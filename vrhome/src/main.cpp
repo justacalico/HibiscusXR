@@ -672,11 +672,16 @@ static void drawFrame(Engine* e) {
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const Mat4 proj = perspective(kFovY, aspect, 0.05f, 100.0f);
 
+    static int errTick = 0;
     for (int i = 0; i < 2; ++i) {
         Eye& y = e->eye[i];
         glBindFramebuffer(GL_FRAMEBUFFER, y.fbo);
         glViewport(0, 0, y.w, y.h);
-        glClearColor(0.10f, 0.12f, 0.20f, 1.0f);
+        // debug.vrhome.fill=1 paints each eye a solid colour to prove the path
+        if (propI("debug.vrhome.fill", 0))
+            glClearColor(i == 0 ? 0.8f : 0.1f, 0.1f, i == 1 ? 0.8f : 0.1f, 1.0f);
+        else
+            glClearColor(0.10f, 0.12f, 0.20f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         // per-eye offset for IPD
         Mat4 eyeView = head;
@@ -686,17 +691,27 @@ static void drawFrame(Engine* e) {
         const Mat4 vp = multiply(proj, eyeView);
         drawScene(e, vp);
         drawReticle(e);
+        if (++errTick >= 144) {
+            errTick = 0;
+            GLenum ge = glGetError();
+            if (ge != GL_NO_ERROR) LOGE("GL error 0x%x", ge);
+        }
     }
 
-    // warp pass: each eye texture through barrel distortion to its half
+    // warp pass: each eye texture through barrel distortion to its half.
+    // depth test must be OFF here - the default framebuffer has a depth buffer
+    // and the fullscreen quads would fail GL_LESS on equal depth after frame 1
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, e->width, e->height);
+    glDisable(GL_DEPTH_TEST);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(e->warpProg);
     const GLint aPos = glGetAttribLocation(e->warpProg, "aPos");
     glEnableVertexAttribArray(aPos);
     glBindBuffer(GL_ARRAY_BUFFER, e->quadVbo);
     glVertexAttribPointer(aPos, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glUniform1i(glGetUniformLocation(e->warpProg, "uTex"), 0);
+    glActiveTexture(GL_TEXTURE0);
     glUniform2f(glGetUniformLocation(e->warpProg, "uLensCenter"), 0.5f, 0.5f);
     glUniform1f(glGetUniformLocation(e->warpProg, "uK1"), kDistK1);
     glUniform1f(glGetUniformLocation(e->warpProg, "uK2"), kDistK2);
@@ -706,6 +721,7 @@ static void drawFrame(Engine* e) {
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }
     glDisableVertexAttribArray(aPos);
+    glEnable(GL_DEPTH_TEST);
     eglSwapBuffers(e->display, e->surface);
 }
 

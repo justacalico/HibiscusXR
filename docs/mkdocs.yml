@@ -1,0 +1,17 @@
+site_name: PN2Lineage
+site_description: LineageOS 17.1 on the Pico Neo 2
+repo_url: https://gitlab.com/neosalsa/docs
+
+theme:
+  name: material
+  palette:
+    primary: blue grey
+
+nav:
+  - Home: index.md
+  - Repositories: repos.md
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true

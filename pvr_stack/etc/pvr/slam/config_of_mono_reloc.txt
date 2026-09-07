@@ -1,0 +1,23 @@
+param_ba_variance_regularization_depth = 1.0e-1
+input_ground_truth_max_time_difference = -1.0
+
+param_use_fisheye = true
+param_ft_len = 125
+param_ft_droprate = 0
+param_not_use_fast = false
+param_uniform_radius = 40
+param_pyra_level = 2
+param_fast_thresh = 10
+param_request_feat_num = 120
+param_var_acc_noise = 2e-4
+param_var_acc_biaswalk = 3.5e-6
+param_var_gyro_noise = 3.03e-8
+param_var_gyro_biaswalk = 5.5e-9
+param_dbow_path = /system/etc/pvr/slam/ORBvoc.bin
+param_qcom_path = /persist/pvr/camera/device_calibration.xml
+
+param_headoffset_x = 0.04
+param_headoffset_y = 0.0208
+param_headoffset_z = 0.1
+
+param_map_path = /data/misc/maps/

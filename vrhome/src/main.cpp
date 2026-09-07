@@ -797,19 +797,22 @@ static const TGlyph* fontGlyph(Engine* e, int cp) {
     g.valid = true;
 
     if (gw > 0 && gh > 0) {
-        if (f.packX + gw + 1 > Font::TEX) {
-            f.packX = 0; f.packY += f.packRowH + 1; f.packRowH = 0;
+        if (f.packX + gw + 3 > Font::TEX) {
+            f.packX = 0; f.packY += f.packRowH + 2; f.packRowH = 0;
         }
-        if (f.packY + gh + 1 <= Font::TEX) {
+        if (f.packY + gh + 2 <= Font::TEX) {
             std::vector<uint8_t> bmp(gw * gh);
             stbtt_MakeCodepointBitmap(&f.info, bmp.data(), gw, gh, gw,
                                       f.scale, f.scale, cp);
+            // the bitmap is tightly packed at gw stride; without this GL pads
+            // each row to 4 bytes and reads the glyph skewed into strips
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glBindTexture(GL_TEXTURE_2D, f.tex);
             glTexSubImage2D(GL_TEXTURE_2D, 0, f.packX, f.packY, gw, gh,
                             GL_ALPHA, GL_UNSIGNED_BYTE, bmp.data());
             g.u0 = f.packX / (float)Font::TEX; g.u1 = (f.packX + gw) / (float)Font::TEX;
             g.v0 = f.packY / (float)Font::TEX; g.v1 = (f.packY + gh) / (float)Font::TEX;
-            f.packX += gw + 1;
+            f.packX += gw + 2;
             if (gh > f.packRowH) f.packRowH = gh;
         }
     }
@@ -844,6 +847,7 @@ static float drawText(Engine* e, const char* utf8, float x, float y, float z,
             const float gtop = y - g->yoff * mPerPx;   // yoff < 0 sits above baseline
             const float gbot = gtop - g->h * mPerPx;
             const float gw = g->w * mPerPx;
+            // glyph top row sits at low v in the atlas, so quad top -> v0
             const float quad[6][5] = {
                 {gx,    gbot, z, g->u0, g->v1},
                 {gx+gw, gbot, z, g->u1, g->v1},
@@ -887,15 +891,15 @@ static void drawHud(Engine* e, const Mat4& proj) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const float s = 0.0016f;   // metres per font pixel in view space
+    const float s = 0.0026f;   // metres per font pixel in view space
     const float z = -1.2f;
     float w = textWidth(e, e->hud, s);
-    drawText(e, e->hud, -w * 0.5f, 0.30f, z, s);
+    drawText(e, e->hud, -w * 0.5f, 0.24f, z, s);
 
     if (e->gazed >= 0 && e->gazed < (int)gApps.size()) {
         const char* lbl = gApps[e->gazed].label.c_str();
         w = textWidth(e, lbl, s);
-        drawText(e, lbl, -w * 0.5f, 0.22f, z, s);
+        drawText(e, lbl, -w * 0.5f, 0.12f, z, s);
     }
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);

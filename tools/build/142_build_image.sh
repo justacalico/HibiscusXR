@@ -59,8 +59,31 @@ put "$OV/lib64/libsensorservice.so" "/lib64/libsensorservice.so" 644
 put "$OV/lib64/libshim_pvr.so"      "/lib64/libshim_pvr.so"      644
 
 echo
-echo "=== build.prop additions ==="
+echo "=== headset buttons: key layouts ==="
+debugfs -w -R "mkdir /usr/keylayout" "$IMG" >/dev/null 2>&1
+for f in gpio-keys.kl dc_detect.kl; do
+  put "$OV/usr/keylayout/$f" "/usr/keylayout/$f" 644
+done
+
+echo
+echo "=== headset buttons: libinput keycode labels ==="
+# the GSI's libinput does not know Pico's labels, so the .kl above would be
+# discarded whole. Patch the image's own libinput in place: dump, repurpose
+# unused TV_* table entries, write back.
 TMP=$(mktemp -d)
+for lib in lib64 lib; do
+  debugfs -R "dump /$lib/libinput.so $TMP/libinput.so" "$IMG" 2>/dev/null
+  if [ -s "$TMP/libinput.so" ] && python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
+      "$TMP/libinput.so" "$TMP/libinput.patched.so" >/dev/null 2>&1; then
+    put "$TMP/libinput.patched.so" "/$lib/libinput.so" 644
+  else
+    echo "  SKIP    /$lib/libinput.so (patch failed or missing)"
+  fi
+  rm -f "$TMP/libinput.so" "$TMP/libinput.patched.so"
+done
+
+echo
+echo "=== build.prop additions ==="
 debugfs -R "dump /build.prop $TMP/build.prop" "$IMG" 2>/dev/null
 if [ -s "$TMP/build.prop" ]; then
   echo "  original: $(stat -c%s "$TMP/build.prop") bytes"

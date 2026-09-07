@@ -38,11 +38,13 @@
 #define AWINDOW_FLAG_KEEP_SCREEN_ON 0x00000080
 #endif
 
-// tunables confirmed on the headset in the vrdemo: roll 90, worldx 90
+// tunables confirmed on the headset in the vrdemo: worldx 90
 static float kDistK1 = 0.22f, kDistK2 = 0.24f;
 static float kIPD  = 0.063f;
 static float kFovY = 90.0f;
-static float kRoll = 90.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
+// roll confirmed on the headset: 90 left the world upside down through the
+// lenses, 270 puts it upright. Still live-tunable via debug.vrhome.roll.
+static float kRoll = 270.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
 
 static const int kSensorIdent = 3;
 static const int kInputIdent  = 4;

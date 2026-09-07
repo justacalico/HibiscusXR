@@ -61,7 +61,8 @@ for p in "${parts[@]}"; do
   "${ADB[@]}" shell "su -c 'rm -f /sdcard/bk/$p.img'" >/dev/null 2>&1
 
   if [ -f "$out" ]; then
-    log "$(printf 'OK   %-14s %10s MB' "$p" "$(awk "BEGIN{printf %.2f, $(stat -c%s "$out")/1048576}")")"
+    mb=$(awk -v s="$(stat -c%s "$out")" 'BEGIN{printf "%.2f", s/1048576}')
+    log "$(printf 'OK   %-14s %10s MB' "$p" "$mb")"
     ok=$((ok+1))
   else
     log "FAIL pull $p"; fail=$((fail+1))

@@ -314,7 +314,7 @@ struct Engine {
     bool ready = false;
 
     GLuint sceneProg = 0, warpProg = 0;
-    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0;
+    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0;
     Eye eye[2];
 
     ASensorManager* sensorMgr = nullptr;
@@ -332,6 +332,20 @@ struct Engine {
 // panels are distinguishable without text
 static float gPanelVerts[256 * 6 * 6];
 static int   gPanelVertCount = 0;
+
+// unit cube, per-face colour so orientation reads clearly at a glance
+static const float kCube[] = {
+#define F(r,g,b, x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4) \
+    x1,y1,z1, r,g,b,  x2,y2,z2, r,g,b,  x3,y3,z3, r,g,b, \
+    x1,y1,z1, r,g,b,  x3,y3,z3, r,g,b,  x4,y4,z4, r,g,b,
+    F(0.9f,0.2f,0.2f, -1,-1, 1,  1,-1, 1,  1, 1, 1, -1, 1, 1)
+    F(0.2f,0.9f,0.2f,  1,-1,-1, -1,-1,-1, -1, 1,-1,  1, 1,-1)
+    F(0.2f,0.4f,0.9f,  1,-1, 1,  1,-1,-1,  1, 1,-1,  1, 1, 1)
+    F(0.9f,0.9f,0.2f, -1,-1,-1, -1,-1, 1, -1, 1, 1, -1, 1,-1)
+    F(0.9f,0.5f,0.1f, -1, 1, 1,  1, 1, 1,  1, 1,-1, -1, 1,-1)
+    F(0.6f,0.2f,0.8f, -1,-1,-1,  1,-1,-1,  1,-1, 1, -1,-1, 1)
+#undef F
+};
 
 // floor grid: gives the eye something to lock onto so a "black" scene is never
 // just empty space
@@ -455,6 +469,9 @@ static int initDisplay(Engine* e) {
     buildGrid();
     glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
     glBufferData(GL_ARRAY_BUFFER, gGridVerts * 6 * sizeof(float), gGrid, GL_STATIC_DRAW);
+    glGenBuffers(1, &e->cubeVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, e->cubeVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(kCube), kCube, GL_STATIC_DRAW);
 
     if (!initEyeTargets(e)) return -1;
     glEnable(GL_DEPTH_TEST);
@@ -564,6 +581,23 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
         glDrawArrays(GL_TRIANGLES, e->gazed * 6, 6);
     }
+    // 4 reference cubes at the cardinal points, so head rotation is obvious
+    glBindBuffer(GL_ARRAY_BUFFER, e->cubeVbo);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void*)(3 * sizeof(float)));
+    static const float kCubePos[4][3] = {
+        { 0, 0, -4}, { 4, 0, 0}, { 0, 0, 4}, {-4, 0, 0}   // N E S W
+    };
+    for (int i = 0; i < 4; ++i) {
+        Mat4 m = identity();
+        const float s = 0.4f;
+        m.m[0] = s; m.m[5] = s; m.m[10] = s;
+        Mat4 mv = multiply(translate3(kCubePos[i][0], kCubePos[i][1], kCubePos[i][2]), m);
+        const Mat4 mvp = multiply(viewProj, mv);
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aCol);
 }
@@ -623,10 +657,17 @@ static void drawFrame(Engine* e) {
 
     e->gazed = pickGazed(head);
 
-    if ((e->appTick % 144) == 0)
-        LOGI("haveQuat=%d quat=(%.2f,%.2f,%.2f,%.2f) panels=%d gazed=%d",
-             e->haveQuat, e->quat[0], e->quat[1], e->quat[2], e->quat[3],
-             (int)gPanels.size(), e->gazed);
+    if ((e->appTick % 144) == 0) {
+        // yaw/pitch/roll from the sensor quat so rotation is readable in logcat
+        const float x = e->quat[0], y = e->quat[1], z = e->quat[2], w = e->quat[3];
+        const float yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;
+        const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(w*x - y*z)))) * 180.0f / (float)M_PI;
+        const float roll  = atan2f(2*(w*z + x*y), 1 - 2*(z*z + x*x)) * 180.0f / (float)M_PI;
+        float fwd[3]; const float c[3] = {0,0,-1};
+        viewDirToWorld(head, c, fwd);
+        LOGI("rot quat=(%.2f,%.2f,%.2f,%.2f) ypr=(%.0f,%.0f,%.0f) fwd=(%.2f,%.2f,%.2f) gazed=%d",
+             x, y, z, w, yaw, pitch, roll, fwd[0], fwd[1], fwd[2], e->gazed);
+    }
 
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const Mat4 proj = perspective(kFovY, aspect, 0.05f, 100.0f);

@@ -124,3 +124,117 @@ adb shell su -c 'settings put global hide_error_dialogs 1'
 Every patched proprietary file has a `.orig` beside it on the device
 (`libart.so.orig`, `libPvr_UnitySDK.so.orig`, …), so a bad patch can be reverted
 in place without reflashing.
+
+---
+
+# out
+
+English | [中文](#中文) | [Русский](#русский)
+
+## What this is
+
+Build output. system-pn2.img / system-pn2-full.img are the flashable LineageOS 17.1 system images for Pico Neo 2 (the GSI plus our overlay written in with debugfs), and dev_sensor.so / dev_shim.so are our own compiled shim libraries.
+
+## How to remake this dump
+
+tools/142-147: copy gsi/gsi_raw.img, `debugfs -w` the overlay files into it, then tools/147_flash_full.ps1 flashes the result. The full details are in the README below.
+
+## License
+
+The built images combine the third-party LineageOS GSI (under its own license) with our own original work. The AGPL v3 in this repository applies to this README and our own files only (shims, overlay files, scripts). LineageOS content stays under its own license, and no Pico proprietary content is shipped here.
+
+## 中文
+
+### 这是什么
+
+构建产物。system-pn2.img / system-pn2-full.img 是 Pico Neo 2 可刷入的 LineageOS 17.1 系统镜像（GSI 加上用 debugfs 写入的我们的 overlay），dev_sensor.so / dev_shim.so 是我们自己编译的 shim 库。
+
+### 如何重新制作这些转储
+
+重新制作：tools/142-147——复制 gsi/gsi_raw.img，用 `debugfs -w` 写入 overlay 文件，再用 tools/147_flash_full.ps1 刷入。详细说明见下方 README。
+
+### 许可证说明
+
+构建出的镜像由第三方 LineageOS GSI（受其自身许可证约束）与我们自己的原创工作组合而成。本仓库的 AGPL v3 仅适用于本 README 以及我们自己的文件（shim、overlay 文件、脚本）。LineageOS 的内容仍受其自身许可证约束，本仓库不包含任何 Pico 专有内容。
+
+## Русский
+
+### Что это
+
+Результаты сборки. system-pn2.img / system-pn2-full.img — прошиваемые образы LineageOS 17.1 для Pico Neo 2 (GSI плюс наш overlay, записанный через debugfs), а dev_sensor.so / dev_shim.so — наши собственные собранные шим-библиотеки.
+
+### Как воспроизвести дамп
+
+Воспроизведение: tools/142-147 — копия gsi/gsi_raw.img, запись overlay-файлов через `debugfs -w`, затем прошивка через tools/147_flash_full.ps1. Подробности — в README ниже.
+
+### Лицензия
+
+Собранные образы объединяют сторонний LineageOS GSI (под его собственной лицензией) с нашей собственной работой. AGPL v3 в этом репозитории распространяется только на этот README и наши собственные файлы (шимы, overlay-файлы, скрипты). Контент LineageOS остаётся под своей лицензией, проприетарные файлы Pico здесь не распространяются.
+
+## Files in this folder / 本目录文件 / Файлы в этой папке
+
+4 files / 共 4 个文件 / всего файлов: 4
+
+```
+   0.2 KiB  dev_sensor.so
+   0.0 KiB  dev_shim.so
+   0.0 GiB  system-pn2-full.img
+   0.0 GiB  system-pn2.img
+```
+
+---
+
+# out
+
+English | [中文](#中文) | [Русский](#русский)
+
+## What this is
+
+Build output. system-pn2.img / system-pn2-full.img are the flashable LineageOS 17.1 system images for Pico Neo 2 (the GSI plus our overlay written in with debugfs), and dev_sensor.so / dev_shim.so are our own compiled shim libraries.
+
+## How to remake this dump
+
+tools/142-147: copy gsi/gsi_raw.img, `debugfs -w` the overlay files into it, then tools/147_flash_full.ps1 flashes the result. The full details are in the README below.
+
+## License
+
+The built images combine the third-party LineageOS GSI (under its own license) with our own original work. The AGPL v3 in this repository applies to this README and our own files only (shims, overlay files, scripts). LineageOS content stays under its own license, and no Pico proprietary content is shipped here.
+
+## 中文
+
+### 这是什么
+
+构建产物。system-pn2.img / system-pn2-full.img 是 Pico Neo 2 可刷入的 LineageOS 17.1 系统镜像（GSI 加上用 debugfs 写入的我们的 overlay），dev_sensor.so / dev_shim.so 是我们自己编译的 shim 库。
+
+### 如何重新制作这些转储
+
+重新制作：tools/142-147——复制 gsi/gsi_raw.img，用 `debugfs -w` 写入 overlay 文件，再用 tools/147_flash_full.ps1 刷入。详细说明见下方 README。
+
+### 许可证说明
+
+构建出的镜像由第三方 LineageOS GSI（受其自身许可证约束）与我们自己的原创工作组合而成。本仓库的 AGPL v3 仅适用于本 README 以及我们自己的文件（shim、overlay 文件、脚本）。LineageOS 的内容仍受其自身许可证约束，本仓库不包含任何 Pico 专有内容。
+
+## Русский
+
+### Что это
+
+Результаты сборки. system-pn2.img / system-pn2-full.img — прошиваемые образы LineageOS 17.1 для Pico Neo 2 (GSI плюс наш overlay, записанный через debugfs), а dev_sensor.so / dev_shim.so — наши собственные собранные шим-библиотеки.
+
+### Как воспроизвести дамп
+
+Воспроизведение: tools/142-147 — копия gsi/gsi_raw.img, запись overlay-файлов через `debugfs -w`, затем прошивка через tools/147_flash_full.ps1. Подробности — в README ниже.
+
+### Лицензия
+
+Собранные образы объединяют сторонний LineageOS GSI (под его собственной лицензией) с нашей собственной работой. AGPL v3 в этом репозитории распространяется только на этот README и наши собственные файлы (шимы, overlay-файлы, скрипты). Контент LineageOS остаётся под своей лицензией, проприетарные файлы Pico здесь не распространяются.
+
+## Files in this folder / 本目录文件 / Файлы в этой папке
+
+4 files / 共 4 个文件 / всего файлов: 4
+
+```
+ 221.9 KiB  dev_sensor.so
+   7.8 KiB  dev_shim.so
+   3.3 GiB  system-pn2-full.img
+   1.9 GiB  system-pn2.img
+```

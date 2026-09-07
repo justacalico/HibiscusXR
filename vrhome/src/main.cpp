@@ -294,28 +294,62 @@ static void launchApp(android_app* app, const std::string& pkg) {
     jobject intent = env->CallObjectMethod(pm, getLaunch, env->NewStringUTF(pkg.c_str()));
     if (!intent) { LOGE("no launch intent for %s", pkg.c_str()); return; }
 
-    // float the app in a freeform window rather than taking over fullscreen
     jclass intCls = env->FindClass("android/content/Intent");
     env->CallObjectMethod(intent,
         env->GetMethodID(intCls, "addFlags", "(I)Landroid/content/Intent;"),
         0x10000000);   // FLAG_ACTIVITY_NEW_TASK
-    jclass aoCls = env->FindClass("android/app/ActivityOptions");
-    jobject opts = env->CallStaticObjectMethod(aoCls,
-        env->GetStaticMethodID(aoCls, "makeBasic",
-            "()Landroid/app/ActivityOptions;"));
-    jclass rectCls = env->FindClass("android/graphics/Rect");
-    jobject rect = env->NewObject(rectCls,
-        env->GetMethodID(rectCls, "<init>", "(IIII)V"),
-        480, 200, 1440, 1000);
-    env->CallObjectMethod(opts,
-        env->GetMethodID(aoCls, "setLaunchBounds",
-            "(Landroid/graphics/Rect;)Landroid/app/ActivityOptions;"), rect);
-    jobject bundle = env->CallObjectMethod(opts,
-        env->GetMethodID(aoCls, "toBundle", "()Landroid/os/Bundle;"));
-    jmethodID startAct = env->GetMethodID(actCls, "startActivity",
-        "(Landroid/content/Intent;Landroid/os/Bundle;)V");
-    env->CallVoidMethod(activity, startAct, intent, bundle);
+
+    // try to float it: create a virtual display and launch the app onto it
+    JNIEnv* env2 = env;   // same env
+    jclass actCls2 = actCls;
+    jmethodID getSys = env2->GetMethodID(actCls2, "getSystemService",
+        "(Ljava/lang/String;)Ljava/lang/Object;");
+    jobject dm = env2->CallObjectMethod(activity, getSys,
+        env2->NewStringUTF("display"));
+    jclass dmCls = env2->FindClass("android/hardware/display/DisplayManager");
+    // a Surface we can render from: SurfaceTexture -> Surface
+    jclass stCls = env2->FindClass("android/graphics/SurfaceTexture");
+    jobject st = env2->NewObject(stCls,
+        env2->GetMethodID(stCls, "<init>", "(I)V"), 0);   // tex id 0 placeholder
+    env2->CallVoidMethod(st, env2->GetMethodID(stCls, "setDefaultBufferSize",
+        "(II)V"), 960, 800);
+    jclass sfCls = env2->FindClass("android/view/Surface");
+    jobject surf = env2->NewObject(sfCls,
+        env2->GetMethodID(sfCls, "<init>", "(Landroid/graphics/SurfaceTexture;)V"), st);
+    jobject vd = env2->CallObjectMethod(dm,
+        env2->GetMethodID(dmCls, "createVirtualDisplay",
+            "(Ljava/lang/String;IIILandroid/view/Surface;I)Landroid/hardware/display/VirtualDisplay;"),
+        env2->NewStringUTF("vrfloat"), 960, 800, 160, surf, 0);
+    if (vd) {
+        jclass vdCls = env2->FindClass("android/hardware/display/VirtualDisplay");
+        jobject disp = env2->CallObjectMethod(vd,
+            env2->GetMethodID(vdCls, "getDisplay", "()Landroid/view/Display;"));
+        jclass dCls = env2->FindClass("android/view/Display");
+        int dispId = env2->CallIntMethod(disp,
+            env2->GetMethodID(dCls, "getDisplayId", "()I"));
+        LOGI("virtual display id=%d for %s", dispId, pkg.c_str());
+        jclass aoCls = env2->FindClass("android/app/ActivityOptions");
+        jobject opts = env2->CallStaticObjectMethod(aoCls,
+            env2->GetStaticMethodID(aoCls, "makeBasic",
+                "()Landroid/app/ActivityOptions;"));
+        env2->CallObjectMethod(opts,
+            env2->GetMethodID(aoCls, "setLaunchDisplayId",
+                "(I)Landroid/app/ActivityOptions;"), dispId);
+        jobject bundle = env2->CallObjectMethod(opts,
+            env2->GetMethodID(aoCls, "toBundle", "()Landroid/os/Bundle;"));
+        jmethodID startAct = env2->GetMethodID(actCls, "startActivity",
+            "(Landroid/content/Intent;Landroid/os/Bundle;)V");
+        env2->CallVoidMethod(activity, startAct, intent, bundle);
+    }
+    // a denied float or a failed virtual display still opens the app normally
+    if (env2->ExceptionCheck() || !vd) {
+        env2->ExceptionClear();
+        jmethodID startAct = env2->GetMethodID(actCls, "startActivity",
+            "(Landroid/content/Intent;)V");
+        env2->CallVoidMethod(activity, startAct, intent);
+    }
     LOGI("launched %s", pkg.c_str());
+    if (env2->ExceptionCheck()) { env2->ExceptionDescribe(); env2->ExceptionClear(); }
 }
 
 // ---------------------------------------------------------------- shaders
@@ -1135,6 +1169,13 @@ static void drawFrame(Engine* e) {
         head = multiply(head, rotX(worldx));
     }
     head = multiply(rotZ(dRoll), head);
+
+    // test hook: setprop debug.vrhome.launch <pkg> fires the floating path once
+    {
+        char tb[PROP_VALUE_MAX];
+        if (__system_property_get("debug.vrhome.launch", tb) > 0 && e->frames == 30)
+            launchApp(e->app, tb);
+    }
 
     e->gazed = pickGazed(head);
 

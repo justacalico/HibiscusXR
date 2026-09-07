@@ -1,0 +1,23 @@
+# Optional wireless adb, for headset development.
+#
+# The Neo 2 never re-enumerates on USB after a reboot, so every reboot costs a
+# physical replug. Over TCP that goes away.
+#
+# persist.adb.tcp.port cannot be used from build.prop: persistent properties are
+# restored from /data/property AFTER build.prop is loaded, and adbd pins that key
+# to 0 whenever it drops back to USB mode, so the /data copy always wins.
+# Triggering on our own property and setting service.adb.tcp.port instead avoids
+# the fight entirely.
+#
+# OFF by default - this opens a root-capable adb socket to anyone on the LAN, so
+# it has to be asked for:
+#     adb shell su -c 'setprop persist.pn2.adbwifi 1'   (survives reboots)
+#     adb shell su -c 'setprop persist.pn2.adbwifi 0'   (back to usb only)
+
+on property:persist.pn2.adbwifi=1
+    setprop service.adb.tcp.port 5555
+    restart adbd
+
+on property:persist.pn2.adbwifi=0
+    setprop service.adb.tcp.port -1
+    restart adbd

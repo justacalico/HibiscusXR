@@ -1,0 +1,31 @@
+# Pico VR service. Stock definition from the 8.1 system image, plus a seclabel.
+#
+# Android 10 init refuses to start a service with no SELinux domain -
+#   "init: service pvrservice does not have a SELinux domain defined"
+# - and being globally permissive does not help, because init bails before the
+# permissive check matters. Stock 8.1 got a domain from Pico's own sepolicy,
+# which is on the stock /system we replaced. u:r:shell:s0 is a domain that exists
+# in the GSI's policy and, under permissive, is unrestricted.
+#
+# Proper fix for a real build: ship a pvrservice domain in sepolicy rather than
+# borrowing shell's.
+
+# LD_PRELOAD is load-bearing. libpvrmodule_platform.so is built against the 8.1
+# framework and (a) imports two libgui symbols Android 10 removed and (b) reads
+# DisplayEventReceiver events into a 24-byte-per-event stack buffer that Q now
+# writes 32 bytes into. libshim_pvr.so supplies the missing symbols and repacks
+# the events. Without it pvrservice loads, then dies with
+# "stack corruption detected (-fstack-protector)" in PVR::receiver().
+service pvrservice /system/bin/pvrservice
+     class core
+     user root
+     group root usb system wakelock
+     seclabel u:r:shell:s0
+     setenv LD_PRELOAD /system/lib64/libshim_pvr.so
+
+on property:sys.pvr.vrservice.state=0
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1
+    start pvrservice
+on property:sys.pvr.vrservice.state=2
+    restart pvrservice

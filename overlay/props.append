@@ -1,0 +1,11 @@
+# --- Pico Neo 2 (A7B10) port additions -------------------------------------
+# Vendor advertises persist.vendor.bt.a2dp_offload_cap but exposes no offload
+# formats, so AudioPolicyManager null-derefs in
+# getHwOffloadEncodingFormatsSupportedForA2DP() and audioserver crash-loops.
+persist.bluetooth.a2dp_offload.disabled=true
+ro.bluetooth.a2dp_offload.supported=false
+
+# Panel reports 2160x3840 portrait but is physically mounted landscape across
+# both eyes. Without this the 2D UI renders across the seam between the lenses.
+ro.surface_flinger.primary_display_orientation=ORIENTATION_90
+ro.sf.hwrotation=90

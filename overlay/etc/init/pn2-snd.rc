@@ -1,0 +1,26 @@
+# Load the sdm845 audio drivers, which stock ships as modules in
+# /vendor/lib/modules rather than building into the kernel.
+#
+# The stock vendor already tries this at ~2.7s:
+#   exec ... /vendor/bin/modprobe -a -d /vendor/lib/modules pinctrl-wcd \
+#            wcd-dsp-glink snd-soc-wcd-spi snd-soc-sdm845
+# Under Android 10 that dies with
+#   init: cannot execve('/vendor/bin/modprobe'): No such file or directory
+# because /vendor/bin/modprobe is toybox_vendor, a dynamically linked binary that
+# needs bionic out of the runtime APEX - and apexd has not mounted it yet at 2.7s.
+# Nothing retries, so no ALSA card ever registers. The vendor audio HAL then spins
+# forever in audio_extn_utils_get_snd_card_num(), audioserver gets killed by its
+# own 5s TimeCheck over and over, media.audio_policy never publishes, and
+# system_server blocks in StartStorageManagerService -> boot never completes.
+#
+# Retry once the APEX is up. Same modules, same order, just late enough to run.
+
+service pn2_snd /system/bin/modprobe -a -d /vendor/lib/modules pinctrl-wcd wcd-dsp-glink snd-soc-wcd-spi snd-soc-sdm845
+    class core
+    user root
+    group root
+    oneshot
+    disabled
+
+on property:apexd.status=ready
+    start pn2_snd

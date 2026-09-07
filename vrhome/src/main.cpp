@@ -52,53 +52,31 @@ static const int kInputIdent  = 4;
 
 // ---------------------------------------------------------------- font
 
-// 5x7 glyphs, one byte per column, LSB = top row. Only the chars the HUD needs.
-struct Glyph { char c; uint8_t col[5]; };
-static const Glyph kFont[] = {
-    {' ', {0x00,0x00,0x00,0x00,0x00}},
-    {'-', {0x08,0x08,0x08,0x08,0x08}},
-    {'.', {0x00,0x60,0x60,0x00,0x00}},
-    {':', {0x00,0x36,0x36,0x00,0x00}},
-    {'0', {0x3E,0x51,0x49,0x45,0x3E}},
-    {'1', {0x00,0x42,0x7F,0x40,0x00}},
-    {'2', {0x42,0x61,0x51,0x49,0x46}},
-    {'3', {0x21,0x41,0x45,0x4B,0x31}},
-    {'4', {0x18,0x14,0x12,0x7F,0x10}},
-    {'5', {0x27,0x45,0x45,0x45,0x39}},
-    {'6', {0x3C,0x4A,0x49,0x49,0x30}},
-    {'7', {0x01,0x71,0x09,0x05,0x03}},
-    {'8', {0x36,0x49,0x49,0x49,0x36}},
-    {'9', {0x06,0x49,0x49,0x29,0x1E}},
-    {'A', {0x7E,0x11,0x11,0x11,0x7E}},
-    {'C', {0x3E,0x41,0x41,0x41,0x22}},
-    {'D', {0x7F,0x41,0x41,0x22,0x1C}},
-    {'E', {0x7F,0x49,0x49,0x49,0x41}},
-    {'F', {0x7F,0x09,0x09,0x09,0x01}},
-    {'G', {0x3E,0x41,0x49,0x49,0x7A}},
-    {'H', {0x7F,0x08,0x08,0x08,0x7F}},
-    {'I', {0x00,0x41,0x7F,0x41,0x00}},
-    {'L', {0x7F,0x40,0x40,0x40,0x40}},
-    {'M', {0x7F,0x02,0x0C,0x02,0x7F}},
-    {'N', {0x7F,0x04,0x08,0x10,0x7F}},
-    {'O', {0x3E,0x41,0x41,0x41,0x3E}},
-    {'P', {0x7F,0x09,0x09,0x09,0x06}},
-    {'Q', {0x3E,0x41,0x51,0x21,0x5E}},
-    {'R', {0x7F,0x09,0x19,0x29,0x46}},
-    {'S', {0x46,0x49,0x49,0x49,0x31}},
-    {'T', {0x01,0x01,0x7F,0x01,0x01}},
-    {'U', {0x3F,0x40,0x40,0x40,0x3F}},
-    {'W', {0x3F,0x40,0x38,0x40,0x3F}},
-    {'X', {0x63,0x14,0x08,0x14,0x63}},
-    {'Y', {0x07,0x08,0x70,0x08,0x07}},
-    {'Z', {0x61,0x51,0x49,0x45,0x43}},
-};
-static const int kFontN = sizeof(kFont) / sizeof(kFont[0]);
-static const int kCellW = 8, kCellH = 8, kAtlasCols = 16;
+#define STB_TRUETYPE_IMPLEMENTATION
+#include "../third_party/stb_truetype.h"
 
-static int glyphIndex(char c) {
-    for (int i = 0; i < kFontN; ++i) if (kFont[i].c == c) return i;
-    return 0;   // blank for anything unmapped
-}
+// TrueType text via stb_truetype over the device's Noto CJK font, so any
+// language works. Glyphs are rasterised on demand into a shared atlas.
+struct TGlyph {
+    float u0, v0, u1, v1;      // atlas uv, v0 = glyph top (low memory v)
+    float xoff, yoff, w, h;    // px: bearing from pen + bitmap size
+    float advance;
+    bool valid = false;
+};
+
+struct Font {
+    stbtt_fontinfo info;
+    std::vector<uint8_t> data;
+    bool ok = false;
+    float scale = 0, ascent = 0;
+    static const int PX = 36;    // rasterise height
+    static const int TEX = 1024; // atlas edge
+    GLuint tex = 0;
+    int packX = 0, packY = 0, packRowH = 0;
+    int cp[512];
+    TGlyph g[512];
+    int n = 0;
+};
 
 static float propF(const char* key, float dflt) {
     char b[PROP_VALUE_MAX];
@@ -398,8 +376,7 @@ struct Engine {
 
     GLuint sceneProg = 0, warpProg = 0, textProg = 0;
     GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0, textVbo = 0;
-    GLuint fontTex = 0;
-    int fontW = 0, fontH = 0;
+    Font font;
     Eye eye[2];
 
     ASensorManager* sensorMgr = nullptr;
@@ -423,6 +400,8 @@ struct Engine {
     int  sensorLagMs = 0;
     float lastQ[4] = {0,0,0,0};
 };
+
+static bool loadFont(Engine* e);
 
 // one quad per panel, rebuilt when the app list changes; colour per app so
 // panels are distinguishable without text
@@ -557,29 +536,7 @@ static int initDisplay(Engine* e) {
     e->textProg  = link(kTextVS,  kTextFS);
     if (!e->sceneProg || !e->warpProg || !e->textProg) return -1;
 
-    // font atlas: 8x8 cells, one per glyph, single alpha channel
-    {
-        const int rows = (kFontN + kAtlasCols - 1) / kAtlasCols;
-        const int tw = kAtlasCols * kCellW, th = rows * kCellH;
-        std::vector<uint8_t> atlas(tw * th, 0);
-        for (int g = 0; g < kFontN; ++g) {
-            const int cx = (g % kAtlasCols) * kCellW;
-            const int cy = (g / kAtlasCols) * kCellH;
-            for (int c = 0; c < 5; ++c)
-                for (int r = 0; r < 7; ++r)
-                    if (kFont[g].col[c] & (1 << r))
-                        atlas[(cy + r) * tw + cx + c] = 255;
-        }
-        glGenTextures(1, &e->fontTex);
-        glBindTexture(GL_TEXTURE_2D, e->fontTex);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, tw, th, 0, GL_ALPHA,
-                     GL_UNSIGNED_BYTE, atlas.data());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        e->fontW = tw; e->fontH = th;
-    }
+    if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
     glGenBuffers(1, &e->textVbo);
 
     glGenBuffers(1, &e->panelVbo);
@@ -772,60 +729,180 @@ static void drawReticle(Engine* e) {
     glDisableVertexAttribArray(aCol);
 }
 
-// HUD: head-locked text showing the live camera rotation, so tracking can be
-// verified without adb. One line near the top of the view, per eye.
-static void drawHud(Engine* e, const Mat4& proj) {
-    glUseProgram(e->textProg);
-    const GLint uMVP  = glGetUniformLocation(e->textProg, "uMVP");
-    const GLint uCol  = glGetUniformLocation(e->textProg, "uColor");
-    const GLint aPos  = glGetAttribLocation(e->textProg, "aPos");
-    const GLint aUV   = glGetAttribLocation(e->textProg, "aUV");
+// ---------------------------------------------------------------- text
+
+static bool loadFont(Engine* e) {
+    static const char* paths[] = {
+        "/system/fonts/NotoSansCJK-Regular.ttc",
+        "/system/fonts/DroidSans.ttf",
+        "/system/fonts/Roboto-Regular.ttf",
+    };
+    FILE* f = nullptr;
+    for (const char* p : paths) { f = fopen(p, "rb"); if (f) break; }
+    if (!f) return false;
+    fseek(f, 0, SEEK_END);
+    const long sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+    e->font.data.resize(sz);
+    fread(e->font.data.data(), 1, sz, f);
+    fclose(f);
+    const int off = stbtt_GetFontOffsetForIndex(e->font.data.data(), 0);
+    if (!stbtt_InitFont(&e->font.info, e->font.data.data(), off)) return false;
+    e->font.scale = stbtt_ScaleForPixelHeight(&e->font.info, Font::PX);
+    int a, d, lg;
+    stbtt_GetFontVMetrics(&e->font.info, &a, &d, &lg);
+    e->font.ascent = a * e->font.scale;
+
+    glGenTextures(1, &e->font.tex);
+    glBindTexture(GL_TEXTURE_2D, e->font.tex);
+    std::vector<uint8_t> zero(Font::TEX * Font::TEX, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, Font::TEX, Font::TEX, 0, GL_ALPHA,
+                 GL_UNSIGNED_BYTE, zero.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    e->font.ok = true;
+    return true;
+}
+
+static int nextCp(const char*& p) {
+    const unsigned char c = (unsigned char)*p++;
+    if (c < 0x80) return c;
+    int r;
+    if      ((c & 0xF8) == 0xF0) r = c & 0x07;
+    else if ((c & 0xF0) == 0xE0) r = c & 0x0F;
+    else if ((c & 0xE0) == 0xC0) r = c & 0x1F;
+    else return c;
+    while (*p && (*p & 0xC0) == 0x80) r = (r << 6) | (*p++ & 0x3F);
+    return r;
+}
+
+static const TGlyph* fontGlyph(Engine* e, int cp) {
+    Font& f = e->font;
+    for (int i = 0; i < f.n; ++i)
+        if (f.cp[i] == cp) return &f.g[i];
+    if (f.n >= 512) return nullptr;
+
+    int adv, lsb;
+    stbtt_GetCodepointHMetrics(&f.info, cp, &adv, &lsb);
+    int x0, y0, x1, y1;
+    stbtt_GetCodepointBitmapBox(&f.info, cp, f.scale, f.scale, &x0, &y0, &x1, &y1);
+    int gw = x1 - x0, gh = y1 - y0;
+
+    TGlyph g{};
+    g.xoff = (float)x0; g.yoff = (float)y0;
+    g.w = (float)gw; g.h = (float)gh;
+    g.advance = adv * f.scale;
+    g.valid = true;
+
+    if (gw > 0 && gh > 0) {
+        if (f.packX + gw + 3 > Font::TEX) {
+            f.packX = 0; f.packY += f.packRowH + 2; f.packRowH = 0;
+        }
+        if (f.packY + gh + 2 <= Font::TEX) {
+            std::vector<uint8_t> bmp(gw * gh);
+            stbtt_MakeCodepointBitmap(&f.info, bmp.data(), gw, gh, gw,
+                                      f.scale, f.scale, cp);
+            // the bitmap is tightly packed at gw stride; without this GL pads
+            // each row to 4 bytes and reads the glyph skewed into strips
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glBindTexture(GL_TEXTURE_2D, f.tex);
+            glTexSubImage2D(GL_TEXTURE_2D, 0, f.packX, f.packY, gw, gh,
+                            GL_ALPHA, GL_UNSIGNED_BYTE, bmp.data());
+            g.u0 = f.packX / (float)Font::TEX; g.u1 = (f.packX + gw) / (float)Font::TEX;
+            g.v0 = f.packY / (float)Font::TEX; g.v1 = (f.packY + gh) / (float)Font::TEX;
+            f.packX += gw + 2;
+            if (gh > f.packRowH) f.packRowH = gh;
+        }
+    }
+    f.cp[f.n] = cp;
+    f.g[f.n] = g;
+    ++f.n;
+    return &f.g[f.n - 1];
+}
+
+static float textWidth(Engine* e, const char* utf8, float mPerPx) {
+    const char* p = utf8;
+    float w = 0;
+    while (*p) {
+        const TGlyph* g = fontGlyph(e, nextCp(p));
+        if (g) w += g->advance * mPerPx;
+    }
+    return w;
+}
+
+// draws a utf-8 string in view space; returns its width in the same units
+static float drawText(Engine* e, const char* utf8, float x, float y, float z,
+                      float mPerPx) {
+    if (!e->font.ok) return 0;
+    std::vector<float> v;
+    const char* p = utf8;
+    float pen = x;
+    while (*p) {
+        const TGlyph* g = fontGlyph(e, nextCp(p));
+        if (!g) continue;
+        if (g->w > 0 && g->h > 0) {
+            const float gx = pen + g->xoff * mPerPx;
+            const float gtop = y - g->yoff * mPerPx;   // yoff < 0 sits above baseline
+            const float gbot = gtop - g->h * mPerPx;
+            const float gw = g->w * mPerPx;
+            // glyph top row sits at low v in the atlas, so quad top -> v0
+            const float quad[6][5] = {
+                {gx,    gbot, z, g->u0, g->v1},
+                {gx+gw, gbot, z, g->u1, g->v1},
+                {gx+gw, gtop, z, g->u1, g->v0},
+                {gx,    gbot, z, g->u0, g->v1},
+                {gx+gw, gtop, z, g->u1, g->v0},
+                {gx,    gtop, z, g->u0, g->v0},
+            };
+            for (auto& q : quad)
+                for (int k = 0; k < 5; ++k) v.push_back(q[k]);
+        }
+        pen += g->advance * mPerPx;
+    }
+    if (v.empty()) return 0;
+    const GLint aPos = glGetAttribLocation(e->textProg, "aPos");
+    const GLint aUV  = glGetAttribLocation(e->textProg, "aUV");
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aUV);
+    glBindBuffer(GL_ARRAY_BUFFER, e->textVbo);
+    glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), v.data(), GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(v.size() / 5));
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+    return pen - x;
+}
+
+// HUD: head-locked text showing the live camera rotation + the gazed app, so
+// tracking can be verified without adb. Two lines near the top, per eye.
+static void drawHud(Engine* e, const Mat4& proj) {
+    if (!e->font.ok) return;
+    glUseProgram(e->textProg);
+    glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"), 1, GL_FALSE,
+                     proj.m);   // view space = identity view
+    glUniform3f(glGetUniformLocation(e->textProg, "uColor"), 1.0f, 1.0f, 1.0f);
+    glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, e->font.tex);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, proj.m);   // view space = identity view
-    glUniform3f(uCol, 1.0f, 1.0f, 1.0f);
-    glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, e->fontTex);
 
-    const float cw = 0.030f, ch = 0.042f;      // metres per glyph in view space
-    const float z  = -1.2f;
-    const float y  = 0.34f;
-    const float len = (float)e->hudLen;
-    const float x0 = -len * cw * 0.5f;
+    const float s = 0.0026f;   // metres per font pixel in view space
+    const float z = -1.2f;
+    float w = textWidth(e, e->hud, s);
+    drawText(e, e->hud, -w * 0.5f, 0.24f, z, s);
 
-    float v[4][5];  // per-char quad: pos.xyz + uv
-    for (int i = 0; i < e->hudLen; ++i) {
-        const int gi = glyphIndex(e->hud[i]);
-        const float cx = (gi % kAtlasCols) * kCellW;
-        const float cy = (gi / kAtlasCols) * kCellH;
-        // glyph row 0 sits at low v in memory, so the quad's top vertex takes
-        // the low-v edge and the bottom vertex the high-v edge
-        const float u0 = cx / e->fontW,       u1 = (cx + kCellW) / e->fontW;
-        const float vTop = cy / e->fontH,     vBot = (cy + kCellH) / e->fontH;
-        const float x = x0 + i * cw;
-        const float q[4][5] = {
-            {x,    y,    z, u0, vBot},
-            {x+cw, y,    z, u1, vBot},
-            {x+cw, y+ch, z, u1, vTop},
-            {x,    y+ch, z, u0, vTop},
-        };
-        const int idx[6] = {0,1,2, 0,2,3};
-        float verts[6][5];
-        for (int t = 0; t < 6; ++t) memcpy(verts[t], q[idx[t]], 5 * sizeof(float));
-        glBindBuffer(GL_ARRAY_BUFFER, e->textVbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
-        glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
-        glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+    if (e->gazed >= 0 && e->gazed < (int)gApps.size()) {
+        const char* lbl = gApps[e->gazed].label.c_str();
+        w = textWidth(e, lbl, s);
+        drawText(e, lbl, -w * 0.5f, 0.12f, z, s);
     }
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aUV);
 }
 
 static void drawFrame(Engine* e) {

@@ -89,6 +89,8 @@ def patch(src, dst):
     return ok == len(PATCHES)
 
 
+if len(sys.argv) == 3:
+    sys.exit(0 if patch(sys.argv[1], sys.argv[2]) else 1)
 a = patch(PN2_ROOT + "/notes/ourinput64.so", PN2_ROOT + "/notes/ourinput64.patched.so")
 b = patch(PN2_ROOT + "/notes/ourinput32.so", PN2_ROOT + "/notes/ourinput32.patched.so")
 sys.exit(0 if (a and b) else 1)

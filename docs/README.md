@@ -8,4 +8,5 @@ mkdocs serve    # local preview
 mkdocs build    # output in site/
 ```
 
-No CI yet - build locally for now.
+CI builds the site on every push to main and publishes it with GitLab Pages
+at https://neosalsa.gitlab.io/docs (job runs on the `linux-truenas` runner).

@@ -1,0 +1,529 @@
+﻿################ /persist/pvr/lens/axisOffset.txt ################
+0.114760800000001,0.193410450000001,-0.1098549,0.132769800000002total 12
+drwxrwxr-x 2 root   root   4096 1970-01-04 10:35 .
+drwxrwxrwx 5 system system 4096 1971-07-17 11:20 ..
+-rw-rw-rw- 1 root   root     64 2020-06-01 22:44 axisOffset.txt
+
+################ /vendor/etc/qvr/config_default.txt ################
+# Server ip address
+
+SERVER_ADDRESS = 172.16.1.100
+
+# Left eye video port
+
+VIDEO_SOURCE = 29702
+
+# Right eye video port
+
+VIDEO_SOURCE_R = 29704
+
+# Render fov. From 95 to 101 for Pico SDK Stream.
+
+VIDEO_FOV = 101
+
+
+
+# Pose data port
+
+POSE_PORT = 29708
+
+# network interface
+
+POSE_TX_INTERFACE = wigig0
+
+
+
+#Delete for Pico SDK Stream
+
+#POSE_PREDICTION_TIME_MS = 100
+
+
+
+# Audio streaming receiver port
+
+AUDIO_PORT = 29706
+
+# Audio jitter parameters
+
+AUDIO_LATENCY = 18
+
+AUDIO_JITTER_BUFFER_CAPACITY = 90
+
+AUDIO_PLAYBACK_RATE_FACTOR = 1000
+
+
+
+# level 0 - more verbose, ....., 4 - warning, 5 - errors
+
+LOG_LEVEL = 5
+
+# log mode: 0 - file mode, 1 - logcat
+
+LOG_MODE = 1
+
+
+
+# RTP parameters
+
+SOCKET_RX_BUFFER_SIZE = 1048576
+
+RTP_PKT_MAX_SIZE = 1500
+
+RTP_PKT_QUEUE_LENGTH = 5000
+
+
+
+# Controller parameters
+
+NUM_CONTROLLERS = 2
+
+# Controller type (0 = EVT Finch,1 = DVT Finch)
+
+CONTROLLER_TYPE = 0
+
+
+
+#Controller acceleration function
+
+ENABLE_ACC_GYRO = true
+
+
+
+#Controller calibration key combination
+
+CONTROLLER_RESET_CENTRE_MASK = -1
+
+
+
+#Set image resolution
+
+EYE_BUFFER_WIDTH = 1920
+
+EYE_BUFFER_HEIGHT = 1920
+
+
+
+# HOME = 3, BACK = 4, MENU = 82
+
+HMD_RESET = 3
+
+
+
+#event port
+
+EVENT_PORT = 29710
+
+
+
+#Qualcomm advice for SO libraries crash
+
+ATW_CONCEAL_PARALLEL = false
+################ svrapi_config.txt (lens / distortion / fov lines) ################
+2:gEyeBufferWidth = 1440
+
+3:gEyeBufferHeight = 1440
+
+5:gEyeBufferFovX = 90.0
+
+6:gEyeBufferFovY = 90.0
+
+8:gMeshAspectRatio = 0.0
+
+10:// Left Eye Frustum
+
+11:gLeftFrustum_Near = 0.0542
+
+12:gLeftFrustum_Far = 100.0
+
+13:gLeftFrustum_Left = -0.053799
+
+14:gLeftFrustum_Right = 0.053799
+
+15:gLeftFrustum_Top = 0.053799
+
+16:gLeftFrustum_Bottom = -0.053799
+
+19://gLeftFrustum_Top = 0.0435
+
+20://gLeftFrustum_Bottom = -0.0435
+
+22:// Right Eye Frustum
+
+23:gRightFrustum_Near = 0.0543
+
+24:gRightFrustum_Far = 100.0
+
+25:gRightFrustum_Left = -0.053799
+
+26:gRightFrustum_Right = 0.053799
+
+27:gRightFrustum_Top = 0.053799
+
+28:gRightFrustum_Bottom = -0.053799
+
+31:// TimeWarp Properties
+
+32:gEnableTimeWarp = true
+
+33:gDisableReprojection = false
+
+35:gDisableLensCorrection = false
+
+36:gDirectModeWarp = true
+
+38:gTimeWarpThreadCore = 4
+
+42:gEnableWarpThreadFifo = true
+
+45:gTimeWarpDelayBetweenEyes = false
+
+49:gTimeWarpMinLoopTime = 0
+
+50:gTimeWarpWaitBias = 3.5
+
+99:// Time (milliseconds) to adjust for midway between left and right eye warp.
+
+100:// The predicted time is to when the left eye will be warped. The right eye
+
+101:// will be warped T/2 later.  To minimize the warp on each eye, this difference
+
+113:// May not want the heuristic values to be the exact first eye.
+
+117:// Warp Mesh
+
+118:gWarpMeshType = 0      // 0 = Columns (Left To Right); 1 = Columns (Right To Left); 2 = Rows (Top To Bottom); 3 = Rows (Bottom To Top)
+
+119:gWarpMeshRows = 64
+
+120:gWarpMeshCols = 64
+
+121://gWarpMeshMinX = -1.3
+
+122://gWarpMeshMaxX= 1.3
+
+123://gWarpMeshMinY = -1.3
+
+124://gWarpMeshMaxY= 1.3
+
+126:gMeshOffsetLeftX = 0.0
+
+127:gMeshOffsetLeftY = 0.0
+
+128:gMeshOffsetRightX = 0.0
+
+129:gMeshOffsetRightY = 0.0
+
+138:// Stencil Mesh
+
+139:gStencilMeshEnabled = false
+
+140:gStencilMeshRadius = 0.95
+
+141:gStencilMeshColorR = 0.0
+
+142:gStencilMeshColorG = 0.0
+
+143:gStencilMeshColorB = 0.0
+
+144:gStencilMeshColorA = 1.0
+
+146:// Lens Parameters
+
+147://gLensOffsetX = 0.0
+
+148://gLensOffsetY = 0.0
+
+152:// Lens Distortion Polynomial: K0 + K1*r + K2*r^2 + K3*r^3 + K4*r^4 + K5*r^5 + K6*r^6
+
+153:// This provides a distortion scale
+
+154:gLensInverse = false
+
+156://gLensPolyK0 = 0.684952714
+
+157://gLensPolyK1 = 0.0
+
+158://gLensPolyK2 = 0.126853243
+
+159://gLensPolyK3 = 0.0
+
+160://gLensPolyK4 = 0.14384007
+
+161://gLensPolyK5 = 0.0
+
+162://gLensPolyK6 = 0.108183761
+
+168:gLensPolyK0 = 0.740740741
+
+169:gLensPolyK1 = 0
+
+170:gLensPolyK2 = 0.192360375
+
+171:gLensPolyK3 = 0.0
+
+172:gLensPolyK4 = -0.020400088
+
+173:gLensPolyK5 = 0
+
+174:gLensPolyK6 = 0.216338258
+
+183:// Chromatic Aberration Correction: K0 + K1*r + K2*r^2 + K3*r^3 + K4*r^5 + K4*r^5 + K6*r^6
+
+184:// This is multiplied by the distortion scale calculated above
+
+185:gChromaticPolyK0_R = 0.992
+
+186:gChromaticPolyK1_R = 0.0
+
+187:gChromaticPolyK2_R = 0.0
+
+188:gChromaticPolyK3_R = 0.0
+
+189:gChromaticPolyK4_R = 0.0
+
+190:gChromaticPolyK5_R = 0.0
+
+191:gChromaticPolyK6_R = 0.0
+
+193:gChromaticPolyK0_G = 1.0
+
+194:gChromaticPolyK1_G = 0.0
+
+195:gChromaticPolyK2_G = 0.0
+
+196:gChromaticPolyK3_G = 0.0
+
+197:gChromaticPolyK4_G = 0.0
+
+198:gChromaticPolyK5_G = 0.0
+
+199:gChromaticPolyK6_G = 0.0
+
+201:gChromaticPolyK0_B = 1.012
+
+202:gChromaticPolyK1_B = 0.0
+
+203:gChromaticPolyK2_B = 0.0
+
+204:gChromaticPolyK3_B = 0.0
+
+205:gChromaticPolyK4_B = 0.0
+
+206:gChromaticPolyK5_B = 0.0
+
+207:gChromaticPolyK6_B = 0.0
+
+209:// Warp Mesh discard UV value
+
+210:gMeshDiscardUV = 2.8
+
+212:// Time (milliseconds) to adjust for midway between left and right eye warp.
+
+213:// The predicted time is to when the left eye will be warped. The right eye
+
+214:// will be warped T/2 later.  To minimize the warp on each eye, this difference
+
+217:gTimeToMidEyeWarp = 3.57
+
+223:gLogEyeOverSleep = true
+
+226:gLogMeshCreation = false
+
+
+################ svrapi_config_default.txt (same filter) ################
+2:gEyeBufferWidth = 1440
+3:gEyeBufferHeight = 1440
+5:gEyeBufferFovX = 101.0
+6:gEyeBufferFovY = 101.0
+8:// Frustum values based on FOV of 80 degrees and 2 inch near plane. Aspect ratio of 1
+9:gMeshAspectRatio = 0.0
+11://// Left Eye Frustum
+12://gLeftFrustum_Near = 0.0373
+13://gLeftFrustum_Far = 100.0
+14://gLeftFrustum_Left = -0.041
+15://gLeftFrustum_Right = 0.041
+16://gLeftFrustum_Top = 0.041
+17://gLeftFrustum_Bottom = -0.041
+19://// Right Eye Frustum
+20://gRightFrustum_Near = 0.0373
+21://gRightFrustum_Far = 100.0
+22://gRightFrustum_Left = -0.041
+23://gRightFrustum_Right = 0.041
+24://gRightFrustum_Top = 0.041
+25://gRightFrustum_Bottom = -0.041
+27:// Left Eye Frustum
+28:gLeftFrustum_Near = 0.0542
+29:gLeftFrustum_Far = 100.0
+30:gLeftFrustum_Left = -0.053799
+31:gLeftFrustum_Right = 0.053799
+32:gLeftFrustum_Top = 0.053799
+33:gLeftFrustum_Bottom = -0.053799
+36://gLeftFrustum_Top = 0.0435
+37://gLeftFrustum_Bottom = -0.0435
+39:// Right Eye Frustum
+40:gRightFrustum_Near = 0.0543
+41:gRightFrustum_Far = 100.0
+42:gRightFrustum_Left = -0.053799
+43:gRightFrustum_Right = 0.053799
+44:gRightFrustum_Top = 0.053799
+45:gRightFrustum_Bottom = -0.053799
+47://gRightFrustum_Top = 0.0435
+48://gRightFrustum_Bottom = -0.0435
+51:// TimeWarp Properties
+52:gEnableTimeWarp = true
+53:gDisableReprojection = false
+55:gDisableLensCorrection = false
+56:gDirectModeWarp = true
+57:gTimeWarpClearBuffer = false
+59:gTimeWarpThreadCore = 4
+63:gEnableWarpThreadFifo = true
+68:gTimeWarpMinLoopTime = 0
+69:gTimeWarpWaitBias = 0.0
+110:// Warp Mesh
+111:gWarpMeshType = 0      // 0 = Columns (Left To Right); 1 = Columns (Right To Left); 2 = Rows (Top To Bottom); 3 = Rows (Bottom To Top)
+112:gWarpMeshRows = 64
+113:gWarpMeshCols = 64
+114://gWarpMeshMinX = -1.3
+115://gWarpMeshMaxX= 1.3
+116://gWarpMeshMinY = -1.3
+117://gWarpMeshMaxY= 1.3
+119:gMeshOffsetLeftX = 0.0
+120:gMeshOffsetLeftY = 0.0
+121:gMeshOffsetRightX = 0.0
+122:gMeshOffsetRightY = 0.0
+131:// Stencil Mesh
+132:gStencilMeshEnabled = false
+133:gStencilMeshRadius = 0.95
+134:gStencilMeshColorR = 0.0
+135:gStencilMeshColorG = 0.0
+136:gStencilMeshColorB = 0.0
+137:gStencilMeshColorA = 1.0
+139:// Lens Parameters
+140://gLensOffsetX = 0.0
+141://gLensOffsetY = 0.0
+145:// Lens Distortion Polynomial: K0 + K1*r + K2*r^2 + K3*r^3 + K4*r^4 + K5*r^5 + K6*r^6
+146:// This provides a distortion scale
+147:gLensInverse = false
+149://gLensPolyK0 = 0.684952714
+150://gLensPolyK1 = 0.0
+151://gLensPolyK2 = 0.126853243
+152://gLensPolyK3 = 0.0
+153://gLensPolyK4 = 0.14384007
+154://gLensPolyK5 = 0.0
+155://gLensPolyK6 = 0.108183761
+161:gLensPolyK0 = 0.740740741
+162:gLensPolyK1 = 0
+163:gLensPolyK2 = 0.192360375
+164:gLensPolyK3 = 0.0
+165:gLensPolyK4 = -0.020400088
+166:gLensPolyK5 = 0
+167:gLensPolyK6 = 0.216338258
+176:// Chromatic Aberration Correction: K0 + K1*r + K2*r^2 + K3*r^3 + K4*r^5 + K4*r^5 + K6*r^6
+177:// This is multiplied by the distortion scale calculated above
+178:gChromaticPolyK0_R = 0.992
+179:gChromaticPolyK1_R = 0.0
+180:gChromaticPolyK2_R = 0.0
+181:gChromaticPolyK3_R = 0.0
+182:gChromaticPolyK4_R = 0.0
+183:gChromaticPolyK5_R = 0.0
+184:gChromaticPolyK6_R = 0.0
+186:gChromaticPolyK0_G = 1.0
+187:gChromaticPolyK1_G = 0.0
+188:gChromaticPolyK2_G = 0.0
+189:gChromaticPolyK3_G = 0.0
+190:gChromaticPolyK4_G = 0.0
+191:gChromaticPolyK5_G = 0.0
+192:gChromaticPolyK6_G = 0.0
+194:gChromaticPolyK0_B = 1.012
+195:gChromaticPolyK1_B = 0.0
+196:gChromaticPolyK2_B = 0.0
+197:gChromaticPolyK3_B = 0.0
+198:gChromaticPolyK4_B = 0.0
+199:gChromaticPolyK5_B = 0.0
+200:gChromaticPolyK6_B = 0.0
+202:// Warp Mesh discard UV value
+203:gMeshDiscardUV = 2.8
+206:gLogEyeOverSleep = true
+209:gLogMeshCreation = false
+
+################ qvrservice_config_default.txt (same filter) ################
+35:# EyeTracking Plugin related configurations
+36:# plugin_eye_tracking_lib = libqvr_eyetracking_plugin.so
+71:tracking_camera_default_resolution_mode    = quarter
+73:# eye tracking camera properties
+74:eye-tracking_camera_id                  = -1
+75:eye-tracking_camera_sensor              = ov6211_stereo
+76:eye-tracking_camera_driver              = native
+77:eye-tracking_camera_res                 = 800 400
+78:eye-tracking_camera_quarter_res         = 416 200 60 220
+79:eye-tracking_camera_frame_rdi_mode      = true
+80:eye-tracking_camera_frame_rdi_bit_depth = 10
+81:eye-tracking_camera_auto_exposure       = false
+82:eye-tracking_camera_hvx_mode            = false
+83:eye-tracking_camera_hvx_algo            = qvrcam_receiver
+84:eye-tracking_camera_master_only         = true
+85:eye-tracking_camera_control_protected   = true
+86:eye-tracking_camera_privileged_client   = 2
+88:eye-tracking_camera_frame_logging_mode  = disabled
+89:eye-tracking_camera_hvx_sensor          = ov6211
+90:eye-tracking_camera_default_flash_mode  = torch
+91:eye-tracking_camera_hvx_stereo_slave_camera_id = -1
+92:eye-tracking_camera_default_resolution_mode    = full
+123:performance_thread_attributes = warp:0>SCHED_FIFO,49,0xFF;1>SCHED_FIFO,49,0xF0;2>SCHED_FIFO,49,0xF0;3>SCHED_FIFO,49,0xF0
+127:performance_thread_attributes_371 = warp:0>SCHED_FIFO,49,0xFF;1>SCHED_FIFO,49,0xC0;2>SCHED_FIFO,49,0xC0;3>SCHED_FIFO,49,0xC0
+148:# mit_actions: fpsup & fpsdown -> increase & decrease fps , resup & reddown -> increase & decrease eye buffer resolution
+161:#   eyeL = left eye tracking camera
+162:#   eyeR = right eye tracking camera
+164:hw_transform = imu eyeL 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0
+165:hw_transform = imu eyeR 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0
+
+################ 6dof_config.xml ################
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+/******************************************************************************
+* Copyright (c) 2016-2020 Qualcomm Technologies, Inc.
+* All Rights Reserved.
+* Confidential and Proprietary - Qualcomm Technologies, Inc.
+******************************************************************************/
+-->
+<Configuration>
+  <SFConfig>
+    <PoseQuality minImageMeanTrackError="15" maxImageMeanTrackError="150" thresholdForGoodTracking="0.4" minFeaturesTrackError="10" />
+  	<Reset maxInRecoveryTimeMs="2000000000" />
+  </SFConfig>    
+</Configuration>
+
+################ live qvrservice config (persist) ################
+35:# EyeTracking Plugin related configurations
+36:# plugin_eye_tracking_lib = libqvr_eyetracking_plugin.so
+73:# eye tracking camera properties
+74:eye-tracking_camera_id                  = -1
+75:eye-tracking_camera_sensor              = ov6211_stereo
+76:eye-tracking_camera_driver              = native
+77:eye-tracking_camera_res                 = 800 400
+78:eye-tracking_camera_quarter_res         = 416 200 60 220
+79:eye-tracking_camera_frame_rdi_mode      = true
+80:eye-tracking_camera_frame_rdi_bit_depth = 10
+81:eye-tracking_camera_auto_exposure       = false
+82:eye-tracking_camera_hvx_mode            = false
+83:eye-tracking_camera_hvx_algo            = qvrcam_receiver
+84:eye-tracking_camera_master_only         = true
+85:eye-tracking_camera_control_protected   = true
+86:eye-tracking_camera_privileged_client   = 2
+88:eye-tracking_camera_frame_logging_mode  = disabled
+89:eye-tracking_camera_hvx_sensor          = ov6211
+90:eye-tracking_camera_default_flash_mode  = torch
+91:eye-tracking_camera_hvx_stereo_slave_camera_id = -1
+92:eye-tracking_camera_default_resolution_mode    = full
+123:performance_thread_attributes = warp:0>SCHED_FIFO,49,0xFF;1>SCHED_FIFO,49,0xF0;2>SCHED_FIFO,49,0xF0;3>SCHED_FIFO,49,0xF0
+127:performance_thread_attributes_371 = warp:0>SCHED_FIFO,49,0xFF;1>SCHED_FIFO,49,0xC0;2>SCHED_FIFO,49,0xC0;3>SCHED_FIFO,49,0xC0
+148:# mit_actions: fpsup & fpsdown -> increase & decrease fps , resup & reddown -> increase & decrease eye buffer resolution
+161:#   eyeL = left eye tracking camera
+162:#   eyeR = right eye tracking camera
+164:hw_transform = imu eyeL 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0
+165:hw_transform = imu eyeR 1.0 0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 0.0 1.0 0.0
+
+################ does the dangling psmvrapi symlink matter? ################
+lrwxrwxrwx 1 root root 36 1971-07-17 11:20 /persist/pvr/psmvrapi_config.txt -> /system/etc/pvr/psmvrapi_config1.txt
+ls: /system/etc/pvr/: No such file or directory
+DONE

@@ -1,0 +1,52 @@
+=== copying fresh from GSI ===
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 14:18 /mnt/f/PN2Lineage/out/system-pn2.img
+
+=== init scripts ===
+  OK    /etc/init/pn2-vintf.rc                     1098 bytes
+  OK    /etc/init/pn2-snd.rc                       1219 bytes
+  OK    /etc/init/pn2-settings.rc                  1323 bytes
+  OK    /etc/init/pn2-power.rc                     1325 bytes
+  OK    /etc/init/pvrservice.rc                    1440 bytes
+
+=== VINTF manifest override ===
+  OK    /etc/pn2/vendor_manifest.xml               22335 bytes
+
+=== patched libs ===
+  OK    /lib64/libsensorservice.so                 227192 bytes
+  OK    /lib64/libshim_pvr.so                      7976 bytes
+
+=== build.prop ===
+  OK    /build.prop                                4658 bytes
+  --- our block as it now reads ---
+    # --- Pico Neo 2 (A7B10) port additions -------------------------------------
+    # Vendor advertises persist.vendor.bt.a2dp_offload_cap but exposes no offload
+    # formats, so AudioPolicyManager null-derefs in
+    # getHwOffloadEncodingFormatsSupportedForA2DP() and audioserver crash-loops.
+    persist.bluetooth.a2dp_offload.disabled=true
+    ro.bluetooth.a2dp_offload.supported=false
+    
+    ro.build.product=PICOA7B10
+    ro.product.model=Pico Neo 2
+
+=== hashes: image vs overlay (must match) ===
+  OK    /lib64/libshim_pvr.so
+  OK    /lib64/libsensorservice.so
+  OK    /etc/pn2/vendor_manifest.xml
+
+=== repair pass ===
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6225/6240 files (0.4% non-contiguous), 466884/481504 blocks
+
+=== fsck after repair (must be clean) ===
+Pass 5: Checking group summary information
+system: 6225/6240 files (0.4% non-contiguous), 466884/481504 blocks
+  filesystem CLEAN
+
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 14:18 /mnt/f/PN2Lineage/out/system-pn2.img
+
+BUILD OK
+DONE

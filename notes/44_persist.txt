@@ -1,0 +1,11 @@
+﻿created: drwxr-xr-x 2 root root 4096 2021-08-08 13:05 /system/etc/modprobe.d / -rw-r--r-- 1 root root 0 2021-08-08 13:05 /system/etc/modprobe.conf
+stock modprobe command rc=0
+patched /system/build.prop
+patched /system/etc/prop.default
+--- verify ---
+drwxr-xr-x 2 root root 4096 2021-08-08 13:05 /system/etc/modprobe.d
+# a2dp offload disabled: vendor advertises offload_cap but exposes no
+# offload formats, so AudioPolicyManager null-derefs on the query.
+persist.bluetooth.a2dp_offload.disabled=true
+ro.bluetooth.a2dp_offload.supported=false
+DONE

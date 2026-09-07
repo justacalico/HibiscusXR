@@ -1,0 +1,37 @@
+=== free before ===
+Free blocks:              260866
+
+=== DSP RPC libraries (vendor copies - correct SONAME for the verneed) ===
+  OK    /lib/libcdsprpc.so                                   110452
+
+=== DSP-side skel libraries ===
+  OK    /lib/rfsa/adsp/libVIOMapping_6dof_skel.so          16356736
+  OK    /lib/rfsa/adsp/libapps_mem_heap.so                    54320
+  OK    /lib/rfsa/adsp/libdspCV_skel.so                       33332
+  OK    /lib/rfsa/adsp/libdsp_streamer_qvrcam_receiver.so         7568
+  OK    /lib/rfsa/adsp/libeye_tracking_dsp_sample_skel.so        33636
+  OK    /lib/rfsa/adsp/libfastcvadsp.so                     1277032
+  OK    /lib/rfsa/adsp/libfastcvdsp_skel.so                  545040
+  OK    /lib/rfsa/adsp/libqvr_cam_dsp_driver_skel.so          92344
+  OK    /lib/rfsa/adsp/libqvr_dsp_driver_skel.so              98496
+  OK    /lib/rfsa/adsp/libqvr_mapper_skel.so                  34260
+  OK    /lib/rfsa/adsp/libscveBlobDescriptor_skel.so          95748
+  OK    /lib/rfsa/adsp/libscveT2T_skel.so                    334300
+  OK    /lib/rfsa/adsp/libsns_low_lat_stream_skel.so          29596
+  OK    /lib/rfsa/adsp/libtobii_eyecore_skel.so             1198400
+  OK    /lib/rfsa/adsp/libtracker_6dof_skel.so             21272022
+
+=== repair + verify ===
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6522/11232 files (0.5% non-contiguous), 618595/870400 blocks
+Pass 5: Checking group summary information
+system: 6522/11232 files (0.5% non-contiguous), 618595/870400 blocks
+  CLEAN
+
+=== free after ===
+Free blocks:              251805
+
+DSP STACK ADDED OK
+DONE

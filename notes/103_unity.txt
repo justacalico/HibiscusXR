@@ -1,0 +1,25 @@
+  lib64/libPvr_UnitySDK.so              8059145
+  lib64/libPvr_UnitySDKExt1.so          8059145
+  lib64/libPvr_UnitySDKExt5.so         13118792
+  lib64/libPvr_UnitySDKExt8.so         13237880
+  lib64/libPvr_UnitySDKExt9.so          1894024
+  lib64/libPvr_UnitySDKExt10.so         1914632
+  lib64/libPvr_UnitySDKExt11.so         2047864
+  lib64/libPvr_UESDKExt2.so            13755328
+  lib64/lib2dToVr.so                     870064
+  lib64/libvraudio.so                    254952
+  lib64/libpicologkit.so                  10904
+  lib/libPvr_UnitySDK.so                 596116
+  lib/libPvr_UnitySDKExt1.so             608428
+  lib/libPvr_UnitySDKExt5.so            8981204
+  lib/libPvr_UnitySDKExt8.so            9098752
+  lib/libPvr_UnitySDKExt9.so            1150796
+  lib/libPvr_UnitySDKExt10.so           1167280
+  lib/libPvr_UnitySDKExt11.so           1255072
+  lib/libPvr_UESDKExt2.so               9448252
+  lib/lib2dToVr.so                       621512
+  lib/libvraudio.so                      189772
+  lib/libpicologkit.so               missing in image
+
+total staged: 157M
+DONE

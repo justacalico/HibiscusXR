@@ -1,0 +1,85 @@
+﻿rc installed:
+# Pico VR service. Stock definition from the 8.1 system image, plus a seclabel.
+#
+# Android 10 init refuses to start a service with no SELinux domain -
+#   "init: service pvrservice does not have a SELinux domain defined"
+# - and being globally permissive does not help, because init bails before the
+# permissive check matters. Stock 8.1 got a domain from Pico's own sepolicy,
+# which is on the stock /system we replaced. u:r:shell:s0 is a domain that exists
+# in the GSI's policy and, under permissive, is unrestricted.
+
+=== manual start (detached) ===
+pid = 4422
+
+=== its own output ===
+
+=== logcat ===
+08-13 11:49:17.865  4422  4422 D PvrOrientationTracker: Open user calibration file FAIL
+08-13 11:49:17.865  4422  4422 D PvrOrientationTracker: open calibration file Fail,use default calibration data
+08-13 11:49:17.865  4422  4422 D PvrOrientationTracker: GeomagneticSwitch = 1
+08-13 11:49:17.865  4422  4422 D PvrOrientationTracker: OrientationTracker addr=0x79bee92000
+08-13 11:49:17.865  4422  4422 D PvrOrientationTracker: OrientationTracker getSensorRequirement: sensors=22
+08-13 11:49:17.865  4422  4422 E PvrService: Sensor mask is 22
+08-13 11:49:17.866  4422  4422 E PvrService: Open library<libHeadImuCalibrate_int.so> failed:dlopen failed: library "libHeadImuCalibrate_int.so" not found
+08-13 11:49:17.867  4422  4422 E PvrService: Open library<libpvrmodule_platform.so> failed:dlopen failed: cannot locate symbol "_ZN7android21SurfaceComposerClient17getBuiltInDisplayEi" referenced by "/system/lib64/libpvrmodule_platform.so"...
+08-13 11:49:17.867  4422  4422 E PvrService: load platform module failed
+08-13 11:49:17.868  4422  4422 E PvrService: Open library<libpvrmodule_externalhmd.so> failed:dlopen failed: library "libpvrmodule_externalhmd.so" not found
+08-13 11:49:17.868  4422  4424 E /system/bin/pvrservice: open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+08-13 11:49:17.868  4422  4422 E PvrService: load external hmd module failed
+08-13 11:49:17.869  4422  4422 E PvrService: Open library<libpvrmodule_controller.so> failed:dlopen failed: library "libpvrmodule_controller.so" not found
+08-13 11:49:17.869  4422  4422 E PvrService: load controller module failed
+08-13 11:49:17.869  4422  4422 I PvrService: PvrService get tracking data through share-memory.
+08-13 11:49:17.869  4422  4422 D PvrService: call PvrServiceCore::getShareMemoryNewTracker()
+08-13 11:49:17.869  4422  4422 D PvrService: call OrientationTracker::getShareMemoryNewTracker()
+08-13 11:49:17.869  4422  4422 D PvrService: startServiceStatusCallThread done.
+08-13 11:49:17.869  4422  4422 I PvrService: Call setTrackingMode in ServiceCore, cur=1 new=1
+08-13 11:49:17.869  4422  4422 E PvrService: setTrackingMode:Try to get tracking lock mutex
+08-13 11:49:17.869  4422  4422 E PvrService: setTrackingMode:Get tracking lock mutex
+08-13 11:49:17.869  4422  4422 I PvrService: Call setTrackingModeThread
+08-13 11:49:17.869  4422  4422 I PvrService: Call setEyeTrackingMode in ServiceCore, cur=0 new=1
+08-13 11:49:17.869  4422  4422 E PvrService: setTrackingModeThread:release tracking lock mutex
+08-13 11:49:17.876  4422  4425 D PvrService: PvrService::setShareMemoryData(0):
+08-13 11:49:17.876  4422  4425 D PvrService:  0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,-0.080500	[418046621870]	[418045523432]	[418046621870]	[1116927]
+08-13 11:49:17.876  4422  4425 D PvrService: threadLoop continue: 1
+08-13 11:49:20.135  4422  4425 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:20.135  4422  4425 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:20.135  4422  4425 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+
+=== what did it open / connect to? ===
+--- libs loaded ---
+/system/lib64/android.frameworks.bufferhub@1.0.so
+/system/lib64/android.hardware.configstore-utils.so
+/system/lib64/android.hardware.configstore@1.0.so
+/system/lib64/android.hardware.configstore@1.1.so
+/system/lib64/android.hardware.graphics.allocator@2.0.so
+/system/lib64/android.hardware.graphics.allocator@3.0.so
+/system/lib64/android.hardware.graphics.bufferqueue@1.0.so
+/system/lib64/android.hardware.graphics.bufferqueue@2.0.so
+/system/lib64/android.hardware.graphics.common@1.0.so
+/system/lib64/android.hardware.graphics.common@1.1.so
+/system/lib64/android.hardware.graphics.common@1.2.so
+/system/lib64/android.hardware.graphics.mapper@2.0.so
+/system/lib64/android.hardware.graphics.mapper@2.1.so
+/system/lib64/android.hardware.graphics.mapper@3.0.so
+/system/lib64/android.hardware.media.omx@1.0.so
+/system/lib64/android.hardware.media@1.0.so
+/system/lib64/android.hardware.memtrack@1.0.so
+/system/lib64/android.hidl.token@1.0-utils.so
+/system/lib64/android.hidl.token@1.0.so
+/system/lib64/android.system.suspend@1.0.so
+/system/lib64/ashmemd_aidl_interface-cpp.so
+/system/lib64/libEGL.so
+/system/lib64/libETC1.so
+/system/lib64/libGLESv1_CM.so
+/system/lib64/libGLESv2.so
+/system/lib64/libGLESv3.so
+/system/lib64/libandroid.so
+/system/lib64/libandroid_runtime.so
+/system/lib64/libandroidfw.so
+/system/lib64/libappfuse.so
+--- sockets / devices ---
+      1 /dev/ashmem
+      1 /dev/binder
+      1 /dev/null
+      1 socket
+DONE

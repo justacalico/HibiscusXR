@@ -1,0 +1,326 @@
+################ init.pvr.camera.calibration.sh ################
+r#!/system/bin/sh
+# *********************************************************************
+# *            copy wifi config file                                  *
+# *********************************************************************
+PATH=/sbin:/system/sbin:/system/bin:/system/xbin
+export PATH
+
+ACTION_REMOUNTSYSTEM="remountSystem"
+
+ACTION_CLEAN_CAMERADATA="cleanCameraData"
+
+ACTION_UPDATE_SD="updateFromSD"
+ACTION_UPDATE_DATA="updateFromData"
+ACTION_UPDATE_FROMBACKUP="updateFromBackup"
+ACTION_BACKUP="backup"
+
+ACTION_USEPERSIST_CONFIG="usePersistConfig"
+
+ACTION_CHECK_CONFIG="checkConfig"
+
+ACTION_CIT="updateCameraConfig"
+
+SYSTEM_CONFIG_PATH="/vendor/etc/qvr/ov9282_stereo_1280x400_cam_config.xml"
+DATA_CONFIG_PATH="/data/local/tmp/ov9282_stereo_1280x400_cam_config.xml"
+SDCARD_CONFIG_PATH="/data/media/0/camera/ov9282_stereo_1280x400_cam_config.xml"
+BACKUP_CONFIG_PATH="/persist/pvr/camera/ov9282_stereo_1280x400_cam_config.xml"
+
+CAMERA_DATA_PATH="/data/misc/qvr/*"
+
+para=$1
+
+echo "we will do ${para} action" > /dev/kmsg
+
+if [ $ACTION_CIT = ${para} ];then
+    echo "we get updateCameraConfig action" > /dev/kmsg
+    if [ -f $DATA_CONFIG_PATH ]; then
+	echo "data path has file" > /dev/kmsg
+#	remount /system
+#	sleep 1
+	cp $DATA_CONFIG_PATH $BACKUP_CONFIG_PATH
+#	rm -rf $SYSTEM_CONFIG_PATH
+#	ln -s $BACKUP_CONFIG_PATH $SYSTEM_CONFIG_PATH
+#	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+#	chown system:system $SYSTEM_CONFIG_PATH
+	chown system:system $BACKUP_CONFIG_PATH
+        rm -rf $CAMERA_DATA_PATH
+    fi
+fi
+
+if [ $ACTION_USEPERSIST_CONFIG = ${para} ];then
+    echo "we get usePersistConfig action" > /dev/kmsg
+    if [ -f $BACKUP_CONFIG_PATH ]; then
+	echo "persist path has file" > /dev/kmsg
+	remount /system
+	sleep 1
+	rm -rf $SYSTEM_CONFIG_PATH
+	ln -s $BACKUP_CONFIG_PATH $SYSTEM_CONFIG_PATH
+	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+	chown system:system $SYSTEM_CONFIG_PATH
+	chown system:system $BACKUP_CONFIG_PATH
+    fi
+fi
+
+if [ $ACTION_REMOUNTSYSTEM = ${para} ];then
+    echo "we get remountSystem action" > /dev/kmsg
+    remount /system
+    sleep 1
+fi
+
+if [ $ACTION_CLEAN_CAMERADATA = ${para} ];then
+    echo "we get cleanCameraData action" > /dev/kmsg
+    rm -rf $CAMERA_DATA_PATH
+fi
+
+if [ $ACTION_UPDATE_FROMBACKUP = ${para} ];then
+    echo "we get updateFromBackup action" > /dev/kmsg
+    if [ -f $BACKUP_CONFIG_PATH ]; then
+	echo "persist path has file" > /dev/kmsg
+	remount /system
+	sleep 1
+	rm -rf $SYSTEM_CONFIG_PATH
+	cp $BACKUP_CONFIG_PATH $SYSTEM_CONFIG_PATH
+	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+	chown system:system $SYSTEM_CONFIG_PATH
+	chown system:system $BACKUP_CONFIG_PATH
+    fi
+fi
+
+if [ $ACTION_UPDATE_SD = ${para} ];then
+    echo "we get updateFromSD action" > /dev/kmsg
+    if [ -f $SDCARD_CONFIG_PATH ]; then
+	echo "sdcard path has file" > /dev/kmsg
+	remount /system
+	sleep 1
+	rm -rf $SYSTEM_CONFIG_PATH
+	cp $SDCARD_CONFIG_PATH $SYSTEM_CONFIG_PATH
+	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+	chown system:system $SYSTEM_CONFIG_PATH
+	chown system:system $BACKUP_CONFIG_PATH
+    fi
+fi
+
+if [ $ACTION_UPDATE_DATA = ${para} ];then
+    echo "we get updateFromData action" > /dev/kmsg
+    if [ -f $DATA_CONFIG_PATH ]; then
+	echo "data path has file" > /dev/kmsg
+	remount /system
+	sleep 1
+	rm -rf $SYSTEM_CONFIG_PATH
+	cp $DATA_CONFIG_PATH $SYSTEM_CONFIG_PATH
+	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+    fi
+fi
+
+if [ $ACTION_BACKUP = ${para} ];then
+    echo "we get backup action" > /dev/kmsg
+    if [ -f $SYSTEM_CONFIG_PATH ]; then
+	echo "system path has file" > /dev/kmsg
+	remount /persist
+	sleep 1
+	rm -rf $SYSTEM_CONFIG_PATH
+	cp $SYSTEM_CONFIG_PATH $BACKUP_CONFIG_PATH
+	chmod 664 $SYSTEM_CONFIG_PATH
+	chmod 664 $BACKUP_CONFIG_PATH
+	chown system:system $SYSTEM_CONFIG_PATH
+	chown system:system $BACKUP_CONFIG_PATH
+    fi
+fi
+
+if [ $ACTION_CHECK_CONFIG = ${para} ];then
+    echo "we get checkConfig action" > /dev/kmsg
+    if [ -f $BACKUP_CONFIG_PATH ]; then
+	echo "persist path has file" > /dev/kmsg
+	if [ -L $SYSTEM_CONFIG_PATH ]; then
+	    echo "system has link so exit , do nothing" > /dev/kmsg
+	    exit 0
+	else
+	    echo "system has no link file" > /dev/kmsg
+#	    if [ -f $SYSTEM_CONFIG_PATH ]; then
+#	        echo "system and persist has file, we use link to make" > /dev/kmsg
+	        remount /system
+	        sleep 1
+	        rm -rf $SYSTEM_CONFIG_PATH
+	        ln -s $BACKUP_CONFIG_PATH $SYSTEM_CONFIG_PATH
+		chmod 664 $SYSTEM_CONFIG_PATH
+		chmod 664 $BACKUP_CONFIG_PATH
+		chown system:system $SYSTEM_CONFIG_PATH
+		chown system:system $BACKUP_CONFIG_PATH
+#	    fi
+	fi
+    fi
+fi
+
+sleep 1
+
+echo "cp file end" > /dev/kmsg
+
+exit 0
+
+################ pvr.calibration.qcom.sh (head 160) ################
+# *********************************************************************
+# *            set pxr calibration data to qcom                       *
+# *********************************************************************
+#PATH=/sbin:/system/sbin:/system/bin:/system/xbin
+PATH=/bin:/usr/bin:/sbin:/system/sbin:/system/bin:/system/xbin
+export PATH
+
+#linux
+#android
+runtime=android
+
+imu_debug=no
+qcom_debug=no
+
+para=$1
+
+if [ $runtime = "linux" ];then
+imu_base_path=./org2/
+qcom_base_path=./org2/
+
+imu_out_path=./new2/
+qcom_out_path=./new2/
+fi
+
+if [ $runtime = "android" ];then
+imu_base_path=/persist/calibration/Bosh/
+qcom_base_path=/persist/sensors/registry/registry/
+
+imu_out_path=/persist/calibration/Bosh/
+qcom_out_path=/persist/sensors/registry/registry/
+fi
+
+mkdir -p ${imu_out_path}
+mkdir -p ${qcom_out_path}
+
+now=`date +%s`
+
+mkdir -p /persist/backup/
+rm -rf /persist/backup/pxr*
+rm -rf /persist/backup/qcom*
+
+cp -ar ${imu_base_path} /persist/backup/pxr_${now}
+cp -ar ${qcom_base_path} /persist/backup/qcom_${now}
+
+sleep 1
+
+imu_file=${imu_base_path}IMUParams.txt
+imu_file_content=`cat $imu_file`
+if [ $imu_debug = "yes" ];then
+	echo $imu_file_content
+fi
+
+qcom_acc_bias_file=${qcom_base_path}bma2x2_0_platform.accel.fac_cal.bias
+qcom_acc_bias_file_content=`cat $qcom_acc_bias_file`
+if [ $qcom_debug = "yes" ];then
+	echo $qcom_acc_bias_file_content
+fi
+
+qcom_acc_mat_file=${qcom_base_path}bma2x2_0_platform.accel.fac_cal.corr_mat
+qcom_acc_mat_file_content=`cat $qcom_acc_mat_file`
+if [ $qcom_debug = "yes" ];then
+	echo $qcom_acc_mat_file_content
+fi
+
+qcom_gyro_bias_file=${qcom_base_path}bmg160_0_platform.gyro.fac_cal.bias
+qcom_gyro_bias_file_content=`cat $qcom_gyro_bias_file`
+if [ $qcom_debug = "yes" ];then
+	echo $qcom_gyro_bias_file_content
+fi
+
+qcom_gyro_mat_file=${qcom_base_path}bmg160_0_platform.gyro.fac_cal.corr_mat
+qcom_gyro_mat_file_content=`cat $qcom_gyro_mat_file`
+if [ $qcom_debug = "yes" ];then
+	echo $qcom_gyro_mat_file_content
+fi
+
+imu_arr=($imu_file_content)
+imu_arr_len=${#imu_arr[*]}
+if [ $imu_debug = "yes" ];then
+	echo $imu_arr_len
+
+	echo ${imu_arr[9]}
+	echo ${imu_arr[10]}
+	echo ${imu_arr[11]}
+
+	echo ${imu_arr[21]}
+	echo ${imu_arr[22]}
+	echo ${imu_arr[23]}
+fi
+
+OLD_IFS="$IFS" 
+IFS="\"" 
+qcom_acc_bias_arr=($qcom_acc_bias_file_content)
+qcom_acc_mat_arr=($qcom_acc_mat_file_content)
+qcom_gyro_bias_arr=($qcom_gyro_bias_file_content)
+qcom_gyro_mat_arr=($qcom_gyro_mat_file_content)
+IFS="$OLD_IFS"
+
+qcom_acc_bias_arr_len=${#qcom_acc_bias_arr[*]}
+qcom_acc_mat_arr_len=${#qcom_acc_mat_arr[*]}
+qcom_gyro_bias_arr_len=${#qcom_gyro_bias_arr[*]}
+qcom_gyro_mat_arr_len=${#qcom_gyro_mat_arr[*]}
+
+if [ $qcom_debug = "yes" ];then
+	echo $qcom_acc_bias_arr_len
+	echo $qcom_acc_mat_arr_len
+	echo $qcom_gyro_bias_arr_len
+	echo $qcom_gyro_mat_arr_len
+
+	echo ${qcom_acc_bias_arr[19]}
+	echo ${qcom_acc_bias_arr[33]}
+	echo ${qcom_acc_bias_arr[47]}
+
+	echo ${qcom_gyro_bias_arr[19]}
+	echo ${qcom_gyro_bias_arr[33]}
+	echo ${qcom_gyro_bias_arr[47]}
+fi
+
+#acc_bias1=${qcom_acc_bias_arr[19]}
+#echo $bc_acc_bias1
+#acc_bias1=$(echo "scale=2; ${qcom_acc_bias_arr[19]}+${imu_arr[9]}" | bc )
+#echo test1
+#echo ${qcom_acc_bias_arr[19]}
+#echo ${imu_arr[9]}
+#echo $acc_bias1
+if [ $runtime = "linux" ];then
+acc_bias1=$(echo ${qcom_acc_bias_arr[19]} ${imu_arr[21]} | awk '{printf "%0.6f\n", $1+$2}')
+acc_bias2=$(echo ${qcom_acc_bias_arr[33]} ${imu_arr[22]} | awk '{printf "%0.6f\n", $1+$2}')
+acc_bias3=$(echo ${qcom_acc_bias_arr[47]} ${imu_arr[23]} | awk '{printf "%0.6f\n", $1+$2}')
+fi
+if [ $runtime = "android" ];then
+acc_bias1_old=`system/bin/addTwoFloat ${qcom_acc_bias_arr[19]} ${imu_arr[21]}`
+acc_bias2_old=`system/bin/addTwoFloat ${qcom_acc_bias_arr[33]} ${imu_arr[22]}`
+acc_bias3_old=`system/bin/addTwoFloat ${qcom_acc_bias_arr[47]} ${imu_arr[23]}`
+acc_bias1=`printf "%0.6f" "$acc_bias1_old"`
+acc_bias2=`printf "%0.6f" "$acc_bias2_old"`
+acc_bias3=`printf "%0.6f" "$acc_bias3_old"`
+fi
+if [ $qcom_debug = "yes" ];then
+echo $acc_bias1
+echo $acc_bias2
+echo $acc_bias3
+fi
+
+#acc_bias2=${qcom_acc_bias_arr[33]}
+#acc_bias3=${qcom_acc_bias_arr[47]}
+
+#gyro_bias1=${qcom_gyro_bias_arr[19]}
+#gyro_bias2=${qcom_gyro_bias_arr[33]}
+#gyro_bias3=${qcom_gyro_bias_arr[47]}
+if [ $runtime = "linux" ];then
+gyro_bias1=$(echo ${qcom_gyro_bias_arr[19]} ${imu_arr[9]} | awk '{printf "%0.6f\n", $1+$2}')
+gyro_bias2=$(echo ${qcom_gyro_bias_arr[33]} ${imu_arr[10]} | awk '{printf "%0.6f\n", $1+$2}')
+gyro_bias3=$(echo ${qcom_gyro_bias_arr[47]} ${imu_arr[11]} | awk '{printf "%0.6f\n", $1+$2}')
+fi
+if [ $runtime = "android" ];then
+gyro_bias1_old=`system/bin/addTwoFloat ${qcom_gyro_bias_arr[19]} ${imu_arr[9]}`
+gyro_bias2_old=`system/bin/addTwoFloat ${qcom_gyro_bias_arr[33]} ${imu_arr[10]}`
+gyro_bias3_old=`system/bin/addTwoFloat ${qcom_gyro_bias_arr[47]} ${imu_arr[11]}`
+gyro_bias1=`printf "%0.6f" "$gyro_bias1_old"`

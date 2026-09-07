@@ -1,0 +1,21 @@
+=== vendor dsp rpc -> /system 08/13/2026 19:28:12 ===
+[19:28:34]    -rw-r--r-- 1 root root 110452 2026-08-13 19:28 /system/lib/libcdsprpc.so
+[19:28:34]    --- restart qvrd ---
+[19:28:34]    VmRSS:	    4536 kB
+[19:28:34]    --- test ---
+[19:28:34]    Option specified: version = 0 tracking_mode = 3 unit_test_param =   duration = 30 
+[19:28:34]                      log types= Tracking Pose: disabled, Tracking Camera: enabled
+[19:28:34]    QVRServiceTest
+[19:28:34]    Api version : 5
+[19:28:34]    VR not supported
+[19:28:34]    --- qvr log ---
+[19:28:34]    8945  8948 E QVRServiceDspWrapper: Failed to open QVR DSP Driver skel: remote handle is null
+[19:28:34]    8945  8948 E QVRServiceDspWrapper: retries 2, sleep for 2
+[19:28:35]    8945  8948 E QVRServiceDspWrapper: Failed to open QVR DSP Driver skel: remote handle is null
+[19:28:35]    8945  8948 E QVRServiceDspWrapper: retries 1, sleep for 2
+[19:28:35]    8945  8948 E QVRServiceDspWrapper: Failed to open QVR DSP Driver skel: remote handle is null
+[19:28:35]    8945  8948 E QVRServiceDspWrapper: Error opening qvr_dsp_driver : -1
+[19:28:35]    8945  8948 E QVRServiceDspWrapper: Releasing QVRServiceDspWrapper due to UNRECOVERABLE state
+[19:28:35]    8945  8948 E QVRServiceTracker: Initialize CDSP failed: dsp wrapper is NULL
+[19:28:35]    8945  8948 E QVRServicePlugin: Plugin not valid
+[19:28:35]    8945  8948 E QVRService: QVRService started. VR mode is not supported.

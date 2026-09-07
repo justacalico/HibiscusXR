@@ -1,0 +1,24 @@
+=== cloning ===
+Cloning into 'vdexExtractor'...
+commit: 78f283b
+
+=== building ===
+make: Entering directory '/home/justin/vdextools/vdexExtractor/src'
+rm -f *.o
+rm -f */*.o
+rm -f vdexExtractor
+make: Leaving directory '/home/justin/vdextools/vdexExtractor/src'
+make: Entering directory '/home/justin/vdextools/vdexExtractor/src'
+gcc -c -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -DVERSION=\"dev-78f283b\" -c dex.c -o dex.o
+gcc -c -std=c11 -D_GNU_SOURCE -Wall -Wextra -Werror -DVERSION=\"dev-78f283b\" -c dex_instruction.c -o dex_instruction.o
+dex_instruction.c:655:43: error: argument 2 of type ‘u4[kMaxVarArgRegs]’ {aka ‘unsigned int[kMaxVarArgRegs]’} declared as a variable length array [-Werror=vla-parameter]
+  655 | void dexInstr_getVarArgs(u2 *code_ptr, u4 arg[kMaxVarArgRegs]) {
+      |                                        ~~~^~~~~~~~~~~~~~~~~~~
+In file included from dex_instruction.c:23:
+dex_instruction.h:278:32: note: previously declared as an ordinary array ‘u4[]’ {aka ‘unsigned int[]’}
+  278 | void dexInstr_getVarArgs(u2 *, u4[]);
+      |                                ^~~~
+cc1: all warnings being treated as errors
+make: *** [Makefile:56: dex_instruction.o] Error 1
+make: Leaving directory '/home/justin/vdextools/vdexExtractor/src'
+[-] build failed

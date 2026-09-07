@@ -1,0 +1,13 @@
+=== /bin/vr ===
+  before: 169
+  OK   /bin/vr -> 152
+=== /framework/vr.jar ===
+  before: 4189
+  OK   /framework/vr.jar -> 304
+
+=== repair + verify ===
+Pass 5: Checking group summary information
+system: 6471/11232 files (0.4% non-contiguous), 547306/870400 blocks
+  CLEAN
+-rwxrwxrwx 1 justin justin 3565158400 Aug 13 14:23 /mnt/f/PN2Lineage/out/system-pn2-full.img
+DONE

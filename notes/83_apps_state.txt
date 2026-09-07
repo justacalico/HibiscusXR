@@ -1,0 +1,68 @@
+﻿=== which pico processes are alive ===
+ 3188  1000 com.picovr.picovrlib.cvcontroller
+
+pvrservice: 1144
+
+=== did they get system uid? (uid 1000 = android.uid.system granted) ===
+com.pvr.vrshell      userId=1000
+com.pvr.vrdisplay      userId=1000
+com.picovr.picovrlib.cvcontroller      userId=1000
+com.pvr.adapter      userId=1000
+
+=== launchable entry points ===
+--- com.pvr.vrshell ---
+      android.intent.action.MAIN:
+        8529e0a com.pvr.vrshell/.MainActivity filter a39a5ac
+          Action: "android.intent.action.MAIN"
+
+Service Resolver Table:
+  Non-Data Actions:
+--- com.picovr.vrusercenter ---
+      android.intent.action.MAIN:
+        2d4e009 com.picovr.vrusercenter/.MainActivity filter dd0635c
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+--- com.pvr.vrdisplay ---
+      android.intent.action.MAIN:
+        b1ce4ae com.pvr.vrdisplay/.vrservice filter f1c128f
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+      pvr.intent.action.vrdisplay:
+        b1ce4ae com.pvr.vrdisplay/.vrservice filter 635a91c
+
+=== any pico app crashes so far ===
+08-13 12:25:42.604  5425  5425 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.642  5453  5453 E AndroidRuntime: Process: com.pvr.configuration, PID: 5453
+08-13 12:25:42.642  5453  5453 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application com.pvr.configuration.BaseApplication: java.lang.ClassNotFoundException: Didn't find class "com.pvr.configuration.BaseApplication" on path: DexPathList[[zip file "/system/priv-app/configserverservice/configserverservice.apk"],nativeLibraryDirectories=[/system/priv-app/configserverservice/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.642  5453  5453 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.configuration.BaseApplication" on path: DexPathList[[zip file "/system/priv-app/configserverservice/configserverservice.apk"],nativeLibraryDirectories=[/system/priv-app/configserverservice/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.694  5477  5477 E AndroidRuntime: Process: com.pvr.pxrnotification, PID: 5477
+08-13 12:25:42.694  5477  5477 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application com.pvr.pxrnotification.PxrNotificationManagerApplication: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.694  5477  5477 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.731  5500  5500 E AndroidRuntime: Process: com.pvr.configuration, PID: 5500
+08-13 12:25:42.731  5500  5500 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application com.pvr.configuration.BaseApplication: java.lang.ClassNotFoundException: Didn't find class "com.pvr.configuration.BaseApplication" on path: DexPathList[[zip file "/system/priv-app/configserverservice/configserverservice.apk"],nativeLibraryDirectories=[/system/priv-app/configserverservice/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:42.731  5500  5500 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.configuration.BaseApplication" on path: DexPathList[[zip file "/system/priv-app/configserverservice/configserverservice.apk"],nativeLibraryDirectories=[/system/priv-app/configserverservice/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+
+=== pico app logs ===
+08-13 12:25:43.202  1657  4922 I ActivityManager: Process com.pvr.pxrnotification (pid 5697) has died: pers PER 
+08-13 12:25:43.202  1657  4922 W ActivityManager: Re-adding persistent process ProcessRecord{f70e65f 5697:com.pvr.pxrnotification/1000}
+08-13 12:25:43.223  1657  1686 I ActivityManager: Start proc 5735:com.pvr.pxrnotification/1000 for restart com.pvr.pxrnotification
+08-13 12:25:43.264  5735  5735 I pxrnotificatio: The ClassLoaderContext is a special shared library.
+08-13 12:25:43.268  5735  5735 W pxrnotificatio: JIT profile information will not be recorded: profile file does not exits.
+08-13 12:25:43.273  5735  5735 E AndroidRuntime: Process: com.pvr.pxrnotification, PID: 5735
+08-13 12:25:43.273  5735  5735 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application com.pvr.pxrnotification.PxrNotificationManagerApplication: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:43.273  5735  5735 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:43.273  5735  5735 E AndroidRuntime: 	Suppressed: java.io.IOException: No original dex files found for dex location /system/app/PxrNotification/PxrNotification.apk
+08-13 12:25:43.276  1657  4922 W ActivityManager: Process com.pvr.pxrnotification has crashed too many times: killing!
+08-13 12:25:43.313  1657  4922 I ActivityManager: Process com.pvr.pxrnotification (pid 5735) has died: pers PER 
+08-13 12:25:43.315  1657  4922 W ActivityManager: Re-adding persistent process ProcessRecord{f70e65f 5735:com.pvr.pxrnotification/1000}
+08-13 12:25:43.331  1657  1686 I ActivityManager: Start proc 5775:com.pvr.pxrnotification/1000 for restart com.pvr.pxrnotification
+08-13 12:25:43.379  5775  5775 I pxrnotificatio: The ClassLoaderContext is a special shared library.
+08-13 12:25:43.385  5775  5775 W pxrnotificatio: JIT profile information will not be recorded: profile file does not exits.
+08-13 12:25:43.395  5775  5775 E AndroidRuntime: Process: com.pvr.pxrnotification, PID: 5775
+08-13 12:25:43.395  5775  5775 E AndroidRuntime: java.lang.RuntimeException: Unable to instantiate application com.pvr.pxrnotification.PxrNotificationManagerApplication: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:43.395  5775  5775 E AndroidRuntime: Caused by: java.lang.ClassNotFoundException: Didn't find class "com.pvr.pxrnotification.PxrNotificationManagerApplication" on path: DexPathList[[zip file "/system/app/PxrNotification/PxrNotification.apk"],nativeLibraryDirectories=[/system/app/PxrNotification/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]
+08-13 12:25:43.395  5775  5775 E AndroidRuntime: 	Suppressed: java.io.IOException: No original dex files found for dex location /system/app/PxrNotification/PxrNotification.apk
+08-13 12:25:43.398  1657  2679 W ActivityManager: Process com.pvr.pxrnotification has crashed too many times: killing!
+DONE

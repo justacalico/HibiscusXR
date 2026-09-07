@@ -1,0 +1,13 @@
+/mnt/f/PN2Lineage/notes/vrshell_lib/libPvr_UnitySDK.so
+window 0x107c24 .. 0x107c4c   target 0x107c24
+
+  00107c24  stp       x29, x30, [sp, #-0x20]!   <=========== FAULTING INSTRUCTION
+  00107c28  cmp       x0, xzr
+  00107c2c  mov       x29, sp
+  00107c30  str       x19, [sp, #0x10]
+  00107c34  csinc     x19, x0, xzr, ne
+  00107c38  mov       x0, x19
+  00107c3c  bl        #0x4f720
+  00107c40  cbnz      x0, #0x107c5c
+  00107c44  bl        #0x159464
+  00107c48  cbz       x0, #0x107c68

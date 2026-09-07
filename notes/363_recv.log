@@ -1,0 +1,20 @@
+=== re-enable controller service 08/14/2026 03:28:47 ===
+[03:29:32]    --- pvrservice health before ---
+[03:29:32]      pid 7948  malloc-contended=0
+[03:29:32]    --- re-enable ---
+[03:29:32]    Package com.picovr.picovrlib.cvcontroller new state: enabled
+[03:29:32]    --- watch 40s: does it settle or crash-loop? ---
+[03:29:32]      t+10s  segv=0  registerClient=0  cvPid=
+[03:29:32]      t+20s  segv=0  registerClient=0  cvPid=
+[03:29:32]      t+30s  segv=0  registerClient=0  cvPid=
+[03:29:32]      t+40s  segv=0  registerClient=0  cvPid=
+[03:29:32]    --- pvrservice health after ---
+[03:29:32]      pid 7948  malloc-contended=0
+[03:29:32]    /data/local/tmp/_recv.sh[21]: /: can't execute: Is a directory
+[03:29:32]      zombie am children=0
+[03:29:32]    --- is tracking still good? ---
+[03:29:32]    grep: Pose": No such file or directory
+[03:29:32]      BadPose=  kLost=0
+[03:29:32]    7948  7966 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, 0.000000)
+[03:29:32]    7948  7966 E PvrService: PvrService getTrackingDataExt position(-0.000017, -0.000020, 0.000052)
+[03:29:32]    --- controller seen? ---

@@ -1,0 +1,7 @@
+=== CVService ABI fix 08/13/2026 17:26:06 ===
+[17:26:10]    --- before ---
+[17:26:10]    name="com.picovr.picovrlib.cvcontroller" codePath="/system/priv-app/CVService" nativeLibraryPath="/system/priv-app/CVService/lib" primaryCpuAbi="arm64-v8a" publicFlags="940097101" privateFlags="8" ft="19ffc5c5b78" it="19ffc118350" ut="19ffc5c5b78" version="2" sharedUserId="1000" isOrphaned="true"
+[17:26:10]    primaryCpuAbi="arm64-v8a"
+[17:26:10]    --- after ---
+[17:26:10]    primaryCpuAbi="armeabi-v7a"
+[17:26:10] rebooting

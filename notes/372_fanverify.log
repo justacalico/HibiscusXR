@@ -1,0 +1,15 @@
+=== fancontrol verify 08/14/2026 03:53:08 ===
+[03:54:27]    --- how many instances? ---
+[03:54:27]    31615 31715
+[03:54:27]      single pid now: 31766
+[03:54:27]    
+[03:54:27]    --- idle behaviour over 60s (temps are falling, fan should step down) ---
+[03:54:27]      t+0s  hottest=62C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]      t+10s  hottest=63C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]      t+20s  hottest=61C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]      t+30s  hottest=62C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]      t+40s  hottest=62C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]      t+50s  hottest=62C  cur_state=1  pwm1=85  rpm=7600
+[03:54:27]    
+[03:54:27]    --- what fancontrol decided ---
+[03:54:27]      (empty = it logs only above a threshold)

@@ -1,0 +1,94 @@
+=== verify reboot 08/13/2026 10:48:11 ===
+[10:48:11] rebooting
+[10:48:33] adb up
+[10:48:33] t+   0s up=  16s boot_completed=''
+[10:48:38] t+   5s up=  21s boot_completed=''
+[10:48:43] t+  10s up=  26s boot_completed=''
+[10:48:48] t+  15s up=  31s boot_completed='1'
+[10:48:48] =========== RESULTS ===========
+[10:48:48] boot_completed : YES
+[10:48:48] watchdog kills : 0
+[10:48:48] sound modules  : 8
+[10:48:48] sound card     : 0 [sdm845tavilsndc]: sdm845-tavil-sn - sdm845-tavil-snd-card                       sdm845-tavil-snd-card
+[10:48:48] audio_flinger  : Service media.audio_flinger: found
+[10:48:48] audio_policy   : Service media.audio_policy: found
+[10:48:48] audioserver crashes: 0
+[10:48:48] --- speaker amp (wsa881x) probe at early boot ---
+   [    7.952989] type=1400 audit(48611803.169:274): avc: denied { read } for comm="modprobe" name="snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=file permissive=1
+   [    7.953097] type=1400 audit(48611803.169:274): avc: denied { read } for comm="modprobe" name="snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=file permissive=1
+   [    7.953107] type=1400 audit(48611803.169:275): avc: denied { open } for comm="modprobe" path="/vendor/lib/modules/snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=file permissive=1
+   [    7.953176] type=1400 audit(48611803.169:275): avc: denied { open } for comm="modprobe" path="/vendor/lib/modules/snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=file permissive=1
+   [    7.953261] type=1400 audit(48611803.169:277): avc: denied { module_load } for comm="modprobe" path="/vendor/lib/modules/snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=system permissive=1
+   [    7.961635] type=1400 audit(48611803.169:277): avc: denied { module_load } for comm="modprobe" path="/vendor/lib/modules/snd-soc-wsa881x.ko" dev="sde16" ino=1322 scontext=u:r:toolbox:s0 tcontext=u:object_r:vendor_file:s0 tclass=system permissive=1
+   [    8.098363] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: msm_init_wsa_dev: wsa-max-devs property missing in DT /soc/qcom,msm-audio-apr/sound-tavil, ret = -22
+   [    8.116113] wsa881x: probe of wsa881x.20170211 failed with error -22
+   [    8.122850] wsa881x: probe of wsa881x.20170212 failed with error -22
+   [    8.130264] wsa881x: probe of wsa881x.21170213 failed with error -22
+   [    8.137532] wsa881x: probe of wsa881x.21170214 failed with error -22
+   [    8.298982] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: no sink widget found for SpkrLeft IN
+   [    8.298987] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: Failed to add route SPK1 OUT -> direct -> SpkrLeft IN
+   [    8.299002] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: no sink widget found for SpkrRight IN
+   [    8.299004] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: Failed to add route SPK2 OUT -> direct -> SpkrRight IN
+   [    8.314341] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: Sound card sdm845-tavil-snd-card registered
+[10:48:48] --- audio routing devices seen by the framework ---
+   
+   MediaFocusControl dump time: 12:58:03 PM
+   
+   Audio Focus stack entries (last is top of stack):
+   
+   
+   No external focus policy
+   
+   
+   
+    Notify on duck:  true
+   
+    In ring or call: false
+   
+   
+   
+   Audio event log: focus commands as seen by MediaFocusControl
+   
+   Stream volumes (device: index)
+   - STREAM_VOICE_CALL:
+      Muted: false
+      Min: 1
+      Max: 5
+      streamVolume:3
+      Current: 1 (earpiece): 3, 40000000 (default): 3
+      Devices: earpiece
+   - STREAM_SYSTEM:
+      Muted: false
+      Min: 0
+      Max: 7
+      streamVolume:7
+      Current: 1 (earpiece): 3, 2 (speaker): 7, 40000000 (default): 5
+      Devices: speaker
+   - STREAM_RING:
+      Muted: false
+      Min: 0
+      Max: 7
+      streamVolume:7
+      Current: 1 (earpiece): 3, 2 (speaker): 7, 40000000 (default): 5
+      Devices: speaker
+   - STREAM_MUSIC:
+      Muted: false
+      Min: 0
+      Max: 15
+      streamVolume:15
+      Current: 2 (speaker): 15, 4000000 (usb_headset): 3, 40000000 (default): 8
+      Devices: speaker
+   - STREAM_ALARM:
+      Muted: false
+      Min: 1
+      Max: 7
+      streamVolume:7
+      Current: 2 (speaker): 7, 40000000 (default): 6
+      Devices: speaker
+   - STREAM_NOTIFICATION:
+      Muted: false
+      Min: 0
+      Max: 7
+      streamVolume:7
+      Current: 1 (earpiece): 3, 2 (speaker): 7, 40000000 (default): 5
+[10:48:49] === done ===

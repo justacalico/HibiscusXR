@@ -1,0 +1,37 @@
+=== closing dependency set ===
+
+--- round 1 ---
+   still missing: libskia.so, libvirtualinput.so
+   pulled libskia.so               lib64  9164072 bytes
+   pulled libskia.so               lib    5863132 bytes
+   pulled libvirtualinput.so       lib64  31472 bytes
+   pulled libvirtualinput.so       lib    28808 bytes
+
+--- round 2 ---
+   still missing: libicui18n.so, libicuuc.so
+   pulled libicui18n.so            lib64  2468720 bytes
+   pulled libicui18n.so            lib    1782188 bytes
+   pulled libicuuc.so              lib64  1810496 bytes
+   pulled libicuuc.so              lib    1353784 bytes
+
+--- round 3 ---
+   nothing missing - dependency set is closed
+
+=== final staged set ===
+   bin\airclient_test                                  24948
+   bin\airservice                                      44336
+   bin\virtual_input                                   28288
+   lib64\libaircamera.so                               56704
+   lib64\libairservice.so                             172040
+   lib64\libicui18n.so                               2468720
+   lib64\libicuuc.so                                 1810496
+   lib64\libskia.so                                  9164072
+   lib64\libvirtualinput.so                            31472
+   lib\libaircamera.so                                 58412
+   lib\libairservice.so                               129868
+   lib\libicui18n.so                                 1782188
+   lib\libicuuc.so                                   1353784
+   lib\libskia.so                                    5863132
+   lib\libvirtualinput.so                              28808
+   init\airservice.rc                                     86
+   init\virtual_input.rc                                 191

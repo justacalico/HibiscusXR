@@ -1,0 +1,129 @@
+﻿vold pid = 889
+uptime: 522s
+
+=== vold thread states (R=run S=sleep D=uninterruptible) ===
+[HwBinder:889_1] state=S wchan=0
+[Binder:889_5] state=S wchan=0
+[Binder:889_6] state=S wchan=0
+[Binder:889_7] state=S wchan=0
+[Binder:889_8] state=S wchan=0
+[Binder:889_9] state=S wchan=0
+[Binder:889_A] state=S wchan=0
+[Binder:889_B] state=S wchan=0
+[Binder:889_C] state=S wchan=0
+[Binder:889_D] state=S wchan=0
+[Binder:889_E] state=S wchan=0
+[Binder:889_2] state=S wchan=0
+[Binder:889_1] state=S wchan=0
+[Binder:889_2] state=S wchan=0
+[Binder:889_3] state=S wchan=0
+[Binder:889_4] state=S wchan=0
+
+=== vold kernel stacks ===
+--- HwBinder:889_1 ---
+--- Binder:889_5 ---
+--- Binder:889_6 ---
+--- Binder:889_7 ---
+--- Binder:889_8 ---
+--- Binder:889_9 ---
+--- Binder:889_A ---
+--- Binder:889_B ---
+--- Binder:889_C ---
+--- Binder:889_D ---
+--- Binder:889_E ---
+--- Binder:889_2 ---
+--- Binder:889_1 ---
+--- Binder:889_2 ---
+--- Binder:889_3 ---
+--- Binder:889_4 ---
+
+=== what has vold got open ===
+
+=== binder state for vold ===
+  node 361691: u00000073cee5fd20 c00000073ceea2920 pri 0:120 hs 0 hw 0 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 274236: u0000007733956d00 c0000007733999920 pri 0:120 hs 0 hw 0 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 186749: u00000074a6956d40 c00000074a6999920 pri 0:120 hs 0 hw 0 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 99551: u0000007679063ce0 c00000076790b2920 pri 0:120 hs 0 hw 0 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 1820: u0000007e76d76880 c0000007de17a31c0 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1885
+  node 12323: u0000007e76c6b900 c0000007de17a4ca0 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1885
+  node 4712: u0000007e76c6b680 c0000007d70be6870 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1109
+  node 1899: u0000007de156b6c0 c0000007de17a3300 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1885
+  node 12577: u0000007d88a56b60 c0000007de17a5380 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 4648: u0000007d70d00d60 c0000007d70be6000 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1321
+  node 12495: u0000007de63d8e00 c0000007de62bab20 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1387
+  node 65095: u0000007d88b0d9c0 c0000007d88bd5580 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 1080
+  node 66912: u0000007d700ece80 c0000007d700d6f40 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 2298
+--
+  node 449188: u0000007bb12cd9c0 c0000007bb13bd5b0 pri 0:120 hs 0 hw 0 ls 0 lw 0 is 1 iw 1 tr 1 proc 889
+  node 448876: u0000007bb5a00880 c0000007bb5b00c08 pri 0:120 hs 1 hw 1 ls 1 lw 1 is 1 iw 1 tr 1 proc 558
+  node 434007: u0000007c467b3ec0 c0000007bb13bb440 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 558
+  node 434015: u0000007c467b3ee0 c0000007bb13bb490 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 558
+  node 434020: u0000007c467b3f00 c0000007bb13bb4e0 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 558
+--
+proc 889
+context binder
+  thread 889: l 02 need_return 1 tr 0
+    incoming transaction 13128: ffffffcc30508800 from 0:0 to 889:889 code 3a flags 10 pri 0:120 r1 node 65 size 48:0 data ffffff8014100000
+  thread 892: l 02 need_return 1 tr 0
+--
+proc 889
+context hwbinder
+  thread 889: l 00 need_return 0 tr 0
+  thread 1816: l 12 need_return 0 tr 0
+  node 13148: u00000077946a1c00 c0000007794634aa0 pri 0:120 hs 1 hw 1 ls 0 lw 0 is 1 iw 1 tr 1 proc 559
+
+=== is vold even registered in servicemanager? ===
+159	vold: [android.os.IVold]
+
+=== crypto / storage props ===
+ro.crypto.state = unencrypted
+ro.crypto.type = 
+vold.decrypt = 
+vold.post_fs_data_done = 1
+sys.listeners.registered = true
+persist.sys.vold_app_data_isolation_enabled = 
+ro.vold.primary_physical = 
+ro.sys.sdcardfs = 0
+
+=== sdcardfs / fuse in kernel? ===
+nodev	sdcardfs
+	fuseblk
+nodev	fuse
+nodev	fusectl
+
+=== /data mount ===
+tmpfs /mnt tmpfs rw,seclabel,relatime,size=2892760k,nr_inodes=723190,mode=755,gid=1000 0 0
+/dev/block/bootdevice/by-name/userdata /data ext4 rw,seclabel,nosuid,nodev,noatime,discard,noauto_da_alloc,data=ordered 0 0
+
+=== dmesg tail for storage ===
+[   11.793938] sdcardfs: removing com.pvr.vrshell
+[   11.793958] sdcardfs: removing com.picovr.picostreamassistant
+[   11.793976] sdcardfs: removing com.google.android.inputmethod.korean
+[   11.793994] sdcardfs: removing jp.co.omronsoft.openwnn
+[   11.794012] sdcardfs: removing com.pvr.seethrough.setting
+[   11.794033] sdcardfs: removing com.qualcomm.qti.ims
+[   11.794051] sdcardfs: removing com.qualcomm.qti.lpa
+[   11.794068] sdcardfs: removing com.qualcomm.qti.uim
+[   11.794152] sdcardfs: removing com.google.android.inputmethod.pinyin
+[   11.794179] sdcardfs: removing com.quicinc.wbcserviceapp
+[   11.794201] sdcardfs: removing com.qualcomm.simcontacts
+[   11.794221] sdcardfs: removing com.pvr.launcher
+[   11.794241] sdcardfs: removing com.picovr.hummingbirdsvc
+[   11.794310] sdcardfs: removing com.pvr.tobservice
+[   11.794333] sdcardfs: removing com.qualcomm.qti.services.secureui
+[   11.794354] sdcardfs: removing com.qualcomm.location.XT
+[   11.794373] sdcardfs: removing com.qualcomm.qti.seccamservice
+[   11.794390] sdcardfs: removing com.qualcomm.qti.qmmi
+[   11.794408] sdcardfs: removing com.google.android.inputmethod.japanese
+[   11.794487] sdcardfs: removing com.qualcomm.qti.confdialer
+[   11.794556] sdcardfs: removing com.qualcomm.qti.networksetting
+[   11.794617] sdcardfs: removing com.picovr.picovrlib.cvcontroller
+[   11.794681] sdcardfs: removing com.qualcomm.atfwd
+[   11.794734] sdcardfs: removing com.qualcomm.embms
+[   11.794807] sdcardfs: removing com.picovr.updatesystem
+[   11.794861] sdcardfs: removing com.alipay.vr.vrpay
+[   11.794915] sdcardfs: removing com.picovr.wing
+[   11.794939] sdcardfs: removing com.qualcomm.qti.sensors.qsensortest
+[   11.794958] sdcardfs: removing com.picovr.send.lbplayer
+[  523.032589] type=1400 audit(1628442372.619:369): avc: denied { call } for comm="service" scontext=u:r:shell:s0 tcontext=u:r:vold:s0 tclass=binder permissive=1
+DONE

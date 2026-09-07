@@ -1,0 +1,160 @@
+﻿=== every sound/asoc/codec line in dmesg ===
+[    0.386497] Advanced Linux Sound Architecture Driver Initialized.
+[    0.809906] msm-dai-tdm soc:qcom,msm-dai-tdm-pri-rx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-pri-rx group_id: 0x9100
+[    0.809977] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-pri-rx:qcom,msm-dai-q6-tdm-pri-rx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-pri-rx:qcom,msm-dai-q6-tdm-pri-rx-0 dev_id: 0x9000
+[    0.809983] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-pri-rx:qcom,msm-dai-q6-tdm-pri-rx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.809996] msm-dai-tdm soc:qcom,msm-dai-tdm-pri-tx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-pri-tx group_id: 0x9101
+[    0.810086] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-pri-tx:qcom,msm-dai-q6-tdm-pri-tx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-pri-tx:qcom,msm-dai-q6-tdm-pri-tx-0 dev_id: 0x9001
+[    0.810091] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-pri-tx:qcom,msm-dai-q6-tdm-pri-tx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810102] msm-dai-tdm soc:qcom,msm-dai-tdm-sec-rx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-sec-rx group_id: 0x9110
+[    0.810167] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-sec-rx:qcom,msm-dai-q6-tdm-sec-rx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-sec-rx:qcom,msm-dai-q6-tdm-sec-rx-0 dev_id: 0x9010
+[    0.810171] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-sec-rx:qcom,msm-dai-q6-tdm-sec-rx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810182] msm-dai-tdm soc:qcom,msm-dai-tdm-sec-tx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-sec-tx group_id: 0x9111
+[    0.810246] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-sec-tx:qcom,msm-dai-q6-tdm-sec-tx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-sec-tx:qcom,msm-dai-q6-tdm-sec-tx-0 dev_id: 0x9011
+[    0.810251] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-sec-tx:qcom,msm-dai-q6-tdm-sec-tx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810261] msm-dai-tdm soc:qcom,msm-dai-tdm-tert-rx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-tert-rx group_id: 0x9120
+[    0.810326] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-tert-rx:qcom,msm-dai-q6-tdm-tert-rx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-tert-rx:qcom,msm-dai-q6-tdm-tert-rx-0 dev_id: 0x9020
+[    0.810329] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-tert-rx:qcom,msm-dai-q6-tdm-tert-rx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810340] msm-dai-tdm soc:qcom,msm-dai-tdm-tert-tx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-tert-tx group_id: 0x9121
+[    0.810400] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-tert-tx:qcom,msm-dai-q6-tdm-tert-tx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-tert-tx:qcom,msm-dai-q6-tdm-tert-tx-0 dev_id: 0x9021
+[    0.810404] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-tert-tx:qcom,msm-dai-q6-tdm-tert-tx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810414] msm-dai-tdm soc:qcom,msm-dai-tdm-quat-rx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-quat-rx group_id: 0x9130
+[    0.810480] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quat-rx:qcom,msm-dai-q6-tdm-quat-rx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-quat-rx:qcom,msm-dai-q6-tdm-quat-rx-0 dev_id: 0x9030
+[    0.810484] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quat-rx:qcom,msm-dai-q6-tdm-quat-rx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810494] msm-dai-tdm soc:qcom,msm-dai-tdm-quat-tx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-quat-tx group_id: 0x9131
+[    0.810555] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quat-tx:qcom,msm-dai-q6-tdm-quat-tx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-quat-tx:qcom,msm-dai-q6-tdm-quat-tx-0 dev_id: 0x9031
+[    0.810559] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quat-tx:qcom,msm-dai-q6-tdm-quat-tx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810568] msm-dai-tdm soc:qcom,msm-dai-tdm-quin-rx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-quin-rx group_id: 0x9140
+[    0.810629] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quin-rx:qcom,msm-dai-q6-tdm-quin-rx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-quin-rx:qcom,msm-dai-q6-tdm-quin-rx-0 dev_id: 0x9040
+[    0.810634] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quin-rx:qcom,msm-dai-q6-tdm-quin-rx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    0.810644] msm-dai-tdm soc:qcom,msm-dai-tdm-quin-tx: msm_dai_tdm_q6_probe: dev_name: soc:qcom,msm-dai-tdm-quin-tx group_id: 0x9141
+[    0.810705] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quin-tx:qcom,msm-dai-q6-tdm-quin-tx-0: msm_dai_q6_tdm_dev_probe: dev_name: soc:qcom,msm-dai-tdm-quin-tx:qcom,msm-dai-q6-tdm-quin-tx-0 dev_id: 0x9041
+[    0.810709] msm-dai-q6-tdm soc:qcom,msm-dai-tdm-quin-tx:qcom,msm-dai-q6-tdm-quin-tx-0: msm_dai_q6_tdm_dev_probe: Custom tdm header not supported
+[    1.158711] irq: no irq domain found for /soc/wcd9xxx-irq !
+[    1.166751] No soundcards found.
+[    2.703269] init: Parsing file /system/etc/init/mediaswcodec-treble.rc...
+[    2.703453] init: /system/etc/init/mediaswcodec-treble.rc: 5: invalid keyword 'override'
+[    2.721100] init: starting service 'exec 1 (/vendor/bin/modprobe -a -d /vendor/lib/modules pinctrl-wcd wcd-dsp-glink snd-soc-wcd-spi snd-soc-sdm845)'...
+[    4.193337] apexd: Found /system/apex/com.android.media.swcodec
+[    7.479718] apexd: Found /system/apex/com.android.media.swcodec
+[    7.479765] apexd: Creating mount point: /apex/com.android.media.swcodec@290000000
+[    7.479798] apexd: Successfully bind-mounted flattened package /system/apex/com.android.media.swcodec on /apex/com.android.media.swcodec@290000000
+[    7.479807] apexd: Creating bind-mount for /apex/com.android.media.swcodec for /apex/com.android.media.swcodec@290000000
+[    7.479815] apexd: Creating mountpoint /apex/com.android.media.swcodec
+[    7.479826] apexd: Bind-mounting /apex/com.android.media.swcodec@290000000 to /apex/com.android.media.swcodec
+[    7.479841] apexd: Successfully activated /system/apex/com.android.media.swcodec package_name: com.android.media.swcodec version: 290000000
+[    7.978853] init: starting service 'media.swcodec'...
+[    7.983553] init: starting service 'mediacodec'...
+[   88.669534] R0: [cds_mc_thread][1769767016] [12:58:59.891750]  wlan: [2520:I :HDD] hdd_update_wiphy_vhtcap: 1040: Updated wiphy vhtcap:0x391fbfa, CSNAntSupp:7, NumSoundDim:1
+[  250.371341] R0: [cds_mc_thread][4874441691] [13:01:41.593556]  wlan: [23395:I :HDD] hdd_update_wiphy_vhtcap: 1040: Updated wiphy vhtcap:0x391fbfa, CSNAntSupp:7, NumSoundDim:1
+
+=== asoc sysfs ===
+codecs
+dais
+platforms
+ls: /sys/devices/platform/soc/*sound*: No such file or directory
+ls: /sys/devices/platform/sound*: No such file or directory
+
+=== driver bind state for the machine driver ===
+== /sys/bus/platform/drivers/cam_cc-sdm845
+ad00000.qcom,camcc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/debugcc-sdm845
+bind
+soc:qcom,cc-debug@100000
+uevent
+unbind
+== /sys/bus/platform/drivers/disp_cc-sdm845
+af00000.qcom,dispcc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/gcc-sdm845
+100000.qcom,gcc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/gfxcc-sdm845
+5090000.qcom,gfxcc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/gpu_cc-sdm845
+5090000.qcom,gpucc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/sdm845-llcc
+1100000.qcom,llcc:qcom,sdm845-llcc
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/sdm845-pinctrl
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/sdm845-v2-pinctrl
+3400000.pinctrl
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/snd-soc-dummy
+bind
+snd-soc-dummy
+uevent
+unbind
+== /sys/bus/platform/drivers/ufs_qcom_phy_qrbtc_sdm845
+bind
+uevent
+unbind
+== /sys/bus/platform/drivers/video_cc-sdm845
+ab00000.qcom,videocc
+bind
+uevent
+unbind
+
+=== devices that failed to probe ===
+cat: /sys/kernel/debug/devices_deferred: No such file or directory
+
+=== is the machine driver a module? ===
+Module                  Size  Used by
+wlan                 7868416  0 
+msm_11ad_proxy         32768  0 
+llcc_perfmon.ko
+modules.alias
+modules.dep
+mpq-adapter.ko
+mpq-dmx-hw-plugin.ko
+msm_11ad_proxy.ko
+pinctrl-wcd.ko
+qca_cld3_wlan.ko
+rdbg.ko
+snd-soc-sdm845.ko
+snd-soc-wcd-mbhc.ko
+snd-soc-wcd-spi.ko
+snd-soc-wcd934x.ko
+snd-soc-wcd9xxx.ko
+snd-soc-wsa881x.ko
+swr-wcd-ctrl.ko
+tspp.ko
+wcd-core.ko
+wcd-dsp-glink.ko
+wil6210.ko
+
+=== what does the DT say the sound node is ===
+ls: /proc/device-tree/soc/sound*: No such file or directory
+ls: /proc/device-tree/sound*: No such file or directory
+-- /proc/device-tree/soc/sound*
+
+=== vendor audio init services ===
+[init.svc.adsprpcd]: [running]
+[init.svc.audio-hal-2-0]: [running]
+[init.svc.audioserver]: [running]
+[init.svc.sensor-sh]: [stopped]
+[init.svc.sensors]: [running]
+[init.svc.sensors-hal-1-0]: [running]
+[init.svc.sensors.qti]: [running]
+[init.svc.sensorscal-hal-1-0]: [running]
+DONE

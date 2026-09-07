@@ -1,0 +1,639 @@
+<title>Neo 2 Port Feasibility</title>
+<style>
+  /* ---------- tokens: light is the base ---------- */
+  :root {
+    --ground:      #F6F7F9;
+    --surface:     #FFFFFF;
+    --surface-2:   #EDEFF3;
+    --ink:         #12171E;
+    --ink-2:       #414B58;
+    --ink-3:       #6C7885;
+    --rule:        #D8DDE4;
+    --rule-strong: #B9C1CB;
+    --accent:      #A81F55;
+    --accent-soft: #F5E2EA;
+    --ok:          #1F6B4D;
+    --ok-soft:     #DCEDE4;
+    --warn:        #8A5A0B;
+    --warn-soft:   #F5E9D3;
+    --stop:        #973124;
+    --stop-soft:   #F6E1DD;
+    --shadow:      0 1px 2px rgba(18,23,30,.06), 0 8px 24px rgba(18,23,30,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0D1117;
+      --surface:     #141A22;
+      --surface-2:   #1C242E;
+      --ink:         #E9EDF2;
+      --ink-2:       #B3BDCA;
+      --ink-3:       #7F8C9B;
+      --rule:        #263039;
+      --rule-strong: #38444F;
+      --accent:      #E86D96;
+      --accent-soft: #351A25;
+      --ok:          #5FBF92;
+      --ok-soft:     #16281F;
+      --warn:        #D9A648;
+      --warn-soft:   #2B2213;
+      --stop:        #E58273;
+      --stop-soft:   #2E1A16;
+      --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #0D1117;
+    --surface:     #141A22;
+    --surface-2:   #1C242E;
+    --ink:         #E9EDF2;
+    --ink-2:       #B3BDCA;
+    --ink-3:       #7F8C9B;
+    --rule:        #263039;
+    --rule-strong: #38444F;
+    --accent:      #E86D96;
+    --accent-soft: #351A25;
+    --ok:          #5FBF92;
+    --ok-soft:     #16281F;
+    --warn:        #D9A648;
+    --warn-soft:   #2B2213;
+    --stop:        #E58273;
+    --stop-soft:   #2E1A16;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+  }
+
+  /* ---------- base ---------- */
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 16.5px;
+    line-height: 1.62;
+    margin: 0;
+    padding: 0 1.5rem 6rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 62rem; margin: 0 auto; }
+  .prose { max-width: 40rem; }
+
+  h1, h2, h3 {
+    font-family: Charter, "Bitstream Charter", "Iowan Old Style", "Source Serif 4", Georgia, serif;
+    text-wrap: balance;
+    line-height: 1.18;
+    margin: 0;
+  }
+  h1 { font-size: clamp(2.1rem, 5vw, 3.1rem); letter-spacing: -.018em; font-weight: 600; }
+  h2 { font-size: 1.62rem; letter-spacing: -.012em; font-weight: 600; }
+  h3 { font-size: 1.1rem; letter-spacing: -.005em; font-weight: 600; }
+  p  { margin: 0; }
+  a  { color: var(--accent); }
+
+  .mono, code, td.mono, .tag {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+  code {
+    font-size: .855em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: .08em .34em;
+    word-break: break-word;
+  }
+
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .705rem;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  section { display: flex; flex-direction: column; gap: 1.15rem; }
+  .stack  { display: flex; flex-direction: column; gap: 1.15rem; }
+  .stack-s{ display: flex; flex-direction: column; gap: .55rem; }
+
+  /* ---------- masthead ---------- */
+  header.mast {
+    display: flex; flex-direction: column; gap: 1.4rem;
+    padding: 3.4rem 0 2.2rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .mast-meta {
+    display: flex; flex-wrap: wrap; gap: .5rem 1.4rem;
+    color: var(--ink-3);
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .72rem; letter-spacing: .06em;
+  }
+  .lede { font-size: 1.16rem; color: var(--ink-2); max-width: 42rem; }
+
+  /* ---------- verdict ---------- */
+  .verdict {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--accent);
+    border-radius: 5px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.65rem;
+    display: flex; flex-direction: column; gap: .8rem;
+  }
+  .verdict p { max-width: 44rem; }
+
+  /* ---------- section rhythm ---------- */
+  .sec { padding-top: 3.2rem; }
+  .sec-head {
+    display: flex; flex-direction: column; gap: .3rem;
+    padding-bottom: .3rem; margin-bottom: .5rem;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  /* ---------- tables ---------- */
+  .tw { overflow-x: auto; border: 1px solid var(--rule); border-radius: 5px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: .9rem; }
+  th, td { text-align: left; padding: .62rem .85rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    background: var(--surface-2);
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .69rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.mono { font-size: .82rem; color: var(--ink-2); }
+  .num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  .pill {
+    display: inline-block; white-space: nowrap;
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .66rem; letter-spacing: .07em; text-transform: uppercase;
+    padding: .17rem .45rem; border-radius: 3px; font-weight: 600;
+  }
+  .p-ok   { background: var(--ok-soft);   color: var(--ok);   }
+  .p-warn { background: var(--warn-soft); color: var(--warn); }
+  .p-stop { background: var(--stop-soft); color: var(--stop); }
+
+  /* ---------- key-value spec grid ---------- */
+  .specs {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: 1px; background: var(--rule);
+    border: 1px solid var(--rule); border-radius: 5px; overflow: hidden;
+  }
+  .spec { background: var(--surface); padding: .85rem 1rem; display: flex; flex-direction: column; gap: .18rem; }
+  .spec dt {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  }
+  .spec dd { margin: 0; font-size: .92rem; }
+  .spec dd .sub { color: var(--ink-3); font-size: .8rem; }
+
+  /* ---------- phases ---------- */
+  .phase {
+    display: grid; grid-template-columns: 3.1rem 1fr; gap: 0 1.1rem;
+    padding: 1.15rem 0; border-top: 1px solid var(--rule);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--rule); }
+  .phase-n {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: 1.5rem; color: var(--accent); font-weight: 600; line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase-body { display: flex; flex-direction: column; gap: .45rem; }
+  .phase-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem .8rem; }
+  .phase-cost {
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+    font-size: .71rem; color: var(--ink-3); letter-spacing: .05em;
+  }
+  .phase ul { margin: .1rem 0 0; padding-left: 1.05rem; color: var(--ink-2); font-size: .93rem; }
+  .phase li { margin-bottom: .18rem; }
+
+  /* ---------- callout ---------- */
+  .note {
+    background: var(--surface-2); border: 1px solid var(--rule);
+    border-radius: 5px; padding: 1rem 1.15rem;
+    display: flex; flex-direction: column; gap: .5rem; font-size: .93rem; color: var(--ink-2);
+  }
+  .note strong { color: var(--ink); }
+
+  ul.plain { margin: 0; padding-left: 1.15rem; color: var(--ink-2); }
+  ul.plain li { margin-bottom: .35rem; }
+
+  footer {
+    margin-top: 3.5rem; padding-top: 1.3rem; border-top: 1px solid var(--rule);
+    color: var(--ink-3); font-size: .8rem;
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+
+  <header class="mast">
+    <div class="mast-meta">
+      <span>PICO NEO 2 EYE</span>
+      <span>A7B10 / PICOA7B10</span>
+      <span>SDM845</span>
+      <span>FEASIBILITY REPORT</span>
+    </div>
+    <h1>Putting an open OS on the Neo&nbsp;2</h1>
+    <p class="lede">
+      Findings from a static teardown of the PUI 4.1.3 firmware and an EDL firehose dump.
+      The headline: the hard part is not the part that looked hard.
+    </p>
+  </header>
+
+  <section class="sec">
+    <div class="verdict">
+      <span class="eyebrow">Verdict</span>
+      <p>
+        <strong>More feasible than it first appeared, but the ceiling is set by Android 8.1, not by the VR stack.</strong>
+        Pico's compositor turns out to be cleanly portable, the tracking hardware is standard parts with mainline
+        Linux drivers, and the factory calibration is in an open, documented format. The genuine obstacle is that
+        this device shipped on <strong>VNDK 27</strong> with no published kernel source, which caps how far a
+        blob-reuse port can travel.
+      </p>
+      <p>
+        There are two coherent routes. Reusing the stock vendor partition gets you a working headset quickly but
+        pins you near Android 11. Going fully open with a mainline kernel, Mesa and Monado reaches a modern Android
+        and satisfies the open-source goal, but it is a months-long project whose risk is concentrated in camera
+        and display bring-up.
+      </p>
+      <p>
+        One caveat lands directly on the make-or-break requirement: the controllers are tracked
+        <strong>electromagnetically</strong>, through an FPGA and signed DSP firmware. There is no open replacement
+        for that and there will not be one. A fully-open build either carries those blobs or ships without
+        controller tracking — worth deciding early, because it is the one place the goal cannot be fully met.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">01 — Identity</span>
+      <h2>What the device actually is</h2>
+    </div>
+    <div class="specs">
+      <dl class="spec"><dt>Android base</dt><dd>8.1.0 &middot; SDK 27<span class="sub"><br>VNDK 27, Treble enabled</span></dd></dl>
+      <dl class="spec"><dt>Build</dt><dd class="mono">PUI 4.1.3 / b346<span class="sub"><br>2021-04-09</span></dd></dl>
+      <dl class="spec"><dt>Security patch</dt><dd>2019-01-05<span class="sub"><br>two years stale at ship</span></dd></dl>
+      <dl class="spec"><dt>Kernel</dt><dd class="mono">4.9.65-perf+<span class="sub"><br>sdm845 launch BSP, never rebased</span></dd></dl>
+      <dl class="spec"><dt>Partitioning</dt><dd>Non-A/B, UFS 6&nbsp;LUN<span class="sub"><br>separate <code>vendor</code>, no <code>super</code></span></dd></dl>
+      <dl class="spec"><dt>SELinux</dt><dd>Permissive <span class="pill p-ok">stock</span><span class="sub"><br>baked into the kernel cmdline</span></dd></dl>
+      <dl class="spec"><dt>Tracking cameras</dt><dd class="mono">ov9282 stereo<span class="sub"><br>2560&times;800, global shutter mono</span></dd></dl>
+      <dl class="spec"><dt>Eye tracking</dt><dd class="mono">ov6211 stereo<span class="sub"><br>800&times;400 &middot; libtobii_runtime.so</span></dd></dl>
+      <dl class="spec"><dt>Panel</dt><dd>JDI 4K @ 72&nbsp;Hz<span class="sub"><br>from OTA build tag <code>jdi4k72</code></span></dd></dl>
+    </div>
+    <div class="note prose">
+      <p><strong>The permissive finding is not a mod.</strong> <code>androidboot.selinux=permissive</code> is present in
+      the stock <code>boot.img</code> cmdline of a retail <code>user</code> build. Whatever else this port requires,
+      an entire category of policy fighting is already off the table.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">02 — The decisive test</span>
+      <h2>Pico's compositor is portable</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        The question that gates everything is what the VR runtime links against. A compositor that reaches into
+        <code>libgui</code>, <code>libui</code> or SurfaceFlinger internals is welded to the exact system image it
+        shipped on, and dies on every Android version bump. One that stays inside the NDK travels freely.
+      </p>
+      <p>
+        <code>libcompositor.pxr.so</code> was built with <strong>NDK r20b against API 26</strong>, and its complete
+        dependency set is <code>liblog</code>, <code>libandroid</code>, <code>libEGL</code>, <code>libGLESv3</code>,
+        <code>libvulkan</code>, <code>libdl</code>, <code>libc</code>, <code>libm</code>. Every one is NDK-stable.
+        The only framework surfaces it imports are <code>ANativeWindow_fromSurface</code> and standard EGL calls,
+        both public NDK API.
+      </p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Component</th><th>Links against</th><th>Portable?</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="mono">libcompositor.pxr.so</td>
+            <td>NDK-stable only</td>
+            <td><span class="pill p-ok">Yes</span></td>
+          </tr>
+          <tr>
+            <td class="mono">qvrservice</td>
+            <td>libqvrservice.so + NDK</td>
+            <td><span class="pill p-ok">Yes</span></td>
+          </tr>
+          <tr>
+            <td class="mono">libconfigurationclient.pxr.so</td>
+            <td>libbinder (no C++ symbols seen)</td>
+            <td><span class="pill p-warn">Likely</span></td>
+          </tr>
+          <tr>
+            <td class="mono">libCVControllerClient.pxr.so</td>
+            <td><code>android::Parcel</code>, <code>android::IBinder</code></td>
+            <td><span class="pill p-warn">Rebuild glue</span></td>
+          </tr>
+          <tr>
+            <td class="mono">pvrservice</td>
+            <td>libgui, libui, libbinder, libsensor, libpowermanager</td>
+            <td><span class="pill p-stop">Version-bound</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose">
+      So the port cost is concentrated in <code>pvrservice</code> and the binder client libraries, which are the
+      thin framework-facing glue rather than the graphics engine. That is a much smaller job than reimplementing a
+      compositor, and it means keeping the closed runtime for backwards compatibility is a realistic goal.
+    </p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">03 — Two useful surprises</span>
+      <h2>vrflinger and the calibration format</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        <strong>The display path is AOSP, not proprietary.</strong> <code>surfaceflinger.rc</code> opens
+        <code>pdx/system/vr/display/{client,manager,vsync}</code> sockets, which is AOSP's vrflinger
+        (<code>frameworks/native/services/vr/</code>). The direct-mode display service is open-source code you can
+        build, not a blob you have to smuggle forward.
+      </p>
+      <p>
+        <strong>The factory calibration is a standard visual-inertial calibration.</strong>
+        <code>/persist/pvr/camera/device_calibration.xml</code> is plain XML carrying
+        <code>FISHEYE_4_PARAMETERS</code> (Kannala-Brandt) intrinsics, stereo rig extrinsics on a 79.5&nbsp;mm
+        baseline, IMU-to-camera transform (<code>ombc</code>/<code>tbc</code>), accelerometer and gyro biases, and a
+        time offset. That is exactly the model Basalt, Kalibr and Monado consume.
+      </p>
+      <p>
+        Taken together these remove the two risks I would normally call project-killing: that direct-mode rendering
+        is unportable, and that per-unit tracking calibration is locked in an opaque vendor format.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">04 — Device tree</span>
+      <h2>It's a Qualcomm reference design</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        The bootloader identifies the unit as <code>QC_REFERENCE_PHONE</code>, and every one of the 40 DTBO entries
+        carries a stock Qualcomm model string — MTP, CDP, QRD, HDK, and notably
+        <strong>SVR</strong> and <strong>QVR</strong>, Qualcomm's VR reference boards. Pico never renamed them.
+      </p>
+      <p>
+        So the device tree base is Qualcomm's <em>public</em> CAF sdm845 reference rather than a bespoke tree that
+        would have to be reconstructed from scratch. The Pico-specific delta arrives as overlay fragments, and it is
+        small enough to enumerate completely:
+      </p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Node</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">picovr,spi-w25q</td><td>FPGA config flash; <code>fpga_rset</code> GPIO 84, <code>power-en</code> GPIO 81, <code>switch-gpio</code> 122</td></tr>
+          <tr><td class="mono">picovr,nordic</td><td>Nordic BLE radio — the controller link</td></tr>
+          <tr><td class="mono">icm@68</td><td><code>imu,icm206xx</code>, dedicated IRQ line</td></tr>
+          <tr><td class="mono">eepromi2c@57</td><td>Calibration EEPROM, plus a <code>tof-en</code> time-of-flight enable</td></tr>
+          <tr><td class="mono">nq@28</td><td>NXP NFC</td></tr>
+          <tr><td class="mono">gpio_fan</td><td>Active cooling with a PWM tach IRQ</td></tr>
+          <tr><td class="mono">hw_version</td><td>3-bit board revision straps on GPIO 105/106/107</td></tr>
+          <tr><td class="mono">gpio_keys</td><td><code>app_key</code>, <code>confirm_key</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose stack">
+      <p>
+        The display is fully specified in the tree as
+        <code>qcom,mdss_dsi_jdi_4k_55uhd_72_new_video</code>, matching the <code>jdi4k72</code> OTA build tag, with
+        70&nbsp;Hz and 75&nbsp;Hz siblings also present:
+      </p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td>Per-DSI resolution</td><td class="mono num">1080 &times; 3840</td></tr>
+          <tr><td>Topology</td><td class="mono">&lt;2 2 2&gt; dual DSI &rarr; 2160 &times; 3840 &rarr; 1920&times;2160 per eye</td></tr>
+          <tr><td>Refresh</td><td class="mono num">72 Hz</td></tr>
+          <tr><td>Mode</td><td class="mono">dsi_video_mode, non_burst_sync_event, 4 lanes, 24bpp</td></tr>
+          <tr><td>Compression</td><td class="mono">DSC, slice 540&times;8, 8 bpc, 8 bpp</td></tr>
+          <tr><td>H porches</td><td class="mono num">front 20 / back 20 / pulse 20</td></tr>
+          <tr><td>V porches</td><td class="mono num">front 498 / back 20 / pulse 10</td></tr>
+          <tr><td>PHY timings</td><td class="mono">0x1b0706 0x22210707 0x4020400</td></tr>
+          <tr><td>Backlight</td><td class="mono">bl_ctrl_gpio, 3-bit on GPIO 49/50/51, levels 1&ndash;7</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note prose">
+      <p><strong>This removes the display unknown entirely.</strong> The DSC parameters are normally the hardest part
+      of a panel bring-up to reverse; here they are stated outright. Combined with a public CAF base, the device-tree
+      portion of this port is largely a matter of assembly rather than discovery.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">05 — QVR protocol</span>
+      <h2>The VR service is sockets, not binder</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        <code>libqvrservice_client.so</code> exports 191 functions, and their signatures give the architecture away:
+        <code>QVRSocket</code>, <code>QVRSocketPkt_t</code>, <code>sockaddr_un</code>, <code>InitSharedMemAt</code>,
+        <code>qvr_ring_buf_id</code>, <code>qvrservice_ring_buffer_desc_t</code>, alongside a string-keyed
+        <code>GetParam</code>/<code>SetParam</code> pair and <code>StartVRMode</code>/<code>StopVRMode</code>.
+      </p>
+      <p>
+        That is a <strong>Unix domain socket protocol with shared-memory ring buffers for pose data</strong> — no
+        Android binder anywhere, and the client links only <code>liblog</code>, <code>libcutils</code>,
+        <code>libdrm</code>, <code>libutils</code> and <code>libc++</code>.
+      </p>
+      <p>
+        The consequence is significant: the VR service interface is independent of the Android framework ABI. It
+        would function on any Linux, it does not break across Android versions, and reimplementing it openly (or
+        teaching Monado to speak it) is a protocol reverse-engineering exercise rather than a framework port. The
+        surface that actually matters — connect, handshake, param get/set, ring buffer, sync clock — is roughly a
+        dozen calls out of the 191.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">06 — The hard blocker</span>
+      <h2>Controllers are electromagnetic</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        The Neo 2 does not track its controllers optically. It uses an <strong>electromagnetic</strong> system, and
+        that is the one subsystem in this device with no open-source path whatsoever.
+      </p>
+      <p>The chain runs through four proprietary layers:</p>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Stage</th><th>Artifact</th><th>Nature</th></tr></thead>
+        <tbody>
+          <tr><td>Coil driver</td><td class="mono">top_level_bitmap.bin</td><td>FPGA bitstream in a Winbond W25Q SPI NOR, reached through the <code>/dev/w25q</code> char device</td></tr>
+          <tr><td>Signal processing</td><td class="mono">sns_ndi_fpga (SLPI)</td><td>Hexagon DSP driver inside signed SLPI firmware</td></tr>
+          <tr><td>Transport</td><td class="mono">libssc.so</td><td>QMI + protobuf from the sensor core</td></tr>
+          <tr><td>HAL</td><td class="mono">sensors-common-ndifpga.pvr.so</td><td>standard Android sensors module, <code>ndi_fpga</code>, six values per sample</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose stack">
+      <p>
+        Per-unit coil calibration sits in <code>/persist/ndi/</code> as <code>tx1.eep</code>, <code>tx2.eep</code> and
+        <code>rxcache.eep</code>, alongside BLE MACs, serials and per-controller IMU calibration. Buttons come over
+        BLE; pose comes from the EM field.
+      </p>
+      <p>
+        Reimplementing this would mean reverse-engineering signed Hexagon DSP code and an FPGA bitstream. That is
+        not a realistic goal. The practical answer is that <strong>controller tracking is permanently blob-dependent</strong>,
+        and any fully-open build either carries these blobs forward or ships without controllers.
+      </p>
+      <div class="note">
+        <p><strong>One piece of luck.</strong> The bitstream lives in the FPGA's own SPI flash, so it survives an OS
+        replacement. A new OS needs only the runtime read path — SLPI firmware, <code>libssc</code>, and the sensor
+        HAL module — never the programming path. And because that module is an ordinary Android sensors HAL, it is
+        one of the more portable blobs in the device.</p>
+        <p><strong>The bitstream is not in any shipping firmware.</strong> It is absent from all three official OTAs
+        and from the Eye dump; the OTA script only stages a copy that must already exist. The only recovery source
+        is a live read of <code>/dev/w25q</code> from a working unit, or a hardware clip on the flash itself.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">07 — Coverage</span>
+      <h2>What can be open, and what cannot</h2>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>Subsystem</th><th>Open-source option</th><th>Status</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>GPU</td><td>Mesa Freedreno / Turnip</td><td><span class="pill p-ok">Open</span></td><td class="mono">Adreno 630 is a6xx, well supported</td></tr>
+          <tr><td>Display compositing</td><td>AOSP vrflinger</td><td><span class="pill p-ok">Open</span></td><td class="mono">already in use on stock</td></tr>
+          <tr><td>OpenXR runtime</td><td>Monado</td><td><span class="pill p-ok">Open</span></td><td class="mono">replaces the Pico runtime</td></tr>
+          <tr><td>Tracking cameras</td><td>mainline <code>ov9282.c</code> + qcom CAMSS</td><td><span class="pill p-warn">Work</span></td><td class="mono">stock uses QVR's native driver, not the HAL</td></tr>
+          <tr><td>SLAM / 6DoF</td><td>Basalt / OpenVINS</td><td><span class="pill p-warn">Work</span></td><td class="mono">factory calib is directly consumable</td></tr>
+          <tr><td>IMU</td><td>mainline InvenSense ICM driver</td><td><span class="pill p-warn">Work</span></td><td class="mono">stock path is <code>sensors-icmxx.pvr.so</code></td></tr>
+          <tr><td>MIPI DSI panel</td><td>panel driver from stock DTB</td><td><span class="pill p-warn">Work</span></td><td class="mono">timings extractable, driver must be written</td></tr>
+          <tr><td>Kernel</td><td>mainline sdm845 or CAF 4.9</td><td><span class="pill p-warn">Work</span></td><td class="mono">no Pico GPL release found</td></tr>
+          <tr><td>Wi-Fi / BT / modem fw</td><td>none</td><td><span class="pill p-stop">Blob</span></td><td class="mono">firmware only, redistribution-free path exists</td></tr>
+          <tr><td>Controller tracking</td><td>none</td><td><span class="pill p-stop">Blob</span></td><td class="mono">EM via FPGA + SLPI DSP; no open equivalent</td></tr>
+          <tr><td>Eye tracking</td><td>none</td><td><span class="pill p-stop">Blob</span></td><td class="mono">Tobii, closed; treat as optional</td></tr>
+          <tr><td>Audio / video codecs</td><td>partial</td><td><span class="pill p-stop">Blob</span></td><td class="mono">Qualcomm OMX, hard to replace</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note prose">
+      <p><strong>The real constraint is VNDK 27.</strong> Vendor blobs built for Android 8.1 lose their compatibility
+      guarantee quickly, and Google removed the VNDK snapshot mechanism entirely in Android 15. Any route that keeps
+      the stock <code>vendor</code> partition realistically tops out around Android 11, and 9 or 10 will be far less
+      painful. Reaching a genuinely modern Android <em>requires</em> the fully-open route. These two goals are
+      coupled, and that is the central trade in this project.</p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">08 — Sequence</span>
+      <h2>Suggested order of work</h2>
+    </div>
+    <p class="prose">Each phase is independently useful and ends in something demonstrable. The gates matter: phase 3 is
+      where the project either becomes a real open platform or settles into a good blob-reuse ROM.</p>
+
+    <div>
+      <div class="phase">
+        <div class="phase-n">1</div>
+        <div class="phase-body">
+          <div class="phase-head"><h3>Boot a GSI on stock vendor</h3><span class="phase-cost">days &middot; low risk</span></div>
+          <ul>
+            <li>Flash an arm64 A-only Treble GSI, leaving <code>vendor</code> and <code>firmware</code> untouched</li>
+            <li>Disable AVB via <code>vbmeta</code>; keep <code>xbl</code>/<code>abl</code> read-only to avoid the anti-rollback trap</li>
+            <li>Success looks like a display and adb, not a working headset</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-n">2</div>
+        <div class="phase-body">
+          <div class="phase-head"><h3>LineageOS with stock vendor + Pico runtime</h3><span class="phase-cost">weeks &middot; moderate</span></div>
+          <ul>
+            <li>Build a device tree for <code>A7B10</code> against the stock 4.9.65 kernel</li>
+            <li>Carry the compositor and <code>qvrservice</code> across unchanged; rebuild only <code>pvrservice</code>-equivalent glue</li>
+            <li>Ships as a <code>boot</code>+<code>system</code> zip, so no proprietary redistribution</li>
+            <li>This is the backwards-compatible headset, capped near Android 11</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-n">3</div>
+        <div class="phase-body">
+          <div class="phase-head"><h3>Mainline kernel bring-up</h3><span class="phase-cost">months &middot; the gate</span></div>
+          <ul>
+            <li>Port from the postmarketOS sdm845 base; extract panel timings from the stock DTB</li>
+            <li>Get the ov9282 pair enumerating through CAMSS as V4L2 devices</li>
+            <li>If the cameras and panel come up, the open platform is real; if not, phase 2 is the ceiling</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-n">4</div>
+        <div class="phase-body">
+          <div class="phase-head"><h3>Open XR stack</h3><span class="phase-cost">months &middot; research</span></div>
+          <ul>
+            <li>Mesa/Turnip for graphics, Monado as the OpenXR runtime</li>
+            <li>Basalt or OpenVINS for SLAM, fed by a converter for <code>device_calibration.xml</code></li>
+            <li>Eye tracking stays unsupported unless the Tobii blob is carried forward</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">09 — Distribution</span>
+      <h2>Shipping without redistributing blobs</h2>
+    </div>
+    <div class="prose stack">
+      <p>
+        Because this device is non-A/B with a real separate <code>vendor</code> partition, the installer can simply
+        not touch <code>/vendor</code> or <code>/firmware</code>. You ship <code>boot</code> and <code>system</code>;
+        the device supplies its own proprietary blobs from the stock partitions already on it.
+      </p>
+      <p>
+        That gives a prebuilt one-click zip with no build step for the end user and no proprietary code in your
+        release. If a blob must be staged, the three official Pico OTA zips are publicly downloadable, so an
+        extraction script can pull from a file the user fetches themselves rather than from your server.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="eyebrow">10 — Open questions</span>
+      <h2>Not yet established</h2>
+    </div>
+    <ul class="plain prose">
+      <li><strong>Kernel source.</strong> No Pico GPL release located, but this now matters far less than it did: the tree is Qualcomm's reference, so the CAF <code>msm-4.9</code> baseline (tag family <code>LA.UM.7.1.r1-*-sdm845.0</code>) plus the enumerated Pico overlay fragments should reconstruct it.</li>
+      <li><strong>Which DTBO the device selects at boot.</strong> Forty candidates are present and the board-id match hasn't been traced yet; the QVR and SVR entries are the likely ones.</li>
+      <li><strong>QVR wire protocol.</strong> The transport is known (Unix sockets + shared-memory ring buffers) but the packet format itself still needs reversing before anything can speak it.</li>
+      <li><strong>Eye-variant vendor partition.</strong> Analysis so far used the standard Neo 2 OTA; the Eye's own <code>vendor</code> and <code>oem</code> still need diffing once the backup drive is reconnected.</li>
+      <li><strong>Fastboot state.</strong> Unlock status and whether <code>fastboot boot</code> works are unverified on the physical unit.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Static analysis only &middot; no device attached &middot; sources: PUI 4.1.3 OTA (b346) and PicoNeo2Eye firehose dump
+  </footer>
+
+</div>

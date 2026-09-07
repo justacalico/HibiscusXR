@@ -1,0 +1,71 @@
+
+F:\PN2Lineage\notes\lib64\libpvrserviceclient.so:	file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000019e28 <_ZN3PVR16PvrServiceClient10recvSocketEPvi>:
+   19e40: fd 7b 07 a9  	stp	x29, x30, [sp, #112]
+   19e44: fd c3 01 91  	add	x29, sp, #112
+   19e48: 48 d0 3b d5  	mrs	x8, TPIDR_EL0
+   19e4c: f3 03 02 2a  	mov	w19, w2
+   19e50: 08 15 40 f9  	ldr	x8, [x8, #40]
+   19e54: f4 03 01 aa  	mov	x20, x1
+   19e58: f5 03 00 aa  	mov	x21, x0
+   19e5c: e8 0f 00 f9  	str	x8, [sp, #24]
+   19e60: 56 db ff 97  	bl	0x10bb8 <gettid@plt>
+   19e64: 69 0c 80 52  	mov	w9, #99
+   19e68: e1 03 00 32  	orr	w1, wzr, #0x1
+   19e6c: e2 43 00 91  	add	x2, sp, #16
+   19e70: e9 13 00 b9  	str	w9, [sp, #16]
+   19e74: f9 db ff 97  	bl	0x10e58 <sched_setscheduler@plt>
+   19e78: a8 62 40 b9  	ldr	w8, [x21, #96]
+   19e7c: fc 03 00 2a  	mov	w28, w0
+   19e80: a8 0b f8 37  	tbnz	w8, #31, 0x19ff4 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x1cc>
+   19e84: 38 00 00 90  	adrp	x24, 0x1d000 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x6c>
+   19e88: 3a 00 00 b0  	adrp	x26, 0x1e000 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x74>
+   19e8c: 3b 00 00 b0  	adrp	x27, 0x1e000 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x78>
+   19e90: f6 03 1f 2a  	mov	w22, wzr
+   19e94: f7 03 1f 2a  	mov	w23, wzr
+   19e98: 18 5f 1e 91  	add	x24, x24, #1943
+   19e9c: 59 06 80 52  	mov	w25, #50
+   19ea0: 5a 4b 05 91  	add	x26, x26, #338
+   19ea4: 7b 5b 06 91  	add	x27, x27, #406
+   19ea8: 81 c2 36 8b  	add	x1, x20, w22, sxtw
+   19eac: 69 02 16 4b  	sub	w9, w19, w22
+   19eb0: e0 03 08 2a  	mov	w0, w8
+   19eb4: e3 03 1f 2a  	mov	w3, wzr
+   19eb8: e4 03 1f aa  	mov	x4, xzr
+   19ebc: e5 03 1f aa  	mov	x5, xzr
+   19ec0: 22 7d 40 93  	sxtw	x2, w9
+   19ec4: e9 db ff 97  	bl	0x10e68 <recvfrom@plt>
+   19ec8: fc 03 00 aa  	mov	x28, x0
+   19ecc: dc 03 f8 37  	tbnz	w28, #31, 0x19f44 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x11c>
+   19ed0: 5c 06 00 34  	cbz	w28, 0x19f98 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x170>
+   19ed4: d6 02 1c 0b  	add	w22, w22, w28
+   19ed8: df 02 13 6b  	cmp	w22, w19
+   19edc: 8b 05 00 54  	b.lt	0x19f8c <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x164>
+   19ee0: bc 12 41 b9  	ldr	w28, [x21, #272]
+   19ee4: 9f 2b 00 71  	cmp	w28, #10
+   19ee8: 8b 01 00 54  	b.lt	0x19f18 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0xf0>
+   19eec: a3 db ff 97  	bl	0x10d78 <__errno@plt>
+   19ef0: 07 00 40 b9  	ldr	w7, [x0]
+   19ef4: e0 07 1f 32  	orr	w0, wzr, #0x6
+   19ef8: e1 03 18 aa  	mov	x1, x24
+   19efc: fc 03 00 b9  	str	w28, [sp]
+   19f00: e2 03 1b aa  	mov	x2, x27
+   19f04: e3 03 16 2a  	mov	w3, w22
+   19f08: e4 03 16 2a  	mov	w4, w22
+   19f0c: e5 03 13 2a  	mov	w5, w19
+   19f10: e6 03 17 2a  	mov	w6, w23
+   19f14: b5 d9 ff 97  	bl	0x105e8 <__android_log_print@plt>
+   19f18: fc 03 16 2a  	mov	w28, w22
+   19f1c: ff 76 00 71  	cmp	w23, #29
+   19f20: ea 05 00 54  	b.ge	0x19fdc <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x1b4>
+   19f24: df 02 13 6b  	cmp	w22, w19
+   19f28: 4a 06 00 54  	b.ge	0x19ff0 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x1c8>
+   19f2c: e0 03 19 2a  	mov	w0, w25
+   19f30: f7 06 00 11  	add	w23, w23, #1
+   19f34: 25 db ff 97  	bl	0x10bc8 <usleep@plt>
+   19f38: a8 62 40 b9  	ldr	w8, [x21, #96]
+   19f3c: 68 fb ff 36  	tbz	w8, #31, 0x19ea8 <_ZN3PVR16PvrServiceClient10recvSocketEPvi+0x80>

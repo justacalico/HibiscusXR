@@ -1,0 +1,7 @@
+﻿adb.exe : /system/bin/sh: no closing quote
+At line:1 char:350
++ ... .139:5555'; & $adb -s $S shell "su -c 'grep -oE \"/[^ ]*\.so\" /proc/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (/system/bin/sh: no closing quote:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

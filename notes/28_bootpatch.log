@@ -1,0 +1,7 @@
+header v0 page=4096 kernel=13983302 ramdisk=1762749 second=0
+ramdisk magic: 1f8b0800
+decompressed ramdisk: 2449064 bytes (gzip cpio)
+extracted entries: 25
+repacked cpio: 2449408 bytes
+recompressed ramdisk: 1767061 bytes (was 1762749)
+wrote /mnt/f/PN2Lineage/gsi/boot_adb.img (15757312 bytes)

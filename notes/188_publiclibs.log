@@ -1,0 +1,36 @@
+=== public.libraries + missing Pico libs 08/13/2026 16:03:41 ===
+[16:03:41] --- pulling the 4 missing libs from the stock reference unit ---
+[16:03:42]    pulled libvirtualinputclient.so       lib64  40336 bytes
+[16:03:42]    pulled libvirtualinputclient.so       lib    37512 bytes
+[16:03:42]    pulled libairclient.so                lib64  73232 bytes
+[16:03:42]    pulled libairclient.so                lib    62636 bytes
+[16:03:43]    pulled libSafetyArea.so               lib64  5793816 bytes
+[16:03:43]    pulled libSafetyArea.so               lib    3403728 bytes
+[16:03:43]    pulled libImageGrid.so                lib64  4554544 bytes
+[16:03:43]    pulled libImageGrid.so                lib    2681408 bytes
+[16:03:43] 
+[16:03:43] --- building the merged public.libraries.txt ---
+[16:03:43]    entries only on stock: 22
+[16:03:43]      + libpvrserviceclient.so
+[16:03:43]      + libvirtualinputclient.so
+[16:03:43]      + libpxrserviceclient.so
+[16:03:43]      + libairclient.so
+[16:03:43]      + libSafetyArea.so
+[16:03:43]      + libImageGrid.so
+[16:03:43]      + libPvr_UnitySDK.so
+[16:03:43]      + libPvr_UnitySDKExt1.so
+[16:03:43]      + libPvr_UnitySDKExt5.so
+[16:03:43]      + libPvr_UnitySDKExt8.so
+[16:03:43]      + libPvr_UnitySDKExt9.so
+[16:03:43]      + libPvr_UnitySDKExt10.so
+[16:03:43]      + libPvr_UnitySDKExt11.so
+[16:03:43]      + libPvr_UESDKExt2.so
+[16:03:43]      + libCVControllerClient.pxr.so
+[16:03:43]      + lib6DofReset.so
+[16:03:43]      + libpxrnotification.pxr.so
+[16:03:43]      + libconfigurationclient.pxr.so
+[16:03:43]      + libplugin.pxr.so
+[16:03:43]      + libloader.pxr.so
+[16:03:43]      + libruntime.pxr.so
+[16:03:43]      + libcompositor.pxr.so
+[16:03:43]    wrote F:\PN2Lineage\overlay_pvr\public.libraries.txt (54 lines)

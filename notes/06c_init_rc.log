@@ -1,0 +1,33 @@
+=== VENDOR init rc mentioning vr/qvr/pvr/track/eye ===
+########## /home/justin/pn2/vendor/etc/init/android.hardware.memtrack@1.0-service.rc ##########
+service memtrack-hal-1-0 /vendor/bin/hw/android.hardware.memtrack@1.0-service
+    class hal
+    user system
+    group system
+
+
+=== SYSTEM init rc mentioning vr ===
+########## /home/justin/pn2/sysinit/init/surfaceflinger.rc ##########
+service surfaceflinger /system/bin/surfaceflinger
+    class core animation
+    user root
+    group graphics drmrpc readproc
+    onrestart restart zygote
+    writepid /dev/stune/foreground/tasks
+    socket pdx/system/vr/display/client     stream 0666 system graphics u:object_r:pdx_display_client_endpoint_socket:s0
+    socket pdx/system/vr/display/manager    stream 0666 system graphics u:object_r:pdx_display_manager_endpoint_socket:s0
+    socket pdx/system/vr/display/vsync      stream 0666 system graphics u:object_r:pdx_display_vsync_endpoint_socket:s0
+
+########## /home/justin/pn2/sysinit/init/pvrservice.rc ##########
+service pvrservice /system/bin/pvrservice
+     class core
+     user root
+     group root usb system wakelock
+
+on property:sys.pvr.vrservice.state=0
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1
+    start pvrservice
+on property:sys.pvr.vrservice.state=2
+    restart pvrservice
+

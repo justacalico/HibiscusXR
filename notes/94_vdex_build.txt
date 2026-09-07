@@ -1,0 +1,6 @@
+25:           -Wall -Wextra -Werror
+--- patched flags ---
+25:           -Wall -Wextra -Werror -Wno-error=vla-parameter -Wno-error=stringop-overflow -Wno-error=array-bounds
+
+=== building ===
+make: *** No targets specified and no makefile found.  Stop.

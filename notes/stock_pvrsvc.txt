@@ -1,0 +1,48 @@
+﻿pvrservice pid: 5931
+
+##### everything pvrservice logged during the launch #####
+5931  5931 I PVR_VsyncListen: type=1400 audit(0.0:2448): avc: denied { call } for scontext=u:r:pvrservice:s0 tcontext=u:r:surfaceflinger:s0 tclass=binder permissive=1
+5931  5931 I PVR_VsyncListen: type=1400 audit(0.0:2449): avc: denied { call } for scontext=u:r:pvrservice:s0 tcontext=u:r:untrusted_app:s0:c512,c768 tclass=binder permissive=1
+5931  5931 I pvrservice: type=1400 audit(0.0:2454): avc: denied { read } for scontext=u:r:pvrservice:s0 tcontext=u:r:system_server:s0 tclass=unix_stream_socket permissive=1
+5931  5963 V PvrService: removeNotificationClient() pid 5767
+5931  5963 E PvrService: VRModeStateClient::onClientDied pid=5767
+5931  5963 I PvrService: mPrevTrackingMode 1, trackingMode 1
+5931  5963 D PvrService: removeNotificationClient done
+5931  5931 I PVR_VsyncListen: type=1400 audit(0.0:2459): avc: denied { read } for scontext=u:r:pvrservice:s0 tcontext=u:r:surfaceflinger:s0 tclass=unix_stream_socket permissive=1
+5931  5931 I PVR_VsyncListen: type=1400 audit(0.0:2460): avc: denied { call } for scontext=u:r:pvrservice:s0 tcontext=u:r:surfaceflinger:s0 tclass=binder permissive=1
+5931  5963 I PvrService: OnTransact:code=2001
+5931  5963 E PvrService: Set 6dof global tracking status:1
+5931  5931 I PVR_VsyncListen: type=1400 audit(0.0:2462): avc: denied { call } for scontext=u:r:pvrservice:s0 tcontext=u:r:untrusted_app:s0:c512,c768 tclass=binder permissive=1
+5931  5963 V PvrService: registerClient() client 0x72a9320540, pid 6272
+5931  5931 I Binder:5931_1: type=1400 audit(0.0:2465): avc: denied { use } for path="socket:[178363]" dev="sockfs" ino=178363 scontext=u:r:system_app:s0 tcontext=u:r:pvrservice:s0 tclass=fd permissive=1
+5931  5931 I Binder:5931_1: type=1400 audit(0.0:2466): avc: denied { write } for path="socket:[178363]" dev="sockfs" ino=178363 scontext=u:r:system_app:s0 tcontext=u:r:pvrservice:s0 tclass=unix_stream_socket permissive=1
+5931  5931 I Binder:5931_1: type=1400 audit(0.0:2471): avc: denied { transfer } for scontext=u:r:pvrservice:s0 tcontext=u:r:surfaceflinger:s0 tclass=binder permissive=1
+5931  5963 E PvrPlatform: Override displayinfo:w=2160 h=3840 fps=72.000008
+5931  5963 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+5931  5963 I PvrPlatform: Override configs by config file
+5931  5963 I PvrPlatform: Override fov value:101.000000
+5931  5963 I PvrPlatform: setCPULevel:9999 1
+5931  5963 I PvrService: OnTransact:code=2001
+5931  5963 E PvrService: Set 6dof global tracking status:1
+5931  5963 I PvrPlatform: setGPULevel:0 1
+5931  5963 I PvrPlatform: svrSetPerformanceLevels GPU level[0] Freq[710000000] done
+5931  5963 I PvrPlatform: setCPULevel:0 1
+5931  5963 I PvrPlatform: svrSetPerformanceLevels CPU level[0] B[2803200] done
+5931  5963 I PvrPlatform: getCPULevel:0 0
+5931  5963 I PvrPlatform: getGPULevel:0 0
+5931  5963 I PvrPlatform: setCPULevel:0 1
+5931  5963 I PvrPlatform: svrSetPerformanceLevels CPU level[0] B[2803200] done
+5931  5931 I PvrPlatform: setGPULevel:0 1
+5931  5931 I PvrPlatform: svrSetPerformanceLevels GPU level[0] Freq[710000000] done
+5931  5968 I PvrPlatform: setCPULevel:0 1
+5931  5968 I PvrPlatform: svrSetPerformanceLevels CPU level[0] B[2803200] done
+5931  5960 D PvrService:  -0.046308,0.006079,0.009667,0.998862,-0.002396,-0.007792,-0.087078	[3952861454948]	[3952860600730]	[1193229]	[972343]
+5931  5931 I pvrservice: type=1400 audit(0.0:2481): avc: denied { read } for scontext=u:r:pvrservice:s0 tcontext=u:r:system_server:s0 tclass=unix_stream_socket permissive=1
+
+##### lens / display / parameter traffic from anyone #####
+5931  5963 E PvrPlatform: Override displayinfo:w=2160 h=3840 fps=72.000008
+6272  6272 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+5931  5963 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+5931  5963 I PvrPlatform: Override fov value:101.000000
+6272  6272 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+DONE

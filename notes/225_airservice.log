@@ -1,0 +1,17 @@
+=== airservice + virtual_input restore 08/13/2026 18:08:39 ===
+[18:08:39] --- pulling binaries ---
+[18:08:39]    airservice         44336 bytes
+[18:08:39]    virtual_input      28288 bytes
+[18:08:39]    airclient_test     24948 bytes
+[18:08:39] --- pulling init rc ---
+[18:08:39]    airservice.rc      86 bytes
+[18:08:40]    virtual_input.rc   191 bytes
+[18:08:40] --- pulling libs (both ABIs) ---
+[18:08:40]    libairservice.so     lib64  172040 bytes
+[18:08:40]    libairservice.so     lib    129868 bytes
+[18:08:40]    libaircamera.so      lib64  56704 bytes
+[18:08:40]    libaircamera.so      lib    58412 bytes
+[18:08:40] 
+[18:08:40] --- what do these need? (checked against our inventory before install) ---
+[18:08:40]    MISSING: libaircamera.so -> libskia.so
+[18:08:40]    MISSING: virtual_input -> libvirtualinput.so

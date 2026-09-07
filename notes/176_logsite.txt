@@ -1,0 +1,91 @@
+libpvrservice.so  window 0xcf84 .. 0xd0d4
+(frame #04 returns to +0xd0d4, so the log-call setup is just above it)
+
+  00cf84  mov      x0, x20
+  00cf88  bl       #0x7e60
+  00cf8c  ldr      q0, [x24]
+  00cf90  ldr      q1, [sp, #0x10]
+  00cf94  ldr      x8, [x19, #0x520]
+  00cf98  fmov     x11, d0
+  00cf9c  add      v0.2d, v0.2d, v1.2d
+  00cfa0  lsr      x12, x11, #6
+  00cfa4  and      x13, x12, #0x3fffffffffffff8
+  00cfa8  fmov     x9, d0
+  00cfac  and      x15, x11, #0x1ff
+  00cfb0  ldr      x14, [x8, x13]
+  00cfb4  cmp      x9, #0x400
+  00cfb8  ldr      x26, [x14, x15, lsl #3]
+  00cfbc  str      q0, [x24]
+  00cfc0  b.lo     #0xcfe4
+  00cfc4  ldr      x0, [x8]
+  00cfc8  bl       #0x7e40
+  00cfcc  ldr      x16, [x19, #0x520]
+  00cfd0  ldr      x17, [x19, #0x538]
+  00cfd4  add      x18, x16, #8
+  00cfd8  sub      x1, x17, #0x200
+  00cfdc  str      x18, [x19, #0x520]
+  00cfe0  str      x1, [x19, #0x538]
+  00cfe4  mov      x0, x20
+  00cfe8  bl       #0x7e90
+  00cfec  cbz      x26, #0xd154
+  00cff0  mov      x0, x21
+  00cff4  mov      x27, x21
+  00cff8  bl       #0x7e60
+  00cffc  ldr      x22, [x19, #0x4f8]
+  00d000  cbz      x22, #0xd0e4
+  00d004  mov      x23, xzr
+  00d008  mov      w21, #8
+  00d00c  mov      x8, x22
+  00d010  cmp      x8, x23
+  00d014  b.hi     #0xd02c
+  00d018  b        #0xd1f0
+  00d01c  ldr      x8, [x19, #0x4f8]
+  00d020  add      x21, x21, #0x10
+  00d024  cmp      x8, x23
+  00d028  b.ls     #0xd1f0
+  00d02c  ldr      x2, [x19, #0x4f0]
+  00d030  ldr      x10, [x2, x21]
+  00d034  ldrb     w8, [x10, #0x23]
+  00d038  cbz      w8, #0xd0d8
+  00d03c  ldrb     w9, [x10, #0x20]
+  00d040  cbnz     w9, #0xd0d8
+  00d044  adrp     x2, #0x1b000
+  00d048  mov      w0, #3
+  00d04c  mov      x1, x25
+  00d050  add      x2, x2, #0x21a        ; x2 = "Notification Client[%d] onClientStatusChange"
+  00d054  mov      w3, w23
+  00d058  bl       #0x7ea0
+  00d05c  ldr      x13, [x19, #0x4f8]
+  00d060  cmp      x13, x23
+  00d064  b.ls     #0xd224
+  00d068  ldr      x3, [x19, #0x4f0]
+  00d06c  add      x1, sp, #0x20
+  00d070  ldr      x4, [x3, x21]
+  00d074  ldr      x5, [x4, #0x18]
+  00d078  ldr      x6, [x5]
+  00d07c  ldur     x14, [x6, #-0x18]
+  00d080  str      x5, [sp, #0x20]
+  00d084  add      x0, x5, x14
+  00d088  bl       #0x8170
+  00d08c  ldr      x0, [sp, #0x20]
+  00d090  ldr      w1, [x26]
+  00d094  ldr      x2, [x26, #8]
+  00d098  ldr      w3, [x26, #0x10]
+  00d09c  ldr      x7, [x0]
+  00d0a0  ldr      x15, [x7, #0x38]
+  00d0a4  blr      x15
+  00d0a8  ldr      x9, [sp, #0x20]
+  00d0ac  cbz      x9, #0xd0c4
+  00d0b0  ldr      x0, [x9]
+  00d0b4  add      x1, sp, #0x20
+  00d0b8  ldur     x16, [x0, #-0x18]
+  00d0bc  add      x0, x9, x16
+  00d0c0  bl       #0x80e0
+  00d0c4  mov      w0, #3
+  00d0c8  mov      x1, x25
+  00d0cc  mov      x2, x28
+  00d0d0  mov      w3, w23   <=== the crashing call
+  00d0d4  bl       #0x7ea0   <=== returns here (+0xd0d4)
+  00d0d8  add      x23, x23, #1
+  00d0dc  cmp      x23, x22
+  00d0e0  b.lo     #0xd01c

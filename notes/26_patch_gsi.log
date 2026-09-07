@@ -1,0 +1,20 @@
+mounted /mnt/f/PN2Lineage/gsi/gsi_raw.img at /mnt/gsi_edit
+
+=== build.prop before ===
+grep: /mnt/gsi_edit/build.prop: Permission denied
+(no adb/usb lines)
+
+=== build.prop after ===
+grep: /mnt/gsi_edit/build.prop: Permission denied
+
+=== also patching /etc/prop.default ===
+grep: /mnt/gsi_edit/etc/prop.default: Permission denied
+
+unmounted; fsck:
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+
+system: ***** FILE SYSTEM WAS MODIFIED *****
+system: 6217/6240 files (0.4% non-contiguous), 466869/481504 blocks
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 09:30 /mnt/f/PN2Lineage/gsi/gsi_raw.img
+DONE

@@ -1,0 +1,188 @@
+﻿=== before ===
+Module                  Size  Used by
+wlan                 7868416  0 
+msm_11ad_proxy         32768  0 
+--- no soundcards ---
+
+=== modprobe binary ===
+lrwxr-xr-x 1 root shell  6 2021-08-08 12:55 /system/bin/modprobe -> toybox
+lrwxr-xr-x 1 root shell 13 2008-12-31 11:00 /vendor/bin/modprobe -> toybox_vendor
+
+=== try the exact stock command ===
+modprobe: /etc/modprobe.conf: No such file or directory
+modprobe: /etc/modprobe.d: No such file or directory
+rc=1
+
+=== if that failed, insmod in dependency order ===
+already: wcd-core
+already: pinctrl-wcd
+already: wcd-dsp-glink
+already: snd-soc-wcd-spi
+already: snd-soc-wcd9xxx
+already: snd-soc-wcd-mbhc
+already: swr-wcd-ctrl
+already: snd-soc-wcd934x
+already: snd-soc-wsa881x
+already: snd-soc-sdm845
+
+=== after ===
+Module                  Size  Used by
+snd_soc_sdm845        155648  0 
+snd_soc_wcd934x       413696  2 snd_soc_sdm845
+swr_wcd_ctrl           32768  1 snd_soc_wcd934x
+snd_soc_wcd_mbhc       49152  1 snd_soc_wcd934x
+snd_soc_wcd9xxx        69632  2 snd_soc_wcd934x
+snd_soc_wsa881x        49152  1 snd_soc_sdm845
+wcd_core              143360  5 snd_soc_sdm845,snd_soc_wcd934x,snd_soc_wcd_mbhc,snd_soc_wcd9xxx,snd_soc_wsa881x
+snd_soc_wcd_spi        28672  0 
+wcd_dsp_glink          28672  0 
+pinctrl_wcd            16384  0 
+wlan                 7868416  0 
+msm_11ad_proxy         32768  0 
+--- cards ---
+ 0 [sdm845tavilsndc]: sdm845-tavil-sn - sdm845-tavil-snd-card
+                      sdm845-tavil-snd-card
+--- /dev/snd ---
+comprC0D15
+comprC0D28
+comprC0D29
+comprC0D30
+comprC0D31
+comprC0D32
+comprC0D8
+controlC0
+hwC0D10
+hwC0D1000
+hwC0D103
+hwC0D104
+hwC0D11
+hwC0D12
+hwC0D13
+hwC0D136
+hwC0D137
+hwC0D138
+hwC0D139
+hwC0D14
+hwC0D140
+hwC0D141
+hwC0D142
+hwC0D15
+hwC0D16
+hwC0D2
+hwC0D20
+hwC0D21
+hwC0D22
+hwC0D24
+hwC0D25
+hwC0D26
+hwC0D27
+hwC0D28
+hwC0D29
+hwC0D3
+hwC0D30
+hwC0D3017
+hwC0D3033
+hwC0D32
+hwC0D33
+hwC0D35
+hwC0D39
+hwC0D40
+hwC0D41
+hwC0D42
+hwC0D43
+hwC0D44
+hwC0D45
+hwC0D46
+hwC0D48
+hwC0D49
+hwC0D55
+hwC0D56
+hwC0D71
+hwC0D72
+hwC0D87
+hwC0D88
+hwC0D9
+pcmC0D0c
+pcmC0D0p
+pcmC0D10c
+pcmC0D10p
+pcmC0D11c
+pcmC0D11p
+pcmC0D12c
+pcmC0D12p
+pcmC0D13c
+pcmC0D13p
+pcmC0D14c
+pcmC0D16c
+pcmC0D16p
+pcmC0D17c
+pcmC0D17p
+pcmC0D18p
+pcmC0D19c
+pcmC0D19p
+pcmC0D1c
+pcmC0D1p
+pcmC0D20c
+pcmC0D21c
+pcmC0D22c
+pcmC0D23c
+pcmC0D24c
+pcmC0D25c
+pcmC0D26c
+pcmC0D27c
+pcmC0D27p
+pcmC0D2c
+pcmC0D2p
+pcmC0D33c
+pcmC0D33p
+pcmC0D34c
+pcmC0D35c
+pcmC0D36p
+pcmC0D37c
+pcmC0D38c
+pcmC0D38p
+pcmC0D39c
+pcmC0D39p
+pcmC0D3c
+pcmC0D3p
+pcmC0D4p
+pcmC0D5c
+pcmC0D5p
+pcmC0D6p
+pcmC0D7c
+pcmC0D9c
+pcmC0D9p
+timer
+
+=== dmesg since ===
+[  372.393679] wcd-slim tavil-slim-pgd: msm_cdc_dt_parse_vreg_info: cdc-vdd-tx-h: vol=[1800000 1800000]uV, curr=[25000]uA, ond 0
+[  372.393682] wcd-slim tavil-slim-pgd: msm_cdc_dt_parse_vreg_info: cdc-vdd-rx-h: vol=[1800000 1800000]uV, curr=[25000]uA, ond 0
+[  372.393685] wcd-slim tavil-slim-pgd: msm_cdc_dt_parse_vreg_info: cdc-vddpx-1: vol=[1800000 1800000]uV, curr=[10000]uA, ond 0
+[  372.393703] wcd-slim tavil-slim-pgd: wcd9xxx_slim_probe: probing for wcd type: 4, name: tavil-slim-pgd
+[  372.450336] wcd-slim tavil-slim-pgd: wcd9xxx_slim_device_up: slim device up, dev_up = 1
+[  372.454171] wcd-slim tavil-slim-pgd: wcd934x_get_cdc_info: wcd9xxx chip id major 0x108, minor 0x1
+[  372.454179] wcd9xxx_core_res_init: num_irqs = 32, num_irq_regs = 4
+[  372.529233] type=1400 audit(1628442223.579:363): avc: denied { module_load } for comm="modprobe" path="/vendor/lib/modules/pinctrl-wcd.ko" dev="sde16" ino=1314 scontext=u:r:phhsu_daemon:s0 tcontext=u:object_r:vendor_file:s0 tclass=system permissive=1
+[  372.538672] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: msm_init_wsa_dev: wsa-max-devs property missing in DT /soc/qcom,msm-audio-apr/sound-tavil, ret = -22
+[  372.539520] swr-wcd tavil_swr_ctrl: swrm_get_logical_dev_num: device 0x20170211 is not ready
+[  372.540464] wsa881x: probe of wsa881x.20170211 failed with error -22
+[  372.549029] swr-wcd tavil_swr_ctrl: swrm_get_logical_dev_num: device 0x20170212 is not ready
+[  372.549276] wsa881x: probe of wsa881x.20170212 failed with error -22
+[  372.555847] swr-wcd tavil_swr_ctrl: swrm_get_logical_dev_num: device 0x21170213 is not ready
+[  372.556014] wsa881x: probe of wsa881x.21170213 failed with error -22
+[  372.562610] swr-wcd tavil_swr_ctrl: swrm_get_logical_dev_num: device 0x21170214 is not ready
+[  372.562947] wsa881x: probe of wsa881x.21170214 failed with error -22
+[  372.563429] wcd-dsp-mgr soc:qcom,wcd-dsp-mgr: for wdsp segments only will be dumped.
+[  372.564736] wcd-dsp-mgr soc:qcom,wcd-dsp-mgr: bound tavil_codec (ops wcd_ctrl_component_ops [snd_soc_wcd934x])
+[  372.564822] wcd-dsp-mgr soc:qcom,wcd-dsp-mgr: bound spi0.0 (ops wcd_spi_component_ops [snd_soc_wcd_spi])
+[  372.564831] wcd-dsp-mgr soc:qcom,wcd-dsp-mgr: bound soc:qcom,glink-spi-xprt-wdsp (ops glink_component_ops)
+[  372.712683] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: no sink widget found for SpkrLeft IN
+[  372.712689] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: Failed to add route SPK1 OUT -> direct -> SpkrLeft IN
+[  372.712706] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: no sink widget found for SpkrRight IN
+[  372.712708] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: ASoC: Failed to add route SPK2 OUT -> direct -> SpkrRight IN
+[  372.712725] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: wcd_mbhc_start: qcom,msm-mbhc-usbc-audio-supported in dt node is missing or false
+[  372.712726] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: wcd_mbhc_start: skipping USB c analog configuration
+[  372.727043] input: sdm845-tavil-snd-card Headset Jack as /devices/platform/soc/soc:qcom,msm-audio-apr/soc:qcom,msm-audio-apr:sound-tavil/sound/card0/input3
+[  372.727285] input: sdm845-tavil-snd-card Button Jack as /devices/platform/soc/soc:qcom,msm-audio-apr/soc:qcom,msm-audio-apr:sound-tavil/sound/card0/input4
+[  372.727807] sdm845-asoc-snd soc:qcom,msm-audio-apr:sound-tavil: Sound card sdm845-tavil-snd-card registered
+DONE

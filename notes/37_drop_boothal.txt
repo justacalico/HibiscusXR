@@ -1,0 +1,6 @@
+﻿backed up to /data/local/tmp/manifest.orig.xml (22604 bytes)
+orig 22604  new 22335
+boot refs remaining: 0
+hal open/close: 76 / 76
+committed. now: 22335 bytes, boot refs 0
+DONE

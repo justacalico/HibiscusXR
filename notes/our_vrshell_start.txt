@@ -1,0 +1,1143 @@
+﻿--------- beginning of main
+08-13 13:40:38.886  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:38.886  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075553, 0.002775, 0.012832, 0.997056)
+08-13 13:40:38.886  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002240, -0.013015, -0.090874)
+08-13 13:40:38.983  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:40:38.983  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:40:39.481  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:39.483  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 3 lines
+08-13 13:40:39.483  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:39.804  7836  7854 D PvrPlatform: Already keep stationary state for 6 secend
+08-13 13:40:39.804  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:39.804  7836  7854 D PvrPlatform: Already keep stationary state for 6 secend
+08-13 13:40:40.807  7836  7854 D PvrPlatform: Already keep stationary state for 7 secend
+08-13 13:40:40.807  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:40.807  7836  7854 D PvrPlatform: Already keep stationary state for 7 secend
+08-13 13:40:41.409  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:41.410  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075326, 0.002828, 0.012466, 0.997078)
+08-13 13:40:41.410  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002199, -0.012972, -0.090846)
+08-13 13:40:41.412  7836  7856 D PvrService: PvrService::setShareMemoryData(226869):
+08-13 13:40:41.412  7836  7856 D PvrService:  -0.075326,0.002828,0.012466,0.997078,-0.002199,-0.012972,-0.090846	[2335821496920]	[2335820662181]	[2215000]	[1063177]
+08-13 13:40:41.412  7836  7856 D PvrService: threadLoop continue: 1
+08-13 13:40:41.807  7836  7854 D PvrPlatform: Already keep stationary state for 8 secend
+08-13 13:40:41.807  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:41.807  7836  7854 D PvrPlatform: Already keep stationary state for 8 secend
+08-13 13:40:42.145  8180  8181 E cmd     : open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+08-13 13:40:42.145  8180  8181 E libprocessgroup: CgroupMap::LoadRcFile called for [8180] failed
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller cpuset is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller cpuset is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller cpuset is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller memory is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller memory is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller memory is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+--------- beginning of system
+08-13 13:40:42.147  1651  7236 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.pvr.vrshell/.MainActivity} from uid 2000
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller schedtune is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller schedtune is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller cpu is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: Controller cpu is not found
+08-13 13:40:42.147  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.147  8180  8181 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:40:42.148  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: STunePreferIdle
+08-13 13:40:42.148  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: STunePreferIdle
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.148  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.148  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:40:42.149  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: MemSoftLimit
+08-13 13:40:42.149  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: MemSwappiness
+08-13 13:40:42.149  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: MemSoftLimit
+08-13 13:40:42.149  8180  8181 W libprocessgroup: SetAttribute: unknown attribute: MemSwappiness
+08-13 13:40:42.149  8180  8181 E libprocessgroup: CgroupMap::FindController called for [8180] failed, RC file was not initialized properly
+08-13 13:40:42.149  8180  8181 W libprocessgroup: JoinCgroup: controller memory is not found
+08-13 13:40:42.169  1651  1676 E system_server: Invalid ID 0x00000000.
+08-13 13:40:42.171  7836  7854 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+08-13 13:40:42.192  1370  1370 D Zygote  : Forked child process 8183
+08-13 13:40:42.194  8183  8183 E libprocessgroup: CgroupMap::FindController called for [8183] failed, RC file was not initialized properly
+08-13 13:40:42.194  8183  8183 E libprocessgroup: CgroupMap::FindController called for [8183] failed, RC file was not initialized properly
+08-13 13:40:42.195  8183  8183 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:42.195  8183  8183 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:42.195  8183  8183 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:42.195  8183  8183 E libprocessgroup: CgroupMap::FindController called for [8183] failed, RC file was not initialized properly
+08-13 13:40:42.199  1651  1684 I ActivityManager: Start proc 8183:com.pvr.vrshell/1000 for pre-top-activity {com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+08-13 13:40:42.203  1370  8184 W zygote64: Reducing the number of considered missed Gc histogram windows from 228 to 100
+08-13 13:40:42.212  1651  3865 W OomAdjuster: Fallback pre-set sched group to default: not expected top priority
+08-13 13:40:42.220  8183  8183 D linker  : dlopen(name="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", flags=0x2, extinfo=[flags=0x40, reserved_addr=0x0, reserved_size=0x0, relro_fd=0, library_fd=0, library_fd_offset=0x0, library_namespace=(n/a)@0x0], caller="/apex/com.android.runtime/lib64/libart.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+08-13 13:40:42.220  8183  8183 D linker  : find_libraries(ns=runtime): task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, is_dt_needed=0
+08-13 13:40:42.221  8183  8183 D linker  : load_library(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+08-13 13:40:42.221  8183  8183 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Trying 1 linked namespaces
+08-13 13:40:42.221  8183  8183 D linker  : find_library_in_linked_namespace(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Ok to load
+08-13 13:40:42.221  8183  8183 D linker  : load_library(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+08-13 13:40:42.221  8183  8183 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Found in linked namespace (default)
+08-13 13:40:42.221  8183  8183 D linker  : Crossing namespace boundary (si=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex@0x78855e3d30, si_ns=(default)@0x78867fb5c0, needed_by=/apex/com.android.runtime/lib64/libart.so@0x78855d6620, ns=runtime@0x788552d010, needed_by_ns=runtime@0x788552d010) adding to local_group_roots: no
+08-13 13:40:42.221  8183  8183 D linker  : ... dlopen calling constructors: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0xb098577ad7928e6b
+08-13 13:40:42.221  8183  8183 D linker  : ... dlopen successful: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0xb098577ad7928e6b
+08-13 13:40:42.221  8183  8183 D linker  : dlerror set to "undefined symbol: oatdatabimgrelro"
+08-13 13:40:42.221  8183  8183 D linker  : dlerror set to "undefined symbol: oatbss"
+08-13 13:40:42.224  8183  8183 W com.pvr.vrshel: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:42.224  8183  8183 W com.pvr.vrshel: resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+08-13 13:40:42.233  1924  1924 D ImageWallpaper: wallpaper visibility changes to: false
+08-13 13:40:42.236  8183  8207 E GraphicsEnv: Failed to get gpu service
+08-13 13:40:42.241  8183  8183 I ashmem  : memfd: device VNDK version (27) is < Q so using ashmem.
+08-13 13:40:42.243  8183  8183 I UnityNativeActivityPico: onCreate enter
+08-13 13:40:42.244  8183  8183 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+08-13 13:40:42.264  8183  8183 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+08-13 13:40:42.265  8183  8183 D linker  : dlopen(name="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", flags=0x2, extinfo=[flags=0x200, reserved_addr=0x77efd72ba0, reserved_size=0x77efe39ac0, relro_fd=-2060106048, library_fd=120, library_fd_offset=0x1d, library_namespace=classloader-namespace@0x788552d650], caller="/apex/com.android.runtime/lib64/libnativeloader.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+08-13 13:40:42.265  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, is_dt_needed=0
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, flags=0x2, realpath=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so)
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libGLESv3.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libEGL.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: liblog.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libandroid.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libm.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libc.so
+08-13 13:40:42.265  8183  8183 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libdl.so
+08-13 13:40:42.265  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libGLESv3.so, is_dt_needed=1
+08-13 13:40:42.265  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libGLESv3.so): Already loaded (by soname): /system/lib64/libGLESv3.so
+08-13 13:40:42.265  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libEGL.so, is_dt_needed=1
+08-13 13:40:42.265  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libEGL.so): Already loaded (by soname): /system/lib64/libEGL.so
+08-13 13:40:42.265  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:40:42.265  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:40:42.265  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libandroid.so, is_dt_needed=1
+08-13 13:40:42.266  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libandroid.so): Already loaded (by soname): /system/lib64/libandroid.so
+08-13 13:40:42.266  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:40:42.266  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:40:42.266  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:40:42.266  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:40:42.266  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:40:42.266  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:40:42.266  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:40:42.266  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:40:42.267  8183  8183 D linker  : ... dlopen calling constructors: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0x30e77b22a4ac3e4f
+08-13 13:40:42.267  8183  8183 D linker  : ... dlopen successful: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0x30e77b22a4ac3e4f
+08-13 13:40:42.267  8183  8183 D linker  : dlopen(name="libPvr_UnitySDKExt11.so", flags=0x101, extinfo=(null), caller="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:40:42.267  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libPvr_UnitySDKExt11.so, is_dt_needed=0
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so, flags=0x101, realpath=/system/lib64/libPvr_UnitySDKExt11.so)
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libGLESv3.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libEGL.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: liblog.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libandroid.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libm.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libc.so
+08-13 13:40:42.268  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libdl.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libGLESv3.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libGLESv3.so): Already loaded (by soname): /system/lib64/libGLESv3.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libEGL.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libEGL.so): Already loaded (by soname): /system/lib64/libEGL.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libandroid.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libandroid.so): Already loaded (by soname): /system/lib64/libandroid.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:40:42.268  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:40:42.268  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:40:42.269  8183  8183 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libPvr_UnitySDKExt11.so", soname="libPvr_UnitySDK.so", handle=0xc5298f1037cc466b
+08-13 13:40:42.269  8183  8183 D linker  : ... dlopen successful: realpath="/system/lib64/libPvr_UnitySDKExt11.so", soname="libPvr_UnitySDK.so", handle=0xc5298f1037cc466b
+08-13 13:40:42.269  8183  8183 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+08-13 13:40:42.269  8183  8183 I VrApi   : couldBeLoaded
+08-13 13:40:42.269  8183  8183 I VrApi   : 0x7797c64c18
+08-13 13:40:42.269  8183  8183 I VrApi   : open replaceable Scuccessed 2
+08-13 13:40:42.269  8183  8183 I VrApi   : current version >=2.7.4.4
+08-13 13:40:42.269  8183  8183 I VrApi   : APP version, 2, 8, 6, 16
+08-13 13:40:42.269  8183  8183 I VrApi   : lib version, 2, 8, 6, 15
+08-13 13:40:42.269  8183  8183 I VrApi   : open replaceable aborted
+08-13 13:40:42.269  8183  8183 D linker  : dlclose(handle=0xc5298f1037cc466b, realpath="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ...
+08-13 13:40:42.270  8183  8183 D linker  : ... dlclose(realpath="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ... load group root is "/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0
+08-13 13:40:42.270  8183  8183 D linker  : ... dlclose(root="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ... not unloading - the load group is flagged with NODELETE
+08-13 13:40:42.270  8183  8183 D linker  : dlclose(handle=0xc5298f1037cc466b) ... done
+08-13 13:40:42.270  8183  8183 I VrApi   : pvr_OnLoad()
+08-13 13:40:42.270  8183  8183 I VrApi   : Using caller's JNIEnv
+08-13 13:40:42.271  8183  8183 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x779804f110
+08-13 13:40:42.271  8183  8183 I VrApi   : BuildVersionSDK 29
+08-13 13:40:42.271  8183  8183 I VrApi   : pvr_Init
+08-13 13:40:42.272  8183  8183 I UnityNativeActivityPico: bypass_presentation = -1
+08-13 13:40:42.275  8183  8183 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+08-13 13:40:42.277  8183  8212 D VRDataUtils: HMD not exist
+08-13 13:40:42.277  8183  8212 D PvrClient: mirroring or not lg return
+08-13 13:40:42.281  4992  4992 I c       : check# change host url
+08-13 13:40:42.281  4992  4992 I initServerJar: 调用DoGetUrlFromDBWithSuffix，uriStr=content://com.picovr.initserver.serverSetting/server_setting/store-AppStore3
+08-13 13:40:42.284  3310  5401 I InitServer: Porvider开始执行query,projection = null***selection = null**selectionArgs = null
+08-13 13:40:42.287  1381  1581 E TrafficController: Failed to set the counterSet: Bad file descriptor, fd: -1
+08-13 13:40:42.278  1381  1381 I Binder:1381_2: type=1400 audit(0.0:1062): avc: denied { sys_admin } for capability=21 scontext=u:r:netd:s0 tcontext=u:r:netd:s0 tclass=capability permissive=1
+08-13 13:40:42.289  4992  4992 I initServerJar: cursor::count=0
+08-13 13:40:42.289  4992  4992 I initServerJar: content=
+08-13 13:40:42.289  4992  4992 I initServerJar: urlViaSuffix=
+08-13 13:40:42.289  4992  4992 I initServerJar: 结果为空，重新调用DoGetUrlFromDBWithSuffix，uriCommon=content://com.picovr.initserver.serverSetting/server_setting/AppStore3
+08-13 13:40:42.290  3310  5401 I InitServer: Porvider开始执行query,projection = null***selection = null**selectionArgs = null
+08-13 13:40:42.291  4992  4992 I initServerJar: cursor::count=0
+08-13 13:40:42.292  4992  4992 I initServerJar: content=
+08-13 13:40:42.292  4992  4992 I initServerJar: urlViaSuffix=
+08-13 13:40:42.292  4992  4992 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1576 android.content.ContextWrapper.startForegroundService:674 com.pvr.verify.utils.CommonUtils.startService:6 com.pvr.verify.a.b.a:14 com.pvr.verify.VerifyService.onCreate:30 
+08-13 13:40:42.292  1651  3865 W ActivityManager: Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+08-13 13:40:42.292  4992  4992 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.pvr.verify.a.b.a:20 com.pvr.verify.VerifyService.onCreate:30 android.app.ActivityThread.handleCreateService:3953 
+08-13 13:40:42.293  1651  3865 W ActivityManager: Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+08-13 13:40:42.293  4992  4992 I b       : check# bind: bind Verify Service
+08-13 13:40:42.293  4992  4992 I VerifyService: onCreate# 
+08-13 13:40:42.293  4992  4992 I VerifyService: onBind: ---
+08-13 13:40:42.319  8183  8183 E ConfigApi: Not Initialize Global Configs
+08-13 13:40:42.319  8183  8183 I ConfigApi: Initialize Global Configs
+08-13 13:40:42.319  8183  8183 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+08-13 13:40:42.319  8183  8183 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+08-13 13:40:42.329  8183  8183 E psmvrConfig: Undefined variable -- iEnableStageLevel
+08-13 13:40:42.329  8183  8183 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+08-13 13:40:42.329  8183  8183 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+08-13 13:40:42.329  8183  8183 I ConfigApi: DIATW Update Config Parameters From VRService
+08-13 13:40:42.329  8183  8183 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+08-13 13:40:42.329  8183  8183 I VrServiceApi: load service priority default
+08-13 13:40:42.329  8183  8183 D linker  : dlopen(name="libpvrserviceclient.so", flags=0x102, extinfo=(null), caller="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:40:42.329  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libpvrserviceclient.so, is_dt_needed=0
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so, flags=0x102, realpath=/system/lib64/libpvrserviceclient.so)
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libutils.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: liblog.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libbinder.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libgui.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libcutils.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libsensor.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libc++.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libc.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libm.so
+08-13 13:40:42.330  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libdl.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libutils.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libutils.so): Already loaded (by soname): /system/lib64/libutils.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libbinder.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libbinder.so): Already loaded (by soname): /system/lib64/libbinder.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libgui.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libgui.so): Already loaded (by soname): /system/lib64/libgui.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libcutils.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libcutils.so): Already loaded (by soname): /system/lib64/libcutils.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libsensor.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libsensor.so): Already loaded (by soname): /system/lib64/libsensor.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libc++.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libc++.so): Already loaded (by soname): /system/lib64/libc++.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:40:42.330  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:40:42.330  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:40:42.332  8183  8183 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libpvrserviceclient.so", soname="libpvrserviceclient.so", handle=0xef7f637627810d03
+08-13 13:40:42.332  8183  8183 D linker  : ... dlopen successful: realpath="/system/lib64/libpvrserviceclient.so", soname="libpvrserviceclient.so", handle=0xef7f637627810d03
+08-13 13:40:42.332  8183  8183 I VrServiceApi: dlopen ok
+08-13 13:40:42.332  8183  8183 I VrServiceApi: dlsym for getPVRModule ok
+08-13 13:40:42.334  7836  7858 V PvrService: registerClient() client 0x77a1c3de80, pid 8183
+08-13 13:40:42.334  8183  8183 D linker  : dlopen(name="libpxr_6dof_optimization.so", flags=0x1, extinfo=(null), caller="/system/lib64/libpvrserviceclient.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libpxr_6dof_optimization.so, is_dt_needed=0
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so, flags=0x1, realpath=/system/lib64/libpxr_6dof_optimization.so)
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libz.so
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libdl.so
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: liblog.so
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libm.so
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:40:42.335  8183  8183 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libc.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libz.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libz.so): Already loaded (by soname): /system/lib64/libz.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:40:42.335  8183  8183 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:40:42.335  8183  8183 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:40:42.336  8183  8183 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libpxr_6dof_optimization.so", soname="libpxr_6dof_optimization.so", handle=0xa9a16174b226c30f
+08-13 13:40:42.336  8183  8183 D linker  : ... dlopen successful: realpath="/system/lib64/libpxr_6dof_optimization.so", soname="libpxr_6dof_optimization.so", handle=0xa9a16174b226c30f
+08-13 13:40:42.336  8183  8183 E Paul    : IsInitialized
+08-13 13:40:42.337  8183  8183 E HaveDir : HaveDir
+08-13 13:40:42.337  8183  8183 E Paul    : open_calib_file_ok
+08-13 13:40:42.328  8183  8183 I com.pvr.vrshell: type=1400 audit(0.0:1063): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:40:42.337  8183  8183 E GyroMatrix: c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+08-13 13:40:42.337  8183  8183 E SensorConstruct: SensorConstruct
+08-13 13:40:42.337  8183  8183 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+08-13 13:40:42.328  8183  8183 I com.pvr.vrshell: type=1400 audit(0.0:1064): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:40:42.328  8183  8183 I com.pvr.vrshell: type=1400 audit(0.0:1065): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:40:42.337  8183  8183 D linker  : dlerror set to "undefined symbol: updateOffsets"
+08-13 13:40:42.337  8183  8183 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+08-13 13:40:42.337  8183  8183 D linker  : dlerror set to "dlclose failed: invalid handle: 0x0"
+08-13 13:40:42.338  8183  8183 D linker  : dlerror set to "undefined symbol: getResetPos"
+08-13 13:40:42.338  8183  8183 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+08-13 13:40:42.338  8183  8183 D linker  : dlerror set to "dlclose failed: invalid handle: 0x0"
+08-13 13:40:42.339  7836  7858 E PvrPlatform: Override displayinfo:w=3840 h=2160 fps=72.000008
+08-13 13:40:42.339  7836  7858 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x779d904598)
+08-13 13:40:42.339  7836  7858 W RefBase : CallStack::getCurrentInternal not linked, returning null
+08-13 13:40:42.339  7836  7858 W RefBase : CallStack::logStackInternal not linked
+08-13 13:40:42.339  8183  8183 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+08-13 13:40:42.339  7836  7858 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+08-13 13:40:42.339  7836  7858 I PvrPlatform: Override configs by config file
+08-13 13:40:42.339  7836  7858 I PvrPlatform: Override fov value:101.000000
+08-13 13:40:42.339  8183  8183 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+--------- beginning of crash
+08-13 13:40:42.339  8183  8183 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10 in tid 8183 (com.pvr.vrshell), pid 8183 (com.pvr.vrshell)
+08-13 13:40:42.395  8220  8220 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdTombstone
+08-13 13:40:42.395  1405  1405 I /system/bin/tombstoned: received crash request for pid 8183
+08-13 13:40:42.396  8220  8220 I crash_dump64: performing dump of process 8183 (target tid = 8183)
+08-13 13:40:42.406  8220  8220 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+08-13 13:40:42.406  8220  8220 F DEBUG   : LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+08-13 13:40:42.406  8220  8220 F DEBUG   : Build fingerprint: 'unknown/unknown/unknown:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+08-13 13:40:42.406  8220  8220 F DEBUG   : Revision: '0'
+08-13 13:40:42.406  8220  8220 F DEBUG   : ABI: 'arm64'
+08-13 13:40:42.407  8220  8220 F DEBUG   : Timestamp: 2026-08-13 13:40:42-0400
+08-13 13:40:42.407  8220  8220 F DEBUG   : pid: 8183, tid: 8183, name: com.pvr.vrshell  >>> com.pvr.vrshell <<<
+08-13 13:40:42.407  8220  8220 F DEBUG   : uid: 1000
+08-13 13:40:42.407  8220  8220 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10
+08-13 13:40:42.407  8220  8220 F DEBUG   : Cause: null pointer dereference
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x0  0000000000000004  x1  0000000000000007  x2  0000000000000000  x3  c08f3f3333333333
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x4  0000007882e7a950  x5  0000007fd9773f78  x6  0000000000000000  x7  0000000000000000
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x8  ac7449f205dd72ee  x9  ac7449f205dd72ee  x10 00000078003a34ec  x11 000000000000002f
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x12 0000000000000000  x13 0000000000000006  x14 0000007fd9773e88  x15 0000000000000000
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x16 0000000000000001  x17 0000007881dd5004  x18 0000000000006574  x19 00000078852a1c00
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x20 0000000000000000  x21 00000078852a1c00  x22 0000007fd97741f0  x23 00000077f5123407
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x24 0000000000000004  x25 0000007885599020  x26 00000078852a1cb0  x27 0000000000000001
+08-13 13:40:42.407  8220  8220 F DEBUG   :     x28 0000000000000000  x29 0000007fd9773f80
+08-13 13:40:42.407  8220  8220 F DEBUG   :     sp  0000000000000000  lr  00000077fff5a364  pc  00000077fff5a370
+08-13 13:40:42.409  8220  8220 F DEBUG   : 
+08-13 13:40:42.409  8220  8220 F DEBUG   : backtrace:
+08-13 13:40:42.409  8220  8220 F DEBUG   :       #00 pc 000000000013f370  /apex/com.android.runtime/lib64/libart.so (art_quick_generic_jni_trampoline+176) (BuildId: 305e71e8e3ac3377f1ac1cc192146d00)
+08-13 13:40:42.438  8220  8220 I crash_dump64: type=1400 audit(0.0:1066): avc: denied { open } for path="/dev/__properties__/u:object_r:device_config_runtime_native_prop:s0" dev="tmpfs" ino=101 scontext=u:r:crash_dump:s0 tcontext=u:object_r:device_config_runtime_native_prop:s0 tclass=file permissive=1
+08-13 13:40:42.522  7836  7854 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+08-13 13:40:42.528  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.529  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 3 lines
+08-13 13:40:42.529  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.539  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.540  1651  1830 I chatty  : uid=1000(system) HwBinder:1651_3 identical 3 lines
+08-13 13:40:42.540  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.541  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.541  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.541  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.543  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 1 line
+08-13 13:40:42.543  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:42.607  1405  1405 E /system/bin/tombstoned: Tombstone written to: /data/tombstones/tombstone_05
+08-13 13:40:42.611  1651  8228 I DropBoxManagerService: add tag=system_app_native_crash isTagEnabled=true flags=0x2
+08-13 13:40:42.613  1651  8227 W ActivityTaskManager:   Force finishing activity com.pvr.vrshell/.MainActivity
+08-13 13:40:42.618  1651  1688 I BootReceiver: Copying /data/tombstones/tombstone_05 to DropBox (SYSTEM_TOMBSTONE)
+08-13 13:40:42.622  1651  1688 I DropBoxManagerService: add tag=SYSTEM_TOMBSTONE isTagEnabled=true flags=0x2
+08-13 13:40:42.652  1651  3678 I ActivityManager: Process com.pvr.vrshell (pid 8183) has died: fore TOP 
+08-13 13:40:42.652  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:42.652  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:42.652  7836  7858 V PvrService: removeNotificationClient() pid 8183
+08-13 13:40:42.652  7836  7858 E PvrService: VRModeStateClient::onClientDied pid=8183
+08-13 13:40:42.652  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8183 in 0ms
+08-13 13:40:42.652  7836  7858 I PvrService: mPrevTrackingMode 1, trackingMode 1
+08-13 13:40:42.652  7836  7858 D PvrService: removeNotificationClient done
+08-13 13:40:42.654  1370  1370 I Zygote  : Process 8183 exited due to signal 11 (Segmentation fault)
+08-13 13:40:42.676  1651  1676 W WindowManager: Failed looking up window callers=com.android.server.wm.WindowManagerService.windowForClientLocked:5323 com.android.server.wm.WindowManagerService.removeWindow:1787 com.android.server.wm.Session.remove:176 
+08-13 13:40:42.679  4992  4992 I b       : check# unBind: unBind Verify Service
+08-13 13:40:42.680  1651  3678 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@556e351
+08-13 13:40:42.680  2621  2621 D ConfigServerService:(BaseApplication.java:27): onTrimMemory level : 5
+08-13 13:40:42.704  1381  1581 E TrafficController: Failed to delete the counterSet: Bad file descriptor
+08-13 13:40:42.721  1924  1924 D ImageWallpaper: wallpaper visibility changes to: true
+08-13 13:40:42.809  7836  7854 D PvrPlatform: Already keep stationary state for 9 secend
+08-13 13:40:43.114  1651  1675 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{20c983d u0 com.pvr.vrshell/.MainActivity t-1 f}
+08-13 13:40:42.809  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:42.809  7836  7854 D PvrPlatform: Already keep stationary state for 9 secend
+08-13 13:40:43.810  7836  7854 D PvrPlatform: Already keep stationary state for 10 secend
+08-13 13:40:43.810  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:43.810  7836  7854 D PvrPlatform: Already keep stationary state for 10 secend
+08-13 13:40:43.900  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:43.901  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075499, 0.002742, 0.012700, 0.997061)
+08-13 13:40:43.901  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002216, -0.013004, -0.090867)
+08-13 13:40:43.978  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:40:43.978  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:40:44.816  7836  7854 D PvrPlatform: Already keep stationary state for 11 secend
+08-13 13:40:44.816  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:44.816  7836  7854 D PvrPlatform: Already keep stationary state for 11 secend
+08-13 13:40:45.043  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.044  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.044  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.044  1651  1828 I chatty  : uid=1000(system) HwBinder:1651_2 identical 1 line
+08-13 13:40:45.045  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.578  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.579  1651  1691 I chatty  : uid=1000(system) HwBinder:1651_1 identical 3 lines
+08-13 13:40:45.580  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.590  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.591  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.592  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.593  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.596  1651  1830 I chatty  : uid=1000(system) HwBinder:1651_3 identical 5 lines
+08-13 13:40:45.597  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:45.817  7836  7854 D PvrPlatform: Already keep stationary state for 12 secend
+08-13 13:40:45.817  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:45.817  7836  7854 D PvrPlatform: Already keep stationary state for 12 secend
+08-13 13:40:46.436  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:46.436  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075055, 0.003231, 0.012176, 0.997100)
+08-13 13:40:46.436  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002229, -0.012922, -0.090811)
+08-13 13:40:46.817  7836  7854 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:40:46.817  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:46.817  7836  7854 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:40:47.057  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-75, 1057) in display 0.
+08-13 13:40:47.058  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:47.066   557   557 I hwservicemanager: getTransport: Cannot find entry vendor.samsung.hardware.light@2.0::ISecLight/default in either framework or device manifest.
+08-13 13:40:47.072   557   557 I hwservicemanager: getTransport: Cannot find entry vendor.samsung.hardware.light@3.0::ISehLight/default in either framework or device manifest.
+08-13 13:40:47.072   557   557 I hwservicemanager: getTransport: Cannot find entry vendor.huawei.hardware.light@2.0::ILight/default in either framework or device manifest.
+08-13 13:40:47.073  1651  1831 E LightsService: Light requested not available on this device. 2
+08-13 13:40:47.074  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-48, 1058) in display 0.
+08-13 13:40:47.074  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:47.074  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-14, 1061) in display 0.
+08-13 13:40:47.074  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:47.074  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:47.657  1651  1831 I chatty  : uid=1000(system) InputDispatcher identical 300 lines
+08-13 13:40:47.658  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:47.658  7836  7856 D PvrService: threadLoop continue: 1
+08-13 13:40:47.659  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:47.761  1651  1831 I chatty  : uid=1000(system) InputDispatcher identical 92 lines
+08-13 13:40:47.764  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:47.827  7836  7854 D PvrPlatform: Already keep stationary state for 1 secend
+08-13 13:40:47.827  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:47.827  7836  7854 D PvrPlatform: Already keep stationary state for 1 secend
+08-13 13:40:47.870  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:48.418  1651  3678 I ActivityTaskManager: START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10200000 cmp=com.alvr.pico2/.MainActivity bnds=[96,344][768,720]} from uid 10156
+08-13 13:40:48.400  1651  1831 I chatty  : uid=1000(system) InputDispatcher identical 289 lines
+08-13 13:40:48.413  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:48.420  1761  3724 D audio_hw_primary: start_output_stream: enter: stream(0xf1155000)usecase(1: low-latency-playback) devices(0x2)
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: select_devices for use case (low-latency-playback)
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: select_devices: out_snd_device(2: speaker) in_snd_device(0: )
+08-13 13:40:48.421  1761  3724 I msm8974_platform: platform_check_and_set_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 1 device (speaker)
+08-13 13:40:48.421  1761  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+08-13 13:40:48.421  1761  3724 I msm8974_platform: platform_check_and_set_codec_backend_cfg: new_snd_devices[0] is 2
+08-13 13:40:48.421  1761  3724 I msm8974_platform: platform_check_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 1 device (speaker)
+08-13 13:40:48.421  1761  3724 D msm8974_platform: platform_check_codec_backend_cfg:becf: afe: playback on codec device not supporting native playback set default Sample Rate(48k)
+08-13 13:40:48.421  1761  3724 I msm8974_platform: platform_check_codec_backend_cfg:becf: afe: Codec selected backend: 0 updated bit width: 16 and sample rate: 48000
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: check_usecases_codec_backend:becf: force routing 0
+08-13 13:40:48.421  1761  3724 E msm8974_platform: platform_check_backends_match: Invalid snd_device = 
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: check_usecases_codec_backend:becf: (62) check_usecases curr device: speaker, usecase device: backends match 0
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: check_usecases_codec_backend:becf: check_usecases num.of Usecases to switch 0
+08-13 13:40:48.421  1761  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(2)
+08-13 13:40:48.421  1761  3724 D hardware_info: hw_info_append_hw_type : device_name = speaker
+08-13 13:40:48.421  1761  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+08-13 13:40:48.421  1761  3724 D audio_hw_primary: enable_snd_device: snd_device(2: speaker)
+08-13 13:40:48.421  1761  3724 I soundtrigger: audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 1, with Raise=0
+08-13 13:40:48.421  1761  3724 D audio_route: Apply path: speaker
+08-13 13:40:48.423  7836  7854 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+08-13 13:40:48.442  1761  3724 D soundtrigger: audio_extn_sound_trigger_update_stream_status: uc_id 1 of type 0 for Event 3, with Raise=0
+08-13 13:40:48.442  1761  3724 D audio_hw_utils: audio_extn_utils_send_app_type_cfg: usecase->out_snd_device speaker
+08-13 13:40:48.442  1761  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+08-13 13:40:48.442  1761  3724 D audio_hw_utils: audio_extn_btsco_get_sample_rate:Not a BT SCO device, need not update sampling rate
+08-13 13:40:48.442  1761  3724 I audio_hw_utils: send_app_type_cfg_for_device PLAYBACK app_type 69937, acdb_dev_id 15, sample_rate 48000, snd_device_be_idx 2
+08-13 13:40:48.443  1761  3724 D msm8974_platform: platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_audio_cal, acdb_id = 15, path = 0, app id = 0x11131, sample rate = 48000
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_asm_topology
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TOPOLOGY_ID
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_adm_topology
+08-13 13:40:48.443  1651  1676 E system_server: Invalid ID 0x00000000.
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TOPOLOGY_ID
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_audtable
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TABLE_SIZE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TABLE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AUDPROC_CAL
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_audvoltable
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_VOL_STEP_TABLE_SIZE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_GAIN_DEP_STEP_TABLE, vol index 0
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_VOL_CAL cal type = 12
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TABLE_SIZE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_audstrmtable
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TABLE_V2
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> audstrm_cal->cal_type.cal_data.cal_size = 16
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_afe_topology
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_TOPOLOGY_ID
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> GET_AFE_TOPOLOGY_ID for adcd_id 15, Topology Id 1025e
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_afe_cal
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_COMMON_TABLE_SIZE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_CMD_GET_AFE_COMMON_TABLE
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> AUDIO_SET_AFE_CAL
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> send_hw_delay : acdb_id = 15 path = 0
+08-13 13:40:48.443  1761  3724 D ACDB-LOADER: ACDB -> ACDB_AVSYNC_INFO: ACDB_CMD_GET_DEVICE_PROPERTY
+08-13 13:40:48.443  1761  3724 D audio_hw_primary: enable_audio_route: apply mixer and update path: low-latency-playback
+08-13 13:40:48.443  1761  3724 D audio_route: Apply path: low-latency-playback
+08-13 13:40:48.444  1761  3724 D audio_hw_primary: select_devices: done
+08-13 13:40:48.451  1371  1371 D Zygote  : Forked child process 8239
+08-13 13:40:48.454  1651  1684 I ActivityManager: Start proc 8239:com.alvr.pico2/u0a1 for pre-top-activity {com.alvr.pico2/com.alvr.pico2.MainActivity}
+08-13 13:40:48.461  8239  8239 E libprocessgroup: CgroupMap::FindController called for [8239] failed, RC file was not initialized properly
+08-13 13:40:48.461  8239  8239 E libprocessgroup: CgroupMap::FindController called for [8239] failed, RC file was not initialized properly
+08-13 13:40:48.461  8239  8239 E libprocessgroup: Failed to make and chown /uid_10001: Read-only file system
+08-13 13:40:48.461  8239  8239 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.461  8239  8239 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.461  8239  8239 E libprocessgroup: CgroupMap::FindController called for [8239] failed, RC file was not initialized properly
+08-13 13:40:48.475  1651  2687 W OomAdjuster: Fallback pre-set sched group to default: not expected top priority
+08-13 13:40:48.480  1381  1581 E TrafficController: Failed to set the counterSet: Bad file descriptor, fd: -1
+08-13 13:40:48.468  1381  1381 I Binder:1381_2: type=1400 audit(0.0:1078): avc: denied { sys_admin } for capability=21 scontext=u:r:netd:s0 tcontext=u:r:netd:s0 tclass=capability permissive=1
+08-13 13:40:48.489  1924  1924 D ImageWallpaper: wallpaper visibility changes to: false
+08-13 13:40:48.501  1761  3724 D msm8974_platform: platform_set_channel_map mixer_ctl_name:Playback Channel Map13
+08-13 13:40:48.501  1761  3724 D msm8974_platform: platform_set_channel_map: set mapping(1 2 0 0 0 0 0 0) for channel:2
+08-13 13:40:48.502  1761  3724 D audio_hw_primary: start_output_stream: exit
+08-13 13:40:48.505  8239  8262 E GraphicsEnv: Failed to get gpu service
+08-13 13:40:48.509  8239  8239 I TrackingModule: initTracking
+08-13 13:40:48.509  8239  8239 I TrackingModule: InitializeInternal
+08-13 13:40:48.509  8239  8239 I TrackingModule: DataProcess Constructor 
+08-13 13:40:48.509  8239  8239 I TrackingModule: PvrFusion Constructor
+08-13 13:40:48.509  8239  8239 I TrackingModule: PvrFusion::Reset()
+08-13 13:40:48.509  8239  8239 I TrackingModule: RecenterTransform 1.000000, 0.000000, 0.000000, 0.000000
+08-13 13:40:48.509  8239  8239 I PvrServiceCore: Load libtracking_module.so success
+08-13 13:40:48.509  8239  8239 E PvrServiceManager: JNI_OnLoad
+08-13 13:40:48.512  8239  8239 I VrApi   : open replaceable failed libPvr_UnitySDKExt14.so
+08-13 13:40:48.512  8239  8239 I VrApi   : pvr_OnLoad()
+08-13 13:40:48.512  8239  8239 I VrApi   : Using caller's JNIEnv
+08-13 13:40:48.513  8239  8239 I VrApi   : Get SdcardPath = /storage/emulated/0, 0xc5033198
+08-13 13:40:48.514  8239  8239 I VrApi   : BuildVersionSDK 29
+08-13 13:40:48.514  8239  8239 I VrApi   : pvr_Init
+08-13 13:40:48.520  8239  8239 I VrApi   : open replaceable failed libPvr_UnitySDKExt14.so
+08-13 13:40:48.520  8239  8239 I VrApi   : pvr_OnLoad()
+08-13 13:40:48.520  8239  8239 E ConfigApi: Not Initialize Global Configs
+08-13 13:40:48.520  8239  8239 I ConfigApi: Initialize Global Configs
+08-13 13:40:48.520  8239  8239 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+08-13 13:40:48.520  8239  8239 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+08-13 13:40:48.525  8239  8239 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+08-13 13:40:48.525  8239  8239 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+08-13 13:40:48.525  8239  8239 I ConfigApi: DIATW Update Config Parameters From VRService
+08-13 13:40:48.525  8239  8239 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+08-13 13:40:48.525  8239  8239 I VrServiceApi: load service priority default
+08-13 13:40:48.526  8239  8239 I VrServiceApi: dlopen failed: dlopen failed: library "libpvrserviceclient.so" not found
+08-13 13:40:48.526  8239  8239 I VrServiceApi: pVrServiceClient = 0xe8dcc308
+08-13 13:40:48.526  8239  8239 E PvrClientJava: getDisplayInfo
+08-13 13:40:48.526  8239  8239 E PvrClientJava: getDisplayInfo env is null
+08-13 13:40:48.526  8239  8239 E PvrClientJava: ERROR occured getParameter! env = 0xef6aa140,obj_pvrClient = 0x0
+08-13 13:40:48.526  8239  8239 I chatty  : uid=10001(u0_a1) com.alvr.pico2 identical 8 lines
+08-13 13:40:48.526  8239  8239 E PvrClientJava: ERROR occured getParameter! env = 0xef6aa140,obj_pvrClient = 0x0
+08-13 13:40:48.526  8239  8239 E ConfigApi: psmvr_UpdateCylinderInfoFromVRService Failed!
+08-13 13:40:48.526  8239  8239 E VrApi   : pvr_OnLoad() called , return false
+08-13 13:40:48.528  8239  8239 I ashmem  : memfd: device VNDK version (27) is < Q so using ashmem.
+08-13 13:40:48.532  1651  7236 I WifiService: acquireMulticastLock uid=10001
+08-13 13:40:48.532  1651  7236 I WifiService: acquireWifiLock uid=10001 lockMode=3
+08-13 13:40:48.534  8239  8239 I P2ALVR  : wifi locks acquired: multicast=true wifi=true
+08-13 13:40:48.539  8239  8239 I P2ALVR-native: nativeStart
+08-13 13:40:48.541  8239  8265 I P2ALVR-native: submit thread pinned to big cores [4..6] (cpu7 reserved for warp)
+08-13 13:40:48.541  8239  8265 I P2ALVR-native: SCHED_FIFO denied (errno=1); set nice=-8
+08-13 13:40:48.541  8239  8265 I Adreno  : QUALCOMM build                   : 2d5c972, I8302e904d2
+08-13 13:40:48.541  8239  8265 I Adreno  : Build Date                       : 03/29/19
+08-13 13:40:48.541  8239  8265 I Adreno  : OpenGL ES Shader Compiler Version: EV031.26.03.00
+08-13 13:40:48.541  8239  8265 I Adreno  : Local Branch                     : mybranche951d0e9-8bc7-f187-be97-5cb90179c3d8
+08-13 13:40:48.541  8239  8265 I Adreno  : Remote Branch                    : quic/gfx-adreno.lnx.1.0.r65-rel
+08-13 13:40:48.541  8239  8265 I Adreno  : Remote Branch                    : NONE
+08-13 13:40:48.541  8239  8265 I Adreno  : Reconstruct Branch               : NOTHING
+08-13 13:40:48.541  8239  8265 I Adreno  : Build Config                     : S L 4.0.10 AArch32
+08-13 13:40:48.541  8239  8239 I ControllerClient: register bind callback
+08-13 13:40:48.544  8239  8265 I Adreno  : PFP: 0x016ee183, ME: 0x00000000
+08-13 13:40:48.546  8239  8239 D ControllerClient: Bind CVControllerAIDLService.
+08-13 13:40:48.546  8239  8239 I P2ALVR  : controller service bind requested
+08-13 13:40:48.546  7631  7631 D cvcontrollerService: LoadLibrary
+08-13 13:40:48.546  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.546  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.546  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.547  7631  7631 D AndroidRuntime: Shutting down VM
+08-13 13:40:48.547  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 7631
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:48.547  7631  7631 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:48.547  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_InitSensor_ ENTER
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_InitSensor_ EXIT
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_StartSensor_ enter
+08-13 13:40:48.551  8239  8265 I VrApi   : this is a Main Sensor
+08-13 13:40:48.551  8239  8265 I VrApi   : PVR_SERVICE_QUATERNION_MODE Start GlobalTracking = 2
+08-13 13:40:48.551  8239  8265 I VrApi   : PVR_SERVICE_QUATERNION_MODE, ENABLE_BOUNDARY, change GlobalTracking to 2 from 2
+08-13 13:40:48.551  8239  8265 I VrServiceApi: SetTrackingMode entry trackingMode = 2
+08-13 13:40:48.551  8239  8265 E VrApi   : SetTrackingMode failed, ret = -1024 
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_StartSensor_ exit
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: Pvr_Enable6DofModule(true); Pvr_Init=0 InitSensor=0 Pvr_StartSensor=1
+08-13 13:40:48.551  8239  8265 I UnityPlugin: UnityPlugin GetTrackingMode trackingMode = 0
+08-13 13:40:48.551  8239  8265 I UnityPlugin: UnityPlugin will call SetTrackingMode trackingMode = 2
+08-13 13:40:48.551  8239  8265 I UnityPlugin: ENABLE_BOUNDARY, change tracking mode to 2 from 2
+08-13 13:40:48.548  8239  8239 I com.alvr.pico2: type=1400 audit(0.0:1079): avc: denied { read } for name="event-log-tags" dev="tmpfs" ino=25917 scontext=u:r:untrusted_app:s0:c1,c256,c512,c768 tcontext=u:object_r:device:s0 tclass=file permissive=1
+08-13 13:40:48.551  8239  8265 I VrServiceApi: SetTrackingMode entry trackingMode = 2
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: eye: Pvr_GetTrackingMode supported=0x0 (EYE=0); boot POSITION-only (IR off) set=0
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: hw model='PICO NEO 2' isEyeHw=0
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: device IP = 192.168.0.172, model = PICO NEO 2
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_SetTrackingOriginType UNITY level type 1 supportFloor 1
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_GetTrackingOriginFloorHeight start get property ret 0
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_GetTrackingOriginFloorHeight end g_fDeltaY 1.670000
+08-13 13:40:48.551  8239  8265 I UnityPlugin: Pvr_SetTrackingOriginType UNITY floor level   1.670000
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: Pvr_SetTrackingOriginType(FloorLevel)=1 floorHeight=1.670 guardian=0
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: boundary not configured; no playspace to forward
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: render IPD = 0.0650 m (software, adjustable); device reports 0.0630
+08-13 13:40:48.551  1108  1108 I sensors-hal: batch:161, android.sensor.proximity/10, period=200000000, max_latency=0
+08-13 13:40:48.551  1108  1108 I sensors-hal: batch:170, android.sensor.proximity/10, period=200000000, max_latency=0 request completed
+08-13 13:40:48.551  1108  1108 I sensors-hal: activate:128, android.sensor.proximity/10 en=1
+08-13 13:40:48.551  8239  8265 I P2ALVR-native: set HOME=/data/user/0/com.alvr.pico2/files
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: config: no saved file, using defaults
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: writeSdkFov(101.00): fEyeTextureFov0/1 + GlobalConfig FovDegrees set
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: alvr: calling initialize_logging
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: alvr: calling initialize_android_context
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: alvr: android_context done
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: alvr: calling initialize
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: alvr: calling resume
+08-13 13:40:48.552  8239  8265 I P2ALVR-native: ALVR initialized + resumed; head id=6597919954511603000
+08-13 13:40:48.552  1651  8267 I DropBoxManagerService: add tag=system_app_crash isTagEnabled=true flags=0x2
+08-13 13:40:48.548  8239  8239 I com.alvr.pico2: type=1400 audit(0.0:1080): avc: denied { open } for path="/dev/event-log-tags" dev="tmpfs" ino=25917 scontext=u:r:untrusted_app:s0:c1,c256,c512,c768 tcontext=u:object_r:device:s0 tclass=file permissive=1
+08-13 13:40:48.554  8239  8265 W [ALVR NATIVE-RUST]: EGL_MESA_platform_surfaceless not available. Using default platform
+08-13 13:40:48.555  8239  8265 W [ALVR NATIVE-RUST]: EGL says it can present to the window but not natively
+08-13 13:40:48.555  8239  8265 E [ALVR NATIVE-RUST]: ALVR panicked (message): panicked at alvr\graphics\src\lib.rs:245:65:
+08-13 13:40:48.555  8239  8265 E [ALVR NATIVE-RUST]: removal index (is 0) should be < len (is 0)
+08-13 13:40:48.555  1108  1108 I sensors-hal: activate:139, android.sensor.proximity/10 en=1 completed
+08-13 13:40:48.556  8239  8239 I P2ALVR  : proximity sensor registered (maxRange=5.0)
+08-13 13:40:48.556  7631  7631 I Process : Sending signal. PID: 7631 SIG: 9
+08-13 13:40:48.557  8239  8239 I P2ALVR  : test-intent receiver registered (com.alvr.pico2.TEST_BATTERY_WARN)
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: ALVR panicked: What happened:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: panicked at alvr\graphics\src\lib.rs:245:65:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: removal index (is 0) should be < len (is 0)
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: 
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: Backtrace:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    0: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    1: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    2: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    3: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    4: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    5: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    6: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    7: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    8: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: 
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: ALVR panicked (message): panicked at library/core/src/panicking.rs:225:5:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 13:40:48.557  8239  8270 I [ALVR NATIVE-RUST]: Initial socket buffer size: send: 524288B, recv: 1048576B
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: ALVR panicked: What happened:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: panicked at library/core/src/panicking.rs:225:5:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: 
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: Backtrace:
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    0: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    1: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    2: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    3: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    4: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    5: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    6: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    7: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    8: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 13:40:48.557  8239  8265 E [ALVR NATIVE-RUST]: 
+08-13 13:40:48.557  8239  8265 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 8265 (Thread-2), pid 8239 (com.alvr.pico2)
+08-13 13:40:48.568  1651  7236 E WindowManager: App trying to use insecure INPUT_FEATURE_NO_INPUT_CHANNEL flag. Ignoring
+08-13 13:40:48.583  8273  8273 I crash_dump32: obtaining output fd from tombstoned, type: kDebuggerdTombstone
+08-13 13:40:48.584  1405  1405 I /system/bin/tombstoned: received crash request for pid 8265
+08-13 13:40:48.587  8273  8273 I crash_dump32: performing dump of process 8239 (target tid = 8265)
+08-13 13:40:48.591  8239  8239 I P2ALVR  : surfaceCreated
+08-13 13:40:48.591  8239  8239 I P2ALVR  : surfaceChanged 3840x1968
+08-13 13:40:48.592  8239  8239 I P2ALVR-native: nativeSurfaceChanged window=0xd9c87808
+08-13 13:40:48.593  8273  8273 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+08-13 13:40:48.593  8273  8273 F DEBUG   : LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+08-13 13:40:48.593  8273  8273 F DEBUG   : Build fingerprint: 'unknown/unknown/unknown:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+08-13 13:40:48.593  8273  8273 F DEBUG   : Revision: '0'
+08-13 13:40:48.593  8273  8273 F DEBUG   : ABI: 'arm'
+08-13 13:40:48.593  8273  8273 F DEBUG   : Timestamp: 2026-08-13 13:40:48-0400
+08-13 13:40:48.594  8273  8273 F DEBUG   : pid: 8239, tid: 8265, name: Thread-2  >>> com.alvr.pico2 <<<
+08-13 13:40:48.594  8273  8273 F DEBUG   : uid: 10001
+08-13 13:40:48.594  8273  8273 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+08-13 13:40:48.594  8273  8273 F DEBUG   :     r0  00000000  r1  00002049  r2  00000006  r3  c45bbea8
+08-13 13:40:48.594  8273  8273 F DEBUG   :     r4  c45bbebc  r5  c45bbea0  r6  0000202f  r7  0000016b
+08-13 13:40:48.594  8273  8273 F DEBUG   :     r8  c45bbeb8  r9  c45bbea8  r10 c45bbed8  r11 c45bbec8
+08-13 13:40:48.594  8273  8273 F DEBUG   :     ip  00002049  sp  c45bbe78  lr  ee39f6e3  pc  ee39f6f6
+08-13 13:40:48.594  8273  8273 F DEBUG   : 
+08-13 13:40:48.594  8273  8273 F DEBUG   : backtrace:
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #00 pc 0005f6f6  /apex/com.android.runtime/lib/bionic/libc.so (abort+166) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #01 pc 004e3cef  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #02 pc 004e7707  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #03 pc 004e8429  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #04 pc 004e8141  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #05 pc 004e56d5  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #06 pc 004d9f13  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.594  8273  8273 F DEBUG   :       #07 pc 00510b47  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+08-13 13:40:48.599  1651  7236 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 7631) has died: fore BTOP
+08-13 13:40:48.599  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.600  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.600  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 7631 in 0ms
+08-13 13:40:48.601  1651  7236 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:48.606  2621  2621 D ConfigServerService:(BaseApplication.java:27): onTrimMemory level : 5
+08-13 13:40:48.611   557   557 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+08-13 13:40:48.611  8239  8260 W Gralloc3: mapper 3.x is not supported
+08-13 13:40:48.613  1370  1370 I Zygote  : Process 7631 exited due to signal 9 (Killed)
+08-13 13:40:48.618  8273  8273 I crash_dump32: type=1400 audit(0.0:1081): avc: denied { open } for path="/dev/__properties__/u:object_r:hwservicemanager_prop:s0" dev="tmpfs" ino=110 scontext=u:r:crash_dump:s0:c1,c256,c512,c768 tcontext=u:object_r:hwservicemanager_prop:s0 tclass=file permissive=1
+08-13 13:40:48.618  8273  8273 I crash_dump32: type=1400 audit(0.0:1082): avc: denied { getattr } for path="/dev/__properties__/u:object_r:hwservicemanager_prop:s0" dev="tmpfs" ino=110 scontext=u:r:crash_dump:s0:c1,c256,c512,c768 tcontext=u:object_r:hwservicemanager_prop:s0 tclass=file permissive=1
+08-13 13:40:48.634  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.635  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.636  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.636  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.639  1651  1691 I chatty  : uid=1000(system) HwBinder:1651_1 identical 4 lines
+08-13 13:40:48.639  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.640  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:48.646  1370  1370 D Zygote  : Forked child process 8280
+08-13 13:40:48.649  1651  1684 I ActivityManager: Start proc 8280:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:48.649  8280  8280 E libprocessgroup: CgroupMap::FindController called for [8280] failed, RC file was not initialized properly
+08-13 13:40:48.649  8280  8280 E libprocessgroup: CgroupMap::FindController called for [8280] failed, RC file was not initialized properly
+08-13 13:40:48.650  8280  8280 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:48.650  8280  8280 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.650  8280  8280 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.656  1651  1682 I ActivityTaskManager: Displayed com.alvr.pico2/.MainActivity: +216ms
+08-13 13:40:48.688  8280  8280 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.688  8280  8280 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:48.688  8280  8280 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.690  8280  8280 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:48.696  8280  8280 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:48.697  8280  8280 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:48.701  8280  8280 D cvcontrollerService: LoadLibrary
+08-13 13:40:48.702  8280  8280 D AndroidRuntime: Shutting down VM
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8280
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:48.702  8280  8280 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:48.704  1651  8303 I DropBoxManagerService: add tag=system_app_crash isTagEnabled=true flags=0x2
+08-13 13:40:48.705  8280  8280 I Process : Sending signal. PID: 8280 SIG: 9
+08-13 13:40:48.726  1651  7236 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8280) has died: fore BTOP
+08-13 13:40:48.726  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.726  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.726  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8280 in 0ms
+08-13 13:40:48.726  1370  1370 I Zygote  : Process 8280 exited due to signal 9 (Killed)
+08-13 13:40:48.726  1651  7236 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:48.734  1370  1370 D Zygote  : Forked child process 8304
+08-13 13:40:48.736  8304  8304 E libprocessgroup: CgroupMap::FindController called for [8304] failed, RC file was not initialized properly
+08-13 13:40:48.736  8304  8304 E libprocessgroup: CgroupMap::FindController called for [8304] failed, RC file was not initialized properly
+08-13 13:40:48.736  8304  8304 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:48.736  8304  8304 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.736  8304  8304 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.739  1651  1684 I ActivityManager: Start proc 8304:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:48.767  8304  8304 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.767  8304  8304 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:48.767  8304  8304 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.769  8304  8304 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:48.776  8304  8304 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:48.777  8304  8304 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:48.785  8304  8304 D cvcontrollerService: LoadLibrary
+08-13 13:40:48.786  8304  8304 D AndroidRuntime: Shutting down VM
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8304
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:48.787  8304  8304 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:48.790  1651  8324 I DropBoxManagerService: add tag=system_app_crash isTagEnabled=true flags=0x2
+08-13 13:40:48.792  8304  8304 I Process : Sending signal. PID: 8304 SIG: 9
+08-13 13:40:48.809  1651  2125 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8304) has died: fore BTOP
+08-13 13:40:48.809  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.809  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.810  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8304 in 0ms
+08-13 13:40:48.810  1370  1370 I Zygote  : Process 8304 exited due to signal 9 (Killed)
+08-13 13:40:48.810  1651  2125 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:48.823  1370  1370 D Zygote  : Forked child process 8325
+08-13 13:40:48.825  1651  1684 I ActivityManager: Start proc 8325:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:48.826  8325  8325 E libprocessgroup: CgroupMap::FindController called for [8325] failed, RC file was not initialized properly
+08-13 13:40:48.826  8325  8325 E libprocessgroup: CgroupMap::FindController called for [8325] failed, RC file was not initialized properly
+08-13 13:40:48.826  8325  8325 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:48.826  8325  8325 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.826  8325  8325 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.827  7836  7854 D PvrPlatform: Already keep stationary state for 2 secend
+08-13 13:40:48.827  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:48.827  7836  7854 D PvrPlatform: Already keep stationary state for 2 secend
+08-13 13:40:48.843  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:48.843  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075546, 0.002919, 0.012380, 0.997061)
+08-13 13:40:48.843  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002203, -0.013012, -0.090873)
+08-13 13:40:48.855  8325  8325 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.855  8325  8325 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:48.855  8325  8325 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.857  8325  8325 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:48.864  8325  8325 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:48.864  8325  8325 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:48.871  8325  8325 D cvcontrollerService: LoadLibrary
+08-13 13:40:48.872  8325  8325 D AndroidRuntime: Shutting down VM
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8325
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:48.872  8325  8325 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:48.875  1651  8345 I DropBoxManagerService: add tag=system_app_crash isTagEnabled=true flags=0x2
+08-13 13:40:48.876  8325  8325 I Process : Sending signal. PID: 8325 SIG: 9
+08-13 13:40:48.894  1651  2125 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8325) has died: fore BTOP
+08-13 13:40:48.894  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.894  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.894  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8325 in 0ms
+08-13 13:40:48.894  1370  1370 I Zygote  : Process 8325 exited due to signal 9 (Killed)
+08-13 13:40:48.895  1651  2125 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:48.907  1370  1370 D Zygote  : Forked child process 8346
+08-13 13:40:48.909  1651  1684 I ActivityManager: Start proc 8346:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:48.909  8346  8346 E libprocessgroup: CgroupMap::FindController called for [8346] failed, RC file was not initialized properly
+08-13 13:40:48.909  8346  8346 E libprocessgroup: CgroupMap::FindController called for [8346] failed, RC file was not initialized properly
+08-13 13:40:48.909  8346  8346 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:48.909  8346  8346 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.909  8346  8346 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.937  8346  8346 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.937  8346  8346 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:48.937  8346  8346 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:48.939  8346  8346 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:48.946  8346  8346 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:48.946  8346  8346 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:48.951  8346  8346 D cvcontrollerService: LoadLibrary
+08-13 13:40:48.952  8346  8346 D AndroidRuntime: Shutting down VM
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8346
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:48.952  8346  8346 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:48.956  8346  8346 I Process : Sending signal. PID: 8346 SIG: 9
+08-13 13:40:48.973  1651  2125 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8346) has died: fore BTOP
+08-13 13:40:48.973  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.973  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:48.973  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8346 in 0ms
+08-13 13:40:48.973  1651  2125 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:48.974  1370  1370 I Zygote  : Process 8346 exited due to signal 9 (Killed)
+08-13 13:40:48.977  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:40:48.986  1370  1370 D Zygote  : Forked child process 8366
+08-13 13:40:48.987  8366  8366 E libprocessgroup: CgroupMap::FindController called for [8366] failed, RC file was not initialized properly
+08-13 13:40:48.987  8366  8366 E libprocessgroup: CgroupMap::FindController called for [8366] failed, RC file was not initialized properly
+08-13 13:40:48.987  8366  8366 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:48.987  8366  8366 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:48.987  8366  8366 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:48.987  1651  1684 I ActivityManager: Start proc 8366:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:49.018  8366  8366 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:49.018  8366  8366 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:49.018  8366  8366 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:49.020  8366  8366 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:49.024  8366  8366 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:49.024  8366  8366 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:49.027  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.028  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.028  1651  2049 I chatty  : uid=1000(system) HwBinder:1651_4 identical 1 line
+08-13 13:40:49.028  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.028  8366  8366 D cvcontrollerService: LoadLibrary
+08-13 13:40:49.029  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.029  8366  8366 D AndroidRuntime: Shutting down VM
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8366
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:49.029  8366  8366 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:49.032  8366  8366 I Process : Sending signal. PID: 8366 SIG: 9
+08-13 13:40:49.053  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.057  1370  1370 I Zygote  : Process 8366 exited due to signal 9 (Killed)
+08-13 13:40:49.057  1651  5894 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8366) has died: fore BTOP
+08-13 13:40:49.057  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.057  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.057  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8366 in 0ms
+08-13 13:40:49.058  1651  5894 W ActivityManager: Scheduling restart of crashed service com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService in 0ms
+08-13 13:40:49.063  1405  1405 E /system/bin/tombstoned: Tombstone written to: /data/tombstones/tombstone_06
+08-13 13:40:49.067  1651  8389 W ActivityTaskManager:   Force finishing activity com.alvr.pico2/.MainActivity
+08-13 13:40:49.070  1651  1688 I BootReceiver: Copying /data/tombstones/tombstone_06 to DropBox (SYSTEM_TOMBSTONE)
+08-13 13:40:49.075  1651  1688 I DropBoxManagerService: add tag=SYSTEM_TOMBSTONE isTagEnabled=true flags=0x2
+08-13 13:40:49.076  1370  1370 D Zygote  : Forked child process 8390
+08-13 13:40:49.080  8390  8390 E libprocessgroup: CgroupMap::FindController called for [8390] failed, RC file was not initialized properly
+08-13 13:40:49.080  8390  8390 E libprocessgroup: CgroupMap::FindController called for [8390] failed, RC file was not initialized properly
+08-13 13:40:49.080  8390  8390 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:40:49.080  8390  8390 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:40:49.080  8390  8390 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:40:49.089  1651  1684 I ActivityManager: Start proc 8390:com.picovr.picovrlib.cvcontroller:RemoteService/1000 for service {com.picovr.picovrlib.cvcontroller/com.picovr.picovrlib.cvcontrollerlib.CVControllerService}
+08-13 13:40:49.097  1651  3726 I Adreno  : QUALCOMM build                   : 2d5c972, I8302e904d2
+08-13 13:40:49.097  1651  3726 I Adreno  : Build Date                       : 03/29/19
+08-13 13:40:49.097  1651  3726 I Adreno  : OpenGL ES Shader Compiler Version: EV031.26.03.00
+08-13 13:40:49.097  1651  3726 I Adreno  : Local Branch                     : mybranche951d0e9-8bc7-f187-be97-5cb90179c3d8
+08-13 13:40:49.097  1651  3726 I Adreno  : Remote Branch                    : quic/gfx-adreno.lnx.1.0.r65-rel
+08-13 13:40:49.097  1651  3726 I Adreno  : Remote Branch                    : NONE
+08-13 13:40:49.097  1651  3726 I Adreno  : Reconstruct Branch               : NOTHING
+08-13 13:40:49.097  1651  3726 I Adreno  : Build Config                     : S L 4.0.10 AArch64
+08-13 13:40:49.099  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.102  1651  3726 I Adreno  : PFP: 0x016ee183, ME: 0x00000000
+08-13 13:40:49.106  1651  1831 W InputDispatcher: channel 'dc18add com.alvr.pico2/com.alvr.pico2.MainActivity (server)' ~ Consumer closed input channel or an error occurred.  events=0xd
+08-13 13:40:49.106  1651  1831 E InputDispatcher: channel 'dc18add com.alvr.pico2/com.alvr.pico2.MainActivity (server)' ~ Channel is unrecoverably broken and will be disposed!
+08-13 13:40:49.112  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (549, 538) in display 0.
+08-13 13:40:49.112  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.129  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (549, 539) in display 0.
+08-13 13:40:49.129  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.132  1108  1740 I sensors-hal: activate:128, android.sensor.proximity/10 en=0
+08-13 13:40:49.132  1651  7236 E WifiMulticastLockManager: Multicaster binderDied
+08-13 13:40:49.133  1371  1371 I Zygote  : Process 8239 exited due to signal 6 (Aborted)
+08-13 13:40:49.134  1651  2687 W ActivityManager: Unable to start service Intent { act=com.android.launcher3.WINDOW_OVERLAY dat=app://com.android.launcher3:10156?v=9&cv=14 pkg=com.google.android.googlequicksearchbox } U=0: not found
+08-13 13:40:49.135  1108  1740 I sensors-hal: activate:139, android.sensor.proximity/10 en=0 completed
+08-13 13:40:49.136  1651  1890 I WindowManager: WIN DEATH: Window{dc18add u0 com.alvr.pico2/com.alvr.pico2.MainActivity}
+08-13 13:40:49.136  1651  1890 W InputDispatcher: Attempted to unregister already unregistered input channel 'dc18add com.alvr.pico2/com.alvr.pico2.MainActivity (server)'
+08-13 13:40:49.136  1651  1671 I ActivityManager: Process com.alvr.pico2 (pid 8239) has died: vis+99 TOP 
+08-13 13:40:49.137  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.137  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.137  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 10001 pid 8239 in 0ms
+08-13 13:40:49.138  8390  8390 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:49.138  8390  8390 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.manager-V1.0-java.jar
+08-13 13:40:49.138  8390  8390 D ApplicationLoaders: Returning zygote-cached class loader: /system/framework/android.hidl.base-V1.0-java.jar
+08-13 13:40:49.140  8390  8390 I r:RemoteServic: The ClassLoaderContext is a special shared library.
+08-13 13:40:49.145  8390  8390 W r:RemoteServic: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:40:49.145  8390  8390 W r:RemoteServic: resources.arsc in APK '/system/priv-app/CVService/CVService.apk' is compressed.
+08-13 13:40:49.152  8390  8390 D cvcontrollerService: LoadLibrary
+08-13 13:40:49.153  8390  8390 D AndroidRuntime: Shutting down VM
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: FATAL EXCEPTION: main
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 8390
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: java.lang.UnsatisfiedLinkError: dalvik.system.PathClassLoader[DexPathList[[zip file "/system/priv-app/CVService/CVService.apk"],nativeLibraryDirectories=[/system/priv-app/CVService/lib/arm64, /system/lib64, /system/product/lib64, /system/lib64, /system/product/lib64]]] couldn't find "libCVController.so"
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1067)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at java.lang.Runtime.loadLibrary0(Runtime.java:1007)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at java.lang.System.loadLibrary(System.java:1667)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at java.lang.Class.newInstance(Native Method)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.os.Handler.dispatchMessage(Handler.java:107)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.os.Looper.loop(Looper.java:214)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at android.app.ActivityThread.main(ActivityThread.java:7356)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at java.lang.reflect.Method.invoke(Native Method)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+08-13 13:40:49.153  8390  8390 E AndroidRuntime: 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+08-13 13:40:49.155  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (549, 541) in display 0.
+08-13 13:40:49.156  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.161  1144  1144 E Layer   : [Surface(name=AppWindowToken{4f41654 token=Token{bf791a7 ActivityRecord{b876a66 u0 com.alvr.pico2/.MainActivity t142}}})/@0xba3f5bb - animation-leash#0] No local sync point found
+08-13 13:40:49.161  1144  1144 E Layer   : [Surface(name=AppWindowToken{4f41654 token=Token{bf791a7 ActivityRecord{b876a66 u0 com.alvr.pico2/.MainActivity t142}}})/@0xba3f5bb - animation-leash#0] No local sync point found
+08-13 13:40:49.161  1144  1144 E Layer   : [Surface(name=AppWindowToken{6915efc token=Token{21f73ef ActivityRecord{c03c8ce u0 com.android.launcher3/.lineage.LineageLauncher t109}}})/@0x74dca64 - animation-leash#0] No local sync point found
+08-13 13:40:49.161  1144  1144 E Layer   : [Surface(name=AppWindowToken{6915efc token=Token{21f73ef ActivityRecord{c03c8ce u0 com.android.launcher3/.lineage.LineageLauncher t109}}})/@0x74dca64 - animation-leash#0] No local sync point found
+08-13 13:40:49.166  1924  1924 D ImageWallpaper: wallpaper visibility changes to: true
+08-13 13:40:49.177  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (547, 541) in display 0.
+08-13 13:40:49.177  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.184  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (547, 542) in display 0.
+08-13 13:40:49.184  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.186  1651  1675 W ActivityManager: setHasOverlayUi called on unknown pid: 8239
+08-13 13:40:49.189  1381  1581 E TrafficController: Failed to delete the counterSet: Bad file descriptor
+08-13 13:40:49.189  1651  1860 W NetworkManagementSocketTagger: setKernelCountSet(10001, 0) failed with errno -11
+08-13 13:40:49.197  8390  8390 I Process : Sending signal. PID: 8390 SIG: 9
+08-13 13:40:49.203  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.220  1651  6423 I ActivityManager: Process com.picovr.picovrlib.cvcontroller:RemoteService (pid 8390) has died: fore SVC 
+08-13 13:40:49.214  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.220  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.220  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:40:49.220  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 8390 in 0ms
+08-13 13:40:49.222  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.224  1370  1370 I Zygote  : Process 8390 exited due to signal 9 (Killed)
+08-13 13:40:49.228  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.238  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.239  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.239  1651  1830 I chatty  : uid=1000(system) HwBinder:1651_3 identical 2 lines
+08-13 13:40:49.240  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:40:49.240  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.555  1651  1831 I chatty  : uid=1000(system) InputDispatcher identical 170 lines
+08-13 13:40:49.556  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:49.557  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-3, 1007) in display 0.
+08-13 13:40:49.557  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.559  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-10, 1013) in display 0.
+08-13 13:40:49.559  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.559  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-17, 1016) in display 0.
+08-13 13:40:49.559  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.561  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-23, 1019) in display 0.
+08-13 13:40:49.561  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.562  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-28, 1022) in display 0.
+08-13 13:40:49.562  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.564  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-31, 1025) in display 0.
+08-13 13:40:49.564  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.564  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-36, 1029) in display 0.
+08-13 13:40:49.564  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.565  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-40, 1032) in display 0.
+08-13 13:40:49.565  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.566  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-42, 1033) in display 0.
+08-13 13:40:49.566  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.566  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-47, 1036) in display 0.
+08-13 13:40:49.567  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.567  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-50, 1040) in display 0.
+08-13 13:40:49.568  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.568  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-58, 1046) in display 0.
+08-13 13:40:49.568  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.569  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-61, 1050) in display 0.
+08-13 13:40:49.570  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.570  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-62, 1052) in display 0.
+08-13 13:40:49.570  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.571  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-65, 1057) in display 0.
+08-13 13:40:49.571  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.572  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-69, 1060) in display 0.
+08-13 13:40:49.572  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.574  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-70, 1063) in display 0.
+08-13 13:40:49.574  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.575  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-73, 1069) in display 0.
+08-13 13:40:49.575  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.577  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-75, 1072) in display 0.
+08-13 13:40:49.577  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.578  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-76, 1077) in display 0.
+08-13 13:40:49.578  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.580  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-76, 1080) in display 0.
+08-13 13:40:49.580  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.580  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1083) in display 0.
+08-13 13:40:49.580  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.581  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1085) in display 0.
+08-13 13:40:49.581  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.582  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1088) in display 0.
+08-13 13:40:49.582  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.583  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1091) in display 0.
+08-13 13:40:49.583  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.584  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1094) in display 0.
+08-13 13:40:49.584  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.733  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-78, 1093) in display 0.
+08-13 13:40:49.733  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.735  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-80, 1093) in display 0.
+08-13 13:40:49.735  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.735  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-81, 1091) in display 0.
+08-13 13:40:49.735  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.735  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-83, 1091) in display 0.
+08-13 13:40:49.735  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.736  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-84, 1090) in display 0.
+08-13 13:40:49.736  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.736  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-86, 1090) in display 0.
+08-13 13:40:49.736  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.737  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-87, 1090) in display 0.
+08-13 13:40:49.737  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.738  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-87, 1087) in display 0.
+08-13 13:40:49.738  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:49.828  7836  7854 D PvrPlatform: Already keep stationary state for 3 secend
+08-13 13:40:49.828  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:49.828  7836  7854 D PvrPlatform: Already keep stationary state for 3 secend
+08-13 13:40:50.828  7836  7854 D PvrPlatform: Already keep stationary state for 4 secend
+08-13 13:40:50.828  7836  7854 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:40:50.828  7836  7854 D PvrPlatform: Already keep stationary state for 4 secend
+08-13 13:40:50.916  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-65, 1262) in display 0.
+08-13 13:40:50.916  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:50.919  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-54, 1262) in display 0.
+08-13 13:40:50.919  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:50.921  7836  7854 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+08-13 13:40:50.922  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-48, 1261) in display 0.
+08-13 13:40:50.922  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:50.922  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-29, 1259) in display 0.
+08-13 13:40:50.922  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:50.922  1651  1831 I InputDispatcher: Dropping event because there is no touchable window or gesture monitor at (-4, 1256) in display 0.
+08-13 13:40:50.923  1651  1831 W InputDispatcher: Asynchronous input event injection failed.
+08-13 13:40:50.923  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:51.256  1651  1831 I chatty  : uid=1000(system) InputDispatcher identical 194 lines
+08-13 13:40:51.258  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.
+08-13 13:40:51.260  7836  7856 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:40:51.260  7836  7856 E PvrService: PvrService getTrackingDataExt rotation(-0.075256, 0.002516, 0.012232, 0.997087)
+08-13 13:40:51.260  7836  7856 E PvrService: PvrService getTrackingDataExt position(-0.002113, -0.012958, -0.090838)
+08-13 13:40:51.261  1651  1831 V InputDispatcher: Asynchronous input event injection succeeded.

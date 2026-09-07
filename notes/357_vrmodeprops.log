@@ -1,0 +1,17 @@
+=== vr-mode property test 08/14/2026 03:21:39 ===
+[03:22:17]    --- set the properties stock has and we do not ---
+[03:22:17]      pvr.display.vrmode.enable = 1
+[03:22:17]      sys.pvr.vrservice.state = 2
+[03:22:17]      pxr.service.6dof.restarted = false
+[03:22:17]    --- restart pvrservice so it picks them up ---
+[03:22:17]      pvrservice pid 7561
+[03:22:17]    --- launch the shell ---
+[03:22:17]    --- trackingstate now ---
+[03:22:17]        458 trackingstate = 0x0,0x0
+[03:22:17]      (anything other than 0x0,0x0 is the win)
+[03:22:17]    --- compositor ---
+[03:22:17]      BadPose=1110  kLost=468
+[03:22:17]    --- live pose (should still be valid) ---
+[03:22:17]    7561  7582 E PvrService: PvrService getTrackingDataExt position(0.000425, -0.009385, -0.088316)
+[03:22:17]    7512  7549 D PvrServiceClient: newTrackerClient getTrackingResultExt svrHeadPoseStateOutput[0] 0.055595,0.005091,-0.000011,-0.998440,0.000859,-0.009401,-0.088325	[4137719912599]	[40.505222]
+[03:22:17]    7561  7582 E PvrService: PvrService getTrackingDataExt position(0.000483, -0.009407, -0.088333)

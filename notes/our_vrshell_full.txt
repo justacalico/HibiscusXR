@@ -1,0 +1,77 @@
+﻿vrshell pid: 8544
+
+8544  8544 E libprocessgroup: CgroupMap::FindController called for [8544] failed, RC file was not initialized properly
+8544  8544 E libprocessgroup: CgroupMap::FindController called for [8544] failed, RC file was not initialized properly
+8544  8544 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+8544  8544 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+8544  8544 I Zygote  : seccomp disabled by setenforce 0
+8544  8544 E libprocessgroup: CgroupMap::FindController called for [8544] failed, RC file was not initialized properly
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I chatty  : uid=1000(system) com.pvr.vrshell identical 5 lines
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 W com.pvr.vrshel: JIT profile information will not be recorded: profile file does not exits.
+8544  8544 W com.pvr.vrshel: resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+8544  8569 E GraphicsEnv: Failed to get gpu service
+8544  8570 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I ashmem  : memfd: device VNDK version (27) is < Q so using ashmem.
+8544  8544 I UnityNativeActivityPico: onCreate enter
+8544  8544 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+8544  8544 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I chatty  : uid=1000(system) com.pvr.vrshell identical 1 line
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+8544  8544 I VrApi   : couldBeLoaded
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I VrApi   : 0x7797c64c18
+8544  8544 I VrApi   : open replaceable Scuccessed 2
+8544  8544 I VrApi   : current version >=2.7.4.4
+8544  8544 I VrApi   : APP version, 2, 8, 6, 16
+8544  8544 I VrApi   : lib version, 2, 8, 6, 15
+8544  8544 I VrApi   : open replaceable aborted
+8544  8544 I VrApi   : pvr_OnLoad()
+8544  8544 I VrApi   : Using caller's JNIEnv
+8544  8544 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x7798049110
+8544  8544 I VrApi   : BuildVersionSDK 29
+8544  8544 I VrApi   : pvr_Init
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I UnityNativeActivityPico: bypass_presentation = -1
+8544  8544 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+8544  8574 D VRDataUtils: HMD not exist
+8544  8574 D PvrClient: mirroring or not lg return
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 E ConfigApi: Not Initialize Global Configs
+8544  8544 I ConfigApi: Initialize Global Configs
+8544  8544 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+8544  8544 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+8544  8544 E psmvrConfig: Undefined variable -- iEnableStageLevel
+8544  8544 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+8544  8544 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+8544  8544 I ConfigApi: DIATW Update Config Parameters From VRService
+8544  8544 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+8544  8544 I VrServiceApi: load service priority default
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I VrServiceApi: dlopen ok
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I VrServiceApi: dlsym for getPVRModule ok
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I chatty  : uid=1000(system) com.pvr.vrshell identical 3 lines
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 E Paul    : IsInitialized
+8544  8544 E HaveDir : HaveDir
+8544  8544 E Paul    : open_calib_file_ok
+8544  8544 E GyroMatrix: c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+8544  8544 E SensorConstruct: SensorConstruct
+8544  8544 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+8544  8544 W linker  : Ignoring unknown debug.ld option "0"
+8544  8544 I com.pvr.vrshell: type=1400 audit(0.0:1118): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+8544  8544 I com.pvr.vrshell: type=1400 audit(0.0:1119): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+8544  8544 I com.pvr.vrshell: type=1400 audit(0.0:1120): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+8544  8544 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+8544  8544 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+8544  8544 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+8544  8544 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10 in tid 8544 (com.pvr.vrshell), pid 8544 (com.pvr.vrshell)
+##### END #####

@@ -1,0 +1,102 @@
+=== boot watch after boot-HAL manifest fix 08/13/2026 10:35:09 ===
+[10:35:09] rebooting
+[10:36:16] adb up
+[10:36:16] t+   0s up= 926s boot_completed='' bootanim=running ss=
+[10:36:22] t+   5s up= 931s boot_completed='' bootanim=running ss=
+[10:36:27] t+  10s up= 936s boot_completed='' bootanim=running ss=
+[10:36:32] t+  16s up= 942s boot_completed='' bootanim=running ss=
+[10:36:37] t+  21s up= 947s boot_completed='' bootanim=running ss=
+[10:36:42] t+  26s up= 952s boot_completed='' bootanim=running ss=
+[10:36:47] t+  31s up= 957s boot_completed='' bootanim=running ss=
+[10:36:52] t+  36s up= 962s boot_completed='' bootanim=running ss=
+[10:36:57] t+  41s up= 967s boot_completed='' bootanim=running ss=
+[10:37:03] t+  46s up= 972s boot_completed='' bootanim=running ss=
+[10:37:08] t+  51s up= 977s boot_completed='' bootanim=running ss=
+[10:37:13] system_server pid -> 'adb.exe: no devices/emulators found' (RESTART if changed)
+[10:37:13] t+  57s up=adb.exe: no devices/emulators founds boot_completed='adb.exe: no devices/emulators found' bootanim=adb.exe: no devices/emulators found ss=adb.exe: no devices/emulators found
+[10:37:18] t+  62s up=adb.exe: no devices/emulators founds boot_completed='adb.exe: no devices/emulators found' bootanim=adb.exe: no devices/emulators found ss=adb.exe: no devices/emulators found
+[10:37:23] t+  67s up=adb.exe: no devices/emulators founds boot_completed='adb.exe: no devices/emulators found' bootanim=adb.exe: no devices/emulators found ss=adb.exe: no devices/emulators found
+[10:37:28] system_server pid -> '1598' (RESTART if changed)
+[10:37:28] t+  72s up=  12s boot_completed='' bootanim=running ss=1598
+[10:37:33] t+  77s up=  17s boot_completed='' bootanim=running ss=1598
+[10:37:38] t+  82s up=  22s boot_completed='' bootanim=running ss=1598
+[10:37:44] t+  87s up=  27s boot_completed='' bootanim=running ss=1598
+[10:37:49] t+  92s up=  32s boot_completed='' bootanim=running ss=1598
+[10:37:54] t+  97s up=  37s boot_completed='' bootanim=running ss=1598
+[10:37:59] t+ 103s up=  43s boot_completed='' bootanim=running ss=1598
+[10:38:04] t+ 108s up=  48s boot_completed='' bootanim=running ss=1598
+[10:38:09] t+ 113s up=  53s boot_completed='' bootanim=running ss=1598
+[10:38:14] t+ 118s up=  58s boot_completed='' bootanim=running ss=1598
+[10:38:19] t+ 123s up=  63s boot_completed='' bootanim=running ss=1598
+[10:38:25] t+ 128s up=  68s boot_completed='' bootanim=running ss=1598
+[10:38:30] t+ 133s up=  73s boot_completed='' bootanim=running ss=1598
+[10:38:35] t+ 139s up=  78s boot_completed='' bootanim=running ss=1598
+[10:38:40] t+ 144s up=  84s boot_completed='' bootanim=running ss=1598
+[10:38:45] t+ 149s up=  89s boot_completed='' bootanim=running ss=1598
+[10:38:50] t+ 154s up=  94s boot_completed='' bootanim=running ss=1598
+[10:38:55] t+ 159s up=  99s boot_completed='' bootanim=stopped ss=1598
+[10:39:01] t+ 164s up= 104s boot_completed='' bootanim=stopped ss=1598
+[10:39:06] t+ 169s up= 109s boot_completed='' bootanim=stopped ss=1598
+[10:39:11] t+ 175s up= 114s boot_completed='' bootanim=stopped ss=1598
+[10:39:16] t+ 180s up= 120s boot_completed='' bootanim=stopped ss=1598
+[10:39:21] t+ 185s up= 125s boot_completed='' bootanim=stopped ss=1598
+[10:39:26] t+ 190s up= 130s boot_completed='' bootanim=stopped ss=1598
+[10:39:31] t+ 195s up= 135s boot_completed='' bootanim=stopped ss=1598
+[10:39:36] t+ 200s up= 140s boot_completed='' bootanim=stopped ss=1598
+[10:39:41] t+ 205s up= 145s boot_completed='' bootanim=stopped ss=1598
+[10:39:47] t+ 210s up= 150s boot_completed='' bootanim=stopped ss=1598
+[10:39:52] t+ 215s up= 155s boot_completed='' bootanim=stopped ss=1598
+[10:39:57] t+ 220s up= 160s boot_completed='' bootanim=stopped ss=1598
+[10:40:02] t+ 226s up= 165s boot_completed='' bootanim=stopped ss=1598
+[10:40:07] system_server pid -> '3404' (RESTART if changed)
+[10:40:07] t+ 231s up= 171s boot_completed='' bootanim=running ss=3404
+[10:40:12] t+ 236s up= 176s boot_completed='' bootanim=running ss=3404
+[10:40:17] t+ 241s up= 181s boot_completed='' bootanim=running ss=3404
+[10:40:22] t+ 246s up= 186s boot_completed='' bootanim=running ss=3404
+[10:40:27] t+ 251s up= 191s boot_completed='' bootanim=running ss=3404
+[10:40:32] t+ 256s up= 196s boot_completed='' bootanim=running ss=3404
+[10:40:38] t+ 261s up= 201s boot_completed='' bootanim=running ss=3404
+[10:40:43] t+ 266s up= 206s boot_completed='' bootanim=running ss=3404
+[10:40:48] t+ 272s up= 211s boot_completed='' bootanim=running ss=3404
+[10:40:53] t+ 277s up= 217s boot_completed='' bootanim=running ss=3404
+[10:40:58] t+ 282s up= 222s boot_completed='' bootanim=running ss=3404
+[10:41:03] t+ 287s up= 227s boot_completed='' bootanim=running ss=3404
+[10:41:08] t+ 292s up= 232s boot_completed='' bootanim=running ss=3404
+[10:41:13] t+ 297s up= 237s boot_completed='' bootanim=running ss=3404
+[10:41:18] t+ 302s up= 242s boot_completed='' bootanim=running ss=3404
+[10:41:24] t+ 307s up= 247s boot_completed='' bootanim=running ss=3404
+[10:41:29] t+ 312s up= 252s boot_completed='' bootanim=running ss=3404
+[10:41:34] t+ 318s up= 257s boot_completed='' bootanim=stopped ss=3404
+[10:41:39] t+ 323s up= 263s boot_completed='' bootanim=stopped ss=3404
+[10:41:44] t+ 328s up= 268s boot_completed='' bootanim=stopped ss=3404
+[10:41:49] t+ 333s up= 273s boot_completed='' bootanim=stopped ss=3404
+[10:41:54] t+ 338s up= 278s boot_completed='' bootanim=stopped ss=3404
+[10:41:59] t+ 343s up= 283s boot_completed='' bootanim=stopped ss=3404
+[10:42:04] t+ 348s up= 288s boot_completed='' bootanim=stopped ss=3404
+[10:42:10] t+ 353s up= 293s boot_completed='' bootanim=stopped ss=3404
+[10:42:15] t+ 358s up= 298s boot_completed='' bootanim=stopped ss=3404
+[10:42:20] t+ 363s up= 303s boot_completed='' bootanim=stopped ss=3404
+[10:42:25] t+ 369s up= 308s boot_completed='' bootanim=stopped ss=3404
+[10:42:30] t+ 374s up= 314s boot_completed='' bootanim=stopped ss=3404
+[10:42:35] t+ 379s up= 319s boot_completed='' bootanim=stopped ss=3404
+[10:42:40] t+ 384s up= 324s boot_completed='' bootanim=stopped ss=3404
+[10:42:45] system_server pid -> '24087' (RESTART if changed)
+[10:42:45] t+ 389s up= 329s boot_completed='' bootanim=running ss=24087
+[10:42:50] t+ 394s up= 334s boot_completed='' bootanim=running ss=24087
+[10:42:55] t+ 399s up= 339s boot_completed='' bootanim=running ss=24087
+[10:43:01] t+ 404s up= 344s boot_completed='' bootanim=running ss=24087
+[10:43:06] t+ 409s up= 349s boot_completed='' bootanim=running ss=24087
+[10:43:11] t+ 414s up= 354s boot_completed='' bootanim=running ss=24087
+[10:43:16] t+ 420s up= 359s boot_completed='' bootanim=running ss=24087
+[10:43:21] t+ 425s up= 365s boot_completed='' bootanim=running ss=24087
+[10:43:26] t+ 430s up= 370s boot_completed='' bootanim=running ss=24087
+[10:43:31] t+ 435s up= 375s boot_completed='' bootanim=running ss=24087
+[10:43:36] t+ 440s up= 380s boot_completed='' bootanim=running ss=24087
+[10:43:41] t+ 445s up= 385s boot_completed='1' bootanim=stopped ss=24087
+[10:43:41] *** BOOT COMPLETED ***
+[10:43:42] vold blocked? 2 watchdog kills
+[10:43:42] ro.build.version.release     10
+[10:43:42] ro.lineage.version           17.1-20210808-UNOFFICIAL-
+[10:43:42] ro.vndk.version              27
+[10:43:42] sys.boot_completed           1
+[10:43:42] === done ===

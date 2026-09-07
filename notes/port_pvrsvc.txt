@@ -1,0 +1,25 @@
+﻿pvrservice pid: 1146
+
+##### everything pvrservice logged during the launch #####
+1146  1853 V PvrService: registerClient() client 0x7f921f2640, pid 4045
+1146  1853 E PvrPlatform: Override displayinfo:w=3840 h=2160 fps=72.000008
+1146  1853 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7f8ba07598)
+1146  1853 W RefBase : CallStack::getCurrentInternal not linked, returning null
+1146  1853 W RefBase : CallStack::logStackInternal not linked
+1146  1853 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+1146  1853 I PvrPlatform: Override configs by config file
+1146  1853 I PvrPlatform: Override fov value:101.000000
+1146  1853 V PvrService: removeNotificationClient() pid 4045
+1146  1853 E PvrService: VRModeStateClient::onClientDied pid=4045
+1146  1853 I PvrService: mPrevTrackingMode 1, trackingMode 1
+1146  1853 D PvrService: removeNotificationClient done
+1146  1851 D PvrService:  -0.022872,-0.026922,0.006935,0.999351,0.003410,-0.003736,-0.083756	[507687137930]	[507686182982]	[1509063]	[1165573]
+1146  1849 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+
+##### lens / display / parameter traffic from anyone #####
+1146  1853 E PvrPlatform: Override displayinfo:w=3840 h=2160 fps=72.000008
+4045  4045 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+1146  1853 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+1146  1853 I PvrPlatform: Override fov value:101.000000
+4045  4045 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+DONE

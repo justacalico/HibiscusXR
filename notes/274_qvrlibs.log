@@ -1,0 +1,22 @@
+=== qvr plugin libs 08/13/2026 19:22:13 ===
+[19:22:14] pulled libtobii_runtime.so              lib    5402632 bytes
+[19:22:14] pulled libtobii_runtime.so              lib64  5402632 bytes
+[19:22:14] pulled libtobii_eyecore_stub.so         lib    16968 bytes
+[19:22:14] pulled libtobii_eyecore_stub.so         lib64  16968 bytes
+[19:22:14] pulled libqti-perfd-client_system.so    lib    24564 bytes
+[19:22:15] pulled libqti-perfd-client_system.so    lib64  15360 bytes
+[19:22:15] 
+[19:22:15] --- dependency check ---
+[19:22:15]    MISSING DEP: libqti-perfd-client_system.so -> vendor.qti.hardware.perf@1.0.so
+[19:22:15]    MISSING DEP: libqti-perfd-client_system.so -> vendor.qti.hardware.perf@1.0.so
+[19:22:24]    -rw-r--r-- 1 root root   24564 2026-08-13 19:22 /system/lib/libqti-perfd-client_system.so
+[19:22:24]    -rw-r--r-- 1 root root   16968 2026-08-13 19:22 /system/lib/libtobii_eyecore_stub.so
+[19:22:24]    -rw-r--r-- 1 root root 5402632 2026-08-13 19:22 /system/lib/libtobii_runtime.so
+[19:22:24]    --- restarting qvrd ---
+[19:22:24]    running
+[19:22:24]    system        8696     1   14892   4620 hrtimer_nanosleep   0 S qvrservice
+[19:22:24]    --- rss (stock is ~7.4MB with plugins) ---
+[19:22:24]    VmRSS:	    4620 kB
+[19:22:24]    --- plugins mapped now? ---
+[19:22:24]    /system/lib/libqvrcamera_client_system.so
+[19:22:24]    /system/lib/libqvrservice.so

@@ -1,0 +1,7 @@
+﻿pristine backup: 22604 bytes, boot refs 1
+staged patched: 22335 bytes, boot refs 0
+--- final state ---
+vendor  : 22604 bytes, boot refs 1  (want 22604 / 1)
+overlay : 22335 bytes, boot refs 0  (want 22335 / 0)
+-rw-r--r-- 1 root root 1098 2021-08-08 13:00 /system/etc/init/pn2-vintf.rc
+DONE

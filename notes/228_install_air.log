@@ -1,0 +1,12 @@
+=== airservice install 08/13/2026 18:10:51 ===
+[18:10:52] staged files pushed
+[18:10:53]    --- installed ---
+[18:10:53]    -rwxr-xr-x 1 root root 44336 2026-08-13 18:10 /system/bin/airservice
+[18:10:53]    -rwxr-xr-x 1 root root 28288 2026-08-13 18:10 /system/bin/virtual_input
+[18:10:53]    libaircamera.so
+[18:10:53]    libairservice.so
+[18:10:53]    libicui18n.so
+[18:10:53]    libicuuc.so
+[18:10:53]    libskia.so
+[18:10:53]    -rw-r--r-- 1 root root 31472 2026-08-13 18:10 /system/lib64/libvirtualinput.so
+[18:10:53] rebooting so init picks up the new services

@@ -1,0 +1,34 @@
+﻿=== why did it reboot ===
+bootreason      : 
+last_reboot     : 
+boot_completed  : 1
+uptime          : 59s
+
+=== pstore: did the kernel leave a death note? ===
+ls: /sys/fs/pstore/: No such file or directory
+
+=== pvrservice state ===
+init.svc.pvrservice = running
+pid = 1149
+does the rc have LD_PRELOAD?
+  NO - this build will crash in PVR::receiver
+
+=== has pvrservice been restarting in a loop? ===
+0
+  ^ number of pvrservice starts this boot
+
+=== fatals this boot ===
+07-17 12:25:24.081   951   951 F DEBUG   : pid: 946, tid: 946, name: netd  >>> /system/bin/netd <<<
+
+=== anything that looks like a watchdog / panic ===
+08-13 11:57:25.303  1655  1682 I PackageWatchdog: Saving observer state to file
+08-13 11:57:25.303  1655  1655 I PackageWatchdog: Cancelling state sync, nothing to sync
+08-13 11:57:25.641  1655  1655 D PackageWatchdog: Getting all observed packages pending health checks
+08-13 11:57:25.641  1655  1655 I PackageWatchdog: Syncing health check requests for packages: {}
+08-13 11:57:25.654  1655  1684 I ActivityManager: Start proc 2121:android.ext.services/u0a9 for service {android.ext.services/android.ext.services.watchdog.ExplicitHealthCheckServiceImpl}
+08-13 11:57:25.808  1655  1655 I ExplicitHealthCheckController: Explicit health check service is connected ComponentInfo{android.ext.services/android.ext.services.watchdog.ExplicitHealthCheckServiceImpl}
+08-13 11:57:25.809  1655  1655 D PackageWatchdog: Getting all observed packages pending health checks
+08-13 11:57:25.809  1655  1655 I PackageWatchdog: Syncing health check requests for packages: {}
+08-13 11:57:25.811  1655  2151 D PackageWatchdog: Received supported packages [PackageConfig{com.android.networkstack, 3600000}]
+08-13 11:58:01.423  3577  3577 D AndroidRuntime: Shutting down VM
+DONE

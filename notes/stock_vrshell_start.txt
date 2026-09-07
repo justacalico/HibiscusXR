@@ -1,0 +1,54 @@
+﻿vrshell pid after restart: 4964
+
+##### PvrServiceClient / library resolution #####
+08-13 13:40:01.428  4964  4964 I UnityNativeActivityPico: onCreate enter
+08-13 13:40:01.442  4964  4964 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+08-13 13:40:01.444  4964  4964 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+08-13 13:40:01.444  4964  4964 I VrApi   : couldBeLoaded
+08-13 13:40:01.444  4964  4964 I VrApi   : 0x7b2b569c18
+08-13 13:40:01.444  4964  4964 I VrApi   : open replaceable Scuccessed 2
+08-13 13:40:01.444  4964  4964 I VrApi   : current version >=2.7.4.4
+08-13 13:40:01.444  4964  4964 I VrApi   : APP version, 2, 8, 6, 16
+08-13 13:40:01.444  4964  4964 I VrApi   : lib version, 2, 8, 6, 15
+08-13 13:40:01.444  4964  4964 I VrApi   : open replaceable aborted
+08-13 13:40:01.445  4964  4964 I VrApi   : pvr_OnLoad()
+08-13 13:40:01.445  4964  4964 I VrApi   : Using caller's JNIEnv
+08-13 13:40:01.446  4964  4964 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x7b192cf110
+08-13 13:40:01.446  4964  4964 I VrApi   : BuildVersionSDK 27
+08-13 13:40:01.446  4964  4964 I VrApi   : pvr_Init
+08-13 13:40:01.446  4964  4964 I UnityNativeActivityPico: bypass_presentation = -1
+08-13 13:40:01.479  4964  4964 I UnityNativeActivityPico: Shell shell_mode = 1
+08-13 13:40:01.479  4964  4964 I UnityNativeActivityPico: force_cancel_unity_pause = -1
+08-13 13:40:01.493  4964  4964 I UnityNativeActivityPico: has android.permission.READ_EXTERNAL_STORAGE this
+08-13 13:40:01.493  4964  4964 I UnityNativeActivityPico: create enter
+08-13 13:40:01.498  4964  4964 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+08-13 13:40:01.498  4964  4964 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+08-13 13:40:01.505  4964  4964 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+08-13 13:40:01.505  4964  4964 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+08-13 13:40:01.505  4964  4964 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+08-13 13:40:01.506  4964  4964 D UnityNativeActivityPico: false = SCRN_BRIGHTNESS
+08-13 13:40:01.506  4964  4964 I UnityNativeActivityPico: EnableAppOverlayType = false
+08-13 13:40:01.507  4964  4964 D UnityNativeActivityPico: com.psmart.vrlib.PvrClient@206748c PvrClient created
+08-13 13:40:01.553  4964  4964 I UnityNativeActivityPico: presentationDisplays.length 0
+08-13 13:40:01.553  4964  4964 I UnityNativeActivityPico: default
+08-13 13:40:01.557  4964  4964 D UnityNativeActivityPico: onStart
+08-13 13:40:01.557  4964  4964 I UnityNativeActivityPico: registerDisplayListener
+08-13 13:40:01.563  4964  4964 I UnityNativeActivityPico: onResume
+08-13 13:40:01.653  4964  4964 I UnityNativeActivityPico: onResume   animation is not null 
+08-13 13:40:01.653  4964  4964 I UnityNativeActivityPico: Notify Unity resume
+08-13 13:40:01.653  4964  4964 I UnityNativeActivityPico: onResume test
+08-13 13:40:01.660  4964  4964 D UnityNativeActivityPico: onPause
+08-13 13:40:01.716  4964  4964 I UnityNativeActivityPico: onPause set cpu 0
+08-13 13:40:01.763  4964  4964 D UnityNativeActivityPico: onPause break-point
+08-13 13:40:01.764  4964  4964 D UnityNativeActivityPico: connect ok
+08-13 13:40:01.765  4964  4964 I UnityNativeActivityPico: onAttachedToWindow!!!!!!!!!!!
+08-13 13:40:01.849  4964  4964 I UnityNativeActivityPico: onStop
+08-13 13:40:01.849  4964  4964 I UnityNativeActivityPico: Shell onStop shell_mode mUnityPlayer.pause()
+08-13 13:40:01.849  4964  4964 D UnityNativeActivityPico: Unity DismissPresentation enter
+08-13 13:40:01.849  4964  4964 I UnityNativeActivityPico: unregisterDisplayListener
+08-13 13:40:05.376  4651  4678 D PvrServiceClient: newTrackerClient getTrackingResultExt svrHeadPoseStateOutput[3] 0.110428,0.092329,0.005031,-0.989573,0.102335,-0.049753,-0.395598	[550879677855]	[22.007847]
+
+##### every dlopen of a pico lib, in order #####
+
+##### dlerrors #####
+DONE

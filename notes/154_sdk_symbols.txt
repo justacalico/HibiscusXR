@@ -1,0 +1,201 @@
+-rwxrwxrwx 1 justin justin 1249080 Aug 13 14:49 /mnt/f/PN2Lineage/ref/alvr-pico-legacy/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so
+
+=== exported symbols matching the crash frames ===
+00058a61 T _Z35psmvr_UpdateCustomInfoFromVRServicev
+000591d9 T _Z37psmvr_UpdateCylinderInfoFromVRServicev
+00059455 T _Z44psmvr_UpdateCustomInfoFromVRServiceInHMDModev
+00059935 T _Z43psmvr_UpdateLensAndDisplayInfoFromVRServicev
+0005ae49 T _Z37psmvr_UpdateLensAndDisplayInfoByTypesPKc
+0005b001 T _Z16psmvr_GetLenSlitv
+0005ba65 T _ZNK3PVR10LensConfig30DistortionFnScaleRadiusSquaredEf
+0005bbed T _ZNK3PVR10LensConfig36DistortionFnScaleRadiusSquaredChromaEf
+0005bc45 T _ZNK3PVR10LensConfig19DistortionFnInverseEf
+0005bcfd T _ZNK3PVR10LensConfig25DistortionFnInverseApproxEf
+0005bd91 T _ZN3PVR10LensConfig18SetUpInverseApproxEv
+0005bf01 T _ZN3PVR10LensConfig13SetToIdentityEv
+000935f1 T _ZN13PvrClientJava14getDisplayInfoEPN3PVR12_displayInfoE
+00093799 T _ZN13PvrClientJava11getLensInfoEPN3PVR15_lensParametersE
+00094649 T Java_com_psmart_vrlib_PvrClient_updateDisplayInfo
+00094fb9 T _Z19GetPvrServiceClientv
+00095265 T _Z14GetDisplayInfoPN3PVR12_displayInfoE
+000952c1 T _Z11GetLensInfoPN3PVR15_lensParametersE
+0011b4a0 V _ZTVN3PVR17IPvrServiceClientE
+0011f21c D fLensSeparation
+00131888 D CLASS_LENSPARAM
+0013188c D CLASS_DISPLAYINFO
+0014046c B changeLensSeparation
+00140dca B gDisableLensCorrection
+001442f8 B map_lensParam
+00144314 B map_displayInfo
+001443cc B pVrServiceClient
+
+=== UNDEFINED symbols (what it imports) matching JNI ===
+
+=== every Java class name referenced as a string ===
+android/graphics/SurfaceTexture
+android/os/Build
+android/os/Build$VERSION
+android/os/Environment
+android/view/Surface
+com/picovr/vractivity/Eye
+com/picovr/vractivity/HmdState
+com/psmart/vrlib/IPDManager
+com/psmart/vrlib/PvrClient
+com/psmart/vrlib/VrLib
+com/pvr/pvrservice/BatteryInfo
+com/pvr/pvrservice/DisplayInfo
+com/pvr/pvrservice/LensParameters
+com/pvr/pvrservice/TrackingData
+com/pvr/pvrservice/VersionInfo
+com/unity3d/player/UnityPlayerNativeActivityPico
+java/lang/String
+
+=== psmart / pvr / vrlib strings ===
+!VrLibJavaVM -- pvr_OnLoad() not called yet
+()Lcom/pvr/pvrservice/BatteryInfo;
+()Lcom/pvr/pvrservice/DisplayInfo;
+()Lcom/pvr/pvrservice/LensParameters;
+()Lcom/pvr/pvrservice/VersionInfo;
+(J)Lcom/pvr/pvrservice/TrackingData;
+(Lcom/picovr/vractivity/Eye;)V
+(Lcom/picovr/vractivity/HmdState;)V
+/sdcard/psmart
+/sdcard/psmart/phoenix
+/sdcard/psmart/phoenix/Geomagnetic_Matrix.txt
+/sdcard/psmart/phoenix/psmvrapi_config.txt
+CLASS_PVRCLIENT
+D:/scmbuild/unitysdk/PicoSDK_Unity-dev_phoenix/PicoSDK_Mobile_CoreLib/CoreLib/src/main/jni/VrService/PvrClientJava.cpp
+D:/scmbuild/unitysdk/PicoSDK_Unity-dev_phoenix/PicoSDK_Mobile_CoreLib/CoreLib/src/main/jni/com_psmart_vrlib_PicovrSDK.cpp
+ERROR occured dispatchKeyEvent! env = %p,obj_pvrClient = %p
+ERROR occured getHmdBatteryInfo! env = %p,obj_pvrClient = %p
+ERROR occured getHmdVersionInfo! env = %p,obj_pvrClient = %p
+ERROR occured getParameter! env = %p,obj_pvrClient = %p
+ERROR occured getTrackingData! env = %p,obj_pvrClient = %p
+ERROR occured getUsbAudioStatus! env = %p,obj_pvrClient = %p
+ERROR occured onPause! env = %p,obj_pvrClient = %p
+ERROR occured onResume! env = %p,obj_pvrClient = %p
+ERROR occured setParameter! env = %p,obj_pvrClient = %p
+ExternalSurface: Pvr_CreateLayerAndroidSurface_: VrLibJavaVM is null
+Java_com_picovr_vractivity_VRActivity_getNativePtr
+Java_com_picovr_vractivity_VRActivity_nativeDestroy
+Java_com_picovr_vractivity_VRActivity_nativePause
+Java_com_picovr_vractivity_VRActivity_nativeRenderEventPush
+Java_com_picovr_vractivity_VRActivity_nativeResume
+Java_com_picovr_vractivity_VRActivity_nativeSetMultisamples
+Java_com_picovr_vractivity_VRActivity_nativeSetRenderPose
+Java_com_picovr_vractivity_VRActivity_nativesurfaceChanged
+Java_com_picovr_vractivity_VRActivity_nativesurfaceCreated
+Java_com_picovr_vractivity_VRActivity_nativesurfaceDestroyed
+Java_com_picovr_vractivity_VRActivity_stringFromJNI
+Java_com_psmart_vrlib_PicovrSDK_ChangeScreenParameters
+Java_com_psmart_vrlib_PicovrSDK_GetEyeBufferHeight
+Java_com_psmart_vrlib_PicovrSDK_GetEyeBufferWidth
+Java_com_psmart_vrlib_PicovrSDK_SetEyeBufferSize
+Java_com_psmart_vrlib_PicovrSDK_calcArmModelParameters
+Java_com_psmart_vrlib_PicovrSDK_cancelControllerVibrate
+Java_com_psmart_vrlib_PicovrSDK_deInitConfigs
+Java_com_psmart_vrlib_PicovrSDK_disableBoundarySystem
+Java_com_psmart_vrlib_PicovrSDK_enable6DofModule
+Java_com_psmart_vrlib_PicovrSDK_getBoundaryExtraType
+Java_com_psmart_vrlib_PicovrSDK_getCpuLevel
+Java_com_psmart_vrlib_PicovrSDK_getCurrentPlatformType
+Java_com_psmart_vrlib_PicovrSDK_getDeviceTrackingStatus
+Java_com_psmart_vrlib_PicovrSDK_getDialogState
+Java_com_psmart_vrlib_PicovrSDK_getElbowPose
+Java_com_psmart_vrlib_PicovrSDK_getFloatConfig
+Java_com_psmart_vrlib_PicovrSDK_getGpuLevel
+Java_com_psmart_vrlib_PicovrSDK_getHmdPose
+Java_com_psmart_vrlib_PicovrSDK_getHmdScreenBrightness
+Java_com_psmart_vrlib_PicovrSDK_getIntConfig
+Java_com_psmart_vrlib_PicovrSDK_getMainSensorState
+Java_com_psmart_vrlib_PicovrSDK_getPointerPose
+Java_com_psmart_vrlib_PicovrSDK_getPredictedDisplayTime
+Java_com_psmart_vrlib_PicovrSDK_getPredictedHeadPoseState
+
+=== JNI signature strings (method descriptors) ===
+($)FKFzD
+(%)FSFzD
+(%d,%d,%d)
+(%f, %f)
+(%f, %f, %f)
+()Landroid/view/Surface;
+()Landroid/view/SurfaceHolder;
+()Lcom/pvr/pvrservice/BatteryInfo;
+()Lcom/pvr/pvrservice/DisplayInfo;
+()Lcom/pvr/pvrservice/LensParameters;
+()Lcom/pvr/pvrservice/VersionInfo;
+()Ljava/io/File;
+()Ljava/lang/Class;
+()Ljava/lang/String;
+(F)F
+(F)V
+(H)FxD
+(I)I
+(I)Landroid/view/View;
+(I)V
+(II)V
+(III)I
+(III)V
+(IIII)Ljava/lang/Object;
+(IIZ)I
+(I[I)V
+(J)KzD{D
+(J)Lcom/pvr/pvrservice/TrackingData;
+(JhF)FzD
+(Landroid/app/Activity;)F
+(Landroid/app/Activity;)I
+(Landroid/app/Activity;)V
+(Landroid/app/Activity;)[I
+(Landroid/app/Activity;I)I
+(Landroid/app/Activity;II)[I
+(Landroid/graphics/SurfaceTexture;)V
+(Lcom/picovr/vractivity/Eye;)V
+(Lcom/picovr/vractivity/HmdState;)V
+(Ljava/lang/String;)[B
+(Ljava/lang/String;J)Ljava/lang/String;
+(Ljava/lang/String;Ljava/lang/String;)I
+([BLjava/lang/String;)V
+(anonymous namespace)
+
+=== the diagnostic messages ALVR saw ===
+ PvrUSBSensor is NULL...
+ ] not found. Created a default material.
+%s,%d : failed to write data to %s
+1try getChildAt methodID not found!
+1try unityPlayer class not found!
+AttachCurrentThread failed %d
+AwStartHeadTracker Failed: dlopen error
+AwStartHeadTracker Failed: load sym error
+Boundary::Error::Dialog Initialized failed !
+Boundary::Error::Dialog Shader initialized failed.
+CancelControllerVibrate: VR Service Client is NULL!
+ControllerModel load texture failed. use white color
+CreateWarpContext: Failed to create EGL context
+CreateWarpContext: eglCreateWindowSurface failed (Egl Error = %s)
+CreateWarpContext: eglMakeCurrent failed
+DIATW CreateWarpContext: eglSurfaceAttrib EGL_FRONT_BUFFER_AUTO_REFRESH_ANDROID to true failed.
+DIATW CreateWarpContext: eglSurfaceAttrib EGL_RENDER_BUFFER to EGL_SINGLE_BUFFER failed.
+DIATW Global tracking GetTrackingData 1 failed tryTimes=%d
+DIATW Global tracking GetTrackingData 2 failed tryTimes=%d
+ERROR occured dispatchKeyEvent! env = %p,obj_pvrClient = %p
+ERROR occured getHmdBatteryInfo! env = %p,obj_pvrClient = %p
+ERROR occured getHmdVersionInfo! env = %p,obj_pvrClient = %p
+ERROR occured getParameter! env = %p,obj_pvrClient = %p
+ERROR occured getTrackingData! env = %p,obj_pvrClient = %p
+ERROR occured getUsbAudioStatus! env = %p,obj_pvrClient = %p
+ERROR occured onPause! env = %p,obj_pvrClient = %p
+ERROR occured onResume! env = %p,obj_pvrClient = %p
+ERROR occured setParameter! env = %p,obj_pvrClient = %p
+Error: Failed to allocate memory
+ExternalSurface: FindClass( %s ) failed
+ExternalSurface: GetMethodID( <init> ) failed
+ExternalSurface: NewGlobalRef() failed
+ExternalSurface: NewObject() failed
+ExternalSurface: Pvr_CreateLayerAndroidSurface_: VrLibJavaVM is null
+ExternalSurface: Pvr_CreateLayerAndroidSurface_: jni is null
+Failed (Main sensor): UNKNOW SENSOR SOURCE!
+Failed to initialize boundary shader with return.
+Failed to join NativeThread (%i)
+Failed to open file
+Failed to read file
+DONE

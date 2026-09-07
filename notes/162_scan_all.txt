@@ -1,0 +1,10 @@
+=== does the 64-bit SDK export the JNI entry points? ===
+  Java_ exports: 3
+  00000000000772f4 T _Z11GetLensInfoPN3PVR15_lensParametersE
+  0000000000077264 T _Z14GetDisplayInfoPN3PVR12_displayInfoE
+  0000000000050a48 T _Z37psmvr_UpdateLensAndDisplayInfoByTypesPKc
+  0000000000050178 T _Z43psmvr_UpdateLensAndDisplayInfoFromVRServicev
+
+=== ALL functions that write x28 without saving it ===
+
+DONE

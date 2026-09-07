@@ -1,0 +1,21 @@
+=== post-reboot baseline 08/14/2026 03:58:01 ===
+[03:58:32]    === did init start the fan daemon? ===
+[03:58:32]      init.svc.pn2_fancontrol = 
+[03:58:32]      pid 31766
+[03:58:32]      cur_state=1 pwm1=85 rpm=7600
+[03:58:32]    
+[03:58:32]    === controller service ===
+[03:58:32]      enabled=1
+[03:58:32]    
+[03:58:32]    === patched lib, and is anything on a stale inode? ===
+[03:58:32]    ad7b078f28b56049fc8dd72d5b4eed1a  /system/lib/libpvrserviceclient.so
+[03:58:32]      (patched = ad7b078f28b56049fc8dd72d5b4eed1a)
+[03:58:32]    
+[03:58:32]    === launch the shell ===
+[03:58:32]      vrshell pid 31107 threads=63
+[03:58:32]    grep: due: No such file or directory
+[03:58:32]    grep: to: No such file or directory
+[03:58:32]    grep: signal: No such file or directory
+[03:58:32]    grep: 11": No such file or directory
+[03:58:32]      segv=
+[03:58:32]    /data/local/tmp/_pb.sh[21]: syntax error: unexpected '('

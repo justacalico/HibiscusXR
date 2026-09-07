@@ -1,0 +1,15 @@
+=== patched libart install 08/13/2026 15:14:58 ===
+[15:14:58] pushing patched libart
+[15:14:58]    F:\PN2Lineage\notes\libart-patched.so: 1 file pushed, 0 skipped. 84.1 MB/s (7654408 bytes in 0.087s)
+[15:14:59]    backup created
+[15:14:59]    --- sizes ---
+[15:14:59]    -rw-r--r-- 1 root root 7654408 2026-08-13 15:15 /system/apex/com.android.runtime.release/lib64/libart.so
+[15:14:59]    -rw-r--r-- 1 root root 7654408 2021-08-08 12:56 /system/apex/com.android.runtime.release/lib64/libart.so.orig
+[15:14:59]    --- md5 (target vs what we pushed) ---
+[15:14:59]    6ff68732a6235c383e44b7aa7052fd61  /system/apex/com.android.runtime.release/lib64/libart.so
+[15:14:59]    6ff68732a6235c383e44b7aa7052fd61  /data/local/tmp/libart-patched.so
+[15:14:59]    mount: '/system
+[15:14:59]    ' not in /proc/mounts
+[15:14:59] 
+[15:14:59] RECOVERY: adb shell su -c 'mount -o rw,remount /system; cp -a /system/apex/com.android.runtime.release/lib64/libart.so.orig /system/apex/com.android.runtime.release/lib64/libart.so; sync'
+[15:14:59] or fastboot flash system F:\PN2Lineage\out\system-pn2-full.img

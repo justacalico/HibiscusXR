@@ -1,0 +1,53 @@
+inventory: 943 libs
+=== per-library dependency check ===
+  OK libpvrserviceclient.so
+  OK libvirtualinputclient.so
+  OK libpxrserviceclient.so
+  OK libairclient.so
+  OK libSafetyArea.so
+  OK libImageGrid.so
+  OK libPvr_UnitySDK.so
+  OK libPvr_UnitySDKExt1.so
+  OK libPvr_UnitySDKExt5.so
+  OK libPvr_UnitySDKExt8.so
+  OK libPvr_UnitySDKExt9.so
+  OK libPvr_UnitySDKExt10.so
+  OK libPvr_UnitySDKExt11.so
+  OK libPvr_UESDKExt2.so
+  OK libCVControllerClient.pxr.so
+  OK lib6DofReset.so
+  OK libpxrnotification.pxr.so
+  OK libconfigurationclient.pxr.so
+  OK libplugin.pxr.so
+  OK libloader.pxr.so
+  OK libruntime.pxr.so
+  OK libcompositor.pxr.so
+
+=== safe to whitelist ===
+  libpvrserviceclient.so
+  libvirtualinputclient.so
+  libpxrserviceclient.so
+  libairclient.so
+  libSafetyArea.so
+  libImageGrid.so
+  libPvr_UnitySDK.so
+  libPvr_UnitySDKExt1.so
+  libPvr_UnitySDKExt5.so
+  libPvr_UnitySDKExt8.so
+  libPvr_UnitySDKExt9.so
+  libPvr_UnitySDKExt10.so
+  libPvr_UnitySDKExt11.so
+  libPvr_UESDKExt2.so
+  libCVControllerClient.pxr.so
+  lib6DofReset.so
+  libpxrnotification.pxr.so
+  libconfigurationclient.pxr.so
+  libplugin.pxr.so
+  libloader.pxr.so
+  libruntime.pxr.so
+  libcompositor.pxr.so
+
+=== NOT safe (would abort zygote) ===
+
+=== unverifiable (not staged) ===
+DONE

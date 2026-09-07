@@ -1,0 +1,326 @@
+############ source: dtbo_00.dts ############
+
+================================================================
+PANEL: jdi_4k_55uhd_72_new_video
+================================================================
+			qcom,mdss_dsi_jdi_4k_55uhd_72_new_video {
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd 72 new video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-virtual-channel-id = <0x00>;
+				qcom,mdss-dsi-stream = <0x00>;
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-underflow-color = <0xff>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <0x38a4 0x3c8c 0x7d00 0x4268 0x3c8c 0x7530 0x1f40 0xbb8>;
+				qcom,mdss-dsi-panel-peak-brightness = <0x401640>;
+				qcom,mdss-dsi-panel-blackness-level = <0xc9e>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-bllp-eof-power-mode;
+				qcom,mdss-dsi-bllp-power-mode;
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-dma-trigger = "trigger_sw";
+				qcom,mdss-dsi-mdp-trigger = "none";
+				qcom,mdss-dsi-reset-sequence = <0x01 0x14 0x00 0x14 0x01 0x14>;
+				qcom,mdss-pan-physical-width-dimension = <0x43>;
+				qcom,mdss-pan-physical-height-dimension = <0x77>;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2b>;
+				qcom,panel-supply-entries = <0x01>;
+				qcom,panel-chahei-supply-entries = <0x04>;
+				qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_gpio";
+				qcom,mdss-dsi-bl-min-level = <0x01>;
+				qcom,mdss-dsi-bl-max-level = <0x07>;
+				qcom,mdss-brightness-max-level = <0xff>;
+				qcom,mdss-dsi-bklight-gpio1 = <0xffffffff 0x31 0x00>;
+				qcom,mdss-dsi-bklight-gpio2 = <0xffffffff 0x32 0x00>;
+				qcom,mdss-dsi-bklight-gpio3 = <0xffffffff 0x33 0x00>;
+				qcom,mdss-dsi-mode-sel-gpio-state = "dual_port";
+				qcom,panel-mode-gpio = <0xffffffff 0x34 0x00>;
+				qcom,platform-reset-gpio = <0xffffffff 0x06 0x00>;
+				qcom,platform-bklight-en-gpio = <0xffffffff 0x1d 0x00>;
+				pwms = <0x05 0x00 0x00>;
+				linux,phandle = <0x22>;
+				phandle = <0x22>;
+
+				qcom,mdss-dsi-display-timings {
+
+					timing@0 {
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-h-sync-skew = <0x00>;
+						qcom,mdss-dsi-v-back-porch = <0x14>;
+						qcom,mdss-dsi-v-front-porch = <0x1f2>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x48>;
+						qcom,mdss-dsi-h-sync-pulse = <0x00>;
+						qcom,compression-mode = "dsc";
+						qcom,mdss-dsc-slice-height = <0x08>;
+						qcom,mdss-dsc-slice-width = <0x21c>;
+						qcom,mdss-dsc-slice-per-pkt = <0x02>;
+						qcom,mdss-dsc-bit-per-component = <0x08>;
+						qcom,mdss-dsc-bit-per-pixel = <0x08>;
+						qcom,mdss-dsc-block-prediction-enable;
+						qcom,mdss-dsi-panel-phy-timings = <0x1b0706 0x22210707 0x4020400>;
+						qcom,display-topology = <0x02 0x02 0x02>;
+						qcom,default-topology-index = <0x00>;
+					};
+				};
+			};
+
+				qcom,mdss_dsi_jdi_4k_55uhd_72_new_video {
+					qcom,panel-supply-entries = <0x00>;
+					qcom,panel-chahei-supply-entries = <0x00>;
+					pwms = <0x00>;
+				};
+
+
+================================================================
+PANEL: jdi_4k_55uhd_75_new_video
+================================================================
+			qcom,mdss_dsi_jdi_4k_55uhd_75_new_video {
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd 75 new video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-virtual-channel-id = <0x00>;
+				qcom,mdss-dsi-stream = <0x00>;
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-underflow-color = <0xff>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <0x38a4 0x3c8c 0x7d00 0x4268 0x3c8c 0x7530 0x1f40 0xbb8>;
+				qcom,mdss-dsi-panel-peak-brightness = <0x401640>;
+				qcom,mdss-dsi-panel-blackness-level = <0xc9e>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-bllp-eof-power-mode;
+				qcom,mdss-dsi-bllp-power-mode;
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-dma-trigger = "trigger_sw";
+				qcom,mdss-dsi-mdp-trigger = "none";
+				qcom,mdss-dsi-reset-sequence = <0x01 0x14 0x00 0x14 0x01 0x14>;
+				qcom,mdss-pan-physical-width-dimension = <0x43>;
+				qcom,mdss-pan-physical-height-dimension = <0x77>;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2d>;
+				qcom,panel-supply-entries = <0x01>;
+				qcom,panel-chahei-supply-entries = <0x04>;
+				qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_gpio";
+				qcom,mdss-dsi-bl-min-level = <0x01>;
+				qcom,mdss-dsi-bl-max-level = <0x07>;
+				qcom,mdss-brightness-max-level = <0xff>;
+				qcom,mdss-dsi-bklight-gpio1 = <0xffffffff 0x31 0x00>;
+				qcom,mdss-dsi-bklight-gpio2 = <0xffffffff 0x32 0x00>;
+				qcom,mdss-dsi-bklight-gpio3 = <0xffffffff 0x33 0x00>;
+				qcom,mdss-dsi-mode-sel-gpio-state = "dual_port";
+				qcom,panel-mode-gpio = <0xffffffff 0x34 0x00>;
+				qcom,platform-reset-gpio = <0xffffffff 0x06 0x00>;
+				qcom,platform-bklight-en-gpio = <0xffffffff 0x1d 0x00>;
+				pwms = <0x05 0x00 0x00>;
+				linux,phandle = <0x20>;
+				phandle = <0x20>;
+
+				qcom,mdss-dsi-display-timings {
+
+					timing@0 {
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-h-sync-skew = <0x00>;
+						qcom,mdss-dsi-v-back-porch = <0x14>;
+						qcom,mdss-dsi-v-front-porch = <0x1f2>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x4b>;
+						qcom,mdss-dsi-h-sync-pulse = <0x00>;
+						qcom,compression-mode = "dsc";
+						qcom,mdss-dsc-slice-height = <0x08>;
+						qcom,mdss-dsc-slice-width = <0x21c>;
+						qcom,mdss-dsc-slice-per-pkt = <0x02>;
+						qcom,mdss-dsc-bit-per-component = <0x08>;
+						qcom,mdss-dsc-bit-per-pixel = <0x08>;
+						qcom,mdss-dsc-block-prediction-enable;
+						qcom,mdss-dsi-panel-phy-timings = <0x1c0707 0x23220707 0x5020400>;
+						qcom,display-topology = <0x02 0x02 0x02>;
+						qcom,default-topology-index = <0x00>;
+					};
+				};
+			};
+
+				qcom,mdss_dsi_jdi_4k_55uhd_75_new_video {
+					qcom,panel-supply-entries = <0x00>;
+					qcom,panel-chahei-supply-entries = <0x00>;
+					pwms = <0x00>;
+				};
+
+
+================================================================
+PANEL: jdi_4k_55uhd_70_new_video
+================================================================
+			qcom,mdss_dsi_jdi_4k_55uhd_70_new_video {
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd 70 new video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-virtual-channel-id = <0x00>;
+				qcom,mdss-dsi-stream = <0x00>;
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-underflow-color = <0xff>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <0x38a4 0x3c8c 0x7d00 0x4268 0x3c8c 0x7530 0x1f40 0xbb8>;
+				qcom,mdss-dsi-panel-peak-brightness = <0x401640>;
+				qcom,mdss-dsi-panel-blackness-level = <0xc9e>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-bllp-eof-power-mode;
+				qcom,mdss-dsi-bllp-power-mode;
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-dma-trigger = "trigger_sw";
+				qcom,mdss-dsi-mdp-trigger = "none";
+				qcom,mdss-dsi-reset-sequence = <0x01 0x14 0x00 0x14 0x01 0x14>;
+				qcom,mdss-pan-physical-width-dimension = <0x43>;
+				qcom,mdss-pan-physical-height-dimension = <0x77>;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2d>;
+				qcom,panel-supply-entries = <0x01>;
+				qcom,panel-chahei-supply-entries = <0x04>;
+				qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_gpio";
+				qcom,mdss-dsi-bl-min-level = <0x01>;
+				qcom,mdss-dsi-bl-max-level = <0x07>;
+				qcom,mdss-brightness-max-level = <0xff>;
+				qcom,mdss-dsi-bklight-gpio1 = <0xffffffff 0x31 0x00>;
+				qcom,mdss-dsi-bklight-gpio2 = <0xffffffff 0x32 0x00>;
+				qcom,mdss-dsi-bklight-gpio3 = <0xffffffff 0x33 0x00>;
+				qcom,mdss-dsi-mode-sel-gpio-state = "dual_port";
+				qcom,panel-mode-gpio = <0xffffffff 0x34 0x00>;
+				qcom,platform-reset-gpio = <0xffffffff 0x06 0x00>;
+				qcom,platform-bklight-en-gpio = <0xffffffff 0x1d 0x00>;
+				pwms = <0x05 0x00 0x00>;
+				linux,phandle = <0x21>;
+				phandle = <0x21>;
+
+				qcom,mdss-dsi-display-timings {
+
+					timing@0 {
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-h-sync-skew = <0x00>;
+						qcom,mdss-dsi-v-back-porch = <0x1d>;
+						qcom,mdss-dsi-v-front-porch = <0x4b>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x46>;
+						qcom,mdss-dsi-h-sync-pulse = <0x00>;
+						qcom,compression-mode = "dsc";
+						qcom,mdss-dsc-slice-height = <0x08>;
+						qcom,mdss-dsc-slice-width = <0x21c>;
+						qcom,mdss-dsc-slice-per-pkt = <0x02>;
+						qcom,mdss-dsc-bit-per-component = <0x08>;
+						qcom,mdss-dsc-bit-per-pixel = <0x08>;
+						qcom,mdss-dsc-block-prediction-enable;
+						qcom,mdss-dsi-panel-phy-timings = <0x1c0707 0x23220707 0x5020400>;
+						qcom,display-topology = <0x02 0x02 0x02>;
+						qcom,default-topology-index = <0x00>;
+					};
+				};
+			};
+
+				qcom,mdss_dsi_jdi_4k_55uhd_70_new_video {
+					qcom,panel-supply-entries = <0x00>;
+					qcom,panel-chahei-supply-entries = <0x00>;
+					pwms = <0x00>;
+				};
+
+
+================================================================
+PANEL: jdi_4k_55uhd_video
+================================================================
+			qcom,mdss_dsi_jdi_4k_55uhd_video {
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-virtual-channel-id = <0x00>;
+				qcom,mdss-dsi-stream = <0x00>;
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-underflow-color = <0xff>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-panel-hdr-enabled;
+				qcom,mdss-dsi-panel-hdr-color-primaries = <0x38a4 0x3c8c 0x7d00 0x4268 0x3c8c 0x7530 0x1f40 0xbb8>;
+				qcom,mdss-dsi-panel-peak-brightness = <0x401640>;
+				qcom,mdss-dsi-panel-blackness-level = <0xc9e>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-bllp-eof-power-mode;
+				qcom,mdss-dsi-bllp-power-mode;
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-dma-trigger = "trigger_sw";
+				qcom,mdss-dsi-mdp-trigger = "none";
+				qcom,mdss-dsi-reset-sequence = <0x01 0x14 0x00 0x14 0x01 0x14>;
+				qcom,mdss-pan-physical-width-dimension = <0x43>;
+				qcom,mdss-pan-physical-height-dimension = <0x77>;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2f>;
+				qcom,panel-supply-entries = <0x01>;
+				qcom,panel-chahei-supply-entries = <0x04>;
+				qcom,mdss-dsi-bl-pmic-control-type = "bl_ctrl_gpio";
+				qcom,mdss-dsi-bl-min-level = <0x01>;
+				qcom,mdss-dsi-bl-max-level = <0x07>;
+				qcom,mdss-brightness-max-level = <0xff>;
+				qcom,mdss-dsi-bklight-gpio1 = <0xffffffff 0x31 0x00>;
+				qcom,mdss-dsi-bklight-gpio2 = <0xffffffff 0x32 0x00>;
+				qcom,mdss-dsi-bklight-gpio3 = <0xffffffff 0x33 0x00>;
+				qcom,mdss-dsi-mode-sel-gpio-state = "dual_port";
+				qcom,panel-mode-gpio = <0xffffffff 0x34 0x00>;
+				qcom,platform-reset-gpio = <0xffffffff 0x06 0x00>;
+				qcom,platform-bklight-en-gpio = <0xffffffff 0x20 0x00>;
+				pwms = <0x05 0x00 0x00>;
+				linux,phandle = <0x1e>;
+				phandle = <0x1e>;
+
+				qcom,mdss-dsi-display-timings {
+
+					timing@0 {
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-h-sync-skew = <0x00>;
+						qcom,mdss-dsi-v-back-porch = <0x14>;
+						qcom,mdss-dsi-v-front-porch = <0x498>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x46>;
+						qcom,mdss-dsi-h-sync-pulse = <0x00>;
+						qcom,compression-mode = "dsc";
+						qcom,mdss-dsc-slice-height = <0x08>;
+						qcom,mdss-dsc-slice-width = <0x21c>;
+						qcom,mdss-dsc-slice-per-pkt = <0x02>;
+						qcom,mdss-dsc-bit-per-component = <0x08>;
+						qcom,mdss-dsc-bit-per-pixel = <0x08>;
+						qcom,mdss-dsc-block-prediction-enable;
+						qcom,mdss-dsi-panel-phy-timings = <0x1e0807 0x24220808 0x5020400>;
+						qcom,display-topology = <0x02 0x02 0x02>;
+						qcom,default-topology-index = <0x00>;
+					};
+				};
+			};
+
+				qcom,mdss_dsi_jdi_4k_55uhd_video {
+					qcom,panel-supply-entries = <0x00>;
+					qcom,panel-chahei-supply-entries = <0x00>;
+					pwms = <0x00>;
+				};
+
+

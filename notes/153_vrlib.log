@@ -1,0 +1,13 @@
+=== psmart/vrlib shared-library check ===
+
+################ OURS (PA7B40NGE5300009W) ################
+  --- framework jars mentioning psmart/pvr/vrlib ---
+  --- permissions XML declaring a psmart/pvr library ---
+  /system/bin/sh: can't open library: No such file or directory
+  --- does any jar actually contain VrActivity ---
+
+################ STOCK (192.168.0.139:5555) ################
+  --- framework jars mentioning psmart/pvr/vrlib ---
+  --- permissions XML declaring a psmart/pvr library ---
+  /system/bin/sh: can't open library: No such file or directory
+  --- does any jar actually contain VrActivity ---

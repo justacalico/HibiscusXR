@@ -1,0 +1,23 @@
+=== what we got ===
+app/PicoToSvrService/PicoToSvrService.apk     383920
+app/PxrNotification/PxrNotification.apk      82619
+app/WebVR/WebVR.apk               93415429
+priv-app/assistantHmd/assistantHmd.apk    6410683
+priv-app/configserverservice/configserverservice.apk     418211
+priv-app/ControllerUpgrade/ControllerUpgrade.apk     627406
+priv-app/CVService/CVService.apk      47656
+priv-app/InitServer/InitServer.apk      76642
+priv-app/PicoSettingsProvider/PicoSettingsProvider.apk      44904
+priv-app/pvrdisplay/pvrdisplay.apk     919611
+priv-app/PVRVerify/PVRVerify.apk     654631
+priv-app/pvr_adapter/pvr_adapter.apk     597082
+priv-app/seethroughsetting/seethroughsetting.apk  203237138
+priv-app/ShortcutMenu/ShortcutMenu.apk     675534
+priv-app/StreamingAssistant/StreamingAssistant.apk    2251858
+priv-app/tobSettings/tobSettings.apk     437739
+priv-app/VRShell2/VRShell2.apk    88061447
+priv-app/VRUserCenter2/VRUserCenter2.apk     212464
+priv-app/VRWing2/VRWing2.apk      23798025
+
+total: 19 apks, 705M
+DONE

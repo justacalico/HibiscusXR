@@ -1,0 +1,7 @@
+﻿adb.exe : adb.exe: no devices/emulators found
+At line:1 char:408
++ ... | Out-Null; & $adb shell "chmod 755 /data/local/tmp/88_dex_triage.sh; ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (adb.exe: no devices/emulators found:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

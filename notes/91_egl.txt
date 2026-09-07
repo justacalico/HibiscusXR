@@ -1,0 +1,70 @@
+﻿=== ALVR this run ===
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]: 
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    0: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    1: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    2: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    3: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    4: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    5: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    6: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    7: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    8: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 12:49:41.481  4341  4368 E [ALVR NATIVE-RUST]: 
+08-13 12:49:41.512  4341  4341 I P2ALVR  : surfaceCreated
+08-13 12:49:41.512  4341  4341 I P2ALVR  : surfaceChanged 3840x1968
+08-13 12:49:41.513  4341  4341 I P2ALVR-native: nativeSurfaceChanged window=0xe0aa9808
+
+=== what pixel format is the window actually? ===
+Display 0 (HWC display 0): no identification data
+Wide-Color information:
+Display 0 color modes:
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000002, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,-840), size=(2560,2560), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=1, invalidate=0, dataspace=Default, defaultPixelFormat=RGBx_8888, color=(0.000,0.000,0.000,1.000), flags=0x00000002, tr=[1.50, 0.00][0.00, 1.50]
+      layerStack=   0, z=        1, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        1, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0, 3840, 2160], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=0, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000001, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        0, pos=(0,0), size=(3840,2160), crop=[  0,   0, 3840, 2160], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=0, dataspace=Default, defaultPixelFormat=RGBA_8888, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+      layerStack=   0, z=        2, pos=(0,0), size=(   0,   0), crop=[  0,   0,  -1,  -1], cornerRadius=0.000000, isProtected=0, isOpaque=0, invalidate=1, dataspace=Default, defaultPixelFormat=Unknown/None, color=(0.000,0.000,0.000,1.000), flags=0x00000000, tr=[0.00, 0.00][0.00, 0.00]
+
+=== display layers and their formats ===
++ BufferLayer (com.android.systemui.ImageWallpaper#0)
++ ColorLayer (animation background stackId=0#0)
++ BufferLayer (com.android.launcher3/com.android.launcher3.lineage.LineageLauncher#0)
++ ColorLayer (animation background stackId=3#0)
++ ColorLayer (animation background stackId=2#0)
++ BufferLayer (StatusBar#0)
++ BufferLayer (NavigationBar0#0)
+
+=== our demo picked a config fine - proof EGL works ===
+
+=== rotation props in play ===
+  ro.surface_flinger.primary_display_orientation = ORIENTATION_90
+  ro.sf.hwrotation = 90
+  persist.sys.sf.native_mode = 
+  ro.surface_flinger.max_frame_buffer_acquired_buffers = 
+
+=== gralloc / mapper versions available ===
+DM,FC Y android.hardware.graphics.allocator@2.0::IAllocator/default               N/A        N/A    
+FC    ? android.hardware.graphics.allocator@2.0::IAllocator/default         N/A        1106   1106
+DM,FC ? android.hardware.graphics.mapper@2.0::IMapper/default               N/A        N/A    1107 1145 1146 1400 1657 1922 2125 3056 3621 3817
+FC    ? android.hardware.graphics.allocator@2.0::I*/* (/vendor/lib/hw/)      N/A        N/A    
+FC    ? android.hardware.graphics.allocator@2.0::I*/* (/vendor/lib64/hw/)    N/A        N/A    1106
+DM,FC ? android.hardware.graphics.mapper@2.0::I*/* (/vendor/lib/hw/)         N/A        N/A    1374 1400 2062 3266
+DM,FC ? android.hardware.graphics.mapper@2.0::I*/* (/vendor/lib64/hw/)       N/A        N/A    1107 1145 1146 1373 1657 1900 1922 2029 2079 2125 2271 2332 2555 2685 2711 2730 2754 2773 2793 2894 2950 3056 3150 3199 3220 3244 3287 3310 3353 3459 3498 3621 3662 3777 3817 3858
+DONE

@@ -1,0 +1,61 @@
+=== settings: stock vs ours ===
+
+######## system
+  -- keys ONLY on stock --
+    dxCRMxhQkdGePGnp = F6D34679A3D67932DFF25515174B211120BD6005E0DE836C62C5D01A0C2CF965
+    mqBRboGZkQPcAkyk = ajsDFrML2CsDAFEwHeF1ZZfS
+    volume_music_bt_a2dp = 8
+    volume_ring_bt_a2dp = 2
+  -- keys with DIFFERENT values --
+    accelerometer_rotation: stock=1  ours=0
+    mute_streams_affected: stock=46  ours=111
+    screen_brightness: stock=237  ours=255
+    screen_off_timeout: stock=2147483647  ours=1800000
+    volume_music_speaker: stock=7  ours=15
+
+######## secure
+  -- keys ONLY on stock --
+    accessibility_display_daltonizer = 3
+    accessibility_display_daltonizer_enabled = 0
+    location_previous_mode = 1
+  -- keys with DIFFERENT values --
+    android_id: stock=78cb819fdf0cd546  ours=7ebef92a38b68232
+    bluetooth_address: stock=2C:4D:79:F1:14:B9  ours=2C:4D:79:F1:DE:99
+    bluetooth_name: stock=Pico Neo 2 Eye  ours=hello
+    double_tap_to_wake: stock=1  ours=null
+    immersive_mode_confirmations: stock=  ours=confirmed
+    location_providers_allowed: stock=  ours=gps
+    media_button_receiver: stock=github.daneren2005.dsub/github.daneren2005.dsub.receiver.MediaButtonIntentReceiver,0  ours=org.lineageos.eleven/org.lineageos.eleven.MediaButtonIntentReceiver,0,1
+    overview_last_stack_active_time: stock=1786642290733  ours=48609599731
+    sysui_qs_tiles: stock=wifi,custom(com.tailscale.ipn/.QuickToggleService),bt  ours=wifi,bt,dnd,flashlight,battery,airplane,cast,rotation
+    sysui_tuner_version: stock=1  ours=4
+
+######## global
+  -- keys ONLY on stock --
+    bluetooth_a2dp_sink_priority_1C:CE:51:49:31:17 = 100
+    bluetooth_headset_priority_1C:CE:51:49:31:17 = 100
+    enable_gpu_debug_layers = 0
+    force_allow_on_external = 1
+    force_resizable_activities = 1
+    gpu_debug_app = com.StressLevelZero.BONELAB
+    pvr.video.resolution = 1080
+    pvr_handness = 0
+    pvr_update = 0
+    pvr_update_silent = 0
+    wifi_wakeup_available = 0
+  -- keys with DIFFERENT values --
+    audio_safe_volume_state: stock=1  ours=3
+    boot_count: stock=97  ours=51
+    car_dock_sound: stock=/system/media/audio/ui/Dock.ogg  ours=/product/media/audio/ui/Dock.ogg
+    car_undock_sound: stock=/system/media/audio/ui/Undock.ogg  ours=/product/media/audio/ui/Undock.ogg
+    desk_dock_sound: stock=/system/media/audio/ui/Dock.ogg  ours=/product/media/audio/ui/Dock.ogg
+    desk_undock_sound: stock=/system/media/audio/ui/Undock.ogg  ours=/product/media/audio/ui/Undock.ogg
+    lock_sound: stock=/system/media/audio/ui/Lock.ogg  ours=/product/media/audio/ui/Lock.ogg
+    low_battery_sound: stock=/system/media/audio/ui/LowBattery.ogg  ours=/product/media/audio/ui/LowBattery.ogg
+    mobile_data_always_on: stock=0  ours=1
+    product_distribution_channel: stock=PICO2BA7D10GO  ours=PICO2BA7B10GO
+    stay_on_while_plugged_in: stock=7  ours=0
+    trusted_sound: stock=/system/media/audio/ui/Trusted.ogg  ours=/product/media/audio/ui/Trusted.ogg
+    unlock_sound: stock=/system/media/audio/ui/Unlock.ogg  ours=/product/media/audio/ui/Unlock.ogg
+    wireless_charging_started_sound: stock=/system/media/audio/ui/WirelessChargingStarted.ogg  ours=/product/media/audio/ui/ChargingStarted.ogg
+    zen_mode_config_etag: stock=212753925  ours=-1044083332

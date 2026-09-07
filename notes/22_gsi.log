@@ -1,0 +1,22 @@
+=== identity ===
+Android sparse image, version: 1.0, Total of 489244 4096-byte output blocks in 19 input chunks.
+gsi size:       1941131520 bytes (1851 MB)
+target system:  3943694336 bytes (3761 MB)
+FITS in system partition
+
+=== root layout ===
+(A-only GSI should contain /system/... i.e. NOT system-as-root)
+
+=== does it have a nested /system ? ===
+
+=== build.prop ===
+
+=== VNDK 27 support present? (vendor is VNDK 27) ===
+0
+no lib64/vndk-27 dir
+0
+no lib64/vndk-sp-27 dir
+
+(a VNDK 27 snapshot in the GSI is what lets an Android 10 system talk to
+ an Android 8.1 vendor partition - this is the single most important check)
+DONE

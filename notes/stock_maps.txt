@@ -1,0 +1,497 @@
+﻿vrshell pid: 3277
+
+##### all mapped .so #####
+/system/lib64/android.hardware.cas.native@1.0.so
+/system/lib64/android.hardware.cas@1.0.so
+/system/lib64/android.hardware.configstore-utils.so
+/system/lib64/android.hardware.configstore@1.0.so
+/system/lib64/android.hardware.drm@1.0.so
+/system/lib64/android.hardware.graphics.allocator@2.0.so
+/system/lib64/android.hardware.graphics.bufferqueue@1.0.so
+/system/lib64/android.hardware.graphics.common@1.0.so
+/system/lib64/android.hardware.graphics.mapper@2.0.so
+/system/lib64/android.hardware.media.omx@1.0.so
+/system/lib64/android.hardware.media@1.0.so
+/system/lib64/android.hardware.memtrack@1.0.so
+/system/lib64/android.hardware.neuralnetworks@1.0.so
+/system/lib64/android.hardware.renderscript@1.0.so
+/system/lib64/android.hidl.allocator@1.0.so
+/system/lib64/android.hidl.base@1.0.so
+/system/lib64/android.hidl.memory@1.0.so
+/system/lib64/android.hidl.token@1.0-utils.so
+/system/lib64/android.hidl.token@1.0.so
+/system/lib64/lib6DofReset.so
+/system/lib64/libCVControllerClient.pxr.so
+/system/lib64/libEGL.so
+/system/lib64/libETC1.so
+/system/lib64/libExtendedExtractor.so
+/system/lib64/libGLESv1_CM.so
+/system/lib64/libGLESv2.so
+/system/lib64/libGLESv3.so
+/system/lib64/libImageGrid.so
+/system/lib64/libOpenMAXAL.so
+/system/lib64/libOpenSLES.so
+/system/lib64/libPvr_UESDKExt2.so
+/system/lib64/libPvr_UnitySDK.so
+/system/lib64/libPvr_UnitySDKExt1.so
+/system/lib64/libPvr_UnitySDKExt10.so
+/system/lib64/libPvr_UnitySDKExt11.so
+/system/lib64/libPvr_UnitySDKExt5.so
+/system/lib64/libPvr_UnitySDKExt8.so
+/system/lib64/libPvr_UnitySDKExt9.so
+/system/lib64/libRS.so
+/system/lib64/libRScpp.so
+/system/lib64/libSafetyArea.so
+/system/lib64/libaaudio.so
+/system/lib64/libairclient.so
+/system/lib64/libandroid.so
+/system/lib64/libandroid_runtime.so
+/system/lib64/libandroidfw.so
+/system/lib64/libappfuse.so
+/system/lib64/libart-compiler.so
+/system/lib64/libart-dexlayout.so
+/system/lib64/libart.so
+/system/lib64/libaudioclient.so
+/system/lib64/libaudiomanager.so
+/system/lib64/libaudioutils.so
+/system/lib64/libavenhancements.so
+/system/lib64/libbacktrace.so
+/system/lib64/libbase.so
+/system/lib64/libbinder.so
+/system/lib64/libc++.so
+/system/lib64/libc.so
+/system/lib64/libcamera2ndk.so
+/system/lib64/libcamera_client.so
+/system/lib64/libcamera_metadata.so
+/system/lib64/libclang_rt.ubsan_standalone-aarch64-android.so
+/system/lib64/libcompiler_rt.so
+/system/lib64/libcompositor.pxr.so
+/system/lib64/libconfigurationclient.pxr.so
+/system/lib64/libcrypto.so
+/system/lib64/libcutils.so
+/system/lib64/libdatabuffer.so
+/system/lib64/libdebuggerd_client.so
+/system/lib64/libdl.so
+/system/lib64/libdng_sdk.so
+/system/lib64/libdrmframework.so
+/system/lib64/libexif.so
+/system/lib64/libexpat.so
+/system/lib64/libft2.so
+/system/lib64/libgraphicsenv.so
+/system/lib64/libgui.so
+/system/lib64/libhardware.so
+/system/lib64/libhardware_legacy.so
+/system/lib64/libharfbuzz_ng.so
+/system/lib64/libheif.so
+/system/lib64/libhidlbase.so
+/system/lib64/libhidlmemory.so
+/system/lib64/libhidltransport.so
+/system/lib64/libhwbinder.so
+/system/lib64/libhwui.so
+/system/lib64/libicui18n.so
+/system/lib64/libicuuc.so
+/system/lib64/libimg_utils.so
+/system/lib64/libinput.so
+/system/lib64/libjavacore.so
+/system/lib64/libjavacrypto.so
+/system/lib64/libjnigraphics.so
+/system/lib64/libjpeg.so
+/system/lib64/libloader.pxr.so
+/system/lib64/liblog.so
+/system/lib64/liblz4.so
+/system/lib64/liblzma.so
+/system/lib64/libm.so
+/system/lib64/libmedia.so
+/system/lib64/libmedia_helper.so
+/system/lib64/libmedia_jni.so
+/system/lib64/libmedia_omx.so
+/system/lib64/libmediadrm.so
+/system/lib64/libmediametrics.so
+/system/lib64/libmediandk.so
+/system/lib64/libmediaplayerservice.so
+/system/lib64/libmediautils.so
+/system/lib64/libmemtrack.so
+/system/lib64/libmemunreachable.so
+/system/lib64/libmidi.so
+/system/lib64/libminikin.so
+/system/lib64/libmtp.so
+/system/lib64/libnativebridge.so
+/system/lib64/libnativehelper.so
+/system/lib64/libnativeloader.so
+/system/lib64/libnativewindow.so
+/system/lib64/libnetd_client.so
+/system/lib64/libneuralnetworks.so
+/system/lib64/libopenjdk.so
+/system/lib64/libopenjdkjvm.so
+/system/lib64/libpackagelistparser.so
+/system/lib64/libpcre2.so
+/system/lib64/libpdfium.so
+/system/lib64/libpiex.so
+/system/lib64/libplugin.pxr.so
+/system/lib64/libpng.so
+/system/lib64/libpowermanager.so
+/system/lib64/libprocessgroup.so
+/system/lib64/libprotobuf-cpp-lite.so
+/system/lib64/libpvrserviceclient.so
+/system/lib64/libpxr_6dof_optimization.so
+/system/lib64/libpxrnotification.pxr.so
+/system/lib64/libpxrserviceclient.so
+/system/lib64/libqti-at.so
+/system/lib64/libqti-perfd-client_system.so
+/system/lib64/libqti-util_system.so
+/system/lib64/libqti_performance.so
+/system/lib64/libregionalization.so
+/system/lib64/libruntime.pxr.so
+/system/lib64/libselinux.so
+/system/lib64/libsensor.so
+/system/lib64/libsigchain.so
+/system/lib64/libskia.so
+/system/lib64/libsonivox.so
+/system/lib64/libsoundpool.so
+/system/lib64/libsoundtrigger.so
+/system/lib64/libspeexresampler.so
+/system/lib64/libsqlite.so
+/system/lib64/libssl.so
+/system/lib64/libstagefright.so
+/system/lib64/libstagefright_flacdec.so
+/system/lib64/libstagefright_foundation.so
+/system/lib64/libstagefright_http_support.so
+/system/lib64/libstagefright_httplive.so
+/system/lib64/libstagefright_omx.so
+/system/lib64/libstagefright_omx_utils.so
+/system/lib64/libstagefright_wfd.so
+/system/lib64/libstagefright_xmlparser.so
+/system/lib64/libstdc++.so
+/system/lib64/libsync.so
+/system/lib64/libtextclassifier_hash.so
+/system/lib64/libtinyxml2.so
+/system/lib64/libtombstoned_client.so
+/system/lib64/libui.so
+/system/lib64/libunwind.so
+/system/lib64/libusbhost.so
+/system/lib64/libutils.so
+/system/lib64/libvendorconn.so
+/system/lib64/libvintf.so
+/system/lib64/libvirtualinputclient.so
+/system/lib64/libvixl-arm.so
+/system/lib64/libvixl-arm64.so
+/system/lib64/libvndksupport.so
+/system/lib64/libvorbisidec.so
+/system/lib64/libvulkan.so
+/system/lib64/libwebviewchromium_loader.so
+/system/lib64/libwebviewchromium_plat_support.so
+/system/lib64/libwilhelm.so
+/system/lib64/libxml2.so
+/system/lib64/libz.so
+/system/lib64/libziparchive.so
+/system/lib64/vendor.qti.hardware.iop@2.0.so
+/system/lib64/vendor.qti.hardware.perf@1.0.so
+/system/lib64/vndk-sp/android.hardware.graphics.common@1.0.so
+/system/lib64/vndk-sp/android.hardware.graphics.mapper@2.0.so
+/system/lib64/vndk-sp/libbacktrace.so
+/system/lib64/vndk-sp/libbase.so
+/system/lib64/vndk-sp/libc++.so
+/system/lib64/vndk-sp/libcutils.so
+/system/lib64/vndk-sp/libhardware.so
+/system/lib64/vndk-sp/libhidlbase.so
+/system/lib64/vndk-sp/libhidltransport.so
+/system/lib64/vndk-sp/libhwbinder.so
+/system/lib64/vndk-sp/liblzma.so
+/system/lib64/vndk-sp/libunwind.so
+/system/lib64/vndk-sp/libutils.so
+/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+/system/priv-app/VRShell2/lib/arm64/libil2cpp.so
+/system/priv-app/VRShell2/lib/arm64/libinput_virtual_display.so
+/system/priv-app/VRShell2/lib/arm64/libmain.so
+/system/priv-app/VRShell2/lib/arm64/libunity.so
+/vendor/lib64/egl/eglSubDriverAndroid.so
+/vendor/lib64/egl/libEGL_adreno.so
+/vendor/lib64/egl/libGLESv1_CM_adreno.so
+/vendor/lib64/egl/libGLESv2_adreno.so
+/vendor/lib64/hw/android.hardware.graphics.mapper@2.0-impl.so
+/vendor/lib64/hw/gralloc.sdm845.so
+/vendor/lib64/libadreno_utils.so
+/vendor/lib64/libgrallocutils.so
+/vendor/lib64/libgsl.so
+/vendor/lib64/libllvm-glnext.so
+/vendor/lib64/libqdMetaData.so
+
+##### 6dof / tracking / pxr / pvr #####
+/system/lib64/android.hardware.memtrack@1.0.so
+/system/lib64/lib6DofReset.so
+/system/lib64/libCVControllerClient.pxr.so
+/system/lib64/libPvr_UESDKExt2.so
+/system/lib64/libPvr_UnitySDK.so
+/system/lib64/libPvr_UnitySDKExt1.so
+/system/lib64/libPvr_UnitySDKExt10.so
+/system/lib64/libPvr_UnitySDKExt11.so
+/system/lib64/libPvr_UnitySDKExt5.so
+/system/lib64/libPvr_UnitySDKExt8.so
+/system/lib64/libPvr_UnitySDKExt9.so
+/system/lib64/libcompositor.pxr.so
+/system/lib64/libconfigurationclient.pxr.so
+/system/lib64/libloader.pxr.so
+/system/lib64/libmemtrack.so
+/system/lib64/libplugin.pxr.so
+/system/lib64/libpvrserviceclient.so
+/system/lib64/libpxr_6dof_optimization.so
+/system/lib64/libpxrnotification.pxr.so
+/system/lib64/libpxrserviceclient.so
+/system/lib64/libruntime.pxr.so
+/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+
+##### pvrservice mapped libs #####
+pvrservice pid: 797
+/system/lib64/android.hardware.cas.native@1.0.so
+/system/lib64/android.hardware.cas@1.0.so
+/system/lib64/android.hardware.configstore-utils.so
+/system/lib64/android.hardware.configstore@1.0.so
+/system/lib64/android.hardware.drm@1.0.so
+/system/lib64/android.hardware.graphics.allocator@2.0.so
+/system/lib64/android.hardware.graphics.bufferqueue@1.0.so
+/system/lib64/android.hardware.graphics.common@1.0.so
+/system/lib64/android.hardware.graphics.mapper@2.0.so
+/system/lib64/android.hardware.media.omx@1.0.so
+/system/lib64/android.hardware.media@1.0.so
+/system/lib64/android.hardware.memtrack@1.0.so
+/system/lib64/android.hidl.allocator@1.0.so
+/system/lib64/android.hidl.memory@1.0.so
+/system/lib64/android.hidl.token@1.0-utils.so
+/system/lib64/android.hidl.token@1.0.so
+/system/lib64/libEGL.so
+/system/lib64/libETC1.so
+/system/lib64/libExtendedExtractor.so
+/system/lib64/libGLESv1_CM.so
+/system/lib64/libGLESv2.so
+/system/lib64/libGLESv3.so
+/system/lib64/libHead3DofPredict.so
+/system/lib64/libRScpp.so
+/system/lib64/libandroid.so
+/system/lib64/libandroid_runtime.so
+/system/lib64/libandroidfw.so
+/system/lib64/libappfuse.so
+/system/lib64/libaudioclient.so
+/system/lib64/libaudiomanager.so
+/system/lib64/libaudioutils.so
+/system/lib64/libavenhancements.so
+/system/lib64/libbacktrace.so
+/system/lib64/libbase.so
+/system/lib64/libbinder.so
+/system/lib64/libc++.so
+/system/lib64/libc.so
+/system/lib64/libcamera_client.so
+/system/lib64/libcamera_metadata.so
+/system/lib64/libclang_rt.ubsan_standalone-aarch64-android.so
+/system/lib64/libcrypto.so
+/system/lib64/libcutils.so
+/system/lib64/libdebuggerd_client.so
+/system/lib64/libdl.so
+/system/lib64/libdng_sdk.so
+/system/lib64/libdrmframework.so
+/system/lib64/libexpat.so
+/system/lib64/libft2.so
+/system/lib64/libgraphicsenv.so
+/system/lib64/libgui.so
+/system/lib64/libhardware.so
+/system/lib64/libhardware_legacy.so
+/system/lib64/libharfbuzz_ng.so
+/system/lib64/libheif.so
+/system/lib64/libhidlbase.so
+/system/lib64/libhidlmemory.so
+/system/lib64/libhidltransport.so
+/system/lib64/libhwbinder.so
+/system/lib64/libhwui.so
+/system/lib64/libicui18n.so
+/system/lib64/libicuuc.so
+/system/lib64/libimg_utils.so
+/system/lib64/libinput.so
+/system/lib64/libjpeg.so
+/system/lib64/liblog.so
+/system/lib64/liblzma.so
+/system/lib64/libm.so
+/system/lib64/libmedia.so
+/system/lib64/libmedia_helper.so
+/system/lib64/libmedia_omx.so
+/system/lib64/libmediadrm.so
+/system/lib64/libmediametrics.so
+/system/lib64/libmediaplayerservice.so
+/system/lib64/libmediautils.so
+/system/lib64/libmemtrack.so
+/system/lib64/libmemunreachable.so
+/system/lib64/libminikin.so
+/system/lib64/libnativebridge.so
+/system/lib64/libnativehelper.so
+/system/lib64/libnativeloader.so
+/system/lib64/libnativewindow.so
+/system/lib64/libnetd_client.so
+/system/lib64/libpackagelistparser.so
+/system/lib64/libpcre2.so
+/system/lib64/libpdfium.so
+/system/lib64/libpiex.so
+/system/lib64/libpng.so
+/system/lib64/libpowermanager.so
+/system/lib64/libprocessgroup.so
+/system/lib64/libprotobuf-cpp-lite.so
+/system/lib64/libpvrmodule_orientationtracker.so
+/system/lib64/libpvrmodule_platform.so
+/system/lib64/libpvrservice.so
+/system/lib64/libpvrserviceclient.so
+/system/lib64/libpxr_6dof_optimization.so
+/system/lib64/libregionalization.so
+/system/lib64/libselinux.so
+/system/lib64/libsensor.so
+/system/lib64/libskia.so
+/system/lib64/libsonivox.so
+/system/lib64/libsoundtrigger.so
+/system/lib64/libspeexresampler.so
+/system/lib64/libsqlite.so
+/system/lib64/libstagefright.so
+/system/lib64/libstagefright_flacdec.so
+/system/lib64/libstagefright_foundation.so
+/system/lib64/libstagefright_httplive.so
+/system/lib64/libstagefright_omx.so
+/system/lib64/libstagefright_omx_utils.so
+/system/lib64/libstagefright_wfd.so
+/system/lib64/libstagefright_xmlparser.so
+/system/lib64/libstdc++.so
+/system/lib64/libsync.so
+/system/lib64/libtinyxml2.so
+/system/lib64/libui.so
+/system/lib64/libunwind.so
+/system/lib64/libusbhost.so
+/system/lib64/libutils.so
+/system/lib64/libvendorconn.so
+/system/lib64/libvintf.so
+/system/lib64/libvndksupport.so
+/system/lib64/libvorbisidec.so
+/system/lib64/libvulkan.so
+/system/lib64/libz.so
+/system/lib64/libziparchive.so
+/system/lib64/vndk-sp/android.hardware.graphics.common@1.0.so
+/system/lib64/vndk-sp/android.hardware.graphics.mapper@2.0.so
+/system/lib64/vndk-sp/libbacktrace.so
+/system/lib64/vndk-sp/libbase.so
+/system/lib64/vndk-sp/libc++.so
+/system/lib64/vndk-sp/libcutils.so
+/system/lib64/vndk-sp/libhardware.so
+/system/lib64/vndk-sp/libhidlbase.so
+/system/lib64/vndk-sp/libhidltransport.so
+/system/lib64/vndk-sp/libhwbinder.so
+/system/lib64/vndk-sp/liblzma.so
+/system/lib64/vndk-sp/libunwind.so
+/system/lib64/vndk-sp/libutils.so
+/vendor/lib64/hw/android.hardware.graphics.mapper@2.0-impl.so
+/vendor/lib64/hw/gralloc.sdm845.so
+/vendor/lib64/libdrm.so
+/vendor/lib64/libgrallocutils.so
+/vendor/lib64/libqdMetaData.so
+/vendor/lib64/libqvrservice_client.so
+
+##### does stock have lib6DofReset.so and where #####
+-rw-r--r-- 1 root root 17872 2008-12-31 11:00 /system/lib/lib6DofReset.so
+-rw-r--r-- 1 root root  9928 2008-12-31 11:00 /system/lib64/lib6DofReset.so
+
+##### full pvr property set #####
+[init.svc.pvrservice]: [running]
+[persist.pvr.2dtovr.button_back]: [1]
+[persist.pvr.adb.root]: [1]
+[persist.pvr.bcl.mode]: [0]
+[persist.pvr.charge.policy]: [3]
+[persist.pvr.config.enable_stencil_mesh]: [0]
+[persist.pvr.config.eyebuffer_height]: [1664]
+[persist.pvr.config.eyebuffer_width]: [1664]
+[persist.pvr.config.target_fps]: [-1]
+[persist.pvr.controller.index]: [-1]
+[persist.pvr.current.countrycode]: [US]
+[persist.pvr.dashboard.enable]: [1]
+[persist.pvr.debug.appfps]: [0]
+[persist.pvr.debug.sysstatus]: [0]
+[persist.pvr.default.home]: [com.picovrtob.vrlauncher]
+[persist.pvr.display.eb_enable]: [1]
+[persist.pvr.display.eb_mode]: [1]
+[persist.pvr.display.eb_use]: [1]
+[persist.pvr.geomagnetic.mode]: [0]
+[persist.pvr.global_6dof]: [true]
+[persist.pvr.isLog2SDCard]: [1]
+[persist.pvr.loadanim]: [1]
+[persist.pvr.logcatch]: [0]
+[persist.pvr.mono.castmode]: [1]
+[persist.pvr.mulkey.enable]: [1]
+[persist.pvr.openrecenter]: [0]
+[persist.pvr.otgmode]: [0]
+[persist.pvr.outproxy.enable]: [true]
+[persist.pvr.performance_mode]: [1]
+[persist.pvr.prebootmode]: [0]
+[persist.pvr.psensor.reset_pose]: [0]
+[persist.pvr.psensor_checkmode]: [1]
+[persist.pvr.raycast.enable]: [0]
+[persist.pvr.reset_mode]: [0]
+[persist.pvr.screenoff.delay]: [10]
+[persist.pvr.sdk.trackingmode]: [4]
+[persist.pvr.sensor.source]: [1]
+[persist.pvr.showsafety.tip]: [1]
+[persist.pvr.sleep_by_static]: [0]
+[persist.pvr.sleepmode]: [2]
+[persist.pvr.surface.rotation]: [1]
+[persist.pvr.volumeui]: [1]
+[persist.pvr.vrtoast.enable]: [1]
+[persist.pvr.wfd.enable]: [1]
+[persist.pvr.wifi.autojoin]: [0]
+[persist.pvrcon.6dof.backup]: [110]
+[persist.pvrcon.config.status]: [1]
+[persist.pvrcon.config.visible]: [0]
+[persist.pvrcon.main.controller]: [1]
+[persist.pvrcon.seethrough.enable]: [1]
+[persist.pvrconfig.lens_ca_correction]: [1]
+[persist.pvrpermission.autogrant]: [0]
+[persist.pvrservice.eyetracking_autorun]: [1]
+[persist.pvrservice.lens.fov]: [101]
+[persist.pvrservice.trackingmode]: [3]
+[persist.pxr.enablenoti]: [0]
+[persist.pxr.eyetracking.fps]: [90]
+[pvr.2d_screen.reposition]: [0]
+[pvr.camera.warmstart.action]: [recoverWarmData]
+[pvr.controller.mode]: [1]
+[pvr.dashboard.ready]: [1]
+[pvr.debug.lockscreen]: [false]
+[pvr.debug.securitysettings]: [true]
+[pvr.display.vrmode.enable]: [1]
+[pvr.display.wave.ori_mode]: [2]
+[pvr.enable.multihal.calibration]: [1]
+[pvr.launcher.open.guide]: [0]
+[pvr.launcher.openrecenter]: [0]
+[pvr.running.app.3dof]: [false]
+[pvr.service.6dof.stopped]: [false]
+[pvr.sleep.mode]: [0]
+[pvr.system.led.type]: [1]
+[pvr.update.app]: [0]
+[pxr.2dtovr.disable]: [0]
+[pxr.product.useexternalfunc]: [1]
+[pxr.service.6dof.restarted]: [false]
+[pxr.splash.update]: [1]
+[pxr.vendorhw.11ad]: [0]
+[pxr.vendorhw.eye]: [1]
+[pxr.vendorhw.product.model]: [Pico Neo 2 Eye]
+[pxr.vendorhw.product.name]: [A7D10]
+[pxr.vendorhw.tof]: [0]
+[ro.boottime.pvrservice]: [4494565987]
+[ro.pvr.2dtovr.controller]: [2]
+[ro.pvr.2dtovr.display]: [0]
+[ro.pvr.adb_noauth]: [1]
+[ro.pvr.controller.service]: [cv]
+[ro.pvr.force_landscape]: [false]
+[ro.pvr.forcetob]: [1]
+[ro.pvr.hmd.type]: [JDI554K]
+[ro.pvr.internal.version]: [C086_RF01_BV1.3_SV1.82_20210409_B346]
+[ro.pvr.net.hostname]: [PicoNeo2_]
+[ro.pvr.p2p.devicename]: [PicoNeo2_]
+[ro.pvr.product.name]: [FalconCV2]
+[ro.pvr.useHmdDevicePose]: [0]
+[ro.pvrservice.enable]: [1]
+[ro.pxr.display.orientation]: [90]
+[sys.pvr.cpufre.action]: [0]
+[sys.pvr.floorheight]: [-0.5286096]
+[sys.pxr.boundary_path]: [/data/misc/user/0/boundary]
+[wavevr.init.auth_controller]: [htc.com.pvr.controllerdevice/htc.com.pvr.controllerdevice.PvrControllerService]
+[wavevr.init.auth_hmd]: [com.pvr.device.svr/com.htc.vr.device.svr.SvrHmdService]
+DONE

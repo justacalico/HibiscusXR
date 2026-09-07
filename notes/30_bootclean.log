@@ -1,0 +1,53 @@
+=== OTA (stock) boot ramdisk ===
+total 1824
+drwxrwxrwx 1 justin justin     512 Aug 13 09:57 .
+drwxrwxrwx 1 justin justin     512 Aug 13 09:58 ..
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 acct
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 bt_firmware
+lrwxrwxrwx 1 justin justin      50 Dec 31  1969 bugreports -> /data/user_de/0/com.android.shell/files/bugreports
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 cache
+lrwxrwxrwx 1 justin justin      13 Dec 31  1969 charger -> /sbin/charger
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 config
+lrwxrwxrwx 1 justin justin      17 Dec 31  1969 d -> /sys/kernel/debug
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 data
+lrwxrwxrwx 1 justin justin      23 Dec 31  1969 default.prop -> system/etc/prop.default
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 dev
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 dsp
+lrwxrwxrwx 1 justin justin      11 Dec 31  1969 etc -> /system/etc
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 firmware
+-rwxrwxrwx 1 justin justin 1791776 Dec 31  1969 init
+-rwxrwxrwx 1 justin justin    1254 Dec 31  1969 init.environ.rc
+-rwxrwxrwx 1 justin justin   28876 Dec 31  1969 init.rc
+-rwxrwxrwx 1 justin justin    3029 Dec 31  1969 init.recovery.qcom.rc
+-rwxrwxrwx 1 justin justin   10219 Dec 31  1969 init.usb.configfs.rc
+-rwxrwxrwx 1 justin justin    5721 Dec 31  1969 init.usb.rc
+-rwxrwxrwx 1 justin justin     497 Dec 31  1969 init.zygote32.rc
+-rwxrwxrwx 1 justin justin     847 Dec 31  1969 init.zygote64_32.rc
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 mnt
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 oem
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 persist
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 proc
+drwxrwxrwx 1 justin justin     512 Aug 13 09:57 res
+drwxrwxrwx 1 justin justin     512 Aug 13 09:57 sbin
+lrwxrwxrwx 1 justin justin      21 Dec 31  1969 sdcard -> /storage/self/primary
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 storage
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 sys
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 system
+-rwxrwxrwx 1 justin justin    5222 Dec 31  1969 ueventd.rc
+drwxrwxrwx 1 justin justin     512 Dec 31  1969 vendor
+
+=== magisk markers in OTA ramdisk ===
+PRESENT: sbin
+
+=== magisk markers in the on-device (backed up) boot ramdisk ===
+PRESENT: .backup
+PRESENT: overlay.d
+PRESENT: sbin
+
+=== init size comparison (magisk replaces init) ===
+OTA    init: 1791776 bytes
+device init: 199960 bytes
+
+=== does OTA ramdisk also symlink default.prop? ===
+lrwxrwxrwx 1 justin justin 23 Dec 31  1969 /mnt/f/PN2Lineage/extracted/bootclean/rd/default.prop -> system/etc/prop.default
+DONE

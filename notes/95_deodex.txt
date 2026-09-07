@@ -1,0 +1,46 @@
+=== usage ===
+[ERROR] [686] 2026/08/13 12:56:41 (utils.c:112 utils_init) No input file/dir specified
+[FATAL] [686] 2026/08/13 12:56:41 (vdexExtractor.c:161 main) Couldn't load input files
+
+=== unquickening ===
+  PicoToSvrService         rc=0 files=1 size=2.1M
+  PxrNotification          rc=0 files=1 size=16K
+  CVService                rc=0 files=1 size=1.5M
+  ControllerUpgrade        rc=0 files=1 size=2.7M
+  InitServer               rc=0 files=1 size=2.6M
+  PVRVerify                rc=0 files=1 size=2.3M
+  PicoSettingsProvider     rc=0 files=1 size=32K
+  ShortcutMenu             rc=0 files=1 size=3.0M
+  StreamingAssistant       rc=0 files=1 size=3.1M
+  VRShell2                 rc=0 files=1 size=2.6M
+  VRUserCenter2            rc=0 files=1 size=3.4M
+  VRWing2                  rc=0 files=1 size=5.2M
+  configserverservice      rc=0 files=1 size=2.8M
+  pvr_adapter              rc=0 files=1 size=792K
+  pvrdisplay               rc=0 files=1 size=176K
+  tobSettings              rc=0 files=1 size=3.5M
+
+=== what landed ===
+configserverservice/configserverservice_classes.dex    2895044
+ControllerUpgrade/ControllerUpgrade_classes.dex    2808608
+CVService/CVService_classes.dex                 1468020
+InitServer/InitServer_classes.dex               2638072
+PicoSettingsProvider/PicoSettingsProvider_classes.dex      31212
+PicoToSvrService/PicoToSvrService_classes.dex    2182980
+pvrdisplay/pvrdisplay_classes.dex                179164
+PVRVerify/PVRVerify_classes.dex                 2361912
+pvr_adapter/pvr_adapter_classes.dex              807484
+PxrNotification/PxrNotification_classes.dex       15708
+ShortcutMenu/ShortcutMenu_classes.dex           3085400
+StreamingAssistant/StreamingAssistant_classes.dex    3169232
+tobSettings/tobSettings_classes.dex             3631996
+VRShell2/VRShell2_classes.dex                   2711928
+VRUserCenter2/VRUserCenter2_classes.dex         3540204
+VRWing2/VRWing2_classes.dex                     5441064
+
+=== a sample extract log ===
+[INFO] Processing 1 file(s) from /mnt/f/PN2Lineage/pvr_apps/priv-app/pvrdisplay/oat/arm64/pvrdisplay.vdex
+[INFO] 1 out of 1 Vdex files have been processed
+[INFO] 1 Dex files have been extracted in total
+[INFO] Extracted Dex files are available in '/mnt/f/PN2Lineage/pvr_dex/pvrdisplay'
+DONE

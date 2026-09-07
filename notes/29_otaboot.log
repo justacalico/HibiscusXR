@@ -1,0 +1,7 @@
+header v0 page=4096 kernel=13983302 ramdisk=1680382 second=0
+ramdisk magic: 1f8b0800
+decompressed ramdisk: 3090176 bytes (gzip cpio)
+extracted entries: 19
+repacked cpio: 3090432 bytes
+recompressed ramdisk: 1677320 bytes (was 1680382)
+wrote /tmp/discard.img (15667200 bytes)

@@ -1,0 +1,15 @@
+=== Pico blob comparison: ours vs stock (PUI 4.1.3) ===
+ours : 35 files
+stock: 35 files
+
+identical : 35
+
+DIFFERENT CONTENT (0):
+
+MISSING FROM OURS (0):
+
+ONLY ON OURS (0):
+
+=== VRShell2 apk identical? ===
+  ours: e7772a394298aa77d80270df47ef6a29  /system/priv-app/VRShell2/VRShell2.apk
+  stock: 60ed50c10e64b424d82a4703780b3d3b  /system/priv-app/VRShell2/VRShell2.apk

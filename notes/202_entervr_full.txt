@@ -1,0 +1,340 @@
+/mnt/f/PN2Lineage/notes/vrshell_lib/libPvr_UnitySDK.so
+window 0x5fa1c .. 0x5ff60   target 0x5ff58
+
+  0005fa1c  sub       sp, sp, #0x3a0
+  0005fa20  adrp      x4, #0x1ef000
+  0005fa24  adrp      x2, #0x16f000
+  0005fa28  stp       x29, x30, [sp, #-0x60]!
+  0005fa2c  mov       x29, sp
+  0005fa30  ldr       x4, [x4, #0x400]
+  0005fa34  stp       x19, x20, [sp, #0x10]
+  0005fa38  str       w3, [x29, #0x7c]
+  0005fa3c  add       x19, x2, #0x2b8        ; "D:/PicoSDK_Work/SDK2.0/PicoSDK_Mobile_CoreLib_bk/CoreLib/src/main/jni/VrApi.cpp"
+  0005fa40  ldr       x3, [x4]
+  0005fa44  adrp      x2, #0x171000
+  0005fa48  stp       x21, x22, [sp, #0x20]
+  0005fa4c  stp       x23, x24, [sp, #0x30]
+  0005fa50  add       x2, x2, #0x2a8        ; "---------- pvr_EnterVrMode ----------"
+  0005fa54  adrp      x22, #0x1ee000
+  0005fa58  mov       x21, x0
+  0005fa5c  mov       x23, x1
+  0005fa60  mov       w0, #4
+  0005fa64  mov       x1, x19
+  0005fa68  stp       x25, x26, [sp, #0x40]
+  0005fa6c  str       x3, [x29, #0x3f8]
+  0005fa70  add       x25, x29, #0x188
+  0005fa74  stp       x27, x28, [sp, #0x50]
+  0005fa78  bl        #0x6d458
+  0005fa7c  ldr       x0, [x22, #0x4e8]
+  0005fa80  mov       x1, x25
+  0005fa84  str       xzr, [x25]
+  0005fa88  mov       x2, #0
+  0005fa8c  ldr       x3, [x0]
+  0005fa90  mov       x0, x3
+  0005fa94  ldr       x3, [x3]
+  0005fa98  ldr       x3, [x3, #0x20]
+  0005fa9c  blr       x3
+  0005faa0  mov       w3, w0
+  0005faa4  cbnz      w0, #0x5ffbc
+  0005faa8  add       x7, x29, #0x80
+  0005faac  mov       x0, #0x288
+  0005fab0  str       x7, [x29, #0x60]
+  0005fab4  adrp      x20, #0x1f0000
+  0005fab8  bl        #0x107c24
+  0005fabc  mov       x28, x0
+  0005fac0  add       x27, x0, #0x148
+  0005fac4  mov       w1, #1
+  0005fac8  add       x0, x0, #0x158
+  0005facc  str       x0, [x29, #0x70]
+  0005fad0  strb      w1, [x28, #0x148]
+  0005fad4  mov       x24, x28
+  0005fad8  strb      w1, [x27, #1]
+  0005fadc  add       x26, x20, #0x20
+  0005fae0  strb      wzr, [x27, #2]
+  0005fae4  str       xzr, [x27, #8]
+  0005fae8  bl        #0x74bec
+  0005faec  str       xzr, [x27, #0x118]
+  0005faf0  ldr       x0, [x25]
+  0005faf4  str       xzr, [x27, #0x120]
+  0005faf8  str       xzr, [x27, #0x128]
+  0005fafc  str       wzr, [x27, #0x130]
+  0005fb00  str       wzr, [x27, #0x134]
+  0005fb04  str       x0, [x28, #8]
+  0005fb08  bl        #0x4f920
+  0005fb0c  str       w0, [x28, #0x10]
+  0005fb10  add       x2, x28, #0x120
+  0005fb14  ldr       x3, [x21, #0x20]
+  0005fb18  ldp       x10, x11, [x21]
+  0005fb1c  str       x3, [x28, #0x140]
+  0005fb20  ldp       x0, x1, [x21, #0x10]
+  0005fb24  stp       x10, x11, [x2]
+  0005fb28  stp       x0, x1, [x2, #0x10]
+  0005fb2c  strb      wzr, [x24], #0x20
+  0005fb30  bl        #0x5a274
+  0005fb34  add       x8, x29, #0x190
+  0005fb38  bl        #0x5c6c4
+  0005fb3c  bl        #0xd51ec
+  0005fb40  mov       x0, #0
+  0005fb44  bl        #0x50030
+  0005fb48  mov       x25, x0
+  0005fb4c  mov       w0, #0x3059
+  0005fb50  bl        #0x50560
+  0005fb54  mov       x8, x0
+  0005fb58  mov       x1, x8
+  0005fb5c  mov       w2, #0x3057
+  0005fb60  add       x3, x26, #4
+  0005fb64  mov       x0, x25
+  0005fb68  str       x8, [x29, #0x68]
+  0005fb6c  bl        #0x50130
+  0005fb70  ldr       x8, [x29, #0x68]
+  0005fb74  add       x3, x26, #8
+  0005fb78  mov       w2, #0x3056
+  0005fb7c  mov       x0, x25
+  0005fb80  mov       x1, x8
+  0005fb84  bl        #0x50130
+  0005fb88  bl        #0x6c41c
+  0005fb8c  ldr       x7, [x29, #0x60]
+  0005fb90  str       x7, [x29, #0x68]
+  0005fb94  mov       x8, x7
+  0005fb98  bl        #0x7fd0c
+  0005fb9c  ldr       x1, [x29, #0x68]
+  0005fba0  mov       x2, #0xfc
+  0005fba4  mov       x0, x24
+  0005fba8  bl        #0x4f2d0
+  0005fbac  ldr       w3, [x26, #4]
+  0005fbb0  add       x0, x28, #0xec
+  0005fbb4  ldr       w2, [x26, #8]
+  0005fbb8  add       x1, x28, #0xf0
+  0005fbbc  str       w3, [x28, #0xf4]
+  0005fbc0  str       w2, [x28, #0xf8]
+  0005fbc4  bl        #0x6c430
+  0005fbc8  ldr       s0, [x28, #0xe8]
+  0005fbcc  adrp      x2, #0x171000
+  0005fbd0  mov       w0, #4
+  0005fbd4  mov       x1, x19
+  0005fbd8  fcvt      d0, s0
+  0005fbdc  add       x2, x2, #0x2d0        ; "hmdInfo.lensSeparation = %f"
+  0005fbe0  bl        #0x6d458
+  0005fbe4  ldr       s0, [x28, #0xec]
+  0005fbe8  adrp      x2, #0x171000
+  0005fbec  mov       w0, #4
+  0005fbf0  mov       x1, x19
+  0005fbf4  fcvt      d0, s0
+  0005fbf8  add       x2, x2, #0x2f0        ; "hmdInfo.widthMeters = %f"
+  0005fbfc  bl        #0x6d458
+  0005fc00  ldr       s0, [x28, #0xf0]
+  0005fc04  adrp      x2, #0x171000
+  0005fc08  mov       w0, #4
+  0005fc0c  mov       x1, x19
+  0005fc10  fcvt      d0, s0
+  0005fc14  add       x2, x2, #0x310        ; "hmdInfo.heightMeters = %f"
+  0005fc18  bl        #0x6d458
+  0005fc1c  ldr       w3, [x28, #0xf4]
+  0005fc20  adrp      x2, #0x171000
+  0005fc24  mov       w0, #4
+  0005fc28  mov       x1, x19
+  0005fc2c  add       x2, x2, #0x330        ; "hmdInfo.widthPixels = %i"
+  0005fc30  bl        #0x6d458
+  0005fc34  ldr       w3, [x28, #0xf8]
+  0005fc38  adrp      x2, #0x171000
+  0005fc3c  mov       w0, #4
+  0005fc40  mov       x1, x19
+  0005fc44  add       x2, x2, #0x350        ; "hmdInfo.heightPixels = %i"
+  0005fc48  bl        #0x6d458
+  0005fc4c  ldr       w3, [x28, #0x10c]
+  0005fc50  adrp      x2, #0x171000
+  0005fc54  mov       w0, #4
+  0005fc58  mov       x1, x19
+  0005fc5c  add       x2, x2, #0x370        ; "hmdInfo.eyeTextureResolution[0] = %i"
+  0005fc60  bl        #0x6d458
+  0005fc64  ldr       w3, [x28, #0x110]
+  0005fc68  adrp      x2, #0x171000
+  0005fc6c  mov       w0, #4
+  0005fc70  mov       x1, x19
+  0005fc74  add       x2, x2, #0x398        ; "hmdInfo.eyeTextureResolution[1] = %i"
+  0005fc78  bl        #0x6d458
+  0005fc7c  ldr       s0, [x28, #0x114]
+  0005fc80  adrp      x2, #0x171000
+  0005fc84  mov       w0, #4
+  0005fc88  mov       x1, x19
+  0005fc8c  fcvt      d0, s0
+  0005fc90  add       x2, x2, #0x3c0        ; "hmdInfo.eyeTextureFov[0] = %f"
+  0005fc94  bl        #0x6d458
+  0005fc98  ldr       s0, [x28, #0x118]
+  0005fc9c  adrp      x2, #0x171000
+  0005fca0  add       x2, x2, #0x3e0        ; "hmdInfo.eyeTextureFov[1] = %f"
+  0005fca4  mov       x1, x19
+  0005fca8  fcvt      d0, s0
+  0005fcac  mov       w0, #4
+  0005fcb0  bl        #0x6d458
+  0005fcb4  mov       w0, #1
+  0005fcb8  bl        #0x7ede0
+  0005fcbc  fcvt      d0, s0
+  0005fcc0  bl        #0x6a498
+  0005fcc4  mov       w0, #7
+  0005fcc8  bl        #0x6eea8
+  0005fccc  adrp      x1, #0x16f000
+  0005fcd0  add       x1, x1, #0x358        ; "Falcon"
+  0005fcd4  bl        #0x747f0
+  0005fcd8  mov       w0, #8
+  0005fcdc  bl        #0x7ed90
+  0005fce0  cmp       w0, #1
+  0005fce4  b.eq      #0x5ff24
+  0005fce8  ldr       x1, [x28, #8]
+  0005fcec  mov       x0, x1
+  0005fcf0  ldr       x1, [x1]
+  0005fcf4  ldr       x1, [x1, #0x78]
+  0005fcf8  blr       x1
+  0005fcfc  cbz       x0, #0x5fd2c
+  0005fd00  ldr       x1, [x28, #8]
+  0005fd04  mov       x0, x1
+  0005fd08  ldr       x1, [x1]
+  0005fd0c  ldr       x1, [x1, #0x88]
+  0005fd10  blr       x1
+  0005fd14  adrp      x1, #0x16f000
+  0005fd18  adrp      x2, #0x171000
+  0005fd1c  mov       w0, #4
+  0005fd20  add       x1, x1, #0x2b8        ; "D:/PicoSDK_Work/SDK2.0/PicoSDK_Mobile_CoreLib_bk/CoreLib/src/main/jni/VrApi.cpp"
+  0005fd24  add       x2, x2, #0x468        ; "Cleared JNI exception"
+  0005fd28  bl        #0x6d458
+  0005fd2c  ldrb      w1, [x28, #0x120]
+  0005fd30  mov       w0, #9
+  0005fd34  strb      w1, [x28, #0x149]
+  0005fd38  add       x19, x28, #0x160
+  0005fd3c  bl        #0x7ed90
+  0005fd40  cmp       w0, wzr
+  0005fd44  ldr       x2, [x28, #0x128]
+  0005fd48  cset      w0, gt
+  0005fd4c  ldrb      w1, [x28, #0x122]
+  0005fd50  str       x2, [x28, #0x150]
+  0005fd54  mov       x2, #0xfc
+  0005fd58  strb      w0, [x28, #0x148]
+  0005fd5c  mov       x0, x19
+  0005fd60  strb      w1, [x28, #0x14a]
+  0005fd64  mov       x1, x24
+  0005fd68  bl        #0x4f2d0
+  0005fd6c  ldr       x22, [x22, #0x4e8]
+  0005fd70  adrp      x0, #0x204000
+  0005fd74  ldr       x2, [x28, #0x140]
+  0005fd78  add       x0, x0, #0x9b0
+  0005fd7c  ldr       w1, [x28, #0x130]
+  0005fd80  ldr       x6, [x22]
+  0005fd84  str       x6, [x28, #0x260]
+  0005fd88  ldr       x3, [x0, #0x5e8]
+  0005fd8c  ldr       w0, [x20, #0x20]
+  0005fd90  str       w0, [x28, #0x27c]
+  0005fd94  ldr       w0, [x29, #0x7c]
+  0005fd98  str       x3, [x28, #0x268]
+  0005fd9c  str       x2, [x28, #0x270]
+  0005fda0  str       w1, [x28, #0x278]
+  0005fda4  cbz       w0, #0x5feec
+  0005fda8  ldr       w0, [x29, #0x7c]
+  0005fdac  cmp       w0, #1
+  0005fdb0  b.eq      #0x5ff18
+  0005fdb4  adrp      x0, #0x1ef000
+  0005fdb8  mov       x1, #0
+  0005fdbc  add       x22, x29, #0x2b8
+  0005fdc0  ldr       x0, [x0, #0xeb8]
+  0005fdc4  bl        #0x4fe80
+  0005fdc8  adrp      x0, #0x1ef000
+  0005fdcc  mov       x1, #0
+  0005fdd0  ldr       x0, [x0, #0x250]
+  0005fdd4  bl        #0x503f0
+  0005fdd8  ldrb      w7, [x28, #0x148]
+  0005fddc  add       x0, x22, #0x10
+  0005fde0  ldrb      w6, [x27, #1]
+  0005fde4  ldrb      w3, [x27, #2]
+  0005fde8  ldr       x2, [x27, #8]
+  0005fdec  ldr       x1, [x29, #0x70]
+  0005fdf0  strb      w7, [x22]
+  0005fdf4  strb      w6, [x22, #1]
+  0005fdf8  strb      w3, [x22, #2]
+  0005fdfc  str       x2, [x22, #8]
+  0005fe00  bl        #0x74c10
+  0005fe04  mov       x1, x19
+  0005fe08  mov       x2, #0xfc
+  0005fe0c  add       x0, x22, #0x18
+  0005fe10  bl        #0x4f2d0
+  0005fe14  ldr       w1, [x27, #0x13c]
+  0005fe18  mov       x0, x22
+  0005fe1c  ldr       x9, [x27, #0x118]
+  0005fe20  ldr       x8, [x27, #0x120]
+  0005fe24  ldr       x7, [x27, #0x128]
+  0005fe28  ldr       w6, [x27, #0x130]
+  0005fe2c  ldr       w3, [x27, #0x134]
+  0005fe30  ldr       w2, [x27, #0x138]
+  0005fe34  str       w1, [x29, #0x3f4]
+  0005fe38  str       x9, [x29, #0x3d0]
+  0005fe3c  str       x8, [x29, #0x3d8]
+  0005fe40  str       x7, [x29, #0x3e0]
+  0005fe44  str       w6, [x29, #0x3e8]
+  0005fe48  str       w3, [x29, #0x3ec]
+  0005fe4c  str       w2, [x29, #0x3f0]
+  0005fe50  bl        #0xe8b50
+  0005fe54  ldr       x1, [x22, #0x10]
+  0005fe58  str       x0, [x28, #0x18]
+  0005fe5c  and       x1, x1, #0xfffffffffffffffc
+  0005fe60  add       x0, x1, #8        ; "2f < %0.2f"
+  0005fe64  ldaxr     w2, [x0]
+  0005fe68  sub       w3, w2, #1
+  0005fe6c  stlxr     w4, w3, [x0]
+  0005fe70  cbnz      w4, #0x5fe64
+  0005fe74  cmp       w2, #1
+  0005fe78  b.eq      #0x5fef8
+  0005fe7c  ldr       w1, [x28, #0x114]
+  0005fe80  ldr       w2, [x28, #0x110]
+  0005fe84  ldr       w0, [x28, #0x118]
+  0005fe88  ldr       w3, [x28, #0x10c]
+  0005fe8c  str       w3, [x23]
+  0005fe90  add       x20, x20, #0x20
+  0005fe94  str       w2, [x23, #4]
+  0005fe98  str       w1, [x23, #8]
+  0005fe9c  str       w0, [x23, #0xc]
+  0005fea0  bl        #0x5a274
+  0005fea4  adrp      x0, #0x1ef000
+  0005fea8  ldr       x2, [x29, #0x3f8]
+  0005feac  fmov      d1, #5.00000000
+  0005feb0  ldr       x21, [x0, #0x400]
+  0005feb4  mov       x0, x28
+  0005feb8  fadd      d0, d0, d1
+  0005febc  ldr       x1, [x21]
+  0005fec0  cmp       x2, x1
+  0005fec4  str       d0, [x20, #0x10]
+  0005fec8  b.ne      #0x5ffb8
+  0005fecc  ldp       x19, x20, [sp, #0x10]
+  0005fed0  ldp       x21, x22, [sp, #0x20]
+  0005fed4  ldp       x23, x24, [sp, #0x30]
+  0005fed8  ldp       x25, x26, [sp, #0x40]
+  0005fedc  ldp       x27, x28, [sp, #0x50]
+  0005fee0  ldp       x29, x30, [sp], #0x60
+  0005fee4  add       sp, sp, #0x3a0
+  0005fee8  ret       
+  0005feec  mov       w0, #0x308a
+  0005fef0  str       w0, [x28, #0x284]
+  0005fef4  b         #0x5fdb4
+  0005fef8  adrp      x0, #0x1ef000
+  0005fefc  ldr       x0, [x0, #0xf18]
+  0005ff00  ldr       x2, [x0]
+  0005ff04  mov       x0, x2
+  0005ff08  ldr       x2, [x2]
+  0005ff0c  ldr       x2, [x2, #0x18]
+  0005ff10  blr       x2
+  0005ff14  b         #0x5fe7c
+  0005ff18  mov       w0, #0x3089
+  0005ff1c  str       w0, [x28, #0x284]
+  0005ff20  b         #0x5fdb4
+  0005ff24  mov       w0, #0xa
+  0005ff28  bl        #0x7ed90
+  0005ff2c  cbz       w0, #0x5ff7c
+  0005ff30  cmp       w0, #4
+  0005ff34  b.ne      #0x5ff44
+  0005ff38  adrp      x0, #0x1ee000
+  0005ff3c  ldr       x0, [x0, #0x958]
+  0005ff40  bl        #0xf7248
+  0005ff44  adrp      x0, #0x204000
+  0005ff48  add       x19, x0, #0x9b0
+  0005ff4c  adrp      x0, #0x1ef000
+  0005ff50  ldr       x0, [x0, #0x9c0]
+  0005ff54  bl        #0xf6ec0
+  0005ff58  ldr       x0, [x28, #8]   <=========== FAULTING INSTRUCTION
+  0005ff5c  adrp      x2, #0x171000

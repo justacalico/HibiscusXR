@@ -1,0 +1,12 @@
+=== revert to x27 patch 08/14/2026 03:08:03 ===
+[03:08:44]    120a6620340083fccde87c9591f62c63  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+[03:08:44]    120a6620340083fccde87c9591f62c63  /data/local/tmp/p2.so
+[03:08:44]    --- controller service stays disabled for now ---
+[03:08:44]    package:com.picovr.picovrlib.cvcontroller
+[03:08:44]    --- launch ---
+[03:08:44]      pid 5220  threads=62
+[03:08:44]    --- crashes? ---
+[03:08:44]      (empty = no crash)
+[03:08:44]    --- vr mode + compositor ---
+[03:08:44]    --- tracking ---
+[03:08:44]      BadPose=0 kLost=0 ts0=0

@@ -1,0 +1,75 @@
+=== free space before ===
+Free blocks:              323094
+Block size:               4096
+-rwxrwxrwx 1 justin justin 3565158400 Aug 13 14:43 /mnt/f/PN2Lineage/out/system-pn2-full.img
+
+=== linker whitelist (the big one: without this every Pico dlopen returns null) ===
+  OK    /etc/public.libraries.txt                                    1156
+
+=== restored blobs, both ABIs ===
+  OK    /lib64/libvirtualinputclient.so                             40336
+  OK    /lib/libvirtualinputclient.so                               37512
+  OK    /lib64/libairclient.so                                      73232
+  OK    /lib/libairclient.so                                        62636
+  OK    /lib64/libSafetyArea.so                                   5793816
+  OK    /lib/libSafetyArea.so                                     3403728
+  OK    /lib64/libImageGrid.so                                    4554544
+  OK    /lib/libImageGrid.so                                      2681408
+  OK    /lib64/libdatabuffer.so                                     15064
+  OK    /lib/libdatabuffer.so                                       20320
+  OK    /lib64/libvirtualinput.so                                   31472
+  OK    /lib/libvirtualinput.so                                     28808
+
+=== passthrough camera service + virtual input daemons ===
+  OK    /bin/airservice                                             44336
+  OK    /bin/virtual_input                                          28288
+
+=== isolated 8.1 chain (only airservice sees these, via LD_LIBRARY_PATH) ===
+  OK    /lib64/pvr_air/libairservice.so                            172040
+  OK    /lib64/pvr_air/libaircamera.so                              56704
+  OK    /lib64/pvr_air/libskia.so                                    5312
+  OK    /lib64/pvr_air/libshim_air.so                                8880
+
+=== shims ===
+  OK    /lib64/libshim_pvr.so                                        8536
+
+=== init scripts ===
+  OK    /etc/init/pn2-airservice.rc                                  1802
+  OK    /etc/init/pn2-qvrd.rc                                        1259
+  OK    /etc/init/pn2-adbwifi.rc                                      954
+
+=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ===
+  OK    /apex/com.android.runtime.release/lib64/libart.so         7654408
+
+=== VRShell x28 patch (recompute struct base from x27) ===
+  OK    /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so           2051960
+
+=== see-through calibration app ===
+  OK    /priv-app/seethroughsetting/seethroughsetting.apk       203241464
+  OK    /priv-app/seethroughsetting/lib/arm64/libPvr_UnitySDK.so      2047864
+  OK    /priv-app/seethroughsetting/lib/arm64/libil2cpp.so       18109400
+  OK    /priv-app/seethroughsetting/lib/arm64/libmain.so             6144
+  OK    /priv-app/seethroughsetting/lib/arm64/libnative-lib.so       186512
+  OK    /priv-app/seethroughsetting/lib/arm64/libnative.so         293144
+  OK    /priv-app/seethroughsetting/lib/arm64/libtracking_module.so       276408
+  OK    /priv-app/seethroughsetting/lib/arm64/libunity.so        13637192
+
+=== repair pass (debugfs write/rm leaves accounting inconsistent) ===
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6504/11232 files (0.5% non-contiguous), 609534/870400 blocks
+
+=== fsck must be clean ===
+Pass 5: Checking group summary information
+system: 6504/11232 files (0.5% non-contiguous), 609534/870400 blocks
+  FILESYSTEM CLEAN
+
+=== free space after ===
+Free blocks:              260866
+-rwxrwxrwx 1 justin justin 3565158400 Aug 13 19:03 /mnt/f/PN2Lineage/out/system-pn2-full.img
+
+BUILD OK
+DONE

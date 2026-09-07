@@ -1,0 +1,29 @@
+=== priv-app ===
+  VRShell2             arm64  libPvr_UnitySDK.so                  2051960
+  VRShell2             arm64  libil2cpp.so                       15768728
+  VRShell2             arm64  libinput_virtual_display.so            5808
+  VRShell2             arm64  libmain.so                             6144
+  VRShell2             arm64  libnative.so                         293144
+  VRShell2             arm64  libtracking_module.so                276408
+  VRShell2             arm64  libunity.so                        14628920
+  VRUserCenter2        arm64  libUserCenterJni.so                 1323424
+  CVService            arm    lib6DofFusion.so                    2124068
+  CVService            arm    libCVController.so                   602396
+  CVService            arm    libHandImuCalibrate.so               427676
+  CVService            arm    libHeadImuCalibrate_int.so           435868
+  CVService            arm    libNDIExec.so                        913484
+  CVService            arm    libPvr_UnitySDKCV.so                1070372
+  CVService            arm    libSixDofProcessor.so                509372
+  CVService            arm    libc++.so                            607584
+  CVService            arm    libclientWrapper.so                   75052
+  CVService            arm    libqvrservice_client.so               42916
+  PVRVerify            arm    libsqlcipher.so                     2160336
+  InitServer           arm64  libmt-jni.so                           5840
+=== app ===
+  PicoToSvrService     arm64  libPvr_NativeSDK.so                 1416664
+  PicoToSvrService     arm64  libgnustl_shared.so                 1100200
+  PicoToSvrService     arm64  libsharedmem.so                        9848
+
+total .so extracted: 23
+size: 44M
+DONE

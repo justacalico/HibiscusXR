@@ -1,0 +1,30 @@
+﻿=== does any manifest declare android.hardware.boot? ===
+/system/etc/vintf/compatibility_matrix.3.xml
+/system/etc/vintf/compatibility_matrix.legacy.xml
+/system/etc/vintf/compatibility_matrix.1.xml
+/system/etc/vintf/compatibility_matrix.4.xml
+/system/etc/vintf/compatibility_matrix.2.xml
+---
+## /vendor/etc/vintf/manifest.xml
+## /vendor/manifest.xml
+        <name>android.hardware.boot</name>
+        <transport>hwbinder</transport>
+        <version>1.0</version>
+        <interface>
+            <name>IBootControl</name>
+            <instance>default</instance>
+        </interface>
+## /system/etc/vintf/manifest.xml
+
+=== boot HAL binary present in vendor? ===
+
+=== is it registered / running? ===
+
+=== A/B evidence ===
+
+true
+
+=== checkpoint metadata file vold also consults ===
+
+=== hwservicemanager: anything waiting? ===
+DONE

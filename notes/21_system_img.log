@@ -1,0 +1,36 @@
+=== free space before ===
+F:\             466G  432G   35G  93% /mnt/f
+=== extracting system.new.dat.br ===
+-rwxrwxrwx 1 justin justin 1973200422 Jan  1  2009 /mnt/f/PN2Lineage/images/ota_4.1.3/system.new.dat.br
+-rwxrwxrwx 1 justin justin      19688 Jan  1  2009 /mnt/f/PN2Lineage/images/ota_4.1.3/system.transfer.list
+=== brotli decompress ===
+exit 0
+-rwxrwxrwx 1 justin justin 3697147904 Jan  1  2009 /mnt/f/PN2Lineage/images/ota_4.1.3/system.new.dat
+=== sdat2img ===
+transfer list v4, 921347 total blocks, 946 new ranges, max block 962816
+wrote /mnt/f/PN2Lineage/images/ota_4.1.3/system.img (3943694336 bytes)
+=== result ===
+-rwxrwxrwx 1 justin justin 3943694336 Aug 13 09:07 /mnt/f/PN2Lineage/images/ota_4.1.3/system.img
+Linux rev 1.0 ext4 filesystem data, UUID=da594c53-9beb-f85c-85c5-cedf76546f7a, volume name "system" (extents) (large files)
+
+=== sanity: is it the stock Pico system? ===
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     11   40700 (2)      0      0    4096 31-Dec-1969 19:00 lost+found
+     12   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoAppCheckPrebuild
+     18   40755 (2)      0      0    4096 31-Dec-2008 11:00 app
+    759   40755 (2)      0   2000    8192 31-Dec-2008 11:00 bin
+   1119  100600 (1)      0      0    6761 31-Dec-2008 11:00 build.prop
+   1120  100644 (1)      0      0   84340 31-Dec-2008 11:00 compatibility_matrix.xml
+   1121   40755 (2)      0      0    4096 31-Dec-2008 11:00 etc
+   1686   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs
+   1688   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs64
+   1690   40755 (2)      0      0    8192 31-Dec-2008 11:00 fonts
+
+ro.pvr.internal.version=C086_RF01_BV1.3_SV1.82_20210409_B346
+ro.build.version.release=8.1.0
+ro.build.fingerprint=Pico/A7B10/PICOA7B10:8.1.0/OPM1.171019.026/eng.scmbui.20210409.201441:user/test-keys
+
+=== free space after ===
+F:\             466G  436G   31G  94% /mnt/f
+DONE

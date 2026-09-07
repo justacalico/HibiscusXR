@@ -1,0 +1,233 @@
+############ pxr.ndifirmware.update.sh ############
+# *********************************************************************
+# *            update ndi firmware                                    *
+# *********************************************************************
+#PATH=/sbin:/system/sbin:/system/bin:/system/xbin
+PATH=/bin:/usr/bin:/sbin:/system/sbin:/system/bin:/system/xbin
+export PATH
+
+#add by nino for 35632: copy sdcard when ota
+if [ ! -f "/cache/ota_success" ]; then
+    echo "couldn't find /cache/ota_success" > /dev/kmsg
+else
+    echo "find /cache/ota_success" > /dev/kmsg
+    cp -ar /system/etc/ndi/top_level_bitmap.bin  /data/media/0/top_level_bitmap.bin
+
+    rm /cache/ota_success
+
+    sleep 1
+fi
+
+result="-1"
+/system/bin/w25q_write_bin
+
+result=`echo $?`
+
+echo "we get update ndi result is $result" > /dev/kmsg
+
+if [ $result = "-1" ];then
+	echo "unknown error when update ndi" > /dev/kmsg
+	exit 1
+fi
+
+if [ $result = "1" ];then
+	echo "write error when update ndi" > /dev/kmsg
+	exit 1
+fi
+
+if [ $result = "0" ];then
+	rm -rf /data/media/0/top_level_bitmap.bin
+	echo "write ok when update ndi" > /dev/kmsg
+	exit 0
+fi
+
+exit 1
+
+############ pxr.vendorhw.check.sh ############
+# *********************************************************************
+# *            select vendor file from different hw                   *
+# *********************************************************************
+PATH=/sbin:/system/sbin:/system/bin:/system/xbin:/vendor/bin
+export PATH
+
+svrapi_link="/persist/vendorhw/pxr/svrapi_config.txt"
+qvrservice_link="/persist/vendorhw/pxr/qvrservice_config.txt"
+qvrconfig_link="/persist/vendorhw/pxr/config.txt"
+
+svrapi_file="/vendor/etc/qvr/svrapi_config_default.txt"
+qvrservice_file="/vendor/etc/qvr/qvrservice_config_default.txt"
+qvrconfig_file="/vendor/etc/qvr/config_default.txt"
+
+force_svrapi=`getprop persist.pxr.vendorhw.svrapi_file`
+force_qvrservice=`getprop persist.pxr.vendorhw.qvrservice_file`
+force_qvrconfig=`getprop persist.pxr.vendorhw.qvrconfig_file`
+
+eyetrackingfps=`getprop persist.pxr.eyetracking.fps`
+echo $eyetrackingfps
+#if [ "$eyetrackingfps" = "90" ]; then
+#	eyetrackingfps="90"
+#else
+#	eyetrackingfps="60"
+#fi
+
+if [ "$force_svrapi" = "" ]; then
+	force_svrapi='/vendor/etc/qvr/force_svrapi.txt'
+fi
+echo $force_svrapi
+
+if [ "$orce_qvrservice" = "" ]; then
+	force_qvrservice='/vendor/etc/qvr/force_qvrservice.txt'
+fi
+echo $force_qvrservice
+
+if [ "$force_qvrconfig" = "" ]; then
+	force_qvrconfig='/vendor/etc/qvr/force_qvrconfig.txt'
+fi
+echo $force_qvrconfig
+
+has11ad=`cat /sys/kernel/debug/wil6210_11ad/wil6210_present`
+#/sys/devices/platform/soc/ac4a000.qcom,cci/ac4a000.qcom,cci:qcom,cam-sensor@0/sixdof
+haseye=`cat /sys/devices/platform/soc/ac4a000.qcom,cci/ac4a000.qcom,cci:qcom,cam-sensor@2/eyetracking`
+hasTof=`cat /sys/devices/platform/soc/ac4a000.qcom,cci/ac4a000.qcom,cci:qcom,cam-sensor@3/tof`
+hasRGB=`cat /data/picovr/camera/rgb`
+
+if [ "$has11ad" = "" ]; then
+	has11ad="0"
+fi
+echo $has11ad
+
+if [ "$haseye" = "" ]; then
+	haseye="0"
+fi
+echo $haseye
+
+if [ "$hasTof" = "" ]; then
+	hasTof="0"
+fi
+echo $hasTof
+
+if [ "$hasRGB" = "" ]; then
+	hasRGB="0"
+fi
+echo $hasRGB
+
+setprop pxr.vendorhw.11ad $has11ad
+setprop pxr.vendorhw.eye $haseye
+setprop pxr.vendorhw.tof $hasTof
+
+mkdir -p /persist/vendorhw/pxr/
+chmod 777 /persist/vendorhw
+chmod 777 /persist/vendorhw/pxr
+chmod 777 /persist/vendorhw/pxr/*
+#rm -rf /persist/vendorhw/pxr/*
+
+#vendor_product=`getprop ro.product.name`
+#vendor_model=`getprop ro.product.model`
+
+vendor_product=`cat /persist/vendorhw/pxr/pxr_product`
+vendor_model=`cat /persist/vendorhw/pxr/pxr_model`
+
+if [ "$vendor_product" = "" ]; then
+	vendor_product=`getprop ro.product.name`
+fi
+
+if [ "$vendor_model" = "" ]; then
+	vendor_model=`getprop ro.product.model`
+fi
+
+pxrhwversion=`cat /sys/bus/platform/drivers/hw_version/soc:hw_version/version`
+
+usetob="1"
+
+if [ "$pxrhwversion" = "B4" ]; then
+    vendor_product="A7G10"
+    vendor_model="Pico Neo 2 Lite"
+	echo $vendor_product > /persist/vendorhw/pxr/pxr_product
+	echo $vendor_model > /persist/vendorhw/pxr/pxr_model
+	usetob="0"
+elif [ "$hasTof" = "1" ]; then
+    vendor_product="unknown"
+    vendor_model="Pico Neo 2 DK"
+	echo $vendor_product > /persist/vendorhw/pxr/pxr_product
+	echo $vendor_model > /persist/vendorhw/pxr/pxr_model
+	usetob="1"
+elif [ "$has11ad" = "01" ]; then
+    vendor_product="A7C10"
+    vendor_model="Pico Neo 2 WiGig"
+	echo $vendor_product > /persist/vendorhw/pxr/pxr_product
+	echo $vendor_model > /persist/vendorhw/pxr/pxr_model
+	usetob="1"
+elif [ "$haseye" = "1" ]; then
+    vendor_product="A7D10"
+    vendor_model="Pico Neo 2 Eye"
+	echo $vendor_product > /persist/vendorhw/pxr/pxr_product
+	echo $vendor_model > /persist/vendorhw/pxr/pxr_model
+	usetob="1"
+fi
+
+setprop pxr.vendorhw.product.name $vendor_product
+
+setprop pxr.vendorhw.product.model "$vendor_model"
+
+setprop pxr.product.useexternalfunc "$usetob"
+
+if [ "$haseye" = "1" ]; then
+	qvrservice_file="/vendor/etc/qvr/qvrservice_config_eyetracking.txt"
+	if [ "$eyetrackingfps" = "90" ]; then
+		qvrservice_file="/vendor/etc/qvr/qvrservice_config_eyetracking90.txt"
+	else
+		qvrservice_file="/vendor/etc/qvr/qvrservice_config_eyetracking60.txt"
+	fi
+fi
+
+if [ "$has11ad" = "01" ]; then
+    qvrconfig_file="/vendor/etc/qvr/config_default.txt"
+    svrapi_file="/vendor/etc/qvr/svrapi_config_11ad.txt"
+fi
+
+
+echo $svrapi_file
+echo $qvrservice_file
+echo $qvrconfig_file
+
+if [ -L $svrapi_link ]; then
+    svrapi_link_file=`readlink $svrapi_link`
+    if [ "$svrapi_link_file" = "/vendor/etc/qvr/svrapi_config_default.txt" ]; then
+        if [ "$svrapi_file" = "/vendor/etc/qvr/svrapi_config_default.txt" ]; then
+	    echo "svrapi_link already exit0 , do nothing" > /dev/kmsg
+        else
+	    rm -rf $svrapi_link
+            ln -s "$svrapi_file" "$svrapi_link"
+        fi
+    else
+        echo "svrapi_link already exit1 , do nothing" > /dev/kmsg
+    fi
+else
+    ln -s "$svrapi_file" "$svrapi_link"
+    echo " we will make svrapi_link" > /dev/kmsg
+fi
+
+if [ -L $qvrservice_link ]; then
+    qvrservice_link_file=`readlink $qvrservice_link`
+    if [ "$qvrservice_link_file" = "/vendor/etc/qvr/qvrservice_config_default.txt" ]; then
+        if [ "$qvrservice_file" = "/vendor/etc/qvr/qvrservice_config_default.txt" ]; then
+	    echo "qvrservice_link already exit0 , do nothing" > /dev/kmsg
+        else
+	    rm -rf $qvrservice_link
+            ln -s "$qvrservice_file" "$qvrservice_link"
+        fi
+    else
+        echo "qvrservice_link already exit1 , do nothing" > /dev/kmsg
+    fi
+else
+    ln -s "$qvrservice_file" "$qvrservice_link"
+    echo " we will make qvrservice_link" > /dev/kmsg
+fi
+
+if [ -L $qvrconfig_link ]; then
+    echo "qvrconfig_link already exit , do nothing" > /dev/kmsg
+else
+    ln -s "$qvrconfig_file" "$qvrconfig_link"
+    echo " we will make qvrconfig_link" > /dev/kmsg
+fi
+

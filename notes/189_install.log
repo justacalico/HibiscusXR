@@ -1,0 +1,10 @@
+=== install missing Pico libs + public.libraries 08/13/2026 16:04:13 ===
+[16:04:15]    --- installed ---
+[16:04:15]    -rw-r--r-- 1 root root 4554544 2026-08-13 16:04 /system/lib64/libImageGrid.so
+[16:04:15]    -rw-r--r-- 1 root root 5793816 2026-08-13 16:04 /system/lib64/libSafetyArea.so
+[16:04:15]    -rw-r--r-- 1 root root   73232 2026-08-13 16:04 /system/lib64/libairclient.so
+[16:04:15]    -rw-r--r-- 1 root root   40336 2026-08-13 16:04 /system/lib64/libvirtualinputclient.so
+[16:04:15]    --- public.libraries.txt tail ---
+[16:04:15]    tail: /system/etc/public.libraries.txt
+[16:04:15]    : No such file or directory
+[16:04:15] rebooting so the linker re-reads public.libraries.txt

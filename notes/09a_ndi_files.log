@@ -1,0 +1,83 @@
+############ NDI / EM / FPGA / controller named files ############
+--- vendor ---
+     11024  /vendor/bin/hw/android.hardware.memtrack@1.0-service
+       125  /vendor/etc/init/android.hardware.memtrack@1.0-service.rc
+      1084  /vendor/etc/pvr/pxr.ndifirmware.update.sh
+      4096  /vendor/etc/scve
+      4096  /vendor/etc/scve/facereco
+  25102173  /vendor/etc/scve/facereco/gModel.dat
+     24500  /vendor/lib/hw/android.hardware.memtrack@1.0-impl.so
+     16240  /vendor/lib/hw/memtrack.sdm845.so
+    202860  /vendor/lib/libfastcvdsp_stub.so
+   8260456  /vendor/lib/libfastcvopt.so
+    200644  /vendor/lib/libscveBlobDescriptor.so
+     16232  /vendor/lib/libscveBlobDescriptor_stub.so
+     92296  /vendor/lib/libscveCommon.so
+     16072  /vendor/lib/libscveCommon_stub.so
+   3479456  /vendor/lib/libscveFaceLandmarks.so
+    398272  /vendor/lib/libscveFaceRecognition.so
+    385132  /vendor/lib/libscveImageCorrection.so
+    509524  /vendor/lib/libscveObjectSegmentation.so
+    626840  /vendor/lib/libscveObjectTracker.so
+     49336  /vendor/lib/libscveObjectTracker_stub.so
+    577164  /vendor/lib/libscvePanorama.so
+    556208  /vendor/lib/libscvePanorama_lite.so
+   2063660  /vendor/lib/libscveScan3D.so
+     33332  /vendor/lib/rfsa/adsp/libdspCV_skel.so
+   1277032  /vendor/lib/rfsa/adsp/libfastcvadsp.so
+    545040  /vendor/lib/rfsa/adsp/libfastcvdsp_skel.so
+     95748  /vendor/lib/rfsa/adsp/libscveBlobDescriptor_skel.so
+    334300  /vendor/lib/rfsa/adsp/libscveT2T_skel.so
+     41540  /vendor/lib/sensors-common-ndifpga.pvr.so
+    256024  /vendor/lib/soundfx/libqcvirt.so
+     19232  /vendor/lib64/hw/android.hardware.memtrack@1.0-impl.so
+     11208  /vendor/lib64/hw/memtrack.sdm845.so
+    231960  /vendor/lib64/libfastcvdsp_stub.so
+   8484472  /vendor/lib64/libfastcvopt.so
+   3366616  /vendor/lib64/libopencv.so
+  14793584  /vendor/lib64/libopencv_java3.so
+    250216  /vendor/lib64/libscveBlobDescriptor.so
+     11096  /vendor/lib64/libscveBlobDescriptor_stub.so
+    139992  /vendor/lib64/libscveCommon.so
+     10880  /vendor/lib64/libscveCommon_stub.so
+   3535176  /vendor/lib64/libscveFaceLandmarks.so
+    553472  /vendor/lib64/libscveFaceRecognition.so
+    455680  /vendor/lib64/libscveImageCorrection.so
+    725656  /vendor/lib64/libscveObjectSegmentation.so
+    945304  /vendor/lib64/libscveObjectTracker.so
+     48224  /vendor/lib64/libscveObjectTracker_stub.so
+    806032  /vendor/lib64/libscvePanorama.so
+    781072  /vendor/lib64/libscvePanorama_lite.so
+   2615016  /vendor/lib64/libscveScan3D.so
+     36120  /vendor/lib64/sensors-common-ndifpga.pvr.so
+    277760  /vendor/lib64/soundfx/libqcvirt.so
+
+--- persist ---
+         1  /home/justin/pn2/persist/Geomagnetic_Switch.txt
+      2700  /home/justin/pn2/persist/calibration/TempController_L.txt
+      2700  /home/justin/pn2/persist/calibration/TempController_R.txt
+      4096  /home/justin/pn2/persist/ndi
+       492  /home/justin/pn2/persist/ndi/controller1imu.eep
+       492  /home/justin/pn2/persist/ndi/controller2imu.eep
+         0  /home/justin/pn2/persist/ndi/controllerbindstate1
+         0  /home/justin/pn2/persist/ndi/controllerbindstate2
+       128  /home/justin/pn2/persist/ndi/ctr1BleMac
+       128  /home/justin/pn2/persist/ndi/ctr1SN
+       128  /home/justin/pn2/persist/ndi/ctr1Version
+       128  /home/justin/pn2/persist/ndi/ctr2BleMac
+       128  /home/justin/pn2/persist/ndi/ctr2SN
+       128  /home/justin/pn2/persist/ndi/ctr2Version
+         1  /home/justin/pn2/persist/ndi/left
+         1  /home/justin/pn2/persist/ndi/right
+      1280  /home/justin/pn2/persist/ndi/rxcache.eep
+      1280  /home/justin/pn2/persist/ndi/tx1.eep
+      1280  /home/justin/pn2/persist/ndi/tx2.eep
+
+--- system/lib64 (from image) ---
+   2885  100644 (1)      0      0   107120 31-Dec-2008 11:00 android.hardware.memtrack@1.0.so
+   2941  100644 (1)      0      0   150592 31-Dec-2008 11:00 libCVControllerClient.pxr.so
+   2979  100644 (1)      0      0   1342952 31-Dec-2008 11:00 libWnnJpnDic.so
+   3175  100644 (1)      0      0   15344 31-Dec-2008 11:00 libmemtrack.so
+   3377  100644 (1)      0      0   76792 31-Dec-2008 11:00 libwnndict.so
+
+--- system/bin (from image) ---

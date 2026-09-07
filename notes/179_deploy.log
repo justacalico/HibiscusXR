@@ -1,0 +1,45 @@
+=== shim redeploy 08/13/2026 15:34:54 ===
+[15:34:54] --- is __android_log_print DEFINED (not UND) in the shim? ---
+[15:34:54]     12: 0000000000001b4c 304 FUNC GLOBAL DEFAULT 12 __android_log_print
+[15:34:54] --- pushing ---
+[15:34:54]    F:\PN2Lineage\shim\libshim_pvr.so: 1 file pushed, 0 skipped. 5.6 MB/s (8536 bytes in 0.001s)
+[15:34:55]    -rw-r--r-- 1 root root 8536 2026-08-13 15:34 /system/lib64/libshim_pvr.so
+[15:34:55]    5dbd9d48b743e3cb6681980a3a228a9c  /system/lib64/libshim_pvr.so
+[15:34:55]    md5sum: /data/local/tmp/libshim_pvr.so
+[15:34:55]    : No such file or directory
+[15:34:55] --- restarting pvrservice so it picks up the new shim ---
+[15:35:01]    pvrservice pid: 4596
+[15:35:01] --- launching VRShell ---
+[15:35:16]    vrshell pid:   died
+[15:35:16]    pvrservice : 4596
+[15:35:16] --- how far did it get ---
+[15:35:17]    08-13 15:35:07.641  4628  4670 I Unity   : xxxxxxxxxxxxx
+[15:35:17]    08-13 15:35:07.641  4628  4670 I Unity   : NavigationManager:InitDataList(List`1)
+[15:35:17]    08-13 15:35:07.641  4628  4670 I Unity   :  
+[15:35:17]    08-13 15:35:07.641  4628  4670 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[15:35:17]    08-13 15:35:07.641  4628  4670 I Unity   : 
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : PUI--------------ro.pvr.product.name = FalconCV2
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : PUI_UnityAPI:GetDeviceMode()
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : StatusBarView:SetUIPos()
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : StatusBarView:Start()
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   :  
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[15:35:17]    08-13 15:35:07.645  4628  4670 I Unity   : 
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   : ime create
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   : SGIme:Create(ImeDelegateBase)
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   : ImeManager:Start()
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   :  
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[15:35:17]    08-13 15:35:07.649  4628  4670 I Unity   : 
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   : ime hide
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   : SGIme:Hide()
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   : ImeManager:Hide()
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   :  
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[15:35:17]    08-13 15:35:07.667  4628  4670 I Unity   : 
+[15:35:17]    08-13 15:35:07.669  4628  4670 I Unity   : OnIMEHide
+[15:35:17]    08-13 15:35:07.669  4628  4670 I Unity   : ImeDelegateImpl_kbd:OnIMEHide()
+[15:35:17]    08-13 15:35:07.669  4628  4670 I Unity   :  
+[15:35:17]    08-13 15:35:07.669  4628  4670 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[15:35:17]    08-13 15:35:07.669  4628  4670 I Unity   : 
+[15:35:17]    08-13 15:35:07.673  4628  4670 E UnityPlugin: Get sensor failed. Render thread not initialized.

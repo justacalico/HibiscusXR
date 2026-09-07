@@ -1,0 +1,35 @@
+NOTE: this GSI's root IS /system content, so VNDK lives at /lib64/vndk-NN
+
+/lib64/vndk-26         193 libs
+/lib64/vndk-27         190 libs
+/lib64/vndk-28         188 libs
+/lib64/vndk-29         216 libs
+/lib64/vndk-sp-26       29 libs
+/lib64/vndk-sp-27       25 libs
+/lib64/vndk-sp-28       30 libs
+/lib64/vndk-sp-29       35 libs
+
+/lib/vndk-27           211 libs  (32-bit)
+/lib/vndk-sp-27         25 libs  (32-bit)
+
+=== sample of /lib64/vndk-27 ===
+android.frameworks.displayservice@1.0.so
+android.frameworks.schedulerservice@1.0.so
+android.frameworks.sensorservice@1.0.so
+android.frameworks.vr.composer@1.0.so
+android.hardware.audio.common@2.0-util.so
+android.hardware.audio.common@2.0.so
+android.hardware.audio.effect@2.0.so
+android.hardware.audio@2.0.so
+android.hardware.automotive.evs@1.0.so
+android.hardware.automotive.vehicle@2.0.so
+android.hardware.biometrics.fingerprint@2.1.so
+android.hardware.bluetooth@1.0.so
+android.hardware.boot@1.0.so
+android.hardware.broadcastradio@1.0.so
+android.hardware.broadcastradio@1.1.so
+
+=== VERDICT ===
+VNDK 27 snapshot present (190 libs).
+Our VNDK 27 vendor partition has what it needs. Boot is plausible.
+DONE

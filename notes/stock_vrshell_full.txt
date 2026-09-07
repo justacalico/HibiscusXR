@@ -1,0 +1,191 @@
+﻿vrshell pid: 5767
+
+5767  5767 I main    : type=1400 audit(0.0:2249): avc: denied { create } for name="cgroup.procs" scontext=u:r:zygote:s0 tcontext=u:object_r:cgroup:s0 tclass=file permissive=1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2251): avc: denied { call } for scontext=u:r:system_app:s0 tcontext=u:r:pvrservice:s0 tclass=binder permissive=1
+5767  5767 W ActivityThread: notifyAppLaunchStatus com.pvr.vrshell com.pvr.vrshell.MainActivity
+5767  5767 W ActivityThread: apploadingtype is null
+5767  5767 W ActivityThread: activityloadingtype is null
+5767  5767 I ActivityVRFlag: Metadata value of VR flag com.picovr.type for component:ComponentInfo{com.pvr.vrshell/com.pvr.vrshell.MainActivity} is:null
+5767  5767 I ActivityVRFlag: Metadata value of VR flag pvr.app.type for component:ComponentInfo{com.pvr.vrshell/com.pvr.vrshell.MainActivity} is:null
+5767  5767 I ActivityVRFlag: Metadata value of VR flag com.picovr.type for application:com.pvr.vrshell is:null
+5767  5767 I ActivityVRFlag: Metadata value of VR flag pvr.app.type for application:com.pvr.vrshell is:vr
+5767  5767 I ActivityVRFlag: Metadata value of orientation com.picovr.display.orientation for component:ComponentInfo{com.pvr.vrshell/com.pvr.vrshell.MainActivity} is:-1
+5767  5767 I ActivityVRFlag: Metadata value of 2dtovrmode pvr.2dtovr.mode for component:ComponentInfo{com.pvr.vrshell/com.pvr.vrshell.MainActivity} is:-1
+5767  5767 I ActivityVRFlag: Metadata value of 2dtovrmode pvr.2dtovr.mode for application:com.pvr.vrshell is:-1
+5767  5767 I UnityNativeActivityPico: onCreate enter
+5767  5767 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+5767  5767 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+5767  5767 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+5767  5767 I VrApi   : couldBeLoaded
+5767  5767 I VrApi   : 0x7b2b569c18
+5767  5767 I VrApi   : open replaceable Scuccessed 2
+5767  5767 I VrApi   : current version >=2.7.4.4
+5767  5767 I VrApi   : APP version, 2, 8, 6, 16
+5767  5767 I VrApi   : lib version, 2, 8, 6, 15
+5767  5767 I VrApi   : open replaceable aborted
+5767  5767 I VrApi   : pvr_OnLoad()
+5767  5767 I VrApi   : Using caller's JNIEnv
+5767  5767 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x7b19298110
+5767  5767 I VrApi   : BuildVersionSDK 27
+5767  5767 I VrApi   : pvr_Init
+5767  5767 I UnityNativeActivityPico: bypass_presentation = -1
+5767  5767 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1556 android.content.ContextWrapper.bindService:684 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+5767  5789 D VRDataUtils: HMD not exist
+5767  5789 D PvrClient: mirroring or not lg return
+5767  5767 D VRBoundary: mSTSettingExist = true
+5767  5767 D VRBoundary: globalBoundaryStatus = -1
+5767  5767 D VRBoundary: appBoundaryStatus = 1
+5767  5767 D VRBoundary: globalBoundaryStatusToC = 1
+5767  5767 D VRBoundary: globalBoundaryStatusToB = -1
+5767  5767 I UnityNativeActivityPico: Shell shell_mode = 1
+5767  5767 I UnityNativeActivityPico: force_cancel_unity_pause = -1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2252): avc: denied { call } for scontext=u:r:system_app:s0 tcontext=u:r:pvrservice:s0 tclass=binder permissive=1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2253): avc: denied { transfer } for scontext=u:r:system_app:s0 tcontext=u:r:pvrservice:s0 tclass=binder permissive=1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2256): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=420 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2257): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=420 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+5767  5767 I com.pvr.vrshell: type=1400 audit(0.0:2258): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=420 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+5767  5767 I UnityNativeActivityPico: has android.permission.READ_EXTERNAL_STORAGE this
+5767  5767 I UnityNativeActivityPico: create enter
+5767  5767 D VRResUtils: sdPath /system/etc/pvr/res.json
+5767  5767 D VRResUtils: size = 127365
+5767  5798 D NetworkSecurityConfig: No Network Security Config specified, using platform default
+5767  5767 D VRResUtils: locale = en
+5767  5767 E ConfigApi: Not Initialize Global Configs
+5767  5767 I ConfigApi: Initialize Global Configs
+5767  5767 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+5767  5767 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+5767  5767 E psmvrConfig: Undefined variable -- iEnableStageLevel
+5767  5767 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+5767  5767 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+5767  5767 I ConfigApi: DIATW Update Config Parameters From VRService
+5767  5767 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+5767  5767 I VrServiceApi: load service priority default
+5767  5767 I VrServiceApi: dlopen ok
+5767  5767 I VrServiceApi: dlsym for getPVRModule ok
+5767  5767 E Paul    : IsInitialized
+5767  5767 E HaveDir : HaveDir
+5767  5767 E Paul    : open_calib_file_ok
+5767  5767 E GyroMatrix: c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+5767  5767 E SensorConstruct: SensorConstruct
+5767  5767 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+5767  5767 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+5767  5767 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+5767  5767 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+5767  5767 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+5767  5767 D UnityNativeActivityPico: false = SCRN_BRIGHTNESS
+5767  5767 I UnityNativeActivityPico: EnableAppOverlayType = false
+5767  5767 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+5767  5767 E PvrClientJava: initNative end
+5767  5767 E PvrClientJava: status = 0,argCnt = 0
+5767  5767 D UnityNativeActivityPico: com.psmart.vrlib.PvrClient@19fc248 PvrClient created
+5767  5767 I LoadingUtils: 2D loading dir: system/media/LoadingRes
+5767  5767 I UnityPlugin: PVR_SetCpuLevel  level 9999
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/inside_background_img.png
+5767  5767 I LoadingUtils: calculateParams Text config 1080   720
+5767  5767 I LoadingUtils: Text config 1080   720
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00000.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00001.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00002.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00003.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00004.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00005.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00006.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00007.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00008.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00009.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00010.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00011.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00012.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00013.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00014.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00015.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00016.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00017.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00018.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00019.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00020.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00021.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00022.png
+5767  5767 I LoadingUtils: file path is /system/media/LoadingRes/img/loading_animation_00023.png
+5767  5767 I UnityNativeActivityPico: presentationDisplays.length 0
+5767  5767 I UnityNativeActivityPico: default
+5767  5767 I PVRShell: ==========onCreate
+5767  5767 I PVRShell: LanguageCountry = en-US
+5767  5767 I PVRShell: isDebug = false
+5767  5767 I PVRShell: default ime is com.android.inputmethod.latin/.LatinIME
+5767  5767 I PVRShell: sogou ime is , default ime is com.android.inputmethod.latin/.LatinIME
+5767  5767 D UnityNativeActivityPico: onStart
+5767  5767 I UnityNativeActivityPico: registerDisplayListener
+5767  5767 I PVRShell: ==========onStart
+5767  5767 I PVRShell: sogou ime is 
+5767  5767 I PvrManagerInternal: PvrManagerInternal
+5767  5767 D 6dof    : pvr6dofStopped :false  lastIs3dof :false   stopped prop: false   3dof propfalse
+5767  5767 D 6dof    : metaDataType :1    isWaveVR :false
+5767  5767 W propdebug: key is pvr.running.app.3dof value is false pid is 5767
+5767  5767 I UnityNativeActivityPico: onResume
+5767  5767 D VRBoundary: head6dofReset = falseservice6dofStopped = false
+5767  5767 D VRDataUtils: finish the toast fore
+5767  5767 D VRDataUtils: finish the toast fore
+5767  5767 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1482 android.content.ContextWrapper.startForegroundService:655 com.psmart.vrlib.VRDataUtils.finishToastActivity:86 com.unity3d.player.UnityPlayerNativeActivityPico.finishToastActivity:0 com.unity3d.player.UnityPlayerNativeActivityPico.onResume:108 
+5767  5767 D VRDataUtils: java.lang.IllegalArgumentException: Service Intent must be explicit: Intent { act=com.lg.uplus.agent.service_action (has extras) }
+5767  5767 D VRConfigUtils: restore level00
+5767  5767 I UnityPlugin: PVR_SetGpuLevel_ level 0
+5767  5767 I UnityPlugin: PVR_SetCpuLevel  level 0
+5767  5767 I UnityNativeActivityPico: onResume   animation is not null 
+5767  5767 I UnityNativeActivityPico: Notify Unity resume
+5767  5767 I UnityNativeActivityPico: onResume test
+5767  5767 I LoadingUtils: start  setting vrmode 2d and ORIENTATION 0
+5767  5767 I PVRShell: ==========onResume
+5767  5767 E PVRShell: VirtualDisplay is null
+5767  5767 E stereo  : PackageName:com.pvr.vrshell type:null
+5767  5836 D OpenGLRenderer: HWUI GL Pipeline
+5767  5767 D UnityNativeActivityPico: onPause
+5767  5767 D VRConfigUtils: save level 00
+5767  5767 D VRConfigUtils: reset level
+5767  5767 I UnityPlugin: PVR_SetCpuLevel  level 0
+5767  5767 I UnityPlugin: PVR_SetGpuLevel_ level 0
+5767  5767 I UnityNativeActivityPico: onPause set cpu 0
+5767  5767 I UnityPlugin: PVR_SetCpuLevel  level 0
+5767  5767 D UnityNativeActivityPico: onPause break-point
+5767  5767 I PVRShell: ==========onPause
+5767  5767 E PVRShell: VirtualDisplay is null
+5767  5767 D UnityNativeActivityPico: connect ok
+5767  5767 I PVRShell: android.net.wifi.STATE_CHANGE, state = true
+5767  5767 I PVRShell: android.net.wifi.WIFI_STATE_CHANGED, state = 3
+5767  5767 I PVRShell: android.net.wifi.RSSI_CHANGED, rssi = -26, level = 3
+5767  5767 I PVRShell: android.intent.action.BATTERY_CHANGED, percent = 22, status = 2
+5767  5767 I UnityNativeActivityPico: onAttachedToWindow!!!!!!!!!!!
+5767  5767 I LoadingUtils: start  setting vrmode 2d and ORIENTATION 0
+5767  5767 I LoadingUtils:  set vrmode 2d and ORIENTATION 0 end
+5767  5767 I LoadingUtils: width  3840  2160
+5767  5836 I Adreno  : QUALCOMM build                   : 2d5c972, I8302e904d2
+5767  5836 I Adreno  : Build Date                       : 03/29/19
+5767  5836 I Adreno  : OpenGL ES Shader Compiler Version: EV031.26.03.00
+5767  5836 I Adreno  : Local Branch                     : mybranche951d0e9-8bc7-f187-be97-5cb90179c3d8
+5767  5836 I Adreno  : Remote Branch                    : quic/gfx-adreno.lnx.1.0.r65-rel
+5767  5836 I Adreno  : Remote Branch                    : NONE
+5767  5836 I Adreno  : Reconstruct Branch               : NOTHING
+5767  5836 I Adreno  : Build Config                     : S L 4.0.10 AArch64
+5767  5836 I Adreno  : PFP: 0x016ee183, ME: 0x00000000
+5767  5836 I com.pvr.vrshell: android::hardware::configstore::V1_0::ISurfaceFlingerConfigs::hasWideColorDisplay retrieved: 0
+5767  5836 I OpenGLRenderer: Initialized EGL, version 1.4
+5767  5836 D OpenGLRenderer: Swap behavior 2
+5767  5767 I FrameAnimation: surfacecreate success
+5767  5767 I LoadingUtils: start  setting vrmode 2d and ORIENTATION 0
+5767  5767 I LoadingUtils:  set vrmode 2d and ORIENTATION 0 end
+5767  5767 I LoadingUtils: width  3840  2160
+5767  5767 I PVRShell: android.intent.action.BATTERY_CHANGED, percent = 22, status = 2
+5767  5767 I PVRShell: android.intent.action.BATTERY_CHANGED, percent = 22, status = 2
+5767  5767 I PVRShell: ==========onSaveInstanceState
+5767  5863 I FrameAnimation: mBitmap.recycle
+5767  5767 I FrameAnimation: Surface is destroy
+5767  5767 I UnityNativeActivityPico: onStop
+5767  5767 I UnityNativeActivityPico: Shell onStop shell_mode mUnityPlayer.pause()
+5767  5767 I UnityPlugin: PVR_Pause()
+5767  5767 D UnityNativeActivityPico: Unity DismissPresentation enter
+5767  5767 I UnityNativeActivityPico: unregisterDisplayListener
+5767  5767 I PVRShell: ==========onStop
+5767  5767 I PVRShell: default ime is com.android.inputmethod.latin/.LatinIME
+5767  5767 I PVRShell: set ime com.android.inputmethod.latin/.LatinIME
+5767  5767 I PVRShell: onWindowFocusChanged, hasFocus = true
+##### END #####

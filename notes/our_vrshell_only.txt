@@ -1,0 +1,64 @@
+﻿vrshell pid was: 8461
+
+##### everything that pid logged #####
+8461  8461 E libprocessgroup: CgroupMap::FindController called for [8461] failed, RC file was not initialized properly
+8461  8461 E libprocessgroup: CgroupMap::FindController called for [8461] failed, RC file was not initialized properly
+8461  8461 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+8461  8461 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+8461  8461 I Zygote  : seccomp disabled by setenforce 0
+8461  8461 E libprocessgroup: CgroupMap::FindController called for [8461] failed, RC file was not initialized properly
+8461  8461 D linker  : dlopen(name="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", flags=0x2, extinfo=[flags=0x40, reserved_addr=0x0, reserved_size=0x0, relro_fd=0, library_fd=0, library_fd_offset=0x0, library_namespace=(n/a)@0x0], caller="/apex/com.android.runtime/lib64/libart.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+8461  8461 D linker  : find_libraries(ns=runtime): task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, is_dt_needed=0
+8461  8461 D linker  : load_library(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+8461  8461 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Trying 1 linked namespaces
+8461  8461 D linker  : find_library_in_linked_namespace(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Ok to load
+8461  8461 D linker  : load_library(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+8461  8461 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Found in linked namespace (default)
+8461  8461 D linker  : Crossing namespace boundary (si=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex@0x78855e3d30, si_ns=(default)@0x78867fb5c0, needed_by=/apex/com.android.runtime/lib64/libart.so@0x78855d6620, ns=runtime@0x788552d010, needed_by_ns=runtime@0x788552d010) adding to local_group_roots: no
+8461  8461 D linker  : ... dlopen calling constructors: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0xbb9579fe0f489dc9
+8461  8461 D linker  : ... dlopen successful: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0xbb9579fe0f489dc9
+8461  8461 D linker  : dlerror set to "undefined symbol: oatdatabimgrelro"
+8461  8461 D linker  : dlerror set to "undefined symbol: oatbss"
+8461  8461 W com.pvr.vrshel: JIT profile information will not be recorded: profile file does not exits.
+8461  8461 W com.pvr.vrshel: resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+8461  8485 E GraphicsEnv: Failed to get gpu service
+8461  8461 I ashmem  : memfd: device VNDK version (27) is < Q so using ashmem.
+8461  8461 I UnityNativeActivityPico: onCreate enter
+8461  8461 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+8461  8461 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+8461  8461 D linker  : dlopen(name="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", flags=0x2, extinfo=[flags=0x200, reserved_addr=0x77efd72ba0, reserved_size=0x77efe39cc0, relro_fd=-2060106048, library_fd=120, library_fd_offset=0x1d, library_namespace=classloader-namespace@0x788552d650], caller="/apex/com.android.runtime/lib64/libnativeloader.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, is_dt_needed=0
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, flags=0x2, realpath=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so)
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libGLESv3.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libEGL.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: liblog.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libandroid.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libstdc++.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libm.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libc.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libdl.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libGLESv3.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libGLESv3.so): Already loaded (by soname): /system/lib64/libGLESv3.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libEGL.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libEGL.so): Already loaded (by soname): /system/lib64/libEGL.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libandroid.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libandroid.so): Already loaded (by soname): /system/lib64/libandroid.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+8461  8461 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+8461  8461 D linker  : ... dlopen calling constructors: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0x1177ab83bb0aa209
+8461  8461 D linker  : ... dlopen successful: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0x1177ab83bb0aa209
+8461  8461 D linker  : dlopen(name="libPvr_UnitySDKExt11.so", flags=0x101, extinfo=(null), caller="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+8461  8461 D linker  : find_libraries(ns=classloader-namespace): task=libPvr_UnitySDKExt11.so, is_dt_needed=0
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so, flags=0x101, realpath=/system/lib64/libPvr_UnitySDKExt11.so)
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libGLESv3.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libEGL.so
+8461  8461 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: liblog.so
+DONE

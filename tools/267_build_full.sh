@@ -1,0 +1,128 @@
+#!/bin/bash
+# Fold this session's work into system-pn2-full.img.
+#
+# Everything below was proven on the live device first. Deliberately NOT included:
+#   - the libPvr_UnitySDKExt11.so x28 patch: its code cave landed inside
+#     PVR::BufferedFile::~BufferedFile and hung VRShell. The see-through app needs
+#     that fix, but it needs a properly verified cave first.
+#   - the CVService packages.xml ABI correction: that lives in /data, not /system.
+#     On a fresh flash PackageManager scans with lib/arm already present and
+#     derives armeabi-v7a by itself, so it does not need carrying.
+#
+# Verify every write by size - debugfs reports success even when it silently
+# refuses to overwrite an existing file, which is why each put() re-reads it.
+set -u
+IMG=/mnt/f/PN2Lineage/out/system-pn2-full.img
+LOG=/mnt/f/PN2Lineage/notes/267_build.txt
+exec >"$LOG" 2>&1
+
+fail=0
+put() {   # put <local> <img-path> <mode>
+  local src="$1" dst="$2" mode="$3"
+  local dir base want got
+  dir=$(dirname "$dst"); base=$(basename "$dst")
+  [ -f "$src" ] || { printf '  MISSING SOURCE %s\n' "$src"; fail=$((fail+1)); return; }
+  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
+  want=$(stat -c%s "$src")
+  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
+  if [ "$got" = "$want" ]; then
+    printf '  OK    %-52s %12s\n' "$dst" "$got"
+  else
+    printf '  FAIL  %-52s wrote %s, image says "%s"\n' "$dst" "$want" "${got:-absent}"
+    fail=$((fail+1))
+  fi
+}
+mkd() {
+  debugfs -w -R "mkdir $1" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $1 mode 040755" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $1 uid 0" "$IMG" >/dev/null 2>&1
+  debugfs -w -R "sif $1 gid 0" "$IMG" >/dev/null 2>&1
+}
+
+echo "=== free space before ==="
+dumpe2fs -h "$IMG" 2>/dev/null | grep -E 'Free blocks|Block size'
+ls -l "$IMG"
+
+OV=/mnt/f/PN2Lineage/overlay_pvr
+AIR=/mnt/f/PN2Lineage/airsvc
+SHIM=/mnt/f/PN2Lineage/shim
+INIT=/mnt/f/PN2Lineage/overlay/etc/init
+ST=/mnt/f/PN2Lineage/seethrough
+
+echo
+echo "=== linker whitelist (the big one: without this every Pico dlopen returns null) ==="
+put "$OV/public.libraries.txt" /etc/public.libraries.txt 644
+
+echo
+echo "=== restored blobs, both ABIs ==="
+for l in libvirtualinputclient libairclient libSafetyArea libImageGrid libdatabuffer; do
+  put "$OV/lib64/$l.so" "/lib64/$l.so" 644
+  put "$OV/lib/$l.so"   "/lib/$l.so"   644
+done
+put "$AIR/lib64/libvirtualinput.so" /lib64/libvirtualinput.so 644
+put "$AIR/lib/libvirtualinput.so"   /lib/libvirtualinput.so   644
+
+echo
+echo "=== passthrough camera service + virtual input daemons ==="
+put "$AIR/bin/airservice"    /bin/airservice    755
+put "$AIR/bin/virtual_input" /bin/virtual_input 755
+
+echo
+echo "=== isolated 8.1 chain (only airservice sees these, via LD_LIBRARY_PATH) ==="
+mkd /lib64/pvr_air
+put "$AIR/lib64/libairservice.so" /lib64/pvr_air/libairservice.so 644
+put "$AIR/lib64/libaircamera.so"  /lib64/pvr_air/libaircamera.so  644
+put "$SHIM/libskia_stub.so"       /lib64/pvr_air/libskia.so       644
+put "$SHIM/libshim_air.so"        /lib64/pvr_air/libshim_air.so   644
+
+echo
+echo "=== shims ==="
+put "$SHIM/libshim_pvr.so" /lib64/libshim_pvr.so 644
+
+echo
+echo "=== init scripts ==="
+put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
+put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
+put "$INIT/pn2-adbwifi.rc"    /etc/init/pn2-adbwifi.rc    644
+
+echo
+echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="
+put /mnt/f/PN2Lineage/notes/libart-patched.so /apex/com.android.runtime.release/lib64/libart.so 644
+
+echo
+echo "=== VRShell x28 patch (recompute struct base from x27) ==="
+put /mnt/f/PN2Lineage/notes/vrshell_lib/libPvr_UnitySDK.patched2.so /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so 644
+
+echo
+echo "=== see-through calibration app ==="
+mkd /priv-app/seethroughsetting
+mkd /priv-app/seethroughsetting/lib
+mkd /priv-app/seethroughsetting/lib/arm64
+put "$ST/seethroughsetting-signed.apk" /priv-app/seethroughsetting/seethroughsetting.apk 644
+for f in "$ST"/lib/arm64/*.so; do
+  put "$f" "/priv-app/seethroughsetting/lib/arm64/$(basename "$f")" 644
+done
+
+echo
+echo "=== repair pass (debugfs write/rm leaves accounting inconsistent) ==="
+e2fsck -fy "$IMG" 2>&1 | tail -6
+
+echo
+echo "=== fsck must be clean ==="
+if e2fsck -fn "$IMG" >/tmp/fsck.txt 2>&1; then
+  tail -2 /tmp/fsck.txt; echo "  FILESYSTEM CLEAN"
+else
+  tail -8 /tmp/fsck.txt; echo "  FILESYSTEM DIRTY"; fail=$((fail+1))
+fi
+
+echo
+echo "=== free space after ==="
+dumpe2fs -h "$IMG" 2>/dev/null | grep -E 'Free blocks'
+ls -l "$IMG"
+echo
+if [ "$fail" -eq 0 ]; then echo "BUILD OK"; else echo "BUILD HAD $fail FAILURES"; fi
+echo DONE

@@ -6,12 +6,74 @@ theme:
   name: material
   palette:
     primary: blue grey
+  features:
+    - navigation.sections
+    - navigation.top
+    - toc.follow
 
 nav:
   - Home: index.md
-  - Repositories: repos.md
+  - Getting started:
+    - Requirements: guide/requirements.md
+    - Building the image: guide/building.md
+    - Flashing: guide/flashing.md
+    - First boot: guide/first-boot.md
+    - Restoring stock: guide/recovery.md
+  - How it works:
+    - Architecture: internals/overview.md
+    - Bugs fixed: internals/bugs-fixed.md
+    - Current status: internals/status.md
+    - Hardware: internals/hardware.md
+    - Partitions: internals/partitions.md
+  - Repositories:
+    - Overview: repos/index.md
+    - tools: repos/tools.md
+    - android: repos/android.md
+    - overlay: repos/overlay.md
+    - notes: repos/notes.md
+    - extracted: repos/extracted.md
+    - shim: repos/shim.md
+    - vrdemo: repos/vrdemo.md
+    - vendor_patch: repos/vendor_patch.md
+    - lens: repos/lens.md
+    - keylayout: repos/keylayout.md
+    - persist_calib: repos/persist_calib.md
+    - pvr_dex: repos/pvr_dex.md
+    - pvr_stack: repos/pvr_stack.md
+    - fullstage: repos/fullstage.md
+    - docs: repos/docs.md
+    - Firmware dumps:
+      - images: repos/dumps/images.md
+      - backup_nonEye: repos/dumps/backup_nonEye.md
+      - gsi: repos/dumps/gsi.md
+      - pvr_apps: repos/dumps/pvr_apps.md
+      - pvr_applibs: repos/dumps/pvr_applibs.md
+      - pvr_apps_dexed: repos/dumps/pvr_apps_dexed.md
+      - pvr_apps_signed: repos/dumps/pvr_apps_signed.md
+      - pvr_apps_injected: repos/dumps/pvr_apps_injected.md
+      - pvr_apps_final: repos/dumps/pvr_apps_final.md
+      - oem_apps: repos/dumps/oem_apps.md
+      - oem_dex: repos/dumps/oem_dex.md
+      - oem_injected: repos/dumps/oem_injected.md
+      - oem_final: repos/dumps/oem_final.md
+      - seethrough: repos/dumps/seethrough.md
+      - sensorpatch: repos/dumps/sensorpatch.md
+      - airsvc: repos/dumps/airsvc.md
+      - fan: repos/dumps/fan.md
+      - overlay_pvr: repos/dumps/overlay_pvr.md
+      - cdsp: repos/dumps/cdsp.md
+      - dsp libs (rfsa): repos/dumps/rfsa.md
+      - qvr: repos/dumps/qvr.md
+      - qvrlibs: repos/dumps/qvrlibs.md
+      - ndi_firmware: repos/dumps/ndi_firmware.md
+      - deadunit: repos/dumps/deadunit.md
+      - eyeunit: repos/dumps/eyeunit.md
+      - build: repos/dumps/build.md
+      - out: repos/dumps/out.md
+      - ref: repos/dumps/ref.md
 
 markdown_extensions:
   - admonition
+  - tables
   - toc:
       permalink: true

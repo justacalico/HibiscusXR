@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Pure-native home shell for the Pico Neo 2: no Java, the APK is a manifest plus
+  one .so. Registered as HOME so it can be selected as the device launcher.
+  Landscape is forced - the panel is a 2160x3840 portrait surface and each eye
+  gets half of a 3840x2160 landscape frame.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.pn2.vrhome"
+    android:versionCode="1"
+    android:versionName="0.1">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
+
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+
+    <application
+        android:label="VR Home"
+        android:hasCode="false"
+        android:debuggable="true">
+
+        <activity
+            android:name="android.app.NativeActivity"
+            android:label="VR Home"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode|density"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <meta-data android:name="android.app.lib_name" android:value="vrhome" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

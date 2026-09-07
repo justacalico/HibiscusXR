@@ -1,0 +1,4 @@
+service fancontrol /system/bin/fancontrol
+     class core
+     user root
+     group root

@@ -158,7 +158,11 @@ static void viewDirToWorld(const Mat4& v, const float in[3], float out[3]) {
 
 // ---------------------------------------------------------------- app list
 
-struct AppEntry { std::string pkg; std::string label; };
+struct AppEntry {
+    std::string pkg, label;
+    std::vector<uint8_t> icon;   // rgba
+    int iconW = 0, iconH = 0;
+};
 static std::vector<AppEntry> gApps;
 
 // activity->env is only valid on the creating thread; android_main runs on its
@@ -204,6 +208,8 @@ static void refreshApps(android_app* app) {
     jfieldID pkgField = env->GetFieldID(aiCls, "packageName", "Ljava/lang/String;");
     jmethodID loadLabel = env->GetMethodID(riCls, "loadLabel",
         "(Landroid/content/pm/PackageManager;)Ljava/lang/CharSequence;");
+    jmethodID loadIcon = env->GetMethodID(riCls, "loadIcon",
+        "(Landroid/content/pm/PackageManager;)Landroid/graphics/drawable/Drawable;");
 
     jclass csCls = env->FindClass("java/lang/CharSequence");
     jmethodID toStr = env->GetMethodID(csCls, "toString", "()Ljava/lang/String;");
@@ -227,6 +233,48 @@ static void refreshApps(android_app* app) {
             e.label = c;
             env->ReleaseStringUTFChars(s, c);
         } else e.label = e.pkg;
+
+        // launcher icon: Drawable -> Bitmap -> pixels
+        jobject icon = env->CallObjectMethod(ri, loadIcon, pm);
+        if (icon) {
+            const int S = 96;
+            jclass cfgCls = env->FindClass("android/graphics/Bitmap$Config");
+            jfieldID argb = env->GetStaticFieldID(cfgCls, "ARGB_8888",
+                "Landroid/graphics/Bitmap$Config;");
+            jobject cfg = env->GetStaticObjectField(cfgCls, argb);
+            jclass bmpCls = env->FindClass("android/graphics/Bitmap");
+            jmethodID create = env->GetStaticMethodID(bmpCls, "createBitmap",
+                "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
+            jobject bmp = env->CallStaticObjectMethod(bmpCls, create, S, S, cfg);
+            jclass cvCls = env->FindClass("android/graphics/Canvas");
+            jobject canvas = env->NewObject(cvCls,
+                env->GetMethodID(cvCls, "<init>", "(Landroid/graphics/Bitmap;)V"), bmp);
+            jclass drCls = env->FindClass("android/graphics/drawable/Drawable");
+            env->CallVoidMethod(icon,
+                env->GetMethodID(drCls, "setBounds", "(IIII)V"), 0, 0, S, S);
+            env->CallVoidMethod(icon,
+                env->GetMethodID(drCls, "draw", "(Landroid/graphics/Canvas;)V"), canvas);
+            jclass bbCls = env->FindClass("java/nio/ByteBuffer");
+            jobject buf = env->CallStaticObjectMethod(bbCls,
+                env->GetStaticMethodID(bbCls, "allocateDirect",
+                    "(I)Ljava/nio/ByteBuffer;"), S * S * 4);
+            env->CallVoidMethod(bmp,
+                env->GetMethodID(bmpCls, "copyPixelsToBuffer",
+                    "(Ljava/nio/Buffer;)V"), buf);
+            uint8_t* px = (uint8_t*)env->GetDirectBufferAddress(buf);
+            e.icon.resize(S * S * 4);
+            // pixels arrive BGRA; swap to RGBA for the texture upload
+            for (int k = 0; k < S * S; ++k) {
+                e.icon[k*4+0] = px[k*4+2];
+                e.icon[k*4+1] = px[k*4+1];
+                e.icon[k*4+2] = px[k*4+0];
+                e.icon[k*4+3] = px[k*4+3];
+            }
+            e.iconW = e.iconH = S;
+            env->DeleteLocalRef(buf); env->DeleteLocalRef(canvas);
+            env->DeleteLocalRef(bmp); env->DeleteLocalRef(cfg);
+            env->DeleteLocalRef(icon);
+        }
         gApps.push_back(e);
     }
     LOGI("apps: %zu launchable", gApps.size());
@@ -271,6 +319,22 @@ static const char* kWarpVS = R"(
 attribute vec2 aPos;
 varying vec2 vUV;
 void main() { vUV = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }
+)";
+
+// textured quad for app icons - aPos + aUV, samples the icon texture as rgba
+static const char* kIconVS = R"(
+attribute vec3 aPos;
+attribute vec2 aUV;
+uniform mat4 uMVP;
+varying vec2 vUV;
+void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
+)";
+
+static const char* kIconFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uTex;
+void main() { gl_FragColor = texture2D(uTex, vUV); }
 )";
 
 static const char* kWarpFS = R"(
@@ -374,9 +438,10 @@ struct Engine {
     int width = 0, height = 0;
     bool ready = false;
 
-    GLuint sceneProg = 0, warpProg = 0, textProg = 0;
-    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0, textVbo = 0;
+    GLuint sceneProg = 0, warpProg = 0, textProg = 0, iconProg = 0;
+    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0, textVbo = 0, iconVbo = 0;
     Font font;
+    std::vector<GLuint> iconTex;   // per-app icon texture, same index as gApps
     Eye eye[2];
 
     ASensorManager* sensorMgr = nullptr;
@@ -477,6 +542,69 @@ static void rebuildPanelVbo(Engine* e) {
                  gPanelVerts, GL_DYNAMIC_DRAW);
 }
 
+// upload each app's icon pixels into its own texture, one per gApps entry
+static void uploadIcons(Engine* e) {
+    for (GLuint t : e->iconTex) glDeleteTextures(1, &t);
+    e->iconTex.clear();
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    for (auto& a : gApps) {
+        if (a.icon.empty()) { e->iconTex.push_back(0); continue; }
+        GLuint t;
+        glGenTextures(1, &t);
+        glBindTexture(GL_TEXTURE_2D, t);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a.iconW, a.iconH, 0, GL_RGBA,
+                     GL_UNSIGNED_BYTE, a.icon.data());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        e->iconTex.push_back(t);
+    }
+}
+
+// icon quad on each panel face, inset and pulled a little toward the viewer
+static void drawIcons(Engine* e, const Mat4& viewProj) {
+    glUseProgram(e->iconProg);
+    glUniformMatrix4fv(glGetUniformLocation(e->iconProg, "uMVP"), 1, GL_FALSE,
+                     viewProj.m);
+    glUniform1i(glGetUniformLocation(e->iconProg, "uTex"), 0);
+    const GLint aPos = glGetAttribLocation(e->iconProg, "aPos");
+    const GLint aUV  = glGetAttribLocation(e->iconProg, "aUV");
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    const float hs = 0.20f;   // icon half-size on the panel face
+    for (size_t i = 0; i < gPanels.size(); ++i) {
+        if (i >= e->iconTex.size() || !e->iconTex[i]) continue;
+        const Panel& p = gPanels[i];
+        const float fx = p.dirx, fz = p.dirz;        // toward viewer
+        const float rx = -fz, rz = fx;               // panel right
+        const float cx = p.x + fx * 0.03f, cz = p.z + fz * 0.03f;
+        const float cy = p.y;
+        const float quad[4][5] = {   // pos.xyz + uv, top of icon at low v
+            {cx - rx*hs, cy - hs, cz - rz*hs, 0.0f, 1.0f},
+            {cx + rx*hs, cy - hs, cz + rz*hs, 1.0f, 1.0f},
+            {cx + rx*hs, cy + hs, cz + rz*hs, 1.0f, 0.0f},
+            {cx - rx*hs, cy + hs, cz - rz*hs, 0.0f, 0.0f},
+        };
+        const int tris[6] = {0,1,2, 0,2,3};
+        float v[30];
+        for (int t = 0; t < 6; ++t) memcpy(v + t*5, quad[tris[t]], 20);
+        glBindTexture(GL_TEXTURE_2D, e->iconTex[i]);
+        glBindBuffer(GL_ARRAY_BUFFER, e->iconVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STREAM_DRAW);
+        glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+        glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    glDisable(GL_BLEND);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+}
+
 static bool initEyeTargets(Engine* e) {
     const int ew = e->width / 2, eh = e->height;
     for (int i = 0; i < 2; ++i) {
@@ -534,10 +662,12 @@ static int initDisplay(Engine* e) {
     e->sceneProg = link(kSceneVS, kSceneFS);
     e->warpProg  = link(kWarpVS,  kWarpFS);
     e->textProg  = link(kTextVS,  kTextFS);
-    if (!e->sceneProg || !e->warpProg || !e->textProg) return -1;
+    e->iconProg  = link(kIconVS,  kIconFS);
+    if (!e->sceneProg || !e->warpProg || !e->textProg || !e->iconProg) return -1;
 
     if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
     glGenBuffers(1, &e->textVbo);
+    glGenBuffers(1, &e->iconVbo);
 
     glGenBuffers(1, &e->panelVbo);
     glGenBuffers(1, &e->quadVbo);
@@ -679,7 +809,15 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
         glDrawArrays(GL_TRIANGLES, e->gazed * 6, 6);
     }
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aCol);
+
+    drawIcons(e, viewProj);
+
     // 4 reference cubes at the cardinal points, so head rotation is obvious
+    glUseProgram(e->sceneProg);
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aCol);
     glBindBuffer(GL_ARRAY_BUFFER, e->cubeVbo);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
@@ -940,6 +1078,7 @@ static void drawFrame(Engine* e) {
     }
     if (e->panelsDirty) {
         rebuildPanelVbo(e);
+        uploadIcons(e);
         e->panelsDirty = false;
     }
 

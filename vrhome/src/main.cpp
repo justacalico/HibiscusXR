@@ -700,7 +700,8 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
     glDisableVertexAttribArray(aCol);
 }
 
-// reticle: small quad drawn in view space, always dead centre
+// reticle: ring + centre dot in clip space, dead centre of each eye's view.
+// This is the gaze cursor for controller-free selection - brightens on a target.
 static void drawReticle(Engine* e) {
     glUseProgram(e->sceneProg);
     const GLint uMVP = glGetUniformLocation(e->sceneProg, "uMVP");
@@ -710,19 +711,41 @@ static void drawReticle(Engine* e) {
     glEnableVertexAttribArray(aCol);
     glDisable(GL_DEPTH_TEST);
 
-    const float s = 0.012f, z = -1.5f;
     const float c = (e->gazed >= 0) ? 1.0f : 0.55f;   // brighter on a target
-    const float verts[] = {
-        -s,-s,z,  c,c,c,   s,-s,z,  c,c,c,   s,s,z,  c,c,c,
-        -s,-s,z,  c,c,c,   s,s,z,   c,c,c,  -s,s,z,  c,c,c,
-    };
+    const int seg = 48;
+    // radii in NDC; the eye viewport is ~0.89 aspect so widen x a touch
+    const float r1x = 0.014f, r1y = 0.026f;
+    const float r2x = 0.018f, r2y = 0.034f;
+    const float dotx = 0.0035f, doty = 0.0065f;
+
+    // ring as a triangle strip between the two radii
+    float ring[(seg + 1) * 2 * 6];
+    for (int i = 0; i <= seg; ++i) {
+        const float a = (float)i / seg * 6.2831853f;
+        const float ca = cosf(a), sa = sinf(a);
+        float* o = ring + i * 12;
+        o[0]=ca*r2x; o[1]=sa*r2y; o[2]=0; o[3]=c; o[4]=c; o[5]=c;
+        o[6]=ca*r1x; o[7]=sa*r1y; o[8]=0; o[9]=c; o[10]=c; o[11]=c;
+    }
     GLuint vbo; glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ring), ring, GL_STREAM_DRAW);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
     glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, identity().m);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, identity().m);   // clip space
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, (seg + 1) * 2);
+
+    // centre dot as a small fan
+    float center[6 + (seg + 1) * 6];
+    center[0]=0; center[1]=0; center[2]=0; center[3]=c; center[4]=c; center[5]=c;
+    for (int i = 0; i <= seg; ++i) {
+        const float a = (float)i / seg * 6.2831853f;
+        float* p = center + 6 + i * 6;
+        p[0]=cosf(a)*dotx; p[1]=sinf(a)*doty; p[2]=0; p[3]=c; p[4]=c; p[5]=c;
+    }
+    glBufferData(GL_ARRAY_BUFFER, sizeof(center), center, GL_STREAM_DRAW);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, seg + 2);
+
     glDeleteBuffers(1, &vbo);
     glEnable(GL_DEPTH_TEST);
     glDisableVertexAttribArray(aPos);

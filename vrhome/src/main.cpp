@@ -293,9 +293,28 @@ static void launchApp(android_app* app, const std::string& pkg) {
         "(Ljava/lang/String;)Landroid/content/Intent;");
     jobject intent = env->CallObjectMethod(pm, getLaunch, env->NewStringUTF(pkg.c_str()));
     if (!intent) { LOGE("no launch intent for %s", pkg.c_str()); return; }
+
+    // float the app in a freeform window rather than taking over fullscreen
+    jclass intCls = env->FindClass("android/content/Intent");
+    env->CallObjectMethod(intent,
+        env->GetMethodID(intCls, "addFlags", "(I)Landroid/content/Intent;"),
+        0x10000000);   // FLAG_ACTIVITY_NEW_TASK
+    jclass aoCls = env->FindClass("android/app/ActivityOptions");
+    jobject opts = env->CallStaticObjectMethod(aoCls,
+        env->GetStaticMethodID(aoCls, "makeBasic",
+            "()Landroid/app/ActivityOptions;"));
+    jclass rectCls = env->FindClass("android/graphics/Rect");
+    jobject rect = env->NewObject(rectCls,
+        env->GetMethodID(rectCls, "<init>", "(IIII)V"),
+        480, 200, 1440, 1000);
+    env->CallObjectMethod(opts,
+        env->GetMethodID(aoCls, "setLaunchBounds",
+            "(Landroid/graphics/Rect;)Landroid/app/ActivityOptions;"), rect);
+    jobject bundle = env->CallObjectMethod(opts,
+        env->GetMethodID(aoCls, "toBundle", "()Landroid/os/Bundle;"));
     jmethodID startAct = env->GetMethodID(actCls, "startActivity",
-        "(Landroid/content/Intent;)V");
-    env->CallVoidMethod(activity, startAct, intent);
+        "(Landroid/content/Intent;Landroid/os/Bundle;)V");
+    env->CallVoidMethod(activity, startAct, intent, bundle);
     LOGI("launched %s", pkg.c_str());
 }
 
@@ -451,6 +470,9 @@ struct Engine {
     bool haveQuat = false;
 
     int gazed = -1;      // panel under the reticle
+    int dwellPanel = -1; // panel the gaze has rested on
+    long long dwellNs = 0;   // when the gaze settled on dwellPanel
+    float dwellFrac = 0;     // 0..1 fill of the gaze-to-launch timer
     int appTick = 0;
     bool panelsDirty = true;
     char hud[96] = "";
@@ -884,6 +906,23 @@ static void drawReticle(Engine* e) {
     glBufferData(GL_ARRAY_BUFFER, sizeof(center), center, GL_STREAM_DRAW);
     glDrawArrays(GL_TRIANGLE_FAN, 0, seg + 2);
 
+    // dwell progress: a sweeping arc that fills as the gaze holds on a panel
+    if (e->dwellFrac > 0.0f) {
+        const int n = (int)(e->dwellFrac * seg) + 1;
+        float arc[(seg + 1) * 2 * 6];
+        const float pc = 0.2f, pg = 0.9f, pb = 1.0f;   // cyan progress
+        for (int i = 0; i <= n; ++i) {
+            const float a = 1.5707963f - (float)i / seg * 6.2831853f * e->dwellFrac;
+            const float ca = cosf(a), sa = sinf(a);
+            float* o = arc + i * 12;
+            o[0]=ca*r2x*1.25f; o[1]=sa*r2y*1.25f; o[2]=0; o[3]=pc; o[4]=pg; o[5]=pb;
+            o[6]=ca*r1x*1.05f; o[7]=sa*r1y*1.05f; o[8]=0; o[9]=pc; o[10]=pg; o[11]=pb;
+        }
+        glBufferData(GL_ARRAY_BUFFER, (n + 1) * 2 * 6 * sizeof(float), arc,
+                     GL_STREAM_DRAW);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, (n + 1) * 2);
+    }
+
     glDeleteBuffers(1, &vbo);
     glEnable(GL_DEPTH_TEST);
     glDisableVertexAttribArray(aPos);
@@ -1098,6 +1137,25 @@ static void drawFrame(Engine* e) {
     head = multiply(rotZ(dRoll), head);
 
     e->gazed = pickGazed(head);
+
+    // gaze dwell: rest on a panel for ~1.8s and it launches itself, so the
+    // home works with no controller at all
+    struct timespec dts;
+    clock_gettime(CLOCK_MONOTONIC, &dts);
+    const long long nowNs = (long long)dts.tv_sec * 1000000000LL + dts.tv_nsec;
+    const long long kDwellNs = 1800LL * 1000000;
+    if (e->gazed != e->dwellPanel) {
+        e->dwellPanel = e->gazed;
+        e->dwellNs = nowNs;
+        e->dwellFrac = 0;
+    } else if (e->gazed >= 0) {
+        e->dwellFrac = (float)(nowNs - e->dwellNs) / kDwellNs;
+        if (e->dwellFrac >= 1.0f) {
+            launchApp(e->app, gApps[e->gazed].pkg);
+            e->dwellPanel = -1;
+            e->dwellFrac = 0;
+        }
+    } else e->dwellFrac = 0;
 
     // yaw/pitch/roll from the sensor quat - drives both the logcat line and the
     // in-headset HUD

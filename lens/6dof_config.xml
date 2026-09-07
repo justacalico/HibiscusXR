@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+/******************************************************************************
+* Copyright (c) 2016-2020 Qualcomm Technologies, Inc.
+* All Rights Reserved.
+* Confidential and Proprietary - Qualcomm Technologies, Inc.
+******************************************************************************/
+-->
+<Configuration>
+  <SFConfig>
+    <PoseQuality minImageMeanTrackError="15" maxImageMeanTrackError="150" thresholdForGoodTracking="0.4" minFeaturesTrackError="10" />
+  	<Reset maxInRecoveryTimeMs="2000000000" />
+  </SFConfig>    
+</Configuration>

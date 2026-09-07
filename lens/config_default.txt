@@ -1,0 +1,57 @@
+# Server ip address
+SERVER_ADDRESS = 172.16.1.100
+# Left eye video port
+VIDEO_SOURCE = 29702
+# Right eye video port
+VIDEO_SOURCE_R = 29704
+# Render fov. From 95 to 101 for Pico SDK Stream.
+VIDEO_FOV = 101
+
+# Pose data port
+POSE_PORT = 29708
+# network interface
+POSE_TX_INTERFACE = wigig0
+
+#Delete for Pico SDK Stream
+#POSE_PREDICTION_TIME_MS = 100
+
+# Audio streaming receiver port
+AUDIO_PORT = 29706
+# Audio jitter parameters
+AUDIO_LATENCY = 18
+AUDIO_JITTER_BUFFER_CAPACITY = 90
+AUDIO_PLAYBACK_RATE_FACTOR = 1000
+
+# level 0 - more verbose, ....., 4 - warning, 5 - errors
+LOG_LEVEL = 5
+# log mode: 0 - file mode, 1 - logcat
+LOG_MODE = 1
+
+# RTP parameters
+SOCKET_RX_BUFFER_SIZE = 1048576
+RTP_PKT_MAX_SIZE = 1500
+RTP_PKT_QUEUE_LENGTH = 5000
+
+# Controller parameters
+NUM_CONTROLLERS = 2
+# Controller type (0 = EVT Finch,1 = DVT Finch)
+CONTROLLER_TYPE = 0
+
+#Controller acceleration function
+ENABLE_ACC_GYRO = true
+
+#Controller calibration key combination
+CONTROLLER_RESET_CENTRE_MASK = -1
+
+#Set image resolution
+EYE_BUFFER_WIDTH = 1920
+EYE_BUFFER_HEIGHT = 1920
+
+# HOME = 3, BACK = 4, MENU = 82
+HMD_RESET = 3
+
+#event port
+EVENT_PORT = 29710
+
+#Qualcomm advice for SO libraries crash
+ATW_CONCEAL_PARALLEL = false

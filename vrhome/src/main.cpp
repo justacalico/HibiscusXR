@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdio>
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -411,6 +412,9 @@ struct Engine {
     bool panelsDirty = true;
     char hud[96] = "";
     int  hudLen = 0;
+    int  frames = 0;
+    int  fps = 0;
+    long long fpsMark = 0;
 };
 
 // one quad per panel, rebuilt when the app list changes; colour per app so
@@ -837,8 +841,8 @@ static void drawFrame(Engine* e) {
     const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(qw*qx - qy*qz)))) * 180.0f / (float)M_PI;
     const float roll  = atan2f(2*(qw*qz + qx*qy), 1 - 2*(qz*qz + qx*qx)) * 180.0f / (float)M_PI;
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f%s", yaw, pitch, roll,
-        useSensor ? "" : "  SEN:OFF");
+        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f  FPS %d%s", yaw, pitch, roll,
+        e->fps, useSensor ? "" : "  SEN:OFF");
 
     if ((e->appTick % 144) == 0) {
         float fwd[3]; const float c[3] = {0,0,-1};
@@ -902,6 +906,18 @@ static void drawFrame(Engine* e) {
     glDisableVertexAttribArray(aPos);
     glEnable(GL_DEPTH_TEST);
     eglSwapBuffers(e->display, e->surface);
+
+    // fps: count presented frames, refresh the number once a second
+    ++e->frames;
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    const long long now = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    if (e->fpsMark == 0) e->fpsMark = now;
+    else if (now - e->fpsMark >= 1000) {
+        e->fps = (int)(e->frames * 1000 / (now - e->fpsMark));
+        e->frames = 0;
+        e->fpsMark = now;
+    }
 }
 
 // ---------------------------------------------------------------- lifecycle

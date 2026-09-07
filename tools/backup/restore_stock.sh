@@ -25,7 +25,8 @@ for a in "$@"; do
   esac
 done
 
-FB=(fastboot ${PN2_SERIAL:+-s "$PN2_SERIAL"})
+# the fastboot serial is not the adb serial on this device - take whatever shows up
+FB=fastboot
 
 # system came from the OTA (stock, unmodified) - the on-device dd of it failed,
 # which is fine because the OTA copy is byte-identical stock content.
@@ -59,6 +60,8 @@ run() { echo "+ $*"; [ "$DRY" -eq 0 ] && "$@"; return 0; }
 if [ "$DRY" -eq 0 ]; then
   command -v fastboot >/dev/null || { echo "fastboot not in PATH" >&2; exit 1; }
   fastboot devices | grep -q . || { echo "no fastboot device" >&2; exit 1; }
+  fbs=$(fastboot devices | awk 'NR==1{print $1}')
+  FB=(fastboot ${fbs:+-s "$fbs"})
 fi
 
 # `fastboot oem pico unlock` is required once per fastboot session, and it can

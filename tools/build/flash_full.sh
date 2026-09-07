@@ -34,6 +34,9 @@ for i in $(seq 20); do
   [ "$i" -lt 20 ] || { log "ABORT: never reached fastboot"; exit 1; }
   sleep 2
 done
+# the fastboot serial is not the adb serial on this device - take whatever shows up
+FB_SERIAL=$(fastboot devices | awk 'NR==1{print $1}')
+FB=(fastboot ${FB_SERIAL:+-s "$FB_SERIAL"})
 log "fastboot: $(fastboot devices | tr '\n' ' ')"
 
 # unlock can hang on a stale session - cap it

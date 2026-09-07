@@ -33,5 +33,6 @@ key 528   FOCUS
 key 766   CAMERA
 key 28    DEFINE_CONFIRM
 key 158   BACK
-key 633   HALL_OPEN WAKE
-key 634   HALL_CLOSE WAKE
+# the WAKE flag is not accepted by this build's key layout parser, and this
+# unit's gpio-keys device does not emit scancodes 633/634 at all, so the stock
+# hall-sensor lines are dropped: key 633 HALL_OPEN / key 634 HALL_CLOSE

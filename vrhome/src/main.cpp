@@ -20,8 +20,10 @@
 #include <GLES2/gl2.h>
 #include <sys/system_properties.h>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <cstdio>
 #include <string>
 #include <vector>
 
@@ -44,6 +46,55 @@ static float kRoll = 90.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
 
 static const int kSensorIdent = 3;
 static const int kInputIdent  = 4;
+
+// ---------------------------------------------------------------- font
+
+// 5x7 glyphs, one byte per column, LSB = top row. Only the chars the HUD needs.
+struct Glyph { char c; uint8_t col[5]; };
+static const Glyph kFont[] = {
+    {' ', {0x00,0x00,0x00,0x00,0x00}},
+    {'-', {0x08,0x08,0x08,0x08,0x08}},
+    {'.', {0x00,0x60,0x60,0x00,0x00}},
+    {':', {0x00,0x36,0x36,0x00,0x00}},
+    {'0', {0x3E,0x51,0x49,0x45,0x3E}},
+    {'1', {0x00,0x42,0x7F,0x40,0x00}},
+    {'2', {0x42,0x61,0x51,0x49,0x46}},
+    {'3', {0x21,0x41,0x45,0x4B,0x31}},
+    {'4', {0x18,0x14,0x12,0x7F,0x10}},
+    {'5', {0x27,0x45,0x45,0x45,0x39}},
+    {'6', {0x3C,0x4A,0x49,0x49,0x30}},
+    {'7', {0x01,0x71,0x09,0x05,0x03}},
+    {'8', {0x36,0x49,0x49,0x49,0x36}},
+    {'9', {0x06,0x49,0x49,0x29,0x1E}},
+    {'A', {0x7E,0x11,0x11,0x11,0x7E}},
+    {'C', {0x3E,0x41,0x41,0x41,0x22}},
+    {'D', {0x7F,0x41,0x41,0x22,0x1C}},
+    {'E', {0x7F,0x49,0x49,0x49,0x41}},
+    {'F', {0x7F,0x09,0x09,0x09,0x01}},
+    {'G', {0x3E,0x41,0x49,0x49,0x7A}},
+    {'H', {0x7F,0x08,0x08,0x08,0x7F}},
+    {'I', {0x00,0x41,0x7F,0x41,0x00}},
+    {'L', {0x7F,0x40,0x40,0x40,0x40}},
+    {'N', {0x7F,0x04,0x08,0x10,0x7F}},
+    {'O', {0x3E,0x41,0x41,0x41,0x3E}},
+    {'P', {0x7F,0x09,0x09,0x09,0x06}},
+    {'Q', {0x3E,0x41,0x51,0x21,0x5E}},
+    {'R', {0x7F,0x09,0x19,0x29,0x46}},
+    {'S', {0x46,0x49,0x49,0x49,0x31}},
+    {'T', {0x01,0x01,0x7F,0x01,0x01}},
+    {'U', {0x3F,0x40,0x40,0x40,0x3F}},
+    {'W', {0x3F,0x40,0x38,0x40,0x3F}},
+    {'X', {0x63,0x14,0x08,0x14,0x63}},
+    {'Y', {0x07,0x08,0x70,0x08,0x07}},
+    {'Z', {0x61,0x51,0x49,0x45,0x43}},
+};
+static const int kFontN = sizeof(kFont) / sizeof(kFont[0]);
+static const int kCellW = 8, kCellH = 8, kAtlasCols = 16;
+
+static int glyphIndex(char c) {
+    for (int i = 0; i < kFontN; ++i) if (kFont[i].c == c) return i;
+    return 0;   // blank for anything unmapped
+}
 
 static float propF(const char* key, float dflt) {
     char b[PROP_VALUE_MAX];
@@ -96,12 +147,19 @@ static Mat4 rotX(float deg) {
     m.m[5] = cosf(r); m.m[6] = sinf(r); m.m[9] = -sinf(r); m.m[10] = cosf(r);
     return m;
 }
-static Mat4 quatToView(const float* q) {
+// Quaternion (x,y,z,w) -> rotation matrix, column-major. inv=true transposes it:
+// the sensor reports device->world and the view matrix wants the inverse.
+static Mat4 quatToMat(const float* q, bool inv) {
     const float x = q[0], y = q[1], z = q[2], w = q[3];
     Mat4 r = identity();
-    r.m[0] = 1 - 2*(y*y + z*z); r.m[4] = 2*(x*y + z*w);   r.m[8]  = 2*(x*z - y*w);
-    r.m[1] = 2*(x*y - z*w);     r.m[5] = 1 - 2*(x*x + z*z); r.m[9]  = 2*(y*z + x*w);
-    r.m[2] = 2*(x*z + y*w);     r.m[6] = 2*(y*z - x*w);   r.m[10] = 1 - 2*(x*x + y*y);
+    float f[9] = {
+        1-2*(y*y+z*z), 2*(x*y-z*w),   2*(x*z+y*w),
+        2*(x*y+z*w),   1-2*(x*x+z*z), 2*(y*z-x*w),
+        2*(x*z-y*w),   2*(y*z+x*w),   1-2*(x*x+y*y),
+    };
+    for (int c = 0; c < 3; ++c)
+        for (int i = 0; i < 3; ++i)
+            r.m[c*4+i] = inv ? f[i*3+c] : f[c*3+i];
     return r;
 }
 static Mat4 translate3(float x, float y, float z) {
@@ -250,6 +308,27 @@ void main() {
 }
 )";
 
+// HUD text: view-space quads sampling a 5x7 bitmap font atlas
+static const char* kTextVS = R"(
+attribute vec3 aPos;
+attribute vec2 aUV;
+uniform mat4 uMVP;
+varying vec2 vUV;
+void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
+)";
+
+static const char* kTextFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uFont;
+uniform vec3 uColor;
+void main() {
+    float a = texture2D(uFont, vUV).a;
+    if (a < 0.05) discard;
+    gl_FragColor = vec4(uColor, a);
+}
+)";
+
 static GLuint compile(GLenum type, const char* src) {
     GLuint s = glCreateShader(type);
     glShaderSource(s, 1, &src, nullptr);
@@ -313,8 +392,10 @@ struct Engine {
     int width = 0, height = 0;
     bool ready = false;
 
-    GLuint sceneProg = 0, warpProg = 0;
-    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0;
+    GLuint sceneProg = 0, warpProg = 0, textProg = 0;
+    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0, textVbo = 0;
+    GLuint fontTex = 0;
+    int fontW = 0, fontH = 0;
     Eye eye[2];
 
     ASensorManager* sensorMgr = nullptr;
@@ -326,6 +407,8 @@ struct Engine {
     int gazed = -1;      // panel under the reticle
     int appTick = 0;
     bool panelsDirty = true;
+    char hud[96] = "";
+    int  hudLen = 0;
 };
 
 // one quad per panel, rebuilt when the app list changes; colour per app so
@@ -458,7 +541,33 @@ static int initDisplay(Engine* e) {
 
     e->sceneProg = link(kSceneVS, kSceneFS);
     e->warpProg  = link(kWarpVS,  kWarpFS);
-    if (!e->sceneProg || !e->warpProg) return -1;
+    e->textProg  = link(kTextVS,  kTextFS);
+    if (!e->sceneProg || !e->warpProg || !e->textProg) return -1;
+
+    // font atlas: 8x8 cells, one per glyph, single alpha channel
+    {
+        const int rows = (kFontN + kAtlasCols - 1) / kAtlasCols;
+        const int tw = kAtlasCols * kCellW, th = rows * kCellH;
+        std::vector<uint8_t> atlas(tw * th, 0);
+        for (int g = 0; g < kFontN; ++g) {
+            const int cx = (g % kAtlasCols) * kCellW;
+            const int cy = (g / kAtlasCols) * kCellH;
+            for (int c = 0; c < 5; ++c)
+                for (int r = 0; r < 7; ++r)
+                    if (kFont[g].col[c] & (1 << r))
+                        atlas[(cy + r) * tw + cx + c] = 255;
+        }
+        glGenTextures(1, &e->fontTex);
+        glBindTexture(GL_TEXTURE_2D, e->fontTex);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, tw, th, 0, GL_ALPHA,
+                     GL_UNSIGNED_BYTE, atlas.data());
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        e->fontW = tw; e->fontH = th;
+    }
+    glGenBuffers(1, &e->textVbo);
 
     glGenBuffers(1, &e->panelVbo);
     glGenBuffers(1, &e->quadVbo);
@@ -631,6 +740,62 @@ static void drawReticle(Engine* e) {
     glDisableVertexAttribArray(aCol);
 }
 
+// HUD: head-locked text showing the live camera rotation, so tracking can be
+// verified without adb. One line near the top of the view, per eye.
+static void drawHud(Engine* e, const Mat4& proj) {
+    glUseProgram(e->textProg);
+    const GLint uMVP  = glGetUniformLocation(e->textProg, "uMVP");
+    const GLint uCol  = glGetUniformLocation(e->textProg, "uColor");
+    const GLint aPos  = glGetAttribLocation(e->textProg, "aPos");
+    const GLint aUV   = glGetAttribLocation(e->textProg, "aUV");
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, proj.m);   // view space = identity view
+    glUniform3f(uCol, 1.0f, 1.0f, 1.0f);
+    glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, e->fontTex);
+
+    const float cw = 0.030f, ch = 0.042f;      // metres per glyph in view space
+    const float z  = -1.2f;
+    const float y  = 0.34f;
+    const float len = (float)e->hudLen;
+    const float x0 = -len * cw * 0.5f;
+
+    float v[4][5];  // per-char quad: pos.xyz + uv
+    for (int i = 0; i < e->hudLen; ++i) {
+        const int gi = glyphIndex(e->hud[i]);
+        const float cx = (gi % kAtlasCols) * kCellW;
+        const float cy = (gi / kAtlasCols) * kCellH;
+        // glyph row 0 sits at low v in memory, so the quad's top vertex takes
+        // the low-v edge and the bottom vertex the high-v edge
+        const float u0 = cx / e->fontW,       u1 = (cx + kCellW) / e->fontW;
+        const float vTop = cy / e->fontH,     vBot = (cy + kCellH) / e->fontH;
+        const float x = x0 + i * cw;
+        const float q[4][5] = {
+            {x,    y,    z, u0, vBot},
+            {x+cw, y,    z, u1, vBot},
+            {x+cw, y+ch, z, u1, vTop},
+            {x,    y+ch, z, u0, vTop},
+        };
+        const int idx[6] = {0,1,2, 0,2,3};
+        float verts[6][5];
+        for (int t = 0; t < 6; ++t) memcpy(verts[t], q[idx[t]], 5 * sizeof(float));
+        glBindBuffer(GL_ARRAY_BUFFER, e->textVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+        glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+        glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+}
+
 static void drawFrame(Engine* e) {
     if (!e->ready) return;
 
@@ -646,27 +811,38 @@ static void drawFrame(Engine* e) {
         e->panelsDirty = false;
     }
 
-    // debug.vrhome.sensor=0 pins the view dead ahead for debugging
+    // debug.vrhome.sensor=0 pins the view; debug.vrhome.tq=0 uses the quat
+    // untransposed in case the track direction reads inverted in the headset.
+    // roll/sensroll/worldx are live-tunable for display orientation.
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
-    Mat4 head = useSensor ? quatToView(e->quat) : identity();
+    const bool transpose = propI("debug.vrhome.tq", 1) != 0;
+    const float dRoll   = propF("debug.vrhome.roll",     kRoll);
+    const float sensroll= propF("debug.vrhome.sensroll", kSensRoll);
+    const float worldx  = propF("debug.vrhome.worldx",   kWorldX);
+    Mat4 head = useSensor ? quatToMat(e->quat, transpose) : identity();
     if (useSensor) {
-        head = multiply(head, rotZ(kSensRoll));
-        head = multiply(head, rotX(kWorldX));
+        head = multiply(head, rotZ(sensroll));
+        head = multiply(head, rotX(worldx));
     }
-    head = multiply(rotZ(kRoll), head);
+    head = multiply(rotZ(dRoll), head);
 
     e->gazed = pickGazed(head);
 
+    // yaw/pitch/roll from the sensor quat - drives both the logcat line and the
+    // in-headset HUD
+    const float qx = e->quat[0], qy = e->quat[1], qz = e->quat[2], qw = e->quat[3];
+    const float yaw   = atan2f(2*(qw*qy + qx*qz), 1 - 2*(qy*qy + qx*qx)) * 180.0f / (float)M_PI;
+    const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(qw*qx - qy*qz)))) * 180.0f / (float)M_PI;
+    const float roll  = atan2f(2*(qw*qz + qx*qy), 1 - 2*(qz*qz + qx*qx)) * 180.0f / (float)M_PI;
+    e->hudLen = snprintf(e->hud, sizeof(e->hud),
+        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f%s", yaw, pitch, roll,
+        useSensor ? "" : "  SEN:OFF");
+
     if ((e->appTick % 144) == 0) {
-        // yaw/pitch/roll from the sensor quat so rotation is readable in logcat
-        const float x = e->quat[0], y = e->quat[1], z = e->quat[2], w = e->quat[3];
-        const float yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;
-        const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(w*x - y*z)))) * 180.0f / (float)M_PI;
-        const float roll  = atan2f(2*(w*z + x*y), 1 - 2*(z*z + x*x)) * 180.0f / (float)M_PI;
         float fwd[3]; const float c[3] = {0,0,-1};
         viewDirToWorld(head, c, fwd);
         LOGI("rot quat=(%.2f,%.2f,%.2f,%.2f) ypr=(%.0f,%.0f,%.0f) fwd=(%.2f,%.2f,%.2f) gazed=%d",
-             x, y, z, w, yaw, pitch, roll, fwd[0], fwd[1], fwd[2], e->gazed);
+             qx, qy, qz, qw, yaw, pitch, roll, fwd[0], fwd[1], fwd[2], e->gazed);
     }
 
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
@@ -691,6 +867,7 @@ static void drawFrame(Engine* e) {
         const Mat4 vp = multiply(proj, eyeView);
         drawScene(e, vp);
         drawReticle(e);
+        if (propI("debug.vrhome.hud", 1)) drawHud(e, proj);
         if (++errTick >= 144) {
             errTick = 0;
             GLenum ge = glGetError();

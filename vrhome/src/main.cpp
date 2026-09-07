@@ -78,6 +78,7 @@ static const Glyph kFont[] = {
     {'H', {0x7F,0x08,0x08,0x08,0x7F}},
     {'I', {0x00,0x41,0x7F,0x41,0x00}},
     {'L', {0x7F,0x40,0x40,0x40,0x40}},
+    {'M', {0x7F,0x02,0x0C,0x02,0x7F}},
     {'N', {0x7F,0x04,0x08,0x10,0x7F}},
     {'O', {0x3E,0x41,0x41,0x41,0x3E}},
     {'P', {0x7F,0x09,0x09,0x09,0x06}},
@@ -415,6 +416,12 @@ struct Engine {
     int  frames = 0;
     int  fps = 0;
     long long fpsMark = 0;
+    int  sensorEv = 0;
+    int  sensorHz = 0;
+    int  sensorNew = 0;
+    int  sensorNewHz = 0;
+    int  sensorLagMs = 0;
+    float lastQ[4] = {0,0,0,0};
 };
 
 // one quad per panel, rebuilt when the app list changes; colour per app so
@@ -619,6 +626,25 @@ static void drainSensor(Engine* e) {
             e->quat[3] = (ev.data[3] != 0.0f) ? ev.data[3]
                 : (sq < 1.0f ? sqrtf(1.0f - sq) : 0.0f);
             e->haveQuat = true;
+            ++e->sensorEv;
+            // event timestamp is ns since boot; track delivery lag so we can
+            // tell a slow stream from a fast-but-stale one
+            {
+                struct timespec ts;
+                clock_gettime(CLOCK_BOOTTIME, &ts);
+                const long long now = (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
+                e->sensorLagMs = (int)((now - ev.timestamp) / 1000000);
+            }
+            // count only samples that actually changed the quat, to see if the
+            // HAL is streaming fresh data or replaying a stale batch
+            if (fabsf(ev.data[0] - e->lastQ[0]) > 1e-5f ||
+                fabsf(ev.data[1] - e->lastQ[1]) > 1e-5f ||
+                fabsf(ev.data[2] - e->lastQ[2]) > 1e-5f ||
+                fabsf(ev.data[3] - e->lastQ[3]) > 1e-5f) {
+                ++e->sensorNew;
+                e->lastQ[0]=ev.data[0]; e->lastQ[1]=ev.data[1];
+                e->lastQ[2]=ev.data[2]; e->lastQ[3]=ev.data[3];
+            }
         }
     }
 }
@@ -841,8 +867,8 @@ static void drawFrame(Engine* e) {
     const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(qw*qx - qy*qz)))) * 180.0f / (float)M_PI;
     const float roll  = atan2f(2*(qw*qz + qx*qy), 1 - 2*(qz*qz + qx*qx)) * 180.0f / (float)M_PI;
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f  FPS %d%s", yaw, pitch, roll,
-        e->fps, useSensor ? "" : "  SEN:OFF");
+        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f  FPS %d  SEN %d  LAG %dMS%s", yaw, pitch, roll,
+        e->fps, e->sensorNewHz, e->sensorLagMs, useSensor ? "" : "  SEN:OFF");
 
     if ((e->appTick % 144) == 0) {
         float fwd[3]; const float c[3] = {0,0,-1};
@@ -915,7 +941,11 @@ static void drawFrame(Engine* e) {
     if (e->fpsMark == 0) e->fpsMark = now;
     else if (now - e->fpsMark >= 1000) {
         e->fps = (int)(e->frames * 1000 / (now - e->fpsMark));
+        e->sensorHz = (int)(e->sensorEv * 1000 / (now - e->fpsMark));
+        e->sensorNewHz = (int)(e->sensorNew * 1000 / (now - e->fpsMark));
         e->frames = 0;
+        e->sensorEv = 0;
+        e->sensorNew = 0;
         e->fpsMark = now;
     }
 }
@@ -962,7 +992,9 @@ void android_main(android_app* app) {
         app->looper, kSensorIdent, nullptr, nullptr);
     if (e.rotSensor) {
         ASensorEventQueue_enableSensor(e.sensorQueue, e.rotSensor);
-        ASensorEventQueue_setEventRate(e.sensorQueue, e.rotSensor, 13888); // ~72Hz
+        // fastest rate - the fused output on this HAL lags badly at the
+        // default, which reads as ~2fps head tracking in the headset
+        ASensorEventQueue_setEventRate(e.sensorQueue, e.rotSensor, 2000);
     }
 
     refreshApps(app);

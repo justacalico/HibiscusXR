@@ -39,12 +39,15 @@ Needs the Android SDK and NDK. Everything resolves from
 `ANDROID_SDK_ROOT` (default `/opt/android-sdk`):
 
 ```bash
-./build.sh
+make            # build out/vrhome.apk
+make install    # adb install -r
+make test       # host unit tests
+make clean
 ```
 
 No Gradle: it's clang for the native lib, javac + d8 for the Java side,
-then aapt2, zipalign and apksigner. `NDK`, `BT`, `JAR` and `KEYS` env vars
-override the defaults.
+then aapt2, zipalign and apksigner, all driven by the Makefile. `NDK`,
+`BT`, `JAR` and `KEYS` env vars override the defaults.
 
 Output is `out/vrhome.apk`. If platform signing keys exist in
 `../build/keys` the APK is signed with them and gets the system
@@ -55,7 +58,7 @@ shell won't be able to host apps.
 ## Installing
 
 ```bash
-adb install -r out/vrhome.apk
+make install
 adb shell cmd package set-home-activity org.pn2.vrhome/.PanelActivity
 ```
 
@@ -67,7 +70,7 @@ key handling) is split into pure modules under `src/` and exercised by
 host-side unit tests:
 
 ```bash
-./test.sh
+make test
 ```
 
 ## Layout
@@ -84,7 +87,7 @@ src/text/        utf8, glyph layout, font atlas, text drawing
 src/input/       headset button handling
 src/sensor/      rotation vector drain
 java/            ShellBridge, PanelActivity, LauncherActivity
-tests/           host unit tests (see test.sh)
+tests/           host unit tests (make test)
 ```
 
 ## Debugging

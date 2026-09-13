@@ -1,12 +1,16 @@
-# Make PVRLauncher (com.pvr.launcher) the default home app.
+# Make the panel shell (org.pn2.vrhome) the default home app.
 #
 # The HOME role holder lives in /data, not /system, so it cannot be baked into
 # the image. Running `cmd role add-role-holder` at boot_completed covers a fresh
 # /data (first flash, factory reset); the marker file keeps this from stomping
-# a launcher the user picked afterwards. Stock never needs this because its own
-# setup flow grants the role - our build has no such step.
+# a launcher the user picked afterwards.
+#
+# The same first-boot pass disables the stock Pico homes (PVRLauncher, PVRHome,
+# VRShell) so nothing else can claim display 0, and whitelists the shell for
+# hidden API access - it reflects into ActivityTaskManager/InputManager for
+# task adoption and touch injection.
 
-service pn2_home /system/bin/sh -c "if [ ! -f /data/local/.pn2_home_done ]; then cmd role add-role-holder android.app.role.HOME com.pvr.launcher && touch /data/local/.pn2_home_done; fi"
+service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done ]; then cmd role add-role-holder android.app.role.HOME org.pn2.vrhome; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; settings put global hidden_api_blacklist_exemptions org.pn2.vrhome; touch /data/local/.pn2_panels_done; fi"
     user root
     group root
     seclabel u:r:shell:s0
@@ -14,4 +18,4 @@ service pn2_home /system/bin/sh -c "if [ ! -f /data/local/.pn2_home_done ]; then
     disabled
 
 on property:sys.boot_completed=1
-    start pn2_home
+    start pn2_panels

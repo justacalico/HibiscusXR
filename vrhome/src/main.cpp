@@ -52,9 +52,10 @@
 static float kDistK1 = 0.22f, kDistK2 = 0.24f;
 static float kIPD  = 0.063f;
 static float kFovY = 90.0f;
-// roll confirmed on the headset: 90 left the world upside down through the
-// lenses, 270 puts it upright. Still live-tunable via debug.vrhome.roll.
-static float kRoll = 270.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
+// roll back to the vrdemo-confirmed 90: 270 only looked upright because
+// quatToMat was returning the raw rotation instead of its transpose.
+// Still live-tunable via debug.vrhome.roll.
+static float kRoll = 90.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
 
 static const int kSensorIdent = 3;
 static const int kInputIdent  = 4;
@@ -158,7 +159,7 @@ static Mat4 quatToMat(const float* q, bool inv) {
     };
     for (int c = 0; c < 3; ++c)
         for (int i = 0; i < 3; ++i)
-            r.m[c*4+i] = inv ? f[i*3+c] : f[c*3+i];
+            r.m[c*4+i] = inv ? f[c*3+i] : f[i*3+c];
     return r;
 }
 

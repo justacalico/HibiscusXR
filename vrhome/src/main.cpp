@@ -182,6 +182,7 @@ struct Panel {
     float stMat[16];
     float yaw = 0;               // world yaw of panel centre
     std::string pkg;
+    std::string label;           // resolved app label for the window bar
 };
 static std::vector<Panel> gPanels;
 
@@ -238,16 +239,60 @@ varying vec2 vUV;
 void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
 )";
 
-// app panel: samples an external OES texture fed by the virtual display
+// app panel: samples an external OES texture fed by the virtual display,
+// corners rounded off in panel space
 static const char* kFloatFS = R"(
 #extension GL_OES_EGL_image_external : require
 precision mediump float;
 varying vec2 vUV;
 uniform samplerExternalOES uTex;
 uniform mat4 uST;
+uniform vec2 uHalf;
+uniform float uRadius;
 void main() {
     vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
-    gl_FragColor = texture2D(uTex, uv);
+    vec4 c = texture2D(uTex, uv);
+    vec2 p = (vUV - 0.5) * 2.0 * uHalf;
+    vec2 q = abs(p) - uHalf + vec2(uRadius);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    gl_FragColor = vec4(c.rgb, c.a * a);
+}
+)";
+
+// solid rounded shapes - window chrome, shadows, rings. aUV runs -1..1 across
+// the quad; uQuad is the quad's physical half size, uBox the shape's, so a
+// soft edge can spread past the box into the quad's padding
+static const char* kShapeVS = R"(
+attribute vec3 aPos;
+attribute vec2 aUV;
+uniform mat4 uMVP;
+varying vec2 vUV;
+void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
+)";
+
+static const char* kShapeFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform vec4 uColor;
+uniform vec2 uQuad;
+uniform vec2 uBox;
+uniform float uRadius;
+uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
+uniform float uSoft;
+void main() {
+    vec2 p = vUV * uQuad;
+    vec2 q = abs(p) - uBox + vec2(uRadius);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float a;
+    if (uBorder > 0.0)
+        a = 1.0 - smoothstep(uBorder - uSoft, uBorder + uSoft, abs(d));
+    else if (uBorder < 0.0)
+        a = 1.0 - smoothstep(0.0, uSoft, d);
+    else
+        a = 1.0 - smoothstep(-uSoft, uSoft, d);
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(uColor.rgb, uColor.a * a);
 }
 )";
 
@@ -324,8 +369,9 @@ struct Engine {
     bool ready = false;    // window surface valid
     bool glInit = false;   // programs/buffers/targets created once per context
 
-    GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0;
-    GLuint quadVbo = 0, gridVbo = 0, textVbo = 0, panelVbo = 0;
+    GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0,
+           shapeProg = 0;
+    GLuint quadVbo = 0, gridVbo = 0, textVbo = 0, panelVbo = 0, skyVbo = 0;
     Font font;
     Eye eye[2];
 
@@ -334,7 +380,7 @@ struct Engine {
     jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
               mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
-              mRemoveTask = nullptr, mFocusTask = nullptr;
+              mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -379,7 +425,7 @@ static void buildGrid() {
     for (int i = -kGridHalf; i <= kGridHalf; ++i) {
         const float t = i * kGridStep;
         const bool axis = (i == 0);
-        const float r = axis ? 0.9f : 0.16f, g = axis ? 0.9f : 0.22f, b = axis ? 0.9f : 0.32f;
+        const float r = axis ? 0.45f : 0.10f, g = axis ? 0.50f : 0.13f, b = axis ? 0.55f : 0.18f;
         const float pts[4][3] = {{t, -1.2f, -e}, {t, -1.2f, e}, {-e, -1.2f, t}, {e, -1.2f, t}};
         for (int k = 0; k < 4; ++k) {
             gGrid[n++] = pts[k][0]; gGrid[n++] = pts[k][1]; gGrid[n++] = pts[k][2];
@@ -387,6 +433,45 @@ static void buildGrid() {
         }
     }
     gGridVerts = n / 6;
+}
+
+// sky dome: open cylinder with a vertical gradient so the scene has a
+// horizon instead of a flat clear colour
+static const int kSkySeg = 64;
+static float gSky[kSkySeg * 3 * 6 * 6];
+static int   gSkyVerts = 0;
+
+static void buildSky() {
+    const float R = 30.0f;
+    const float rings[4][4] = {  // y, r, g, b
+        {-6.0f, 0.012f, 0.016f, 0.026f},
+        { 0.0f, 0.085f, 0.105f, 0.150f},
+        { 8.0f, 0.040f, 0.050f, 0.075f},
+        {26.0f, 0.012f, 0.016f, 0.030f},
+    };
+    int n = 0;
+    for (int s = 0; s < kSkySeg; ++s) {
+        const float a0 = s * 2.0f * (float)M_PI / kSkySeg;
+        const float a1 = (s + 1) * 2.0f * (float)M_PI / kSkySeg;
+        const float x0 = sinf(a0) * R, z0 = cosf(a0) * R;
+        const float x1 = sinf(a1) * R, z1 = cosf(a1) * R;
+        for (int r = 0; r < 3; ++r) {
+            const float* lo = rings[r];
+            const float* hi = rings[r + 1];
+            const float quad[4][3] = {{x0, lo[0], z0}, {x1, lo[0], z1},
+                                      {x1, hi[0], z1}, {x0, hi[0], z0}};
+            const float* cols[4] = {lo + 1, lo + 1, hi + 1, hi + 1};
+            const int tris[6] = {0,1,2, 0,2,3};
+            for (int t = 0; t < 6; ++t) {
+                const int v = tris[t];
+                gSky[n++] = quad[v][0]; gSky[n++] = quad[v][1];
+                gSky[n++] = quad[v][2];
+                gSky[n++] = cols[v][0]; gSky[n++] = cols[v][1];
+                gSky[n++] = cols[v][2];
+            }
+        }
+    }
+    gSkyVerts = n / 6;
 }
 
 // ---------------------------------------------------------- bridge calls
@@ -439,6 +524,8 @@ static void initBridge(Engine* e) {
     e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
     e->mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
     e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
+    e->mAppLabel     = env->GetMethodID(bc, "appLabel",
+                        "(Ljava/lang/String;)Ljava/lang/String;");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
@@ -575,6 +662,23 @@ static void pumpBridge(Engine* e) {
         for (int i = 0; i < (int)gPanels.size(); ++i)
             if (gPanels[i].displayId == id) { closePanel(e, i); break; }
     }
+
+    // window-bar labels: resolve once per panel, after pkg is known
+    if (e->mAppLabel) {
+        for (auto& p : gPanels) {
+            if (p.pkg.empty() || !p.label.empty()) continue;
+            jstring jpkg = env->NewStringUTF(p.pkg.c_str());
+            jstring jl = (jstring)env->CallObjectMethod(e->bridge, e->mAppLabel,
+                                                      jpkg);
+            env->DeleteLocalRef(jpkg);
+            if (env->ExceptionCheck()) { env->ExceptionClear(); continue; }
+            if (!jl) continue;
+            const char* c = env->GetStringUTFChars(jl, nullptr);
+            p.label = c;
+            env->ReleaseStringUTFChars(jl, c);
+            env->DeleteLocalRef(jl);
+        }
+    }
 }
 
 // pull the newest frame of each virtual display into its texture
@@ -601,25 +705,103 @@ static void panelCenter(const Panel& p, float out[3], float right[3]) {
     right[0] = cosf(p.yaw); right[1] = 0; right[2] = sinf(p.yaw);
 }
 
-static void drawPanels(Engine* e, const Mat4& viewProj) {
-    if (gPanels.empty()) return;
-    glUseProgram(e->floatProg);
-    glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
-    const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
-    const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
-    const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
-    const GLint aUV  = glGetAttribLocation(e->floatProg, "aUV");
+// text laid out on a yawed panel plane - defined with the font helpers below
+static void drawTextPanel(Engine* e, const char* utf8, const float o[3],
+                          const float r[3], float mPerPx);
+static float textWidth(Engine* e, const char* utf8, float mPerPx);
+
+// window chrome: bottom bar under each panel holding the app label
+static const float kBarH = 0.085f, kBarGap = 0.012f;
+static const float kCornerR = 0.028f;
+
+// one rounded quad on a panel's plane centred at c. toward>0 shifts it toward
+// the viewer so layered chrome never z-fights the surface under it
+static void shapeQuad(Engine* e, const Mat4& vp, const float c[3],
+                      const float r[3], float toward,
+                      float qw, float qh, float bw, float bh,
+                      float radius, float border, float soft,
+                      const float col[4]) {
+    const GLint uMVP    = glGetUniformLocation(e->shapeProg, "uMVP");
+    const GLint uQuad   = glGetUniformLocation(e->shapeProg, "uQuad");
+    const GLint uBox    = glGetUniformLocation(e->shapeProg, "uBox");
+    const GLint uRadius = glGetUniformLocation(e->shapeProg, "uRadius");
+    const GLint uBorder = glGetUniformLocation(e->shapeProg, "uBorder");
+    const GLint uSoft   = glGetUniformLocation(e->shapeProg, "uSoft");
+    const GLint uColor  = glGetUniformLocation(e->shapeProg, "uColor");
+    const GLint aPos    = glGetAttribLocation(e->shapeProg, "aPos");
+    const GLint aUV     = glGetAttribLocation(e->shapeProg, "aUV");
+    const float q[4][5] = {
+        {c[0]-r[0]*qw - c[0]*toward, c[1]-qh, c[2]-r[2]*qw - c[2]*toward, -1,-1},
+        {c[0]+r[0]*qw - c[0]*toward, c[1]-qh, c[2]+r[2]*qw - c[2]*toward,  1,-1},
+        {c[0]+r[0]*qw - c[0]*toward, c[1]+qh, c[2]+r[2]*qw - c[2]*toward,  1, 1},
+        {c[0]-r[0]*qw - c[0]*toward, c[1]+qh, c[2]-r[2]*qw - c[2]*toward, -1, 1},
+    };
+    const int tris[6] = {0,1,2, 0,2,3};
+    float verts[30];
+    for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
+    glUniform2f(uQuad, qw, qh);
+    glUniform2f(uBox, bw, bh);
+    glUniform1f(uRadius, radius);
+    glUniform1f(uBorder, border);
+    glUniform1f(uSoft, soft);
+    glUniform4fv(uColor, 1, col);
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aUV);
-    glActiveTexture(GL_TEXTURE0);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+}
+
+static void drawPanels(Engine* e, const Mat4& viewProj) {
+    if (gPanels.empty()) return;
+    const float hw = kPanelW / 2, hh = kPanelH / 2;
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
 
-    const float hw = kPanelW / 2, hh = kPanelH / 2;
+    // shadows first: they sit behind the panels and must not cover a
+    // neighbouring window
+    glUseProgram(e->shapeProg);
     for (auto& p : gPanels) {
         float c[3], r[3];
         panelCenter(p, c, r);
-        // vv: 0 bottom, 1 top; uu: 0 left, 1 right
+        const float shw = hw + 0.10f, shh = (hh + kBarGap + kBarH) + 0.10f;
+        const float shc[3] = {c[0], c[1] - (kBarGap + kBarH) * 0.5f - 0.02f,
+                              c[2]};
+        const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f};
+        shapeQuad(e, viewProj, shc, r, -0.03f, shw, shh,
+                  shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
+    }
+
+    for (int i = 0; i < (int)gPanels.size(); ++i) {
+        Panel& p = gPanels[i];
+        float c[3], r[3];
+        panelCenter(p, c, r);
+        const bool hov = (e->hover == i);
+
+        // bottom bar: dark pill under the window with the app label
+        const float barY = c[1] - hh - kBarGap - kBarH * 0.5f;
+        const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
+                                 hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
+        const float barC[3] = {c[0], barY, c[2]};
+        glUseProgram(e->shapeProg);
+        shapeQuad(e, viewProj, barC, r, 0.004f, hw, kBarH * 0.5f,
+                  hw, kBarH * 0.5f, kBarH * 0.45f, 0.0f, 0.002f, barCol);
+
+        // the app surface itself, corners rounded in the shader
+        glUseProgram(e->floatProg);
+        glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
+        glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), kCornerR);
+        const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
+        const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
+        const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
+        const GLint aUV  = glGetAttribLocation(e->floatProg, "aUV");
         const float q[4][5] = {
             {c[0]-r[0]*hw, c[1]-hh, c[2]-r[2]*hw, 0.0f, 0.0f},
             {c[0]+r[0]*hw, c[1]-hh, c[2]+r[2]*hw, 1.0f, 0.0f},
@@ -631,16 +813,46 @@ static void drawPanels(Engine* e, const Mat4& viewProj) {
         for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
         glUniformMatrix4fv(uST, 1, GL_FALSE, p.stMat);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);
         glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
         glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
         glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+        glEnableVertexAttribArray(aPos);
+        glEnableVertexAttribArray(aUV);
+        glDepthMask(GL_TRUE);
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDepthMask(GL_FALSE);
+
+        // hairline border, brightened while gazed at
+        glUseProgram(e->shapeProg);
+        const float bdCol[4] = {1.0f, 1.0f, 1.0f, hov ? 0.55f : 0.14f};
+        shapeQuad(e, viewProj, c, r, 0.006f, hw + 0.006f, hh + 0.006f,
+                  hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
+                  0.0016f, 0.0012f, bdCol);
+
+        // app label centred in the bar, shrunk to fit if the name is long
+        if (!p.label.empty() && e->font.ok) {
+            float s = 0.0014f;
+            float w = textWidth(e, p.label.c_str(), s);
+            if (w > hw * 1.9f) { s *= hw * 1.9f / w;
+                                 w = textWidth(e, p.label.c_str(), s); }
+            float to[3] = {c[0] - r[0] * w * 0.5f, barY + 0.014f, c[2] - r[2] * w * 0.5f};
+            to[0] -= c[0] * 0.010f; to[2] -= c[2] * 0.010f;
+            glUseProgram(e->textProg);
+            glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
+                               1, GL_FALSE, viewProj.m);
+            glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
+                        1.0f, 1.0f, 1.0f);
+            glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, e->font.tex);
+            drawTextPanel(e, p.label.c_str(), to, r, s);
+        }
     }
+    glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aUV);
 }
 
 // gaze ray vs panels; stores hovered panel + hit point in display px
@@ -676,7 +888,8 @@ static void pickPanel(Engine* e, const Mat4& head) {
         e->gazeYaw = atan2f(d[0], -d[2]);
 }
 
-// cursor dot on the hovered panel, just in front of its surface
+// gaze cursor on the hovered panel: thin ring + centre dot, just in front of
+// the surface so it never z-fights it
 static void drawCursor(Engine* e, const Mat4& viewProj) {
     if (e->hover < 0 || e->hover >= (int)gPanels.size()) return;
     const Panel& p = gPanels[e->hover];
@@ -685,36 +898,19 @@ static void drawCursor(Engine* e, const Mat4& viewProj) {
     const float u = e->hitX / kVdW * 2.0f - 1.0f;
     const float v = 1.0f - e->hitY / kVdH * 2.0f;
     const float hw = kPanelW / 2, hh = kPanelH / 2;
-    // toward the viewer a touch so it never z-fights the panel
-    float pos[3] = {c[0] + r[0]*u*hw - c[0]*0.01f,
-                    c[1] + v*hh,
-                    c[2] + r[2]*u*hw - c[2]*0.01f};
-    const float s = 0.012f;
-    glUseProgram(e->sceneProg);
-    const GLint uMVP = glGetUniformLocation(e->sceneProg, "uMVP");
-    const GLint aPos = glGetAttribLocation(e->sceneProg, "aPos");
-    const GLint aCol = glGetAttribLocation(e->sceneProg, "aCol");
-    glEnableVertexAttribArray(aPos);
-    glEnableVertexAttribArray(aCol);
+    float pos[3] = {c[0] + r[0]*u*hw, c[1] + v*hh, c[2] + r[2]*u*hw};
     glDisable(GL_DEPTH_TEST);
-    // billboard in the panel plane: right x up offsets
-    const float verts[6][6] = {
-        {pos[0]-r[0]*s, pos[1]-s, pos[2]-r[2]*s, 1,1,1},
-        {pos[0]+r[0]*s, pos[1]-s, pos[2]+r[2]*s, 1,1,1},
-        {pos[0]+r[0]*s, pos[1]+s, pos[2]+r[2]*s, 1,1,1},
-        {pos[0]-r[0]*s, pos[1]-s, pos[2]-r[2]*s, 1,1,1},
-        {pos[0]+r[0]*s, pos[1]+s, pos[2]+r[2]*s, 1,1,1},
-        {pos[0]-r[0]*s, pos[1]+s, pos[2]-r[2]*s, 1,1,1},
-    };
-    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(e->shapeProg);
+    const float ringCol[4] = {1.0f, 1.0f, 1.0f, 0.85f};
+    const float dotCol[4]  = {1.0f, 1.0f, 1.0f, 0.90f};
+    shapeQuad(e, viewProj, pos, r, 0.012f, 0.014f, 0.014f, 0.014f, 0.014f,
+              0.014f, 0.0016f, 0.001f, ringCol);
+    shapeQuad(e, viewProj, pos, r, 0.012f, 0.005f, 0.005f, 0.005f, 0.005f,
+              0.005f, 0.0f, 0.001f, dotCol);
+    glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aCol);
 }
 
 static bool initEyeTargets(Engine* e) {
@@ -793,7 +989,9 @@ static int initWindow(Engine* e) {
         e->warpProg  = linkProg(kWarpVS,  kWarpFS);
         e->textProg  = linkProg(kTextVS,  kTextFS);
         e->floatProg = linkProg(kFloatVS, kFloatFS);
-        if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg)
+        e->shapeProg = linkProg(kShapeVS, kShapeFS);
+        if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg ||
+                !e->shapeProg)
             return -1;
 
         if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
@@ -801,12 +999,16 @@ static int initWindow(Engine* e) {
         glGenBuffers(1, &e->panelVbo);
         glGenBuffers(1, &e->quadVbo);
         glGenBuffers(1, &e->gridVbo);
+        glGenBuffers(1, &e->skyVbo);
         const float quad[] = {-1,-1, 1,-1, -1,1,  1,-1, 1,1, -1,1};
         glBindBuffer(GL_ARRAY_BUFFER, e->quadVbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
         buildGrid();
         glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
         glBufferData(GL_ARRAY_BUFFER, gGridVerts * 6 * sizeof(float), gGrid, GL_STATIC_DRAW);
+        buildSky();
+        glBindBuffer(GL_ARRAY_BUFFER, e->skyVbo);
+        glBufferData(GL_ARRAY_BUFFER, gSkyVerts * 6 * sizeof(float), gSky, GL_STATIC_DRAW);
 
         if (!initEyeTargets(e)) return -1;
         glEnable(GL_DEPTH_TEST);
@@ -931,12 +1133,21 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
     const GLint aCol = glGetAttribLocation(e->sceneProg, "aCol");
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aCol);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
+
+    // sky first, no depth write - it's the backdrop everything sits on
+    glDepthMask(GL_FALSE);
+    glBindBuffer(GL_ARRAY_BUFFER, e->skyVbo);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
+                          (void*)(3 * sizeof(float)));
+    glDrawArrays(GL_TRIANGLES, 0, gSkyVerts);
+    glDepthMask(GL_TRUE);
 
     glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                           (void*)(3 * sizeof(float)));
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
     glDrawArrays(GL_LINES, 0, gGridVerts);
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aCol);
@@ -1046,46 +1257,81 @@ static float textWidth(Engine* e, const char* utf8, float mPerPx) {
     return w;
 }
 
-static float drawText(Engine* e, const char* utf8, float x, float y, float z,
-                      float mPerPx) {
-    if (!e->font.ok) return 0;
-    std::vector<float> v;
+// glyph verts in text-local coords: baseline y=0, +x right, +y up. Returns
+// the pen advance; verts are (x, y, u, v) quads
+static float emitText(Engine* e, const char* utf8, float mPerPx,
+                      std::vector<float>& out) {
     const char* p = utf8;
-    float pen = x;
+    float pen = 0;
     while (*p) {
         const TGlyph* g = fontGlyph(e, nextCp(p));
         if (!g) continue;
         if (g->w > 0 && g->h > 0) {
             const float gx = pen + g->xoff * mPerPx;
-            const float gtop = y - g->yoff * mPerPx;
+            const float gtop = -g->yoff * mPerPx;
             const float gbot = gtop - g->h * mPerPx;
             const float gw = g->w * mPerPx;
-            const float quad[6][5] = {
-                {gx,    gbot, z, g->u0, g->v1},
-                {gx+gw, gbot, z, g->u1, g->v1},
-                {gx+gw, gtop, z, g->u1, g->v0},
-                {gx,    gbot, z, g->u0, g->v1},
-                {gx+gw, gtop, z, g->u1, g->v0},
-                {gx,    gtop, z, g->u0, g->v0},
+            const float quad[6][4] = {
+                {gx,    gbot, g->u0, g->v1},
+                {gx+gw, gbot, g->u1, g->v1},
+                {gx+gw, gtop, g->u1, g->v0},
+                {gx,    gbot, g->u0, g->v1},
+                {gx+gw, gtop, g->u1, g->v0},
+                {gx,    gtop, g->u0, g->v0},
             };
             for (auto& q : quad)
-                for (int k = 0; k < 5; ++k) v.push_back(q[k]);
+                for (int k = 0; k < 4; ++k) out.push_back(q[k]);
         }
         pen += g->advance * mPerPx;
     }
-    if (v.empty()) return 0;
+    return pen;
+}
+
+static void flushText(Engine* e, const float* v, int n) {
     const GLint aPos = glGetAttribLocation(e->textProg, "aPos");
     const GLint aUV  = glGetAttribLocation(e->textProg, "aUV");
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aUV);
     glBindBuffer(GL_ARRAY_BUFFER, e->textVbo);
-    glBufferData(GL_ARRAY_BUFFER, v.size() * sizeof(float), v.data(), GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, n * 5 * sizeof(float), v, GL_STREAM_DRAW);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
     glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
-    glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(v.size() / 5));
+    glDrawArrays(GL_TRIANGLES, 0, n);
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aUV);
-    return pen - x;
+}
+
+static float drawText(Engine* e, const char* utf8, float x, float y, float z,
+                      float mPerPx) {
+    if (!e->font.ok) return 0;
+    std::vector<float> lv;
+    const float w = emitText(e, utf8, mPerPx, lv);
+    if (lv.empty()) return 0;
+    std::vector<float> v(lv.size() / 4 * 5);
+    for (size_t i = 0, j = 0; i < lv.size(); i += 4, j += 5) {
+        v[j] = x + lv[i]; v[j+1] = y + lv[i+1]; v[j+2] = z;
+        v[j+3] = lv[i+2]; v[j+4] = lv[i+3];
+    }
+    flushText(e, v.data(), (int)(v.size() / 5));
+    return w;
+}
+
+// text on a yawed panel plane: o is the baseline start in world space, r the
+// plane's right vector; up stays world +y
+static void drawTextPanel(Engine* e, const char* utf8, const float o[3],
+                          const float r[3], float mPerPx) {
+    if (!e->font.ok) return;
+    std::vector<float> lv;
+    emitText(e, utf8, mPerPx, lv);
+    if (lv.empty()) return;
+    std::vector<float> v(lv.size() / 4 * 5);
+    for (size_t i = 0, j = 0; i < lv.size(); i += 4, j += 5) {
+        v[j]   = o[0] + r[0] * lv[i];
+        v[j+1] = o[1] + lv[i+1];
+        v[j+2] = o[2] + r[2] * lv[i];
+        v[j+3] = lv[i+2]; v[j+4] = lv[i+3];
+    }
+    flushText(e, v.data(), (int)(v.size() / 5));
 }
 
 // HUD: head-locked status line so the pipeline can be verified without adb
@@ -1094,7 +1340,8 @@ static void drawHud(Engine* e, const Mat4& proj) {
     glUseProgram(e->textProg);
     glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"), 1, GL_FALSE,
                      proj.m);
-    glUniform3f(glGetUniformLocation(e->textProg, "uColor"), 1.0f, 1.0f, 1.0f);
+    glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
+                0.55f, 0.60f, 0.68f);
     glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, e->font.tex);
@@ -1102,16 +1349,10 @@ static void drawHud(Engine* e, const Mat4& proj) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const float s = 0.0026f;
+    const float s = 0.0016f;
     const float z = -1.2f;
     float w = textWidth(e, e->hud, s);
-    drawText(e, e->hud, -w * 0.5f, 0.30f, z, s);
-    if (e->hover >= 0 && e->hover < (int)gPanels.size() &&
-            !gPanels[e->hover].pkg.empty()) {
-        const char* lbl = gPanels[e->hover].pkg.c_str();
-        w = textWidth(e, lbl, s);
-        drawText(e, lbl, -w * 0.5f, 0.18f, z, s);
-    }
+    drawText(e, e->hud, -w * 0.5f, 0.34f, z, s);
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 }

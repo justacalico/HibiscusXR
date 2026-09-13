@@ -17,13 +17,13 @@ constexpr int kInputIdent  = 4;
 
 // panel defaults: roughly Quest-size panels
 constexpr int   kVdW = 1600, kVdH = 900, kVdDpi = 240;
-constexpr float kPanelDist = 2.2f;    // metres
+constexpr float kPanelDist = 1.5f;    // metres
 constexpr float kPanelW = 1.30f, kPanelH = 0.73f;
 constexpr float kPanelY = 0.05f;      // metres above horizon
 constexpr int   kMaxPanels = 3;
-// yaw offsets of the ring slots, relative to ring centre. 0.62 rad apart:
-// a 1.3 m panel at 2.2 m spans ~0.57 rad, so neighbours can no longer overlap
-constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.62f, 0.62f};
+// yaw offsets of the ring slots, relative to ring centre. 0.88 rad apart:
+// a 1.3 m panel at 1.5 m spans ~0.82 rad, so neighbours can no longer overlap
+constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 
 // window chrome: label pill under each panel holding the app name
 constexpr float kBarH = 0.085f, kBarGap = 0.012f;

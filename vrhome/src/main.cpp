@@ -200,10 +200,11 @@ static void drawFrame(Engine* e) {
     dragTick(e, head);
     updatePanels(e);
 
-    // covered by a stray fullscreen app: management above must still run
-    // (pumpBridge is what adopts it into a panel and gets our surface back),
-    // but there is nothing to present and no vsync to pace us
-    if (!e->ready) { usleep(33000); return; }
+    // covered by a fullscreen app (a VR game or an adopted stray):
+    // management above must still run - pumpBridge is what adopts strays and
+    // gets our surface back - but there is nothing to present and no vsync
+    // to pace us
+    if (!e->ready || e->covered) { usleep(33000); return; }
 
     updateHud(e);
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;

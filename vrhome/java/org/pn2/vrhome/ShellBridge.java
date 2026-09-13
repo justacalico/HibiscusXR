@@ -4,6 +4,7 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
 import android.hardware.display.DisplayManager;
@@ -76,6 +77,8 @@ public class ShellBridge {
     // displays the render thread just launched something onto; don't reap
     // them while the task is still landing
     private final Set<Integer> launching = new HashSet<>();
+    // set by the poller: a non-shell task owns the physical display
+    private volatile boolean covered = false;
 
     static {
         System.loadLibrary("vrhome");
@@ -213,6 +216,39 @@ public class ShellBridge {
             Log.e(TAG, "launchPackageOn " + pkg, t);
         }
     }
+
+    // real Pico VR apps declare pvr.app.type=vr (or com.picovr.type=vr);
+    // they drive the compositor directly and must own the physical display,
+    // a virtual window can't host them
+    public boolean isVrApp(String pkg) {
+        try {
+            ApplicationInfo ai = pm.getApplicationInfo(pkg,
+                    PackageManager.GET_META_DATA);
+            if (ai.metaData == null) return false;
+            for (String key : new String[]{"pvr.app.type", "com.picovr.type"}) {
+                Object v = ai.metaData.get(key);
+                if (v != null && "vr".equalsIgnoreCase(String.valueOf(v)))
+                    return true;
+            }
+        } catch (Throwable ignored) {}
+        return false;
+    }
+
+    // VR apps launch plain on display 0: no panel, no display override
+    public void launchVrApp(String pkg) {
+        try {
+            Intent i = pm.getLaunchIntentForPackage(pkg);
+            if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            ctx.startActivity(i);
+            Log.i(TAG, "launched vr app " + pkg + " on display 0");
+        } catch (Throwable t) {
+            Log.e(TAG, "launchVrApp " + pkg, t);
+        }
+    }
+
+    // render thread: true while something other than us owns display 0
+    public boolean isCovered() { return covered; }
 
     // our own library activity goes on its own panel
     public void launchLauncherOn(int displayId) {
@@ -353,12 +389,27 @@ public class ShellBridge {
         Set<Integer> liveDisplays = new HashSet<>();
         Set<Integer> liveTasks = new HashSet<>();
         synchronized (pendingAdopts) {
+            // the task list is MRU-ordered: the first display-0 entry is the
+            // top one - anything but us means a fullscreen app owns the HMD
+            boolean top = true;
+            for (Object t : tasks()) {
+                int disp = fDisplayId.getInt(t);
+                if (disp != 0) continue;
+                if (top) {
+                    String p = pkgOf(t);
+                    covered = p != null && !p.equals(SELF);
+                    top = false;
+                }
+            }
+            if (top) covered = false;
+
             for (Object t : tasks()) {
                 int taskId = fTaskId.getInt(t);
                 int disp = fDisplayId.getInt(t);
                 liveTasks.add(taskId);
                 String pkg = pkgOf(t);
                 if (disp == 0 && pkg != null && !pkg.equals(SELF)
+                        && !isVrApp(pkg)      // VR keeps display 0
                         && !adopting.contains(taskId)) {
                     Pending p = new Pending();
                     p.taskId = taskId;

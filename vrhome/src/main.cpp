@@ -65,10 +65,10 @@ static const int   kVdW = 1600, kVdH = 900, kVdDpi = 240;
 static const float kPanelDist = 2.2f;    // metres
 static const float kPanelW = 1.30f, kPanelH = 0.73f;
 static const float kPanelY = 0.05f;      // metres above horizon
-static const int   kMaxPanels = 6;
-// yaw offsets of the ring slots, relative to ring centre
-static const float kSlotYaw[kMaxPanels] =
-    {0.0f, -0.42f, 0.42f, -0.84f, 0.84f, -1.26f};
+static const int   kMaxPanels = 3;
+// yaw offsets of the ring slots, relative to ring centre. 0.62 rad apart:
+// a 1.3 m panel at 2.2 m spans ~0.57 rad, so neighbours can no longer overlap
+static const float kSlotYaw[kMaxPanels] = {0.0f, -0.62f, 0.62f};
 
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
 static const int kPicoConfirm = 1001;
@@ -586,6 +586,23 @@ static void closePanel(Engine* e, int idx) {
     else if (e->hover > idx) e->hover--;
 }
 
+// drop the oldest app window when the ring is full; the library panel is the
+// shell's launcher and never gets evicted. returns false if nothing could go
+static bool evictOldestApp(Engine* e) {
+    for (int i = 0; i < (int)gPanels.size(); ++i) {
+        Panel& p = gPanels[i];
+        if (p.pkg == "org.pn2.vrhome.library") continue;
+        if (e->bridge && p.taskId >= 0) {
+            JNIEnv* env = threadEnv(e->app);
+            env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
+            if (env->ExceptionCheck()) env->ExceptionClear();
+        }
+        closePanel(e, i);
+        return true;
+    }
+    return false;
+}
+
 // next free yaw slot around a centre yaw
 static float freeSlotYaw(float centre) {
     bool used[kMaxPanels] = {};
@@ -615,6 +632,7 @@ static void pumpBridge(Engine* e) {
             if (gLaunchQ.empty()) break;
             pkg = gLaunchQ.front(); gLaunchQ.pop_front();
         }
+        if ((int)gPanels.size() >= kMaxPanels && !evictOldestApp(e)) continue;
         int idx = openPanel(e, freeSlotYaw(e->gazeYaw));
         if (idx < 0) continue;
         gPanels[idx].pkg = pkg;
@@ -634,6 +652,7 @@ static void pumpBridge(Engine* e) {
         if (!p) break;
         int taskId = env->GetIntField(p, e->fPendTask);
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
+        if ((int)gPanels.size() >= kMaxPanels) evictOldestApp(e);
         int idx = openPanel(e, freeSlotYaw(e->gazeYaw));
         if (idx >= 0) {
             gPanels[idx].taskId = taskId;

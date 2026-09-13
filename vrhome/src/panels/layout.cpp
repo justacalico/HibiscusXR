@@ -33,6 +33,19 @@ int evictIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
+float pillHalfWidth(float textW, float winHW) {
+    const float cap = winHW - kBarInset;
+    float w = textW * 0.5f + kPillPadX;
+    // a pill is wider than it is tall: floor at 2:1 so a missing label
+    // still leaves a readable lozenge instead of a dot
+    if (w < kBarH) w = kBarH;
+    return w < cap ? w : cap;
+}
+
+float pillTextLimit(float winHW) {
+    return (winHW - kBarInset - kPillPadX) * 2.0f;
+}
+
 void recenterSlots(std::vector<Panel>& panels, float centre) {
     for (auto& p : panels) {
         // keep the panel's slot offset, re-centre the ring on current gaze

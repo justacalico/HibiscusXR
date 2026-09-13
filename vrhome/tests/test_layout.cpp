@@ -95,4 +95,17 @@ void testLayout() {
     ps.push_back(mkPanel(0.05f));
     pk = pickPanel(ps, I);
     CHECK(pk.idx >= 0);
+
+    // pill sizing: hugs the label, always narrower than the window
+    const float winHW = kPanelW / 2;
+    CHECK_F(pillHalfWidth(0.20f, winHW), 0.10f + kPillPadX, 1e-6f);
+    CHECK(pillHalfWidth(0.20f, winHW) < winHW);
+    // no label still leaves a 2:1 lozenge, not a dot
+    CHECK_F(pillHalfWidth(0.0f, winHW), kBarH, 1e-6f);
+    // long labels clamp inside the window edges
+    CHECK_F(pillHalfWidth(10.0f, winHW), winHW - kBarInset, 1e-6f);
+    // text limit matches the pill's padded interior at the clamp
+    CHECK_F(pillTextLimit(winHW), (winHW - kBarInset - kPillPadX) * 2.0f,
+            1e-6f);
+    CHECK(pillTextLimit(winHW) < kPanelW);
 }

@@ -25,9 +25,10 @@ constexpr int   kMaxPanels = 3;
 // a 1.3 m panel at 2.2 m spans ~0.57 rad, so neighbours can no longer overlap
 constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.62f, 0.62f};
 
-// window chrome: bottom bar under each panel holding the app label
+// window chrome: label pill under each panel holding the app name
 constexpr float kBarH = 0.085f, kBarGap = 0.012f;
 constexpr float kBarInset = 0.030f;   // horizontal margin vs the window edges
+constexpr float kPillPadX = 0.070f;   // pill side padding around the label
 constexpr float kCornerR = 0.028f;
 
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl

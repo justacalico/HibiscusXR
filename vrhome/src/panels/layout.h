@@ -22,6 +22,13 @@ int evictIndex(const std::vector<Panel>& panels);
 // snap every panel to its nearest ring slot around a new centre yaw
 void recenterSlots(std::vector<Panel>& panels, float centre);
 
+// half-width of the label pill under a window: hugs the text with side
+// padding, clamped inside the window's edges so it reads as a pill
+float pillHalfWidth(float textW, float winHW);
+
+// widest the label may get before it must shrink to stay inside the pill
+float pillTextLimit(float winHW);
+
 struct Pick {
     int idx = -1;         // panel under the ray
     float u = 0, v = 0;   // hit point in panel coords, -1..1

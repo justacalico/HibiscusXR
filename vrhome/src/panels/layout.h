@@ -45,3 +45,7 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head);
 // drag keeps streaming events after the cursor leaves the edges; false when
 // the ray can never reach the panel's plane
 bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py);
+
+// drag speed gain: the injected point runs ahead of the raw gaze point,
+// measured from where the drag grabbed; clamps to the display edge
+float dragBoost(float anchor, float p, float max);

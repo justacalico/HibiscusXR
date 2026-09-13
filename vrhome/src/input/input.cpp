@@ -32,7 +32,8 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
                 JNIEnv* env = threadEnv(app);
                 const Panel& p = e->panels[e->hover];
                 e->dragDisp = p.displayId;
-                e->dragX = e->hitX; e->dragY = e->hitY;
+                e->dragX = e->grabX = e->hitX;
+                e->dragY = e->grabY = e->hitY;
                 LOGI("drag start disp %d @ %.0f,%.0f",
                      p.displayId, e->hitX, e->hitY);
                 env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
@@ -85,9 +86,12 @@ void dragTick(Engine* e, const Mat4& head) {
     if (!e->confirmHeld || e->dragDisp < 0 || !e->bridge) return;
     for (auto& p : e->panels) {
         if (p.displayId != e->dragDisp) continue;
-        float px, py;
-        if (dragPoint(p, head, &px, &py) &&
-                (fabsf(px - e->dragX) > 1.0f || fabsf(py - e->dragY) > 1.0f)) {
+        float rx, ry;
+        if (dragPoint(p, head, &rx, &ry)) {
+            const float px = dragBoost(e->grabX, rx, kVdW);
+            const float py = dragBoost(e->grabY, ry, kVdH);
+            if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)
+                return;
             e->dragX = px; e->dragY = py;
             JNIEnv* env = threadEnv(e->app);
             env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,

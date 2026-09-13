@@ -28,6 +28,7 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 // window chrome: label pill under each panel holding the app name
 constexpr float kBarH = 0.085f, kBarGap = 0.012f;
 constexpr float kBarInset = 0.030f;   // horizontal margin vs the window edges
+constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
 constexpr float kPillPadX = 0.070f;   // pill side padding around the label
 constexpr float kCornerR = 0.028f;
 

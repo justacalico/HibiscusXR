@@ -108,3 +108,8 @@ bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py) {
     *py = (0.5f - v * 0.5f) * kVdH;
     return true;
 }
+
+float dragBoost(float anchor, float p, float max) {
+    const float b = anchor + (p - anchor) * kDragGain;
+    return b < 0.0f ? 0.0f : b > max ? max : b;
+}

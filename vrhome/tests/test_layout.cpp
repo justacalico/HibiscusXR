@@ -121,6 +121,15 @@ void testLayout() {
     Mat4 back = quatToMat((const float[]){0, 1.0f, 0, 0}, false);
     CHECK(!dragPoint(ps[0], back, &dx, &dy));
 
+    // dragBoost amplifies the delta from the grab point and clamps
+    CHECK_F(dragBoost(400.0f, 500.0f, kVdW), 400.0f + 100.0f * kDragGain,
+            1e-3f);
+    CHECK_F(dragBoost(400.0f, 300.0f, kVdW), 400.0f - 100.0f * kDragGain,
+            1e-3f);
+    CHECK_F(dragBoost(400.0f, 400.0f, kVdW), 400.0f, 1e-3f);
+    CHECK_F(dragBoost(1500.0f, 1600.0f, kVdW), (float)kVdW, 1e-3f);
+    CHECK_F(dragBoost(100.0f, 0.0f, kVdW), 0.0f, 1e-3f);
+
     // rayPanel reports the unclamped offset so misses are detectable
     float ru, rv, rt;
     float fwd[3] = {0, 0, -1};

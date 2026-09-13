@@ -58,6 +58,7 @@ struct Engine {
     bool confirmHeld = false;
     int dragDisp = -1;           // display a confirm-drag started on
     float dragX = 0, dragY = 0;  // last injected drag position, px
+    float grabX = 0, grabY = 0;  // where the drag grabbed, px
 
     char hud[96] = "";
     int  hudLen = 0;

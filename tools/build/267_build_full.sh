@@ -85,6 +85,28 @@ echo "=== shims ==="
 put "$SHIM/libshim_pvr.so" /lib64/libshim_pvr.so 644
 
 echo
+echo "=== headset buttons: key layouts + libinput keycode labels ==="
+# Without gpio-keys.kl the gpio-keys device falls back to Generic.kl and the
+# confirm button arrives as ENTER; lib2dToVr only treats 1001/1002/96 as
+# confirm, so the ok button is dead inside PVR Home. libinput must also know
+# Pico's keycode labels or the whole .kl is discarded at parse time.
+mkd /usr/keylayout
+put ${PN2_ROOT}/overlay/usr/keylayout/gpio-keys.kl /usr/keylayout/gpio-keys.kl 644
+put ${PN2_ROOT}/overlay/usr/keylayout/dc_detect.kl /usr/keylayout/dc_detect.kl 644
+TMPD=$(mktemp -d)
+for lib in lib64 lib; do
+  debugfs -R "dump /$lib/libinput.so $TMPD/libinput.so" "$IMG" 2>/dev/null
+  if [ -s "$TMPD/libinput.so" ] && python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
+      "$TMPD/libinput.so" "$TMPD/libinput.patched.so" >/dev/null 2>&1; then
+    put "$TMPD/libinput.patched.so" "/$lib/libinput.so" 644
+  else
+    echo "  SKIP    /$lib/libinput.so (patch failed or missing)"; fail=$((fail+1))
+  fi
+  rm -f "$TMPD/libinput.so" "$TMPD/libinput.patched.so"
+done
+rm -rf "$TMPD"
+
+echo
 echo "=== init scripts ==="
 put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
 put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644

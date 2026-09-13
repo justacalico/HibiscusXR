@@ -25,28 +25,49 @@ float textWidth(const GlyphSet& set, const char* utf8, float mPerPx) {
     return w;
 }
 
+bool textBounds(const GlyphSet& set, const char* utf8, float mPerPx,
+                float* top, float* bot) {
+    const char* p = utf8;
+    float t = -1e30f, b = 1e30f;
+    bool any = false;
+    while (*p) {
+        const Glyph* g = set.find(nextCp(p));
+        if (!g || g->w <= 0 || g->h <= 0) continue;
+        const float gt = -g->yoff * mPerPx;
+        const float gb = gt - g->h * mPerPx;
+        if (gt > t) t = gt;
+        if (gb < b) b = gb;
+        any = true;
+    }
+    if (!any) return false;
+    *top = t; *bot = b;
+    return true;
+}
+
 float emitText(const GlyphSet& set, const char* utf8, float mPerPx,
-               std::vector<float>& out) {
+               std::vector<float>& out, float dx) {
     const char* p = utf8;
     float pen = 0;
     while (*p) {
         const Glyph* g = set.find(nextCp(p));
         if (!g) continue;
         if (g->w > 0 && g->h > 0) {
-            const float gx = pen + g->xoff * mPerPx;
             const float gtop = -g->yoff * mPerPx;
             const float gbot = gtop - g->h * mPerPx;
             const float gw = g->w * mPerPx;
-            const float quad[6][4] = {
-                {gx,    gbot, g->u0, g->v1},
-                {gx+gw, gbot, g->u1, g->v1},
-                {gx+gw, gtop, g->u1, g->v0},
-                {gx,    gbot, g->u0, g->v1},
-                {gx+gw, gtop, g->u1, g->v0},
-                {gx,    gtop, g->u0, g->v0},
-            };
-            for (auto& q : quad)
-                for (int k = 0; k < 4; ++k) out.push_back(q[k]);
+            for (int rep = 0; rep < (dx > 0.0f ? 2 : 1); ++rep) {
+                const float gx = pen + g->xoff * mPerPx + rep * dx;
+                const float quad[6][4] = {
+                    {gx,    gbot, g->u0, g->v1},
+                    {gx+gw, gbot, g->u1, g->v1},
+                    {gx+gw, gtop, g->u1, g->v0},
+                    {gx,    gbot, g->u0, g->v1},
+                    {gx+gw, gtop, g->u1, g->v0},
+                    {gx,    gtop, g->u0, g->v0},
+                };
+                for (auto& q : quad)
+                    for (int k = 0; k < 4; ++k) out.push_back(q[k]);
+            }
         }
         pen += g->advance * mPerPx;
     }

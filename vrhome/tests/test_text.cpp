@@ -84,4 +84,26 @@ void testText() {
     liftTextPanel(lv.data(), 12, o, rr, wp);
     CHECK_F(wp[0], 0.0f + rr[0] * lv[0], 1e-6f);
     CHECK_F(wp[2], -2.2f + rr[2] * lv[0], 1e-6f);
+
+    // textBounds: a glyph with yoff -20 and h 25 spans -5 below to +20 above
+    // the baseline at scale 1; a space-only string has no bounds
+    GlyphSet bs;
+    Glyph* bg = bs.add('x');
+    bg->w = 10; bg->h = 25; bg->yoff = -20; bg->advance = 12;
+    float top, bot;
+    CHECK(textBounds(bs, "x", 1.0f, &top, &bot));
+    CHECK_F(top, 20.0f, 1e-6f);
+    CHECK_F(bot, -5.0f, 1e-6f);
+    CHECK(!textBounds(bs, " ", 1.0f, &top, &bot));
+    CHECK(!textBounds(bs, "", 1.0f, &top, &bot));
+    CHECK(!textBounds(bs, "z", 1.0f, &top, &bot));   // unbaked
+
+    // bold emit: dx>0 doubles the quads, second copy offset in x
+    lv.clear();
+    emitText(as, "ab", 0.01f, lv, 0.002f);
+    CHECK(lv.size() == 2 * 2 * 6 * 4);
+    CHECK_F(lv[24], 0.002f, 1e-6f);   // second copy of 'a' shifted by dx
+    CHECK_F(lv[48], 0.12f, 1e-5f);    // first copy of 'b' at pen advance
+    // same advance as the regular emit
+    CHECK_F(emitText(as, "ab", 0.01f, lv, 0.002f), 0.24f, 1e-6f);
 }

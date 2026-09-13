@@ -129,13 +129,24 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
                   hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
                   0.0016f, 0.0012f, bdCol);
 
-        // app label centred in the bar, shrunk to fit if the name is long
+        // app label centred in the bar, bold, shrunk to fit if the name is
+        // long. Centering uses the real glyph bounds, not the font's nominal
+        // ascent, so descenders don't push the text off-centre
         if (!p.label.empty() && e->font.ok) {
             float s = 0.0014f;
-            float w = measureText(e, p.label.c_str(), s);
-            if (w > hw * 1.9f) { s *= hw * 1.9f / w;
-                                 w = measureText(e, p.label.c_str(), s); }
-            float to[3] = {c[0] - r[0] * w * 0.5f, barY + 0.014f, c[2] - r[2] * w * 0.5f};
+            float bold = 0.8f * s;
+            float w = measureText(e, p.label.c_str(), s) + bold;
+            if (w > hw * 1.9f) {
+                s *= hw * 1.9f / w;
+                bold = 0.8f * s;
+                w = measureText(e, p.label.c_str(), s) + bold;
+            }
+            float baseline = barY;
+            float gt, gb;
+            if (textBounds(e->font.set, p.label.c_str(), s, &gt, &gb))
+                baseline = barY - (gt + gb) * 0.5f;
+            float to[3] = {c[0] - r[0] * w * 0.5f, baseline,
+                           c[2] - r[2] * w * 0.5f};
             to[0] -= c[0] * 0.010f; to[2] -= c[2] * 0.010f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
@@ -145,7 +156,7 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
-            drawTextPanel(e, p.label.c_str(), to, r, s);
+            drawTextPanel(e, p.label.c_str(), to, r, s, bold);
         }
     }
     glDepthMask(GL_TRUE);

@@ -81,14 +81,16 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
         panelCenter(p, c, r);
         const bool hov = (e->hover == i);
 
-        // bottom bar: dark pill under the window with the app label
+        // bottom bar: dark pill under the window with the app label, inset
+        // from the window's edges so it reads as a separate element
         const float barY = c[1] - hh - kBarGap - kBarH * 0.5f;
+        const float barHW = hw - kBarInset;
         const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
                                  hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
         const float barC[3] = {c[0], barY, c[2]};
         glUseProgram(e->shapeProg);
-        shapeQuad(e, viewProj, barC, r, 0.004f, hw, kBarH * 0.5f,
-                  hw, kBarH * 0.5f, kBarH * 0.45f, 0.0f, 0.002f, barCol);
+        shapeQuad(e, viewProj, barC, r, 0.004f, barHW, kBarH * 0.5f,
+                  barHW, kBarH * 0.5f, kBarH * 0.45f, 0.0f, 0.002f, barCol);
 
         // the app surface itself, corners rounded in the shader
         glUseProgram(e->floatProg);

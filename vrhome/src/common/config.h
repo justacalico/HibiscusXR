@@ -27,6 +27,7 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.62f, 0.62f};
 
 // window chrome: bottom bar under each panel holding the app label
 constexpr float kBarH = 0.085f, kBarGap = 0.012f;
+constexpr float kBarInset = 0.030f;   // horizontal margin vs the window edges
 constexpr float kCornerR = 0.028f;
 
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl

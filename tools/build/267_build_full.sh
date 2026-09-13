@@ -96,11 +96,15 @@ put ${PN2_ROOT}/overlay/usr/keylayout/dc_detect.kl /usr/keylayout/dc_detect.kl 6
 TMPD=$(mktemp -d)
 for lib in lib64 lib; do
   debugfs -R "dump /$lib/libinput.so $TMPD/libinput.so" "$IMG" 2>/dev/null
-  if [ -s "$TMPD/libinput.so" ] && python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
+  if [ ! -s "$TMPD/libinput.so" ]; then
+    echo "  FAIL    /$lib/libinput.so missing from image"; fail=$((fail+1))
+  elif strings "$TMPD/libinput.so" | grep -q DEFINE_CONFIRM; then
+    echo "  OK    /$lib/libinput.so already patched"
+  elif python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
       "$TMPD/libinput.so" "$TMPD/libinput.patched.so" >/dev/null 2>&1; then
     put "$TMPD/libinput.patched.so" "/$lib/libinput.so" 644
   else
-    echo "  SKIP    /$lib/libinput.so (patch failed or missing)"; fail=$((fail+1))
+    echo "  FAIL    /$lib/libinput.so patch failed"; fail=$((fail+1))
   fi
   rm -f "$TMPD/libinput.so" "$TMPD/libinput.patched.so"
 done
@@ -111,6 +115,7 @@ echo "=== init scripts ==="
 put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
 put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
 put "$INIT/pn2-adbwifi.rc"    /etc/init/pn2-adbwifi.rc    644
+put "$INIT/pn2-settings.rc"   /etc/init/pn2-settings.rc   644
 put "$INIT/pn2-home.rc"       /etc/init/pn2-home.rc       644
 
 echo
@@ -120,6 +125,15 @@ put ${PN2_ROOT}/notes/libart-patched.so /apex/com.android.runtime.release/lib64/
 echo
 echo "=== VRShell x28 patch (recompute struct base from x27) ==="
 put ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so 644
+
+echo
+echo "=== panel shell (org.pn2.vrhome) ==="
+# Platform-signed NativeActivity: owns display 0, hosts every 2D app on a
+# per-task virtual display rendered as a world-space panel. HOME role, hidden
+# API whitelist and disabling the stock Pico homes are first-boot work in
+# pn2-home.rc - the role holder lives in /data and cannot be baked in.
+mkd /app/PN2Panels
+put "$PN2_ROOT/vrhome/out/vrhome.apk" /app/PN2Panels/PN2Panels.apk 644
 
 echo
 echo "=== see-through calibration app ==="

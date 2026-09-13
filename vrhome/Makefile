@@ -65,7 +65,9 @@ $(GLUE_O): $(GLUE)/android_native_app_glue.c | toolcheck
 
 $(OUT)/obj/%.o: src/%.cpp | toolcheck
 	@mkdir -p $(dir $@)
-	$(CLANGXX) -c -fPIC -O2 -std=c++17 -I $(GLUE) -o $@ $<
+	$(CLANGXX) -c -fPIC -O2 -std=c++17 -I $(GLUE) -MMD -MP -o $@ $<
+
+-include $(NATIVE_OBJS:.o=.d)
 
 $(SO): $(NATIVE_OBJS) $(GLUE_O)
 	@mkdir -p $(dir $@)

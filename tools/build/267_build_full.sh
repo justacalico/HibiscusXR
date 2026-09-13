@@ -89,6 +89,7 @@ echo "=== init scripts ==="
 put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
 put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
 put "$INIT/pn2-adbwifi.rc"    /etc/init/pn2-adbwifi.rc    644
+put "$INIT/pn2-home.rc"       /etc/init/pn2-home.rc       644
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="

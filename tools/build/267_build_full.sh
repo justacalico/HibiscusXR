@@ -132,6 +132,16 @@ echo "=== panel shell (org.pn2.vrhome) ==="
 # per-task virtual display rendered as a world-space panel. HOME role, hidden
 # API whitelist and disabling the stock Pico homes are first-boot work in
 # pn2-home.rc - the role holder lives in /data and cannot be baked in.
+#
+# Always rebuild from source and verify the platform signature: a debug-signed
+# apk installs fine but gets none of the system permissions, and the shell
+# fails silently at runtime.
+"$PN2_ROOT/vrhome/build.sh" \
+    || { echo "FAIL vrhome build"; fail=$((fail+1)); }
+BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
+"$BT/apksigner" verify --print-certs "$PN2_ROOT/vrhome/out/vrhome.apk" \
+    | grep -q "CN=Android" \
+    || { echo "FAIL vrhome.apk is not platform-signed"; fail=$((fail+1)); }
 mkd /app/PN2Panels
 put "$PN2_ROOT/vrhome/out/vrhome.apk" /app/PN2Panels/PN2Panels.apk 644
 

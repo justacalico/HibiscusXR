@@ -1,12 +1,15 @@
-// Proof-of-concept VR home for the Pico Neo 2 running a plain Android 10 GSI.
+// Panel shell for the Pico Neo 2 running a plain Android 10 GSI.
 //
-// Renders a wall of launchable apps in stereo on the open EGL path - no Pico
-// stack, no closed compositor. 3DoF comes from the IMU through ASensorManager.
-// Gaze dwells a panel; the headset Confirm/Back button launches it via JNI.
+// Owns the physical display and renders empty space plus one textured quad
+// per virtual display. 2D apps live on those virtual displays: ShellBridge
+// (Java side of this APK) creates them, launches/adopts tasks onto them and
+// injects input. This process is the HOME app so display 0 always has a
+// valid activity; there is no launcher UI in the scene itself - the app
+// library is a regular 2D activity on its own panel.
 //
-// This is a PoC, not a product: panels are colour-keyed rectangles and app
-// identity goes to logcat. Icons, text, 2D-apps-as-panels and controllers are
-// later work.
+// Headset buttons: confirm taps at the gaze point on the hovered panel,
+// back closes the newest panel when nothing else has focus, home recenters
+// the panel ring on the current gaze.
 
 #include <android/log.h>
 #include <android/native_activity.h>
@@ -25,6 +28,8 @@
 #include <cstring>
 #include <cstdio>
 #include <ctime>
+#include <deque>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -38,6 +43,9 @@
 #ifndef AWINDOW_FLAG_KEEP_SCREEN_ON
 #define AWINDOW_FLAG_KEEP_SCREEN_ON 0x00000080
 #endif
+#ifndef GL_TEXTURE_EXTERNAL_OES
+#define GL_TEXTURE_EXTERNAL_OES 0x8D65
+#endif
 
 // tunables confirmed on the headset in the vrdemo: worldx 90
 static float kDistK1 = 0.22f, kDistK2 = 0.24f;
@@ -50,16 +58,27 @@ static float kRoll = 270.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
 static const int kSensorIdent = 3;
 static const int kInputIdent  = 4;
 
+// panel defaults: roughly Quest-size panels
+static const int   kVdW = 1600, kVdH = 900, kVdDpi = 240;
+static const float kPanelDist = 2.2f;    // metres
+static const float kPanelW = 1.30f, kPanelH = 0.73f;
+static const float kPanelY = 0.05f;      // metres above horizon
+static const int   kMaxPanels = 6;
+// yaw offsets of the ring slots, relative to ring centre
+static const float kSlotYaw[kMaxPanels] =
+    {0.0f, -0.42f, 0.42f, -0.84f, 0.84f, -1.26f};
+
+// Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
+static const int kPicoConfirm = 1001;
+
 // ---------------------------------------------------------------- font
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../third_party/stb_truetype.h"
 
-// TrueType text via stb_truetype over the device's Noto CJK font, so any
-// language works. Glyphs are rasterised on demand into a shared atlas.
 struct TGlyph {
-    float u0, v0, u1, v1;      // atlas uv, v0 = glyph top (low memory v)
-    float xoff, yoff, w, h;    // px: bearing from pen + bitmap size
+    float u0, v0, u1, v1;
+    float xoff, yoff, w, h;
     float advance;
     bool valid = false;
 };
@@ -69,8 +88,8 @@ struct Font {
     std::vector<uint8_t> data;
     bool ok = false;
     float scale = 0, ascent = 0;
-    static const int PX = 36;    // rasterise height
-    static const int TEX = 1024; // atlas edge
+    static const int PX = 36;
+    static const int TEX = 1024;
     GLuint tex = 0;
     int packX = 0, packY = 0, packRowH = 0;
     int cp[512];
@@ -88,9 +107,6 @@ static int propI(const char* key, int dflt) {
     if (__system_property_get(key, b) > 0) return atoi(b);
     return dflt;
 }
-
-// Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
-static const int kPicoConfirm = 1001;
 
 // ---------------------------------------------------------------- math
 
@@ -144,9 +160,6 @@ static Mat4 quatToMat(const float* q, bool inv) {
             r.m[c*4+i] = inv ? f[i*3+c] : f[c*3+i];
     return r;
 }
-static Mat4 translate3(float x, float y, float z) {
-    Mat4 r = identity(); r.m[12] = x; r.m[13] = y; r.m[14] = z; return r;
-}
 
 // world-space direction a unit view-space vector points after view matrix V
 // (rotation part only, orthonormal, so transpose == inverse)
@@ -156,200 +169,41 @@ static void viewDirToWorld(const Mat4& v, const float in[3], float out[3]) {
     out[2] = v.m[8]*in[0] + v.m[9]*in[1] + v.m[10]*in[2];
 }
 
-// ---------------------------------------------------------------- app list
+// ---------------------------------------------------------------- panels
 
-struct AppEntry {
-    std::string pkg, label;
-    std::vector<uint8_t> icon;   // rgba
-    int iconW = 0, iconH = 0;
+struct Panel {
+    int displayId = -1;
+    int taskId = -1;
+    GLuint tex = 0;
+    jobject st = nullptr;        // global ref to SurfaceTexture
+    jfloatArray stArr = nullptr; // global ref, 16 floats
+    float stMat[16];
+    float yaw = 0;               // world yaw of panel centre
+    std::string pkg;
 };
-static std::vector<AppEntry> gApps;
+static std::vector<Panel> gPanels;
 
-// activity->env is only valid on the creating thread; android_main runs on its
-// own thread, so pull the env for THIS thread out of the VM (no-op if attached)
-static JNIEnv* threadEnv(android_app* app) {
-    JNIEnv* env = nullptr;
-    app->activity->vm->AttachCurrentThread(&env, nullptr);
-    return env;
+// launch requests arrive from Java (LauncherActivity, test hook)
+static std::deque<std::string> gLaunchQ;
+static std::mutex gLaunchMu;
+
+extern "C" JNIEXPORT void JNICALL
+Java_org_pn2_vrhome_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
+    const char* p = env->GetStringUTFChars(pkg, nullptr);
+    {
+        std::lock_guard<std::mutex> l(gLaunchMu);
+        gLaunchQ.push_back(p);
+    }
+    env->ReleaseStringUTFChars(pkg, p);
 }
 
-static void refreshApps(android_app* app) {
-    JNIEnv* env = threadEnv(app);
-    jobject activity = app->activity->clazz;
-    jclass actCls = env->GetObjectClass(activity);
+// HOME presses reach us as onNewIntent on PanelActivity - flag handled in
+// the render loop where the gaze yaw is current
+static volatile bool gWantRecenter = false;
 
-    jmethodID getPM = env->GetMethodID(actCls, "getPackageManager",
-        "()Landroid/content/pm/PackageManager;");
-    jobject pm = env->CallObjectMethod(activity, getPM);
-
-    jclass intentCls = env->FindClass("android/content/Intent");
-    jmethodID ctor = env->GetMethodID(intentCls, "<init>", "(Ljava/lang/String;)V");
-    jmethodID addCat = env->GetMethodID(intentCls, "addCategory",
-        "(Ljava/lang/String;)Landroid/content/Intent;");
-    jobject intent = env->NewObject(intentCls, ctor,
-        env->NewStringUTF("android.intent.action.MAIN"));
-    env->CallObjectMethod(intent, addCat,
-        env->NewStringUTF("android.intent.category.LAUNCHER"));
-
-    jclass pmCls = env->GetObjectClass(pm);
-    jmethodID query = env->GetMethodID(pmCls, "queryIntentActivities",
-        "(Landroid/content/Intent;I)Ljava/util/List;");
-    jobject list = env->CallObjectMethod(pm, query, intent, 0);
-
-    jclass listCls = env->GetObjectClass(list);
-    jmethodID size = env->GetMethodID(listCls, "size", "()I");
-    jmethodID get  = env->GetMethodID(listCls, "get", "(I)Ljava/lang/Object;");
-    jint n = env->CallIntMethod(list, size);
-
-    jclass riCls = env->FindClass("android/content/pm/ResolveInfo");
-    jfieldID aiField = env->GetFieldID(riCls, "activityInfo",
-        "Landroid/content/pm/ActivityInfo;");
-    jclass aiCls = env->FindClass("android/content/pm/ActivityInfo");
-    jfieldID pkgField = env->GetFieldID(aiCls, "packageName", "Ljava/lang/String;");
-    jmethodID loadLabel = env->GetMethodID(riCls, "loadLabel",
-        "(Landroid/content/pm/PackageManager;)Ljava/lang/CharSequence;");
-    jmethodID loadIcon = env->GetMethodID(riCls, "loadIcon",
-        "(Landroid/content/pm/PackageManager;)Landroid/graphics/drawable/Drawable;");
-
-    jclass csCls = env->FindClass("java/lang/CharSequence");
-    jmethodID toStr = env->GetMethodID(csCls, "toString", "()Ljava/lang/String;");
-
-    gApps.clear();
-    for (jint i = 0; i < n; ++i) {
-        jobject ri = env->CallObjectMethod(list, get, i);
-        jobject ai = env->GetObjectField(ri, aiField);
-        jstring pkg = (jstring)env->GetObjectField(ai, pkgField);
-        const char* p = env->GetStringUTFChars(pkg, nullptr);
-        if (!strcmp(p, "org.pn2.vrhome")) {
-            env->ReleaseStringUTFChars(pkg, p); continue;
-        }
-        AppEntry e; e.pkg = p;
-        env->ReleaseStringUTFChars(pkg, p);
-
-        jobject lbl = env->CallObjectMethod(ri, loadLabel, pm);
-        if (lbl) {
-            jstring s = (jstring)env->CallObjectMethod(lbl, toStr);
-            const char* c = env->GetStringUTFChars(s, nullptr);
-            e.label = c;
-            env->ReleaseStringUTFChars(s, c);
-        } else e.label = e.pkg;
-
-        // launcher icon: Drawable -> Bitmap -> pixels
-        jobject icon = env->CallObjectMethod(ri, loadIcon, pm);
-        if (icon) {
-            const int S = 96;
-            jclass cfgCls = env->FindClass("android/graphics/Bitmap$Config");
-            jfieldID argb = env->GetStaticFieldID(cfgCls, "ARGB_8888",
-                "Landroid/graphics/Bitmap$Config;");
-            jobject cfg = env->GetStaticObjectField(cfgCls, argb);
-            jclass bmpCls = env->FindClass("android/graphics/Bitmap");
-            jmethodID create = env->GetStaticMethodID(bmpCls, "createBitmap",
-                "(IILandroid/graphics/Bitmap$Config;)Landroid/graphics/Bitmap;");
-            jobject bmp = env->CallStaticObjectMethod(bmpCls, create, S, S, cfg);
-            jclass cvCls = env->FindClass("android/graphics/Canvas");
-            jobject canvas = env->NewObject(cvCls,
-                env->GetMethodID(cvCls, "<init>", "(Landroid/graphics/Bitmap;)V"), bmp);
-            jclass drCls = env->FindClass("android/graphics/drawable/Drawable");
-            env->CallVoidMethod(icon,
-                env->GetMethodID(drCls, "setBounds", "(IIII)V"), 0, 0, S, S);
-            env->CallVoidMethod(icon,
-                env->GetMethodID(drCls, "draw", "(Landroid/graphics/Canvas;)V"), canvas);
-            jclass bbCls = env->FindClass("java/nio/ByteBuffer");
-            jobject buf = env->CallStaticObjectMethod(bbCls,
-                env->GetStaticMethodID(bbCls, "allocateDirect",
-                    "(I)Ljava/nio/ByteBuffer;"), S * S * 4);
-            env->CallVoidMethod(bmp,
-                env->GetMethodID(bmpCls, "copyPixelsToBuffer",
-                    "(Ljava/nio/Buffer;)V"), buf);
-            uint8_t* px = (uint8_t*)env->GetDirectBufferAddress(buf);
-            e.icon.resize(S * S * 4);
-            // pixels arrive BGRA; swap to RGBA for the texture upload
-            for (int k = 0; k < S * S; ++k) {
-                e.icon[k*4+0] = px[k*4+2];
-                e.icon[k*4+1] = px[k*4+1];
-                e.icon[k*4+2] = px[k*4+0];
-                e.icon[k*4+3] = px[k*4+3];
-            }
-            e.iconW = e.iconH = S;
-            env->DeleteLocalRef(buf); env->DeleteLocalRef(canvas);
-            env->DeleteLocalRef(bmp); env->DeleteLocalRef(cfg);
-            env->DeleteLocalRef(icon);
-        }
-        gApps.push_back(e);
-    }
-    LOGI("apps: %zu launchable", gApps.size());
-    for (auto& a : gApps) LOGI("  %s", a.pkg.c_str());
-}
-
-static void launchApp(android_app* app, const std::string& pkg) {
-    JNIEnv* env = threadEnv(app);
-    jobject activity = app->activity->clazz;
-    jclass actCls = env->GetObjectClass(activity);
-    jmethodID getPM = env->GetMethodID(actCls, "getPackageManager",
-        "()Landroid/content/pm/PackageManager;");
-    jobject pm = env->CallObjectMethod(activity, getPM);
-    jclass pmCls = env->GetObjectClass(pm);
-    jmethodID getLaunch = env->GetMethodID(pmCls, "getLaunchIntentForPackage",
-        "(Ljava/lang/String;)Landroid/content/Intent;");
-    jobject intent = env->CallObjectMethod(pm, getLaunch, env->NewStringUTF(pkg.c_str()));
-    if (!intent) { LOGE("no launch intent for %s", pkg.c_str()); return; }
-
-    jclass intCls = env->FindClass("android/content/Intent");
-    env->CallObjectMethod(intent,
-        env->GetMethodID(intCls, "addFlags", "(I)Landroid/content/Intent;"),
-        0x10000000);   // FLAG_ACTIVITY_NEW_TASK
-
-    // try to float it: create a virtual display and launch the app onto it
-    JNIEnv* env2 = env;   // same env
-    jclass actCls2 = actCls;
-    jmethodID getSys = env2->GetMethodID(actCls2, "getSystemService",
-        "(Ljava/lang/String;)Ljava/lang/Object;");
-    jobject dm = env2->CallObjectMethod(activity, getSys,
-        env2->NewStringUTF("display"));
-    jclass dmCls = env2->FindClass("android/hardware/display/DisplayManager");
-    // a Surface we can render from: SurfaceTexture -> Surface
-    jclass stCls = env2->FindClass("android/graphics/SurfaceTexture");
-    jobject st = env2->NewObject(stCls,
-        env2->GetMethodID(stCls, "<init>", "(I)V"), 0);   // tex id 0 placeholder
-    env2->CallVoidMethod(st, env2->GetMethodID(stCls, "setDefaultBufferSize",
-        "(II)V"), 960, 800);
-    jclass sfCls = env2->FindClass("android/view/Surface");
-    jobject surf = env2->NewObject(sfCls,
-        env2->GetMethodID(sfCls, "<init>", "(Landroid/graphics/SurfaceTexture;)V"), st);
-    jobject vd = env2->CallObjectMethod(dm,
-        env2->GetMethodID(dmCls, "createVirtualDisplay",
-            "(Ljava/lang/String;IIILandroid/view/Surface;I)Landroid/hardware/display/VirtualDisplay;"),
-        env2->NewStringUTF("vrfloat"), 960, 800, 160, surf, 0);
-    if (vd) {
-        jclass vdCls = env2->FindClass("android/hardware/display/VirtualDisplay");
-        jobject disp = env2->CallObjectMethod(vd,
-            env2->GetMethodID(vdCls, "getDisplay", "()Landroid/view/Display;"));
-        jclass dCls = env2->FindClass("android/view/Display");
-        int dispId = env2->CallIntMethod(disp,
-            env2->GetMethodID(dCls, "getDisplayId", "()I"));
-        LOGI("virtual display id=%d for %s", dispId, pkg.c_str());
-        jclass aoCls = env2->FindClass("android/app/ActivityOptions");
-        jobject opts = env2->CallStaticObjectMethod(aoCls,
-            env2->GetStaticMethodID(aoCls, "makeBasic",
-                "()Landroid/app/ActivityOptions;"));
-        env2->CallObjectMethod(opts,
-            env2->GetMethodID(aoCls, "setLaunchDisplayId",
-                "(I)Landroid/app/ActivityOptions;"), dispId);
-        jobject bundle = env2->CallObjectMethod(opts,
-            env2->GetMethodID(aoCls, "toBundle", "()Landroid/os/Bundle;"));
-        jmethodID startAct = env2->GetMethodID(actCls, "startActivity",
-            "(Landroid/content/Intent;Landroid/os/Bundle;)V");
-        env2->CallVoidMethod(activity, startAct, intent, bundle);
-    }
-    // a denied float or a failed virtual display still opens the app normally
-    if (env2->ExceptionCheck() || !vd) {
-        env2->ExceptionClear();
-        jmethodID startAct = env2->GetMethodID(actCls, "startActivity",
-            "(Landroid/content/Intent;)V");
-        env2->CallVoidMethod(activity, startAct, intent);
-    }
-    LOGI("launched %s", pkg.c_str());
-    if (env2->ExceptionCheck()) { env2->ExceptionDescribe(); env2->ExceptionClear(); }
+extern "C" JNIEXPORT void JNICALL
+Java_org_pn2_vrhome_PanelActivity_nativeHome(JNIEnv*, jclass) {
+    gWantRecenter = true;
 }
 
 // ---------------------------------------------------------------- shaders
@@ -374,8 +228,7 @@ varying vec2 vUV;
 void main() { vUV = aPos * 0.5 + 0.5; gl_Position = vec4(aPos, 0.0, 1.0); }
 )";
 
-// textured quad for app icons - aPos + aUV, samples the icon texture as rgba
-static const char* kIconVS = R"(
+static const char* kFloatVS = R"(
 attribute vec3 aPos;
 attribute vec2 aUV;
 uniform mat4 uMVP;
@@ -383,11 +236,17 @@ varying vec2 vUV;
 void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
 )";
 
-static const char* kIconFS = R"(
+// app panel: samples an external OES texture fed by the virtual display
+static const char* kFloatFS = R"(
+#extension GL_OES_EGL_image_external : require
 precision mediump float;
 varying vec2 vUV;
-uniform sampler2D uTex;
-void main() { gl_FragColor = texture2D(uTex, vUV); }
+uniform samplerExternalOES uTex;
+uniform mat4 uST;
+void main() {
+    vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
+    gl_FragColor = texture2D(uTex, uv);
+}
 )";
 
 static const char* kWarpFS = R"(
@@ -407,7 +266,6 @@ void main() {
 }
 )";
 
-// HUD text: view-space quads sampling a 5x7 bitmap font atlas
 static const char* kTextVS = R"(
 attribute vec3 aPos;
 attribute vec2 aUV;
@@ -449,36 +307,6 @@ static GLuint link(const char* vs, const char* fs) {
     return p;
 }
 
-// ---------------------------------------------------------------- panels
-
-// panel wall: a full ring of quads around the viewer, one per app, so there is
-// always something in view regardless of which way the IMU happens to face
-static const float kRadius  = 2.4f;   // metres - close enough to feel present
-static const float kRowStep = 0.55f;  // metres between rows
-static const float kPanelW  = 0.62f, kPanelH = 0.50f;
-
-struct Panel { float x, y, z; float dirx, dirz; };  // centre + facing dir
-
-static std::vector<Panel> gPanels;
-
-static void buildPanels() {
-    gPanels.clear();
-    const int n = (int)gApps.size();
-    // ring the full 360° so there is always a panel wherever the head faces
-    const int cols = n > 0 ? (int)ceilf(n / 4.0f) : 0;
-    for (int i = 0; i < n; ++i) {
-        const int col = i % cols, row = i / cols;
-        const float ang = (float)col / (float)cols * 2.0f * (float)M_PI;
-        Panel p;
-        p.x = sinf(ang) * kRadius;
-        p.y = 0.6f - row * kRowStep;
-        p.z = -cosf(ang) * kRadius;
-        const float len = sqrtf(p.x * p.x + p.z * p.z);
-        p.dirx = -p.x / len; p.dirz = -p.z / len;
-        gPanels.push_back(p);
-    }
-}
-
 // ---------------------------------------------------------------- engine
 
 struct Eye { GLuint fbo = 0, tex = 0, depth = 0; int w = 0, h = 0; };
@@ -491,11 +319,21 @@ struct Engine {
     int width = 0, height = 0;
     bool ready = false;
 
-    GLuint sceneProg = 0, warpProg = 0, textProg = 0, iconProg = 0;
-    GLuint panelVbo = 0, quadVbo = 0, gridVbo = 0, cubeVbo = 0, textVbo = 0, iconVbo = 0;
+    GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0;
+    GLuint quadVbo = 0, gridVbo = 0, textVbo = 0, panelVbo = 0;
     Font font;
-    std::vector<GLuint> iconTex;   // per-app icon texture, same index as gApps
     Eye eye[2];
+
+    // ShellBridge java object + cached method ids
+    jobject bridge = nullptr;
+    jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
+              mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
+              mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
+              mRemoveTask = nullptr, mFocusTask = nullptr;
+    jmethodID stUpdate = nullptr, stMatrix = nullptr;
+    jclass pendingCls = nullptr;
+    jfieldID fPendTask = nullptr, fPendPkg = nullptr;
+    bool bridgeDead = false;
 
     ASensorManager* sensorMgr = nullptr;
     const ASensor* rotSensor = nullptr;
@@ -503,12 +341,12 @@ struct Engine {
     float quat[4] = {0, 0, 0, 1};
     bool haveQuat = false;
 
-    int gazed = -1;      // panel under the reticle
-    int dwellPanel = -1; // panel the gaze has rested on
-    long long dwellNs = 0;   // when the gaze settled on dwellPanel
-    float dwellFrac = 0;     // 0..1 fill of the gaze-to-launch timer
-    int appTick = 0;
-    bool panelsDirty = true;
+    int hover = -1;              // panel index under the gaze ray
+    float hitX = 0, hitY = 0;    // display px coords of the hit
+    float gazeYaw = 0.0f;        // world yaw the user currently faces
+    bool launcherSpawned = false;
+    bool confirmHeld = false;
+
     char hud[96] = "";
     int  hudLen = 0;
     int  frames = 0;
@@ -518,30 +356,10 @@ struct Engine {
     int  sensorHz = 0;
     int  sensorNew = 0;
     int  sensorNewHz = 0;
-    int  sensorLagMs = 0;
     float lastQ[4] = {0,0,0,0};
 };
 
 static bool loadFont(Engine* e);
-
-// one quad per panel, rebuilt when the app list changes; colour per app so
-// panels are distinguishable without text
-static float gPanelVerts[256 * 6 * 6];
-static int   gPanelVertCount = 0;
-
-// unit cube, per-face colour so orientation reads clearly at a glance
-static const float kCube[] = {
-#define F(r,g,b, x1,y1,z1, x2,y2,z2, x3,y3,z3, x4,y4,z4) \
-    x1,y1,z1, r,g,b,  x2,y2,z2, r,g,b,  x3,y3,z3, r,g,b, \
-    x1,y1,z1, r,g,b,  x3,y3,z3, r,g,b,  x4,y4,z4, r,g,b,
-    F(0.9f,0.2f,0.2f, -1,-1, 1,  1,-1, 1,  1, 1, 1, -1, 1, 1)
-    F(0.2f,0.9f,0.2f,  1,-1,-1, -1,-1,-1, -1, 1,-1,  1, 1,-1)
-    F(0.2f,0.4f,0.9f,  1,-1, 1,  1,-1,-1,  1, 1,-1,  1, 1, 1)
-    F(0.9f,0.9f,0.2f, -1,-1,-1, -1,-1, 1, -1, 1, 1, -1, 1,-1)
-    F(0.9f,0.5f,0.1f, -1, 1, 1,  1, 1, 1,  1, 1,-1, -1, 1,-1)
-    F(0.6f,0.2f,0.8f, -1,-1,-1,  1,-1,-1,  1,-1, 1, -1,-1, 1)
-#undef F
-};
 
 // floor grid: gives the eye something to lock onto so a "black" scene is never
 // just empty space
@@ -556,7 +374,7 @@ static void buildGrid() {
     for (int i = -kGridHalf; i <= kGridHalf; ++i) {
         const float t = i * kGridStep;
         const bool axis = (i == 0);
-        const float r = axis ? 0.9f : 0.22f, g = axis ? 0.9f : 0.30f, b = axis ? 0.9f : 0.40f;
+        const float r = axis ? 0.9f : 0.16f, g = axis ? 0.9f : 0.22f, b = axis ? 0.9f : 0.32f;
         const float pts[4][3] = {{t, -1.2f, -e}, {t, -1.2f, e}, {-e, -1.2f, t}, {e, -1.2f, t}};
         for (int k = 0; k < 4; ++k) {
             gGrid[n++] = pts[k][0]; gGrid[n++] = pts[k][1]; gGrid[n++] = pts[k][2];
@@ -566,92 +384,251 @@ static void buildGrid() {
     gGridVerts = n / 6;
 }
 
-static void rebuildPanelVbo(Engine* e) {
-    gPanelVertCount = 0;
-    const int n = (int)gPanels.size();
-    if (n > 256) return;
-    float* v = gPanelVerts;
-    for (int i = 0; i < n; ++i) {
-        const Panel& p = gPanels[i];
-        // panel basis: right = up x forward, up = world Y
-        const float fx = p.dirx, fz = p.dirz;              // toward viewer
-        const float rx = -fz, rz = fx;                     // right = cross(fwd,up)
-        const float hw = kPanelW / 2, hh = kPanelH / 2;
-        const float px[4] = {p.x - rx*hw, p.x + rx*hw, p.x + rx*hw, p.x - rx*hw};
-        const float pz[4] = {p.z - rz*hw, p.z + rz*hw, p.z + rz*hw, p.z - rz*hw};
-        const float py[4] = {p.y - hh, p.y - hh, p.y + hh, p.y + hh};
-        // hue from package hash
-        unsigned h = 5381;
-        for (char c : gApps[i].pkg) h = h * 33 + (unsigned char)c;
-        const float r = 0.35f + 0.5f * ((h >> 0)  & 255) / 255.0f;
-        const float g = 0.35f + 0.5f * ((h >> 8)  & 255) / 255.0f;
-        const float b = 0.35f + 0.5f * ((h >> 16) & 255) / 255.0f;
-        const int tris[6] = {0, 1, 2, 0, 2, 3};
-        for (int t : tris) {
-            *v++ = px[t]; *v++ = py[t]; *v++ = pz[t];
-            *v++ = r; *v++ = g; *v++ = b;
+// ---------------------------------------------------------- bridge calls
+
+static JNIEnv* threadEnv(android_app* app) {
+    JNIEnv* env = nullptr;
+    app->activity->vm->AttachCurrentThread(&env, nullptr);
+    return env;
+}
+
+// FindClass on a natively-attached thread only sees the boot classpath; app
+// classes must go through the activity's ClassLoader
+static jclass loadAppClass(JNIEnv* env, jobject activity, const char* name) {
+    jclass actCls = env->GetObjectClass(activity);
+    jmethodID getCL = env->GetMethodID(actCls, "getClassLoader",
+                                     "()Ljava/lang/ClassLoader;");
+    jobject cl = env->CallObjectMethod(activity, getCL);
+    jclass clCls = env->FindClass("java/lang/ClassLoader");
+    jmethodID load = env->GetMethodID(clCls, "loadClass",
+                                      "(Ljava/lang/String;)Ljava/lang/Class;");
+    jstring jn = env->NewStringUTF(name);
+    jclass c = (jclass)env->CallObjectMethod(cl, load, jn);
+    env->DeleteLocalRef(jn);
+    return c;
+}
+
+static void initBridge(Engine* e) {
+    JNIEnv* env = threadEnv(e->app);
+    jclass bc = loadAppClass(env, e->app->activity->clazz,
+                             "org.pn2.vrhome.ShellBridge");
+    if (!bc) { e->bridgeDead = true; LOGE("no ShellBridge class"); return; }
+    jmethodID ctor = env->GetMethodID(bc, "<init>", "(Landroid/content/Context;)V");
+    jobject br = env->NewObject(bc, ctor, e->app->activity->clazz);
+    if (env->ExceptionCheck()) {
+        env->ExceptionDescribe(); env->ExceptionClear();
+        e->bridgeDead = true; LOGE("ShellBridge ctor failed"); return;
+    }
+    e->bridge = env->NewGlobalRef(br);
+    e->mCreatePanel  = env->GetMethodID(bc, "createPanel", "(IIII)I");
+    e->mPanelTex     = env->GetMethodID(bc, "panelTexture",
+                        "(I)Landroid/graphics/SurfaceTexture;");
+    e->mLaunchPkg    = env->GetMethodID(bc, "launchPackageOn",
+                        "(Ljava/lang/String;I)V");
+    e->mLaunchLauncher = env->GetMethodID(bc, "launchLauncherOn", "(I)V");
+    e->mAdopt        = env->GetMethodID(bc, "adoptTaskOn", "(II)V");
+    e->mReleasePanel = env->GetMethodID(bc, "releasePanel", "(I)V");
+    e->mTakeAdopt    = env->GetMethodID(bc, "takePendingAdopt",
+                        "()Lorg/pn2/vrhome/ShellBridge$Pending;");
+    e->mTakeRelease  = env->GetMethodID(bc, "takePendingRelease", "()I");
+    e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
+    e->mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
+    e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
+
+    jclass stc = env->FindClass("android/graphics/SurfaceTexture");
+    e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
+    e->stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
+
+    e->pendingCls = (jclass)env->NewGlobalRef(loadAppClass(env,
+        e->app->activity->clazz, "org.pn2.vrhome.ShellBridge$Pending"));
+    e->fPendTask = env->GetFieldID(e->pendingCls, "taskId", "I");
+    e->fPendPkg  = env->GetFieldID(e->pendingCls, "pkg", "Ljava/lang/String;");
+    LOGI("bridge ready");
+}
+
+// create a GL texture + virtual display + panel record. taskId stays -1 for
+// launcher/explicit launches. Returns gPanels index or -1.
+static int openPanel(Engine* e, float yaw) {
+    if (!e->bridge || (int)gPanels.size() >= kMaxPanels) return -1;
+    JNIEnv* env = threadEnv(e->app);
+
+    GLuint tex = 0;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, tex);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    int dispId = env->CallIntMethod(e->bridge, e->mCreatePanel,
+                                    (jint)tex, kVdW, kVdH, kVdDpi);
+    if (env->ExceptionCheck()) { env->ExceptionDescribe(); env->ExceptionClear(); }
+    if (dispId < 0) { glDeleteTextures(1, &tex); return -1; }
+
+    jobject st = env->CallObjectMethod(e->bridge, e->mPanelTex, dispId);
+    if (!st) { glDeleteTextures(1, &tex);
+        env->CallVoidMethod(e->bridge, e->mReleasePanel, dispId); return -1; }
+
+    Panel p;
+    p.displayId = dispId;
+    p.tex = tex;
+    p.st = env->NewGlobalRef(st);
+    p.stArr = (jfloatArray)env->NewGlobalRef(env->NewFloatArray(16));
+    memset(p.stMat, 0, sizeof(p.stMat));
+    p.yaw = yaw;
+    gPanels.push_back(p);
+    LOGI("panel %d on display %d yaw %.2f", (int)gPanels.size() - 1, dispId, yaw);
+    return (int)gPanels.size() - 1;
+}
+
+static void closePanel(Engine* e, int idx) {
+    Panel& p = gPanels[idx];
+    JNIEnv* env = threadEnv(e->app);
+    if (e->bridge && p.displayId >= 0)
+        env->CallVoidMethod(e->bridge, e->mReleasePanel, p.displayId);
+    if (p.st) env->DeleteGlobalRef(p.st);
+    if (p.stArr) env->DeleteGlobalRef(p.stArr);
+    if (p.tex) glDeleteTextures(1, &p.tex);
+    gPanels.erase(gPanels.begin() + idx);
+    if (e->hover == idx) e->hover = -1;
+    else if (e->hover > idx) e->hover--;
+}
+
+// next free yaw slot around a centre yaw
+static float freeSlotYaw(float centre) {
+    bool used[kMaxPanels] = {};
+    for (auto& p : gPanels) {
+        for (int s = 0; s < kMaxPanels; ++s) {
+            float d = p.yaw - (centre + kSlotYaw[s]);
+            while (d > (float)M_PI) d -= 2.0f * (float)M_PI;
+            while (d < -(float)M_PI) d += 2.0f * (float)M_PI;
+            if (fabsf(d) < 0.05f) used[s] = true;
         }
-        gPanelVertCount += 6;
     }
-    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
-    glBufferData(GL_ARRAY_BUFFER, gPanelVertCount * 6 * sizeof(float),
-                 gPanelVerts, GL_DYNAMIC_DRAW);
+    for (int s = 0; s < kMaxPanels; ++s)
+        if (!used[s]) return centre + kSlotYaw[s];
+    return centre;
 }
 
-// upload each app's icon pixels into its own texture, one per gApps entry
-static void uploadIcons(Engine* e) {
-    for (GLuint t : e->iconTex) glDeleteTextures(1, &t);
-    e->iconTex.clear();
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    for (auto& a : gApps) {
-        if (a.icon.empty()) { e->iconTex.push_back(0); continue; }
-        GLuint t;
-        glGenTextures(1, &t);
-        glBindTexture(GL_TEXTURE_2D, t);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, a.iconW, a.iconH, 0, GL_RGBA,
-                     GL_UNSIGNED_BYTE, a.icon.data());
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        e->iconTex.push_back(t);
+// drain everything the bridge has queued; run on the render thread
+static void pumpBridge(Engine* e) {
+    if (!e->bridge) return;
+    JNIEnv* env = threadEnv(e->app);
+
+    // app launches requested by the library panel / test hook
+    for (;;) {
+        std::string pkg;
+        {
+            std::lock_guard<std::mutex> l(gLaunchMu);
+            if (gLaunchQ.empty()) break;
+            pkg = gLaunchQ.front(); gLaunchQ.pop_front();
+        }
+        int idx = openPanel(e, freeSlotYaw(e->gazeYaw));
+        if (idx < 0) continue;
+        gPanels[idx].pkg = pkg;
+        jstring jpkg = env->NewStringUTF(pkg.c_str());
+        env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
+                            gPanels[idx].displayId);
+        env->DeleteLocalRef(jpkg);
+        if (env->ExceptionCheck()) { env->ExceptionClear(); }
+    }
+
+    if (!e->pendingCls) return;
+
+    // stray display-0 tasks the poller wants us to take
+    for (;;) {
+        jobject p = env->CallObjectMethod(e->bridge, e->mTakeAdopt);
+        if (env->ExceptionCheck()) { env->ExceptionClear(); break; }
+        if (!p) break;
+        int taskId = env->GetIntField(p, e->fPendTask);
+        jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
+        int idx = openPanel(e, freeSlotYaw(e->gazeYaw));
+        if (idx >= 0) {
+            gPanels[idx].taskId = taskId;
+            if (jpkg) {
+                const char* c = env->GetStringUTFChars(jpkg, nullptr);
+                gPanels[idx].pkg = c;
+                env->ReleaseStringUTFChars(jpkg, c);
+            }
+            env->CallVoidMethod(e->bridge, e->mAdopt, taskId,
+                                gPanels[idx].displayId);
+            if (env->ExceptionCheck()) { env->ExceptionClear(); }
+        } else {
+            // no free panel slots: kill the stray rather than leave a mono
+            // app stuck to the physical display retrying forever
+            env->CallVoidMethod(e->bridge, e->mRemoveTask, taskId);
+            if (env->ExceptionCheck()) { env->ExceptionClear(); }
+        }
+        env->DeleteLocalRef(p);
+    }
+
+    // empty displays the poller wants torn down
+    for (;;) {
+        int id = env->CallIntMethod(e->bridge, e->mTakeRelease);
+        if (env->ExceptionCheck()) { env->ExceptionClear(); break; }
+        if (id < 0) break;
+        for (int i = 0; i < (int)gPanels.size(); ++i)
+            if (gPanels[i].displayId == id) { closePanel(e, i); break; }
     }
 }
 
-// icon quad on each panel face, inset and pulled a little toward the viewer
-static void drawIcons(Engine* e, const Mat4& viewProj) {
-    glUseProgram(e->iconProg);
-    glUniformMatrix4fv(glGetUniformLocation(e->iconProg, "uMVP"), 1, GL_FALSE,
-                     viewProj.m);
-    glUniform1i(glGetUniformLocation(e->iconProg, "uTex"), 0);
-    const GLint aPos = glGetAttribLocation(e->iconProg, "aPos");
-    const GLint aUV  = glGetAttribLocation(e->iconProg, "aUV");
+// pull the newest frame of each virtual display into its texture
+static void updatePanels(Engine* e) {
+    if (gPanels.empty()) return;
+    JNIEnv* env = threadEnv(e->app);
+    for (auto& p : gPanels) {
+        if (!p.st) continue;
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);
+        env->CallVoidMethod(p.st, e->stUpdate);
+        env->CallVoidMethod(p.st, e->stMatrix, p.stArr);
+        env->GetFloatArrayRegion(p.stArr, 0, 16, p.stMat);
+        if (env->ExceptionCheck()) env->ExceptionClear();
+    }
+}
+
+// panel quad in world space, facing the viewer at the origin
+static void panelCenter(const Panel& p, float out[3], float right[3]) {
+    out[0] = sinf(p.yaw) * kPanelDist;
+    out[1] = kPanelY;
+    out[2] = -cosf(p.yaw) * kPanelDist;
+    // fwd = (-sin,0,cos) toward origin; right = cross(up, fwd) so the panel's
+    // right edge lands on the viewer's right
+    right[0] = cosf(p.yaw); right[1] = 0; right[2] = sinf(p.yaw);
+}
+
+static void drawPanels(Engine* e, const Mat4& viewProj) {
+    if (gPanels.empty()) return;
+    glUseProgram(e->floatProg);
+    glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
+    const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
+    const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
+    const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
+    const GLint aUV  = glGetAttribLocation(e->floatProg, "aUV");
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aUV);
     glActiveTexture(GL_TEXTURE0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const float hs = 0.20f;   // icon half-size on the panel face
-    for (size_t i = 0; i < gPanels.size(); ++i) {
-        if (i >= e->iconTex.size() || !e->iconTex[i]) continue;
-        const Panel& p = gPanels[i];
-        const float fx = p.dirx, fz = p.dirz;        // toward viewer
-        const float rx = -fz, rz = fx;               // panel right
-        const float cx = p.x + fx * 0.03f, cz = p.z + fz * 0.03f;
-        const float cy = p.y;
-        const float quad[4][5] = {   // pos.xyz + uv, top of icon at low v
-            {cx - rx*hs, cy - hs, cz - rz*hs, 0.0f, 1.0f},
-            {cx + rx*hs, cy - hs, cz + rz*hs, 1.0f, 1.0f},
-            {cx + rx*hs, cy + hs, cz + rz*hs, 1.0f, 0.0f},
-            {cx - rx*hs, cy + hs, cz - rz*hs, 0.0f, 0.0f},
+    const float hw = kPanelW / 2, hh = kPanelH / 2;
+    for (auto& p : gPanels) {
+        float c[3], r[3];
+        panelCenter(p, c, r);
+        // vv: 0 bottom, 1 top; uu: 0 left, 1 right
+        const float q[4][5] = {
+            {c[0]-r[0]*hw, c[1]-hh, c[2]-r[2]*hw, 0.0f, 0.0f},
+            {c[0]+r[0]*hw, c[1]-hh, c[2]+r[2]*hw, 1.0f, 0.0f},
+            {c[0]+r[0]*hw, c[1]+hh, c[2]+r[2]*hw, 1.0f, 1.0f},
+            {c[0]-r[0]*hw, c[1]+hh, c[2]-r[2]*hw, 0.0f, 1.0f},
         };
         const int tris[6] = {0,1,2, 0,2,3};
-        float v[30];
-        for (int t = 0; t < 6; ++t) memcpy(v + t*5, quad[tris[t]], 20);
-        glBindTexture(GL_TEXTURE_2D, e->iconTex[i]);
-        glBindBuffer(GL_ARRAY_BUFFER, e->iconVbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(v), v, GL_STREAM_DRAW);
+        float verts[30];
+        for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
+        glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
+        glUniformMatrix4fv(uST, 1, GL_FALSE, p.stMat);
+        glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);
+        glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
         glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
         glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -659,6 +636,80 @@ static void drawIcons(Engine* e, const Mat4& viewProj) {
     glDisable(GL_BLEND);
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aUV);
+}
+
+// gaze ray vs panels; stores hovered panel + hit point in display px
+static void pickPanel(Engine* e, const Mat4& head) {
+    float d[3];
+    const float fwd[3] = {0, 0, -1};
+    viewDirToWorld(head, fwd, d);
+    e->hover = -1;
+    float bestT = 1e9f;
+    for (int i = 0; i < (int)gPanels.size(); ++i) {
+        Panel& p = gPanels[i];
+        float c[3], r[3];
+        panelCenter(p, c, r);
+        // plane normal toward origin
+        float n[3] = {-c[0], 0, -c[2]};
+        const float nl = sqrtf(n[0]*n[0] + n[2]*n[2]);
+        n[0] /= nl; n[2] /= nl;
+        // normal points at the viewer, ray travels into the plane: d.n < 0
+        const float dn = d[0]*n[0] + d[2]*n[2];
+        if (dn > -1e-5f) continue;
+        const float t = (c[0]*n[0] + c[1]*n[1] + c[2]*n[2]) / dn;
+        if (t <= 0 || t >= bestT) continue;
+        const float px = d[0]*t - c[0], py = d[1]*t - c[1], pz = d[2]*t - c[2];
+        const float u = (px*r[0] + pz*r[2]) / (kPanelW / 2);
+        const float v = py / (kPanelH / 2);
+        if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) continue;
+        bestT = t;
+        e->hover = i;
+        e->hitX = (u * 0.5f + 0.5f) * kVdW;
+        e->hitY = (0.5f - v * 0.5f) * kVdH;
+    }
+    if (d[0]*d[0] + d[2]*d[2] > 1e-6f)
+        e->gazeYaw = atan2f(d[0], -d[2]);
+}
+
+// cursor dot on the hovered panel, just in front of its surface
+static void drawCursor(Engine* e, const Mat4& viewProj) {
+    if (e->hover < 0 || e->hover >= (int)gPanels.size()) return;
+    const Panel& p = gPanels[e->hover];
+    float c[3], r[3];
+    panelCenter(p, c, r);
+    const float u = e->hitX / kVdW * 2.0f - 1.0f;
+    const float v = 1.0f - e->hitY / kVdH * 2.0f;
+    const float hw = kPanelW / 2, hh = kPanelH / 2;
+    // toward the viewer a touch so it never z-fights the panel
+    float pos[3] = {c[0] + r[0]*u*hw - c[0]*0.01f,
+                    c[1] + v*hh,
+                    c[2] + r[2]*u*hw - c[2]*0.01f};
+    const float s = 0.012f;
+    glUseProgram(e->sceneProg);
+    const GLint uMVP = glGetUniformLocation(e->sceneProg, "uMVP");
+    const GLint aPos = glGetAttribLocation(e->sceneProg, "aPos");
+    const GLint aCol = glGetAttribLocation(e->sceneProg, "aCol");
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aCol);
+    glDisable(GL_DEPTH_TEST);
+    // billboard in the panel plane: right x up offsets
+    const float verts[6][6] = {
+        {pos[0]-r[0]*s, pos[1]-s, pos[2]-r[2]*s, 1,1,1},
+        {pos[0]+r[0]*s, pos[1]-s, pos[2]+r[2]*s, 1,1,1},
+        {pos[0]+r[0]*s, pos[1]+s, pos[2]+r[2]*s, 1,1,1},
+        {pos[0]-r[0]*s, pos[1]-s, pos[2]-r[2]*s, 1,1,1},
+        {pos[0]+r[0]*s, pos[1]+s, pos[2]+r[2]*s, 1,1,1},
+        {pos[0]-r[0]*s, pos[1]+s, pos[2]-r[2]*s, 1,1,1},
+    };
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glEnable(GL_DEPTH_TEST);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aCol);
 }
 
 static bool initEyeTargets(Engine* e) {
@@ -718,13 +769,12 @@ static int initDisplay(Engine* e) {
     e->sceneProg = link(kSceneVS, kSceneFS);
     e->warpProg  = link(kWarpVS,  kWarpFS);
     e->textProg  = link(kTextVS,  kTextFS);
-    e->iconProg  = link(kIconVS,  kIconFS);
-    if (!e->sceneProg || !e->warpProg || !e->textProg || !e->iconProg) return -1;
+    e->floatProg = link(kFloatVS, kFloatFS);
+    if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg)
+        return -1;
 
     if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
     glGenBuffers(1, &e->textVbo);
-    glGenBuffers(1, &e->iconVbo);
-
     glGenBuffers(1, &e->panelVbo);
     glGenBuffers(1, &e->quadVbo);
     glGenBuffers(1, &e->gridVbo);
@@ -734,9 +784,6 @@ static int initDisplay(Engine* e) {
     buildGrid();
     glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
     glBufferData(GL_ARRAY_BUFFER, gGridVerts * 6 * sizeof(float), gGrid, GL_STATIC_DRAW);
-    glGenBuffers(1, &e->cubeVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, e->cubeVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(kCube), kCube, GL_STATIC_DRAW);
 
     if (!initEyeTargets(e)) return -1;
     glEnable(GL_DEPTH_TEST);
@@ -770,16 +817,6 @@ static void drainSensor(Engine* e) {
                 : (sq < 1.0f ? sqrtf(1.0f - sq) : 0.0f);
             e->haveQuat = true;
             ++e->sensorEv;
-            // event timestamp is ns since boot; track delivery lag so we can
-            // tell a slow stream from a fast-but-stale one
-            {
-                struct timespec ts;
-                clock_gettime(CLOCK_BOOTTIME, &ts);
-                const long long now = (long long)ts.tv_sec * 1000000000LL + ts.tv_nsec;
-                e->sensorLagMs = (int)((now - ev.timestamp) / 1000000);
-            }
-            // count only samples that actually changed the quat, to see if the
-            // HAL is streaming fresh data or replaying a stale batch
             if (fabsf(ev.data[0] - e->lastQ[0]) > 1e-5f ||
                 fabsf(ev.data[1] - e->lastQ[1]) > 1e-5f ||
                 fabsf(ev.data[2] - e->lastQ[2]) > 1e-5f ||
@@ -797,37 +834,59 @@ static bool isConfirm(int32_t code) {
            code == AKEYCODE_BUTTON_A || code == kPicoConfirm;
 }
 
+static void recenter(Engine* e);
+
 // the glue drains the input queue itself and calls this per event - polling the
 // queue manually finds it already empty, so input MUST be handled here
 static int32_t onInputEvent(android_app* app, AInputEvent* ev) {
     Engine* e = (Engine*)app->userData;
-    if (AInputEvent_getType(ev) == AINPUT_EVENT_TYPE_KEY &&
-        AKeyEvent_getAction(ev) == AKEY_EVENT_ACTION_DOWN) {
-        const int32_t code = AKeyEvent_getKeyCode(ev);
-        LOGI("key down %d (gazed=%d)", code, e->gazed);
-        if (isConfirm(code)) {
-            if (e->gazed >= 0 && e->gazed < (int)gApps.size())
-                launchApp(app, gApps[e->gazed].pkg);
-            return 1;
+    if (AInputEvent_getType(ev) != AINPUT_EVENT_TYPE_KEY)
+        return 0;
+    const int32_t code = AKeyEvent_getKeyCode(ev);
+    const int32_t action = AKeyEvent_getAction(ev);
+
+    if (isConfirm(code)) {
+        if (action == AKEY_EVENT_ACTION_DOWN && AKeyEvent_getRepeatCount(ev) == 0)
+            LOGI("confirm down, hover %d", e->hover);
+        if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
+            e->confirmHeld = false;
+            if (e->bridge && e->hover >= 0 && e->hover < (int)gPanels.size()) {
+                JNIEnv* env = threadEnv(app);
+                const Panel& p = gPanels[e->hover];
+                LOGI("tap disp %d @ %.0f,%.0f", p.displayId, e->hitX, e->hitY);
+                env->CallVoidMethod(e->bridge, e->mInjectTap,
+                                    p.displayId, (float)e->hitX, (float)e->hitY);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+                if (p.taskId >= 0) {
+                    env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
+                    if (env->ExceptionCheck()) env->ExceptionClear();
+                }
+            }
+        } else if (action == AKEY_EVENT_ACTION_DOWN && AKeyEvent_getRepeatCount(ev) == 0) {
+            e->confirmHeld = true;
         }
+        return 1;
+    }
+    if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
+        // display-0 focus: close the newest panel; when a panel app has
+        // focus the key never reaches us - the app handles it natively
+        if (e->bridge && !gPanels.empty()) {
+            JNIEnv* env = threadEnv(app);
+            Panel& p = gPanels.back();
+            if (p.taskId >= 0) {
+                env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+            }
+            closePanel(e, (int)gPanels.size() - 1);
+        }
+        return 1;
+    }
+    if (code == AKEYCODE_HOME && action == AKEY_EVENT_ACTION_UP) {
+        // recenter: the ring's slot layout recentres on the current gaze yaw
+        recenter(e);
+        return 1;
     }
     return 0;
-}
-
-// pick the panel closest to the gaze ray; returns index or -1
-static int pickGazed(const Mat4& view) {
-    float fwd[3];
-    const float center[3] = {0, 0, -1};
-    viewDirToWorld(view, center, fwd);
-    int best = -1; float bestCos = 0.992f;   // ~7 deg cone
-    for (int i = 0; i < (int)gPanels.size(); ++i) {
-        const Panel& p = gPanels[i];
-        const float len = sqrtf(p.x*p.x + p.y*p.y + p.z*p.z);
-        const float dx = p.x / len, dy = p.y / len, dz = p.z / len;
-        const float c = dx*fwd[0] + dy*fwd[1] + dz*fwd[2];
-        if (c > bestCos) { bestCos = c; best = i; }
-    }
-    return best;
 }
 
 static void drawScene(Engine* e, const Mat4& viewProj) {
@@ -838,129 +897,17 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
     glEnableVertexAttribArray(aPos);
     glEnableVertexAttribArray(aCol);
 
-    // floor grid first so there is always geometry in frame
     glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
                           (void*)(3 * sizeof(float)));
     glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
     glDrawArrays(GL_LINES, 0, gGridVerts);
-
-    // panels, gazed one brightened by redrawing it scaled up
-    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
-    glDrawArrays(GL_TRIANGLES, 0, gPanelVertCount);
-
-    // highlight: redraw the gazed panel scaled about its own centre
-    if (e->gazed >= 0) {
-        const Panel& p = gPanels[e->gazed];
-        const float s = 1.12f;
-        Mat4 m = identity(); m.m[0] = s; m.m[5] = s; m.m[10] = s;
-        Mat4 mv = multiply(translate3(p.x, p.y, p.z),
-                    multiply(m, translate3(-p.x, -p.y, -p.z)));
-        const Mat4 mvp = multiply(viewProj, mv);
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
-        glDrawArrays(GL_TRIANGLES, e->gazed * 6, 6);
-    }
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aCol);
 
-    drawIcons(e, viewProj);
-
-    // 4 reference cubes at the cardinal points, so head rotation is obvious
-    glUseProgram(e->sceneProg);
-    glEnableVertexAttribArray(aPos);
-    glEnableVertexAttribArray(aCol);
-    glBindBuffer(GL_ARRAY_BUFFER, e->cubeVbo);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float),
-                          (void*)(3 * sizeof(float)));
-    static const float kCubePos[4][3] = {
-        { 0, 0, -4}, { 4, 0, 0}, { 0, 0, 4}, {-4, 0, 0}   // N E S W
-    };
-    for (int i = 0; i < 4; ++i) {
-        Mat4 m = identity();
-        const float s = 0.4f;
-        m.m[0] = s; m.m[5] = s; m.m[10] = s;
-        Mat4 mv = multiply(translate3(kCubePos[i][0], kCubePos[i][1], kCubePos[i][2]), m);
-        const Mat4 mvp = multiply(viewProj, mv);
-        glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aCol);
-}
-
-// reticle: ring + centre dot in clip space, dead centre of each eye's view.
-// This is the gaze cursor for controller-free selection - brightens on a target.
-static void drawReticle(Engine* e) {
-    glUseProgram(e->sceneProg);
-    const GLint uMVP = glGetUniformLocation(e->sceneProg, "uMVP");
-    const GLint aPos = glGetAttribLocation(e->sceneProg, "aPos");
-    const GLint aCol = glGetAttribLocation(e->sceneProg, "aCol");
-    glEnableVertexAttribArray(aPos);
-    glEnableVertexAttribArray(aCol);
-    glDisable(GL_DEPTH_TEST);
-
-    const float c = (e->gazed >= 0) ? 1.0f : 0.55f;   // brighter on a target
-    const int seg = 48;
-    // radii in NDC; the eye viewport is ~0.89 aspect so widen x a touch
-    const float r1x = 0.014f, r1y = 0.026f;
-    const float r2x = 0.018f, r2y = 0.034f;
-    const float dotx = 0.0035f, doty = 0.0065f;
-
-    // ring as a triangle strip between the two radii
-    float ring[(seg + 1) * 2 * 6];
-    for (int i = 0; i <= seg; ++i) {
-        const float a = (float)i / seg * 6.2831853f;
-        const float ca = cosf(a), sa = sinf(a);
-        float* o = ring + i * 12;
-        o[0]=ca*r2x; o[1]=sa*r2y; o[2]=0; o[3]=c; o[4]=c; o[5]=c;
-        o[6]=ca*r1x; o[7]=sa*r1y; o[8]=0; o[9]=c; o[10]=c; o[11]=c;
-    }
-    GLuint vbo; glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ring), ring, GL_STREAM_DRAW);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, identity().m);   // clip space
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, (seg + 1) * 2);
-
-    // centre dot as a small fan
-    float center[6 + (seg + 1) * 6];
-    center[0]=0; center[1]=0; center[2]=0; center[3]=c; center[4]=c; center[5]=c;
-    for (int i = 0; i <= seg; ++i) {
-        const float a = (float)i / seg * 6.2831853f;
-        float* p = center + 6 + i * 6;
-        p[0]=cosf(a)*dotx; p[1]=sinf(a)*doty; p[2]=0; p[3]=c; p[4]=c; p[5]=c;
-    }
-    glBufferData(GL_ARRAY_BUFFER, sizeof(center), center, GL_STREAM_DRAW);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, seg + 2);
-
-    // dwell progress: a sweeping arc that fills as the gaze holds on a panel
-    if (e->dwellFrac > 0.0f) {
-        const int n = (int)(e->dwellFrac * seg) + 1;
-        float arc[(seg + 1) * 2 * 6];
-        const float pc = 0.2f, pg = 0.9f, pb = 1.0f;   // cyan progress
-        for (int i = 0; i <= n; ++i) {
-            const float a = 1.5707963f - (float)i / seg * 6.2831853f * e->dwellFrac;
-            const float ca = cosf(a), sa = sinf(a);
-            float* o = arc + i * 12;
-            o[0]=ca*r2x*1.25f; o[1]=sa*r2y*1.25f; o[2]=0; o[3]=pc; o[4]=pg; o[5]=pb;
-            o[6]=ca*r1x*1.05f; o[7]=sa*r1y*1.05f; o[8]=0; o[9]=pc; o[10]=pg; o[11]=pb;
-        }
-        glBufferData(GL_ARRAY_BUFFER, (n + 1) * 2 * 6 * sizeof(float), arc,
-                     GL_STREAM_DRAW);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, (n + 1) * 2);
-    }
-
-    glDeleteBuffers(1, &vbo);
-    glEnable(GL_DEPTH_TEST);
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aCol);
+    drawPanels(e, viewProj);
+    drawCursor(e, viewProj);
 }
 
 // ---------------------------------------------------------------- text
@@ -1038,8 +985,6 @@ static const TGlyph* fontGlyph(Engine* e, int cp) {
             std::vector<uint8_t> bmp(gw * gh);
             stbtt_MakeCodepointBitmap(&f.info, bmp.data(), gw, gh, gw,
                                       f.scale, f.scale, cp);
-            // the bitmap is tightly packed at gw stride; without this GL pads
-            // each row to 4 bytes and reads the glyph skewed into strips
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
             glBindTexture(GL_TEXTURE_2D, f.tex);
             glTexSubImage2D(GL_TEXTURE_2D, 0, f.packX, f.packY, gw, gh,
@@ -1066,7 +1011,6 @@ static float textWidth(Engine* e, const char* utf8, float mPerPx) {
     return w;
 }
 
-// draws a utf-8 string in view space; returns its width in the same units
 static float drawText(Engine* e, const char* utf8, float x, float y, float z,
                       float mPerPx) {
     if (!e->font.ok) return 0;
@@ -1078,10 +1022,9 @@ static float drawText(Engine* e, const char* utf8, float x, float y, float z,
         if (!g) continue;
         if (g->w > 0 && g->h > 0) {
             const float gx = pen + g->xoff * mPerPx;
-            const float gtop = y - g->yoff * mPerPx;   // yoff < 0 sits above baseline
+            const float gtop = y - g->yoff * mPerPx;
             const float gbot = gtop - g->h * mPerPx;
             const float gw = g->w * mPerPx;
-            // glyph top row sits at low v in the atlas, so quad top -> v0
             const float quad[6][5] = {
                 {gx,    gbot, z, g->u0, g->v1},
                 {gx+gw, gbot, z, g->u1, g->v1},
@@ -1110,13 +1053,12 @@ static float drawText(Engine* e, const char* utf8, float x, float y, float z,
     return pen - x;
 }
 
-// HUD: head-locked text showing the live camera rotation + the gazed app, so
-// tracking can be verified without adb. Two lines near the top, per eye.
+// HUD: head-locked status line so the pipeline can be verified without adb
 static void drawHud(Engine* e, const Mat4& proj) {
     if (!e->font.ok) return;
     glUseProgram(e->textProg);
     glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"), 1, GL_FALSE,
-                     proj.m);   // view space = identity view
+                     proj.m);
     glUniform3f(glGetUniformLocation(e->textProg, "uColor"), 1.0f, 1.0f, 1.0f);
     glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
     glActiveTexture(GL_TEXTURE0);
@@ -1125,39 +1067,39 @@ static void drawHud(Engine* e, const Mat4& proj) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const float s = 0.0026f;   // metres per font pixel in view space
+    const float s = 0.0026f;
     const float z = -1.2f;
     float w = textWidth(e, e->hud, s);
-    drawText(e, e->hud, -w * 0.5f, 0.24f, z, s);
-
-    if (e->gazed >= 0 && e->gazed < (int)gApps.size()) {
-        const char* lbl = gApps[e->gazed].label.c_str();
+    drawText(e, e->hud, -w * 0.5f, 0.30f, z, s);
+    if (e->hover >= 0 && e->hover < (int)gPanels.size() &&
+            !gPanels[e->hover].pkg.empty()) {
+        const char* lbl = gPanels[e->hover].pkg.c_str();
         w = textWidth(e, lbl, s);
-        drawText(e, lbl, -w * 0.5f, 0.12f, z, s);
+        drawText(e, lbl, -w * 0.5f, 0.18f, z, s);
     }
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 }
 
+static void recenter(Engine* e) {
+    for (auto& p : gPanels) {
+        // keep the panel's slot offset, re-centre the ring on current gaze
+        float off = p.yaw - e->gazeYaw;
+        while (off > (float)M_PI)  off -= 2.0f * (float)M_PI;
+        while (off < -(float)M_PI) off += 2.0f * (float)M_PI;
+        // find nearest slot offset and snap to it around the new centre
+        float best = 1e9f; int bs = 0;
+        for (int s = 0; s < kMaxPanels; ++s) {
+            float d = fabsf(off - kSlotYaw[s]);
+            if (d < best) { best = d; bs = s; }
+        }
+        p.yaw = e->gazeYaw + kSlotYaw[bs];
+    }
+}
+
 static void drawFrame(Engine* e) {
     if (!e->ready) return;
 
-    // refresh the app list every ~5s so installs show up without a relaunch
-    if (++e->appTick >= 360) {
-        e->appTick = 0;
-        refreshApps(e->app);
-        buildPanels();
-        e->panelsDirty = true;
-    }
-    if (e->panelsDirty) {
-        rebuildPanelVbo(e);
-        uploadIcons(e);
-        e->panelsDirty = false;
-    }
-
-    // debug.vrhome.sensor=0 pins the view; debug.vrhome.tq=0 uses the quat
-    // untransposed in case the track direction reads inverted in the headset.
-    // roll/sensroll/worldx are live-tunable for display orientation.
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
     const bool transpose = propI("debug.vrhome.tq", 1) != 0;
     const float dRoll   = propF("debug.vrhome.roll",     kRoll);
@@ -1170,50 +1112,69 @@ static void drawFrame(Engine* e) {
     }
     head = multiply(rotZ(dRoll), head);
 
-    // test hook: setprop debug.vrhome.launch <pkg> fires the floating path once
+    // test hook: setprop debug.vrhome.launch <pkg> queues a panel launch
     {
+        static bool testFired = false;
         char tb[PROP_VALUE_MAX];
-        if (__system_property_get("debug.vrhome.launch", tb) > 0 && e->frames == 30)
-            launchApp(e->app, tb);
+        if (!testFired && __system_property_get("debug.vrhome.launch", tb) > 0
+                && e->frames > 30) {
+            testFired = true;
+            std::lock_guard<std::mutex> l(gLaunchMu);
+            gLaunchQ.push_back(tb);
+        }
+    }
+    // test hook: setprop debug.vrhome.tap "disp,x,y" injects a tap there.
+    // Fires once per new value; the prop may not be clearable from this uid.
+    {
+        static char lastTap[PROP_VALUE_MAX] = "";
+        char tb[PROP_VALUE_MAX];
+        if (__system_property_get("debug.vrhome.tap", tb) > 0 &&
+                strcmp(tb, lastTap) != 0) {
+            strncpy(lastTap, tb, sizeof(lastTap) - 1);
+            int d, x, y;
+            if (sscanf(tb, "%d,%d,%d", &d, &x, &y) == 3 && e->bridge) {
+                JNIEnv* env = threadEnv(e->app);
+                env->CallVoidMethod(e->bridge, e->mInjectTap, d,
+                                    (float)x, (float)y);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+            }
+        }
     }
 
-    e->gazed = pickGazed(head);
-
-    // gaze dwell: rest on a panel for ~1.8s and it launches itself, so the
-    // home works with no controller at all
-    struct timespec dts;
-    clock_gettime(CLOCK_MONOTONIC, &dts);
-    const long long nowNs = (long long)dts.tv_sec * 1000000000LL + dts.tv_nsec;
-    const long long kDwellNs = 1800LL * 1000000;
-    if (e->gazed != e->dwellPanel) {
-        e->dwellPanel = e->gazed;
-        e->dwellNs = nowNs;
-        e->dwellFrac = 0;
-    } else if (e->gazed >= 0) {
-        e->dwellFrac = (float)(nowNs - e->dwellNs) / kDwellNs;
-        if (e->dwellFrac >= 1.0f) {
-            launchApp(e->app, gApps[e->gazed].pkg);
-            e->dwellPanel = -1;
-            e->dwellFrac = 0;
+    // one-time: library panel dead ahead once tracking is live. gazeYaw is
+    // still stale on the first quat frame (pickPanel runs below), so take the
+    // yaw straight from the head matrix.
+    if (e->bridge && e->haveQuat && !e->launcherSpawned) {
+        e->launcherSpawned = true;
+        float d[3];
+        const float fwd[3] = {0, 0, -1};
+        viewDirToWorld(head, fwd, d);
+        int idx = openPanel(e, atan2f(d[0], -d[2]));
+        if (idx >= 0) {
+            gPanels[idx].pkg = "org.pn2.vrhome.library";
+            JNIEnv* env = threadEnv(e->app);
+            env->CallVoidMethod(e->bridge, e->mLaunchLauncher,
+                                gPanels[idx].displayId);
+            if (env->ExceptionCheck()) env->ExceptionClear();
         }
-    } else e->dwellFrac = 0;
+    }
 
-    // yaw/pitch/roll from the sensor quat - drives both the logcat line and the
-    // in-headset HUD
+    if (gWantRecenter) {
+        gWantRecenter = false;
+        recenter(e);
+    }
+    pumpBridge(e);
+    pickPanel(e, head);
+    updatePanels(e);
+
     const float qx = e->quat[0], qy = e->quat[1], qz = e->quat[2], qw = e->quat[3];
     const float yaw   = atan2f(2*(qw*qy + qx*qz), 1 - 2*(qy*qy + qx*qx)) * 180.0f / (float)M_PI;
     const float pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(qw*qx - qy*qz)))) * 180.0f / (float)M_PI;
     const float roll  = atan2f(2*(qw*qz + qx*qy), 1 - 2*(qz*qz + qx*qx)) * 180.0f / (float)M_PI;
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f  PIT %+4.0f  ROL %+4.0f  FPS %d  SEN %d  LAG %dMS%s", yaw, pitch, roll,
-        e->fps, e->sensorNewHz, e->sensorLagMs, useSensor ? "" : "  SEN:OFF");
-
-    if ((e->appTick % 144) == 0) {
-        float fwd[3]; const float c[3] = {0,0,-1};
-        viewDirToWorld(head, c, fwd);
-        LOGI("rot quat=(%.2f,%.2f,%.2f,%.2f) ypr=(%.0f,%.0f,%.0f) fwd=(%.2f,%.2f,%.2f) gazed=%d",
-             qx, qy, qz, qw, yaw, pitch, roll, fwd[0], fwd[1], fwd[2], e->gazed);
-    }
+        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d  PNL %zu%s",
+        yaw, pitch, roll, e->fps, e->sensorNewHz, gPanels.size(),
+        e->bridge ? "" : "  BRIDGE:OFF");
 
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const Mat4 proj = perspective(kFovY, aspect, 0.05f, 100.0f);
@@ -1223,20 +1184,17 @@ static void drawFrame(Engine* e) {
         Eye& y = e->eye[i];
         glBindFramebuffer(GL_FRAMEBUFFER, y.fbo);
         glViewport(0, 0, y.w, y.h);
-        // debug.vrhome.fill=1 paints each eye a solid colour to prove the path
         if (propI("debug.vrhome.fill", 0))
             glClearColor(i == 0 ? 0.8f : 0.1f, 0.1f, i == 1 ? 0.8f : 0.1f, 1.0f);
         else
-            glClearColor(0.10f, 0.12f, 0.20f, 1.0f);
+            glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        // per-eye offset for IPD
         Mat4 eyeView = head;
         const float off = (i == 0 ? -kIPD / 2 : kIPD / 2);
         Mat4 shift = identity(); shift.m[12] = off;
         eyeView = multiply(eyeView, shift);
         const Mat4 vp = multiply(proj, eyeView);
         drawScene(e, vp);
-        drawReticle(e);
         if (propI("debug.vrhome.hud", 1)) drawHud(e, proj);
         if (++errTick >= 144) {
             errTick = 0;
@@ -1245,9 +1203,7 @@ static void drawFrame(Engine* e) {
         }
     }
 
-    // warp pass: each eye texture through barrel distortion to its half.
-    // depth test must be OFF here - the default framebuffer has a depth buffer
-    // and the fullscreen quads would fail GL_LESS on equal depth after frame 1
+    // warp pass: each eye texture through barrel distortion to its half
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glViewport(0, 0, e->width, e->height);
     glDisable(GL_DEPTH_TEST);
@@ -1271,7 +1227,6 @@ static void drawFrame(Engine* e) {
     glEnable(GL_DEPTH_TEST);
     eglSwapBuffers(e->display, e->surface);
 
-    // fps: count presented frames, refresh the number once a second
     ++e->frames;
     struct timespec ts;
     clock_gettime(CLOCK_MONOTONIC, &ts);
@@ -1299,14 +1254,8 @@ static void onAppCmd(android_app* app, int32_t cmd) {
     case APP_CMD_TERM_WINDOW:
         termDisplay(e);
         break;
-    case APP_CMD_GAINED_FOCUS:
-        if (e->rotSensor)
-            ASensorEventQueue_enableSensor(e->sensorQueue, e->rotSensor);
-        break;
-    case APP_CMD_LOST_FOCUS:
-        if (e->rotSensor)
-            ASensorEventQueue_disableSensor(e->sensorQueue, e->rotSensor);
-        break;
+    // keep sensors running regardless of focus: a focused panel app must
+    // not freeze head tracking of the shell that renders it
     }
 }
 
@@ -1330,15 +1279,9 @@ void android_main(android_app* app) {
         app->looper, kSensorIdent, nullptr, nullptr);
     if (e.rotSensor) {
         ASensorEventQueue_enableSensor(e.sensorQueue, e.rotSensor);
-        // fastest rate - the fused output on this HAL lags badly at the
-        // default, which reads as ~2fps head tracking in the headset
         ASensorEventQueue_setEventRate(e.sensorQueue, e.rotSensor, 2000);
     }
 
-    refreshApps(app);
-    buildPanels();
-
-    // immersive: hide nav + status bars so nothing but our scene shows
     {
         JNIEnv* env = threadEnv(app);
         jobject activity = app->activity->clazz;
@@ -1353,7 +1296,8 @@ void android_main(android_app* app) {
         // IMMERSIVE_STICKY|HIDE_NAVIGATION|FULLSCREEN|LAYOUT_STABLE|LAYOUT_HIDE_NAVIGATION|LAYOUT_FULLSCREEN
         env->CallVoidMethod(decor, setVis, 0x1000 | 0x0002 | 0x0004 | 0x0100 | 0x0200 | 0x0400);
     }
-    // panelVbo does not exist until initDisplay; the dirty flag handles it
+
+    initBridge(&e);
 
     while (!app->destroyRequested) {
         int ident, events;

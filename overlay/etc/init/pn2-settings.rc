@@ -15,7 +15,11 @@
 # service at all - "does not have a SELinux domain defined" - because a service
 # launched from /system/bin/sh as a non-root user has no domain transition in
 # policy. Being globally permissive does not help; init bails before that matters.
-service pn2_settings /system/bin/sh -c "settings put system accelerometer_rotation 0; settings put system user_rotation 0"
+# policy_control hides the SystemUI bars: on a headset the physical display is
+# owned by the panel shell, and a mono nav/status strip drawn across it lands
+# in both eyes. The shell's virtual displays have no decorations anyway, so
+# nothing the user interacts with loses them.
+service pn2_settings /system/bin/sh -c "settings put system accelerometer_rotation 0; settings put system user_rotation 0; settings put global policy_control immersive.full=*"
     user root
     group root
     seclabel u:r:shell:s0

@@ -148,6 +148,18 @@ public class ShellBridge {
         return v != null ? v.st : null;
     }
 
+    // display name for a panel's window bar; the library panel's pseudo
+    // package is not a real package so it gets a fixed label
+    public String appLabel(String pkg) {
+        if ("org.pn2.vrhome.library".equals(pkg)) return "Library";
+        try {
+            return pm.getApplicationLabel(
+                    pm.getApplicationInfo(pkg, 0)).toString();
+        } catch (Throwable t) {
+            return pkg;
+        }
+    }
+
     public void releasePanel(int displayId) {
         Vd v = vds.remove(displayId);
         launching.remove(displayId);

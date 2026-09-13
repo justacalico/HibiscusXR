@@ -96,6 +96,40 @@ void testLayout() {
     pk = pickPanel(ps, I);
     CHECK(pk.idx >= 0);
 
+    // dragPoint: gaze centred on the panel -> display centre-ish coords
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    float dx, dy;
+    CHECK(dragPoint(ps[0], I, &dx, &dy));
+    CHECK_F(dx, kVdW * 0.5f, 1e-3f);
+    CHECK_F(dy, (0.5f + kPanelY / kPanelH) * kVdH, 1e-3f);
+
+    // gaze yawed onto a side panel: drag point lands on its centre column
+    Panel pr2 = mkPanel(kSlotYaw[1]);
+    Mat4 v2 = quatToMat((const float[]){0, sinf(kSlotYaw[1] / 2), 0,
+                        cosf(kSlotYaw[1] / 2)}, false);
+    CHECK(dragPoint(pr2, v2, &dx, &dy));
+    CHECK_F(dx, kVdW * 0.5f, 1e-3f);
+
+    // gaze way past the panel edge clamps inside the window, not outside
+    Mat4 far = quatToMat((const float[]){0, sinf(-0.30f), 0,
+                         cosf(-0.30f)}, false);
+    CHECK(dragPoint(ps[0], far, &dx, &dy));
+    CHECK_F(dx, 0.0f, 1e-3f);
+
+    // facing away entirely: the ray can't reach the plane
+    Mat4 back = quatToMat((const float[]){0, 1.0f, 0, 0}, false);
+    CHECK(!dragPoint(ps[0], back, &dx, &dy));
+
+    // rayPanel reports the unclamped offset so misses are detectable
+    float ru, rv, rt;
+    float fwd[3] = {0, 0, -1};
+    CHECK(rayPanel(ps[0], fwd, &ru, &rv, &rt));
+    CHECK_F(ru, 0.0f, 1e-5f);
+    CHECK_F(rt, kPanelDist, 1e-4f);
+    float away[3] = {0, 0, 1};
+    CHECK(!rayPanel(ps[0], away, &ru, &rv, &rt));
+
     // pill sizing: hugs the label, always narrower than the window
     const float winHW = kPanelW / 2;
     CHECK_F(pillHalfWidth(0.20f, winHW), 0.10f + kPillPadX, 1e-6f);

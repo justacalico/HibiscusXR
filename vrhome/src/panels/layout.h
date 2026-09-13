@@ -29,6 +29,10 @@ float pillHalfWidth(float textW, float winHW);
 // widest the label may get before it must shrink to stay inside the pill
 float pillTextLimit(float winHW);
 
+// gaze ray vs one panel's plane; u,v in panel coords, may fall outside -1..1
+bool rayPanel(const Panel& p, const float d[3], float* u, float* v,
+              float* t = nullptr);
+
 struct Pick {
     int idx = -1;         // panel under the ray
     float u = 0, v = 0;   // hit point in panel coords, -1..1
@@ -36,3 +40,8 @@ struct Pick {
 
 // gaze ray (head's -z from the origin) vs all panel rects; nearest wins
 Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head);
+
+// gaze point on one panel in display px, clamped inside the window so a held
+// drag keeps streaming events after the cursor leaves the edges; false when
+// the ray can never reach the panel's plane
+bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py);

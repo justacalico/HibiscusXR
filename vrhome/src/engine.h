@@ -38,6 +38,7 @@ struct Engine {
     jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
               mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
+              mInjectTouch = nullptr,
               mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
@@ -55,6 +56,8 @@ struct Engine {
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     bool launcherSpawned = false;
     bool confirmHeld = false;
+    int dragDisp = -1;           // display a confirm-drag started on
+    float dragX = 0, dragY = 0;  // last injected drag position, px
 
     char hud[96] = "";
     int  hudLen = 0;

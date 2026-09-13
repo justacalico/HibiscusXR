@@ -60,31 +60,51 @@ void recenterSlots(std::vector<Panel>& panels, float centre) {
     }
 }
 
+bool rayPanel(const Panel& p, const float d[3], float* u, float* v,
+              float* t) {
+    float c[3], r[3];
+    panelCenter(p, c, r);
+    // plane normal toward origin
+    float n[3] = {-c[0], 0, -c[2]};
+    const float nl = sqrtf(n[0]*n[0] + n[2]*n[2]);
+    n[0] /= nl; n[2] /= nl;
+    // normal points at the viewer, ray travels into the plane: d.n < 0
+    const float dn = d[0]*n[0] + d[2]*n[2];
+    if (dn > -1e-5f) return false;
+    const float t0 = (c[0]*n[0] + c[1]*n[1] + c[2]*n[2]) / dn;
+    if (t0 <= 0) return false;
+    const float px = d[0]*t0 - c[0], py = d[1]*t0 - c[1], pz = d[2]*t0 - c[2];
+    *u = (px*r[0] + pz*r[2]) / (kPanelW / 2);
+    *v = py / (kPanelH / 2);
+    if (t) *t = t0;
+    return true;
+}
+
 Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
     float d[3];
     gazeDir(head, d);
     Pick pick;
     float bestT = 1e9f;
     for (int i = 0; i < (int)panels.size(); ++i) {
-        const Panel& p = panels[i];
-        float c[3], r[3];
-        panelCenter(p, c, r);
-        // plane normal toward origin
-        float n[3] = {-c[0], 0, -c[2]};
-        const float nl = sqrtf(n[0]*n[0] + n[2]*n[2]);
-        n[0] /= nl; n[2] /= nl;
-        // normal points at the viewer, ray travels into the plane: d.n < 0
-        const float dn = d[0]*n[0] + d[2]*n[2];
-        if (dn > -1e-5f) continue;
-        const float t = (c[0]*n[0] + c[1]*n[1] + c[2]*n[2]) / dn;
-        if (t <= 0 || t >= bestT) continue;
-        const float px = d[0]*t - c[0], py = d[1]*t - c[1], pz = d[2]*t - c[2];
-        const float u = (px*r[0] + pz*r[2]) / (kPanelW / 2);
-        const float v = py / (kPanelH / 2);
+        float u, v, t;
+        if (!rayPanel(panels[i], d, &u, &v, &t)) continue;
+        if (t >= bestT) continue;
         if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) continue;
         bestT = t;
         pick.idx = i;
         pick.u = u; pick.v = v;
     }
     return pick;
+}
+
+bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py) {
+    float d[3], u, v;
+    gazeDir(head, d);
+    if (!rayPanel(p, d, &u, &v, nullptr)) return false;
+    // a held drag follows the gaze even past the window's edge
+    u = u < -1.0f ? -1.0f : u > 1.0f ? 1.0f : u;
+    v = v < -1.0f ? -1.0f : v > 1.0f ? 1.0f : v;
+    *px = (u * 0.5f + 0.5f) * kVdW;
+    *py = (0.5f - v * 0.5f) * kVdH;
+    return true;
 }

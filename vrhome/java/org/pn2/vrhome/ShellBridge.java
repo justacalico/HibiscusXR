@@ -1,0 +1,390 @@
+package org.pn2.vrhome;
+
+import android.app.ActivityOptions;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.SurfaceTexture;
+import android.hardware.display.DisplayManager;
+import android.hardware.display.VirtualDisplay;
+import android.hardware.input.InputManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.util.Log;
+import android.view.InputEvent;
+import android.view.MotionEvent;
+import android.view.Surface;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/*
+ * System-side plumbing for the panel shell. The GL thread owns the OES
+ * textures; everything Android (virtual displays, tasks, input injection)
+ * goes through here. Hidden API access is expected: the app is platform
+ * signed and org.pn2.vrhome is in hidden_api_blacklist_exemptions.
+ *
+ * Threading: createPanel, launch/adopt/release, the takePending getters and
+ * the inject methods are all called from the render thread. The poller and
+ * LauncherActivity callbacks run on the main looper.
+ */
+public class ShellBridge {
+    private static final String TAG = "vrhome.bridge";
+    private static final String SELF = "org.pn2.vrhome";
+
+    // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
+    private static final int VD_FLAGS = 1 | 64;
+
+    private final Context ctx;
+    private final DisplayManager dm;
+    private final PackageManager pm;
+    private final Handler main = new Handler(Looper.getMainLooper());
+
+    // IActivityTaskManager proxy + the methods we use on it
+    private Object atm;
+    private Method mGetTasks, mRemoveTask, mSetFocusedTask, mMoveStack;
+    private Method mSetDisplayId, mInject, mSetLaunchDisplayId;
+    private InputManager input;
+
+    private Field fTaskId, fStackId, fDisplayId, fTopActivity, fBaseActivity,
+                  fBaseIntent, fNumActivities;
+
+    static class Vd {
+        SurfaceTexture st;
+        Surface surf;
+        VirtualDisplay vd;
+        long createdMs;
+    }
+    private final Map<Integer, Vd> vds = new HashMap<>();
+
+    public static class Pending {
+        public int taskId;
+        public String pkg;
+    }
+    private final ArrayDeque<Pending> pendingAdopts = new ArrayDeque<>();
+    private final ArrayDeque<Integer> pendingReleases = new ArrayDeque<>();
+    private final Set<Integer> adopting = new HashSet<>();
+    // displays the render thread just launched something onto; don't reap
+    // them while the task is still landing
+    private final Set<Integer> launching = new HashSet<>();
+
+    static {
+        System.loadLibrary("vrhome");
+    }
+
+    public ShellBridge(Context c) throws Exception {
+        ctx = c;
+        dm = (DisplayManager) c.getSystemService(Context.DISPLAY_SERVICE);
+        pm = c.getPackageManager();
+        input = (InputManager) c.getSystemService(Context.INPUT_SERVICE);
+
+        Class<?> atmCls = Class.forName("android.app.ActivityTaskManager");
+        atm = atmCls.getDeclaredMethod("getService").invoke(null);
+        Class<?> proxy = atm.getClass();
+        mGetTasks = proxy.getMethod("getTasks", int.class);
+        mRemoveTask = proxy.getMethod("removeTask", int.class);
+        mSetFocusedTask = proxy.getMethod("setFocusedTask", int.class);
+        try {
+            mMoveStack = proxy.getMethod("moveStackToDisplay",
+                    int.class, int.class);
+        } catch (NoSuchMethodException e) {
+            mMoveStack = null;
+        }
+
+        Class<?> rti = Class.forName("android.app.ActivityManager$RunningTaskInfo");
+        fTaskId = rti.getField("taskId");
+        fStackId = rti.getField("stackId");
+        fDisplayId = rti.getField("displayId");
+        fTopActivity = rti.getField("topActivity");
+        fBaseActivity = rti.getField("baseActivity");
+        fBaseIntent = rti.getField("baseIntent");
+        fNumActivities = rti.getField("numActivities");
+
+        mSetDisplayId = InputEvent.class.getDeclaredMethod("setDisplayId", int.class);
+        mInject = InputManager.class.getDeclaredMethod("injectInputEvent",
+                InputEvent.class, int.class);
+        mSetLaunchDisplayId = ActivityOptions.class.getDeclaredMethod(
+                "setLaunchDisplayId", int.class);
+
+        main.postDelayed(poll, 800);
+        Log.i(TAG, "bridge up");
+    }
+
+    // ---------------------------------------------------------- displays
+
+    // Called on the render thread: texId must come from its GL context.
+    public int createPanel(int texId, int w, int h, int dpi) {
+        try {
+            SurfaceTexture st = new SurfaceTexture(texId);
+            st.setDefaultBufferSize(w, h);
+            Surface surf = new Surface(st);
+            VirtualDisplay vd = dm.createVirtualDisplay("pn2panel",
+                    w, h, dpi, surf, VD_FLAGS);
+            if (vd == null) { surf.release(); st.release(); return -1; }
+            int id = vd.getDisplay().getDisplayId();
+            Vd v = new Vd();
+            v.st = st; v.surf = surf; v.vd = vd;
+            v.createdMs = SystemClock.uptimeMillis();
+            vds.put(id, v);
+            Log.i(TAG, "panel display id=" + id + " " + w + "x" + h);
+            return id;
+        } catch (Throwable t) {
+            Log.e(TAG, "createPanel", t);
+            return -1;
+        }
+    }
+
+    public SurfaceTexture panelTexture(int displayId) {
+        Vd v = vds.get(displayId);
+        return v != null ? v.st : null;
+    }
+
+    public void releasePanel(int displayId) {
+        Vd v = vds.remove(displayId);
+        launching.remove(displayId);
+        if (v == null) return;
+        try { v.vd.release(); } catch (Throwable ignored) {}
+        try { v.surf.release(); } catch (Throwable ignored) {}
+        try { v.st.release(); } catch (Throwable ignored) {}
+        Log.i(TAG, "released display " + displayId);
+    }
+
+    // ---------------------------------------------------------- launches
+
+    private Bundle displayOpts(int displayId) throws Exception {
+        ActivityOptions o = ActivityOptions.makeBasic();
+        mSetLaunchDisplayId.invoke(o, displayId);
+        return o.toBundle();
+    }
+
+    // ATMS on this build can NPE in ActivityRecord.computeBounds when an
+    // activity lands on a not-yet-laid-out VD; mark the display busy up front
+    // and retry briefly on the main thread
+    private void startWithRetry(final Intent i, final int displayId,
+                                final int tries) {
+        try {
+            ctx.startActivity(i, displayOpts(displayId));
+            Log.i(TAG, "launched " + i.getComponent() + " on " + displayId);
+        } catch (Throwable t) {
+            if (tries > 0) {
+                main.postDelayed(new Runnable() {
+                    @Override public void run() {
+                        startWithRetry(i, displayId, tries - 1);
+                    }
+                }, 350);
+            } else {
+                Log.e(TAG, "startActivity failed " + i.getComponent(), t);
+                synchronized (pendingAdopts) {
+                    pendingReleases.add(displayId);
+                }
+            }
+        }
+    }
+
+    public void launchPackageOn(String pkg, int displayId) {
+        try {
+            Intent i = pm.getLaunchIntentForPackage(pkg);
+            if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            launching.add(displayId);
+            startWithRetry(i, displayId, 3);
+        } catch (Throwable t) {
+            Log.e(TAG, "launchPackageOn " + pkg, t);
+        }
+    }
+
+    // our own library activity goes on its own panel
+    public void launchLauncherOn(int displayId) {
+        try {
+            Intent i = new Intent();
+            i.setComponent(new ComponentName(ctx, LauncherActivity.class));
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            launching.add(displayId);
+            startWithRetry(i, displayId, 3);
+        } catch (Throwable t) {
+            Log.e(TAG, "launchLauncherOn", t);
+        }
+    }
+
+    // a task that spawned on the physical display gets moved into a panel.
+    // Prefer moveStackToDisplay (atomic, keeps the running activity); the
+    // relaunch+remove path is only a fallback - it races when the system
+    // retargets the still-living original task for the new intent
+    public void adoptTaskOn(int taskId, int displayId) {
+        try {
+            int stackId = -1;
+            Intent i = null;
+            String pkg = null;
+            for (Object t : tasks()) {
+                if (fTaskId.getInt(t) != taskId) continue;
+                stackId = fStackId.getInt(t);
+                Intent base = (Intent) fBaseIntent.get(t);
+                if (base != null && base.getComponent() != null) {
+                    i = new Intent(base);
+                } else {
+                    ComponentName b = (ComponentName) fBaseActivity.get(t);
+                    if (b != null) {
+                        pkg = b.getPackageName();
+                        i = pm.getLaunchIntentForPackage(pkg);
+                    }
+                }
+                break;
+            }
+            launching.add(displayId);
+            if (stackId >= 0 && mMoveStack != null) {
+                try {
+                    mMoveStack.invoke(atm, stackId, displayId);
+                    Log.i(TAG, "moved stack " + stackId + " (task " + taskId +
+                            ") onto " + displayId);
+                    return;
+                } catch (Throwable moveErr) {
+                    Log.w(TAG, "moveStackToDisplay failed, relaunching",
+                            moveErr);
+                }
+            }
+            if (i != null) {
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startWithRetry(i, displayId, 3);
+                mRemoveTask.invoke(atm, taskId);
+                Log.i(TAG, "adopted task " + taskId + " onto " + displayId);
+            } else {
+                // nothing to relaunch: kill it rather than leave a mono app
+                // welded to the physical display
+                mRemoveTask.invoke(atm, taskId);
+                Log.w(TAG, "task " + taskId + " had no intent, removed");
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "adoptTaskOn " + taskId, t);
+        } finally {
+            synchronized (pendingAdopts) {
+                adopting.remove(taskId);
+            }
+        }
+    }
+
+    public void focusTask(int taskId) {
+        try { mSetFocusedTask.invoke(atm, taskId); } catch (Throwable ignored) {}
+    }
+
+    public void removeTask(int taskId) {
+        try { mRemoveTask.invoke(atm, taskId); } catch (Throwable t) {
+            Log.e(TAG, "removeTask " + taskId, t);
+        }
+    }
+
+    // ---------------------------------------------------------- input
+
+    public void injectTouch(int displayId, float x, float y, int action) {
+        try {
+            long now = SystemClock.uptimeMillis();
+            MotionEvent ev = MotionEvent.obtain(now, now, action, x, y, 0);
+            ev.setSource(android.view.InputDevice.SOURCE_TOUCHSCREEN);
+            mSetDisplayId.invoke(ev, displayId);
+            boolean ok = (Boolean) mInject.invoke(input, ev, 0);
+            Log.i(TAG, "inject " + action + " @" + (int)x + "," + (int)y +
+                    " disp " + displayId + " -> " + ok);
+            ev.recycle();
+        } catch (Throwable t) {
+            Log.e(TAG, "injectTouch", t);
+        }
+    }
+
+    public void injectTap(int displayId, float x, float y) {
+        injectTouch(displayId, x, y, MotionEvent.ACTION_DOWN);
+        injectTouch(displayId, x, y, MotionEvent.ACTION_UP);
+    }
+
+    // ---------------------------------------------------------- polling
+
+    @SuppressWarnings("unchecked")
+    private List<Object> tasks() {
+        try {
+            return (List<Object>) mGetTasks.invoke(atm, 80);
+        } catch (Throwable t) {
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    private String pkgOf(Object t) throws Exception {
+        ComponentName top = (ComponentName) fTopActivity.get(t);
+        if (top != null) return top.getPackageName();
+        ComponentName base = (ComponentName) fBaseActivity.get(t);
+        return base != null ? base.getPackageName() : null;
+    }
+
+    private final Runnable poll = new Runnable() {
+        @Override public void run() {
+            try { pollOnce(); } catch (Throwable t) { Log.e(TAG, "poll", t); }
+            main.postDelayed(this, 400);
+        }
+    };
+
+    private void pollOnce() throws Exception {
+        Set<Integer> liveDisplays = new HashSet<>();
+        Set<Integer> liveTasks = new HashSet<>();
+        synchronized (pendingAdopts) {
+            for (Object t : tasks()) {
+                int taskId = fTaskId.getInt(t);
+                int disp = fDisplayId.getInt(t);
+                liveTasks.add(taskId);
+                String pkg = pkgOf(t);
+                if (disp == 0 && pkg != null && !pkg.equals(SELF)
+                        && !adopting.contains(taskId)) {
+                    Pending p = new Pending();
+                    p.taskId = taskId;
+                    p.pkg = pkg;
+                    pendingAdopts.add(p);
+                    adopting.add(taskId);
+                    Log.i(TAG, "stray task " + taskId + " " + pkg);
+                } else if (disp != 0) {
+                    liveDisplays.add(disp);
+                }
+            }
+            adopting.retainAll(liveTasks);
+
+            long now = SystemClock.uptimeMillis();
+            for (Map.Entry<Integer, Vd> e : vds.entrySet()) {
+                int id = e.getKey();
+                if (liveDisplays.contains(id)) { launching.remove(id); continue; }
+                if (launching.contains(id) && now - e.getValue().createdMs < 6000)
+                    continue;   // task still landing on it
+                launching.remove(id);
+                pendingReleases.add(id);
+            }
+        }
+    }
+
+    // render thread: next stray task waiting for a panel, or null
+    public Pending takePendingAdopt() {
+        synchronized (pendingAdopts) {
+            return pendingAdopts.poll();
+        }
+    }
+
+    // render thread: next display id whose panel should be torn down, or -1
+    public int takePendingRelease() {
+        synchronized (pendingAdopts) {
+            Integer id = pendingReleases.poll();
+            return id != null ? id : -1;
+        }
+    }
+
+    // ---------------------------------------------------------- entry points
+
+    // called by LauncherActivity on the UI thread: ask the render thread for
+    // a fresh panel and launch this package on it
+    public static void openPackage(String pkg) {
+        nativeQueueLaunch(pkg);
+    }
+
+    private static native void nativeQueueLaunch(String pkg);
+}

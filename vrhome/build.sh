@@ -34,7 +34,7 @@ echo "[1/6] compile glue + native lib"
 "$CC" -c -fPIC -O2 -I "$GLUE" -o "$OUT/glue.o" "$GLUE/android_native_app_glue.c"
 "$CLANG" -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
     -I "$GLUE" -o "$OUT/lib/arm64-v8a/libvrhome.so" \
-    "$SRC/src/main.cpp" "$OUT/glue.o" \
+    "$SRC"/src/*.cpp "$SRC"/src/*/*.cpp "$OUT/glue.o" \
     -landroid -lEGL -lGLESv2 -llog -lm -u ANativeActivity_onCreate
 
 echo "[2/6] javac"

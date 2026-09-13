@@ -1,0 +1,20 @@
+#pragma once
+
+#include "../math/mat4.h"
+
+struct Engine;
+
+// measure a string in metres, baking any missing glyphs first
+float measureText(Engine* e, const char* utf8, float mPerPx);
+
+// text laid flat on the z plane; returns the pen advance in metres
+float drawText(Engine* e, const char* utf8, float x, float y, float z,
+               float mPerPx);
+
+// text on a yawed panel plane: o is the baseline start in world space, r the
+// plane's right vector; up stays world +y
+void drawTextPanel(Engine* e, const char* utf8, const float o[3],
+                   const float r[3], float mPerPx);
+
+// HUD: head-locked status line so the pipeline can be verified without adb
+void drawHud(Engine* e, const Mat4& proj);

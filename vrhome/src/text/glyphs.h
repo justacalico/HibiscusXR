@@ -26,10 +26,17 @@ struct GlyphSet {
 // sum of advances in metres at mPerPx scale
 float textWidth(const GlyphSet& set, const char* utf8, float mPerPx);
 
+// tightest vertical extent of the shaped string in text-local units:
+// top > 0 above the baseline, bot < 0 below it. false when the string has
+// no visible glyphs
+bool textBounds(const GlyphSet& set, const char* utf8, float mPerPx,
+                float* top, float* bot);
+
 // glyph verts in text-local coords: baseline y=0, +x right, +y up. Appends
-// (x, y, u, v) quads, returns the pen advance in metres
+// (x, y, u, v) quads, returns the pen advance in metres. dx > 0 emits each
+// glyph a second time offset that far in +x: cheap fake bold
 float emitText(const GlyphSet& set, const char* utf8, float mPerPx,
-               std::vector<float>& out);
+               std::vector<float>& out, float dx = 0.0f);
 
 // lift emitted quads to world space, n = quads in lv (4 floats each), output
 // is (x, y, z, u, v) tuples. Flat version sits on z plane; panel version

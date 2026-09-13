@@ -22,6 +22,7 @@
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <sys/system_properties.h>
+#include <unistd.h>
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
@@ -295,7 +296,7 @@ static GLuint compile(GLenum type, const char* src) {
         LOGE("shader: %s", l); glDeleteShader(s); return 0; }
     return s;
 }
-static GLuint link(const char* vs, const char* fs) {
+static GLuint linkProg(const char* vs, const char* fs) {
     GLuint v = compile(GL_VERTEX_SHADER, vs), f = compile(GL_FRAGMENT_SHADER, fs);
     if (!v || !f) return 0;
     GLuint p = glCreateProgram();
@@ -314,10 +315,13 @@ struct Eye { GLuint fbo = 0, tex = 0, depth = 0; int w = 0, h = 0; };
 struct Engine {
     android_app* app = nullptr;
     EGLDisplay display = EGL_NO_DISPLAY;
+    EGLConfig eglConfig = nullptr;
     EGLSurface surface = EGL_NO_SURFACE;
+    EGLSurface pbuffer = EGL_NO_SURFACE;
     EGLContext context = EGL_NO_CONTEXT;
     int width = 0, height = 0;
-    bool ready = false;
+    bool ready = false;    // window surface valid
+    bool glInit = false;   // programs/buffers/targets created once per context
 
     GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0;
     GLuint quadVbo = 0, gridVbo = 0, textVbo = 0, panelVbo = 0;
@@ -741,9 +745,13 @@ static bool initEyeTargets(Engine* e) {
     return true;
 }
 
-static int initDisplay(Engine* e) {
+// one-time EGL setup. The context outlives any single window surface so the
+// compositor can keep running (panel adoption, texture updates) while a
+// stray fullscreen app covers the physical display.
+static int initEgl(Engine* e) {
     const EGLint attribs[] = {
-        EGL_SURFACE_TYPE, EGL_WINDOW_BIT, EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_DEPTH_SIZE, 16,
         EGL_NONE
     };
@@ -752,43 +760,68 @@ static int initDisplay(Engine* e) {
     EGLConfig config; EGLint numConfigs = 0;
     eglChooseConfig(dpy, attribs, &config, 1, &numConfigs);
     if (numConfigs < 1) { LOGE("no EGL config"); return -1; }
-    EGLint format = 0;
-    eglGetConfigAttrib(dpy, config, EGL_NATIVE_VISUAL_ID, &format);
-    ANativeWindow_setBuffersGeometry(e->app->window, 0, 0, format);
-    EGLSurface surf = eglCreateWindowSurface(dpy, config, e->app->window, nullptr);
     const EGLint ctxAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
     EGLContext ctx = eglCreateContext(dpy, config, EGL_NO_CONTEXT, ctxAttribs);
-    if (eglMakeCurrent(dpy, surf, surf, ctx) == EGL_FALSE) {
+    const EGLint pbAttribs[] = { EGL_WIDTH, 1, EGL_HEIGHT, 1, EGL_NONE };
+    EGLSurface pb = eglCreatePbufferSurface(dpy, config, pbAttribs);
+    e->display = dpy; e->eglConfig = config; e->context = ctx; e->pbuffer = pb;
+    if (eglMakeCurrent(dpy, pb, pb, ctx) == EGL_FALSE) {
+        LOGE("pbuffer current failed"); return -1;
+    }
+    return 0;
+}
+
+static int initWindow(Engine* e) {
+    if (e->display == EGL_NO_DISPLAY && initEgl(e) != 0) return -1;
+    EGLint format = 0;
+    eglGetConfigAttrib(e->display, e->eglConfig, EGL_NATIVE_VISUAL_ID, &format);
+    ANativeWindow_setBuffersGeometry(e->app->window, 0, 0, format);
+    e->surface = eglCreateWindowSurface(e->display, e->eglConfig,
+                                      e->app->window, nullptr);
+    if (eglMakeCurrent(e->display, e->surface, e->surface, e->context)
+            == EGL_FALSE) {
         LOGE("eglMakeCurrent failed"); return -1;
     }
-    eglQuerySurface(dpy, surf, EGL_WIDTH, &e->width);
-    eglQuerySurface(dpy, surf, EGL_HEIGHT, &e->height);
-    e->display = dpy; e->surface = surf; e->context = ctx;
-    LOGI("surface %dx%d  %s", e->width, e->height, glGetString(GL_RENDERER));
+    eglQuerySurface(e->display, e->surface, EGL_WIDTH, &e->width);
+    eglQuerySurface(e->display, e->surface, EGL_HEIGHT, &e->height);
+    if (!e->glInit) {
+        e->glInit = true;
+        LOGI("surface %dx%d  %s", e->width, e->height, glGetString(GL_RENDERER));
 
-    e->sceneProg = link(kSceneVS, kSceneFS);
-    e->warpProg  = link(kWarpVS,  kWarpFS);
-    e->textProg  = link(kTextVS,  kTextFS);
-    e->floatProg = link(kFloatVS, kFloatFS);
-    if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg)
-        return -1;
+        e->sceneProg = linkProg(kSceneVS, kSceneFS);
+        e->warpProg  = linkProg(kWarpVS,  kWarpFS);
+        e->textProg  = linkProg(kTextVS,  kTextFS);
+        e->floatProg = linkProg(kFloatVS, kFloatFS);
+        if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg)
+            return -1;
 
-    if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
-    glGenBuffers(1, &e->textVbo);
-    glGenBuffers(1, &e->panelVbo);
-    glGenBuffers(1, &e->quadVbo);
-    glGenBuffers(1, &e->gridVbo);
-    const float quad[] = {-1,-1, 1,-1, -1,1,  1,-1, 1,1, -1,1};
-    glBindBuffer(GL_ARRAY_BUFFER, e->quadVbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-    buildGrid();
-    glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
-    glBufferData(GL_ARRAY_BUFFER, gGridVerts * 6 * sizeof(float), gGrid, GL_STATIC_DRAW);
+        if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
+        glGenBuffers(1, &e->textVbo);
+        glGenBuffers(1, &e->panelVbo);
+        glGenBuffers(1, &e->quadVbo);
+        glGenBuffers(1, &e->gridVbo);
+        const float quad[] = {-1,-1, 1,-1, -1,1,  1,-1, 1,1, -1,1};
+        glBindBuffer(GL_ARRAY_BUFFER, e->quadVbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
+        buildGrid();
+        glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
+        glBufferData(GL_ARRAY_BUFFER, gGridVerts * 6 * sizeof(float), gGrid, GL_STATIC_DRAW);
 
-    if (!initEyeTargets(e)) return -1;
-    glEnable(GL_DEPTH_TEST);
+        if (!initEyeTargets(e)) return -1;
+        glEnable(GL_DEPTH_TEST);
+    }
     e->ready = true;
     return 0;
+}
+
+// covered or window gone: keep the context current on the pbuffer so panel
+// textures and adoption keep working
+static void termWindow(Engine* e) {
+    if (e->display != EGL_NO_DISPLAY)
+        eglMakeCurrent(e->display, e->pbuffer, e->pbuffer, e->context);
+    if (e->surface != EGL_NO_SURFACE)
+        eglDestroySurface(e->display, e->surface);
+    e->surface = EGL_NO_SURFACE; e->ready = false;
 }
 
 static void termDisplay(Engine* e) {
@@ -796,10 +829,11 @@ static void termDisplay(Engine* e) {
         eglMakeCurrent(e->display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         if (e->context != EGL_NO_CONTEXT) eglDestroyContext(e->display, e->context);
         if (e->surface != EGL_NO_SURFACE) eglDestroySurface(e->display, e->surface);
+        if (e->pbuffer != EGL_NO_SURFACE) eglDestroySurface(e->display, e->pbuffer);
         eglTerminate(e->display);
     }
     e->display = EGL_NO_DISPLAY; e->context = EGL_NO_CONTEXT;
-    e->surface = EGL_NO_SURFACE; e->ready = false;
+    e->surface = EGL_NO_SURFACE; e->pbuffer = EGL_NO_SURFACE; e->ready = false;
 }
 
 // drain sensor + input queues - MUST run inside the looper poll, else the
@@ -1098,7 +1132,8 @@ static void recenter(Engine* e) {
 }
 
 static void drawFrame(Engine* e) {
-    if (!e->ready) return;
+    // no GL context at all yet (window never arrived): nothing to do
+    if (e->context == EGL_NO_CONTEXT) { usleep(50000); return; }
 
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
     const bool transpose = propI("debug.vrhome.tq", 1) != 0;
@@ -1166,6 +1201,11 @@ static void drawFrame(Engine* e) {
     pumpBridge(e);
     pickPanel(e, head);
     updatePanels(e);
+
+    // covered by a stray fullscreen app: management above must still run
+    // (pumpBridge is what adopts it into a panel and gets our surface back),
+    // but there is nothing to present and no vsync to pace us
+    if (!e->ready) { usleep(33000); return; }
 
     const float qx = e->quat[0], qy = e->quat[1], qz = e->quat[2], qw = e->quat[3];
     const float yaw   = atan2f(2*(qw*qy + qx*qz), 1 - 2*(qy*qy + qx*qx)) * 180.0f / (float)M_PI;
@@ -1249,10 +1289,10 @@ static void onAppCmd(android_app* app, int32_t cmd) {
     Engine* e = (Engine*)app->userData;
     switch (cmd) {
     case APP_CMD_INIT_WINDOW:
-        if (app->window) initDisplay(e);
+        if (app->window) initWindow(e);
         break;
     case APP_CMD_TERM_WINDOW:
-        termDisplay(e);
+        termWindow(e);
         break;
     // keep sensors running regardless of focus: a focused panel app must
     // not freeze head tracking of the shell that renders it

@@ -51,7 +51,7 @@ public class ShellBridge {
 
     // IActivityTaskManager proxy + the methods we use on it
     private Object atm;
-    private Method mGetTasks, mRemoveTask, mSetFocusedTask;
+    private Method mGetTasks, mRemoveTask, mSetFocusedTask, mMoveStack;
     private Method mSetDisplayId, mInject, mSetLaunchDisplayId;
     private InputManager input;
 
@@ -93,6 +93,12 @@ public class ShellBridge {
         mGetTasks = proxy.getMethod("getTasks", int.class);
         mRemoveTask = proxy.getMethod("removeTask", int.class);
         mSetFocusedTask = proxy.getMethod("setFocusedTask", int.class);
+        try {
+            mMoveStack = proxy.getMethod("moveStackToDisplay",
+                    int.class, int.class);
+        } catch (NoSuchMethodException e) {
+            mMoveStack = null;
+        }
 
         Class<?> rti = Class.forName("android.app.ActivityManager$RunningTaskInfo");
         fTaskId = rti.getField("taskId");
@@ -209,14 +215,18 @@ public class ShellBridge {
         }
     }
 
-    // a task that spawned on the physical display gets relaunched inside a
-    // panel; the original task is removed so nothing stays on display 0
+    // a task that spawned on the physical display gets moved into a panel.
+    // Prefer moveStackToDisplay (atomic, keeps the running activity); the
+    // relaunch+remove path is only a fallback - it races when the system
+    // retargets the still-living original task for the new intent
     public void adoptTaskOn(int taskId, int displayId) {
         try {
+            int stackId = -1;
             Intent i = null;
             String pkg = null;
             for (Object t : tasks()) {
                 if (fTaskId.getInt(t) != taskId) continue;
+                stackId = fStackId.getInt(t);
                 Intent base = (Intent) fBaseIntent.get(t);
                 if (base != null && base.getComponent() != null) {
                     i = new Intent(base);
@@ -229,9 +239,20 @@ public class ShellBridge {
                 }
                 break;
             }
+            launching.add(displayId);
+            if (stackId >= 0 && mMoveStack != null) {
+                try {
+                    mMoveStack.invoke(atm, stackId, displayId);
+                    Log.i(TAG, "moved stack " + stackId + " (task " + taskId +
+                            ") onto " + displayId);
+                    return;
+                } catch (Throwable moveErr) {
+                    Log.w(TAG, "moveStackToDisplay failed, relaunching",
+                            moveErr);
+                }
+            }
             if (i != null) {
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                launching.add(displayId);
                 startWithRetry(i, displayId, 3);
                 mRemoveTask.invoke(atm, taskId);
                 Log.i(TAG, "adopted task " + taskId + " onto " + displayId);

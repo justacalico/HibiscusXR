@@ -39,7 +39,8 @@ struct Engine {
               mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
               mInjectTouch = nullptr,
-              mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr;
+              mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,
+              mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -55,6 +56,7 @@ struct Engine {
     float hitX = 0, hitY = 0;    // display px coords of the hit
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     bool launcherSpawned = false;
+    bool covered = false;        // a fullscreen app owns the physical display
     bool confirmHeld = false;
     int dragDisp = -1;           // display a confirm-drag started on
     float dragX = 0, dragY = 0;  // last injected drag position, px

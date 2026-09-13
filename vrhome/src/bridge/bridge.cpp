@@ -87,6 +87,11 @@ void initBridge(Engine* e) {
     e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
     e->mAppLabel     = env->GetMethodID(bc, "appLabel",
                         "(Ljava/lang/String;)Ljava/lang/String;");
+    e->mIsVr         = env->GetMethodID(bc, "isVrApp",
+                        "(Ljava/lang/String;)Z");
+    e->mLaunchVr     = env->GetMethodID(bc, "launchVrApp",
+                        "(Ljava/lang/String;)V");
+    e->mIsCovered    = env->GetMethodID(bc, "isCovered", "()Z");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
@@ -111,16 +116,30 @@ void pumpBridge(Engine* e) {
             if (gLaunchQ.empty()) break;
             pkg = gLaunchQ.front(); gLaunchQ.pop_front();
         }
-        if ((int)e->panels.size() >= kMaxPanels && !evictOldestApp(e)) continue;
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw));
-        if (idx < 0) continue;
-        e->panels[idx].pkg = pkg;
         jstring jpkg = env->NewStringUTF(pkg.c_str());
+        // Pico VR apps take over the headset; no panel is spent on them
+        if (e->mIsVr && env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)) {
+            env->CallVoidMethod(e->bridge, e->mLaunchVr, jpkg);
+            env->DeleteLocalRef(jpkg);
+            if (env->ExceptionCheck()) { env->ExceptionClear(); }
+            continue;
+        }
+        if ((int)e->panels.size() >= kMaxPanels && !evictOldestApp(e)) {
+            env->DeleteLocalRef(jpkg);
+            continue;
+        }
+        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw));
+        if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
+        e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
                             e->panels[idx].displayId);
         env->DeleteLocalRef(jpkg);
         if (env->ExceptionCheck()) { env->ExceptionClear(); }
     }
+
+    // a fullscreen task owns the HMD - suspend scene rendering while covered
+    if (e->mIsCovered)
+        e->covered = env->CallBooleanMethod(e->bridge, e->mIsCovered) == JNI_TRUE;
 
     if (!e->pendingCls) return;
 

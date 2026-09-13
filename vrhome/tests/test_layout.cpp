@@ -48,8 +48,8 @@ void testLayout() {
     // eviction: library panel is protected, oldest app goes first
     ps.clear();
     ps.push_back(mkPanel(0.0f, kLibraryPkg));
-    ps.push_back(mkPanel(-0.62f));
-    ps.push_back(mkPanel(0.62f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[2]));
     CHECK(evictIndex(ps) == 1);
     ps[1].pkg = kLibraryPkg;
     CHECK(evictIndex(ps) == 2);
@@ -61,7 +61,7 @@ void testLayout() {
     // recenter snaps each panel to its nearest slot around the new centre
     ps.clear();
     ps.push_back(mkPanel(1.02f));   // near the centre slot -> stays
-    ps.push_back(mkPanel(0.40f));   // nearer -0.62 than centre -> left slot
+    ps.push_back(mkPanel(1.0f + kSlotYaw[1] * 0.6f));  // nearer left slot
     recenterSlots(ps, 1.0f);
     CHECK_F(ps[0].yaw, 1.0f + kSlotYaw[0], 1e-5f);
     CHECK_F(ps[1].yaw, 1.0f + kSlotYaw[1], 1e-5f);

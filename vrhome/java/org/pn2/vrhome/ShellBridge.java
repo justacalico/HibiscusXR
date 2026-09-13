@@ -295,16 +295,25 @@ public class ShellBridge {
 
     // ---------------------------------------------------------- input
 
+    // a drag is one gesture: MOVEs and the final UP keep the DOWN's downTime
+    private long mDownTime = 0;
+
     public void injectTouch(int displayId, float x, float y, int action) {
         try {
             long now = SystemClock.uptimeMillis();
-            MotionEvent ev = MotionEvent.obtain(now, now, action, x, y, 0);
+            if (action == MotionEvent.ACTION_DOWN || mDownTime == 0)
+                mDownTime = now;
+            MotionEvent ev = MotionEvent.obtain(mDownTime, now, action, x, y, 0);
             ev.setSource(android.view.InputDevice.SOURCE_TOUCHSCREEN);
             mSetDisplayId.invoke(ev, displayId);
             boolean ok = (Boolean) mInject.invoke(input, ev, 0);
-            Log.i(TAG, "inject " + action + " @" + (int)x + "," + (int)y +
-                    " disp " + displayId + " -> " + ok);
+            if (action != MotionEvent.ACTION_MOVE)
+                Log.i(TAG, "inject " + action + " @" + (int)x + "," + (int)y +
+                        " disp " + displayId + " -> " + ok);
             ev.recycle();
+            if (action == MotionEvent.ACTION_UP ||
+                    action == MotionEvent.ACTION_CANCEL)
+                mDownTime = 0;
         } catch (Throwable t) {
             Log.e(TAG, "injectTouch", t);
         }

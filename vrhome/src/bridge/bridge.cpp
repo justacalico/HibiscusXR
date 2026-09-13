@@ -82,6 +82,7 @@ void initBridge(Engine* e) {
                         "()Lorg/pn2/vrhome/ShellBridge$Pending;");
     e->mTakeRelease  = env->GetMethodID(bc, "takePendingRelease", "()I");
     e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
+    e->mInjectTouch  = env->GetMethodID(bc, "injectTouch", "(IFFI)V");
     e->mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
     e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
     e->mAppLabel     = env->GetMethodID(bc, "appLabel",

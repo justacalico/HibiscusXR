@@ -197,6 +197,7 @@ static void drawFrame(Engine* e) {
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
 
+    dragTick(e, head);
     updatePanels(e);
 
     // covered by a stray fullscreen app: management above must still run

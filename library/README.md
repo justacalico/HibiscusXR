@@ -68,11 +68,11 @@ flutter pub get
 flutter gen-l10n
 flutter test
 flutter analyze
-flutter build apk --release   # signed with debug.keystore
+flutter build apk --release   # debug-signed, re-sign before distributing
 ```
 
-`debug.keystore` is a committed throwaway key, same convention as the
-other repos in this workspace - swap in a real key before distributing.
+No signing key is committed. Configure a real release key via
+`key.properties` / `signingConfigs` when distributing.
 
 ## License
 

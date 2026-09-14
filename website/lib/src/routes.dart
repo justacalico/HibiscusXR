@@ -4,6 +4,7 @@ abstract final class Routes {
   static const features = '/features';
   static const screenshots = '/screenshots';
   static const download = '/download';
+  static const faq = '/faq';
   static const about = '/about';
 }
 

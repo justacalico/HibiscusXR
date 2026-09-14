@@ -70,6 +70,7 @@ class _Wordmark extends StatelessWidget {
 List<Destination> _destinations(AppLocalizations l10n) => [
       Destination(Routes.features, (l) => l.navFeatures),
       Destination(Routes.screenshots, (l) => l.navScreenshots),
+      Destination(Routes.faq, (l) => l.navFaq),
       Destination(Routes.about, (l) => l.navAbout),
       Destination(Links.docs, (l) => l.navDocs),
     ];
@@ -104,6 +105,7 @@ class _NavLink extends StatefulWidget {
 
 class _NavLinkState extends State<_NavLink> {
   bool _hover = false;
+  bool _focus = false;
 
   @override
   Widget build(BuildContext context) {
@@ -111,8 +113,11 @@ class _NavLinkState extends State<_NavLink> {
     final color = current
         ? context.colors.onSurface
         : context.colors.secondary;
+    final active = _hover || _focus;
     return FocusableActionDetector(
       onShowHoverHighlight: (v) => setState(() => _hover = v),
+      onShowFocusHighlight: (v) => setState(() => _focus = v),
+      actions: activateActions(() => _open(widget.destination, context)),
       mouseCursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => _open(widget.destination, context),
@@ -121,8 +126,10 @@ class _NavLinkState extends State<_NavLink> {
           child: Text(
             widget.label,
             style: context.text.labelSmall!.copyWith(
-              color: _hover ? context.colors.onSurface : color,
+              color: active ? context.colors.onSurface : color,
               fontWeight: current ? FontWeight.w500 : FontWeight.w400,
+              decoration:
+                  _focus ? TextDecoration.underline : TextDecoration.none,
             ),
           ),
         ),

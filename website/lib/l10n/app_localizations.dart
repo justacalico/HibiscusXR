@@ -134,6 +134,12 @@ abstract class AppLocalizations {
   /// **'About'**
   String get navAbout;
 
+  /// No description provided for @navFaq.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get navFaq;
+
   /// No description provided for @navDocs.
   ///
   /// In en, this message translates to:
@@ -673,6 +679,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Built with Flutter'**
   String get footerBuiltWith;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faqTitle;
+
+  /// No description provided for @faqSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Short answers, no marketing.'**
+  String get faqSubtitle;
+
+  /// No description provided for @faqQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'Is there a build I can install?'**
+  String get faqQ1;
+
+  /// No description provided for @faqA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet. Library ships inside the PN2Lineage system image, which is still being assembled. The download page tracks the current state.'**
+  String get faqA1;
+
+  /// No description provided for @faqQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I try it today?'**
+  String get faqQ2;
+
+  /// No description provided for @faqA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Clone the repository and build it with the Flutter toolchain, or watch the repo for the first release.'**
+  String get faqA2;
+
+  /// No description provided for @faqQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'What is vrhome?'**
+  String get faqQ3;
+
+  /// No description provided for @faqA3.
+  ///
+  /// In en, this message translates to:
+  /// **'The VR home environment Library lives inside. vrhome draws the window frames, the keyboard and the rest of the desktop around app windows like this one.'**
+  String get faqA3;
+
+  /// No description provided for @faqQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'Does it work without the headset?'**
+  String get faqQ4;
+
+  /// No description provided for @faqA4.
+  ///
+  /// In en, this message translates to:
+  /// **'It is a normal Flutter app and runs anywhere Android does. The controller shortcuts and the window layout only really make sense inside vrhome on the Pico Neo 2.'**
+  String get faqA4;
+
+  /// No description provided for @faqQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I sideload the APK?'**
+  String get faqQ5;
+
+  /// No description provided for @faqA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, it installs like any other APK. What it cannot be alone is the home environment - that part belongs to the system image.'**
+  String get faqA5;
+
+  /// No description provided for @faqQ6.
+  ///
+  /// In en, this message translates to:
+  /// **'Why AGPL?'**
+  String get faqQ6;
+
+  /// No description provided for @faqA6.
+  ///
+  /// In en, this message translates to:
+  /// **'The whole port is free software. If you ship a modified Library over a network or on a device, your users get the source too.'**
+  String get faqA6;
 
   /// No description provided for @notFoundTitle.
   ///

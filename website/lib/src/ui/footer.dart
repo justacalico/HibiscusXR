@@ -7,6 +7,7 @@ import 'package:pn2_website/l10n/app_localizations.dart';
 import '../links.dart';
 import '../routes.dart';
 import '../theme.dart';
+import 'widgets.dart';
 
 class _Link {
   const _Link(this.label, this.target);
@@ -25,6 +26,7 @@ class SiteFooter extends StatelessWidget {
     final product = <_Link>[
       _Link(l10n.navFeatures, Routes.features),
       _Link(l10n.navScreenshots, Routes.screenshots),
+      _Link(l10n.navFaq, Routes.faq),
       _Link(l10n.navDownload, Routes.download),
     ];
     final project = <_Link>[
@@ -126,11 +128,17 @@ class _FooterLink extends StatefulWidget {
 
 class _FooterLinkState extends State<_FooterLink> {
   bool _hover = false;
+  bool _focus = false;
 
   @override
   Widget build(BuildContext context) {
+    final underline = _hover || _focus;
     return FocusableActionDetector(
       onShowHoverHighlight: (v) => setState(() => _hover = v),
+      onShowFocusHighlight: (v) => setState(() => _focus = v),
+      actions: activateActions(() => widget.link.external
+          ? launchUrl(Uri.parse(widget.link.target))
+          : context.go(widget.link.target)),
       mouseCursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: () => widget.link.external
@@ -142,7 +150,7 @@ class _FooterLinkState extends State<_FooterLink> {
             widget.link.label,
             style: context.text.labelSmall!.copyWith(
               decoration:
-                  _hover ? TextDecoration.underline : TextDecoration.none,
+                  underline ? TextDecoration.underline : TextDecoration.none,
             ),
           ),
         ),

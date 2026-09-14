@@ -5,6 +5,16 @@ import 'package:flutter/rendering.dart' show RenderAbstractViewport;
 
 import '../theme.dart';
 
+/// Lets Enter/Space trigger [f] inside a FocusableActionDetector.
+Map<Type, Action<Intent>> activateActions(VoidCallback f) => {
+      ActivateIntent: CallbackAction<Intent>(
+        onInvoke: (_) {
+          f();
+          return null;
+        },
+      ),
+    };
+
 /// Frosted surface used by the nav bar and the mobile menu.
 class Frosted extends StatelessWidget {
   const Frosted({super.key, required this.child, this.opacity = 0.72});
@@ -57,6 +67,7 @@ class _PillButtonState extends State<PillButton> {
     return FocusableActionDetector(
       onShowHoverHighlight: (v) => setState(() => _hover = v),
       onShowFocusHighlight: (v) => setState(() => _focus = v),
+      actions: activateActions(widget.onPressed),
       mouseCursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onPressed,
@@ -106,13 +117,17 @@ class ChevronLink extends StatefulWidget {
 
 class _ChevronLinkState extends State<ChevronLink> {
   bool _hover = false;
+  bool _focus = false;
 
   @override
   Widget build(BuildContext context) {
     final color = context.colors.primary;
     final size = widget.large ? 19.0 : 15.0;
+    final underline = _hover || _focus;
     return FocusableActionDetector(
       onShowHoverHighlight: (v) => setState(() => _hover = v),
+      onShowFocusHighlight: (v) => setState(() => _focus = v),
+      actions: activateActions(widget.onPressed),
       mouseCursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: widget.onPressed,
@@ -125,7 +140,7 @@ class _ChevronLinkState extends State<ChevronLink> {
                 color: color,
                 fontSize: size,
                 decoration:
-                    _hover ? TextDecoration.underline : TextDecoration.none,
+                    underline ? TextDecoration.underline : TextDecoration.none,
                 decorationColor: color,
               ),
             ),

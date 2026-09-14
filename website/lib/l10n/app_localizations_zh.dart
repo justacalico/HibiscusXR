@@ -27,6 +27,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navAbout => '关于';
 
   @override
+  String get navFaq => '常见问题';
+
+  @override
   String get navDocs => '文档';
 
   @override
@@ -304,6 +307,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get footerBuiltWith => '用 Flutter 构建';
+
+  @override
+  String get faqTitle => '常见问题';
+
+  @override
+  String get faqSubtitle => '短答案,不整虚的。';
+
+  @override
+  String get faqQ1 => '现在能装吗?';
+
+  @override
+  String get faqA1 => '还不能。应用库随 PN2Lineage 系统镜像一起发货,镜像还在拼。当前进度看下载页。';
+
+  @override
+  String get faqQ2 => '今天想用上怎么办?';
+
+  @override
+  String get faqA2 => '克隆仓库用 Flutter 工具链自己构建,或者盯仓库等第一个发布版。';
+
+  @override
+  String get faqQ3 => 'vrhome 是什么?';
+
+  @override
+  String get faqA3 => '应用库住在里面的 VR 主界面。窗口框、键盘和桌面其他部分都由 vrhome 画,应用库只是其中一个窗口。';
+
+  @override
+  String get faqQ4 => '没头显能用吗?';
+
+  @override
+  String get faqA4 =>
+      '它就是个普通的 Flutter 应用,安卓上哪都能跑。但手柄快捷键和窗口布局只有在 Pico Neo 2 的 vrhome 里才有意义。';
+
+  @override
+  String get faqQ5 => '能侧载 APK 吗?';
+
+  @override
+  String get faqA5 => '能,装法和别的 APK 一样。但单独一个应用库当不了主界面,那部分属于系统镜像。';
+
+  @override
+  String get faqQ6 => '为什么是 AGPL?';
+
+  @override
+  String get faqA6 => '整个移植都是自由软件。你要是把改过的应用库放到网上或设备上给人用,用户也得能拿到源码。';
 
   @override
   String get notFoundTitle => '找不到页面';

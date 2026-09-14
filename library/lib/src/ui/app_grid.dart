@@ -35,12 +35,12 @@ class AppGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(28, 12, 28, 28),
+      padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        crossAxisSpacing: 18,
-        mainAxisSpacing: 18,
-        childAspectRatio: 0.82,
+        maxCrossAxisExtent: 330,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 1.62,
       ),
       itemCount: apps.length,
       itemBuilder: (context, i) => _GridCell(
@@ -156,9 +156,9 @@ class _GridCellState extends State<_GridCell> {
             feedback: Material(
               color: Colors.transparent,
               child: SizedBox(
-                width: 200,
-                height: 244,
-                child: Opacity(opacity: 0.94, child: tile),
+                width: 300,
+                height: 185,
+                child: Opacity(opacity: 0.92, child: tile),
               ),
             ),
             childWhenDragging: Opacity(opacity: 0.3, child: tile),

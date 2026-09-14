@@ -4,7 +4,6 @@ import '../../l10n/app_localizations.dart';
 import '../library_store.dart';
 import '../menu_actions.dart';
 import '../models.dart';
-import 'glass.dart';
 import 'theme.dart';
 
 /// Rounded pill search field wired to the store's query.
@@ -335,17 +334,17 @@ class _Pill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Glass(
-      blur: true,
-      radius: LibraryTheme.pillRadius,
-      child: SizedBox(
-        height: 46,
-        child: DefaultTextStyle.merge(
-          style: _pillText,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Center(child: child),
-          ),
+    return Container(
+      height: 48,
+      decoration: BoxDecoration(
+        color: LibraryTheme.surface,
+        borderRadius: BorderRadius.circular(LibraryTheme.pillRadius),
+      ),
+      child: DefaultTextStyle.merge(
+        style: _pillText,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Center(child: child),
         ),
       ),
     );

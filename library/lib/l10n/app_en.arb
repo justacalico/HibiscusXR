@@ -23,6 +23,14 @@
       "count": { "type": "int" }
     }
   },
+  "collectionCount": "{label} ({count})",
+  "@collectionCount": {
+    "description": "Collection or group label with the number of apps",
+    "placeholders": {
+      "label": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
   "collectionPinned": "Pinned",
   "@collectionPinned": {
     "description": "Collection filter showing only pinned apps"
@@ -185,6 +193,10 @@
   "systemBadge": "System",
   "@systemBadge": {
     "description": "Badge on tiles for preinstalled system apps"
+  },
+  "details": "Details",
+  "@details": {
+    "description": "Context menu action opening the app details dialog"
   },
   "detailsTitle": "About {app}",
   "@detailsTitle": {

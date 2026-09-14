@@ -31,9 +31,14 @@ class LibraryController extends ChangeNotifier {
   Object? _error;
   StreamSubscription<void>? _sub;
   bool _restored = false;
+  int _generation = 0;
 
   LoadState get state => _state;
   Object? get error => _error;
+
+  /// Bumped every time the catalog is re-read. Tiles key on it so stale
+  /// icons get re-decoded after installs and removals.
+  int get generation => _generation;
 
   /// Restores the snapshot, loads the catalog, then keeps the list in sync
   /// with package changes. Safe to call again after a failure.
@@ -50,6 +55,7 @@ class LibraryController extends ChangeNotifier {
       }
       store.setApps(await _source.listApps());
       icons.invalidate();
+      _generation++;
       _sub ??= _source.changes.listen((_) => refresh());
       _state = LoadState.ready;
     } catch (e) {
@@ -65,6 +71,8 @@ class LibraryController extends ChangeNotifier {
     try {
       store.setApps(await _source.listApps());
       icons.invalidate();
+      _generation++;
+      notifyListeners();
     } catch (_) {
       // keep the stale list; a later broadcast will retry
     }

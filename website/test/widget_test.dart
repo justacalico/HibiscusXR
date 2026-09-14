@@ -73,6 +73,28 @@ void main() {
     expect(find.text('查看功能'), findsOneWidget);
   });
 
+  testWidgets('faq rows expand on tap', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    final router = tester
+        .widget<MaterialApp>(find.byType(MaterialApp))
+        .routerConfig! as GoRouter;
+    router.go('/faq');
+    await tester.pumpAndSettle();
+
+    expect(find.text('FAQ'), findsWidgets);
+    final answer = find.textContaining('still being assembled');
+    expect(answer, findsNothing);
+
+    await tester.tap(find.text('Is there a build I can install?'));
+    await tester.pumpAndSettle();
+    expect(answer, findsOneWidget);
+  });
+
   testWidgets('dark theme applies dark scaffold', (tester) async {
     SharedPreferences.setMockInitialValues({'theme_mode': 'dark'});
     final prefs = await SharedPreferences.getInstance();

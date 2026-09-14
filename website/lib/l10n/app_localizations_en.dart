@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navAbout => 'About';
 
   @override
+  String get navFaq => 'FAQ';
+
+  @override
   String get navDocs => 'Docs';
 
   @override
@@ -323,6 +326,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get footerBuiltWith => 'Built with Flutter';
+
+  @override
+  String get faqTitle => 'FAQ';
+
+  @override
+  String get faqSubtitle => 'Short answers, no marketing.';
+
+  @override
+  String get faqQ1 => 'Is there a build I can install?';
+
+  @override
+  String get faqA1 =>
+      'Not yet. Library ships inside the PN2Lineage system image, which is still being assembled. The download page tracks the current state.';
+
+  @override
+  String get faqQ2 => 'How do I try it today?';
+
+  @override
+  String get faqA2 =>
+      'Clone the repository and build it with the Flutter toolchain, or watch the repo for the first release.';
+
+  @override
+  String get faqQ3 => 'What is vrhome?';
+
+  @override
+  String get faqA3 =>
+      'The VR home environment Library lives inside. vrhome draws the window frames, the keyboard and the rest of the desktop around app windows like this one.';
+
+  @override
+  String get faqQ4 => 'Does it work without the headset?';
+
+  @override
+  String get faqA4 =>
+      'It is a normal Flutter app and runs anywhere Android does. The controller shortcuts and the window layout only really make sense inside vrhome on the Pico Neo 2.';
+
+  @override
+  String get faqQ5 => 'Can I sideload the APK?';
+
+  @override
+  String get faqA5 =>
+      'Yes, it installs like any other APK. What it cannot be alone is the home environment - that part belongs to the system image.';
+
+  @override
+  String get faqQ6 => 'Why AGPL?';
+
+  @override
+  String get faqA6 =>
+      'The whole port is free software. If you ship a modified Library over a network or on a device, your users get the source too.';
 
   @override
   String get notFoundTitle => 'Page not found';

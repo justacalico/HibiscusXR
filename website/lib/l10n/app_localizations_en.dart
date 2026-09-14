@@ -383,7 +383,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notFoundCta => 'Back to Library';
-
-  @override
-  String get languageName => 'English';
 }

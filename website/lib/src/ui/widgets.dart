@@ -311,6 +311,7 @@ class ShotCard extends StatelessWidget {
             asset,
             fit: BoxFit.cover,
             alignment: Alignment.topCenter,
+            semanticLabel: caption,
           ),
         ),
         const SizedBox(height: 16),

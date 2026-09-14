@@ -359,7 +359,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notFoundCta => '回到应用库';
-
-  @override
-  String get languageName => '中文';
 }

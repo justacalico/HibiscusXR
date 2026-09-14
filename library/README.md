@@ -1,9 +1,9 @@
 # library
 
 App library for the Pico Neo 2 running the LineageOS 17.1 port - a
-visionOS-style glass grid of every launchable app, built in Flutter. It
-is meant to run inside the `vrhome` shell as the app window, but works
-as a normal launcher-style activity anywhere.
+Quest-style dark grid of every launchable app, built in Flutter. It is
+meant to run inside the `vrhome` shell as the app window, but works as a
+normal launcher-style activity anywhere.
 
 ## Screenshots
 
@@ -13,8 +13,8 @@ as a normal launcher-style activity anywhere.
 
 ## Features
 
-- Grid of circular glass icon discs with labels, visionOS style:
-  frosted-glass controls, hairline strokes, scale-on-focus feedback
+- Tile grid of installed apps with icons, icon-tinted backdrops and
+  labels
 - Search with accent-insensitive matching
 - Collections: All / Pinned / Apps / System plus user groups, with counts
 - Sort: A-Z, Z-A, recently installed, recently updated, custom order
@@ -47,8 +47,8 @@ lib/
       prefs_persistence.dart     SharedPreferences snapshot
       icon_cache.dart            icon byte memoizer
     ui/
-      theme.dart             glass colors + ThemeData
-      glass.dart             frosted-glass surface widget
+      theme.dart             colors + ThemeData
+      icon_colors.dart       dominant icon color + tile gradient
       library_page.dart      window: header, controls, states
       controls.dart          search field + dropdown pills
       app_grid.dart          grid + drag/drop reorder + d-pad

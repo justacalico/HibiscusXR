@@ -17,6 +17,7 @@ class FeaturesPage extends StatelessWidget {
         _PageHead(title: l10n.featuresTitle, subtitle: l10n.featuresSubtitle),
         Band(
           color: context.colors.surfaceContainerHighest,
+          padding: const EdgeInsets.only(top: 64, bottom: 96),
           child: _Lead(l10n: l10n),
         ),
         _Group(
@@ -80,8 +81,8 @@ class _PageHead extends StatelessWidget {
     final mobile = Layout.isMobile(context);
     return Band(
       padding: EdgeInsets.only(
-        top: mobile ? 64 : 110,
-        bottom: mobile ? 48 : 72,
+        top: mobile ? 56 : 96,
+        bottom: mobile ? 40 : 56,
       ),
       child: Column(
         children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pn2_website/main.dart';
@@ -38,6 +39,38 @@ void main() {
 
     expect(find.text('Nothing to install yet.'), findsOneWidget);
     expect(find.text('Not shipping yet'), findsOneWidget);
+  });
+
+  testWidgets('unknown route shows the not-found page', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    // go_router parses the fragment; push an unknown path through it.
+    final router = tester
+        .widget<MaterialApp>(find.byType(MaterialApp))
+        .routerConfig! as GoRouter;
+    router.go('/nope');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Page not found'), findsOneWidget);
+    expect(find.text('Back to Library'), findsOneWidget);
+  });
+
+  testWidgets('zh locale renders translated chrome', (tester) async {
+    SharedPreferences.setMockInitialValues({'locale': 'zh'});
+    final prefs = await SharedPreferences.getInstance();
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(SiteApp(settings: AppSettings(prefs)..load()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('应用库'), findsWidgets);
+    expect(find.text('功能'), findsWidgets);
+    expect(find.text('查看功能'), findsOneWidget);
   });
 
   testWidgets('dark theme applies dark scaffold', (tester) async {

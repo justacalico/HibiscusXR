@@ -115,5 +115,9 @@
   "footerLicense": "AGPL-3.0 许可证",
   "footerBuiltWith": "用 Flutter 构建",
 
+  "notFoundTitle": "找不到页面",
+  "notFoundBody": "你要找的页面不存在。",
+  "notFoundCta": "回到应用库",
+
   "languageName": "中文"
 }

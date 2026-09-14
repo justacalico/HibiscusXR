@@ -5,6 +5,12 @@ Quest-style dark grid of every launchable app, built in Flutter. It is
 meant to run inside the `vrhome` shell as the app window, but works as a
 normal launcher-style activity anywhere.
 
+## Screenshots
+
+| Grid | Collections | Tile menu |
+|---|---|---|
+| ![app grid](screenshots/library-grid.png) | ![collection menu](screenshots/collection-menu.png) | ![tile menu](screenshots/tile-menu.png) |
+
 ## Features
 
 - Tile grid of installed apps with icons, icon-tinted backdrops and

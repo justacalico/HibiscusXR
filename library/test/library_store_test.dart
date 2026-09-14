@@ -9,14 +9,13 @@ AppEntry app(
   bool system = false,
   int installed = 0,
   int updated = 0,
-}) =>
-    AppEntry(
-      packageName: pkg,
-      label: label ?? pkg,
-      isSystem: system,
-      firstInstallTime: installed,
-      lastUpdateTime: updated,
-    );
+}) => AppEntry(
+  packageName: pkg,
+  label: label ?? pkg,
+  isSystem: system,
+  firstInstallTime: installed,
+  lastUpdateTime: updated,
+);
 
 LibraryStore store({int idSeq = 0}) {
   var n = idSeq;
@@ -57,7 +56,10 @@ void main() {
 
     test('matches package name', () {
       final s = store()
-        ..setApps([app('com.x.camera', label: 'Cam'), app('y', label: 'Files')]);
+        ..setApps([
+          app('com.x.camera', label: 'Cam'),
+          app('y', label: 'Files'),
+        ]);
       s.setQuery('com.x');
       expect(s.visible.single.packageName, 'com.x.camera');
     });
@@ -85,8 +87,7 @@ void main() {
     });
 
     test('user and system split on isSystem', () {
-      final s = store()
-        ..setApps([app('a'), app('b', system: true)]);
+      final s = store()..setApps([app('a'), app('b', system: true)]);
       s.setFilter(const FilterUserApps());
       expect(s.visible.single.packageName, 'a');
       s.setFilter(const FilterSystemApps());
@@ -136,8 +137,7 @@ void main() {
     });
 
     test('recently updated uses update time', () {
-      final s = store()
-        ..setApps([app('a', updated: 1), app('b', updated: 7)]);
+      final s = store()..setApps([app('a', updated: 1), app('b', updated: 7)]);
       s.setSort(LibrarySort.recentlyUpdated);
       expect(s.visible.first.packageName, 'b');
     });
@@ -268,7 +268,11 @@ void main() {
         'pinned': ['gone'],
         'order': ['gone', 'a'],
         'groups': [
-          {'id': 'g', 'name': 'x', 'members': ['gone', 'a']},
+          {
+            'id': 'g',
+            'name': 'x',
+            'members': ['gone', 'a'],
+          },
         ],
       });
       final s = store()..setApps([app('a')]);

@@ -26,6 +26,7 @@ class AppCatalog(private val context: Context) {
         val out = ArrayList<Map<String, Any?>>(resolved.size)
         for (ri in resolved) {
             val pkg = ri.activityInfo.packageName ?: continue
+            if (pkg == context.packageName) continue
             if (!seen.add(pkg)) continue
             val info = packageInfo(pkg)
             out.add(

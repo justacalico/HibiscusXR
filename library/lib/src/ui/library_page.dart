@@ -109,8 +109,7 @@ class _LibraryPageState extends State<LibraryPage> {
       child: Row(
         children: [
           Flexible(
-            child: LibrarySearchField(
-                controller: _search, store: _store),
+            child: LibrarySearchField(controller: _search, store: _store),
           ),
           const SizedBox(width: 12),
           const Spacer(),
@@ -136,7 +135,9 @@ class _LibraryPageState extends State<LibraryPage> {
               width: 28,
               height: 28,
               child: CircularProgressIndicator(
-                  strokeWidth: 2.5, color: LibraryTheme.accent),
+                strokeWidth: 2.5,
+                color: LibraryTheme.accent,
+              ),
             ),
             const SizedBox(height: 16),
             Text(l10n.loadingApps, style: _muted),
@@ -145,15 +146,15 @@ class _LibraryPageState extends State<LibraryPage> {
       case LoadState.failed:
         return _Centered(
           children: [
-            const Icon(Icons.cloud_off,
-                size: 42, color: LibraryTheme.textSecondary),
+            const Icon(
+              Icons.cloud_off,
+              size: 42,
+              color: LibraryTheme.textSecondary,
+            ),
             const SizedBox(height: 14),
             Text(l10n.loadFailed, style: _muted),
             const SizedBox(height: 16),
-            FilledButton(
-              onPressed: _c.init,
-              child: Text(l10n.retry),
-            ),
+            FilledButton(onPressed: _c.init, child: Text(l10n.retry)),
           ],
         );
       case LoadState.ready:
@@ -161,8 +162,11 @@ class _LibraryPageState extends State<LibraryPage> {
         if (apps.isEmpty) {
           return _Centered(
             children: [
-              const Icon(Icons.apps_outage,
-                  size: 42, color: LibraryTheme.textSecondary),
+              const Icon(
+                Icons.apps_outage,
+                size: 42,
+                color: LibraryTheme.textSecondary,
+              ),
               const SizedBox(height: 14),
               Text(_emptyText(l10n), style: _muted),
             ],
@@ -205,8 +209,11 @@ class _LibraryPageState extends State<LibraryPage> {
     final picked = await showAppMenu(
       context,
       at,
-      menuActionsFor(app,
-          pinned: _store.isPinned(app.packageName), inGroup: inGroup),
+      menuActionsFor(
+        app,
+        pinned: _store.isPinned(app.packageName),
+        inGroup: inGroup,
+      ),
     );
     if (picked == null || !mounted) return;
     switch (picked) {
@@ -260,8 +267,11 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   Future<void> _renameGroup(AppGroup group) async {
-    final name =
-        await promptGroupName(context, initial: group.name, renaming: true);
+    final name = await promptGroupName(
+      context,
+      initial: group.name,
+      renaming: true,
+    );
     if (name != null) _store.renameGroup(group.id, name);
   }
 
@@ -274,8 +284,9 @@ class _LibraryPageState extends State<LibraryPage> {
   AppLocalizations l10nOf() => AppLocalizations.of(context);
 
   void _toast(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
@@ -318,10 +329,7 @@ class _Centered extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: children,
-      ),
+      child: Column(mainAxisSize: MainAxisSize.min, children: children),
     );
   }
 }

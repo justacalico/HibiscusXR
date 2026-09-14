@@ -8,7 +8,7 @@ import 'app_source.dart';
 /// The tile grid falls back to letter icons when [icon] returns null.
 class FakeAppSource implements AppSource {
   FakeAppSource({List<AppEntry>? apps, this.icons = const {}})
-      : apps = apps ?? _demoApps;
+    : apps = apps ?? _demoApps;
 
   List<AppEntry> apps;
 
@@ -86,15 +86,25 @@ class FakeAppSource implements AppSource {
 
   static final List<AppEntry> _demoApps = [
     const AppEntry(
-        packageName: 'com.vr.home', label: 'VR Home', firstInstallTime: 100),
+      packageName: 'com.vr.home',
+      label: 'VR Home',
+      firstInstallTime: 100,
+    ),
     const AppEntry(
-        packageName: 'com.vr.player', label: 'Video Player', firstInstallTime: 90),
+      packageName: 'com.vr.player',
+      label: 'Video Player',
+      firstInstallTime: 90,
+    ),
     const AppEntry(
-        packageName: 'com.vr.browser', label: 'Browser', firstInstallTime: 80),
+      packageName: 'com.vr.browser',
+      label: 'Browser',
+      firstInstallTime: 80,
+    ),
     const AppEntry(
-        packageName: 'com.android.settings',
-        label: 'Settings',
-        isSystem: true,
-        firstInstallTime: 1),
+      packageName: 'com.android.settings',
+      label: 'Settings',
+      isSystem: true,
+      firstInstallTime: 1,
+    ),
   ];
 }

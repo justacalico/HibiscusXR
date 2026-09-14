@@ -22,8 +22,9 @@ Future<Color?> dominantIconColor(Uint8List png) async {
       targetHeight: 24,
     );
     final frame = await codec.getNextFrame();
-    final data =
-        await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+    final data = await frame.image.toByteData(
+      format: ui.ImageByteFormat.rawRgba,
+    );
     frame.image.dispose();
     codec.dispose();
     if (data == null) return null;

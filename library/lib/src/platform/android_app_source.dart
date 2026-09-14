@@ -6,12 +6,10 @@ import 'app_source.dart';
 /// MethodChannel/EventChannel glue to the Kotlin side in MainActivity.
 /// Thin on purpose: arguments go in, parsed values come out.
 class AndroidAppSource implements AppSource {
-  AndroidAppSource({
-    MethodChannel? apps,
-    EventChannel? changes,
-  })  : _apps = apps ?? const MethodChannel('gitlab.neosalsa.library/apps'),
-        _changes =
-            changes ?? const EventChannel('gitlab.neosalsa.library/changes');
+  AndroidAppSource({MethodChannel? apps, EventChannel? changes})
+    : _apps = apps ?? const MethodChannel('gitlab.neosalsa.library/apps'),
+      _changes =
+          changes ?? const EventChannel('gitlab.neosalsa.library/changes');
 
   final MethodChannel _apps;
   final EventChannel _changes;
@@ -29,14 +27,14 @@ class AndroidAppSource implements AppSource {
   }
 
   AppEntry _parse(Map m) => AppEntry(
-        packageName: '${m['packageName']}',
-        label: '${m['label'] ?? m['packageName']}',
-        activityName: m['activityName'] as String?,
-        isSystem: m['isSystem'] == true,
-        versionName: m['versionName'] as String?,
-        firstInstallTime: (m['firstInstallTime'] as num?)?.toInt() ?? 0,
-        lastUpdateTime: (m['lastUpdateTime'] as num?)?.toInt() ?? 0,
-      );
+    packageName: '${m['packageName']}',
+    label: '${m['label'] ?? m['packageName']}',
+    activityName: m['activityName'] as String?,
+    isSystem: m['isSystem'] == true,
+    versionName: m['versionName'] as String?,
+    firstInstallTime: (m['firstInstallTime'] as num?)?.toInt() ?? 0,
+    lastUpdateTime: (m['lastUpdateTime'] as num?)?.toInt() ?? 0,
+  );
 
   @override
   Future<Uint8List?> icon(String packageName) =>
@@ -57,8 +55,7 @@ class AndroidAppSource implements AppSource {
       await _apps.invokeMethod<bool>('pickAndInstallApk') ?? false;
 
   Future<bool> _bool(String method, String packageName) async =>
-      await _apps.invokeMethod<bool>(method, {'package': packageName}) ??
-      false;
+      await _apps.invokeMethod<bool>(method, {'package': packageName}) ?? false;
 
   @override
   Stream<void> get changes =>

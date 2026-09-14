@@ -16,14 +16,14 @@ class LibrarySnapshot {
   final List<AppGroup> groups;
 
   Map<String, dynamic> toJson() => {
-        'version': version,
-        'pinned': pinned,
-        'order': order,
-        'groups': [
-          for (final g in groups)
-            {'id': g.id, 'name': g.name, 'members': g.members},
-        ],
-      };
+    'version': version,
+    'pinned': pinned,
+    'order': order,
+    'groups': [
+      for (final g in groups)
+        {'id': g.id, 'name': g.name, 'members': g.members},
+    ],
+  };
 
   static LibrarySnapshot fromJson(Map<String, dynamic> json) {
     final rawGroups = json['groups'];

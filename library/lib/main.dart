@@ -10,12 +10,14 @@ import 'src/ui/theme.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final persistence = await PrefsPersistence.open();
-  runApp(LibraryApp(
-    controller: LibraryController(
-      source: AndroidAppSource(),
-      persistence: persistence,
+  runApp(
+    LibraryApp(
+      controller: LibraryController(
+        source: AndroidAppSource(),
+        persistence: persistence,
+      ),
     ),
-  ));
+  );
 }
 
 class LibraryApp extends StatelessWidget {

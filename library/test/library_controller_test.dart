@@ -27,7 +27,8 @@ void main() {
 
   test('restores pins before the catalog arrives', () async {
     final mem = MemoryPersistence(
-        const LibrarySnapshot(pinned: ['com.vr.home']));
+      const LibrarySnapshot(pinned: ['com.vr.home']),
+    );
     final c = LibraryController(source: FakeAppSource(), persistence: mem);
     addTearDown(c.dispose);
     await c.init();
@@ -46,9 +47,9 @@ void main() {
   });
 
   test('package change events refresh the catalog', () async {
-    final src = FakeAppSource(apps: [
-      const AppEntry(packageName: 'a', label: 'A'),
-    ]);
+    final src = FakeAppSource(
+      apps: [const AppEntry(packageName: 'a', label: 'A')],
+    );
     addTearDown(src.dispose);
     final c = LibraryController(source: src, persistence: MemoryPersistence());
     addTearDown(c.dispose);
@@ -92,7 +93,9 @@ void main() {
     expect(src.launched, [app.packageName]);
     expect(src.infoOpened, [app.packageName]);
     expect(src.uninstalled, [app.packageName]);
-    expect(c.store.visible.any((a) => a.packageName == app.packageName),
-        isFalse);
+    expect(
+      c.store.visible.any((a) => a.packageName == app.packageName),
+      isFalse,
+    );
   });
 }

@@ -24,18 +24,10 @@ android {
         versionName = flutter.versionName
     }
 
-    signingConfigs {
-        create("release") {
-            storeFile = file("../../debug.keystore")
-            keyAlias = "library"
-            storePassword = "android"
-            keyPassword = "android"
-        }
-    }
-
     buildTypes {
         release {
-            signingConfig = signingConfigs.getByName("release")
+            // No key is committed; sign externally before distribution.
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }

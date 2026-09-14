@@ -107,6 +107,7 @@ class _Hero extends StatelessWidget {
               child: Image.asset(
                 'assets/screenshots/library-grid.png',
                 fit: BoxFit.cover,
+                semanticLabel: l10n.shotGridCaption,
               ),
             ),
           ),
@@ -160,9 +161,10 @@ class _Showcase extends StatelessWidget {
                 runSpacing: 32,
                 alignment: WrapAlignment.center,
                 children: [
-                  for (final asset in const [
-                    'assets/screenshots/collection-menu.png',
-                    'assets/screenshots/tile-menu.png',
+                  for (final (asset, caption) in [
+                    ('assets/screenshots/collection-menu.png',
+                        l10n.shotCollectionCaption),
+                    ('assets/screenshots/tile-menu.png', l10n.shotMenuCaption),
                   ])
                     Reveal(
                       child: Container(
@@ -175,7 +177,11 @@ class _Showcase extends StatelessWidget {
                           ),
                         ),
                         clipBehavior: Clip.antiAlias,
-                        child: Image.asset(asset, fit: BoxFit.cover),
+                        child: Image.asset(
+                          asset,
+                          fit: BoxFit.cover,
+                          semanticLabel: caption,
+                        ),
                       ),
                     ),
                 ],

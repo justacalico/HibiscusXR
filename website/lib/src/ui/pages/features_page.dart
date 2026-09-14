@@ -155,6 +155,7 @@ class _Lead extends StatelessWidget {
             child: Image.asset(
               'assets/screenshots/collection-menu.png',
               fit: BoxFit.cover,
+              semanticLabel: l10n.shotCollectionCaption,
             ),
           ),
         ),

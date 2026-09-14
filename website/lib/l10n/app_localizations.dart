@@ -781,12 +781,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Library'**
   String get notFoundCta;
-
-  /// No description provided for @languageName.
-  ///
-  /// In en, this message translates to:
-  /// **'English'**
-  String get languageName;
 }
 
 class _AppLocalizationsDelegate

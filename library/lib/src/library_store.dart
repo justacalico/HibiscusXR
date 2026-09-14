@@ -45,8 +45,7 @@ class FilterGroup extends LibraryFilter {
 /// sort and active filter. Pure Dart, no platform calls - every decision
 /// the UI shows is computed here so tests can reach it.
 class LibraryStore extends ChangeNotifier {
-  LibraryStore({String Function()? idGen})
-      : _idGen = idGen ?? _defaultIdGen;
+  LibraryStore({String Function()? idGen}) : _idGen = idGen ?? _defaultIdGen;
 
   static String _defaultIdGen() =>
       DateTime.now().microsecondsSinceEpoch.toRadixString(36);
@@ -85,9 +84,11 @@ class LibraryStore extends ChangeNotifier {
     final q = normalizeForSearch(_query.trim());
     if (q.isNotEmpty) {
       base = base
-          .where((a) =>
-              normalizeForSearch(a.label).contains(q) ||
-              a.packageName.toLowerCase().contains(q))
+          .where(
+            (a) =>
+                normalizeForSearch(a.label).contains(q) ||
+                a.packageName.toLowerCase().contains(q),
+          )
           .toList();
     }
     final sorted = _applySort(base);
@@ -155,8 +156,9 @@ class LibraryStore extends ChangeNotifier {
   List<AppEntry> _byName(List<AppEntry> list, bool desc) {
     final copy = List.of(list);
     copy.sort((a, b) {
-      final c = normalizeForSearch(a.label)
-          .compareTo(normalizeForSearch(b.label));
+      final c = normalizeForSearch(
+        a.label,
+      ).compareTo(normalizeForSearch(b.label));
       if (c != 0) return desc ? -c : c;
       final p = a.packageName.compareTo(b.packageName);
       return desc ? -p : p;
@@ -322,17 +324,18 @@ class LibraryStore extends ChangeNotifier {
       for (final x in _groups)
         x.id == id
             ? x.copyWith(
-                members: x.members.where((m) => m != packageName).toList())
+                members: x.members.where((m) => m != packageName).toList(),
+              )
             : x,
     ];
     notifyListeners();
   }
 
   LibrarySnapshot snapshot() => LibrarySnapshot(
-        pinned: _pinned.toList(),
-        order: List.of(_order),
-        groups: List.of(_groups),
-      );
+    pinned: _pinned.toList(),
+    order: List.of(_order),
+    groups: List.of(_groups),
+  );
 
   void restore(LibrarySnapshot snap) {
     _pinned

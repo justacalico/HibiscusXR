@@ -18,9 +18,9 @@ class LibraryController extends ChangeNotifier {
     required AppSource source,
     required this._persistence,
     LibraryStore? store,
-  })  : _source = source,
-        store = store ?? LibraryStore(),
-        icons = IconCache(source);
+  }) : _source = source,
+       store = store ?? LibraryStore(),
+       icons = IconCache(source);
 
   final AppSource _source;
   final LibraryPersistence _persistence;

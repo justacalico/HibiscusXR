@@ -13,8 +13,7 @@ Future<AppAction?> showAppMenu(
   List<AppAction> actions,
 ) {
   final l10n = AppLocalizations.of(context);
-  final overlay =
-      Overlay.of(context).context.findRenderObject() as RenderBox;
+  final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   return showMenu<AppAction>(
     context: context,
     position: RelativeRect.fromRect(
@@ -27,11 +26,13 @@ Future<AppAction?> showAppMenu(
           value: a,
           child: Row(
             children: [
-              Icon(_iconFor(a),
-                  size: 18,
-                  color: a == AppAction.uninstall
-                      ? LibraryTheme.danger
-                      : LibraryTheme.textSecondary),
+              Icon(
+                _iconFor(a),
+                size: 18,
+                color: a == AppAction.uninstall
+                    ? LibraryTheme.danger
+                    : LibraryTheme.textSecondary,
+              ),
               const SizedBox(width: 12),
               Text(
                 _labelFor(l10n, a),
@@ -101,10 +102,7 @@ class GroupCreateNew extends GroupPick {
 }
 
 /// Lists the existing groups plus a "new group" row.
-Future<GroupPick?> pickGroup(
-  BuildContext context,
-  List<AppGroup> groups,
-) {
+Future<GroupPick?> pickGroup(BuildContext context, List<AppGroup> groups) {
   final l10n = AppLocalizations.of(context);
   return showDialog<GroupPick>(
     context: context,
@@ -117,8 +115,7 @@ Future<GroupPick?> pickGroup(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   l10n.noGroupsYet,
-                  style:
-                      const TextStyle(color: LibraryTheme.textSecondary),
+                  style: const TextStyle(color: LibraryTheme.textSecondary),
                 ),
               )
             : ListView(
@@ -128,10 +125,8 @@ Future<GroupPick?> pickGroup(
                     ListTile(
                       leading: const Icon(Icons.folder_outlined),
                       title: Text(g.name),
-                      subtitle: Text(
-                          l10n.appCount(g.members.length)),
-                      onTap: () =>
-                          Navigator.pop(context, GroupPicked(g.id)),
+                      subtitle: Text(l10n.appCount(g.members.length)),
+                      onTap: () => Navigator.pop(context, GroupPicked(g.id)),
                     ),
                 ],
               ),
@@ -144,8 +139,7 @@ Future<GroupPick?> pickGroup(
         FilledButton.icon(
           icon: const Icon(Icons.add, size: 18),
           label: Text(l10n.newGroup),
-          onPressed: () =>
-              Navigator.pop(context, const GroupCreateNew()),
+          onPressed: () => Navigator.pop(context, const GroupCreateNew()),
         ),
       ],
     ),
@@ -171,8 +165,7 @@ Future<String?> promptGroupName(
           controller: controller,
           autofocus: true,
           decoration: InputDecoration(hintText: l10n.groupNameHint),
-          onSubmitted: (v) =>
-              Navigator.pop(context, v.trim()),
+          onSubmitted: (v) => Navigator.pop(context, v.trim()),
         ),
       ),
       actions: [
@@ -181,8 +174,7 @@ Future<String?> promptGroupName(
           child: Text(l10n.cancel),
         ),
         FilledButton(
-          onPressed: () =>
-              Navigator.pop(context, controller.text.trim()),
+          onPressed: () => Navigator.pop(context, controller.text.trim()),
           child: Text(renaming ? l10n.save : l10n.create),
         ),
       ],
@@ -204,8 +196,7 @@ Future<bool> confirmDeleteGroup(BuildContext context, String name) async {
           child: Text(l10n.cancel),
         ),
         FilledButton(
-          style: FilledButton.styleFrom(
-              backgroundColor: LibraryTheme.danger),
+          style: FilledButton.styleFrom(backgroundColor: LibraryTheme.danger),
           onPressed: () => Navigator.pop(context, true),
           child: Text(l10n.delete),
         ),
@@ -226,28 +217,31 @@ Future<void> showAppDetails(
   final locale = Localizations.localeOf(context).toString();
   String fmt(int ms) => ms <= 0
       ? l10n.notAvailable
-      : DateFormat.yMMMd(locale)
-          .format(DateTime.fromMillisecondsSinceEpoch(ms));
+      : DateFormat.yMMMd(
+          locale,
+        ).format(DateTime.fromMillisecondsSinceEpoch(ms));
 
   Widget row(String label, String value) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 92,
-              child: Text(label,
-                  style: const TextStyle(
-                      color: LibraryTheme.textSecondary)),
-            ),
-            Expanded(
-              child: SelectableText(value,
-                  style:
-                      const TextStyle(color: LibraryTheme.textPrimary)),
-            ),
-          ],
+    padding: const EdgeInsets.symmetric(vertical: 6),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 92,
+          child: Text(
+            label,
+            style: const TextStyle(color: LibraryTheme.textSecondary),
+          ),
         ),
-      );
+        Expanded(
+          child: SelectableText(
+            value,
+            style: const TextStyle(color: LibraryTheme.textPrimary),
+          ),
+        ),
+      ],
+    ),
+  );
 
   return showDialog<void>(
     context: context,
@@ -259,8 +253,7 @@ Future<void> showAppDetails(
           mainAxisSize: MainAxisSize.min,
           children: [
             row(l10n.detailsPackage, app.packageName),
-            row(l10n.detailsVersion,
-                app.versionName ?? l10n.notAvailable),
+            row(l10n.detailsVersion, app.versionName ?? l10n.notAvailable),
             row(l10n.detailsInstalled, fmt(app.firstInstallTime)),
             row(l10n.detailsUpdated, fmt(app.lastUpdateTime)),
           ],

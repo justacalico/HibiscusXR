@@ -71,14 +71,17 @@ void main() {
 
   test('actions send the package argument', () async {
     final src = AndroidAppSource();
-    const entry =
-        AppEntry(packageName: 'com.a', label: 'Alpha');
+    const entry = AppEntry(packageName: 'com.a', label: 'Alpha');
     await src.launch(entry);
     await src.uninstall(entry);
     await src.openAppInfo(entry);
     await src.pickAndInstallApk();
-    expect(calls.map((c) => c.method),
-        ['launch', 'uninstall', 'openAppInfo', 'pickAndInstallApk']);
+    expect(calls.map((c) => c.method), [
+      'launch',
+      'uninstall',
+      'openAppInfo',
+      'pickAndInstallApk',
+    ]);
     expect(calls[0].arguments, {'package': 'com.a'});
   });
 

@@ -50,8 +50,15 @@ class AppEntry {
       other.lastUpdateTime == lastUpdateTime;
 
   @override
-  int get hashCode => Object.hash(packageName, label, activityName, isSystem,
-      versionName, firstInstallTime, lastUpdateTime);
+  int get hashCode => Object.hash(
+    packageName,
+    label,
+    activityName,
+    isSystem,
+    versionName,
+    firstInstallTime,
+    lastUpdateTime,
+  );
 }
 
 /// A named, ordered collection of package names.

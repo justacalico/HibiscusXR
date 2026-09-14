@@ -24,33 +24,50 @@ void main() {
     };
     final apps = [
       const AppEntry(
-          packageName: 'com.vr.home', label: 'VR Home', firstInstallTime: 100),
+        packageName: 'com.vr.home',
+        label: 'VR Home',
+        firstInstallTime: 100,
+      ),
       const AppEntry(
-          packageName: 'com.vr.player',
-          label: 'Video Player',
-          firstInstallTime: 90),
+        packageName: 'com.vr.player',
+        label: 'Video Player',
+        firstInstallTime: 90,
+      ),
       const AppEntry(
-          packageName: 'com.vr.browser',
-          label: 'Browser',
-          firstInstallTime: 80),
+        packageName: 'com.vr.browser',
+        label: 'Browser',
+        firstInstallTime: 80,
+      ),
       const AppEntry(
-          packageName: 'com.android.settings',
-          label: 'Settings',
-          isSystem: true,
-          firstInstallTime: 1),
+        packageName: 'com.android.settings',
+        label: 'Settings',
+        isSystem: true,
+        firstInstallTime: 1,
+      ),
       const AppEntry(
-          packageName: 'com.vr.store', label: 'Store', firstInstallTime: 70),
+        packageName: 'com.vr.store',
+        label: 'Store',
+        firstInstallTime: 70,
+      ),
       const AppEntry(
-          packageName: 'com.vr.files', label: 'Files', firstInstallTime: 60),
+        packageName: 'com.vr.files',
+        label: 'Files',
+        firstInstallTime: 60,
+      ),
       const AppEntry(
-          packageName: 'com.vr.photos', label: 'Photos', firstInstallTime: 50),
+        packageName: 'com.vr.photos',
+        label: 'Photos',
+        firstInstallTime: 50,
+      ),
       const AppEntry(
-          packageName: 'com.vr.music', label: 'Music', firstInstallTime: 40),
+        packageName: 'com.vr.music',
+        label: 'Music',
+        firstInstallTime: 40,
+      ),
     ];
     final src = FakeAppSource(apps: apps, icons: icons);
     addTearDown(src.dispose);
-    final c =
-        LibraryController(source: src, persistence: MemoryPersistence());
+    final c = LibraryController(source: src, persistence: MemoryPersistence());
     addTearDown(c.dispose);
 
     await tester.pumpWidget(LibraryApp(controller: c));

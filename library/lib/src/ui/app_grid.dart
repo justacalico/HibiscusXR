@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../library_store.dart';
 import '../models.dart';
@@ -83,6 +84,7 @@ class _GridCell extends StatefulWidget {
 class _GridCellState extends State<_GridCell> {
   bool _dragging = false;
   bool _dropHover = false;
+  bool _focused = false;
 
   @override
   Widget build(BuildContext context) {
@@ -92,10 +94,40 @@ class _GridCellState extends State<_GridCell> {
       pinned: widget.store.isPinned(widget.app.packageName),
       systemLabel: widget.systemLabel,
       dragging: _dragging,
+      focused: _focused,
       onTap: () => widget.onOpen(widget.app),
       onMenu: (at) => widget.onMenu(widget.app, at),
     );
 
+    // D-pad / controller support: arrows move focus between cells, confirm
+    // launches, the menu key opens the tile's context menu.
+    return Focus(
+      autofocus: widget.index == 0,
+      onFocusChange: (f) => setState(() => _focused = f),
+      onKeyEvent: (node, event) {
+        if (event is! KeyDownEvent) return KeyEventResult.ignored;
+        final key = event.logicalKey;
+        if (key == LogicalKeyboardKey.select ||
+            key == LogicalKeyboardKey.enter ||
+            key == LogicalKeyboardKey.gameButtonA) {
+          widget.onOpen(widget.app);
+          return KeyEventResult.handled;
+        }
+        if (key == LogicalKeyboardKey.contextMenu) {
+          final box = context.findRenderObject() as RenderBox;
+          widget.onMenu(
+            widget.app,
+            box.localToGlobal(box.size.center(Offset.zero)),
+          );
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: _dropTarget(tile),
+    );
+  }
+
+  Widget _dropTarget(Widget tile) {
     return DragTarget<AppEntry>(
       onWillAcceptWithDetails: (d) {
         if (d.data.packageName == widget.app.packageName) return false;

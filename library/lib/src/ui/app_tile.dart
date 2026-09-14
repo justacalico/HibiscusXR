@@ -17,6 +17,7 @@ class AppTile extends StatefulWidget {
     required this.onTap,
     required this.onMenu,
     this.dragging = false,
+    this.focused = false,
   });
 
   final AppEntry app;
@@ -28,6 +29,7 @@ class AppTile extends StatefulWidget {
   /// Kebab tap / long-press position for anchoring the context menu.
   final ValueChanged<Offset> onMenu;
   final bool dragging;
+  final bool focused;
 
   @override
   State<AppTile> createState() => _AppTileState();
@@ -53,41 +55,46 @@ class _AppTileState extends State<AppTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: FutureBuilder<TileArt>(
-            future: _art,
-            builder: (context, snap) {
-              final art = snap.data;
-              return _TileFace(
-                art: art,
-                app: widget.app,
-                pinned: widget.pinned,
-                systemLabel: widget.systemLabel,
-                dragging: widget.dragging,
-                onTap: widget.onTap,
-                onMenu: widget.onMenu,
-              );
-            },
-          ),
-        ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          child: Text(
-            widget.app.label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: LibraryTheme.textPrimary,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+    return GestureDetector(
+      behavior: HitTestBehavior.translucent,
+      onTap: widget.onTap,
+      child: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<TileArt>(
+              future: _art,
+              builder: (context, snap) {
+                final art = snap.data;
+                return _TileFace(
+                  art: art,
+                  app: widget.app,
+                  pinned: widget.pinned,
+                  systemLabel: widget.systemLabel,
+                  dragging: widget.dragging,
+                  focused: widget.focused,
+                  onTap: widget.onTap,
+                  onMenu: widget.onMenu,
+                );
+              },
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            child: Text(
+              widget.app.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: LibraryTheme.textPrimary,
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -99,6 +106,7 @@ class _TileFace extends StatelessWidget {
     required this.pinned,
     required this.systemLabel,
     required this.dragging,
+    required this.focused,
     required this.onTap,
     required this.onMenu,
   });
@@ -108,6 +116,7 @@ class _TileFace extends StatelessWidget {
   final bool pinned;
   final String systemLabel;
   final bool dragging;
+  final bool focused;
   final VoidCallback onTap;
   final ValueChanged<Offset> onMenu;
 
@@ -121,6 +130,9 @@ class _TileFace extends StatelessWidget {
         duration: const Duration(milliseconds: 160),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(LibraryTheme.tileRadius),
+          border: focused
+              ? Border.all(color: LibraryTheme.accent, width: 2.5)
+              : null,
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -192,8 +204,7 @@ class _TileFace extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (pinned)
-            const _Badge(child: Icon(Icons.push_pin, size: 13)),
+          if (pinned) const _Badge(child: Icon(Icons.push_pin, size: 13)),
           if (app.isSystem)
             _Badge(
               child: Text(

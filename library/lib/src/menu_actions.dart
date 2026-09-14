@@ -53,7 +53,9 @@ class NewGroupItem extends CollectionItem {
 List<CollectionItem> collectionItems(LibraryStore store) {
   final groups = List.of(store.groups)
     ..sort(
-        (a, b) => normalizeForSearch(a.name).compareTo(normalizeForSearch(b.name)));
+      (a, b) =>
+          normalizeForSearch(a.name).compareTo(normalizeForSearch(b.name)),
+    );
   return [
     const FilterItem(FilterAll()),
     const FilterItem(FilterPinned()),

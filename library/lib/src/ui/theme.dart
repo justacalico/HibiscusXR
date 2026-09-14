@@ -33,18 +33,14 @@ class LibraryTheme {
       popupMenuTheme: PopupMenuThemeData(
         color: surface,
         elevation: 12,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         labelTextStyle: WidgetStateProperty.all(
           const TextStyle(color: textPrimary, fontSize: 14),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: const TextStyle(
           color: textPrimary,
           fontSize: 18,
@@ -60,8 +56,10 @@ class LibraryTheme {
         filled: true,
         fillColor: surface,
         hintStyle: const TextStyle(color: textSecondary),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 20,
+          vertical: 14,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(pillRadius),
           borderSide: BorderSide.none,

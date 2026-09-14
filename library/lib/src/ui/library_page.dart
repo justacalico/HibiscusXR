@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../library_controller.dart';
@@ -50,10 +49,8 @@ class _LibraryPageState extends State<LibraryPage> {
           body: SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 14),
-                _header(l10n),
-                const SizedBox(height: 18),
-                _controls(),
+                const SizedBox(height: 16),
+                _controls(l10n),
                 Expanded(child: _body(l10n)),
               ],
             ),
@@ -63,47 +60,7 @@ class _LibraryPageState extends State<LibraryPage> {
     );
   }
 
-  Widget _header(AppLocalizations l10n) {
-    return SizedBox(
-      height: 40,
-      child: Stack(
-        children: [
-          Center(
-            child: Text(
-              l10n.appTitle,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w600,
-                color: LibraryTheme.textPrimary,
-              ),
-            ),
-          ),
-          Positioned(
-            right: 16,
-            top: 0,
-            bottom: 0,
-            child: Row(
-              children: [
-                _HeaderIcon(
-                  icon: Icons.add,
-                  tooltip: l10n.installApp,
-                  onTap: () => _c.installApk(),
-                ),
-                const SizedBox(width: 6),
-                _HeaderIcon(
-                  icon: Icons.close,
-                  tooltip: l10n.cancel,
-                  onTap: () => SystemNavigator.pop(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _controls() {
+  Widget _controls(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
@@ -121,6 +78,12 @@ class _LibraryPageState extends State<LibraryPage> {
           ),
           const SizedBox(width: 10),
           SortDropdown(store: _store),
+          const SizedBox(width: 10),
+          _PillButton(
+            icon: Icons.add,
+            tooltip: l10n.installApp,
+            onTap: () => _c.installApk(),
+          ),
         ],
       ),
     );
@@ -290,8 +253,8 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 }
 
-class _HeaderIcon extends StatelessWidget {
-  const _HeaderIcon({
+class _PillButton extends StatelessWidget {
+  const _PillButton({
     required this.icon,
     required this.tooltip,
     required this.onTap,
@@ -307,13 +270,13 @@ class _HeaderIcon extends StatelessWidget {
       message: tooltip,
       child: Material(
         color: LibraryTheme.surface,
-        shape: const CircleBorder(),
+        borderRadius: BorderRadius.circular(LibraryTheme.pillRadius),
         child: InkWell(
-          customBorder: const CircleBorder(),
+          borderRadius: BorderRadius.circular(LibraryTheme.pillRadius),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 18, color: LibraryTheme.textSecondary),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+            child: Icon(icon, size: 20, color: LibraryTheme.textSecondary),
           ),
         ),
       ),

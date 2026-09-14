@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_library/main.dart';
 import 'package:pn2_library/src/library_controller.dart';
@@ -13,7 +14,7 @@ void main() {
     addTearDown(src.dispose);
     await tester.pumpWidget(LibraryApp(controller: fakeController(src)));
     await tester.pumpAndSettle();
-    expect(find.text('App Library'), findsOneWidget);
+    expect(find.byIcon(Icons.add), findsOneWidget); // install pill
     expect(find.text('VR Home'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
   });

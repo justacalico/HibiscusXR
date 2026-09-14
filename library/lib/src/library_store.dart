@@ -54,6 +54,7 @@ class LibraryStore extends ChangeNotifier {
   final String Function() _idGen;
 
   List<AppEntry> _apps = const [];
+  bool _catalogLoaded = false;
   final Set<String> _pinned = {};
   List<AppGroup> _groups = [];
   List<String> _order = [];
@@ -176,6 +177,7 @@ class LibraryStore extends ChangeNotifier {
   /// Replaces the catalog, pruning pins, order and group members that no
   /// longer resolve, and appending newly seen packages to the manual order.
   void setApps(List<AppEntry> apps) {
+    _catalogLoaded = true;
     _apps = List.unmodifiable(apps);
     final pkgs = apps.map((a) => a.packageName).toSet();
     _pinned.removeWhere((p) => !pkgs.contains(p));
@@ -338,7 +340,12 @@ class LibraryStore extends ChangeNotifier {
       ..addAll(snap.pinned);
     _order = List.of(snap.order);
     _groups = List.of(snap.groups);
-    // Reconcile against whatever is loaded so stale entries cannot linger.
-    setApps(_apps);
+    // Reconcile only when a catalog is already loaded; otherwise the next
+    // setApps call prunes stale snapshot entries on arrival.
+    if (_catalogLoaded) {
+      setApps(_apps);
+    } else {
+      notifyListeners();
+    }
   }
 }

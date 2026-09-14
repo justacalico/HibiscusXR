@@ -1,5 +1,5 @@
 default:
-  image: ghcr.io/cirruslabs/flutter:stable
+  image: ghcr.io/cirruslabs/flutter:3.44.0
 
 stages:
   - test

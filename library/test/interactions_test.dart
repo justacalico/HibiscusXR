@@ -54,7 +54,7 @@ void main() {
     addTearDown(src.dispose);
     await pumpApp(tester, src);
     // system tile kebab
-    final kebabs = find.byIcon(Icons.more_vert);
+    final kebabs = find.byIcon(Icons.more_horiz);
     await tester.tap(kebabs.last);
     await tester.pumpAndSettle();
     expect(find.text('Open'), findsOneWidget);
@@ -71,7 +71,7 @@ void main() {
     final src = FakeAppSource(apps: demoApps());
     addTearDown(src.dispose);
     final c = await pumpApp(tester, src);
-    final kebabOfGamma = find.byIcon(Icons.more_vert).at(2);
+    final kebabOfGamma = find.byIcon(Icons.more_horiz).at(2);
     await tester.tap(kebabOfGamma);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Pin'));

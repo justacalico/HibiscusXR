@@ -1,0 +1,156 @@
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import 'package:pn2_website/l10n/app_localizations.dart';
+
+import '../../links.dart';
+import '../../theme.dart';
+import '../shell.dart';
+import '../widgets.dart';
+import 'features_page.dart' show PageHead;
+
+class DownloadsPage extends StatelessWidget {
+  const DownloadsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return PageBody(
+      children: [
+        PageHead(title: l10n.downloadTitle, subtitle: l10n.downloadSubtitle),
+        Band(
+          color: context.colors.surfaceContainerHighest,
+          width: Layout.text + 96,
+          padding: const EdgeInsets.symmetric(vertical: 72),
+          child: Column(
+            children: [
+              Reveal(
+                child: _StatusCard(l10n: l10n),
+              ),
+              const SizedBox(height: 48),
+              Reveal(
+                child: _Steps(l10n: l10n),
+              ),
+              const SizedBox(height: 32),
+              Reveal(
+                child: Text(
+                  l10n.downloadNote,
+                  textAlign: TextAlign.center,
+                  style: context.text.labelSmall!
+                      .copyWith(fontSize: 13, height: 1.5),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _StatusCard extends StatelessWidget {
+  const _StatusCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: context.colors.surface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: context.colors.outline, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.inventory_2_outlined,
+                  size: 20, color: context.colors.primary),
+              const SizedBox(width: 10),
+              Text(l10n.downloadStatusTitle,
+                  style: context.text.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.downloadStatusBody, style: context.text.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
+class _Steps extends StatelessWidget {
+  const _Steps({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final steps = [
+      l10n.downloadStepSource,
+      l10n.downloadStepDocs,
+      l10n.downloadStepWatch,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.downloadStepsTitle, style: context.text.titleLarge),
+        const SizedBox(height: 20),
+        for (var i = 0; i < steps.length; i++)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 26,
+                  height: 26,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: context.colors.primary,
+                  ),
+                  child: Text(
+                    '${i + 1}',
+                    style: context.text.labelSmall!.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Text(
+                    steps[i],
+                    style: context.text.bodyMedium!
+                        .copyWith(color: context.colors.onSurface),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 20),
+        Wrap(
+          spacing: 24,
+          runSpacing: 12,
+          children: [
+            PillButton(
+              label: l10n.downloadSourceCta,
+              small: true,
+              onPressed: () => launchUrl(Uri.parse(Links.repo)),
+            ),
+            ChevronLink(
+              label: l10n.downloadDocsCta,
+              large: false,
+              onPressed: () => launchUrl(Uri.parse(Links.docs)),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}

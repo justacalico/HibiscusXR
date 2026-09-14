@@ -1,0 +1,130 @@
+{
+  "@@locale": "en",
+  "appTitle": "Library",
+  "@appTitle": {
+    "description": "Product name"
+  },
+  "projectName": "PN2Lineage",
+  "@projectName": {
+    "description": "Name of the parent porting project"
+  },
+
+  "navFeatures": "Features",
+  "navScreenshots": "Screenshots",
+  "navDownload": "Download",
+  "navAbout": "About",
+  "navDocs": "Docs",
+  "navMenu": "Menu",
+  "navClose": "Close",
+
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "themeLabel": "Appearance",
+
+  "languageLabel": "Language",
+
+  "heroEyebrow": "For the Pico Neo 2 LineageOS port",
+  "heroTitle": "Library",
+  "heroSubtitle": "Every app on the headset, in one quiet grid. Search it, pin it, group it, launch it.",
+  "heroPrimary": "See features",
+  "heroSecondary": "Read the docs",
+
+  "homeShowcaseEyebrow": "App grid",
+  "homeShowcaseTitle": "Everything installed, at a glance.",
+  "homeShowcaseBody": "Tiles tinted by each app's own icon colour, with labels, badges and a kebab menu on every tile. Made to sit inside the vrhome shell as the app window.",
+
+  "homeFindTitle": "Find anything fast",
+  "homeFindBody": "Search ignores accents and case, collections split apps from system packages, and four sort orders keep the grid the way you left it.",
+  "homeArrangeTitle": "Your order, kept",
+  "homeArrangeBody": "Pin favourites to the top, long-press-drag tiles into place, and file apps into groups you name yourself.",
+  "homeControlTitle": "Controller first",
+  "homeControlBody": "Arrow keys move focus, confirm launches, and the menu key opens the tile menu. Built for a controller, usable with anything.",
+
+  "homeOpenTitle": "Open all the way down.",
+  "homeOpenBody": "Library is free software under the AGPL-3.0. Every screen, every string, every commit lives in the open on GitLab.",
+  "homeOpenSource": "Browse the source",
+
+  "homeDownloadTitle": "Not shipping yet.",
+  "homeDownloadBody": "There is no release build to install today. The port is still being assembled piece by piece - watch the repository or build from source if you want it early.",
+  "homeDownloadCta": "Download status",
+
+  "featuresTitle": "Features",
+  "featuresSubtitle": "A launcher-shaped tool, tuned for a headset.",
+
+  "featGridTitle": "A grid that reads like a shelf",
+  "featGridBody": "Every launchable app gets a tile: icon, label and a backdrop tinted from the icon's own dominant colour. New installs and removals show up live, no refresh needed.",
+
+  "featFindTitle": "Find",
+  "featSearchTitle": "Search that forgives",
+  "featSearchBody": "Matching ignores case and accents, so typing the way you remember a name is enough to find it.",
+  "featCollectionsTitle": "Collections with counts",
+  "featCollectionsBody": "All, Pinned, Apps and System are always there. Groups you make join the same row, each with a live count.",
+  "featSortTitle": "Four sort orders",
+  "featSortBody": "A-Z, Z-A, recently installed and recently updated - or a custom order once you start dragging tiles.",
+
+  "featArrangeTitle": "Arrange",
+  "featPinTitle": "Pin to the top",
+  "featPinBody": "Pinned apps lead the grid in every collection. Long-press-drag any tile to rearrange; the order survives restarts.",
+  "featGroupsTitle": "Groups",
+  "featGroupsBody": "Create, rename and delete groups, then file apps into them from the tile menu. A group is just another collection.",
+
+  "featControlTitle": "Control",
+  "featMenuTitle": "A menu on every tile",
+  "featMenuBody": "Open, pin, add to group, app details and uninstall for user apps - one long press or menu key away.",
+  "featInstallTitle": "Install APKs in place",
+  "featInstallBody": "The system file picker handles installs, so sideloading never leaves the window.",
+
+  "featNavigateTitle": "Navigate",
+  "featDpadTitle": "D-pad native",
+  "featDpadBody": "Arrows move focus, confirm launches the focused app, and the menu key opens its tile menu. Focus wraps the way a TV launcher does.",
+  "featLiveTitle": "Live package updates",
+  "featLiveBody": "Install or remove an app anywhere on the system and the grid updates while you watch.",
+  "featI18nTitle": "Every string external",
+  "featI18nBody": "All UI text lives in ARB files, so translating the app means editing one file, not hunting through code.",
+
+  "screenshotsTitle": "Screenshots",
+  "screenshotsSubtitle": "The real app, running on the headset.",
+  "shotGridCaption": "The app grid inside vrhome.",
+  "shotCollectionCaption": "Collections and groups, with counts.",
+  "shotMenuCaption": "The tile menu on a long press.",
+
+  "downloadTitle": "Download",
+  "downloadSubtitle": "Nothing to install yet.",
+  "downloadStatusTitle": "Not shipping yet",
+  "downloadStatusBody": "Library ships with the PN2Lineage system image, and the image is still being built. When a flashable build exists it will land here first.",
+  "downloadStepsTitle": "Want it early?",
+  "downloadStepSource": "Clone the repository and build the app yourself with the Flutter toolchain.",
+  "downloadStepDocs": "Read the docs for the port's build pipeline and current state.",
+  "downloadStepWatch": "Watch the repository to get release news.",
+  "downloadSourceCta": "View source on GitLab",
+  "downloadDocsCta": "Open the docs",
+  "downloadNote": "Builds are signed for the headset's system image. Sideloaded copies work, but the library is meant to live inside vrhome.",
+
+  "aboutTitle": "About",
+  "aboutSubtitle": "One small piece of a larger port.",
+  "aboutWhatTitle": "What it is",
+  "aboutWhatBody": "Library is the app window of vrhome, the VR home environment for the Pico Neo 2 running LineageOS 17.1. It lists every launchable app on the headset and gets out of the way.",
+  "aboutProjectTitle": "The project",
+  "aboutProjectBody": "PN2Lineage ports LineageOS 17.1 - Android 10 via a phh GSI - to the Pico Neo 2. Every piece of the port, from the GSI overlay to the VR stack, lives in its own repository under neosalsa on GitLab.",
+  "aboutTechTitle": "How it is built",
+  "aboutTechBody": "Flutter, with all decisions in pure Dart modules and platform glue kept thin. The Kotlin side only talks to PackageManager, rasterizes icons and fires intents.",
+  "aboutLicenseTitle": "License",
+  "aboutLicenseBody": "Library is free software under the GNU Affero General Public License v3. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.",
+  "aboutRepoCta": "Library repository",
+  "aboutDocsCta": "Project docs",
+  "aboutGroupCta": "All neosalsa repos",
+
+  "footerProduct": "Library",
+  "footerProject": "Project",
+  "footerCopyright": "Copyright {year} neosalsa",
+  "@footerCopyright": {
+    "placeholders": {
+      "year": {"type": "int"}
+    }
+  },
+  "footerLicense": "Licensed under the AGPL-3.0",
+  "footerBuiltWith": "Built with Flutter",
+
+  "languageName": "English"
+}

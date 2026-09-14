@@ -26,6 +26,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String collectionCount(String label, int count) {
+    return '$label ($count)';
+  }
+
+  @override
   String get collectionPinned => 'Pinned';
 
   @override
@@ -152,6 +157,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get systemBadge => 'System';
+
+  @override
+  String get details => 'Details';
 
   @override
   String detailsTitle(String app) {

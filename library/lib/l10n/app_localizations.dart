@@ -124,6 +124,12 @@ abstract class AppLocalizations {
   /// **'All ({count})'**
   String collectionAllCount(int count);
 
+  /// Collection or group label with the number of apps
+  ///
+  /// In en, this message translates to:
+  /// **'{label} ({count})'**
+  String collectionCount(String label, int count);
+
   /// Collection filter showing only pinned apps
   ///
   /// In en, this message translates to:
@@ -345,6 +351,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'System'**
   String get systemBadge;
+
+  /// Context menu action opening the app details dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
 
   /// Title of the app details dialog
   ///

@@ -8,6 +8,7 @@ import '../menu_actions.dart';
 import '../models.dart';
 import 'app_grid.dart';
 import 'controls.dart';
+import 'glass.dart';
 import 'menus.dart';
 import 'theme.dart';
 
@@ -47,14 +48,31 @@ class _LibraryPageState extends State<LibraryPage> {
       builder: (context, _) {
         final l10n = AppLocalizations.of(context);
         return Scaffold(
-          body: SafeArea(
-            child: Column(
+          backgroundColor: Colors.transparent,
+          body: Container(
+            decoration: const BoxDecoration(
+              gradient: LibraryTheme.backdropGradient,
+            ),
+            child: Stack(
               children: [
-                const SizedBox(height: 14),
-                _header(l10n),
-                const SizedBox(height: 18),
-                _controls(),
-                Expanded(child: _body(l10n)),
+                const Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LibraryTheme.backdropGlow,
+                    ),
+                  ),
+                ),
+                SafeArea(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 14),
+                      _header(l10n),
+                      const SizedBox(height: 18),
+                      _controls(),
+                      Expanded(child: _body(l10n)),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -146,12 +164,16 @@ class _LibraryPageState extends State<LibraryPage> {
       case LoadState.failed:
         return _Centered(
           children: [
-            const Icon(
-              Icons.cloud_off,
-              size: 42,
-              color: LibraryTheme.textSecondary,
+            const Glass(
+              circle: true,
+              padding: EdgeInsets.all(22),
+              child: Icon(
+                Icons.cloud_off,
+                size: 34,
+                color: LibraryTheme.textSecondary,
+              ),
             ),
-            const SizedBox(height: 14),
+            const SizedBox(height: 18),
             Text(l10n.loadFailed, style: _muted),
             const SizedBox(height: 16),
             FilledButton(onPressed: _c.init, child: Text(l10n.retry)),
@@ -162,12 +184,16 @@ class _LibraryPageState extends State<LibraryPage> {
         if (apps.isEmpty) {
           return _Centered(
             children: [
-              const Icon(
-                Icons.apps_outage,
-                size: 42,
-                color: LibraryTheme.textSecondary,
+              const Glass(
+                circle: true,
+                padding: EdgeInsets.all(22),
+                child: Icon(
+                  Icons.apps_outage,
+                  size: 34,
+                  color: LibraryTheme.textSecondary,
+                ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 18),
               Text(_emptyText(l10n), style: _muted),
             ],
           );
@@ -305,15 +331,19 @@ class _HeaderIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Tooltip(
       message: tooltip,
-      child: Material(
-        color: LibraryTheme.surface,
-        shape: const CircleBorder(),
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(8),
-            child: Icon(icon, size: 18, color: LibraryTheme.textSecondary),
+      child: Glass(
+        circle: true,
+        blur: true,
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Icon(icon, size: 18, color: LibraryTheme.textSecondary),
+            ),
           ),
         ),
       ),

@@ -1,4 +1,4 @@
-package org.pn2.vrhome;
+package gitlab.neosalsa.home;
 
 import android.app.Activity;
 import android.content.Intent;

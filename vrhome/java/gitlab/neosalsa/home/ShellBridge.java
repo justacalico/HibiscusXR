@@ -1,4 +1,4 @@
-package org.pn2.vrhome;
+package gitlab.neosalsa.home;
 
 import android.app.ActivityOptions;
 import android.content.ComponentName;
@@ -32,7 +32,7 @@ import java.util.Set;
  * System-side plumbing for the panel shell. The GL thread owns the OES
  * textures; everything Android (virtual displays, tasks, input injection)
  * goes through here. Hidden API access is expected: the app is platform
- * signed and org.pn2.vrhome is in hidden_api_blacklist_exemptions.
+ * signed and gitlab.neosalsa.home is in hidden_api_blacklist_exemptions.
  *
  * Threading: createPanel, launch/adopt/release, the takePending getters and
  * the inject methods are all called from the render thread. The poller and
@@ -40,7 +40,7 @@ import java.util.Set;
  */
 public class ShellBridge {
     private static final String TAG = "vrhome.bridge";
-    private static final String SELF = "org.pn2.vrhome";
+    private static final String SELF = "gitlab.neosalsa.home";
 
     // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
     private static final int VD_FLAGS = 1 | 64;
@@ -154,7 +154,7 @@ public class ShellBridge {
     // display name for a panel's window bar; the library panel's pseudo
     // package is not a real package so it gets a fixed label
     public String appLabel(String pkg) {
-        if ("org.pn2.vrhome.library".equals(pkg)) return "Library";
+        if ("gitlab.neosalsa.home.library".equals(pkg)) return "Library";
         try {
             return pm.getApplicationLabel(
                     pm.getApplicationInfo(pkg, 0)).toString();

@@ -257,7 +257,7 @@ void android_main(android_app* app) {
     ANativeActivity_setWindowFlags(app->activity,
         AWINDOW_FLAG_FULLSCREEN | AWINDOW_FLAG_KEEP_SCREEN_ON, 0);
 
-    e.sensorMgr = ASensorManager_getInstanceForPackage("org.pn2.vrhome");
+    e.sensorMgr = ASensorManager_getInstanceForPackage("gitlab.neosalsa.home");
     e.rotSensor = ASensorManager_getDefaultSensor(e.sensorMgr,
         ASENSOR_TYPE_GAME_ROTATION_VECTOR);
     if (!e.rotSensor)

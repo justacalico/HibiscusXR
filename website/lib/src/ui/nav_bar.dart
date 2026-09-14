@@ -82,6 +82,16 @@ void _open(Destination d, BuildContext context) {
   }
 }
 
+/// Current path without requiring the context to sit under a RouteBase,
+/// so it also works inside dialogs and the router error page.
+String _currentPath(BuildContext context) =>
+    GoRouter.maybeOf(context)
+        ?.routerDelegate
+        .currentConfiguration
+        .uri
+        .path ??
+    '';
+
 class _NavLink extends StatefulWidget {
   const _NavLink({required this.destination, required this.label});
 
@@ -97,8 +107,7 @@ class _NavLinkState extends State<_NavLink> {
 
   @override
   Widget build(BuildContext context) {
-    final current =
-        GoRouterState.of(context).uri.path == widget.destination.path;
+    final current = _currentPath(context) == widget.destination.path;
     final color = current
         ? context.colors.onSurface
         : context.colors.secondary;
@@ -188,7 +197,7 @@ class _MobileMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final current = GoRouterState.of(context).uri.path;
+    final current = _currentPath(context);
     final destinations = [
       Destination(Routes.home, (l) => l.appTitle),
       ..._destinations(l10n),

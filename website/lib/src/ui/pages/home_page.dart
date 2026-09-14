@@ -150,6 +150,38 @@ class _Showcase extends StatelessWidget {
               ),
             ),
           ),
+          const SizedBox(height: 48),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final two = constraints.maxWidth >= 760;
+              final width = two ? (constraints.maxWidth - 32) / 2 : null;
+              return Wrap(
+                spacing: 32,
+                runSpacing: 32,
+                alignment: WrapAlignment.center,
+                children: [
+                  for (final asset in const [
+                    'assets/screenshots/collection-menu.png',
+                    'assets/screenshots/tile-menu.png',
+                  ])
+                    Reveal(
+                      child: Container(
+                        width: width,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: context.colors.outline,
+                            width: 1,
+                          ),
+                        ),
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.asset(asset, fit: BoxFit.cover),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ],
       ),
     );

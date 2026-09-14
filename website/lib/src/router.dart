@@ -6,11 +6,19 @@ import 'ui/pages/about_page.dart';
 import 'ui/pages/downloads_page.dart';
 import 'ui/pages/features_page.dart';
 import 'ui/pages/home_page.dart';
+import 'ui/pages/not_found_page.dart';
 import 'ui/pages/screenshots_page.dart';
 import 'ui/shell.dart';
 
 GoRouter buildRouter() => GoRouter(
       initialLocation: Routes.home,
+      errorPageBuilder: (context, state) => CustomTransitionPage<void>(
+        key: state.pageKey,
+        child: const SiteShell(child: NotFoundPage()),
+        transitionDuration: const Duration(milliseconds: 200),
+        transitionsBuilder: (context, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+      ),
       routes: [
         ShellRoute(
           builder: (context, state, child) => SiteShell(child: child),

@@ -674,6 +674,24 @@ abstract class AppLocalizations {
   /// **'Built with Flutter'**
   String get footerBuiltWith;
 
+  /// No description provided for @notFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Page not found'**
+  String get notFoundTitle;
+
+  /// No description provided for @notFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The page you are looking for does not exist.'**
+  String get notFoundBody;
+
+  /// No description provided for @notFoundCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Library'**
+  String get notFoundCta;
+
   /// No description provided for @languageName.
   ///
   /// In en, this message translates to:

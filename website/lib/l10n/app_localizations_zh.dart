@@ -306,5 +306,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get footerBuiltWith => '用 Flutter 构建';
 
   @override
+  String get notFoundTitle => '找不到页面';
+
+  @override
+  String get notFoundBody => '你要找的页面不存在。';
+
+  @override
+  String get notFoundCta => '回到应用库';
+
+  @override
   String get languageName => '中文';
 }

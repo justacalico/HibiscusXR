@@ -29,24 +29,34 @@ class ScreenshotsPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 72),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 900 ? 3 : 1;
-              final width =
-                  (constraints.maxWidth - (columns - 1) * 32) / columns;
-              return Wrap(
-                spacing: 32,
-                runSpacing: 40,
+              final wide = constraints.maxWidth >= 760;
+              final half = (constraints.maxWidth - 32) / 2;
+              return Column(
                 children: [
-                  for (var i = 0; i < shots.length; i++)
-                    Reveal(
-                      delay: Duration(milliseconds: i * 100),
-                      child: SizedBox(
-                        width: width,
-                        child: ShotCard(
-                          asset: shots[i].$1,
-                          caption: shots[i].$2,
-                        ),
-                      ),
+                  Reveal(
+                    child: ShotCard(
+                      asset: shots[0].$1,
+                      caption: shots[0].$2,
                     ),
+                  ),
+                  const SizedBox(height: 40),
+                  Wrap(
+                    spacing: 32,
+                    runSpacing: 40,
+                    children: [
+                      for (var i = 1; i < shots.length; i++)
+                        Reveal(
+                          delay: Duration(milliseconds: i * 100),
+                          child: SizedBox(
+                            width: wide ? half : constraints.maxWidth,
+                            child: ShotCard(
+                              asset: shots[i].$1,
+                              caption: shots[i].$2,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               );
             },

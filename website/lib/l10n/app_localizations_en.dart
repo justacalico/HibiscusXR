@@ -325,5 +325,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerBuiltWith => 'Built with Flutter';
 
   @override
+  String get notFoundTitle => 'Page not found';
+
+  @override
+  String get notFoundBody => 'The page you are looking for does not exist.';
+
+  @override
+  String get notFoundCta => 'Back to Library';
+
+  @override
   String get languageName => 'English';
 }

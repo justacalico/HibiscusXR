@@ -59,6 +59,8 @@ struct Engine {
     bool launcherSpawned = false;
     bool covered = false;        // a fullscreen app owns the physical display
     bool confirmHeld = false;
+    bool moveHeld = false;       // confirm held on a drag handle
+    float moveGrabYaw = 0.0f;    // gaze yaw when the ring drag grabbed
     int dragDisp = -1;           // display a confirm-drag started on
     float dragX = 0, dragY = 0;  // last injected drag position, px
     float grabX = 0, grabY = 0;  // where the drag grabbed, px

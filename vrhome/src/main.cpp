@@ -216,6 +216,7 @@ static void drawFrame(Engine* e) {
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
 
     dragTick(e, head);
+    moveTick(e);
     updatePanels(e);
 
     // covered by a fullscreen app (a VR game or an adopted stray):

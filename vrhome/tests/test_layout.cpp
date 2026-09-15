@@ -182,6 +182,16 @@ void testLayout() {
     CHECK(pillButtonAt(um, pillVC, phw) == ZONE_MIN);
     CHECK(pillButtonAt(0.0f, pillVC, phw) == ZONE_LABEL);
 
+    // the drag handle hangs under the pill's middle: its centre hits, the
+    // pill band, the window interior and far below do not
+    const float handleVC = -handleDrop() / (kPanelH * 0.5f);
+    CHECK(onHandle(0.0f, handleVC));
+    CHECK(!onHandle(0.0f, 0.0f));
+    CHECK(!onHandle(0.0f, pillVC));
+    CHECK(!onHandle(0.0f, handleVC - 0.30f));
+    CHECK(!onHandle((kHandleW + kHandlePad + 0.02f) / (kPanelW * 0.5f),
+                    handleVC));
+
     // gaze picks report the chrome zone: aim a fake head straight at a
     // world point (pickPanel only reads the head's -z column)
     ps.clear();
@@ -202,6 +212,35 @@ void testLayout() {
     aim.m[6] = 0.60f;              // way under the pill: nothing
     pk = pickPanel(ps, aim);
     CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
+    // centred under the pill: the drag handle
+    const float handleY = kPanelY - handleDrop();
+    aim.m[2] = -0.0f; aim.m[6] = -handleY;
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_HANDLE);
+    aim.m[2] = -(kHandleW + kHandlePad + 0.03f);   // past the line: nothing
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
+
+    // a ring drag shifts every panel by the same delta, keeping slot offsets
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[2]));
+    grabRing(ps);
+    dragRing(ps, 0.30f);
+    CHECK_F(ps[0].yaw, kSlotYaw[0] + 0.30f, 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[1] + 0.30f, 1e-6f);
+    CHECK_F(ps[2].yaw, kSlotYaw[2] + 0.30f, 1e-6f);
+    // the next tick re-applies the snapshot, not accumulated yaw
+    dragRing(ps, -0.10f);
+    CHECK_F(ps[0].yaw, -0.10f, 1e-6f);
+    CHECK_F(ps[2].yaw, kSlotYaw[2] - 0.10f, 1e-6f);
+    // delta wraps across +-pi instead of throwing panels off the ring
+    ps.clear();
+    ps.push_back(mkPanel((float)M_PI - 0.05f));
+    grabRing(ps);
+    dragRing(ps, 0.20f);
+    CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
     // the library pill has no buttons: its whole band picks as label
     ps.clear();

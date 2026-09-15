@@ -9,6 +9,7 @@ enum Zone {
     ZONE_LABEL,        // the pill, off both buttons
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
+    ZONE_HANDLE,       // the drag line under the pill: moves the whole ring
 };
 
 // One floating window: a GL texture fed by a virtual display plus the task
@@ -27,4 +28,5 @@ struct Panel {
     std::string label;        // resolved app label for the window bar
     bool minimized = false;   // hidden window; task and display stay alive
     float pillHW = 0;         // last drawn pill half-width, feeds hit tests
+    float grabYaw = 0;        // yaw snapped when a ring drag grabbed
 };

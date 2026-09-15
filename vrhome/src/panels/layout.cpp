@@ -79,6 +79,32 @@ int pillButtonAt(float u, float v, float pillHW) {
     return ZONE_LABEL;
 }
 
+float handleDrop() {
+    return kPanelH * 0.5f + kBarGap + kBarH + kHandleGap + kHandleT;
+}
+
+// panel-coord point -> world offset from the handle's centre, which hangs
+// centred under the pill
+static void handleLocal(float u, float v, float* x, float* y) {
+    *x = u * (kPanelW * 0.5f);
+    *y = v * (kPanelH * 0.5f) + handleDrop();
+}
+
+bool onHandle(float u, float v) {
+    float x, y;
+    handleLocal(u, v, &x, &y);
+    return fabsf(x) <= kHandleW + kHandlePad &&
+           fabsf(y) <= kHandleT + kHandlePad;
+}
+
+void grabRing(std::vector<Panel>& panels) {
+    for (auto& p : panels) p.grabYaw = p.yaw;
+}
+
+void dragRing(std::vector<Panel>& panels, float delta) {
+    for (auto& p : panels) p.yaw = wrapPi(p.grabYaw + delta);
+}
+
 int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg) {
     for (int i = 0; i < (int)panels.size(); ++i)
         if (panels[i].minimized && panels[i].pkg == pkg) return i;
@@ -142,6 +168,8 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
             if (onPill(u, v, phw))
                 zone = p.pkg == kLibraryPkg ? ZONE_LABEL
                                             : pillButtonAt(u, v, phw);
+            else if (onHandle(u, v))
+                zone = ZONE_HANDLE;
         }
         if (zone == ZONE_NONE) continue;
         bestT = t;

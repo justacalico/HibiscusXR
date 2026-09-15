@@ -46,6 +46,14 @@ constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
 constexpr float kPillBtnW = kPillBtnPad + 4.0f * kPillBtnR + kPillBtnGap;
 constexpr float kCornerR = 0.028f;
 
+// drag handle: a short white line centred under the pill. Holding confirm on
+// it drags the whole ring - every window keeps its slot offset and follows
+// the gaze yaw together
+constexpr float kHandleW = 0.045f;    // visible line half-width
+constexpr float kHandleT = 0.0035f;   // visible line half-thickness
+constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
+constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
+
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
 constexpr int kPicoConfirm = 1001;
 

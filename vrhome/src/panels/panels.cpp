@@ -40,6 +40,7 @@ int openPanel(Engine* e, float yaw) {
     p.stArr = env->NewGlobalRef(env->NewFloatArray(16));
     memset(p.stMat, 0, sizeof(p.stMat));
     p.yaw = yaw;
+    p.grabYaw = yaw;
     // the pick can hit the pill before the first draw measures the label
     p.pillHW = pillHalfWidth(0.0f, kPanelW * 0.5f, true);
     e->panels.push_back(p);

@@ -41,6 +41,21 @@ bool onPill(float u, float v, float pillHW);
 // which button a point on the pill hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
 int pillButtonAt(float u, float v, float pillHW);
 
+// how far under the panel centre the drag handle's centre hangs, world units
+float handleDrop();
+
+// is (u,v) in panel coords on the drag handle under the pill; the hit box is
+// padded past the drawn line since gaze aim is coarse
+bool onHandle(float u, float v);
+
+// arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
+// offset by the gaze delta
+void grabRing(std::vector<Panel>& panels);
+
+// ring drag tick: shift every panel's yaw by the delta from its snapshot,
+// keeping the ring's shape while the grabbed point tracks the gaze
+void dragRing(std::vector<Panel>& panels, float delta);
+
 // first minimized panel running pkg, or -1: relaunching an app whose window
 // is minimized brings the same window back instead of opening a new one
 int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg);

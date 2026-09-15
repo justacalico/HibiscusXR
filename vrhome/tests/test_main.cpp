@@ -8,6 +8,7 @@ void testLayout();
 void testText();
 void testSceneGeo();
 void testKeys();
+void testWarp();
 
 int main() {
     testMat4();
@@ -16,6 +17,7 @@ int main() {
     testText();
     testSceneGeo();
     testKeys();
+    testWarp();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

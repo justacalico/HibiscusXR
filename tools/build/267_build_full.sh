@@ -136,7 +136,7 @@ echo "=== panel shell (gitlab.neosalsa.home) ==="
 # Always rebuild from source and verify the platform signature: a debug-signed
 # apk installs fine but gets none of the system permissions, and the shell
 # fails silently at runtime.
-"$PN2_ROOT/vrhome/build.sh" \
+make -C "$PN2_ROOT/vrhome" apk \
     || { echo "FAIL vrhome build"; fail=$((fail+1)); }
 BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
 "$BT/apksigner" verify --print-certs "$PN2_ROOT/vrhome/out/vrhome.apk" \

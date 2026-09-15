@@ -31,7 +31,7 @@ flutter pub get
 flutter gen-l10n
 flutter test
 flutter analyze
-flutter build web --release --base-href "/website/"
+flutter build web --release --base-href "/"
 ```
 
 ## Deploy

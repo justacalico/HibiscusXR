@@ -998,6 +998,18 @@ abstract class AppLocalizations {
   /// **'library repo'**
   String get downloadLibraryCta;
 
+  /// No description provided for @issuesButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Report an issue'**
+  String get issuesButton;
+
+  /// No description provided for @issuesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bugs, feature requests, help - all welcome.'**
+  String get issuesSubtitle;
+
   /// No description provided for @buildsTitle.
   ///
   /// In en, this message translates to:

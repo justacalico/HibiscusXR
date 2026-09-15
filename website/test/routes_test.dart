@@ -28,6 +28,8 @@ void main() {
       Links.library,
       Links.out,
       Links.notes,
+      Links.issues,
+      Links.newIssue,
     ]) {
       final uri = Uri.parse(url);
       expect(uri.scheme, 'https', reason: url);

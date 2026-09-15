@@ -39,14 +39,15 @@ float drawText(Engine* e, const char* utf8, float x, float y, float z,
 }
 
 void drawTextPanel(Engine* e, const char* utf8, const float o[3],
-                   const float r[3], float mPerPx, float bold) {
+                   const float r[3], const float up[3], float mPerPx,
+                   float bold) {
     if (!e->font.ok) return;
     ensureGlyphs(e, utf8);
     std::vector<float> lv;
     emitText(e->font.set, utf8, mPerPx, lv, bold);
     if (lv.empty()) return;
     std::vector<float> v;
-    liftTextPanel(lv.data(), (int)lv.size() / 4, o, r, v);
+    liftTextPanel(lv.data(), (int)lv.size() / 4, o, r, up, v);
     flushText(e, v.data(), (int)(v.size() / 5));
 }
 

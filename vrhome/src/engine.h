@@ -56,11 +56,13 @@ struct Engine {
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
     float gazeYaw = 0.0f;        // world yaw the user currently faces
+    float gazePitch = 0.0f;      // world pitch the user currently faces
     bool launcherSpawned = false;
     bool covered = false;        // a fullscreen app owns the physical display
     bool confirmHeld = false;
     bool moveHeld = false;       // confirm held on a drag handle
     float moveGrabYaw = 0.0f;    // gaze yaw when the ring drag grabbed
+    float moveGrabPitch = 0.0f;  // gaze pitch when the ring drag grabbed
     int dragDisp = -1;           // display a confirm-drag started on
     float dragX = 0, dragY = 0;  // last injected drag position, px
     float grabX = 0, grabY = 0;  // where the drag grabbed, px

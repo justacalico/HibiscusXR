@@ -28,6 +28,9 @@ constexpr float kPanelDist = 1.5f;    // metres
 constexpr float kPanelW = 1.30f, kPanelH = 0.73f;
 constexpr float kPanelY = 0.05f;      // metres above horizon
 constexpr int   kMaxPanels = 3;
+// elevation clamp: panels ride a cylinder around the viewer and tilt to keep
+// facing it, so past ~86 deg the centre panel would sit on your crown
+constexpr float kPitchMax = 1.5f;
 // yaw offsets of the ring slots, relative to ring centre. 0.88 rad apart:
 // a 1.3 m panel at 1.5 m spans ~0.82 rad, so neighbours can no longer overlap
 constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};

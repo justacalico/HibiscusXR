@@ -24,9 +24,11 @@ struct Panel {
     void* stArr = nullptr;    // jfloatArray global ref, 16 floats
     float stMat[16] = {};
     float yaw = 0;            // world yaw of panel centre
+    float pitch = 0;          // elevation on the ring; plane tilts to face you
     std::string pkg;
     std::string label;        // resolved app label for the window bar
     bool minimized = false;   // hidden window; task and display stay alive
     float pillHW = 0;         // last drawn pill half-width, feeds hit tests
     float grabYaw = 0;        // yaw snapped when a ring drag grabbed
+    float grabPitch = 0;      // pitch snapped when a ring drag grabbed
 };

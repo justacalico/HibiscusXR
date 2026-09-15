@@ -53,6 +53,7 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
                     // panel follows, so the windows stay in formation
                     e->moveHeld = true;
                     e->moveGrabYaw = e->gazeYaw;
+                    e->moveGrabPitch = e->gazePitch;
                     grabRing(e->panels);
                     LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
                 }
@@ -120,8 +121,8 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
         return 1;
     }
     if (code == AKEYCODE_HOME && action == AKEY_EVENT_ACTION_UP) {
-        // recenter: the ring's slot layout recentres on the current gaze yaw
-        recenterSlots(e->panels, e->gazeYaw);
+        // recenter: the ring's slot layout recentres on the current gaze
+        recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
         return 1;
     }
     return 0;
@@ -151,8 +152,9 @@ void dragTick(Engine* e, const Mat4& head) {
 }
 
 // held on a drag handle: every panel keeps its slot offset and swings around
-// the viewer with the gaze
+// the viewer with the gaze, up and down as well as side to side
 void moveTick(Engine* e) {
     if (!e->moveHeld) return;
-    dragRing(e->panels, wrapPi(e->gazeYaw - e->moveGrabYaw));
+    dragRing(e->panels, wrapPi(e->gazeYaw - e->moveGrabYaw),
+             e->gazePitch - e->moveGrabPitch);
 }

@@ -40,8 +40,8 @@ float emitText(const GlyphSet& set, const char* utf8, float mPerPx,
 
 // lift emitted quads to world space, n = quads in lv (4 floats each), output
 // is (x, y, z, u, v) tuples. Flat version sits on z plane; panel version
-// follows a yawed plane: o is the baseline start, r the plane's right vector
+// follows the plane spanned by r and up: o is the baseline start
 void liftText(const float* lv, int n, float x, float y, float z,
               std::vector<float>& out);
 void liftTextPanel(const float* lv, int n, const float o[3], const float r[3],
-                   std::vector<float>& out);
+                   const float up[3], std::vector<float>& out);

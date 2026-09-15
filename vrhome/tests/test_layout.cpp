@@ -14,21 +14,49 @@ static Panel mkPanel(float yaw, const char* pkg = "com.x.app") {
 void testLayout() {
     // panel at yaw 0 sits dead ahead on -z at ring distance
     Panel p0 = mkPanel(0.0f);
-    float c[3], r[3];
-    panelCenter(p0, c, r);
+    float c[3], r[3], up[3];
+    panelCenter(p0, c, r, up);
     CHECK_F(c[0], 0.0f, 1e-6f);
     CHECK_F(c[1], kPanelY, 1e-6f);
     CHECK_F(c[2], -kPanelDist, 1e-6f);
     CHECK_F(r[0], 1.0f, 1e-6f);   // right edge on +x
     CHECK_F(r[2], 0.0f, 1e-6f);
+    CHECK_F(up[0], 0.0f, 1e-5f);
+    CHECK(up[1] > 0.99f);         // up is ~+y, nudged by the kPanelY lift
 
     // yaw +pi/2: centre on +x, right vector turns to +z
     Panel pr = mkPanel((float)M_PI / 2);
-    panelCenter(pr, c, r);
+    panelCenter(pr, c, r, up);
     CHECK_F(c[0], kPanelDist, 1e-5f);
     CHECK_F(c[2], 0.0f, 1e-5f);
     CHECK_F(r[0], 0.0f, 1e-5f);
     CHECK_F(r[2], 1.0f, 1e-5f);
+
+    // pitch raises the panel on the cylinder and tilts its up vector toward
+    // the viewer; the ring keeps its full horizontal spread
+    Panel pp = mkPanel(0.0f);
+    pp.pitch = 0.5f;
+    panelCenter(pp, c, r, up);
+    CHECK_F(c[0], 0.0f, 1e-6f);
+    CHECK_F(c[1], kPanelY + sinf(0.5f) * kPanelDist, 1e-5f);
+    CHECK_F(c[2], -kPanelDist, 1e-6f);
+    CHECK(up[1] < 1.0f && up[2] > 0.0f);
+    CHECK_F(up[0]*up[0] + up[1]*up[1] + up[2]*up[2], 1.0f, 1e-5f);
+
+    // rayPanel sees through the tilt: aiming at the raised centre lands u=v=0
+    float pu, pv;
+    float dpc[3] = {c[0], c[1], c[2]};
+    CHECK(rayPanel(pp, dpc, &pu, &pv));
+    CHECK_F(pu, 0.0f, 1e-4f);
+    CHECK_F(pv, 0.0f, 1e-4f);
+
+    // the ring's shared elevation: empty is flat, otherwise the first panel's
+    {
+        std::vector<Panel> rp;
+        CHECK_F(ringPitch(rp), 0.0f, 1e-6f);
+        rp.push_back(pp);
+        CHECK_F(ringPitch(rp), 0.5f, 1e-6f);
+    }
 
     // slot picking: empty ring -> centre slot; then left, then right
     std::vector<Panel> ps;
@@ -62,9 +90,14 @@ void testLayout() {
     ps.clear();
     ps.push_back(mkPanel(1.02f));   // near the centre slot -> stays
     ps.push_back(mkPanel(1.0f + kSlotYaw[1] * 0.6f));  // nearer left slot
-    recenterSlots(ps, 1.0f);
+    recenterSlots(ps, 1.0f, 0.0f);
     CHECK_F(ps[0].yaw, 1.0f + kSlotYaw[0], 1e-5f);
     CHECK_F(ps[1].yaw, 1.0f + kSlotYaw[1], 1e-5f);
+    // recenter also pulls the ring to the given elevation, clamped
+    recenterSlots(ps, 1.0f, 0.4f);
+    CHECK_F(ps[0].pitch, 0.4f, 1e-6f);
+    recenterSlots(ps, 1.0f, 9.0f);
+    CHECK_F(ps[0].pitch, kPitchMax, 1e-6f);
 
     // gaze pick: identity head looks down -z, hits the centre panel
     Mat4 I = identity();
@@ -102,7 +135,8 @@ void testLayout() {
     float dx, dy;
     CHECK(dragPoint(ps[0], I, &dx, &dy));
     CHECK_F(dx, kVdW * 0.5f, 1e-3f);
-    CHECK_F(dy, (0.5f + kPanelY / kPanelH) * kVdH, 1e-3f);
+    // the tilted plane shifts the hit a hair vs the flat kPanelY estimate
+    CHECK_F(dy, (0.5f + kPanelY / kPanelH) * kVdH, 0.1f);
 
     // gaze yawed onto a side panel: drag point lands on its centre column
     Panel pr2 = mkPanel(kSlotYaw[1]);
@@ -135,7 +169,9 @@ void testLayout() {
     float fwd[3] = {0, 0, -1};
     CHECK(rayPanel(ps[0], fwd, &ru, &rv, &rt));
     CHECK_F(ru, 0.0f, 1e-5f);
-    CHECK_F(rt, kPanelDist, 1e-4f);
+    // the kPanelY lift tilts the plane, so the ray lands a touch past the
+    // ring distance: t = |c|^2 / kPanelDist
+    CHECK_F(rt, kPanelDist + kPanelY * kPanelY / kPanelDist, 1e-4f);
     float away[3] = {0, 0, 1};
     CHECK(!rayPanel(ps[0], away, &ru, &rv, &rt));
 
@@ -250,19 +286,28 @@ void testLayout() {
     CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
 
     grabRing(ps);
-    dragRing(ps, 0.30f);
+    dragRing(ps, 0.30f, 0.0f);
     CHECK_F(ps[0].yaw, kSlotYaw[0] + 0.30f, 1e-6f);
     CHECK_F(ps[1].yaw, kSlotYaw[1] + 0.30f, 1e-6f);
     CHECK_F(ps[2].yaw, kSlotYaw[2] + 0.30f, 1e-6f);
     // the next tick re-applies the snapshot, not accumulated yaw
-    dragRing(ps, -0.10f);
+    dragRing(ps, -0.10f, 0.0f);
     CHECK_F(ps[0].yaw, -0.10f, 1e-6f);
     CHECK_F(ps[2].yaw, kSlotYaw[2] - 0.10f, 1e-6f);
+    // pitch delta elevates the whole ring together, clamped at the poles
+    dragRing(ps, 0.0f, 0.35f);
+    CHECK_F(ps[0].pitch, 0.35f, 1e-6f);
+    CHECK_F(ps[1].pitch, 0.35f, 1e-6f);
+    CHECK_F(ps[2].pitch, 0.35f, 1e-6f);
+    dragRing(ps, 0.0f, 9.0f);
+    CHECK_F(ps[0].pitch, kPitchMax, 1e-6f);
+    dragRing(ps, 0.0f, -9.0f);
+    CHECK_F(ps[0].pitch, -kPitchMax, 1e-6f);
     // delta wraps across +-pi instead of throwing panels off the ring
     ps.clear();
     ps.push_back(mkPanel((float)M_PI - 0.05f));
     grabRing(ps);
-    dragRing(ps, 0.20f);
+    dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
     // the library pill has no buttons: its whole band picks as label

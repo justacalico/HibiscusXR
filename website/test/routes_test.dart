@@ -7,9 +7,11 @@ void main() {
   test('site routes are all root-anchored and unique', () {
     const paths = [
       Routes.home,
-      Routes.features,
+      Routes.status,
+      Routes.repositories,
       Routes.screenshots,
       Routes.download,
+      Routes.faq,
       Routes.about,
     ];
     expect(paths.toSet().length, paths.length);
@@ -19,10 +21,18 @@ void main() {
   });
 
   test('external links are https gitlab URLs', () {
-    for (final url in [Links.docs, Links.repo, Links.group]) {
+    for (final url in [
+      Links.docs,
+      Links.group,
+      Links.vrhome,
+      Links.library,
+      Links.out,
+      Links.notes,
+    ]) {
       final uri = Uri.parse(url);
       expect(uri.scheme, 'https', reason: url);
       expect(uri.host, 'gitlab.com', reason: url);
+      expect(uri.path.startsWith('/neosalsa'), isTrue, reason: url);
     }
   });
 

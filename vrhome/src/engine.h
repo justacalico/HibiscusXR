@@ -53,6 +53,7 @@ struct Engine {
     bool haveQuat = false;
 
     int hover = -1;              // panel index under the gaze ray
+    int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     bool launcherSpawned = false;
@@ -61,6 +62,8 @@ struct Engine {
     int dragDisp = -1;           // display a confirm-drag started on
     float dragX = 0, dragY = 0;  // last injected drag position, px
     float grabX = 0, grabY = 0;  // where the drag grabbed, px
+    int pressDisp = -1;          // display the held confirm press started on
+    int pressZone = ZONE_NONE;   // chrome zone that press started on
 
     char hud[96] = "";
     int  hudLen = 0;

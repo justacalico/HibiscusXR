@@ -124,6 +124,21 @@ void pumpBridge(Engine* e) {
             if (env->ExceptionCheck()) { env->ExceptionClear(); }
             continue;
         }
+        // a minimized window for this app comes back instead of opening a
+        // new panel: its task and display are still alive
+        const int mi = minimizedIndex(e->panels, pkg);
+        if (mi >= 0) {
+            e->panels[mi].minimized = false;
+            if (e->panels[mi].taskId >= 0) {
+                env->CallVoidMethod(e->bridge, e->mFocusTask,
+                                    e->panels[mi].taskId);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+            }
+            LOGI("unminimized %s on disp %d", pkg.c_str(),
+                 e->panels[mi].displayId);
+            env->DeleteLocalRef(jpkg);
+            continue;
+        }
         if ((int)e->panels.size() >= kMaxPanels && !evictOldestApp(e)) {
             env->DeleteLocalRef(jpkg);
             continue;

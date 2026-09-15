@@ -40,6 +40,8 @@ int openPanel(Engine* e, float yaw) {
     p.stArr = env->NewGlobalRef(env->NewFloatArray(16));
     memset(p.stMat, 0, sizeof(p.stMat));
     p.yaw = yaw;
+    // the pick can hit the pill before the first draw measures the label
+    p.pillHW = pillHalfWidth(0.0f, kPanelW * 0.5f, true);
     e->panels.push_back(p);
     LOGI("panel %d on display %d yaw %.2f", (int)e->panels.size() - 1,
          dispId, yaw);
@@ -55,7 +57,7 @@ void closePanel(Engine* e, int idx) {
     if (p.stArr) env->DeleteGlobalRef((jobject)p.stArr);
     if (p.tex) { GLuint t = p.tex; glDeleteTextures(1, &t); }
     e->panels.erase(e->panels.begin() + idx);
-    if (e->hover == idx) e->hover = -1;
+    if (e->hover == idx) { e->hover = -1; e->hoverZone = ZONE_NONE; }
     else if (e->hover > idx) e->hover--;
 }
 

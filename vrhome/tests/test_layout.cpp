@@ -141,14 +141,81 @@ void testLayout() {
 
     // pill sizing: hugs the label, always narrower than the window
     const float winHW = kPanelW / 2;
-    CHECK_F(pillHalfWidth(0.20f, winHW), 0.10f + kPillPadX, 1e-6f);
-    CHECK(pillHalfWidth(0.20f, winHW) < winHW);
+    CHECK_F(pillHalfWidth(0.20f, winHW, false), 0.10f + kPillPadX, 1e-6f);
+    CHECK(pillHalfWidth(0.20f, winHW, false) < winHW);
     // no label still leaves a 2:1 lozenge, not a dot
-    CHECK_F(pillHalfWidth(0.0f, winHW), kBarH, 1e-6f);
+    CHECK_F(pillHalfWidth(0.0f, winHW, false), kBarH, 1e-6f);
     // long labels clamp inside the window edges
-    CHECK_F(pillHalfWidth(10.0f, winHW), winHW - kBarInset, 1e-6f);
+    CHECK_F(pillHalfWidth(10.0f, winHW, false), winHW - kBarInset, 1e-6f);
     // text limit matches the pill's padded interior at the clamp
-    CHECK_F(pillTextLimit(winHW), (winHW - kBarInset - kPillPadX) * 2.0f,
-            1e-6f);
-    CHECK(pillTextLimit(winHW) < kPanelW);
+    CHECK_F(pillTextLimit(winHW, false),
+            (winHW - kBarInset - kPillPadX) * 2.0f, 1e-6f);
+    CHECK(pillTextLimit(winHW, false) < kPanelW);
+
+    // a closable pill reserves the button strip on its right end
+    CHECK_F(pillHalfWidth(0.20f, winHW, true),
+            0.10f + kPillPadX + kPillBtnW, 1e-6f);
+    CHECK_F(pillHalfWidth(0.0f, winHW, true), kPillPadX + kPillBtnW, 1e-6f);
+    CHECK_F(pillHalfWidth(10.0f, winHW, true), winHW - kBarInset, 1e-6f);
+    CHECK_F(pillTextLimit(winHW, true),
+            (winHW - kBarInset - kPillPadX - kPillBtnW) * 2.0f, 1e-6f);
+
+    // button layout: close hugs the right edge, minimize sits to its left
+    const float phw = 0.30f;
+    CHECK_F(pillCloseX(phw), phw - kPillBtnPad - kPillBtnR, 1e-6f);
+    CHECK_F(pillMinX(phw),
+            phw - kPillBtnPad - 3.0f * kPillBtnR - kPillBtnGap, 1e-6f);
+    CHECK(pillMinX(phw) > 0.0f && pillMinX(phw) < pillCloseX(phw));
+
+    // the pill band hangs under the window: centred v is on it, the window
+    // interior and points below the pill are not
+    const float pillVC = -(kPanelH * 0.5f + kBarGap + kBarH * 0.5f) /
+                         (kPanelH * 0.5f);
+    CHECK(onPill(0.0f, pillVC, phw));
+    CHECK(!onPill(0.0f, 0.0f, phw));
+    CHECK(!onPill(0.0f, pillVC - 0.20f, phw));
+    CHECK(!onPill(phw / (kPanelW * 0.5f) + 0.05f, pillVC, phw));
+    // button hits land on their discs, the middle of the pill is label
+    const float uc = pillCloseX(phw) / (kPanelW * 0.5f);
+    const float um = pillMinX(phw) / (kPanelW * 0.5f);
+    CHECK(pillButtonAt(uc, pillVC, phw) == ZONE_CLOSE);
+    CHECK(pillButtonAt(um, pillVC, phw) == ZONE_MIN);
+    CHECK(pillButtonAt(0.0f, pillVC, phw) == ZONE_LABEL);
+
+    // gaze picks report the chrome zone: aim a fake head straight at a
+    // world point (pickPanel only reads the head's -z column)
+    ps.clear();
+    Panel bp = mkPanel(0.0f);
+    bp.pillHW = phw;
+    ps.push_back(bp);
+    const float pillY = kPanelY - (kPanelH * 0.5f + kBarGap + kBarH * 0.5f);
+    Mat4 aim = identity();
+    aim.m[2] = -0.0f; aim.m[6] = -pillY; aim.m[10] = kPanelDist;
+    pk = pickPanel(ps, aim);   // dead centre of the pill: the label
+    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
+    aim.m[2] = -pillCloseX(phw);   // right end: the close button
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_CLOSE);
+    aim.m[2] = -pillMinX(phw);     // next to it: minimize
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_MIN);
+    aim.m[6] = 0.60f;              // way under the pill: nothing
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
+
+    // the library pill has no buttons: its whole band picks as label
+    ps.clear();
+    ps.push_back(mkPanel(0.0f, kLibraryPkg));
+    aim.m[2] = -pillCloseX(kBarH); aim.m[6] = -pillY;
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
+
+    // minimized windows vanish from picking and stay findable for restore
+    ps[0].minimized = true;
+    pk = pickPanel(ps, aim);
+    CHECK(pk.idx == -1);
+    CHECK(minimizedIndex(ps, kLibraryPkg) == 0);
+    CHECK(minimizedIndex(ps, "com.x.app") == -1);
+    ps[0].minimized = false;
+    CHECK(minimizedIndex(ps, kLibraryPkg) == -1);
 }

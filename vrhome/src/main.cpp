@@ -207,6 +207,7 @@ static void drawFrame(Engine* e) {
     // gaze pick: nearest panel under the head ray, hit in display px
     const Pick pk = pickPanel(e->panels, head);
     e->hover = pk.idx;
+    e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
     if (pk.idx >= 0) {
         e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
         e->hitY = (0.5f - pk.v * 0.5f) * kVdH;

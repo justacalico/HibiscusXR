@@ -23,27 +23,36 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
         const bool down = action == AKEY_EVENT_ACTION_DOWN &&
                           AKeyEvent_getRepeatCount(ev) == 0;
         if (down) {
-            LOGI("confirm down, hover %d", e->hover);
+            LOGI("confirm down, hover %d zone %d", e->hover, e->hoverZone);
             e->confirmHeld = true;
             e->dragDisp = -1;
-            // press starts a real gesture: DOWN here, MOVEs while held, UP on
-            // release - a quick press still lands as a plain tap
-            if (e->bridge && e->hover >= 0 && e->hover < (int)e->panels.size()) {
-                JNIEnv* env = threadEnv(app);
+            e->pressDisp = -1;
+            e->pressZone = e->hoverZone;
+            if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 const Panel& p = e->panels[e->hover];
-                e->dragDisp = p.displayId;
-                e->dragX = e->grabX = e->hitX;
-                e->dragY = e->grabY = e->hitY;
-                LOGI("drag start disp %d @ %.0f,%.0f",
-                     p.displayId, e->hitX, e->hitY);
-                env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
-                                    e->hitX, e->hitY, AMOTION_EVENT_ACTION_DOWN);
-                if (env->ExceptionCheck()) env->ExceptionClear();
+                e->pressDisp = p.displayId;
+                // a press on the window surface starts a real gesture:
+                // DOWN here, MOVEs while held, UP on release - a quick press
+                // still lands as a plain tap. a press on the pill only arms
+                // its chrome action, fired if the release lands on the same
+                // spot
+                if (e->bridge && e->hoverZone == ZONE_WINDOW) {
+                    JNIEnv* env = threadEnv(app);
+                    e->dragDisp = p.displayId;
+                    e->dragX = e->grabX = e->hitX;
+                    e->dragY = e->grabY = e->hitY;
+                    LOGI("drag start disp %d @ %.0f,%.0f",
+                         p.displayId, e->hitX, e->hitY);
+                    env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
+                                        e->hitX, e->hitY,
+                                        AMOTION_EVENT_ACTION_DOWN);
+                    if (env->ExceptionCheck()) env->ExceptionClear();
+                }
             }
         } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
             e->confirmHeld = false;
+            JNIEnv* env = threadEnv(app);
             if (e->bridge && e->dragDisp >= 0) {
-                JNIEnv* env = threadEnv(app);
                 env->CallVoidMethod(e->bridge, e->mInjectTouch, e->dragDisp,
                                     e->dragX, e->dragY, AMOTION_EVENT_ACTION_UP);
                 if (env->ExceptionCheck()) env->ExceptionClear();
@@ -53,8 +62,37 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
                         if (env->ExceptionCheck()) env->ExceptionClear();
                         break;
                     }
+            } else if (e->pressDisp >= 0 && e->hoverZone == e->pressZone) {
+                // pill press: fire only when the release is still on the
+                // same panel and the same zone it started on
+                for (int i = 0; i < (int)e->panels.size(); ++i) {
+                    Panel& p = e->panels[i];
+                    if (p.displayId != e->pressDisp || e->hover != i)
+                        continue;
+                    if (e->pressZone == ZONE_CLOSE) {
+                        LOGI("pill close disp %d", p.displayId);
+                        if (e->bridge && p.taskId >= 0) {
+                            env->CallVoidMethod(e->bridge, e->mRemoveTask,
+                                                p.taskId);
+                            if (env->ExceptionCheck()) env->ExceptionClear();
+                        }
+                        closePanel(e, i);
+                    } else if (e->pressZone == ZONE_MIN) {
+                        LOGI("pill minimize disp %d", p.displayId);
+                        p.minimized = true;
+                        e->hover = -1;
+                        e->hoverZone = ZONE_NONE;
+                    } else if (e->pressZone == ZONE_LABEL && e->bridge &&
+                               p.taskId >= 0) {
+                        env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
+                        if (env->ExceptionCheck()) env->ExceptionClear();
+                    }
+                    break;
+                }
             }
             e->dragDisp = -1;
+            e->pressDisp = -1;
+            e->pressZone = ZONE_NONE;
         }
         return 1;
     }

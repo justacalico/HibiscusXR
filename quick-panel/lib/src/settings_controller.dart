@@ -19,7 +19,6 @@ class SettingsController {
 
   final SettingsStore store;
   StreamSubscription<SettingsSnapshot>? _events;
-  Timer? _clockTimer;
   bool _started = false;
 
   /// Restore persisted toggles, pull the platform snapshot and start
@@ -32,9 +31,6 @@ class SettingsController {
     store.applySnapshot(await _source.load());
     store.tick();
     _events = _source.events.listen(store.applySnapshot);
-    _clockTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      store.tick();
-    });
   }
 
   /// Flip a tile: optimistic update, then tell the platform.
@@ -58,7 +54,6 @@ class SettingsController {
 
   Future<void> dispose() async {
     await _events?.cancel();
-    _clockTimer?.cancel();
     store.dispose();
   }
 }

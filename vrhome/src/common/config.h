@@ -49,8 +49,8 @@ constexpr float kCornerR = 0.028f;
 // drag handle: a short white line centred under the pill. Holding confirm on
 // it drags the whole ring - every window keeps its slot offset and follows
 // the gaze yaw together
-constexpr float kHandleW = 0.045f;    // visible line half-width
-constexpr float kHandleT = 0.0035f;   // visible line half-thickness
+constexpr float kHandleW = 0.065f;    // visible line half-width
+constexpr float kHandleT = 0.0055f;   // visible line half-thickness
 constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
 constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 

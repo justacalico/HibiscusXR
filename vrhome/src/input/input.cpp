@@ -25,6 +25,7 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
         if (down) {
             LOGI("confirm down, hover %d zone %d", e->hover, e->hoverZone);
             e->confirmHeld = true;
+            e->moveHeld = false;
             e->dragDisp = -1;
             e->pressDisp = -1;
             e->pressZone = e->hoverZone;
@@ -47,10 +48,19 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
                                         e->hitX, e->hitY,
                                         AMOTION_EVENT_ACTION_DOWN);
                     if (env->ExceptionCheck()) env->ExceptionClear();
+                } else if (e->hoverZone == ZONE_HANDLE) {
+                    // ring drag: the held handle tracks the gaze and every
+                    // panel follows, so the windows stay in formation
+                    e->moveHeld = true;
+                    e->moveGrabYaw = e->gazeYaw;
+                    e->moveGrabPitch = e->gazePitch;
+                    grabRing(e->panels);
+                    LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
                 }
             }
         } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
             e->confirmHeld = false;
+            e->moveHeld = false;
             JNIEnv* env = threadEnv(app);
             if (e->bridge && e->dragDisp >= 0) {
                 env->CallVoidMethod(e->bridge, e->mInjectTouch, e->dragDisp,
@@ -111,8 +121,8 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
         return 1;
     }
     if (code == AKEYCODE_HOME && action == AKEY_EVENT_ACTION_UP) {
-        // recenter: the ring's slot layout recentres on the current gaze yaw
-        recenterSlots(e->panels, e->gazeYaw);
+        // recenter: the ring's slot layout recentres on the current gaze
+        recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
         return 1;
     }
     return 0;
@@ -139,4 +149,12 @@ void dragTick(Engine* e, const Mat4& head) {
         return;
     }
     e->dragDisp = -1;   // window went away mid-drag
+}
+
+// held on a drag handle: every panel keeps its slot offset and swings around
+// the viewer with the gaze, up and down as well as side to side
+void moveTick(Engine* e) {
+    if (!e->moveHeld) return;
+    dragRing(e->panels, wrapPi(e->gazeYaw - e->moveGrabYaw),
+             e->gazePitch - e->moveGrabPitch);
 }

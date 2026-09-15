@@ -24,5 +24,8 @@ void gazeDir(const Mat4& head, float out[3]);
 // pitched so far the horizontal projection vanishes (caller keeps last yaw)
 bool gazeYaw(const Mat4& head, float* out);
 
+// elevation of the gaze direction, radians; always defined
+float gazePitch(const Mat4& head);
+
 // yaw/pitch/roll in degrees for the HUD
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll);

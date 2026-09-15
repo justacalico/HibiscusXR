@@ -37,6 +37,12 @@ bool gazeYaw(const Mat4& head, float* out) {
     return true;
 }
 
+float gazePitch(const Mat4& head) {
+    float d[3];
+    gazeDir(head, d);
+    return asinf(fmaxf(-1.0f, fminf(1.0f, d[1])));
+}
+
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll) {
     const float x = q[0], y = q[1], z = q[2], w = q[3];
     *yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;

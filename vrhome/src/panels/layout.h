@@ -9,18 +9,24 @@
 // layout is host-testable: no GL, no JNI.
 
 // panel quad in world space, facing the viewer at the origin. `right` is the
-// unit vector along the panel's right edge
-void panelCenter(const Panel& p, float out[3], float right[3]);
+// unit vector along the panel's right edge, `up` its top edge - the plane
+// tilts with pitch so an elevated window still looks at you
+void panelCenter(const Panel& p, float out[3], float right[3], float up[3]);
 
 // yaw of the next free ring slot around a centre yaw; centre when full
 float freeSlotYaw(const std::vector<Panel>& panels, float centre);
+
+// the ring's current elevation: panels share one pitch, so a window opened
+// while the ring is raised joins at the same height instead of the horizon
+float ringPitch(const std::vector<Panel>& panels);
 
 // index of the oldest evictable panel (first that isn't the library
 // launcher), or -1 when nothing can go
 int evictIndex(const std::vector<Panel>& panels);
 
-// snap every panel to its nearest ring slot around a new centre yaw
-void recenterSlots(std::vector<Panel>& panels, float centre);
+// snap every panel to its nearest ring slot around a new centre yaw and pull
+// the whole ring to the given elevation
+void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);
 
 // half-width of the label pill under a window: hugs the text with side
 // padding plus the button strip when the window has one, clamped inside the
@@ -40,6 +46,27 @@ bool onPill(float u, float v, float pillHW);
 
 // which button a point on the pill hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
 int pillButtonAt(float u, float v, float pillHW);
+
+// how far under the panel centre the drag handle's centre hangs, world units
+float handleDrop();
+
+// is (u,v) in panel coords on the drag handle under the pill; the hit box is
+// padded past the drawn line since gaze aim is coarse
+bool onHandle(float u, float v);
+
+// the panel in the middle of the ring - the only one that gets a drag
+// handle. Picked by lowest total angular distance to the others, so the
+// centre slot wins on a full ring; minimized panels don't count
+int middleIndex(const std::vector<Panel>& panels);
+
+// arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
+// offset by the gaze delta
+void grabRing(std::vector<Panel>& panels);
+
+// ring drag tick: shift every panel by the gaze delta from its snapshot -
+// yaw wraps around the ring, pitch elevates the whole ring and is clamped so
+// the windows can't flip over the poles
+void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch);
 
 // first minimized panel running pkg, or -1: relaunching an app whose window
 // is minimized brings the same window back instead of opening a new one

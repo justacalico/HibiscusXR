@@ -143,7 +143,8 @@ void pumpBridge(Engine* e) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw));
+        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
+                            ringPitch(e->panels));
         if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
         e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
@@ -166,7 +167,8 @@ void pumpBridge(Engine* e) {
         int taskId = env->GetIntField(p, e->fPendTask);
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw));
+        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
+                            ringPitch(e->panels));
         if (idx >= 0) {
             e->panels[idx].taskId = taskId;
             if (jpkg) {

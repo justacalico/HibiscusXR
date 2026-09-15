@@ -12,3 +12,7 @@ struct Mat4;
 
 // per-frame while the confirm button is held: inject drag MOVEs at the gaze
 void dragTick(Engine* e, const Mat4& head);
+
+// per-frame while a drag handle is held: swing the whole panel ring with the
+// gaze yaw so every window moves together
+void moveTick(Engine* e);

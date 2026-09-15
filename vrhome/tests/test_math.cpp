@@ -158,9 +158,12 @@ void testHead() {
     CHECK(gazeYaw(I, &gy));
     CHECK_F(gy, 0.0f, 1e-6f);
 
-    // straight up: no horizontal yaw to report
+    // head pitched fully over: no horizontal yaw to report, pitch maxes out
     Mat4 up = quatToMat((const float[]){0.7071f, 0, 0, 0.7071f}, false);
     CHECK(!gazeYaw(up, &gy));
+    CHECK_F(gazePitch(I), 0.0f, 1e-6f);
+    // the fixture quat isn't exactly normalized, so allow slack
+    CHECK_F(fabsf(gazePitch(up)), (float)M_PI / 2, 0.01f);
 
     // euler extraction: identity quat -> all zero
     float yaw, pitch, roll;

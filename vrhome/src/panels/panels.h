@@ -4,7 +4,7 @@ struct Engine;
 
 // create a GL texture + virtual display + panel record. taskId stays -1 for
 // launcher/explicit launches. Returns panels index or -1.
-int  openPanel(Engine* e, float yaw);
+int  openPanel(Engine* e, float yaw, float pitch);
 
 void closePanel(Engine* e, int idx);
 

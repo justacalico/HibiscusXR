@@ -87,7 +87,7 @@ static void spawnLauncher(Engine* e, const Mat4& head) {
     e->launcherSpawned = true;
     float gy = 0.0f;
     gazeYaw(head, &gy);
-    int idx = openPanel(e, gy);
+    int idx = openPanel(e, gy, gazePitch(head));
     if (idx >= 0) {
         e->panels[idx].pkg = kLibraryPkg;
         JNIEnv* env = threadEnv(e->app);
@@ -201,7 +201,8 @@ static void drawFrame(Engine* e) {
     debugTapHook(e);
     spawnLauncher(e, head);
 
-    if (takeWantRecenter()) recenterSlots(e->panels, e->gazeYaw);
+    if (takeWantRecenter())
+        recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
     pumpBridge(e);
 
     // gaze pick: nearest panel under the head ray, hit in display px
@@ -214,8 +215,10 @@ static void drawFrame(Engine* e) {
     }
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
+    e->gazePitch = gazePitch(head);
 
     dragTick(e, head);
+    moveTick(e);
     updatePanels(e);
 
     // covered by a fullscreen app (a VR game or an adopted stray):

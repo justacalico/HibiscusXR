@@ -11,11 +11,12 @@ float measureText(Engine* e, const char* utf8, float mPerPx);
 float drawText(Engine* e, const char* utf8, float x, float y, float z,
                float mPerPx);
 
-// text on a yawed panel plane: o is the baseline start in world space, r the
-// plane's right vector; up stays world +y. bold > 0 double-strikes each
-// glyph offset that far along +x (in metres)
+// text on a panel plane: o is the baseline start in world space, r and up the
+// plane's edge vectors so glyphs tilt with a pitched window. bold > 0
+// double-strikes each glyph offset that far along +x (in metres)
 void drawTextPanel(Engine* e, const char* utf8, const float o[3],
-                   const float r[3], float mPerPx, float bold = 0.0f);
+                   const float r[3], const float up[3], float mPerPx,
+                   float bold = 0.0f);
 
 // HUD: head-locked status line so the pipeline can be verified without adb
 void drawHud(Engine* e, const Mat4& proj);

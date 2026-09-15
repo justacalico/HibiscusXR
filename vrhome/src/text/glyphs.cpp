@@ -86,11 +86,11 @@ void liftText(const float* lv, int n, float x, float y, float z,
 }
 
 void liftTextPanel(const float* lv, int n, const float o[3], const float r[3],
-                   std::vector<float>& out) {
+                   const float up[3], std::vector<float>& out) {
     for (int i = 0; i < n; ++i) {
-        out.push_back(o[0] + r[0] * lv[i*4]);
-        out.push_back(o[1] + lv[i*4+1]);
-        out.push_back(o[2] + r[2] * lv[i*4]);
+        out.push_back(o[0] + r[0] * lv[i*4] + up[0] * lv[i*4+1]);
+        out.push_back(o[1] + r[1] * lv[i*4] + up[1] * lv[i*4+1]);
+        out.push_back(o[2] + r[2] * lv[i*4] + up[2] * lv[i*4+1]);
         out.push_back(lv[i*4+2]);
         out.push_back(lv[i*4+3]);
     }

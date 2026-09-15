@@ -28,6 +28,9 @@ constexpr float kPanelDist = 1.5f;    // metres
 constexpr float kPanelW = 1.30f, kPanelH = 0.73f;
 constexpr float kPanelY = 0.05f;      // metres above horizon
 constexpr int   kMaxPanels = 3;
+// elevation clamp: panels ride a cylinder around the viewer and tilt to keep
+// facing it, so past ~86 deg the centre panel would sit on your crown
+constexpr float kPitchMax = 1.5f;
 // yaw offsets of the ring slots, relative to ring centre. 0.88 rad apart:
 // a 1.3 m panel at 1.5 m spans ~0.82 rad, so neighbours can no longer overlap
 constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
@@ -45,6 +48,14 @@ constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
 // total strip the buttons reserve on the pill's right end
 constexpr float kPillBtnW = kPillBtnPad + 4.0f * kPillBtnR + kPillBtnGap;
 constexpr float kCornerR = 0.028f;
+
+// drag handle: a short white line centred under the pill. Holding confirm on
+// it drags the whole ring - every window keeps its slot offset and follows
+// the gaze yaw together
+constexpr float kHandleW = 0.065f;    // visible line half-width
+constexpr float kHandleT = 0.0055f;   // visible line half-thickness
+constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
+constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
 constexpr int kPicoConfirm = 1001;

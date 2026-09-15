@@ -77,13 +77,15 @@ void testText() {
     CHECK_F(w[2], -3.0f, 1e-6f);
     CHECK_F(w[3], lv[2], 1e-6f);
 
-    // lift onto a yawed plane: x follows the right vector
+    // lift onto a yawed plane: x follows the right vector, y the up vector
     std::vector<float> wp;
     const float o[3] = {0, 0, -2.2f};
     const float rr[3] = {0, 0, 1};   // panel turned 90 deg
-    liftTextPanel(lv.data(), 12, o, rr, wp);
-    CHECK_F(wp[0], 0.0f + rr[0] * lv[0], 1e-6f);
-    CHECK_F(wp[2], -2.2f + rr[2] * lv[0], 1e-6f);
+    const float uu[3] = {0, 0.8f, 0.6f};  // and pitched back, up tilted fwd
+    liftTextPanel(lv.data(), 12, o, rr, uu, wp);
+    CHECK_F(wp[0], 0.0f + rr[0] * lv[0] + uu[0] * lv[1], 1e-6f);
+    CHECK_F(wp[1], uu[1] * lv[1], 1e-6f);
+    CHECK_F(wp[2], -2.2f + rr[2] * lv[0] + uu[2] * lv[1], 1e-6f);
 
     // textBounds: a glyph with yoff -20 and h 25 spans -5 below to +20 above
     // the baseline at scale 1; a space-only string has no bounds

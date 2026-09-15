@@ -282,6 +282,49 @@ class _RevealState extends State<Reveal> with SingleTickerProviderStateMixin {
   }
 }
 
+/// Centred page masthead shared by the subpages.
+class PageHead extends StatelessWidget {
+  const PageHead({super.key, required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final mobile = Layout.isMobile(context);
+    return Band(
+      padding: EdgeInsets.only(
+        top: mobile ? 56 : 96,
+        bottom: mobile ? 40 : 56,
+      ),
+      child: Column(
+        children: [
+          Reveal(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: context.text.displayLarge!
+                  .copyWith(fontSize: mobile ? 48 : 80),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Reveal(
+            delay: const Duration(milliseconds: 100),
+            child: Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: context.text.bodyLarge!.copyWith(
+                fontSize: 21,
+                color: context.colors.secondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// A screenshot with a hairline border and a caption under it.
 class ShotCard extends StatelessWidget {
   const ShotCard({

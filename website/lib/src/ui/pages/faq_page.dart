@@ -5,7 +5,6 @@ import 'package:pn2_website/l10n/app_localizations.dart';
 import '../../theme.dart';
 import '../shell.dart';
 import '../widgets.dart';
-import 'features_page.dart' show PageHead;
 
 class FaqPage extends StatelessWidget {
   const FaqPage({super.key});

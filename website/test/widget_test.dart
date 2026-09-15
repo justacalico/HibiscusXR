@@ -12,6 +12,10 @@ Future<Widget> _app() async {
   return SiteApp(settings: AppSettings(prefs)..load());
 }
 
+GoRouter _routerOf(WidgetTester tester) => tester
+    .widget<MaterialApp>(find.byType(MaterialApp))
+    .routerConfig! as GoRouter;
+
 void main() {
   testWidgets('home page renders hero and nav', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
@@ -20,10 +24,10 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    expect(find.text('Library'), findsWidgets);
-    expect(find.text('Features'), findsWidgets);
-    expect(find.text('Screenshots'), findsWidgets);
-    expect(find.text('See features'), findsOneWidget);
+    expect(find.text('PN2Lineage'), findsWidgets);
+    expect(find.text('Status'), findsWidgets);
+    expect(find.text('Repos'), findsWidgets);
+    expect(find.text('See the status'), findsOneWidget);
     expect(find.text('Read the docs'), findsOneWidget);
   });
 
@@ -37,8 +41,38 @@ void main() {
     await tester.tap(find.text('Download').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Nothing to install yet.'), findsOneWidget);
-    expect(find.text('Not shipping yet'), findsOneWidget);
+    expect(find.text('Flashing risk'), findsOneWidget);
+    expect(find.text('The full system image'), findsOneWidget);
+  });
+
+  testWidgets('repositories page lists all groups', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/repositories');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Software'), findsOneWidget);
+    expect(find.text('Port source'), findsOneWidget);
+    expect(find.text('Dumps & staging'), findsOneWidget);
+    expect(find.text('vrhome'), findsOneWidget);
+  });
+
+  testWidgets('status page shows both lists', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/status');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Working'), findsOneWidget);
+    expect(find.text('Not yet'), findsOneWidget);
   });
 
   testWidgets('unknown route shows the not-found page', (tester) async {
@@ -48,15 +82,11 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    // go_router parses the fragment; push an unknown path through it.
-    final router = tester
-        .widget<MaterialApp>(find.byType(MaterialApp))
-        .routerConfig! as GoRouter;
-    router.go('/nope');
+    _routerOf(tester).go('/nope');
     await tester.pumpAndSettle();
 
     expect(find.text('Page not found'), findsOneWidget);
-    expect(find.text('Back to Library'), findsOneWidget);
+    expect(find.text('Back to PN2Lineage'), findsOneWidget);
   });
 
   testWidgets('zh locale renders translated chrome', (tester) async {
@@ -68,9 +98,9 @@ void main() {
     await tester.pumpWidget(SiteApp(settings: AppSettings(prefs)..load()));
     await tester.pumpAndSettle();
 
-    expect(find.text('应用库'), findsWidgets);
-    expect(find.text('功能'), findsWidgets);
-    expect(find.text('查看功能'), findsOneWidget);
+    expect(find.text('PN2Lineage'), findsWidgets);
+    expect(find.text('现状'), findsWidgets);
+    expect(find.text('查看现状'), findsOneWidget);
   });
 
   testWidgets('faq rows expand on tap', (tester) async {
@@ -80,17 +110,14 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    final router = tester
-        .widget<MaterialApp>(find.byType(MaterialApp))
-        .routerConfig! as GoRouter;
-    router.go('/faq');
+    _routerOf(tester).go('/faq');
     await tester.pumpAndSettle();
 
     expect(find.text('FAQ'), findsWidgets);
-    final answer = find.textContaining('still being assembled');
+    final answer = find.textContaining('VR display still shows black');
     expect(answer, findsNothing);
 
-    await tester.tap(find.text('Is there a build I can install?'));
+    await tester.tap(find.text('Does the port actually work?'));
     await tester.pumpAndSettle();
     expect(answer, findsOneWidget);
   });

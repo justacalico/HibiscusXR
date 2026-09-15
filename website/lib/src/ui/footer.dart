@@ -23,8 +23,9 @@ class SiteFooter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final product = <_Link>[
-      _Link(l10n.navFeatures, Routes.features),
+    final site = <_Link>[
+      _Link(l10n.navStatus, Routes.status),
+      _Link(l10n.navRepos, Routes.repositories),
       _Link(l10n.navScreenshots, Routes.screenshots),
       _Link(l10n.navFaq, Routes.faq),
       _Link(l10n.navDownload, Routes.download),
@@ -32,8 +33,8 @@ class SiteFooter extends StatelessWidget {
     final project = <_Link>[
       _Link(l10n.navAbout, Routes.about),
       _Link(l10n.navDocs, Links.docs),
-      _Link(l10n.aboutGroupCta, Links.group),
-      _Link(l10n.aboutRepoCta, Links.repo),
+      _Link(l10n.aboutRepoCta, Links.group),
+      _Link(l10n.aboutNotesCta, Links.notes),
     ];
     final year = DateTime.now().year;
 
@@ -58,7 +59,7 @@ class SiteFooter extends StatelessWidget {
                 spacing: 64,
                 runSpacing: 24,
                 children: [
-                  _FooterColumn(title: l10n.footerProduct, links: product),
+                  _FooterColumn(title: l10n.footerSite, links: site),
                   _FooterColumn(title: l10n.footerProject, links: project),
                 ],
               ),

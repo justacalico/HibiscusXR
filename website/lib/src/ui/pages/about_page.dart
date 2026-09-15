@@ -7,7 +7,6 @@ import '../../links.dart';
 import '../../theme.dart';
 import '../shell.dart';
 import '../widgets.dart';
-import 'features_page.dart' show PageHead;
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -25,9 +24,8 @@ class AboutPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Block(title: l10n.aboutWhatTitle, body: l10n.aboutWhatBody),
-              _Block(
-                  title: l10n.aboutProjectTitle, body: l10n.aboutProjectBody),
-              _Block(title: l10n.aboutTechTitle, body: l10n.aboutTechBody),
+              _Block(title: l10n.aboutHowTitle, body: l10n.aboutHowBody),
+              _Block(title: l10n.aboutGroupTitle, body: l10n.aboutGroupBody),
               _Block(
                   title: l10n.aboutLicenseTitle, body: l10n.aboutLicenseBody),
               const SizedBox(height: 12),
@@ -37,15 +35,15 @@ class AboutPage extends StatelessWidget {
                 children: [
                   ChevronLink(
                     label: l10n.aboutRepoCta,
-                    onPressed: () => launchUrl(Uri.parse(Links.repo)),
+                    onPressed: () => launchUrl(Uri.parse(Links.group)),
                   ),
                   ChevronLink(
                     label: l10n.aboutDocsCta,
                     onPressed: () => launchUrl(Uri.parse(Links.docs)),
                   ),
                   ChevronLink(
-                    label: l10n.aboutGroupCta,
-                    onPressed: () => launchUrl(Uri.parse(Links.group)),
+                    label: l10n.aboutNotesCta,
+                    onPressed: () => launchUrl(Uri.parse(Links.notes)),
                   ),
                 ],
               ),

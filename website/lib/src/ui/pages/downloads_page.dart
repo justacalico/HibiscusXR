@@ -7,7 +7,6 @@ import '../../links.dart';
 import '../../theme.dart';
 import '../shell.dart';
 import '../widgets.dart';
-import 'features_page.dart' show PageHead;
 
 class DownloadsPage extends StatelessWidget {
   const DownloadsPage({super.key});
@@ -24,22 +23,15 @@ class DownloadsPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 72),
           child: Column(
             children: [
-              Reveal(
-                child: _StatusCard(l10n: l10n),
-              ),
-              const SizedBox(height: 48),
-              Reveal(
-                child: _Steps(l10n: l10n),
-              ),
+              Reveal(child: _WarnCard(l10n: l10n)),
               const SizedBox(height: 32),
-              Reveal(
-                child: Text(
-                  l10n.downloadNote,
-                  textAlign: TextAlign.center,
-                  style: context.text.labelSmall!
-                      .copyWith(fontSize: 13, height: 1.5),
-                ),
-              ),
+              Reveal(child: _ImageCard(l10n: l10n)),
+              const SizedBox(height: 48),
+              Reveal(child: _Steps(l10n: l10n)),
+              const SizedBox(height: 48),
+              Reveal(child: _Requirements(l10n: l10n)),
+              const SizedBox(height: 48),
+              Reveal(child: _Software(l10n: l10n)),
             ],
           ),
         ),
@@ -48,10 +40,11 @@ class DownloadsPage extends StatelessWidget {
   }
 }
 
-class _StatusCard extends StatelessWidget {
-  const _StatusCard({required this.l10n});
+class _Card extends StatelessWidget {
+  const _Card({required this.child, this.tint});
 
-  final AppLocalizations l10n;
+  final Widget child;
+  final Color? tint;
 
   @override
   Widget build(BuildContext context) {
@@ -61,8 +54,49 @@ class _StatusCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.colors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: context.colors.outline, width: 1),
+        border: Border.all(color: tint ?? context.colors.outline, width: 1),
       ),
+      child: child,
+    );
+  }
+}
+
+class _WarnCard extends StatelessWidget {
+  const _WarnCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      tint: AppColors.bad.withValues(alpha: 0.5),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.warning_amber_rounded,
+                  size: 20, color: AppColors.bad),
+              const SizedBox(width: 10),
+              Text(l10n.downloadWarnTitle, style: context.text.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.downloadWarnBody, style: context.text.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageCard extends StatelessWidget {
+  const _ImageCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -71,12 +105,17 @@ class _StatusCard extends StatelessWidget {
               Icon(Icons.inventory_2_outlined,
                   size: 20, color: context.colors.primary),
               const SizedBox(width: 10),
-              Text(l10n.downloadStatusTitle,
-                  style: context.text.titleMedium),
+              Text(l10n.downloadImageTitle, style: context.text.titleMedium),
             ],
           ),
           const SizedBox(height: 12),
-          Text(l10n.downloadStatusBody, style: context.text.bodyMedium),
+          Text(l10n.downloadImageBody, style: context.text.bodyMedium),
+          const SizedBox(height: 20),
+          PillButton(
+            label: l10n.downloadImageCta,
+            small: true,
+            onPressed: () => launchUrl(Uri.parse(Links.out)),
+          ),
         ],
       ),
     );
@@ -91,9 +130,10 @@ class _Steps extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final steps = [
-      l10n.downloadStepSource,
-      l10n.downloadStepDocs,
-      l10n.downloadStepWatch,
+      l10n.downloadStep1,
+      l10n.downloadStep2,
+      l10n.downloadStep3,
+      l10n.downloadStep4,
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,6 +166,54 @@ class _Steps extends StatelessWidget {
                 Expanded(
                   child: Text(
                     steps[i],
+                    style: context.text.bodyMedium!.copyWith(
+                      color: context.colors.onSurface,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.downloadStepsNote,
+          style: context.text.labelSmall!.copyWith(fontSize: 13, height: 1.5),
+        ),
+      ],
+    );
+  }
+}
+
+class _Requirements extends StatelessWidget {
+  const _Requirements({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final reqs = [
+      l10n.downloadReq1,
+      l10n.downloadReq2,
+      l10n.downloadReq3,
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.downloadReqTitle, style: context.text.titleLarge),
+        const SizedBox(height: 16),
+        for (final req in reqs)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.check_circle_outline,
+                    size: 18, color: AppColors.ok),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    req,
                     style: context.text.bodyMedium!
                         .copyWith(color: context.colors.onSurface),
                   ),
@@ -133,24 +221,44 @@ class _Steps extends StatelessWidget {
               ],
             ),
           ),
-        const SizedBox(height: 20),
-        Wrap(
-          spacing: 24,
-          runSpacing: 12,
-          children: [
-            PillButton(
-              label: l10n.downloadSourceCta,
-              small: true,
-              onPressed: () => launchUrl(Uri.parse(Links.repo)),
-            ),
-            ChevronLink(
-              label: l10n.downloadDocsCta,
-              large: false,
-              onPressed: () => launchUrl(Uri.parse(Links.docs)),
-            ),
-          ],
-        ),
       ],
+    );
+  }
+}
+
+class _Software extends StatelessWidget {
+  const _Software({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(l10n.downloadSoftwareTitle, style: context.text.titleMedium),
+          const SizedBox(height: 12),
+          Text(l10n.downloadSoftwareBody, style: context.text.bodyMedium),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 24,
+            runSpacing: 12,
+            children: [
+              ChevronLink(
+                label: l10n.downloadVrhomeCta,
+                large: false,
+                onPressed: () => launchUrl(Uri.parse(Links.vrhome)),
+              ),
+              ChevronLink(
+                label: l10n.downloadLibraryCta,
+                large: false,
+                onPressed: () => launchUrl(Uri.parse(Links.library)),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,11 +1,11 @@
 {
-    "name": "Library",
-    "short_name": "Library",
+    "name": "PN2Lineage",
+    "short_name": "PN2Lineage",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#fbfbfd",
     "theme_color": "#fbfbfd",
-    "description": "The app window of vrhome for the Pico Neo 2 LineageOS port.",
+    "description": "LineageOS 17.1 running on the Pico Neo 2 VR headset.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

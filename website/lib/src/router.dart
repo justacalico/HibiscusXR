@@ -5,10 +5,11 @@ import 'routes.dart';
 import 'ui/pages/about_page.dart';
 import 'ui/pages/downloads_page.dart';
 import 'ui/pages/faq_page.dart';
-import 'ui/pages/features_page.dart';
 import 'ui/pages/home_page.dart';
 import 'ui/pages/not_found_page.dart';
+import 'ui/pages/repositories_page.dart';
 import 'ui/pages/screenshots_page.dart';
+import 'ui/pages/status_page.dart';
 import 'ui/shell.dart';
 
 GoRouter buildRouter() => GoRouter(
@@ -29,8 +30,12 @@ GoRouter buildRouter() => GoRouter(
               pageBuilder: _fade(const HomePage()),
             ),
             GoRoute(
-              path: Routes.features,
-              pageBuilder: _fade(const FeaturesPage()),
+              path: Routes.status,
+              pageBuilder: _fade(const StatusPage()),
+            ),
+            GoRoute(
+              path: Routes.repositories,
+              pageBuilder: _fade(const RepositoriesPage()),
             ),
             GoRoute(
               path: Routes.screenshots,

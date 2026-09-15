@@ -19,7 +19,7 @@ pages:
   stage: deploy
   script:
     - flutter pub get
-    - flutter build web --release --no-web-resources-cdn --base-href "/$CI_PROJECT_NAME/"
+    - flutter build web --release --no-web-resources-cdn --base-href "/"
     - cp -r build/web public
   artifacts:
     paths:

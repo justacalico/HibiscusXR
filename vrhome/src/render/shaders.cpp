@@ -87,25 +87,36 @@ void main() {
 }
 )";
 
+// Stock Pico lens field: scale = K0 + K2 r^2 + K4 r^4 + K6 r^6 in tan-angle
+// radius, plus per-channel chromatic scales. r comes out of the 90-degree
+// projection as ndc = 2p and tan(theta) = (aspect*ndc.x, ndc.y). Off-texture
+// samples go black rather than smearing the edge texel.
 const char* const kWarpFS = R"(
 precision mediump float;
 varying vec2 vUV;
 uniform sampler2D uTex;
 uniform vec2 uLensCenter;
 uniform float uAspect;
-uniform float uK1;
+uniform float uK0;
 uniform float uK2;
+uniform float uK4;
+uniform float uK6;
+uniform vec2 uChroma;
 void main() {
     vec2 p = vUV - uLensCenter;
-    // x scaled by the eye aspect so r is circular in pixels, not in uv -
-    // the eye target is 1920x2160 and the plain uv radius warped an
-    // ellipse, which read as a slight fisheye
-    vec2 q = vec2(p.x * uAspect, p.y);
+    vec2 q = vec2(p.x * uAspect, p.y) * 2.0;
     float r2 = dot(q, q);
-    float scale = 1.0 + uK1 * r2 + uK2 * r2 * r2;
+    float scale = uK0 + r2 * (uK2 + r2 * (uK4 + r2 * uK6));
     vec2 uv = uLensCenter + p * scale;
-    gl_FragColor = (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
-        ? vec4(0.0, 0.0, 0.0, 1.0) : texture2D(uTex, uv);
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    } else {
+        vec2 d = uv - uLensCenter;
+        gl_FragColor = vec4(
+            texture2D(uTex, uLensCenter + d * uChroma.x).r,
+            texture2D(uTex, uv).g,
+            texture2D(uTex, uLensCenter + d * uChroma.y).b, 1.0);
+    }
 }
 )";
 

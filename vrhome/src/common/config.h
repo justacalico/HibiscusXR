@@ -3,8 +3,15 @@
 // Shared constants. All values are compile-time; the runtime overrides for
 // head tracking live behind the debug.vrhome.* system properties.
 
-// tunables confirmed on the headset in the vrdemo: worldx 90
-constexpr float kDistK1 = 0.22f, kDistK2 = 0.24f;
+// Neo 2 lens polynomial from the stock /vendor/etc/qvr/svrapi_config.txt:
+// scale(r) = K0 + K2 r^2 + K4 r^4 + K6 r^6, r the tan-angle radius off the
+// lens axis (r = 1 at 45 deg). The old hand-tuned 1 + 0.22 r2 + 0.24 r2^2
+// stayed near 1 across the field, so the lens's own distortion showed
+// through and the image stretched toward the screen edges.
+constexpr float kLensK0 = 0.740740741f, kLensK2 = 0.192360375f;
+constexpr float kLensK4 = -0.020400088f, kLensK6 = 0.216338258f;
+// chromatic-aberration channel scales, multiplied into the warp
+constexpr float kLensChr = 0.992f, kLensChb = 1.012f;
 constexpr float kIPD  = 0.063f;
 constexpr float kFovY = 90.0f;
 // roll back to the vrdemo-confirmed 90: 270 only looked upright because

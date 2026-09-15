@@ -154,6 +154,8 @@
 
   "downloadTitle": "Download",
   "downloadSubtitle": "Flash it yourself - but read the warning first.",
+  "downloadAlphaTitle": "Alpha software",
+  "downloadAlphaBody": "This is very early alpha. These are testing builds, not production releases. Things will break, features are missing, and the VR display is still black. Only flash if you know what you're doing and want to help test.",
   "downloadWarnTitle": "Flashing risk",
   "downloadWarnBody": "Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.",
   "downloadImageTitle": "The full system image",

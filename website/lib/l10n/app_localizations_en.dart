@@ -455,6 +455,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Flash it yourself - but read the warning first.';
 
   @override
+  String get downloadAlphaTitle => 'Alpha software';
+
+  @override
+  String get downloadAlphaBody =>
+      'This is very early alpha. These are testing builds, not production releases. Things will break, features are missing, and the VR display is still black. Only flash if you know what you\'re doing and want to help test.';
+
+  @override
   String get downloadWarnTitle => 'Flashing risk';
 
   @override

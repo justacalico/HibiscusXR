@@ -884,6 +884,18 @@ abstract class AppLocalizations {
   /// **'Flash it yourself - but read the warning first.'**
   String get downloadSubtitle;
 
+  /// No description provided for @downloadAlphaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Alpha software'**
+  String get downloadAlphaTitle;
+
+  /// No description provided for @downloadAlphaBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This is very early alpha. These are testing builds, not production releases. Things will break, features are missing, and the VR display is still black. Only flash if you know what you\'re doing and want to help test.'**
+  String get downloadAlphaBody;
+
   /// No description provided for @downloadWarnTitle.
   ///
   /// In en, this message translates to:

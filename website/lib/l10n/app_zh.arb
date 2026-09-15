@@ -146,6 +146,8 @@
 
   "downloadTitle": "下载",
   "downloadSubtitle": "自己动手刷——但先读完警告。",
+  "downloadAlphaTitle": "Alpha 阶段",
+  "downloadAlphaBody": "这是非常早期的 alpha。这些是测试构建,不是正式发布版。东西会坏,功能不全,VR 画面还是黑的。只有你知道自己在干什么、愿意帮忙测试的时候才刷。",
   "downloadWarnTitle": "刷机风险",
   "downloadWarnBody": "只刷 system 分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。",
   "downloadImageTitle": "完整系统镜像",

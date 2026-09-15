@@ -42,7 +42,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Flashing risk'), findsOneWidget);
-    expect(find.text('The full system image'), findsOneWidget);
+    expect(find.text('Alpha software'), findsOneWidget);
   });
 
   testWidgets('repositories page lists all groups', (tester) async {

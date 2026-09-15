@@ -414,6 +414,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadSubtitle => '自己动手刷——但先读完警告。';
 
   @override
+  String get downloadAlphaTitle => 'Alpha 阶段';
+
+  @override
+  String get downloadAlphaBody =>
+      '这是非常早期的 alpha。这些是测试构建,不是正式发布版。东西会坏,功能不全,VR 画面还是黑的。只有你知道自己在干什么、愿意帮忙测试的时候才刷。';
+
+  @override
   String get downloadWarnTitle => '刷机风险';
 
   @override

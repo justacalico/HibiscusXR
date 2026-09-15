@@ -5,6 +5,7 @@ import 'package:pn2_website/l10n/app_localizations.dart';
 
 import '../../links.dart';
 import '../../theme.dart';
+import '../builds_section.dart';
 import '../shell.dart';
 import '../widgets.dart';
 
@@ -32,6 +33,8 @@ class DownloadsPage extends StatelessWidget {
               Reveal(child: _Requirements(l10n: l10n)),
               const SizedBox(height: 48),
               Reveal(child: _Software(l10n: l10n)),
+              const SizedBox(height: 64),
+              Reveal(child: const BuildsSection()),
             ],
           ),
         ),

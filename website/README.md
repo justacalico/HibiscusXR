@@ -1,7 +1,9 @@
 # website
 
-Project site for `library` - the app window of vrhome on the Pico Neo 2
-LineageOS port. Built with Flutter web, deployed to GitLab Pages.
+Project site for PN2Lineage - the LineageOS 17.1 port for the Pico Neo 2
+VR headset. Covers the whole neosalsa group: the port, the software, the
+repository map and the research notes. Built with Flutter web, deployed
+to GitLab Pages.
 
 Live at https://website-be06f5.gitlab.io/
 

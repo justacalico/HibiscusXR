@@ -35,6 +35,8 @@ class DownloadsPage extends StatelessWidget {
               Reveal(child: _Software(l10n: l10n)),
               const SizedBox(height: 64),
               Reveal(child: const BuildsSection()),
+              const SizedBox(height: 48),
+              Reveal(child: _IssueCard(l10n: l10n)),
             ],
           ),
         ),
@@ -259,6 +261,39 @@ class _Software extends StatelessWidget {
                 onPressed: () => launchUrl(Uri.parse(Links.library)),
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _IssueCard extends StatelessWidget {
+  const _IssueCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.bug_report_outlined,
+                  size: 20, color: context.colors.primary),
+              const SizedBox(width: 10),
+              Text(l10n.issuesButton, style: context.text.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.issuesSubtitle, style: context.text.bodyMedium),
+          const SizedBox(height: 20),
+          PillButton(
+            label: l10n.issuesButton,
+            small: true,
+            onPressed: () => launchUrl(Uri.parse(Links.newIssue)),
           ),
         ],
       ),

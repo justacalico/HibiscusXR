@@ -15,15 +15,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get close => 'Close';
-
-  @override
-  String get minimize => 'Minimize';
-
-  @override
-  String get panelLabel => 'Quick Settings';
-
-  @override
   String get tileWifi => 'Wi-Fi';
 
   @override

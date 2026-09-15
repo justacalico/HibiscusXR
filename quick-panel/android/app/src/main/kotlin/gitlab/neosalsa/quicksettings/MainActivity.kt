@@ -215,8 +215,6 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.quicksettings.REPORT")
                     .setPackage(packageName),
             )
-            "close" -> finish()
-            "minimize" -> moveTaskToBack(true)
         }
     }
 }

@@ -42,6 +42,6 @@ void main() {
     expect(find.text('Wi-Fi'), findsOneWidget);
     expect(find.text('neosalsa-5g'), findsOneWidget);
     expect(find.text('Bluetooth'), findsOneWidget);
-    expect(find.text('Quick Settings'), findsOneWidget);
+    expect(find.text('Reset view'), findsOneWidget);
   });
 }

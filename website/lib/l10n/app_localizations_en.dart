@@ -519,6 +519,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadLibraryCta => 'library repo';
 
   @override
+  String get buildsTitle => 'Available builds';
+
+  @override
+  String get buildsSubtitle =>
+      'Pulled live from the dist pipeline. Alpha and beta are prereleases.';
+
+  @override
+  String get buildsChannelRelease => 'Release';
+
+  @override
+  String get buildsChannelBeta => 'Beta';
+
+  @override
+  String get buildsChannelAlpha => 'Alpha';
+
+  @override
+  String get buildsEmpty => 'No builds in this channel yet.';
+
+  @override
+  String get buildsError => 'Couldn\'t load builds. Try again later.';
+
+  @override
+  String get buildsRetry => 'Retry';
+
+  @override
+  String get buildsFullImage => 'Full image';
+
+  @override
+  String get buildsCleanImage => 'Clean image';
+
+  @override
+  String get buildsLogs => 'Build logs';
+
+  @override
+  String get buildsChecksums => 'Checksums';
+
+  @override
+  String get buildsViewRelease => 'View on GitLab';
+
+  @override
+  String get buildsLoading => 'Loading builds…';
+
+  @override
   String get faqTitle => 'FAQ';
 
   @override

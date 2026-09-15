@@ -42,6 +42,22 @@ class _SettingTileState extends State<SettingTile> {
     final radius = spec.large
         ? PanelTheme.tileRadius
         : PanelTheme.smallTileRadius;
+    final content = Padding(
+      padding: EdgeInsets.all(spec.large ? 14 : 8),
+      child: spec.large
+          ? _large(label, iconColor, l10n)
+          : _small(label, iconColor),
+    );
+
+    // Unimplemented tiles grey out, take no taps and drop out of d-pad
+    // traversal.
+    if (!spec.implemented) {
+      return Material(
+        color: PanelTheme.surface.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(radius),
+        child: Opacity(opacity: 0.45, child: content),
+      );
+    }
 
     return FocusableActionDetector(
       autofocus: widget.autofocus,
@@ -67,10 +83,7 @@ class _SettingTileState extends State<SettingTile> {
                   ? Border.all(color: PanelTheme.accent, width: 2)
                   : null,
             ),
-            padding: EdgeInsets.all(spec.large ? 14 : 8),
-            child: spec.large
-                ? _large(label, iconColor, l10n)
-                : _small(label, iconColor),
+            child: content,
           ),
         ),
       ),

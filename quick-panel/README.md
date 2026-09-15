@@ -23,6 +23,7 @@ window, but works as a normal activity anywhere.
   open the matching system panel instead
 - Pico-side toggles (seethrough, boundary) broadcast a seam intent for
   the OS layer to catch
+- Tiles without a platform implementation yet are greyed out and inert
 - D-pad/controller navigation: arrows move focus, confirm activates
 - All UI strings in ARB files, ready for localization
 

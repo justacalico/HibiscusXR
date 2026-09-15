@@ -49,4 +49,14 @@ void main() {
     expect(smallTiles, hasLength(8));
     expect(panelTiles, [...largeTiles, ...smallTiles]);
   });
+
+  test('unimplemented tiles are flagged', () {
+    final off = panelTiles.where((t) => !t.implemented);
+    expect(off.map((t) => t.toggleId ?? t.actionId), [
+      ToggleId.boundary,
+      ToggleId.seethrough,
+      ActionId.resetView,
+      ActionId.reportProblem,
+    ]);
+  });
 }

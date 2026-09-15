@@ -519,6 +519,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadLibraryCta => 'library repo';
 
   @override
+  String get issuesButton => 'Report an issue';
+
+  @override
+  String get issuesSubtitle => 'Bugs, feature requests, help - all welcome.';
+
+  @override
   String get buildsTitle => 'Available builds';
 
   @override

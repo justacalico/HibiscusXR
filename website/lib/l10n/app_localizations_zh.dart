@@ -476,6 +476,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadLibraryCta => 'library 仓库';
 
   @override
+  String get issuesButton => '提交 issue';
+
+  @override
+  String get issuesSubtitle => 'Bug、功能请求、求助,都欢迎。';
+
+  @override
   String get buildsTitle => '可用构建';
 
   @override

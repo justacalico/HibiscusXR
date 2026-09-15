@@ -166,6 +166,9 @@
   "downloadVrhomeCta": "vrhome 仓库",
   "downloadLibraryCta": "library 仓库",
 
+  "issuesButton": "提交 issue",
+  "issuesSubtitle": "Bug、功能请求、求助,都欢迎。",
+
   "buildsTitle": "可用构建",
   "buildsSubtitle": "从 dist 流水线实时拉取。Alpha 和 Beta 是预发布版。",
   "buildsChannelRelease": "正式版",

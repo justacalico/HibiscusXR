@@ -54,13 +54,28 @@ class _Wordmark extends StatelessWidget {
       mouseCursor: SystemMouseCursors.click,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Text(
-          l10n.appTitle,
-          style: context.text.titleMedium!.copyWith(
-            fontFamily: 'InterDisplay',
-            fontSize: 17,
-            letterSpacing: -0.3,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4.5),
+              child: Image.asset(
+                'assets/brand/mark.png',
+                width: 18,
+                height: 18,
+                semanticLabel: l10n.appTitle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              l10n.appTitle,
+              style: context.text.titleMedium!.copyWith(
+                fontFamily: 'InterDisplay',
+                fontSize: 17,
+                letterSpacing: -0.3,
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -100,6 +100,9 @@ Live-tunable system properties (`setprop` on the headset):
 | `debug.vrhome.sensroll` | sensor-frame roll correction |
 | `debug.vrhome.worldx` | mount tilt correction |
 | `debug.vrhome.hud` | `0` hides the status line |
+| `debug.vrhome.fov` | vertical render FOV in degrees (default `90`) |
+| `debug.vrhome.k1` / `debug.vrhome.k2` | lens warp coefficients (set both to `0` for no distortion) |
+| `debug.vrhome.lensy` | lens centre height in eye uv (default `0.5`) |
 | `debug.vrhome.fill` | `1` paints each eye a different colour |
 | `debug.vrhome.launch` | set to a package name to open it on a window |
 | `debug.vrhome.tap` | `"displayId,x,y"` injects a tap |

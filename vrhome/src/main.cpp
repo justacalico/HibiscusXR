@@ -31,6 +31,7 @@
 #include "panels/panels.h"
 #include "render/egl.h"
 #include "render/scene.h"
+#include "render/warp.h"
 #include "sensor/sensor.h"
 #include "text/draw.h"
 
@@ -140,9 +141,14 @@ static void warpPresent(Engine* e) {
     glVertexAttribPointer(aPos, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glUniform1i(glGetUniformLocation(e->warpProg, "uTex"), 0);
     glActiveTexture(GL_TEXTURE0);
-    glUniform2f(glGetUniformLocation(e->warpProg, "uLensCenter"), 0.5f, 0.5f);
-    glUniform1f(glGetUniformLocation(e->warpProg, "uK1"), kDistK1);
-    glUniform1f(glGetUniformLocation(e->warpProg, "uK2"), kDistK2);
+    const Warp wp = makeWarp(e->eye[0].w, e->eye[0].h);
+    glUniform2f(glGetUniformLocation(e->warpProg, "uLensCenter"), wp.cx,
+                propF("debug.vrhome.lensy", wp.cy));
+    glUniform1f(glGetUniformLocation(e->warpProg, "uAspect"), wp.aspect);
+    glUniform1f(glGetUniformLocation(e->warpProg, "uK1"),
+                propF("debug.vrhome.k1", wp.k1));
+    glUniform1f(glGetUniformLocation(e->warpProg, "uK2"),
+                propF("debug.vrhome.k2", wp.k2));
     for (int i = 0; i < 2; ++i) {
         glViewport(i * e->eye[i].w, 0, e->eye[i].w, e->eye[i].h);
         glBindTexture(GL_TEXTURE_2D, e->eye[i].tex);
@@ -208,7 +214,8 @@ static void drawFrame(Engine* e) {
 
     updateHud(e);
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
-    drawEyes(e, head, perspective(kFovY, aspect, 0.05f, 100.0f));
+    const float fov = propF("debug.vrhome.fov", kFovY);
+    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f));
     warpPresent(e);
     updateFps(e);
 }

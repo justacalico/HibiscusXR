@@ -92,11 +92,16 @@ precision mediump float;
 varying vec2 vUV;
 uniform sampler2D uTex;
 uniform vec2 uLensCenter;
+uniform float uAspect;
 uniform float uK1;
 uniform float uK2;
 void main() {
     vec2 p = vUV - uLensCenter;
-    float r2 = dot(p, p);
+    // x scaled by the eye aspect so r is circular in pixels, not in uv -
+    // the eye target is 1920x2160 and the plain uv radius warped an
+    // ellipse, which read as a slight fisheye
+    vec2 q = vec2(p.x * uAspect, p.y);
+    float r2 = dot(q, q);
     float scale = 1.0 + uK1 * r2 + uK2 * r2 * r2;
     vec2 uv = uLensCenter + p * scale;
     gl_FragColor = (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)

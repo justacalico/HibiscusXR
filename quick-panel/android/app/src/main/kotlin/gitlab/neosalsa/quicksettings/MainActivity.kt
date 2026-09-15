@@ -1,15 +1,20 @@
 package gitlab.neosalsa.quicksettings
 
+import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Bundle
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -25,6 +30,22 @@ class MainActivity : FlutterActivity() {
     // Panel-only toggles our OS layer owns; broadcast so whoever holds
     // the real switch (qvrd, thermalserviced, ...) can react.
     private val seamToggles = setOf("seethrough", "boundary")
+
+    // Names of currently connected bluetooth devices, kept warm by the
+    // profile proxies below plus ACL connect/disconnect broadcasts.
+    private val connectedBtDevices = mutableSetOf<String>()
+
+    private val profileListener = object : BluetoothProfile.ServiceListener {
+        override fun onServiceConnected(profile: Int, proxy: BluetoothProfile) {
+            try {
+                for (d in proxy.connectedDevices) {
+                    d?.name?.let(connectedBtDevices::add)
+                }
+            } catch (_: SecurityException) {}
+        }
+
+        override fun onServiceDisconnected(profile: Int) {}
+    }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -43,10 +64,47 @@ class MainActivity : FlutterActivity() {
                     update["volume"] = volume()
                 Intent.ACTION_AIRPLANE_MODE_CHANGED ->
                     update["toggles"] = mapOf("airplaneMode" to airplaneOn())
+                BluetoothDevice.ACTION_ACL_CONNECTED,
+                BluetoothDevice.ACTION_ACL_DISCONNECTED -> {
+                    val dev = btDevice(intent)
+                    try {
+                        if (intent.action == BluetoothDevice.ACTION_ACL_CONNECTED) {
+                            dev?.name?.let(connectedBtDevices::add)
+                        } else {
+                            dev?.name?.let(connectedBtDevices::remove)
+                        }
+                    } catch (_: SecurityException) {}
+                    // empty string clears the tile's "connected" label
+                    update["bluetoothDevice"] = connectedBtDevices.firstOrNull() ?: ""
+                }
             }
             if (update.isNotEmpty()) eventSink?.success(update)
         }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // SSID reads need location; device names need BLUETOOTH_CONNECT on S+
+        val needed = buildList {
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
+            if (Build.VERSION.SDK_INT >= 31) {
+                add(Manifest.permission.BLUETOOTH_CONNECT)
+            }
+        }.filter {
+            checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
+        if (needed.isNotEmpty()) requestPermissions(needed, 0)
+    }
+
+    private fun btDevice(intent: Intent): BluetoothDevice? =
+        if (Build.VERSION.SDK_INT >= 33) {
+            intent.getParcelableExtra(
+                BluetoothDevice.EXTRA_DEVICE, BluetoothDevice::class.java,
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE)
+        }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -88,6 +146,8 @@ class MainActivity : FlutterActivity() {
                             addAction(BluetoothAdapter.ACTION_STATE_CHANGED)
                             addAction(VOLUME_CHANGED)
                             addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED)
+                            addAction(BluetoothDevice.ACTION_ACL_CONNECTED)
+                            addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED)
                         },
                     )
                 }
@@ -97,17 +157,25 @@ class MainActivity : FlutterActivity() {
                     unregisterReceiver(receiver)
                 }
             })
+        // Warm the connected-device names for devices that paired before
+        // the panel opened.
+        getSystemService(BluetoothManager::class.java)?.adapter?.let { adapter ->
+            adapter.getProfileProxy(this, profileListener, BluetoothProfile.A2DP)
+            adapter.getProfileProxy(this, profileListener, BluetoothProfile.HEADSET)
+        }
     }
 
     private fun snapshot(): Map<String, Any?> = mapOf(
         "batteryLevel" to batteryLevel(),
         "wifiSsid" to wifiSsid(),
+        "bluetoothDevice" to (connectedBtDevices.firstOrNull() ?: ""),
         "volume" to volume(),
         "brightness" to brightness(),
         "toggles" to mapOf(
             "wifi" to wifiManager().isWifiEnabled,
             "bluetooth" to bluetoothOn(),
             "airplaneMode" to airplaneOn(),
+            "microphone" to !audio().isMicrophoneMute,
         ),
     )
 

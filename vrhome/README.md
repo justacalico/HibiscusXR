@@ -1,79 +1,67 @@
+<div align="center">
+
 # vrhome
 
-VR home environment for the Pico Neo 2 running the open-source LineageOS
-17.1 port. It replaces the stock Pico shell entirely: no Pico compositor,
-no closed runtime, just a NativeActivity on the plain Android EGL path.
+**An open VR home environment for the Pico Neo 2**
 
-Regular 2D apps run on virtual displays and appear as floating windows in
-the scene. The app library is a normal Android activity on its own window,
-so there is no separate launcher UI to maintain.
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
+![Platform](https://img.shields.io/badge/platform-Pico%20Neo%202%20%C2%B7%20Android%2010-3DDC84)
 
-## How it works
+[Features](#features) • [Getting started](#getting-started) • [Controls](#controls) • [How it works](#how-it-works) • [Development](#development)
 
-- `PanelActivity` (a NativeActivity) owns the physical display. The native
-  side renders two eye buffers per frame and warps them through barrel
-  distortion onto the two halves of the panel.
-- Head tracking is 3DoF from the game rotation vector via `ASensorManager`.
-- `ShellBridge` (Java) creates a virtual display per window, launches or
-  adopts tasks onto it, injects input, and resolves app labels. A poller
-  notices stray tasks stuck on display 0 and hands them to the native side
-  to adopt onto a new window, and tears down displays whose task went away.
-- Each window is a rounded quad with a soft shadow, a thin border, and a
-  bottom bar carrying the app's display name. The gaze cursor is a small
-  ring plus a dot.
+</div>
 
-## Controls
+vrhome replaces the stock Pico shell on the LineageOS 17.1 port: no Pico compositor, no closed runtime, just a `NativeActivity` on the plain Android EGL path. Regular 2D apps run on virtual displays and appear as floating windows in the scene, while real Pico VR apps still launch fullscreen.
 
-- Look at a window to focus it, press the headset confirm button (or
-  ENTER / DPAD_CENTER) to tap at the gaze point.
-- BACK closes the newest window.
-- HOME recentres the window ring on where you're looking.
+## Features
 
-At most three windows float at once, including the library. Opening
-another app closes the oldest app window; the library itself is never
-closed automatically.
+- **2D apps as floating windows.** Every app runs on its own virtual display, rendered as a textured quad with rounded corners, a soft shadow and a label pill carrying its name.
+- **Gaze and click input.** Look at a window to focus it, press the headset confirm button to tap at the gaze point, hold and move your head to scroll or drag.
+- **A library that is just an app.** The app grid is a regular Android activity on its own panel, so there is no separate launcher UI to maintain.
+- **VR apps stay VR.** Packages declaring `pvr.app.type=vr` launch straight to fullscreen on the physical display and hand the headset back to the shell when they exit.
+- **3DoF head tracking** from the game rotation vector, with barrel-distorted eye buffers matched to the Neo 2's panel.
+- **No Gradle.** The whole APK builds from a Makefile: clang, javac, d8, aapt2, zipalign, apksigner.
+- **Host-testable core.** Layout, math, text and input policy are pure C++ modules exercised by `make test`.
 
-## Building
+## Requirements
 
-Needs the Android SDK and NDK. Everything resolves from
-`ANDROID_SDK_ROOT` (default `/opt/android-sdk`):
+- A Pico Neo 2 running the LineageOS 17.1 port (Android 10)
+- Android SDK and NDK
+- Platform signing keys for full functionality (see below)
+
+## Getting started
 
 ```bash
 make            # build out/vrhome.apk
 make install    # adb install -r
-make test       # host unit tests
-make clean
-```
-
-No Gradle: it's clang for the native lib, javac + d8 for the Java side,
-then aapt2, zipalign and apksigner, all driven by the Makefile. `NDK`,
-`BT`, `JAR` and `KEYS` env vars override the defaults.
-
-Output is `out/vrhome.apk`. If platform signing keys exist in
-`../build/keys` the APK is signed with them and gets the system
-permissions the manifest asks for; otherwise a generated debug keystore
-is used and the virtual-display permissions will NOT be granted, so the
-shell won't be able to host apps.
-
-## Installing
-
-```bash
-make install
 adb shell cmd package set-home-activity org.pn2.vrhome/.PanelActivity
 ```
 
-## Testing
+Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `NDK`, `BT`, `JAR` and `KEYS` env vars override the defaults.
 
-The platform-independent code (matrix math, the head-tracking transform,
-panel slot/pick/evict policy, UTF-8 and text layout, scenery geometry,
-key handling) is split into pure modules under `src/` and exercised by
-host-side unit tests:
+> [!IMPORTANT]
+> If platform signing keys exist in `../build/keys`, the APK is signed with them and gets the system permissions the manifest asks for. With the fallback debug keystore the virtual-display permissions are NOT granted, so the shell can't host apps.
 
-```bash
-make test
-```
+## Controls
 
-## Layout
+| Input | Action |
+| ----- | ------ |
+| Look at a window | Focus it; the gaze cursor tracks the panel |
+| Confirm button (or ENTER / DPAD_CENTER) | Tap at the gaze point |
+| Hold confirm and move your gaze | Drag or scroll the window content |
+| BACK | Close the newest window |
+| HOME | Recenter the window ring on where you're looking |
+
+At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically.
+
+## How it works
+
+- `PanelActivity` (a `NativeActivity`) owns the physical display. The native side renders two eye buffers per frame and warps them through barrel distortion onto the two halves of the panel.
+- Head tracking is 3DoF from the game rotation vector via `ASensorManager`.
+- `ShellBridge` (Java) creates a virtual display per window, launches or adopts tasks onto it, injects input, and resolves app labels. A poller adopts stray tasks stuck on display 0 and tears down displays whose task went away.
+- The render loop suspends while a fullscreen app owns the display, so VR titles get the panel to themselves.
+
+## Project structure
 
 ```
 src/main.cpp     entry point and frame loop
@@ -87,33 +75,36 @@ src/text/        utf8, glyph layout, font atlas, text drawing
 src/input/       headset button handling
 src/sensor/      rotation vector drain
 java/            ShellBridge, PanelActivity, LauncherActivity
-tests/           host unit tests (make test)
+tests/           host unit tests
 ```
 
-## Debugging
+## Development
 
-Live-tunable system properties (setprop on the device):
+Platform-independent logic (matrix math, the head-tracking transform, panel slot/pick/evict policy, UTF-8 and text layout, scenery geometry, key handling) lives in pure modules under `src/` and runs against host-side unit tests:
 
-- `debug.vrhome.sensor`   0 pins the head tracking
-- `debug.vrhome.tq`       0 uses the untransposed sensor matrix
-- `debug.vrhome.roll`     static view roll in degrees
-- `debug.vrhome.sensroll` sensor-frame roll correction
-- `debug.vrhome.worldx`   mount tilt correction
-- `debug.vrhome.hud`      0 hides the status line
-- `debug.vrhome.fill`     1 paints each eye a different colour
-- `debug.vrhome.launch`   set to a package name to open it on a window
-- `debug.vrhome.tap`      "displayId,x,y" injects a tap
+```bash
+make test
+```
+
+See `AGENTS.md` for the testing and file-size rules this repo follows.
+
+### Debugging on device
+
+Live-tunable system properties (`setprop` on the headset):
+
+| Property | Effect |
+| -------- | ------ |
+| `debug.vrhome.sensor` | `0` pins the head tracking |
+| `debug.vrhome.tq` | `0` uses the untransposed sensor matrix |
+| `debug.vrhome.roll` | static view roll in degrees |
+| `debug.vrhome.sensroll` | sensor-frame roll correction |
+| `debug.vrhome.worldx` | mount tilt correction |
+| `debug.vrhome.hud` | `0` hides the status line |
+| `debug.vrhome.fill` | `1` paints each eye a different colour |
+| `debug.vrhome.launch` | set to a package name to open it on a window |
+| `debug.vrhome.tap` | `"displayId,x,y"` injects a tap |
 
 Logcat tag is `vrhome`.
 
-## Known limits
-
-- 3DoF only, no positional tracking, no controller support.
-- No async reprojection; head motion is less smooth than the stock shell.
-- Apps are plain 2D surfaces. VR-native apps that expect the Pico
-  compositor won't run correctly here.
-
-## Licence
-
-AGPL v3. See `LICENSE`. Bundles `stb_truetype.h` (public domain/MIT) in
-`third_party/`.
+> [!NOTE]
+> Known limits: 3DoF only, no positional tracking, no controller support, and no async reprojection, so head motion is less smooth than the stock shell.

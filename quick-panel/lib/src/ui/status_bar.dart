@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../battery.dart';
+import 'battery_icon.dart';
 import 'theme.dart';
 
 /// Top strip of the panel: battery on the left, date centered,
@@ -18,16 +20,10 @@ class PanelStatusBar extends StatelessWidget {
   final DateTime now;
   final VoidCallback onSettings;
 
-  IconData get _batteryIcon {
-    if (batteryLevel >= 95) return Icons.battery_full;
-    if (batteryLevel >= 60) return Icons.battery_5_bar;
-    if (batteryLevel >= 30) return Icons.battery_3_bar;
-    return Icons.battery_1_bar;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final batteryColor = BatteryIcon.colorFor(batteryTintFor(batteryLevel));
     return SizedBox(
       height: 40,
       child: Stack(
@@ -37,15 +33,13 @@ class PanelStatusBar extends StatelessWidget {
             alignment: Alignment.centerLeft,
             child: Row(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(_batteryIcon, size: 22, color: PanelTheme.textPrimary),
+                BatteryIcon(level: batteryLevel),
                 const SizedBox(width: 6),
                 Text(
                   l10n.batteryPercent(batteryLevel),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: PanelTheme.textPrimary,
-                  ),
+                  style: TextStyle(fontSize: 14, color: batteryColor),
                 ),
               ],
             ),

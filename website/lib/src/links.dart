@@ -6,6 +6,8 @@ abstract final class Links {
   static const library = 'https://gitlab.com/neosalsa/applications/library';
   static const out = 'https://gitlab.com/neosalsa/out';
   static const notes = 'https://gitlab.com/neosalsa/notes';
+  static const issues = 'https://gitlab.com/neosalsa/issues';
+  static const newIssue = 'https://gitlab.com/neosalsa/issues/-/issues/new';
 
   /// Dist project on GitLab - releases are public, assets never expire.
   static const distProjectId = '86495557';

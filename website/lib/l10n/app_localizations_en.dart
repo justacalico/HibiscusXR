@@ -9,13 +9,13 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Library';
+  String get appTitle => 'PN2Lineage';
 
   @override
-  String get projectName => 'PN2Lineage';
+  String get navStatus => 'Status';
 
   @override
-  String get navFeatures => 'Features';
+  String get navRepos => 'Repos';
 
   @override
   String get navScreenshots => 'Screenshots';
@@ -54,175 +54,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageLabel => 'Language';
 
   @override
-  String get heroEyebrow => 'For the Pico Neo 2 LineageOS port';
+  String get heroEyebrow => 'Pico Neo 2 · LineageOS 17.1';
 
   @override
-  String get heroTitle => 'Library';
+  String get heroTitle => 'Android 10, in VR.';
 
   @override
   String get heroSubtitle =>
-      'Every app on the headset, in one quiet grid. Search it, pin it, group it, launch it.';
+      'A full port of LineageOS 17.1 to the Pico Neo 2 headset. Stock vendor untouched, Pico\'s VR stack restored on top - and every step of the research in the open.';
 
   @override
-  String get heroPrimary => 'See features';
+  String get heroPrimary => 'See the status';
 
   @override
   String get heroSecondary => 'Read the docs';
 
   @override
-  String get homeShowcaseEyebrow => 'App grid';
+  String get heroShotCaption => 'The library app window inside vrhome.';
 
   @override
-  String get homeShowcaseTitle => 'Everything installed, at a glance.';
+  String get statSoc => 'Snapdragon 845';
 
   @override
-  String get homeShowcaseBody =>
-      'Tiles tinted by each app\'s own icon colour, with labels, badges and a kebab menu on every tile. Made to sit inside the vrhome shell as the app window.';
+  String get statSocLabel => 'with Adreno 630';
 
   @override
-  String get homeFindTitle => 'Find anything fast';
+  String get statPanel => '3840×2160 @ 72 Hz';
 
   @override
-  String get homeFindBody =>
-      'Search ignores accents and case, collections split apps from system packages, and four sort orders keep the grid the way you left it.';
+  String get statPanelLabel => 'JDI 4K panel';
 
   @override
-  String get homeArrangeTitle => 'Your order, kept';
+  String get statRepos => '46';
 
   @override
-  String get homeArrangeBody =>
-      'Pin favourites to the top, long-press-drag tiles into place, and file apps into groups you name yourself.';
+  String get statReposLabel => 'Repositories';
 
   @override
-  String get homeControlTitle => 'Controller first';
+  String get statNotes => '~300';
 
   @override
-  String get homeControlBody =>
-      'Arrow keys move focus, confirm launches, and the menu key opens the tile menu. Built for a controller, usable with anything.';
+  String get statNotesLabel => 'Research notes';
 
   @override
-  String get homeOpenTitle => 'Open all the way down.';
+  String get homeShellEyebrow => 'The shell';
 
   @override
-  String get homeOpenBody =>
-      'Library is free software under the AGPL-3.0. Every screen, every string, every commit lives in the open on GitLab.';
+  String get homeShellTitle => 'An open VR home, already running.';
 
   @override
-  String get homeOpenSource => 'Browse the source';
+  String get homeShellBody =>
+      'vrhome replaces the stock Pico shell with a NativeActivity of our own: 2D apps float as windows, VR apps still launch fullscreen, and the library grid is just another app.';
 
   @override
-  String get homeDownloadTitle => 'Not shipping yet.';
-
-  @override
-  String get homeDownloadBody =>
-      'There is no release build to install today. The port is still being assembled piece by piece - watch the repository or build from source if you want it early.';
-
-  @override
-  String get homeDownloadCta => 'Download status';
-
-  @override
-  String get featuresTitle => 'Features';
-
-  @override
-  String get featuresSubtitle => 'A launcher-shaped tool, tuned for a headset.';
-
-  @override
-  String get featGridTitle => 'A grid that reads like a shelf';
-
-  @override
-  String get featGridBody =>
-      'Every launchable app gets a tile: icon, label and a backdrop tinted from the icon\'s own dominant colour. New installs and removals show up live, no refresh needed.';
-
-  @override
-  String get featFindTitle => 'Find';
-
-  @override
-  String get featSearchTitle => 'Search that forgives';
-
-  @override
-  String get featSearchBody =>
-      'Matching ignores case and accents, so typing the way you remember a name is enough to find it.';
-
-  @override
-  String get featCollectionsTitle => 'Collections with counts';
-
-  @override
-  String get featCollectionsBody =>
-      'All, Pinned, Apps and System are always there. Groups you make join the same row, each with a live count.';
-
-  @override
-  String get featSortTitle => 'Four sort orders';
-
-  @override
-  String get featSortBody =>
-      'A-Z, Z-A, recently installed and recently updated - or a custom order once you start dragging tiles.';
-
-  @override
-  String get featArrangeTitle => 'Arrange';
-
-  @override
-  String get featPinTitle => 'Pin to the top';
-
-  @override
-  String get featPinBody =>
-      'Pinned apps lead the grid in every collection. Long-press-drag any tile to rearrange; the order survives restarts.';
-
-  @override
-  String get featGroupsTitle => 'Groups';
-
-  @override
-  String get featGroupsBody =>
-      'Create, rename and delete groups, then file apps into them from the tile menu. A group is just another collection.';
-
-  @override
-  String get featControlTitle => 'Control';
-
-  @override
-  String get featMenuTitle => 'A menu on every tile';
-
-  @override
-  String get featMenuBody =>
-      'Open, pin, add to group, app details and uninstall for user apps - one long press or menu key away.';
-
-  @override
-  String get featInstallTitle => 'Install APKs in place';
-
-  @override
-  String get featInstallBody =>
-      'The system file picker handles installs, so sideloading never leaves the window.';
-
-  @override
-  String get featNavigateTitle => 'Navigate';
-
-  @override
-  String get featDpadTitle => 'D-pad native';
-
-  @override
-  String get featDpadBody =>
-      'Arrows move focus, confirm launches the focused app, and the menu key opens its tile menu. Focus wraps the way a TV launcher does.';
-
-  @override
-  String get featLiveTitle => 'Live package updates';
-
-  @override
-  String get featLiveBody =>
-      'Install or remove an app anywhere on the system and the grid updates while you watch.';
-
-  @override
-  String get featI18nTitle => 'Every string external';
-
-  @override
-  String get featI18nBody =>
-      'All UI text lives in ARB files, so translating the app means editing one file, not hunting through code.';
-
-  @override
-  String get screenshotsTitle => 'Screenshots';
-
-  @override
-  String get screenshotsSubtitle => 'The real app, running on the headset.';
-
-  @override
-  String get shotGridCaption => 'The app grid inside vrhome.';
+  String get homeShellCta => 'See screenshots';
 
   @override
   String get shotCollectionCaption => 'Collections and groups, with counts.';
@@ -231,87 +116,501 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shotMenuCaption => 'The tile menu on a long press.';
 
   @override
+  String get homeWayOverlayTitle => 'GSI plus overlay';
+
+  @override
+  String get homeWayOverlayBody =>
+      'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.';
+
+  @override
+  String get homeWayReposTitle => 'One repo per component';
+
+  @override
+  String get homeWayReposBody =>
+      'Device tree, shim sources, dump repos, staging trees - 46 repositories under one group, each small enough to read in one sitting.';
+
+  @override
+  String get homeWayNotesTitle => 'Research in the open';
+
+  @override
+  String get homeWayNotesBody =>
+      'Every dead end is written down. The notes repo holds around 300 numbered files of raw findings, from first boot to the last black frame.';
+
+  @override
+  String get homeWayCta => 'Browse the repositories';
+
+  @override
+  String get homeStatusEyebrow => 'Where it stands';
+
+  @override
+  String get homeStatusTitle => 'Boots. Shell runs. One bug left.';
+
+  @override
+  String get homeStatusBody =>
+      'The port boots with audio, live head rotation and VRShell driving the real Pico compositor. The VR display still shows black - one tracking-state bug between here and a picture.';
+
+  @override
+  String get homeStatusCta => 'Full status';
+
+  @override
+  String get homeOpenTitle => 'Open all the way down.';
+
+  @override
+  String get homeOpenBody =>
+      'Everything we wrote is AGPL-3.0. Pico\'s binaries stay Pico\'s - pulled from your own device, mapped in a manifest, never redistributed.';
+
+  @override
+  String get homeOpenSource => 'Browse the group';
+
+  @override
+  String get homeDownloadTitle => 'Flash it yourself.';
+
+  @override
+  String get homeDownloadBody =>
+      'A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.';
+
+  @override
+  String get homeDownloadCta => 'Get the image';
+
+  @override
+  String get statusTitle => 'Status';
+
+  @override
+  String get statusSubtitle => 'The honest list. It moves as the port does.';
+
+  @override
+  String get statusWorksTitle => 'Working';
+
+  @override
+  String get statusWorks1 =>
+      'Boots clean: audio, 3840×2160 landscape, suspend matching stock';
+
+  @override
+  String get statusWorks2 =>
+      'pvrservice publishes live head rotation - valid unit quaternions';
+
+  @override
+  String get statusWorks3 =>
+      'VRShell launches reliably and drives the real Pico compositor';
+
+  @override
+  String get statusWorks4 => 'airservice, virtual_input and pn2_qvrd all start';
+
+  @override
+  String get statusWorks5 =>
+      'See-through calibration app installed, platform-signed, launching';
+
+  @override
+  String get statusWorks6 => '2D Pico apps render - VRUserCenter, Pico Store';
+
+  @override
+  String get statusWorks7 => 'Optional wireless adb via persist.pn2.adbwifi';
+
+  @override
+  String get statusBrokenTitle => 'Not yet';
+
+  @override
+  String get statusBroken1 => 'The VR display stays black - the single blocker';
+
+  @override
+  String get statusBroken2 =>
+      '6DoF / SLAM - qvrservice never opens the tracking cameras';
+
+  @override
+  String get statusBroken3 =>
+      'Passthrough imagery - libgui calls deleted in Android 10';
+
+  @override
+  String get statusBroken4 =>
+      'CVService controllers - crashes on a wifi broadcast, disabled';
+
+  @override
+  String get statusBroken5 =>
+      'Provision setup wizard - crashes in its language picker';
+
+  @override
+  String get statusBlockerTitle => 'One bug between here and a picture.';
+
+  @override
+  String get statusBlockerBody =>
+      'pvrservice hands out good rotation, but the SDK inside each app reports trackingstate 0x0,0x0. The pose fails the compositor\'s unit-quaternion check and every frame is dropped. The data exists on the service side and arrives as \"no tracking\" on the client side.';
+
+  @override
+  String get statusBlockerCta => 'Read the internals docs';
+
+  @override
+  String get reposTitle => 'Repositories';
+
+  @override
+  String get reposSubtitle =>
+      'One repo per component under the neosalsa group.';
+
+  @override
+  String get reposSoftwareTitle => 'Software';
+
+  @override
+  String get reposSoftwareBody => 'Things people run or read.';
+
+  @override
+  String get reposSourceTitle => 'Port source';
+
+  @override
+  String get reposSourceBody =>
+      'Device tree, fixes, tooling and the research log - all our own work.';
+
+  @override
+  String get reposDumpsTitle => 'Dumps & staging';
+
+  @override
+  String get reposDumpsBody =>
+      'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary Pico files belong to Pico and are never redistributed.';
+
+  @override
+  String reposCount(int count) {
+    return '$count repos';
+  }
+
+  @override
+  String get repoVrhome =>
+      'Open VR home: 2D apps as floating windows, Pico VR apps fullscreen.';
+
+  @override
+  String get repoLibrary =>
+      'Flutter app grid inside vrhome - search, pin, group, launch.';
+
+  @override
+  String get repoVrdemo =>
+      'Minimal native VR test app (pn2vr) used for compositor bring-up.';
+
+  @override
+  String get repoDocs =>
+      'The MkDocs documentation site - guides, internals, repo map.';
+
+  @override
+  String get repoWebsite => 'This site.';
+
+  @override
+  String get repoTools =>
+      'Every script for the port, sorted by job: recon, build, flash.';
+
+  @override
+  String get repoAndroid =>
+      'LineageOS device tree device/pico/A7B10, read from stock firmware.';
+
+  @override
+  String get repoOverlay =>
+      'Files laid over the GSI: init rc fixes, patched libs, blob manifest.';
+
+  @override
+  String get repoVendorPatch => 'Vendor-side init and vintf patch files.';
+
+  @override
+  String get repoShim =>
+      'Source for the ABI shims bridging 8.1 binaries to Android 10.';
+
+  @override
+  String get repoKeylayout =>
+      'Input keylayout files for the headset\'s buttons.';
+
+  @override
+  String get repoLens =>
+      'Lens, distortion and svrapi configs from /vendor/etc/qvr.';
+
+  @override
+  String get repoPersistCalib =>
+      'Calibration files that live on /persist - camera, lens.';
+
+  @override
+  String get repoNotes =>
+      'The research log - around 300 numbered files of raw findings.';
+
+  @override
+  String get repoExtracted =>
+      'Decompiled boot images, dtbs, props and VR binaries.';
+
+  @override
+  String get repoPvrDex => 'Deodexed dex code of the PVR system apps.';
+
+  @override
+  String get repoPvrStack =>
+      'PVR service binaries, libraries and configs pulled from stock.';
+
+  @override
+  String get repoFullstage =>
+      'Staging tree mirroring /system for the full image build.';
+
+  @override
+  String get repoImages =>
+      'Stock PUI 4.1.3 OTA, rebuilt images and a LUN0 snapshot.';
+
+  @override
+  String get repoBackupNonEye =>
+      'Full partition backup of the non-Eye unit - the rollback source.';
+
+  @override
+  String get repoGsi =>
+      'The LineageOS 17.1 GSI base and its raw ext4 conversion.';
+
+  @override
+  String get repoPvrApps => 'All PVR system apps pulled from stock, apk + oat.';
+
+  @override
+  String get repoPvrApplibs =>
+      'App-private lib/ dirs that sit beside each system apk.';
+
+  @override
+  String get repoPvrAppsDexed => 'Deodex stage of the PVR repack pipeline.';
+
+  @override
+  String get repoPvrAppsSigned => 'Re-sign stage of the repack pipeline.';
+
+  @override
+  String get repoPvrAppsInjected =>
+      'Native-lib injection stage of the repack pipeline.';
+
+  @override
+  String get repoPvrAppsFinal => 'Final repacked and signed PVR apps.';
+
+  @override
+  String get repoOemApps =>
+      'Raw /oem partition apps - PVRLauncher, PVRHome and friends.';
+
+  @override
+  String get repoOemDex => 'Deodex stage for the /oem apps.';
+
+  @override
+  String get repoOemInjected =>
+      '/oem apps with native libs injected before signing.';
+
+  @override
+  String get repoOemFinal => 'Final repacked and signed /oem apps.';
+
+  @override
+  String get repoSeethrough =>
+      'The seethrough calibration app and its native libs.';
+
+  @override
+  String get repoSensorpatch => 'Binary-patch work area for libsensorservice.';
+
+  @override
+  String get repoAirsvc =>
+      'Stock airservice and virtual_input daemons plus rc files.';
+
+  @override
+  String get repoFan => 'Stock fancontrol and thermalserviced binaries.';
+
+  @override
+  String get repoOverlayPvr =>
+      'Pico\'s resource overlays and public.libraries.txt.';
+
+  @override
+  String get repoCdsp => 'Qualcomm CDSP RPC libraries from stock vendor.';
+
+  @override
+  String get repoRfsa => 'Hexagon DSP skel libs and rfsa filesystem pieces.';
+
+  @override
+  String get repoQvr => 'QVR service client libraries, both ABIs.';
+
+  @override
+  String get repoQvrlibs =>
+      'QVR vendor libraries, including the Tobii eye-core stubs.';
+
+  @override
+  String get repoNdiFirmware =>
+      'NDI eye-tracker firmware and w25q flasher ELFs.';
+
+  @override
+  String get repoDeadunit => 'SPI NOR dumps from a dead unit\'s eye board.';
+
+  @override
+  String get repoEyeunit => 'SPI flash dumps from a working eye-tracking unit.';
+
+  @override
+  String get repoBuild =>
+      'Locally generated signing keys - real keys are never committed.';
+
+  @override
+  String get repoOut =>
+      'Built images: system-pn2-full.img and the compiled shims.';
+
+  @override
+  String get repoRef => 'Local clone of alvr-pico-legacy kept for reference.';
+
+  @override
+  String get screenshotsTitle => 'Screenshots';
+
+  @override
+  String get screenshotsSubtitle =>
+      'vrhome and its library window, on real hardware.';
+
+  @override
+  String get shotGridCaption => 'The app grid inside vrhome.';
+
+  @override
   String get downloadTitle => 'Download';
 
   @override
-  String get downloadSubtitle => 'Nothing to install yet.';
+  String get downloadSubtitle =>
+      'Flash it yourself - but read the warning first.';
 
   @override
-  String get downloadStatusTitle => 'Not shipping yet';
+  String get downloadWarnTitle => 'Flashing risk';
 
   @override
-  String get downloadStatusBody =>
-      'Library ships with the PN2Lineage system image, and the image is still being built. When a flashable build exists it will land here first.';
+  String get downloadWarnBody =>
+      'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.';
 
   @override
-  String get downloadStepsTitle => 'Want it early?';
+  String get downloadImageTitle => 'The full system image';
 
   @override
-  String get downloadStepSource =>
-      'Clone the repository and build the app yourself with the Flutter toolchain.';
+  String get downloadImageBody =>
+      'system-pn2-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.';
 
   @override
-  String get downloadStepDocs =>
-      'Read the docs for the port\'s build pipeline and current state.';
+  String get downloadImageCta => 'Open the out repo';
 
   @override
-  String get downloadStepWatch => 'Watch the repository to get release news.';
+  String get downloadStepsTitle => 'Flashing';
 
   @override
-  String get downloadSourceCta => 'View source on GitLab';
+  String get downloadStep1 => 'adb reboot bootloader';
 
   @override
-  String get downloadDocsCta => 'Open the docs';
+  String get downloadStep2 => 'fastboot oem pico unlock';
 
   @override
-  String get downloadNote =>
-      'Builds are signed for the headset\'s system image. Sideloaded copies work, but the library is meant to live inside vrhome.';
+  String get downloadStep3 =>
+      'fastboot -S 128M flash system system-pn2-full.img';
+
+  @override
+  String get downloadStep4 => 'fastboot reboot';
+
+  @override
+  String get downloadStepsNote =>
+      'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash. The tools repo has a script that handles both quirks for you.';
+
+  @override
+  String get downloadReqTitle => 'What you need';
+
+  @override
+  String get downloadReq1 =>
+      'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work';
+
+  @override
+  String get downloadReq2 =>
+      'Rooted stock firmware and an unlockable bootloader';
+
+  @override
+  String get downloadReq3 => 'A Linux host with adb and fastboot';
+
+  @override
+  String get downloadSoftwareTitle => 'The software on top';
+
+  @override
+  String get downloadSoftwareBody =>
+      'The image ships vrhome and the library app. To hack on either, clone its repo - vrhome builds with a plain Makefile, library with Flutter.';
+
+  @override
+  String get downloadVrhomeCta => 'vrhome repo';
+
+  @override
+  String get downloadLibraryCta => 'library repo';
+
+  @override
+  String get faqTitle => 'FAQ';
+
+  @override
+  String get faqSubtitle => 'Short answers, no marketing.';
+
+  @override
+  String get faqQ1 => 'Does the port actually work?';
+
+  @override
+  String get faqA1 =>
+      'It boots, VRShell runs and head tracking is live. The one blocker: the VR display still shows black because app-side tracking state arrives as zero. The status page keeps the current list.';
+
+  @override
+  String get faqQ2 => 'Is it safe to flash?';
+
+  @override
+  String get faqA2 =>
+      'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.';
+
+  @override
+  String get faqQ3 => 'Which headset does it run on?';
+
+  @override
+  String get faqA3 =>
+      'The Pico Neo 2 (A7B10 / PICOA7B10). Both the Eye and non-Eye SKUs work; eye tracking is extra work on top.';
+
+  @override
+  String get faqQ4 => 'Where do Pico\'s proprietary files come from?';
+
+  @override
+  String get faqA4 =>
+      'From your own device or its stock OTA. The overlay repo carries a manifest of every blob needed - path, size, sha256 prefix, purpose - and none of them are committed to source repos.';
+
+  @override
+  String get faqQ5 => 'What is vrhome?';
+
+  @override
+  String get faqA5 =>
+      'Our own VR home environment. Stock VRShell needs the closed Pico compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.';
+
+  @override
+  String get faqQ6 => 'What is the license?';
+
+  @override
+  String get faqA6 =>
+      'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.';
 
   @override
   String get aboutTitle => 'About';
 
   @override
-  String get aboutSubtitle => 'One small piece of a larger port.';
+  String get aboutSubtitle => 'One port, one headset, every step in the open.';
 
   @override
   String get aboutWhatTitle => 'What it is';
 
   @override
   String get aboutWhatBody =>
-      'Library is the app window of vrhome, the VR home environment for the Pico Neo 2 running LineageOS 17.1. It lists every launchable app on the headset and gets out of the way.';
+      'PN2Lineage runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.';
 
   @override
-  String get aboutProjectTitle => 'The project';
+  String get aboutHowTitle => 'How it works';
 
   @override
-  String get aboutProjectBody =>
-      'PN2Lineage ports LineageOS 17.1 - Android 10 via a phh GSI - to the Pico Neo 2. Every piece of the port, from the GSI overlay to the VR stack, lives in its own repository under neosalsa on GitLab.';
+  String get aboutHowBody =>
+      'GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.';
 
   @override
-  String get aboutTechTitle => 'How it is built';
+  String get aboutGroupTitle => 'The group';
 
   @override
-  String get aboutTechBody =>
-      'Flutter, with all decisions in pure Dart modules and platform glue kept thin. The Kotlin side only talks to PackageManager, rasterizes icons and fires intents.';
+  String get aboutGroupBody =>
+      'Forty-six repositories under neosalsa, one per component: the device tree, the shims, the research notes, the dump repos, the VR home and this site.';
 
   @override
   String get aboutLicenseTitle => 'License';
 
   @override
   String get aboutLicenseBody =>
-      'Library is free software under the GNU Affero General Public License v3. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.';
+      'All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.';
 
   @override
-  String get aboutRepoCta => 'Library repository';
+  String get aboutRepoCta => 'GitLab group';
 
   @override
   String get aboutDocsCta => 'Project docs';
 
   @override
-  String get aboutGroupCta => 'All neosalsa repos';
+  String get aboutNotesCta => 'Research notes';
 
   @override
-  String get footerProduct => 'Library';
+  String get footerSite => 'Site';
 
   @override
   String get footerProject => 'Project';
@@ -328,59 +627,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerBuiltWith => 'Built with Flutter';
 
   @override
-  String get faqTitle => 'FAQ';
-
-  @override
-  String get faqSubtitle => 'Short answers, no marketing.';
-
-  @override
-  String get faqQ1 => 'Is there a build I can install?';
-
-  @override
-  String get faqA1 =>
-      'Not yet. Library ships inside the PN2Lineage system image, which is still being assembled. The download page tracks the current state.';
-
-  @override
-  String get faqQ2 => 'How do I try it today?';
-
-  @override
-  String get faqA2 =>
-      'Clone the repository and build it with the Flutter toolchain, or watch the repo for the first release.';
-
-  @override
-  String get faqQ3 => 'What is vrhome?';
-
-  @override
-  String get faqA3 =>
-      'The VR home environment Library lives inside. vrhome draws the window frames, the keyboard and the rest of the desktop around app windows like this one.';
-
-  @override
-  String get faqQ4 => 'Does it work without the headset?';
-
-  @override
-  String get faqA4 =>
-      'It is a normal Flutter app and runs anywhere Android does. The controller shortcuts and the window layout only really make sense inside vrhome on the Pico Neo 2.';
-
-  @override
-  String get faqQ5 => 'Can I sideload the APK?';
-
-  @override
-  String get faqA5 =>
-      'Yes, it installs like any other APK. What it cannot be alone is the home environment - that part belongs to the system image.';
-
-  @override
-  String get faqQ6 => 'Why AGPL?';
-
-  @override
-  String get faqA6 =>
-      'The whole port is free software. If you ship a modified Library over a network or on a device, your users get the source too.';
-
-  @override
   String get notFoundTitle => 'Page not found';
 
   @override
   String get notFoundBody => 'The page you are looking for does not exist.';
 
   @override
-  String get notFoundCta => 'Back to Library';
+  String get notFoundCta => 'Back to PN2Lineage';
 }

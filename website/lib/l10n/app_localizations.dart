@@ -98,23 +98,23 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
-  /// Product name
-  ///
-  /// In en, this message translates to:
-  /// **'Library'**
-  String get appTitle;
-
-  /// Name of the parent porting project
+  /// Project name
   ///
   /// In en, this message translates to:
   /// **'PN2Lineage'**
-  String get projectName;
+  String get appTitle;
 
-  /// No description provided for @navFeatures.
+  /// No description provided for @navStatus.
   ///
   /// In en, this message translates to:
-  /// **'Features'**
-  String get navFeatures;
+  /// **'Status'**
+  String get navStatus;
+
+  /// No description provided for @navRepos.
+  ///
+  /// In en, this message translates to:
+  /// **'Repos'**
+  String get navRepos;
 
   /// No description provided for @navScreenshots.
   ///
@@ -191,25 +191,25 @@ abstract class AppLocalizations {
   /// No description provided for @heroEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'For the Pico Neo 2 LineageOS port'**
+  /// **'Pico Neo 2 · LineageOS 17.1'**
   String get heroEyebrow;
 
   /// No description provided for @heroTitle.
   ///
   /// In en, this message translates to:
-  /// **'Library'**
+  /// **'Android 10, in VR.'**
   String get heroTitle;
 
   /// No description provided for @heroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Every app on the headset, in one quiet grid. Search it, pin it, group it, launch it.'**
+  /// **'A full port of LineageOS 17.1 to the Pico Neo 2 headset. Stock vendor untouched, Pico\'s VR stack restored on top - and every step of the research in the open.'**
   String get heroSubtitle;
 
   /// No description provided for @heroPrimary.
   ///
   /// In en, this message translates to:
-  /// **'See features'**
+  /// **'See the status'**
   String get heroPrimary;
 
   /// No description provided for @heroSecondary.
@@ -218,281 +218,83 @@ abstract class AppLocalizations {
   /// **'Read the docs'**
   String get heroSecondary;
 
-  /// No description provided for @homeShowcaseEyebrow.
+  /// No description provided for @heroShotCaption.
   ///
   /// In en, this message translates to:
-  /// **'App grid'**
-  String get homeShowcaseEyebrow;
+  /// **'The library app window inside vrhome.'**
+  String get heroShotCaption;
 
-  /// No description provided for @homeShowcaseTitle.
+  /// No description provided for @statSoc.
   ///
   /// In en, this message translates to:
-  /// **'Everything installed, at a glance.'**
-  String get homeShowcaseTitle;
+  /// **'Snapdragon 845'**
+  String get statSoc;
 
-  /// No description provided for @homeShowcaseBody.
+  /// No description provided for @statSocLabel.
   ///
   /// In en, this message translates to:
-  /// **'Tiles tinted by each app\'s own icon colour, with labels, badges and a kebab menu on every tile. Made to sit inside the vrhome shell as the app window.'**
-  String get homeShowcaseBody;
+  /// **'with Adreno 630'**
+  String get statSocLabel;
 
-  /// No description provided for @homeFindTitle.
+  /// No description provided for @statPanel.
   ///
   /// In en, this message translates to:
-  /// **'Find anything fast'**
-  String get homeFindTitle;
+  /// **'3840×2160 @ 72 Hz'**
+  String get statPanel;
 
-  /// No description provided for @homeFindBody.
+  /// No description provided for @statPanelLabel.
   ///
   /// In en, this message translates to:
-  /// **'Search ignores accents and case, collections split apps from system packages, and four sort orders keep the grid the way you left it.'**
-  String get homeFindBody;
+  /// **'JDI 4K panel'**
+  String get statPanelLabel;
 
-  /// No description provided for @homeArrangeTitle.
+  /// No description provided for @statRepos.
   ///
   /// In en, this message translates to:
-  /// **'Your order, kept'**
-  String get homeArrangeTitle;
+  /// **'46'**
+  String get statRepos;
 
-  /// No description provided for @homeArrangeBody.
+  /// No description provided for @statReposLabel.
   ///
   /// In en, this message translates to:
-  /// **'Pin favourites to the top, long-press-drag tiles into place, and file apps into groups you name yourself.'**
-  String get homeArrangeBody;
+  /// **'Repositories'**
+  String get statReposLabel;
 
-  /// No description provided for @homeControlTitle.
+  /// No description provided for @statNotes.
   ///
   /// In en, this message translates to:
-  /// **'Controller first'**
-  String get homeControlTitle;
+  /// **'~300'**
+  String get statNotes;
 
-  /// No description provided for @homeControlBody.
+  /// No description provided for @statNotesLabel.
   ///
   /// In en, this message translates to:
-  /// **'Arrow keys move focus, confirm launches, and the menu key opens the tile menu. Built for a controller, usable with anything.'**
-  String get homeControlBody;
+  /// **'Research notes'**
+  String get statNotesLabel;
 
-  /// No description provided for @homeOpenTitle.
+  /// No description provided for @homeShellEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'Open all the way down.'**
-  String get homeOpenTitle;
+  /// **'The shell'**
+  String get homeShellEyebrow;
 
-  /// No description provided for @homeOpenBody.
+  /// No description provided for @homeShellTitle.
   ///
   /// In en, this message translates to:
-  /// **'Library is free software under the AGPL-3.0. Every screen, every string, every commit lives in the open on GitLab.'**
-  String get homeOpenBody;
+  /// **'An open VR home, already running.'**
+  String get homeShellTitle;
 
-  /// No description provided for @homeOpenSource.
+  /// No description provided for @homeShellBody.
   ///
   /// In en, this message translates to:
-  /// **'Browse the source'**
-  String get homeOpenSource;
+  /// **'vrhome replaces the stock Pico shell with a NativeActivity of our own: 2D apps float as windows, VR apps still launch fullscreen, and the library grid is just another app.'**
+  String get homeShellBody;
 
-  /// No description provided for @homeDownloadTitle.
+  /// No description provided for @homeShellCta.
   ///
   /// In en, this message translates to:
-  /// **'Not shipping yet.'**
-  String get homeDownloadTitle;
-
-  /// No description provided for @homeDownloadBody.
-  ///
-  /// In en, this message translates to:
-  /// **'There is no release build to install today. The port is still being assembled piece by piece - watch the repository or build from source if you want it early.'**
-  String get homeDownloadBody;
-
-  /// No description provided for @homeDownloadCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Download status'**
-  String get homeDownloadCta;
-
-  /// No description provided for @featuresTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Features'**
-  String get featuresTitle;
-
-  /// No description provided for @featuresSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A launcher-shaped tool, tuned for a headset.'**
-  String get featuresSubtitle;
-
-  /// No description provided for @featGridTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A grid that reads like a shelf'**
-  String get featGridTitle;
-
-  /// No description provided for @featGridBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Every launchable app gets a tile: icon, label and a backdrop tinted from the icon\'s own dominant colour. New installs and removals show up live, no refresh needed.'**
-  String get featGridBody;
-
-  /// No description provided for @featFindTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Find'**
-  String get featFindTitle;
-
-  /// No description provided for @featSearchTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Search that forgives'**
-  String get featSearchTitle;
-
-  /// No description provided for @featSearchBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Matching ignores case and accents, so typing the way you remember a name is enough to find it.'**
-  String get featSearchBody;
-
-  /// No description provided for @featCollectionsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Collections with counts'**
-  String get featCollectionsTitle;
-
-  /// No description provided for @featCollectionsBody.
-  ///
-  /// In en, this message translates to:
-  /// **'All, Pinned, Apps and System are always there. Groups you make join the same row, each with a live count.'**
-  String get featCollectionsBody;
-
-  /// No description provided for @featSortTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Four sort orders'**
-  String get featSortTitle;
-
-  /// No description provided for @featSortBody.
-  ///
-  /// In en, this message translates to:
-  /// **'A-Z, Z-A, recently installed and recently updated - or a custom order once you start dragging tiles.'**
-  String get featSortBody;
-
-  /// No description provided for @featArrangeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Arrange'**
-  String get featArrangeTitle;
-
-  /// No description provided for @featPinTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pin to the top'**
-  String get featPinTitle;
-
-  /// No description provided for @featPinBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Pinned apps lead the grid in every collection. Long-press-drag any tile to rearrange; the order survives restarts.'**
-  String get featPinBody;
-
-  /// No description provided for @featGroupsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Groups'**
-  String get featGroupsTitle;
-
-  /// No description provided for @featGroupsBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Create, rename and delete groups, then file apps into them from the tile menu. A group is just another collection.'**
-  String get featGroupsBody;
-
-  /// No description provided for @featControlTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Control'**
-  String get featControlTitle;
-
-  /// No description provided for @featMenuTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A menu on every tile'**
-  String get featMenuTitle;
-
-  /// No description provided for @featMenuBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Open, pin, add to group, app details and uninstall for user apps - one long press or menu key away.'**
-  String get featMenuBody;
-
-  /// No description provided for @featInstallTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Install APKs in place'**
-  String get featInstallTitle;
-
-  /// No description provided for @featInstallBody.
-  ///
-  /// In en, this message translates to:
-  /// **'The system file picker handles installs, so sideloading never leaves the window.'**
-  String get featInstallBody;
-
-  /// No description provided for @featNavigateTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Navigate'**
-  String get featNavigateTitle;
-
-  /// No description provided for @featDpadTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'D-pad native'**
-  String get featDpadTitle;
-
-  /// No description provided for @featDpadBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Arrows move focus, confirm launches the focused app, and the menu key opens its tile menu. Focus wraps the way a TV launcher does.'**
-  String get featDpadBody;
-
-  /// No description provided for @featLiveTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Live package updates'**
-  String get featLiveTitle;
-
-  /// No description provided for @featLiveBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Install or remove an app anywhere on the system and the grid updates while you watch.'**
-  String get featLiveBody;
-
-  /// No description provided for @featI18nTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Every string external'**
-  String get featI18nTitle;
-
-  /// No description provided for @featI18nBody.
-  ///
-  /// In en, this message translates to:
-  /// **'All UI text lives in ARB files, so translating the app means editing one file, not hunting through code.'**
-  String get featI18nBody;
-
-  /// No description provided for @screenshotsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Screenshots'**
-  String get screenshotsTitle;
-
-  /// No description provided for @screenshotsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The real app, running on the headset.'**
-  String get screenshotsSubtitle;
-
-  /// No description provided for @shotGridCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'The app grid inside vrhome.'**
-  String get shotGridCaption;
+  /// **'See screenshots'**
+  String get homeShellCta;
 
   /// No description provided for @shotCollectionCaption.
   ///
@@ -506,6 +308,570 @@ abstract class AppLocalizations {
   /// **'The tile menu on a long press.'**
   String get shotMenuCaption;
 
+  /// No description provided for @homeWayOverlayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'GSI plus overlay'**
+  String get homeWayOverlayTitle;
+
+  /// No description provided for @homeWayOverlayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.'**
+  String get homeWayOverlayBody;
+
+  /// No description provided for @homeWayReposTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One repo per component'**
+  String get homeWayReposTitle;
+
+  /// No description provided for @homeWayReposBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Device tree, shim sources, dump repos, staging trees - 46 repositories under one group, each small enough to read in one sitting.'**
+  String get homeWayReposBody;
+
+  /// No description provided for @homeWayNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Research in the open'**
+  String get homeWayNotesTitle;
+
+  /// No description provided for @homeWayNotesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every dead end is written down. The notes repo holds around 300 numbered files of raw findings, from first boot to the last black frame.'**
+  String get homeWayNotesBody;
+
+  /// No description provided for @homeWayCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the repositories'**
+  String get homeWayCta;
+
+  /// No description provided for @homeStatusEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Where it stands'**
+  String get homeStatusEyebrow;
+
+  /// No description provided for @homeStatusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Boots. Shell runs. One bug left.'**
+  String get homeStatusTitle;
+
+  /// No description provided for @homeStatusBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The port boots with audio, live head rotation and VRShell driving the real Pico compositor. The VR display still shows black - one tracking-state bug between here and a picture.'**
+  String get homeStatusBody;
+
+  /// No description provided for @homeStatusCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Full status'**
+  String get homeStatusCta;
+
+  /// No description provided for @homeOpenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open all the way down.'**
+  String get homeOpenTitle;
+
+  /// No description provided for @homeOpenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything we wrote is AGPL-3.0. Pico\'s binaries stay Pico\'s - pulled from your own device, mapped in a manifest, never redistributed.'**
+  String get homeOpenBody;
+
+  /// No description provided for @homeOpenSource.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse the group'**
+  String get homeOpenSource;
+
+  /// No description provided for @homeDownloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash it yourself.'**
+  String get homeDownloadTitle;
+
+  /// No description provided for @homeDownloadBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.'**
+  String get homeDownloadBody;
+
+  /// No description provided for @homeDownloadCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Get the image'**
+  String get homeDownloadCta;
+
+  /// No description provided for @statusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusTitle;
+
+  /// No description provided for @statusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The honest list. It moves as the port does.'**
+  String get statusSubtitle;
+
+  /// No description provided for @statusWorksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Working'**
+  String get statusWorksTitle;
+
+  /// No description provided for @statusWorks1.
+  ///
+  /// In en, this message translates to:
+  /// **'Boots clean: audio, 3840×2160 landscape, suspend matching stock'**
+  String get statusWorks1;
+
+  /// No description provided for @statusWorks2.
+  ///
+  /// In en, this message translates to:
+  /// **'pvrservice publishes live head rotation - valid unit quaternions'**
+  String get statusWorks2;
+
+  /// No description provided for @statusWorks3.
+  ///
+  /// In en, this message translates to:
+  /// **'VRShell launches reliably and drives the real Pico compositor'**
+  String get statusWorks3;
+
+  /// No description provided for @statusWorks4.
+  ///
+  /// In en, this message translates to:
+  /// **'airservice, virtual_input and pn2_qvrd all start'**
+  String get statusWorks4;
+
+  /// No description provided for @statusWorks5.
+  ///
+  /// In en, this message translates to:
+  /// **'See-through calibration app installed, platform-signed, launching'**
+  String get statusWorks5;
+
+  /// No description provided for @statusWorks6.
+  ///
+  /// In en, this message translates to:
+  /// **'2D Pico apps render - VRUserCenter, Pico Store'**
+  String get statusWorks6;
+
+  /// No description provided for @statusWorks7.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional wireless adb via persist.pn2.adbwifi'**
+  String get statusWorks7;
+
+  /// No description provided for @statusBrokenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet'**
+  String get statusBrokenTitle;
+
+  /// No description provided for @statusBroken1.
+  ///
+  /// In en, this message translates to:
+  /// **'The VR display stays black - the single blocker'**
+  String get statusBroken1;
+
+  /// No description provided for @statusBroken2.
+  ///
+  /// In en, this message translates to:
+  /// **'6DoF / SLAM - qvrservice never opens the tracking cameras'**
+  String get statusBroken2;
+
+  /// No description provided for @statusBroken3.
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough imagery - libgui calls deleted in Android 10'**
+  String get statusBroken3;
+
+  /// No description provided for @statusBroken4.
+  ///
+  /// In en, this message translates to:
+  /// **'CVService controllers - crashes on a wifi broadcast, disabled'**
+  String get statusBroken4;
+
+  /// No description provided for @statusBroken5.
+  ///
+  /// In en, this message translates to:
+  /// **'Provision setup wizard - crashes in its language picker'**
+  String get statusBroken5;
+
+  /// No description provided for @statusBlockerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One bug between here and a picture.'**
+  String get statusBlockerTitle;
+
+  /// No description provided for @statusBlockerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'pvrservice hands out good rotation, but the SDK inside each app reports trackingstate 0x0,0x0. The pose fails the compositor\'s unit-quaternion check and every frame is dropped. The data exists on the service side and arrives as \"no tracking\" on the client side.'**
+  String get statusBlockerBody;
+
+  /// No description provided for @statusBlockerCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the internals docs'**
+  String get statusBlockerCta;
+
+  /// No description provided for @reposTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Repositories'**
+  String get reposTitle;
+
+  /// No description provided for @reposSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One repo per component under the neosalsa group.'**
+  String get reposSubtitle;
+
+  /// No description provided for @reposSoftwareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Software'**
+  String get reposSoftwareTitle;
+
+  /// No description provided for @reposSoftwareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Things people run or read.'**
+  String get reposSoftwareBody;
+
+  /// No description provided for @reposSourceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Port source'**
+  String get reposSourceTitle;
+
+  /// No description provided for @reposSourceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Device tree, fixes, tooling and the research log - all our own work.'**
+  String get reposSourceBody;
+
+  /// No description provided for @reposDumpsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dumps & staging'**
+  String get reposDumpsTitle;
+
+  /// No description provided for @reposDumpsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary Pico files belong to Pico and are never redistributed.'**
+  String get reposDumpsBody;
+
+  /// No description provided for @reposCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} repos'**
+  String reposCount(int count);
+
+  /// No description provided for @repoVrhome.
+  ///
+  /// In en, this message translates to:
+  /// **'Open VR home: 2D apps as floating windows, Pico VR apps fullscreen.'**
+  String get repoVrhome;
+
+  /// No description provided for @repoLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Flutter app grid inside vrhome - search, pin, group, launch.'**
+  String get repoLibrary;
+
+  /// No description provided for @repoVrdemo.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal native VR test app (pn2vr) used for compositor bring-up.'**
+  String get repoVrdemo;
+
+  /// No description provided for @repoDocs.
+  ///
+  /// In en, this message translates to:
+  /// **'The MkDocs documentation site - guides, internals, repo map.'**
+  String get repoDocs;
+
+  /// No description provided for @repoWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'This site.'**
+  String get repoWebsite;
+
+  /// No description provided for @repoTools.
+  ///
+  /// In en, this message translates to:
+  /// **'Every script for the port, sorted by job: recon, build, flash.'**
+  String get repoTools;
+
+  /// No description provided for @repoAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'LineageOS device tree device/pico/A7B10, read from stock firmware.'**
+  String get repoAndroid;
+
+  /// No description provided for @repoOverlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Files laid over the GSI: init rc fixes, patched libs, blob manifest.'**
+  String get repoOverlay;
+
+  /// No description provided for @repoVendorPatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor-side init and vintf patch files.'**
+  String get repoVendorPatch;
+
+  /// No description provided for @repoShim.
+  ///
+  /// In en, this message translates to:
+  /// **'Source for the ABI shims bridging 8.1 binaries to Android 10.'**
+  String get repoShim;
+
+  /// No description provided for @repoKeylayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Input keylayout files for the headset\'s buttons.'**
+  String get repoKeylayout;
+
+  /// No description provided for @repoLens.
+  ///
+  /// In en, this message translates to:
+  /// **'Lens, distortion and svrapi configs from /vendor/etc/qvr.'**
+  String get repoLens;
+
+  /// No description provided for @repoPersistCalib.
+  ///
+  /// In en, this message translates to:
+  /// **'Calibration files that live on /persist - camera, lens.'**
+  String get repoPersistCalib;
+
+  /// No description provided for @repoNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'The research log - around 300 numbered files of raw findings.'**
+  String get repoNotes;
+
+  /// No description provided for @repoExtracted.
+  ///
+  /// In en, this message translates to:
+  /// **'Decompiled boot images, dtbs, props and VR binaries.'**
+  String get repoExtracted;
+
+  /// No description provided for @repoPvrDex.
+  ///
+  /// In en, this message translates to:
+  /// **'Deodexed dex code of the PVR system apps.'**
+  String get repoPvrDex;
+
+  /// No description provided for @repoPvrStack.
+  ///
+  /// In en, this message translates to:
+  /// **'PVR service binaries, libraries and configs pulled from stock.'**
+  String get repoPvrStack;
+
+  /// No description provided for @repoFullstage.
+  ///
+  /// In en, this message translates to:
+  /// **'Staging tree mirroring /system for the full image build.'**
+  String get repoFullstage;
+
+  /// No description provided for @repoImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock PUI 4.1.3 OTA, rebuilt images and a LUN0 snapshot.'**
+  String get repoImages;
+
+  /// No description provided for @repoBackupNonEye.
+  ///
+  /// In en, this message translates to:
+  /// **'Full partition backup of the non-Eye unit - the rollback source.'**
+  String get repoBackupNonEye;
+
+  /// No description provided for @repoGsi.
+  ///
+  /// In en, this message translates to:
+  /// **'The LineageOS 17.1 GSI base and its raw ext4 conversion.'**
+  String get repoGsi;
+
+  /// No description provided for @repoPvrApps.
+  ///
+  /// In en, this message translates to:
+  /// **'All PVR system apps pulled from stock, apk + oat.'**
+  String get repoPvrApps;
+
+  /// No description provided for @repoPvrApplibs.
+  ///
+  /// In en, this message translates to:
+  /// **'App-private lib/ dirs that sit beside each system apk.'**
+  String get repoPvrApplibs;
+
+  /// No description provided for @repoPvrAppsDexed.
+  ///
+  /// In en, this message translates to:
+  /// **'Deodex stage of the PVR repack pipeline.'**
+  String get repoPvrAppsDexed;
+
+  /// No description provided for @repoPvrAppsSigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-sign stage of the repack pipeline.'**
+  String get repoPvrAppsSigned;
+
+  /// No description provided for @repoPvrAppsInjected.
+  ///
+  /// In en, this message translates to:
+  /// **'Native-lib injection stage of the repack pipeline.'**
+  String get repoPvrAppsInjected;
+
+  /// No description provided for @repoPvrAppsFinal.
+  ///
+  /// In en, this message translates to:
+  /// **'Final repacked and signed PVR apps.'**
+  String get repoPvrAppsFinal;
+
+  /// No description provided for @repoOemApps.
+  ///
+  /// In en, this message translates to:
+  /// **'Raw /oem partition apps - PVRLauncher, PVRHome and friends.'**
+  String get repoOemApps;
+
+  /// No description provided for @repoOemDex.
+  ///
+  /// In en, this message translates to:
+  /// **'Deodex stage for the /oem apps.'**
+  String get repoOemDex;
+
+  /// No description provided for @repoOemInjected.
+  ///
+  /// In en, this message translates to:
+  /// **'/oem apps with native libs injected before signing.'**
+  String get repoOemInjected;
+
+  /// No description provided for @repoOemFinal.
+  ///
+  /// In en, this message translates to:
+  /// **'Final repacked and signed /oem apps.'**
+  String get repoOemFinal;
+
+  /// No description provided for @repoSeethrough.
+  ///
+  /// In en, this message translates to:
+  /// **'The seethrough calibration app and its native libs.'**
+  String get repoSeethrough;
+
+  /// No description provided for @repoSensorpatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Binary-patch work area for libsensorservice.'**
+  String get repoSensorpatch;
+
+  /// No description provided for @repoAirsvc.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock airservice and virtual_input daemons plus rc files.'**
+  String get repoAirsvc;
+
+  /// No description provided for @repoFan.
+  ///
+  /// In en, this message translates to:
+  /// **'Stock fancontrol and thermalserviced binaries.'**
+  String get repoFan;
+
+  /// No description provided for @repoOverlayPvr.
+  ///
+  /// In en, this message translates to:
+  /// **'Pico\'s resource overlays and public.libraries.txt.'**
+  String get repoOverlayPvr;
+
+  /// No description provided for @repoCdsp.
+  ///
+  /// In en, this message translates to:
+  /// **'Qualcomm CDSP RPC libraries from stock vendor.'**
+  String get repoCdsp;
+
+  /// No description provided for @repoRfsa.
+  ///
+  /// In en, this message translates to:
+  /// **'Hexagon DSP skel libs and rfsa filesystem pieces.'**
+  String get repoRfsa;
+
+  /// No description provided for @repoQvr.
+  ///
+  /// In en, this message translates to:
+  /// **'QVR service client libraries, both ABIs.'**
+  String get repoQvr;
+
+  /// No description provided for @repoQvrlibs.
+  ///
+  /// In en, this message translates to:
+  /// **'QVR vendor libraries, including the Tobii eye-core stubs.'**
+  String get repoQvrlibs;
+
+  /// No description provided for @repoNdiFirmware.
+  ///
+  /// In en, this message translates to:
+  /// **'NDI eye-tracker firmware and w25q flasher ELFs.'**
+  String get repoNdiFirmware;
+
+  /// No description provided for @repoDeadunit.
+  ///
+  /// In en, this message translates to:
+  /// **'SPI NOR dumps from a dead unit\'s eye board.'**
+  String get repoDeadunit;
+
+  /// No description provided for @repoEyeunit.
+  ///
+  /// In en, this message translates to:
+  /// **'SPI flash dumps from a working eye-tracking unit.'**
+  String get repoEyeunit;
+
+  /// No description provided for @repoBuild.
+  ///
+  /// In en, this message translates to:
+  /// **'Locally generated signing keys - real keys are never committed.'**
+  String get repoBuild;
+
+  /// No description provided for @repoOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Built images: system-pn2-full.img and the compiled shims.'**
+  String get repoOut;
+
+  /// No description provided for @repoRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Local clone of alvr-pico-legacy kept for reference.'**
+  String get repoRef;
+
+  /// No description provided for @screenshotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get screenshotsTitle;
+
+  /// No description provided for @screenshotsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'vrhome and its library window, on real hardware.'**
+  String get screenshotsSubtitle;
+
+  /// No description provided for @shotGridCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'The app grid inside vrhome.'**
+  String get shotGridCaption;
+
   /// No description provided for @downloadTitle.
   ///
   /// In en, this message translates to:
@@ -515,62 +881,206 @@ abstract class AppLocalizations {
   /// No description provided for @downloadSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Nothing to install yet.'**
+  /// **'Flash it yourself - but read the warning first.'**
   String get downloadSubtitle;
 
-  /// No description provided for @downloadStatusTitle.
+  /// No description provided for @downloadWarnTitle.
   ///
   /// In en, this message translates to:
-  /// **'Not shipping yet'**
-  String get downloadStatusTitle;
+  /// **'Flashing risk'**
+  String get downloadWarnTitle;
 
-  /// No description provided for @downloadStatusBody.
+  /// No description provided for @downloadWarnBody.
   ///
   /// In en, this message translates to:
-  /// **'Library ships with the PN2Lineage system image, and the image is still being built. When a flashable build exists it will land here first.'**
-  String get downloadStatusBody;
+  /// **'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.'**
+  String get downloadWarnBody;
+
+  /// No description provided for @downloadImageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The full system image'**
+  String get downloadImageTitle;
+
+  /// No description provided for @downloadImageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'system-pn2-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.'**
+  String get downloadImageBody;
+
+  /// No description provided for @downloadImageCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the out repo'**
+  String get downloadImageCta;
 
   /// No description provided for @downloadStepsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Want it early?'**
+  /// **'Flashing'**
   String get downloadStepsTitle;
 
-  /// No description provided for @downloadStepSource.
+  /// No description provided for @downloadStep1.
   ///
   /// In en, this message translates to:
-  /// **'Clone the repository and build the app yourself with the Flutter toolchain.'**
-  String get downloadStepSource;
+  /// **'adb reboot bootloader'**
+  String get downloadStep1;
 
-  /// No description provided for @downloadStepDocs.
+  /// No description provided for @downloadStep2.
   ///
   /// In en, this message translates to:
-  /// **'Read the docs for the port\'s build pipeline and current state.'**
-  String get downloadStepDocs;
+  /// **'fastboot oem pico unlock'**
+  String get downloadStep2;
 
-  /// No description provided for @downloadStepWatch.
+  /// No description provided for @downloadStep3.
   ///
   /// In en, this message translates to:
-  /// **'Watch the repository to get release news.'**
-  String get downloadStepWatch;
+  /// **'fastboot -S 128M flash system system-pn2-full.img'**
+  String get downloadStep3;
 
-  /// No description provided for @downloadSourceCta.
+  /// No description provided for @downloadStep4.
   ///
   /// In en, this message translates to:
-  /// **'View source on GitLab'**
-  String get downloadSourceCta;
+  /// **'fastboot reboot'**
+  String get downloadStep4;
 
-  /// No description provided for @downloadDocsCta.
+  /// No description provided for @downloadStepsNote.
   ///
   /// In en, this message translates to:
-  /// **'Open the docs'**
-  String get downloadDocsCta;
+  /// **'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash. The tools repo has a script that handles both quirks for you.'**
+  String get downloadStepsNote;
 
-  /// No description provided for @downloadNote.
+  /// No description provided for @downloadReqTitle.
   ///
   /// In en, this message translates to:
-  /// **'Builds are signed for the headset\'s system image. Sideloaded copies work, but the library is meant to live inside vrhome.'**
-  String get downloadNote;
+  /// **'What you need'**
+  String get downloadReqTitle;
+
+  /// No description provided for @downloadReq1.
+  ///
+  /// In en, this message translates to:
+  /// **'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work'**
+  String get downloadReq1;
+
+  /// No description provided for @downloadReq2.
+  ///
+  /// In en, this message translates to:
+  /// **'Rooted stock firmware and an unlockable bootloader'**
+  String get downloadReq2;
+
+  /// No description provided for @downloadReq3.
+  ///
+  /// In en, this message translates to:
+  /// **'A Linux host with adb and fastboot'**
+  String get downloadReq3;
+
+  /// No description provided for @downloadSoftwareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The software on top'**
+  String get downloadSoftwareTitle;
+
+  /// No description provided for @downloadSoftwareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The image ships vrhome and the library app. To hack on either, clone its repo - vrhome builds with a plain Makefile, library with Flutter.'**
+  String get downloadSoftwareBody;
+
+  /// No description provided for @downloadVrhomeCta.
+  ///
+  /// In en, this message translates to:
+  /// **'vrhome repo'**
+  String get downloadVrhomeCta;
+
+  /// No description provided for @downloadLibraryCta.
+  ///
+  /// In en, this message translates to:
+  /// **'library repo'**
+  String get downloadLibraryCta;
+
+  /// No description provided for @faqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faqTitle;
+
+  /// No description provided for @faqSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Short answers, no marketing.'**
+  String get faqSubtitle;
+
+  /// No description provided for @faqQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'Does the port actually work?'**
+  String get faqQ1;
+
+  /// No description provided for @faqA1.
+  ///
+  /// In en, this message translates to:
+  /// **'It boots, VRShell runs and head tracking is live. The one blocker: the VR display still shows black because app-side tracking state arrives as zero. The status page keeps the current list.'**
+  String get faqA1;
+
+  /// No description provided for @faqQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'Is it safe to flash?'**
+  String get faqQ2;
+
+  /// No description provided for @faqA2.
+  ///
+  /// In en, this message translates to:
+  /// **'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.'**
+  String get faqA2;
+
+  /// No description provided for @faqQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Which headset does it run on?'**
+  String get faqQ3;
+
+  /// No description provided for @faqA3.
+  ///
+  /// In en, this message translates to:
+  /// **'The Pico Neo 2 (A7B10 / PICOA7B10). Both the Eye and non-Eye SKUs work; eye tracking is extra work on top.'**
+  String get faqA3;
+
+  /// No description provided for @faqQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'Where do Pico\'s proprietary files come from?'**
+  String get faqQ4;
+
+  /// No description provided for @faqA4.
+  ///
+  /// In en, this message translates to:
+  /// **'From your own device or its stock OTA. The overlay repo carries a manifest of every blob needed - path, size, sha256 prefix, purpose - and none of them are committed to source repos.'**
+  String get faqA4;
+
+  /// No description provided for @faqQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'What is vrhome?'**
+  String get faqQ5;
+
+  /// No description provided for @faqA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Our own VR home environment. Stock VRShell needs the closed Pico compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.'**
+  String get faqA5;
+
+  /// No description provided for @faqQ6.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the license?'**
+  String get faqQ6;
+
+  /// No description provided for @faqA6.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.'**
+  String get faqA6;
 
   /// No description provided for @aboutTitle.
   ///
@@ -581,7 +1091,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'One small piece of a larger port.'**
+  /// **'One port, one headset, every step in the open.'**
   String get aboutSubtitle;
 
   /// No description provided for @aboutWhatTitle.
@@ -593,32 +1103,32 @@ abstract class AppLocalizations {
   /// No description provided for @aboutWhatBody.
   ///
   /// In en, this message translates to:
-  /// **'Library is the app window of vrhome, the VR home environment for the Pico Neo 2 running LineageOS 17.1. It lists every launchable app on the headset and gets out of the way.'**
+  /// **'PN2Lineage runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
   String get aboutWhatBody;
 
-  /// No description provided for @aboutProjectTitle.
+  /// No description provided for @aboutHowTitle.
   ///
   /// In en, this message translates to:
-  /// **'The project'**
-  String get aboutProjectTitle;
+  /// **'How it works'**
+  String get aboutHowTitle;
 
-  /// No description provided for @aboutProjectBody.
+  /// No description provided for @aboutHowBody.
   ///
   /// In en, this message translates to:
-  /// **'PN2Lineage ports LineageOS 17.1 - Android 10 via a phh GSI - to the Pico Neo 2. Every piece of the port, from the GSI overlay to the VR stack, lives in its own repository under neosalsa on GitLab.'**
-  String get aboutProjectBody;
+  /// **'GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.'**
+  String get aboutHowBody;
 
-  /// No description provided for @aboutTechTitle.
+  /// No description provided for @aboutGroupTitle.
   ///
   /// In en, this message translates to:
-  /// **'How it is built'**
-  String get aboutTechTitle;
+  /// **'The group'**
+  String get aboutGroupTitle;
 
-  /// No description provided for @aboutTechBody.
+  /// No description provided for @aboutGroupBody.
   ///
   /// In en, this message translates to:
-  /// **'Flutter, with all decisions in pure Dart modules and platform glue kept thin. The Kotlin side only talks to PackageManager, rasterizes icons and fires intents.'**
-  String get aboutTechBody;
+  /// **'Forty-six repositories under neosalsa, one per component: the device tree, the shims, the research notes, the dump repos, the VR home and this site.'**
+  String get aboutGroupBody;
 
   /// No description provided for @aboutLicenseTitle.
   ///
@@ -629,13 +1139,13 @@ abstract class AppLocalizations {
   /// No description provided for @aboutLicenseBody.
   ///
   /// In en, this message translates to:
-  /// **'Library is free software under the GNU Affero General Public License v3. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.'**
+  /// **'All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.'**
   String get aboutLicenseBody;
 
   /// No description provided for @aboutRepoCta.
   ///
   /// In en, this message translates to:
-  /// **'Library repository'**
+  /// **'GitLab group'**
   String get aboutRepoCta;
 
   /// No description provided for @aboutDocsCta.
@@ -644,17 +1154,17 @@ abstract class AppLocalizations {
   /// **'Project docs'**
   String get aboutDocsCta;
 
-  /// No description provided for @aboutGroupCta.
+  /// No description provided for @aboutNotesCta.
   ///
   /// In en, this message translates to:
-  /// **'All neosalsa repos'**
-  String get aboutGroupCta;
+  /// **'Research notes'**
+  String get aboutNotesCta;
 
-  /// No description provided for @footerProduct.
+  /// No description provided for @footerSite.
   ///
   /// In en, this message translates to:
-  /// **'Library'**
-  String get footerProduct;
+  /// **'Site'**
+  String get footerSite;
 
   /// No description provided for @footerProject.
   ///
@@ -680,90 +1190,6 @@ abstract class AppLocalizations {
   /// **'Built with Flutter'**
   String get footerBuiltWith;
 
-  /// No description provided for @faqTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'FAQ'**
-  String get faqTitle;
-
-  /// No description provided for @faqSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Short answers, no marketing.'**
-  String get faqSubtitle;
-
-  /// No description provided for @faqQ1.
-  ///
-  /// In en, this message translates to:
-  /// **'Is there a build I can install?'**
-  String get faqQ1;
-
-  /// No description provided for @faqA1.
-  ///
-  /// In en, this message translates to:
-  /// **'Not yet. Library ships inside the PN2Lineage system image, which is still being assembled. The download page tracks the current state.'**
-  String get faqA1;
-
-  /// No description provided for @faqQ2.
-  ///
-  /// In en, this message translates to:
-  /// **'How do I try it today?'**
-  String get faqQ2;
-
-  /// No description provided for @faqA2.
-  ///
-  /// In en, this message translates to:
-  /// **'Clone the repository and build it with the Flutter toolchain, or watch the repo for the first release.'**
-  String get faqA2;
-
-  /// No description provided for @faqQ3.
-  ///
-  /// In en, this message translates to:
-  /// **'What is vrhome?'**
-  String get faqQ3;
-
-  /// No description provided for @faqA3.
-  ///
-  /// In en, this message translates to:
-  /// **'The VR home environment Library lives inside. vrhome draws the window frames, the keyboard and the rest of the desktop around app windows like this one.'**
-  String get faqA3;
-
-  /// No description provided for @faqQ4.
-  ///
-  /// In en, this message translates to:
-  /// **'Does it work without the headset?'**
-  String get faqQ4;
-
-  /// No description provided for @faqA4.
-  ///
-  /// In en, this message translates to:
-  /// **'It is a normal Flutter app and runs anywhere Android does. The controller shortcuts and the window layout only really make sense inside vrhome on the Pico Neo 2.'**
-  String get faqA4;
-
-  /// No description provided for @faqQ5.
-  ///
-  /// In en, this message translates to:
-  /// **'Can I sideload the APK?'**
-  String get faqQ5;
-
-  /// No description provided for @faqA5.
-  ///
-  /// In en, this message translates to:
-  /// **'Yes, it installs like any other APK. What it cannot be alone is the home environment - that part belongs to the system image.'**
-  String get faqA5;
-
-  /// No description provided for @faqQ6.
-  ///
-  /// In en, this message translates to:
-  /// **'Why AGPL?'**
-  String get faqQ6;
-
-  /// No description provided for @faqA6.
-  ///
-  /// In en, this message translates to:
-  /// **'The whole port is free software. If you ship a modified Library over a network or on a device, your users get the source too.'**
-  String get faqA6;
-
   /// No description provided for @notFoundTitle.
   ///
   /// In en, this message translates to:
@@ -779,7 +1205,7 @@ abstract class AppLocalizations {
   /// No description provided for @notFoundCta.
   ///
   /// In en, this message translates to:
-  /// **'Back to Library'**
+  /// **'Back to PN2Lineage'**
   String get notFoundCta;
 }
 

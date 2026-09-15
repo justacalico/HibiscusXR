@@ -34,7 +34,7 @@ vrhome replaces the stock Pico shell on the LineageOS 17.1 port: no Pico composi
 ```bash
 make            # build out/vrhome.apk
 make install    # adb install -r
-adb shell cmd package set-home-activity org.pn2.vrhome/.PanelActivity
+adb shell cmd package set-home-activity gitlab.neosalsa.home/.PanelActivity
 ```
 
 Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `NDK`, `BT`, `JAR` and `KEYS` env vars override the defaults.

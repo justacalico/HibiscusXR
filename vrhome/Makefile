@@ -32,7 +32,9 @@ HOST_CXXFLAGS := -std=c++17 -O0 -g -Wall -Wextra -Isrc
 
 NATIVE_SRCS := $(wildcard src/*.cpp src/*/*.cpp)
 NATIVE_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(NATIVE_SRCS))
-JAVA_SRCS   := $(wildcard java/org/pn2/vrhome/*.java)
+JPKG        := gitlab/neosalsa/home
+JAVA_SRCS   := $(wildcard java/$(JPKG)/*.java)
+RES_SRCS    := $(wildcard res/*/*)
 
 GLUE_O    := $(OUT)/glue.o
 SO        := $(OUT)/lib/arm64-v8a/libvrhome.so
@@ -83,12 +85,16 @@ $(DEX): $(CLASSES) | toolcheck
 	@mkdir -p $(OUT)/dex
 	rm -f $@
 	$(D8) --classpath "$(JAR)" --output $(OUT)/dex \
-	    $(OUT)/classes/org/pn2/vrhome/*.class
+	    $(OUT)/classes/$(JPKG)/*.class
 
-$(UNALIGNED): AndroidManifest.xml | toolcheck
+$(OUT)/res.zip: $(RES_SRCS) | toolcheck
+	@mkdir -p $(OUT)
+	$(AAPT2) compile --dir res -o $@
+
+$(UNALIGNED): AndroidManifest.xml $(OUT)/res.zip | toolcheck
 	@mkdir -p $(OUT)
 	$(AAPT2) link -I "$(JAR)" --manifest AndroidManifest.xml \
-	    --min-sdk-version 26 --target-sdk-version 29 -o $@
+	    --min-sdk-version 26 --target-sdk-version 29 -o $@ $(OUT)/res.zip
 
 # aapt2 can't add entries afterwards: inject the .so and dex into a fresh
 # copy of the apk, both stored uncompressed

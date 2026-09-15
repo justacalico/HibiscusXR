@@ -36,4 +36,4 @@ constexpr float kCornerR = 0.028f;
 constexpr int kPicoConfirm = 1001;
 
 // pseudo-package adopted by the app-library panel
-constexpr const char* kLibraryPkg = "org.pn2.vrhome.library";
+constexpr const char* kLibraryPkg = "gitlab.neosalsa.home.library";

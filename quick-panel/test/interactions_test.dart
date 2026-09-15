@@ -46,9 +46,9 @@ void main() {
     await tester.pumpWidget(QuickSettingsApp(controller: c));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Reset view'));
+    await tester.tap(find.text('About device'));
     await tester.pump();
-    expect(src.actionsPerformed, [ActionId.resetView]);
+    expect(src.actionsPerformed, [ActionId.aboutDevice]);
   });
 
   testWidgets('gear button dispatches openSettings', (tester) async {
@@ -111,10 +111,35 @@ void main() {
     await tester.pumpWidget(QuickSettingsApp(controller: c));
     await tester.pumpAndSettle();
 
-    // first large tile is autofocused; move right and activate
+    // first large tile is autofocused; arrow right skips the greyed-out
+    // Boundary tile and lands on Bluetooth
     await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
     await tester.sendKeyEvent(LogicalKeyboardKey.enter);
     await tester.pump();
-    expect(src.togglesRequested, [(ToggleId.boundary, true)]);
+    expect(src.togglesRequested, [(ToggleId.bluetooth, true)]);
+  });
+
+  testWidgets('greyed-out tiles are inert', (tester) async {
+    tester.view.physicalSize = const Size(1200, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    final src = FakeSettingsSource();
+    final c = SettingsController(
+      source: src,
+      persistence: MemoryPersistence(),
+    );
+    addTearDown(c.dispose);
+    await c.start();
+    await tester.pumpWidget(QuickSettingsApp(controller: c));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Seethrough'));
+    await tester.tap(find.text('Reset view'));
+    await tester.tap(find.text('Report problem'));
+    await tester.pump();
+    expect(src.togglesRequested, isEmpty);
+    expect(src.actionsPerformed, isEmpty);
+    expect(c.store.isOn(ToggleId.seethrough), isFalse);
   });
 }

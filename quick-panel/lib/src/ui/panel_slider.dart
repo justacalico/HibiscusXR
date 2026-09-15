@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'theme.dart';
 
 /// Quest-style slider: a pill track, accent fill, and a round knob with
-/// the icon inside sitting at the fill edge. Drag or tap to set.
+/// the icon inside flush with the fill edge. Drag or tap to set.
 class PanelSlider extends StatelessWidget {
   const PanelSlider({
     super.key,
@@ -19,7 +19,7 @@ class PanelSlider extends StatelessWidget {
   final ValueChanged<double> onChanged;
 
   static const height = 44.0;
-  static const knob = 36.0;
+  static const knob = height;
 
   void _setFromDx(double dx, double width) {
     onChanged((dx / width).clamp(0.0, 1.0));
@@ -65,10 +65,10 @@ class PanelSlider extends StatelessWidget {
                       width: knob,
                       height: knob,
                       decoration: const BoxDecoration(
-                        color: PanelTheme.textPrimary,
+                        color: PanelTheme.panel,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(icon, size: 20, color: PanelTheme.panel),
+                      child: Icon(icon, size: 20, color: PanelTheme.textPrimary),
                     ),
                   ),
                 ],

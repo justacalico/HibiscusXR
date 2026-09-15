@@ -127,7 +127,7 @@ echo "=== VRShell x28 patch (recompute struct base from x27) ==="
 put ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so 644
 
 echo
-echo "=== panel shell (org.pn2.vrhome) ==="
+echo "=== panel shell (gitlab.neosalsa.home) ==="
 # Platform-signed NativeActivity: owns display 0, hosts every 2D app on a
 # per-task virtual display rendered as a world-space panel. HOME role, hidden
 # API whitelist and disabling the stock Pico homes are first-boot work in

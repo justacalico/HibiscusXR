@@ -3,6 +3,8 @@
 Project site for `library` - the app window of vrhome on the Pico Neo 2
 LineageOS port. Built with Flutter web, deployed to GitLab Pages.
 
+Live at https://website-be06f5.gitlab.io/
+
 ## Layout
 
 ```

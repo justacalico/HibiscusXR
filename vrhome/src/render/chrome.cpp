@@ -1,6 +1,6 @@
 #include "chrome.h"
 
-#include "../engine.h"
+#include "../hud/engine.h"
 #include "../common/config.h"
 #include "../panels/layout.h"
 #include "../text/draw.h"
@@ -17,7 +17,7 @@
 // surface under it. ang rotates the quad inside the panel's plane; the shape
 // stays defined in the quad's own frame, so a rotated capsule reads as a
 // rotated capsule
-static void shapeQuad(Engine* e, const Mat4& vp, const float c[3],
+static void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                       const float r[3], const float up[3],
                       float toward, float ang,
                       float qw, float qh, float bw, float bh,
@@ -66,11 +66,11 @@ static void shapeQuad(Engine* e, const Mat4& vp, const float c[3],
     glDisableVertexAttribArray(aUV);
 }
 
-void drawPanels(Engine* e, const Mat4& viewProj) {
+void drawPanels(HudEngine* e, const Mat4& viewProj) {
     if (e->panels.empty()) return;
     const float hw = kPanelW / 2, hh = kPanelH / 2;
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
     // shadows first: they sit behind the panels and must not cover a
@@ -242,7 +242,7 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
     glDisable(GL_BLEND);
 }
 
-void drawCursor(Engine* e, const Mat4& viewProj) {
+void drawCursor(HudEngine* e, const Mat4& viewProj) {
     if (e->hover < 0 || e->hover >= (int)e->panels.size()) return;
     const Panel& p = e->panels[e->hover];
     float c[3], r[3], up[3];
@@ -255,7 +255,7 @@ void drawCursor(Engine* e, const Mat4& viewProj) {
                     c[2] + r[2]*u*hw + up[2]*v*hh};
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glUseProgram(e->shapeProg);
     const float ringCol[4] = {1.0f, 1.0f, 1.0f, 0.85f};
     const float dotCol[4]  = {1.0f, 1.0f, 1.0f, 0.90f};

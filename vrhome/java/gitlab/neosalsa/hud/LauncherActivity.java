@@ -1,4 +1,4 @@
-package gitlab.neosalsa.home;
+package gitlab.neosalsa.hud;
 
 import android.app.Activity;
 import android.content.Intent;

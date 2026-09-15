@@ -109,13 +109,14 @@ void main() {
     float scale = uK0 + r2 * (uK2 + r2 * (uK4 + r2 * uK6));
     vec2 uv = uLensCenter + p * scale;
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
-        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        gl_FragColor = vec4(0.0);
     } else {
         vec2 d = uv - uLensCenter;
         gl_FragColor = vec4(
             texture2D(uTex, uLensCenter + d * uChroma.x).r,
             texture2D(uTex, uv).g,
-            texture2D(uTex, uLensCenter + d * uChroma.y).b, 1.0);
+            texture2D(uTex, uLensCenter + d * uChroma.y).b,
+            texture2D(uTex, uv).a);
     }
 }
 )";

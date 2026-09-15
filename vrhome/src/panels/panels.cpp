@@ -1,8 +1,8 @@
 #include "panels.h"
 
 #include "layout.h"
-#include "../engine.h"
-#include "../bridge/bridge.h"
+#include "../hud/engine.h"
+#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
 
@@ -12,9 +12,9 @@
 #define GL_TEXTURE_EXTERNAL_OES 0x8D65
 #endif
 
-int openPanel(Engine* e, float yaw, float pitch) {
+int openPanel(HudEngine* e, float yaw, float pitch) {
     if (!e->bridge || (int)e->panels.size() >= kMaxPanels) return -1;
-    JNIEnv* env = threadEnv(e->app);
+    JNIEnv* env = threadEnv(e->vm);
 
     GLuint tex = 0;
     glGenTextures(1, &tex);
@@ -51,9 +51,9 @@ int openPanel(Engine* e, float yaw, float pitch) {
     return (int)e->panels.size() - 1;
 }
 
-void closePanel(Engine* e, int idx) {
+void closePanel(HudEngine* e, int idx) {
     Panel& p = e->panels[idx];
-    JNIEnv* env = threadEnv(e->app);
+    JNIEnv* env = threadEnv(e->vm);
     if (e->bridge && p.displayId >= 0)
         env->CallVoidMethod(e->bridge, e->mReleasePanel, p.displayId);
     if (p.st) env->DeleteGlobalRef((jobject)p.st);
@@ -64,12 +64,12 @@ void closePanel(Engine* e, int idx) {
     else if (e->hover > idx) e->hover--;
 }
 
-bool evictOldestApp(Engine* e) {
+bool evictOldestApp(HudEngine* e) {
     const int i = evictIndex(e->panels);
     if (i < 0) return false;
     Panel& p = e->panels[i];
     if (e->bridge && p.taskId >= 0) {
-        JNIEnv* env = threadEnv(e->app);
+        JNIEnv* env = threadEnv(e->vm);
         env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
         if (env->ExceptionCheck()) env->ExceptionClear();
     }
@@ -77,9 +77,9 @@ bool evictOldestApp(Engine* e) {
     return true;
 }
 
-void updatePanels(Engine* e) {
+void updatePanels(HudEngine* e) {
     if (e->panels.empty()) return;
-    JNIEnv* env = threadEnv(e->app);
+    JNIEnv* env = threadEnv(e->vm);
     for (auto& p : e->panels) {
         if (!p.st) continue;
         glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);

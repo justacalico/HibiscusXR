@@ -1,28 +1,20 @@
 #pragma once
 
-#include <android_native_app_glue.h>
 #include <jni.h>
 
-#include <string>
+struct HudEngine;
 
-struct Engine;
-
-// attach the calling thread to the VM and return its env
-JNIEnv* threadEnv(android_app* app);
-
-// FindClass on a natively-attached thread only sees the boot classpath; app
-// classes must go through the activity's ClassLoader
-jclass loadAppClass(JNIEnv* env, jobject activity, const char* name);
-
-// construct ShellBridge and cache every method/field id we call
-void initBridge(Engine* e);
+// cache the method/field ids we call on an already-built ShellBridge; `br` is
+// the java object HudService constructed (it owns the covered-listener wiring)
+void initBridge(HudEngine* e, JNIEnv* env, jobject br);
 
 // queue an app launch from any thread (LauncherActivity JNI + test hook)
 void queueLaunch(const char* pkg);
 
 // drain everything the bridge has queued; run on the render thread
-void pumpBridge(Engine* e);
+void pumpBridge(HudEngine* e);
 
-// HOME presses reach us as onNewIntent on PanelActivity - consumed in the
-// render loop where the gaze yaw is current
+// ask the render thread to recenter the ring on the next frame (summon key
+// in home space, plus the automatic recenter when a covered app lets go)
+void wantRecenter();
 bool takeWantRecenter();

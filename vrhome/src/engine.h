@@ -1,20 +1,25 @@
 #pragma once
 
-#include <android_native_app_glue.h>
-#include <android/sensor.h>
 #include <jni.h>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
+#include <android/sensor.h>
 
-#include <vector>
-
-#include "panels/panel.h"
 #include "text/font.h"
 
 struct Eye { GLuint fbo = 0, tex = 0, depth = 0; int w = 0, h = 0; };
 
+// Render + sensor state shared by the two shell processes:
+//   env (gitlab.neosalsa.home, PanelActivity) - the HOME activity; owns the
+//     physical display surface and draws only the scenery
+//   hud (gitlab.neosalsa.hud, HudService) - a system-overlay service; owns
+//     panels, virtual displays and input, draws chrome over anything
+// HudEngine extends this with everything only the HUD needs.
 struct Engine {
-    android_app* app = nullptr;
+    JavaVM* vm = nullptr;
+    jobject ctx = nullptr;      // activity/service instance; its ClassLoader
+                                // is the only one that sees app classes
+
     EGLDisplay display = EGL_NO_DISPLAY;
     EGLConfig eglConfig = nullptr;
     EGLSurface surface = EGL_NO_SURFACE;
@@ -31,43 +36,18 @@ struct Engine {
     Font font;
     Eye eye[2];
 
-    std::vector<Panel> panels;
-
-    // ShellBridge java object + cached method ids
-    jobject bridge = nullptr;
-    jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
-              mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
-              mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
-              mInjectTouch = nullptr,
-              mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,
-              mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr;
-    jmethodID stUpdate = nullptr, stMatrix = nullptr;
-    jclass pendingCls = nullptr;
-    jfieldID fPendTask = nullptr, fPendPkg = nullptr;
-    bool bridgeDead = false;
-
+    // env feeds this from ASensorEventQueue; the HUD fills it from its java
+    // sensor listener instead (a service has no ALooper queue of its own)
     ASensorManager* sensorMgr = nullptr;
     const ASensor* rotSensor = nullptr;
     ASensorEventQueue* sensorQueue = nullptr;
     float quat[4] = {0, 0, 0, 1};
     bool haveQuat = false;
+    float lastQ[4] = {0, 0, 0, 0};
 
-    int hover = -1;              // panel index under the gaze ray
-    int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
-    float hitX = 0, hitY = 0;    // display px coords of the hit
+    bool covered = false;        // a fullscreen app owns the physical display
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     float gazePitch = 0.0f;      // world pitch the user currently faces
-    bool launcherSpawned = false;
-    bool covered = false;        // a fullscreen app owns the physical display
-    bool confirmHeld = false;
-    bool moveHeld = false;       // confirm held on a drag handle
-    float moveGrabYaw = 0.0f;    // gaze yaw when the ring drag grabbed
-    float moveGrabPitch = 0.0f;  // gaze pitch when the ring drag grabbed
-    int dragDisp = -1;           // display a confirm-drag started on
-    float dragX = 0, dragY = 0;  // last injected drag position, px
-    float grabX = 0, grabY = 0;  // where the drag grabbed, px
-    int pressDisp = -1;          // display the held confirm press started on
-    int pressZone = ZONE_NONE;   // chrome zone that press started on
 
     char hud[96] = "";
     int  hudLen = 0;
@@ -78,5 +58,4 @@ struct Engine {
     int  sensorHz = 0;
     int  sensorNew = 0;
     int  sensorNewHz = 0;
-    float lastQ[4] = {0,0,0,0};
 };

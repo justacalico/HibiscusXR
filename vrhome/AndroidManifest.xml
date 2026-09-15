@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Panel shell for the Pico Neo 2: a NativeActivity that owns the physical
-  display and renders one textured quad per virtual display. All 2D apps
-  run on virtual displays created by ShellBridge; the app library is just
-  another 2D activity (LauncherActivity) on its own panel.
+  Home environment for the Pico Neo 2: a NativeActivity that owns the
+  physical display and renders only the scenery. All UI - panels, the app
+  library, the summonable menu - lives in gitlab.neosalsa.hud, a system
+  overlay drawn over this window. CoverWatch feeds the covered flag so the
+  render loop can sleep while a fullscreen app owns the panel.
   Landscape is forced - the panel is a 3840x2160 landscape surface and each
   eye gets half of it.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="gitlab.neosalsa.home"
-    android:versionCode="4"
+    android:versionCode="5"
     android:versionName="1.0">
 
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
@@ -17,28 +18,20 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
 
-    <!-- floating-window support: run apps on virtual displays we render -->
-    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW" />
-    <uses-permission android:name="android.permission.MANAGE_ACTIVITY_STACKS" />
-    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT" />
-    <uses-permission android:name="android.permission.CAPTURE_SECURE_VIDEO_OUTPUT" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INJECT_EVENTS" />
+    <!-- task polling for the covered flag -->
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
-    <uses-permission android:name="android.permission.REORDER_TASKS" />
-    <uses-permission android:name="android.permission.REMOVE_TASKS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
-        android:label="PN2 Panels"
+        android:label="PN2 Home"
         android:icon="@mipmap/ic_launcher"
         android:hasCode="true"
         android:debuggable="false">
 
         <activity
             android:name=".PanelActivity"
-            android:label="PN2 Panels"
+            android:label="PN2 Home"
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode|density"
             android:launchMode="singleTask"
@@ -51,14 +44,5 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- the app library; lives on a virtual display, never on the panel -->
-        <activity
-            android:name=".LauncherActivity"
-            android:label="Library"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize|screenLayout|density"
-            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" />
     </application>
 </manifest>

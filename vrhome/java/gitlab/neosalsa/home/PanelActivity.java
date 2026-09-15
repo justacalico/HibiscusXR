@@ -1,21 +1,14 @@
 package gitlab.neosalsa.home;
 
 import android.app.NativeActivity;
-import android.content.Intent;
-import android.util.Log;
+import android.os.Bundle;
 
-// The shell's own activity on the physical display. Exists so HOME presses
-// reach native code: when we are already the front activity, the framework
-// delivers onNewIntent instead of a key event, and that is our recenter
-// trigger.
+// The home environment's only activity: the HOME target on the physical
+// display, rendering scenery. Panels, the app library and the summonable
+// menu all live in the HUD service (gitlab.neosalsa.hud).
 public class PanelActivity extends NativeActivity {
-    private static final String TAG = "vrhome.act";
-
-    @Override protected void onNewIntent(Intent i) {
-        super.onNewIntent(i);
-        Log.i(TAG, "onNewIntent " + i.getAction());
-        nativeHome();
+    @Override protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        CoverWatch.start();
     }
-
-    private static native void nativeHome();
 }

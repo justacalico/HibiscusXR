@@ -1,27 +1,23 @@
 #include "input.h"
 
 #include "keys.h"
-#include "../engine.h"
-#include "../bridge/bridge.h"
+#include "../hud/engine.h"
+#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 
+#include <android/input.h>
 #include <android/keycodes.h>
 
 #include <cmath>
 
-int32_t onInputEvent(android_app* app, AInputEvent* ev) {
-    Engine* e = (Engine*)app->userData;
-    if (AInputEvent_getType(ev) != AINPUT_EVENT_TYPE_KEY)
-        return 0;
-    const int32_t code = AKeyEvent_getKeyCode(ev);
-    const int32_t action = AKeyEvent_getAction(ev);
-
+// KeyEvent action/motion constants come from android/input.h; the events
+// themselves arrive from the java window, never the NDK input queue
+void hudKey(HudEngine* e, int code, int action, int repeat) {
     if (isConfirm(code)) {
-        const bool down = action == AKEY_EVENT_ACTION_DOWN &&
-                          AKeyEvent_getRepeatCount(ev) == 0;
+        const bool down = action == AKEY_EVENT_ACTION_DOWN && repeat == 0;
         if (down) {
             LOGI("confirm down, hover %d zone %d", e->hover, e->hoverZone);
             e->confirmHeld = true;
@@ -38,7 +34,7 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
                 // its chrome action, fired if the release lands on the same
                 // spot
                 if (e->bridge && e->hoverZone == ZONE_WINDOW) {
-                    JNIEnv* env = threadEnv(app);
+                    JNIEnv* env = threadEnv(e->vm);
                     e->dragDisp = p.displayId;
                     e->dragX = e->grabX = e->hitX;
                     e->dragY = e->grabY = e->hitY;
@@ -61,7 +57,7 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
         } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
             e->confirmHeld = false;
             e->moveHeld = false;
-            JNIEnv* env = threadEnv(app);
+            JNIEnv* env = threadEnv(e->vm);
             if (e->bridge && e->dragDisp >= 0) {
                 env->CallVoidMethod(e->bridge, e->mInjectTouch, e->dragDisp,
                                     e->dragX, e->dragY, AMOTION_EVENT_ACTION_UP);
@@ -104,13 +100,14 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
             e->pressDisp = -1;
             e->pressZone = ZONE_NONE;
         }
-        return 1;
+        return;
     }
     if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
-        // display-0 focus: close the newest panel; when a panel app has
-        // focus the key never reaches us - the app handles it natively
+        // close the newest panel; over a covered app the service consumes
+        // BACK itself to dismiss the menu, so this only ever runs in home
+        // space
         if (e->bridge && !e->panels.empty()) {
-            JNIEnv* env = threadEnv(app);
+            JNIEnv* env = threadEnv(e->vm);
             Panel& p = e->panels.back();
             if (p.taskId >= 0) {
                 env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
@@ -118,19 +115,13 @@ int32_t onInputEvent(android_app* app, AInputEvent* ev) {
             }
             closePanel(e, (int)e->panels.size() - 1);
         }
-        return 1;
+        return;
     }
-    if (code == AKEYCODE_HOME && action == AKEY_EVENT_ACTION_UP) {
-        // recenter: the ring's slot layout recentres on the current gaze
-        recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
-        return 1;
-    }
-    return 0;
 }
 
 // streams MOVEs to the display a confirm-press started on; the gaze point is
 // clamped inside the window so the drag survives the gaze leaving the edges
-void dragTick(Engine* e, const Mat4& head) {
+void dragTick(HudEngine* e, const Mat4& head) {
     if (!e->confirmHeld || e->dragDisp < 0 || !e->bridge) return;
     for (auto& p : e->panels) {
         if (p.displayId != e->dragDisp) continue;
@@ -141,7 +132,7 @@ void dragTick(Engine* e, const Mat4& head) {
             if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)
                 return;
             e->dragX = px; e->dragY = py;
-            JNIEnv* env = threadEnv(e->app);
+            JNIEnv* env = threadEnv(e->vm);
             env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
                                 px, py, AMOTION_EVENT_ACTION_MOVE);
             if (env->ExceptionCheck()) env->ExceptionClear();
@@ -153,7 +144,7 @@ void dragTick(Engine* e, const Mat4& head) {
 
 // held on a drag handle: every panel keeps its slot offset and swings around
 // the viewer with the gaze, up and down as well as side to side
-void moveTick(Engine* e) {
+void moveTick(HudEngine* e) {
     if (!e->moveHeld) return;
     dragRing(e->panels, wrapPi(e->gazeYaw - e->moveGrabYaw),
              e->gazePitch - e->moveGrabPitch);

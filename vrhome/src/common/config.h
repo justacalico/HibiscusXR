@@ -57,8 +57,12 @@ constexpr float kHandleT = 0.0055f;   // visible line half-thickness
 constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
 constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 
-// Pico's custom keycode, installed via the patched libinput + gpio-keys.kl
+// Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
+// 1003 is the headset home button remapped off HOME (system_server eats
+// KEYCODE_HOME before anything else can see it, so the HUD's summon key
+// must not be HOME at all)
 constexpr int kPicoConfirm = 1001;
+constexpr int kPicoHome = 1003;
 
 // pseudo-package adopted by the app-library panel
-constexpr const char* kLibraryPkg = "gitlab.neosalsa.home.library";
+constexpr const char* kLibraryPkg = "gitlab.neosalsa.hud.library";

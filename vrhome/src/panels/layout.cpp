@@ -33,17 +33,56 @@ int evictIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
-float pillHalfWidth(float textW, float winHW) {
+float pillHalfWidth(float textW, float winHW, bool btns) {
     const float cap = winHW - kBarInset;
-    float w = textW * 0.5f + kPillPadX;
+    float w = textW * 0.5f + kPillPadX + (btns ? kPillBtnW : 0.0f);
     // a pill is wider than it is tall: floor at 2:1 so a missing label
     // still leaves a readable lozenge instead of a dot
     if (w < kBarH) w = kBarH;
     return w < cap ? w : cap;
 }
 
-float pillTextLimit(float winHW) {
-    return (winHW - kBarInset - kPillPadX) * 2.0f;
+float pillTextLimit(float winHW, bool btns) {
+    return (winHW - kBarInset - kPillPadX - (btns ? kPillBtnW : 0.0f)) * 2.0f;
+}
+
+float pillCloseX(float pillHW) {
+    return pillHW - kPillBtnPad - kPillBtnR;
+}
+
+float pillMinX(float pillHW) {
+    return pillCloseX(pillHW) - kPillBtnGap - 2.0f * kPillBtnR;
+}
+
+// panel-coord point -> world offset from the pill's centre, which hangs
+// centred under the window's bottom edge
+static void pillLocal(float u, float v, float* x, float* y) {
+    *x = u * (kPanelW * 0.5f);
+    *y = v * (kPanelH * 0.5f) + kPanelH * 0.5f + kBarGap + kBarH * 0.5f;
+}
+
+bool onPill(float u, float v, float pillHW) {
+    float x, y;
+    pillLocal(u, v, &x, &y);
+    return fabsf(x) <= pillHW && fabsf(y) <= kBarH * 0.5f;
+}
+
+int pillButtonAt(float u, float v, float pillHW) {
+    float x, y;
+    pillLocal(u, v, &x, &y);
+    // square hit area a touch bigger than the disc: gaze aim is coarse
+    const float r = kPillBtnR + 0.008f;
+    if (fabsf(x - pillCloseX(pillHW)) <= r && fabsf(y) <= r)
+        return ZONE_CLOSE;
+    if (fabsf(x - pillMinX(pillHW)) <= r && fabsf(y) <= r)
+        return ZONE_MIN;
+    return ZONE_LABEL;
+}
+
+int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg) {
+    for (int i = 0; i < (int)panels.size(); ++i)
+        if (panels[i].minimized && panels[i].pkg == pkg) return i;
+    return -1;
 }
 
 void recenterSlots(std::vector<Panel>& panels, float centre) {
@@ -86,13 +125,28 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
     Pick pick;
     float bestT = 1e9f;
     for (int i = 0; i < (int)panels.size(); ++i) {
+        const Panel& p = panels[i];
+        if (p.minimized) continue;
         float u, v, t;
-        if (!rayPanel(panels[i], d, &u, &v, &t)) continue;
+        if (!rayPanel(p, d, &u, &v, &t)) continue;
         if (t >= bestT) continue;
-        if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) continue;
+        int zone = ZONE_NONE;
+        if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
+            zone = ZONE_WINDOW;
+        } else {
+            // pillHW is filled in by the renderer once the label is
+            // measured; before that the empty-pill floor still hits
+            const float phw = p.pillHW > 0.0f ? p.pillHW
+                    : pillHalfWidth(0.0f, kPanelW * 0.5f,
+                                    p.pkg != kLibraryPkg);
+            if (onPill(u, v, phw))
+                zone = p.pkg == kLibraryPkg ? ZONE_LABEL
+                                            : pillButtonAt(u, v, phw);
+        }
+        if (zone == ZONE_NONE) continue;
         bestT = t;
         pick.idx = i;
-        pick.u = u; pick.v = v;
+        pick.u = u; pick.v = v; pick.zone = zone;
     }
     return pick;
 }

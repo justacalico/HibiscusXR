@@ -37,6 +37,13 @@ constexpr float kBarH = 0.085f, kBarGap = 0.012f;
 constexpr float kBarInset = 0.030f;   // horizontal margin vs the window edges
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
 constexpr float kPillPadX = 0.070f;   // pill side padding around the label
+// minimize + close circles on the pill's right end; the library panel is the
+// shell's own launcher and gets none
+constexpr float kPillBtnR = 0.028f;   // button disc radius
+constexpr float kPillBtnGap = 0.014f; // between the two discs
+constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
+// total strip the buttons reserve on the pill's right end
+constexpr float kPillBtnW = kPillBtnPad + 4.0f * kPillBtnR + kPillBtnGap;
 constexpr float kCornerR = 0.028f;
 
 // Pico's custom keycode, installed via the patched libinput + gpio-keys.kl

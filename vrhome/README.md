@@ -49,10 +49,11 @@ Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `N
 | Look at a window | Focus it; the gaze cursor tracks the panel |
 | Confirm button (or ENTER / DPAD_CENTER) | Tap at the gaze point |
 | Hold confirm and move your gaze | Drag or scroll the window content |
+| Confirm on a pill button | – minimizes the window, × closes it |
 | BACK | Close the newest window |
 | HOME | Recenter the window ring on where you're looking |
 
-At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically.
+At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically. Minimized apps keep running in the background; tapping their icon in the library brings the same window back.
 
 ## How it works
 

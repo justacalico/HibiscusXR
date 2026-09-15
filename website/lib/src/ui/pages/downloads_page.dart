@@ -24,9 +24,9 @@ class DownloadsPage extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 72),
           child: Column(
             children: [
-              Reveal(child: _WarnCard(l10n: l10n)),
+              Reveal(child: _AlphaCard(l10n: l10n)),
               const SizedBox(height: 32),
-              Reveal(child: _ImageCard(l10n: l10n)),
+              Reveal(child: _WarnCard(l10n: l10n)),
               const SizedBox(height: 48),
               Reveal(child: _Steps(l10n: l10n)),
               const SizedBox(height: 48),
@@ -66,6 +66,34 @@ class _Card extends StatelessWidget {
   }
 }
 
+class _AlphaCard extends StatelessWidget {
+  const _AlphaCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      tint: AppColors.accent.withValues(alpha: 0.4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.science_outlined,
+                  size: 20, color: context.colors.primary),
+              const SizedBox(width: 10),
+              Text(l10n.downloadAlphaTitle, style: context.text.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.downloadAlphaBody, style: context.text.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
 class _WarnCard extends StatelessWidget {
   const _WarnCard({required this.l10n});
 
@@ -88,39 +116,6 @@ class _WarnCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(l10n.downloadWarnBody, style: context.text.bodyMedium),
-        ],
-      ),
-    );
-  }
-}
-
-class _ImageCard extends StatelessWidget {
-  const _ImageCard({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.inventory_2_outlined,
-                  size: 20, color: context.colors.primary),
-              const SizedBox(width: 10),
-              Text(l10n.downloadImageTitle, style: context.text.titleMedium),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(l10n.downloadImageBody, style: context.text.bodyMedium),
-          const SizedBox(height: 20),
-          PillButton(
-            label: l10n.downloadImageCta,
-            small: true,
-            onPressed: () => launchUrl(Uri.parse(Links.out)),
-          ),
         ],
       ),
     );

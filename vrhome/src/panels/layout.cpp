@@ -97,6 +97,21 @@ bool onHandle(float u, float v) {
            fabsf(y) <= kHandleT + kHandlePad;
 }
 
+int middleIndex(const std::vector<Panel>& panels) {
+    int best = -1;
+    float bestSum = 1e9f;
+    for (int i = 0; i < (int)panels.size(); ++i) {
+        if (panels[i].minimized) continue;
+        float sum = 0.0f;
+        for (int j = 0; j < (int)panels.size(); ++j) {
+            if (panels[j].minimized) continue;
+            sum += fabsf(wrapPi(panels[i].yaw - panels[j].yaw));
+        }
+        if (sum < bestSum) { bestSum = sum; best = i; }
+    }
+    return best;
+}
+
 void grabRing(std::vector<Panel>& panels) {
     for (auto& p : panels) p.grabYaw = p.yaw;
 }
@@ -150,6 +165,7 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
     gazeDir(head, d);
     Pick pick;
     float bestT = 1e9f;
+    const int mid = middleIndex(panels);
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
         if (p.minimized) continue;
@@ -168,7 +184,7 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
             if (onPill(u, v, phw))
                 zone = p.pkg == kLibraryPkg ? ZONE_LABEL
                                             : pillButtonAt(u, v, phw);
-            else if (onHandle(u, v))
+            else if (i == mid && onHandle(u, v))
                 zone = ZONE_HANDLE;
         }
         if (zone == ZONE_NONE) continue;

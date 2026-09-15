@@ -48,6 +48,11 @@ float handleDrop();
 // padded past the drawn line since gaze aim is coarse
 bool onHandle(float u, float v);
 
+// the panel in the middle of the ring - the only one that gets a drag
+// handle. Picked by lowest total angular distance to the others, so the
+// centre slot wins on a full ring; minimized panels don't count
+int middleIndex(const std::vector<Panel>& panels);
+
 // arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
 // offset by the gaze delta
 void grabRing(std::vector<Panel>& panels);

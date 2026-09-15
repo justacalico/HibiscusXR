@@ -226,6 +226,29 @@ void testLayout() {
     ps.push_back(mkPanel(0.0f));
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps.push_back(mkPanel(kSlotYaw[2]));
+
+    // the middle of the ring is the centre-slot panel; only it owns a handle
+    CHECK(middleIndex(ps) == 0);
+    ps[0].minimized = true;   // centre hidden: a side panel takes over
+    CHECK(middleIndex(ps) == 1);
+    ps[0].minimized = false;
+    ps.clear();
+    CHECK(middleIndex(ps) == -1);
+    ps.push_back(mkPanel(0.5f));
+    CHECK(middleIndex(ps) == 0);
+    ps.pop_back();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[2]));
+
+    // a side panel has no handle: aiming under its pill hits nothing
+    Mat4 side = identity();
+    side.m[2] = -sinf(kSlotYaw[1]) * kPanelDist;
+    side.m[6] = -handleY;
+    side.m[10] = cosf(kSlotYaw[1]) * kPanelDist;
+    pk = pickPanel(ps, side);
+    CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
+
     grabRing(ps);
     dragRing(ps, 0.30f);
     CHECK_F(ps[0].yaw, kSlotYaw[0] + 0.30f, 1e-6f);

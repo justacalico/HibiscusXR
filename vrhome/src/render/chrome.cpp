@@ -86,6 +86,7 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
                   shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
     }
 
+    const int mid = middleIndex(e->panels);
     for (int i = 0; i < (int)e->panels.size(); ++i) {
         Panel& p = e->panels[i];
         if (p.minimized) continue;
@@ -150,13 +151,15 @@ void drawPanels(Engine* e, const Mat4& viewProj) {
             }
         }
 
-        // drag handle: a short white line centred under the pill; holding it
-        // drags the whole ring, so brighten it while gazed at
-        const bool hhov = hov && e->hoverZone == ZONE_HANDLE;
-        const float hc[3] = {c[0], c[1] - handleDrop(), c[2]};
-        const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
-        shapeQuad(e, viewProj, hc, r, 0.006f, 0.0f, kHandleW, kHandleT,
-                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+        // drag handle: a short white line centred under the middle window's
+        // pill; holding it drags the whole ring, so brighten it while gazed
+        if (i == mid) {
+            const bool hhov = hov && e->hoverZone == ZONE_HANDLE;
+            const float hc[3] = {c[0], c[1] - handleDrop(), c[2]};
+            const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
+            shapeQuad(e, viewProj, hc, r, 0.006f, 0.0f, kHandleW, kHandleT,
+                      kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+        }
 
         // the app surface itself, corners rounded in the shader
         glUseProgram(e->floatProg);

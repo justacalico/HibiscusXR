@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "PN2Lineage",
+  "appTitle": "Neosalsa",
   "@appTitle": {
     "description": "Project name"
   },
@@ -192,7 +192,7 @@
   "aboutTitle": "About",
   "aboutSubtitle": "One port, one headset, every step in the open.",
   "aboutWhatTitle": "What it is",
-  "aboutWhatBody": "PN2Lineage runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
+  "aboutWhatBody": "Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
   "aboutHowTitle": "How it works",
   "aboutHowBody": "GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.",
   "aboutGroupTitle": "The group",
@@ -216,5 +216,5 @@
 
   "notFoundTitle": "Page not found",
   "notFoundBody": "The page you are looking for does not exist.",
-  "notFoundCta": "Back to PN2Lineage"
+  "notFoundCta": "Back to Neosalsa"
 }

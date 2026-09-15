@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// Project name
   ///
   /// In en, this message translates to:
-  /// **'PN2Lineage'**
+  /// **'Neosalsa'**
   String get appTitle;
 
   /// No description provided for @navStatus.
@@ -1103,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutWhatBody.
   ///
   /// In en, this message translates to:
-  /// **'PN2Lineage runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
+  /// **'Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
   String get aboutWhatBody;
 
   /// No description provided for @aboutHowTitle.
@@ -1205,7 +1205,7 @@ abstract class AppLocalizations {
   /// No description provided for @notFoundCta.
   ///
   /// In en, this message translates to:
-  /// **'Back to PN2Lineage'**
+  /// **'Back to Neosalsa'**
   String get notFoundCta;
 }
 

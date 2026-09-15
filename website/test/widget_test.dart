@@ -24,7 +24,7 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    expect(find.text('PN2Lineage'), findsWidgets);
+    expect(find.text('Neosalsa'), findsWidgets);
     expect(find.text('Status'), findsWidgets);
     expect(find.text('Repos'), findsWidgets);
     expect(find.text('See the status'), findsOneWidget);
@@ -86,7 +86,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Page not found'), findsOneWidget);
-    expect(find.text('Back to PN2Lineage'), findsOneWidget);
+    expect(find.text('Back to Neosalsa'), findsOneWidget);
   });
 
   testWidgets('zh locale renders translated chrome', (tester) async {
@@ -98,7 +98,7 @@ void main() {
     await tester.pumpWidget(SiteApp(settings: AppSettings(prefs)..load()));
     await tester.pumpAndSettle();
 
-    expect(find.text('PN2Lineage'), findsWidgets);
+    expect(find.text('Neosalsa'), findsWidgets);
     expect(find.text('现状'), findsWidgets);
     expect(find.text('查看现状'), findsOneWidget);
   });

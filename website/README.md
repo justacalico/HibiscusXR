@@ -1,6 +1,6 @@
 # website
 
-Project site for PN2Lineage - the LineageOS 17.1 port for the Pico Neo 2
+Project site for Neosalsa - the LineageOS 17.1 port for the Pico Neo 2
 VR headset. Covers the whole neosalsa group: the port, the software, the
 repository map and the research notes. Built with Flutter web, deployed
 to GitLab Pages.

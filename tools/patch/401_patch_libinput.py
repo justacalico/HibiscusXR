@@ -68,6 +68,10 @@ def patch(src, dst):
     print(f"--- {dst}  ({'64' if is64 else '32'}-bit) ---")
     ok = 0
     for donor, (newlabel, newvalue) in PATCHES.items():
+        # idempotent: a lib already carrying this label counts as done, which
+        # lets an older patched image pick up newer labels on a rebuild
+        if data.find(b"\0" + newlabel.encode() + b"\0") >= 0:
+            print(f"  OK    {newlabel} already present"); ok += 1; continue
         i = data.find(b"\0" + donor.encode() + b"\0")
         if i < 0:
             print(f"  SKIP  donor {donor} not found"); continue

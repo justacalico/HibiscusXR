@@ -142,15 +142,26 @@ static void warpPresent(Engine* e) {
     glUniform1i(glGetUniformLocation(e->warpProg, "uTex"), 0);
     glActiveTexture(GL_TEXTURE0);
     const Warp wp = makeWarp(e->eye[0].w, e->eye[0].h);
-    glUniform2f(glGetUniformLocation(e->warpProg, "uLensCenter"), wp.cx,
-                propF("debug.vrhome.lensy", wp.cy));
+    // lens axis sits ~1.25mm outboard of each half centre on a 63mm IPD /
+    // ~121mm panel, roughly 0.02 in eye uv
+    const float lensX = propF("debug.vrhome.lensx", 0.02f);
+    const float lensY = propF("debug.vrhome.lensy", wp.cy);
     glUniform1f(glGetUniformLocation(e->warpProg, "uAspect"), wp.aspect);
-    glUniform1f(glGetUniformLocation(e->warpProg, "uK1"),
-                propF("debug.vrhome.k1", wp.k1));
+    glUniform1f(glGetUniformLocation(e->warpProg, "uK0"),
+                propF("debug.vrhome.k0", wp.k0));
     glUniform1f(glGetUniformLocation(e->warpProg, "uK2"),
                 propF("debug.vrhome.k2", wp.k2));
+    glUniform1f(glGetUniformLocation(e->warpProg, "uK4"),
+                propF("debug.vrhome.k4", wp.k4));
+    glUniform1f(glGetUniformLocation(e->warpProg, "uK6"),
+                propF("debug.vrhome.k6", wp.k6));
+    glUniform2f(glGetUniformLocation(e->warpProg, "uChroma"),
+                propF("debug.vrhome.cr", kLensChr),
+                propF("debug.vrhome.cb", kLensChb));
     for (int i = 0; i < 2; ++i) {
         glViewport(i * e->eye[i].w, 0, e->eye[i].w, e->eye[i].h);
+        glUniform2f(glGetUniformLocation(e->warpProg, "uLensCenter"),
+                    i == 0 ? wp.cx - lensX : wp.cx + lensX, lensY);
         glBindTexture(GL_TEXTURE_2D, e->eye[i].tex);
         glDrawArrays(GL_TRIANGLES, 0, 6);
     }

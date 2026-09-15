@@ -56,7 +56,7 @@ void main() {
     await pump(
       tester,
       const SettingsSnapshot(
-        batteryLevel: 23,
+        batteryLevel: 15,
         volume: 0.1,
         brightness: 0.9,
         toggles: {ToggleId.doNotDisturb: true},

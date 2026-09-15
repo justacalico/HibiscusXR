@@ -83,7 +83,8 @@ class _Wordmark extends StatelessWidget {
 }
 
 List<Destination> _destinations(AppLocalizations l10n) => [
-      Destination(Routes.features, (l) => l.navFeatures),
+      Destination(Routes.status, (l) => l.navStatus),
+      Destination(Routes.repositories, (l) => l.navRepos),
       Destination(Routes.screenshots, (l) => l.navScreenshots),
       Destination(Routes.faq, (l) => l.navFaq),
       Destination(Routes.about, (l) => l.navAbout),
@@ -137,7 +138,7 @@ class _NavLinkState extends State<_NavLink> {
       child: GestureDetector(
         onTap: () => _open(widget.destination, context),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           child: Text(
             widget.label,
             style: context.text.labelSmall!.copyWith(

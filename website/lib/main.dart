@@ -31,7 +31,7 @@ class _SiteAppState extends State<SiteApp> {
       child: ListenableBuilder(
         listenable: widget.settings,
         builder: (context, _) => MaterialApp.router(
-          title: 'Library',
+          title: 'PN2Lineage',
           onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
           debugShowCheckedModeBanner: false,
           theme: lightTheme(),

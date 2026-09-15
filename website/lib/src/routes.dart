@@ -1,7 +1,8 @@
 /// All in-site paths. Pure constants so tests can walk the whole table.
 abstract final class Routes {
   static const home = '/';
-  static const features = '/features';
+  static const status = '/status';
+  static const repositories = '/repositories';
   static const screenshots = '/screenshots';
   static const download = '/download';
   static const faq = '/faq';

@@ -18,6 +18,9 @@ abstract final class AppColors {
   static const accent = Color(0xFF0071E3);
   static const accentHover = Color(0xFF0077ED);
   static const accentOnDark = Color(0xFF2997FF);
+
+  static const ok = Color(0xFF30D158);
+  static const bad = Color(0xFFFF453A);
 }
 
 /// Layout constants shared by every page.

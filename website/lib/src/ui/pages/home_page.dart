@@ -19,8 +19,10 @@ class HomePage extends StatelessWidget {
     return PageBody(
       children: [
         _Hero(l10n: l10n),
-        _Showcase(l10n: l10n),
+        _Stats(l10n: l10n),
+        _ShellBand(l10n: l10n),
         _Trio(l10n: l10n),
+        _StatusBand(l10n: l10n),
         _OpenBand(l10n: l10n),
         _DownloadBand(l10n: l10n),
       ],
@@ -50,7 +52,7 @@ class _Hero extends StatelessWidget {
               l10n.heroTitle,
               textAlign: TextAlign.center,
               style: context.text.displayLarge!
-                  .copyWith(fontSize: mobile ? 56 : 96),
+                  .copyWith(fontSize: mobile ? 52 : 96),
             ),
           ),
           const SizedBox(height: 20),
@@ -79,7 +81,7 @@ class _Hero extends StatelessWidget {
               children: [
                 PillButton(
                   label: l10n.heroPrimary,
-                  onPressed: () => context.go(Routes.features),
+                  onPressed: () => context.go(Routes.status),
                 ),
                 ChevronLink(
                   label: l10n.heroSecondary,
@@ -107,7 +109,7 @@ class _Hero extends StatelessWidget {
               child: Image.asset(
                 'assets/screenshots/library-grid.png',
                 fit: BoxFit.cover,
-                semanticLabel: l10n.shotGridCaption,
+                semanticLabel: l10n.heroShotCaption,
               ),
             ),
           ),
@@ -117,8 +119,67 @@ class _Hero extends StatelessWidget {
   }
 }
 
-class _Showcase extends StatelessWidget {
-  const _Showcase({required this.l10n});
+/// Four-cell spec strip under the hero.
+class _Stats extends StatelessWidget {
+  const _Stats({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final stats = [
+      (l10n.statSoc, l10n.statSocLabel),
+      (l10n.statPanel, l10n.statPanelLabel),
+      (l10n.statRepos, l10n.statReposLabel),
+      (l10n.statNotes, l10n.statNotesLabel),
+    ];
+    return Band(
+      padding: const EdgeInsets.symmetric(vertical: 56),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final columns = constraints.maxWidth >= 760 ? 4 : 2;
+          final width = (constraints.maxWidth - (columns - 1) * 32) / columns;
+          return Wrap(
+            spacing: 32,
+            runSpacing: 32,
+            alignment: WrapAlignment.center,
+            children: [
+              for (var i = 0; i < stats.length; i++)
+                Reveal(
+                  delay: Duration(milliseconds: i * 60),
+                  child: SizedBox(
+                    width: width,
+                    child: Column(
+                      children: [
+                        Text(
+                          stats[i].$1,
+                          textAlign: TextAlign.center,
+                          style: context.text.titleLarge!.copyWith(
+                            fontSize: Layout.isMobile(context) ? 19 : 24,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          stats[i].$2,
+                          textAlign: TextAlign.center,
+                          style: context.text.labelSmall!
+                              .copyWith(fontSize: 14),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// vrhome + library showcase with the two remaining screenshots.
+class _ShellBand extends StatelessWidget {
+  const _ShellBand({required this.l10n});
 
   final AppLocalizations l10n;
 
@@ -128,11 +189,11 @@ class _Showcase extends StatelessWidget {
       color: context.colors.surfaceContainerHighest,
       child: Column(
         children: [
-          Reveal(child: Eyebrow(l10n.homeShowcaseEyebrow, center: true)),
+          Reveal(child: Eyebrow(l10n.homeShellEyebrow, center: true)),
           const SizedBox(height: 12),
           Reveal(
             child: Text(
-              l10n.homeShowcaseTitle,
+              l10n.homeShellTitle,
               textAlign: TextAlign.center,
               style: context.text.displayMedium!.copyWith(
                 fontSize: Layout.isMobile(context) ? 36 : 56,
@@ -144,7 +205,7 @@ class _Showcase extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: Layout.text),
               child: Text(
-                l10n.homeShowcaseBody,
+                l10n.homeShellBody,
                 textAlign: TextAlign.center,
                 style: context.text.bodyLarge!
                     .copyWith(color: context.colors.secondary),
@@ -188,12 +249,20 @@ class _Showcase extends StatelessWidget {
               );
             },
           ),
+          const SizedBox(height: 32),
+          Reveal(
+            child: ChevronLink(
+              label: l10n.homeShellCta,
+              onPressed: () => context.go(Routes.screenshots),
+            ),
+          ),
         ],
       ),
     );
   }
 }
 
+/// The three pillars: overlay approach, repo structure, research log.
 class _Trio extends StatelessWidget {
   const _Trio({required this.l10n});
 
@@ -202,53 +271,103 @@ class _Trio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      (l10n.homeFindTitle, l10n.homeFindBody),
-      (l10n.homeArrangeTitle, l10n.homeArrangeBody),
-      (l10n.homeControlTitle, l10n.homeControlBody),
+      (l10n.homeWayOverlayTitle, l10n.homeWayOverlayBody),
+      (l10n.homeWayReposTitle, l10n.homeWayReposBody),
+      (l10n.homeWayNotesTitle, l10n.homeWayNotesBody),
     ];
     return Band(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 760 ? 3 : 1;
-          final width = (constraints.maxWidth - (columns - 1) * 48) / columns;
-          return Wrap(
-            spacing: 48,
-            runSpacing: 40,
-            children: [
-              for (var i = 0; i < items.length; i++)
-                Reveal(
-                  delay: Duration(milliseconds: i * 100),
-                  child: SizedBox(
-                    width: width,
-                    child: _TrioItem(
-                      title: items[i].$1,
-                      body: items[i].$2,
+      child: Column(
+        children: [
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final columns = constraints.maxWidth >= 760 ? 3 : 1;
+              final width =
+                  (constraints.maxWidth - (columns - 1) * 48) / columns;
+              return Wrap(
+                spacing: 48,
+                runSpacing: 40,
+                children: [
+                  for (var i = 0; i < items.length; i++)
+                    Reveal(
+                      delay: Duration(milliseconds: i * 100),
+                      child: SizedBox(
+                        width: width,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(items[i].$1,
+                                style: context.text.titleLarge),
+                            const SizedBox(height: 8),
+                            Text(items[i].$2,
+                                style: context.text.bodyMedium),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-            ],
-          );
-        },
+                ],
+              );
+            },
+          ),
+          const SizedBox(height: 36),
+          Reveal(
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: ChevronLink(
+                label: l10n.homeWayCta,
+                onPressed: () => context.go(Routes.repositories),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _TrioItem extends StatelessWidget {
-  const _TrioItem({required this.title, required this.body});
+/// Status teaser band - leads to the full status page.
+class _StatusBand extends StatelessWidget {
+  const _StatusBand({required this.l10n});
 
-  final String title;
-  final String body;
+  final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: context.text.titleLarge),
-        const SizedBox(height: 8),
-        Text(body, style: context.text.bodyMedium),
-      ],
+    return Band(
+      color: context.colors.surfaceContainerHighest,
+      child: Column(
+        children: [
+          Reveal(child: Eyebrow(l10n.homeStatusEyebrow, center: true)),
+          const SizedBox(height: 12),
+          Reveal(
+            child: Text(
+              l10n.homeStatusTitle,
+              textAlign: TextAlign.center,
+              style: context.text.displayMedium!.copyWith(
+                fontSize: Layout.isMobile(context) ? 36 : 56,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Reveal(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: Layout.text),
+              child: Text(
+                l10n.homeStatusBody,
+                textAlign: TextAlign.center,
+                style: context.text.bodyLarge!
+                    .copyWith(color: context.colors.secondary),
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Reveal(
+            child: ChevronLink(
+              label: l10n.homeStatusCta,
+              onPressed: () => context.go(Routes.status),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -293,7 +412,7 @@ class _OpenBand extends StatelessWidget {
               Reveal(
                 child: ChevronLink(
                   label: l10n.homeOpenSource,
-                  onPressed: () => launchUrl(Uri.parse(Links.repo)),
+                  onPressed: () => launchUrl(Uri.parse(Links.group)),
                 ),
               ),
             ],

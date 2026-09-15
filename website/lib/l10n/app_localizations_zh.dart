@@ -476,6 +476,48 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadLibraryCta => 'library 仓库';
 
   @override
+  String get buildsTitle => '可用构建';
+
+  @override
+  String get buildsSubtitle => '从 dist 流水线实时拉取。Alpha 和 Beta 是预发布版。';
+
+  @override
+  String get buildsChannelRelease => '正式版';
+
+  @override
+  String get buildsChannelBeta => '测试版';
+
+  @override
+  String get buildsChannelAlpha => '内测版';
+
+  @override
+  String get buildsEmpty => '此通道暂无构建。';
+
+  @override
+  String get buildsError => '无法加载构建,请稍后再试。';
+
+  @override
+  String get buildsRetry => '重试';
+
+  @override
+  String get buildsFullImage => '完整镜像';
+
+  @override
+  String get buildsCleanImage => '精简镜像';
+
+  @override
+  String get buildsLogs => '构建日志';
+
+  @override
+  String get buildsChecksums => '校验和';
+
+  @override
+  String get buildsViewRelease => '在 GitLab 查看';
+
+  @override
+  String get buildsLoading => '正在加载构建…';
+
+  @override
   String get faqTitle => '常见问题';
 
   @override

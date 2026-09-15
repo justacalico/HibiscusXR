@@ -998,6 +998,90 @@ abstract class AppLocalizations {
   /// **'library repo'**
   String get downloadLibraryCta;
 
+  /// No description provided for @buildsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Available builds'**
+  String get buildsTitle;
+
+  /// No description provided for @buildsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulled live from the dist pipeline. Alpha and beta are prereleases.'**
+  String get buildsSubtitle;
+
+  /// No description provided for @buildsChannelRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get buildsChannelRelease;
+
+  /// No description provided for @buildsChannelBeta.
+  ///
+  /// In en, this message translates to:
+  /// **'Beta'**
+  String get buildsChannelBeta;
+
+  /// No description provided for @buildsChannelAlpha.
+  ///
+  /// In en, this message translates to:
+  /// **'Alpha'**
+  String get buildsChannelAlpha;
+
+  /// No description provided for @buildsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No builds in this channel yet.'**
+  String get buildsEmpty;
+
+  /// No description provided for @buildsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load builds. Try again later.'**
+  String get buildsError;
+
+  /// No description provided for @buildsRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get buildsRetry;
+
+  /// No description provided for @buildsFullImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Full image'**
+  String get buildsFullImage;
+
+  /// No description provided for @buildsCleanImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Clean image'**
+  String get buildsCleanImage;
+
+  /// No description provided for @buildsLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Build logs'**
+  String get buildsLogs;
+
+  /// No description provided for @buildsChecksums.
+  ///
+  /// In en, this message translates to:
+  /// **'Checksums'**
+  String get buildsChecksums;
+
+  /// No description provided for @buildsViewRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'View on GitLab'**
+  String get buildsViewRelease;
+
+  /// No description provided for @buildsLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading builds…'**
+  String get buildsLoading;
+
   /// No description provided for @faqTitle.
   ///
   /// In en, this message translates to:

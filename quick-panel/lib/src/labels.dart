@@ -36,10 +36,6 @@ String tileLabel(TileSpec spec, AppLocalizations l10n) {
       return l10n.actionAboutDevice;
     case ActionId.openSettings:
       return l10n.settings;
-    case ActionId.close:
-      return l10n.close;
-    case ActionId.minimize:
-      return l10n.minimize;
     case null:
       return '';
   }

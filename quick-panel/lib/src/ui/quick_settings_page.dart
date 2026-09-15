@@ -122,12 +122,6 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 10),
-                      _Footer(
-                        onClose: () => controller.runAction(ActionId.close),
-                        onMinimize: () =>
-                            controller.runAction(ActionId.minimize),
-                      ),
                     ],
                   ),
                 ),
@@ -146,50 +140,5 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
       case TileKind.action:
         controller.runAction(spec.actionId!);
     }
-  }
-}
-
-class _Footer extends StatelessWidget {
-  const _Footer({required this.onClose, required this.onMinimize});
-
-  final VoidCallback onClose;
-  final VoidCallback onMinimize;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return SizedBox(
-      height: 36,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconPill(
-                  icon: Icons.close,
-                  tooltip: l10n.close,
-                  onTap: onClose,
-                ),
-                IconPill(
-                  icon: Icons.remove,
-                  tooltip: l10n.minimize,
-                  onTap: onMinimize,
-                ),
-              ],
-            ),
-          ),
-          Text(
-            l10n.panelLabel,
-            style: const TextStyle(
-              fontSize: 12,
-              color: PanelTheme.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

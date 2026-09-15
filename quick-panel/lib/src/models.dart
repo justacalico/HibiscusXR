@@ -11,7 +11,7 @@ enum ToggleId {
   batterySaver,
 }
 
-enum ActionId { resetView, reportProblem, aboutDevice, openSettings, close, minimize }
+enum ActionId { resetView, reportProblem, aboutDevice, openSettings }
 
 /// State pushed up from the platform in one shot or as a change event.
 /// Null fields mean "no information / unchanged".

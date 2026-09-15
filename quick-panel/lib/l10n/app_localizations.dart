@@ -106,24 +106,6 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
-  /// No description provided for @close.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get close;
-
-  /// No description provided for @minimize.
-  ///
-  /// In en, this message translates to:
-  /// **'Minimize'**
-  String get minimize;
-
-  /// No description provided for @panelLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick Settings'**
-  String get panelLabel;
-
   /// No description provided for @tileWifi.
   ///
   /// In en, this message translates to:

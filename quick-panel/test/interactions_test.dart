@@ -51,7 +51,7 @@ void main() {
     expect(src.actionsPerformed, [ActionId.resetView]);
   });
 
-  testWidgets('gear and footer buttons dispatch actions', (tester) async {
+  testWidgets('gear button dispatches openSettings', (tester) async {
     tester.view.physicalSize = const Size(1200, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -67,14 +67,8 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.tap(find.byIcon(Icons.settings));
-    await tester.tap(find.byIcon(Icons.close));
-    await tester.tap(find.byIcon(Icons.remove));
     await tester.pump();
-    expect(src.actionsPerformed, [
-      ActionId.openSettings,
-      ActionId.close,
-      ActionId.minimize,
-    ]);
+    expect(src.actionsPerformed, [ActionId.openSettings]);
   });
 
   testWidgets('dragging the volume slider updates the source',

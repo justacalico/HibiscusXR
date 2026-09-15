@@ -1,4 +1,4 @@
-# Make the panel shell (org.pn2.vrhome) the default home app.
+# Make the panel shell (gitlab.neosalsa.home) the default home app.
 #
 # The HOME role holder lives in /data, not /system, so it cannot be baked into
 # the image. Running `cmd role add-role-holder` at boot_completed covers a fresh
@@ -10,7 +10,7 @@
 # hidden API access - it reflects into ActivityTaskManager/InputManager for
 # task adoption and touch injection.
 
-service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done ]; then cmd role add-role-holder android.app.role.HOME org.pn2.vrhome; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; settings put global hidden_api_blacklist_exemptions org.pn2.vrhome; touch /data/local/.pn2_panels_done; fi"
+service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v2 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; settings put global hidden_api_blacklist_exemptions gitlab.neosalsa.home; touch /data/local/.pn2_panels_done_v2; fi"
     user root
     group root
     seclabel u:r:shell:s0

@@ -40,11 +40,13 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/text/utf8.cpp src/text/glyphs.cpp \
                src/text/font.cpp src/text/draw.cpp \
                src/render/egl.cpp src/render/frame.cpp \
-               src/render/shaders.cpp src/render/warp.cpp
-ENV_SRCS := src/env/main.cpp src/render/scene.cpp src/render/scene_geo.cpp \
+               src/render/shaders.cpp src/render/warp.cpp \
+               src/render/scene_geo.cpp
+ENV_SRCS := src/env/main.cpp src/render/scene.cpp \
             src/sensor/sensor.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
-            src/panels/panels.cpp src/bridge/bridge.cpp \
+            src/panels/panels.cpp src/panels/layout.cpp \
+            src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp
 
 ENV_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(SHARED_SRCS) $(ENV_SRCS))

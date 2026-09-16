@@ -428,6 +428,29 @@ class AppLocalizationsZh extends AppLocalizations {
       '只刷 system 分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。';
 
   @override
+  String get downloadBackupTitle => '先备份';
+
+  @override
+  String get downloadBackupBody =>
+      '刷机会彻底替换 system 分区。动手之前先把原厂系统完整备份下来——出了问题,这份转储是你唯一的退路。';
+
+  @override
+  String get downloadBackupStep1 => '进原厂系统,拿到 root 过的 adb:adb root';
+
+  @override
+  String get downloadBackupStep2 =>
+      '用 dd 通过 adb shell 把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定';
+
+  @override
+  String get downloadBackupStep3 => '把转储拉到电脑上,妥善保存';
+
+  @override
+  String get downloadBackupConfirm => '我已经完整备份了我的头显';
+
+  @override
+  String get downloadLockedHint => '在上方确认备份后才会显示';
+
+  @override
   String get downloadImageTitle => '完整系统镜像';
 
   @override

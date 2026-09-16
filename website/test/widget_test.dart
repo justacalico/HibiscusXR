@@ -45,6 +45,33 @@ void main() {
     expect(find.text('Alpha software'), findsOneWidget);
   });
 
+  testWidgets('download page unlocks steps after backup confirm',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/download');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Back up first'), findsOneWidget);
+    expect(
+        find.text('Confirm your backup above to reveal'), findsNWidgets(2));
+    expect(find.byType(ImageFiltered), findsNWidgets(2));
+
+    final confirm = find.text('I created a full backup of my headset');
+    await Scrollable.ensureVisible(tester.element(confirm),
+        alignment: 0.5);
+    await tester.pumpAndSettle();
+    await tester.tap(confirm);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Confirm your backup above to reveal'), findsNothing);
+    expect(find.byType(ImageFiltered), findsNothing);
+  });
+
   testWidgets('repositories page lists all groups', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;

@@ -469,6 +469,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.';
 
   @override
+  String get downloadBackupTitle => 'Back up first';
+
+  @override
+  String get downloadBackupBody =>
+      'Flashing replaces your system partition for good. Before anything else, take a full backup of the stock system - if something goes wrong, that dump is your only way back.';
+
+  @override
+  String get downloadBackupStep1 => 'Boot stock and get rooted adb: adb root';
+
+  @override
+  String get downloadBackupStep2 =>
+      'Dump every partition with dd over adb shell - the tools repo has a backup script that does it end to end';
+
+  @override
+  String get downloadBackupStep3 =>
+      'Pull the dump to your computer and keep it somewhere safe';
+
+  @override
+  String get downloadBackupConfirm => 'I created a full backup of my headset';
+
+  @override
+  String get downloadLockedHint => 'Confirm your backup above to reveal';
+
+  @override
   String get downloadImageTitle => 'The full system image';
 
   @override

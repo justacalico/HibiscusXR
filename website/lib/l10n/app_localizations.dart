@@ -908,6 +908,48 @@ abstract class AppLocalizations {
   /// **'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.'**
   String get downloadWarnBody;
 
+  /// No description provided for @downloadBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up first'**
+  String get downloadBackupTitle;
+
+  /// No description provided for @downloadBackupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashing replaces your system partition for good. Before anything else, take a full backup of the stock system - if something goes wrong, that dump is your only way back.'**
+  String get downloadBackupBody;
+
+  /// No description provided for @downloadBackupStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Boot stock and get rooted adb: adb root'**
+  String get downloadBackupStep1;
+
+  /// No description provided for @downloadBackupStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Dump every partition with dd over adb shell - the tools repo has a backup script that does it end to end'**
+  String get downloadBackupStep2;
+
+  /// No description provided for @downloadBackupStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull the dump to your computer and keep it somewhere safe'**
+  String get downloadBackupStep3;
+
+  /// No description provided for @downloadBackupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I created a full backup of my headset'**
+  String get downloadBackupConfirm;
+
+  /// No description provided for @downloadLockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your backup above to reveal'**
+  String get downloadLockedHint;
+
   /// No description provided for @downloadImageTitle.
   ///
   /// In en, this message translates to:

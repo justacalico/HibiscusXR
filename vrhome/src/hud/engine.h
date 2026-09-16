@@ -55,8 +55,4 @@ struct HudEngine : Engine {
 
     std::mutex keyMu;
     std::deque<KeyIn> keyQ;
-
-    // latest rotation-vector sample from the java sensor listener
-    std::atomic<float> qx{0}, qy{0}, qz{0}, qw{1};
-    std::atomic<bool> haveQ{false};
 };

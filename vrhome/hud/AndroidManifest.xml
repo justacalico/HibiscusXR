@@ -26,6 +26,7 @@
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
     <uses-permission android:name="android.permission.REMOVE_TASKS" />
+    <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
     <!-- global watch on the remapped summon key -->
     <uses-permission android:name="android.permission.MONITOR_INPUT" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />

@@ -90,6 +90,10 @@ public class ShellBridge {
     private final Set<Integer> launching = new HashSet<>();
     // set by the poller: a non-env task owns the physical display
     private volatile boolean covered = false;
+    // the listener only hears CHANGES, so the first poll must fire
+    // unconditionally - otherwise a service that starts while the env is
+    // already front keeps its fail-hidden default and never shows
+    private volatile boolean firstPoll = true;
 
     static {
         System.loadLibrary("vrhud");
@@ -414,16 +418,18 @@ public class ShellBridge {
                 if (top) {
                     String p = pkgOf(t);
                     final boolean cov = p != null && !ownPkg(p);
-                    if (cov != covered) {
+                    if (cov != covered || firstPoll) {
                         covered = cov;
+                        firstPoll = false;
                         if (listener != null) listener.onCovered(cov);
                     }
                     top = false;
                 }
             }
             if (top) {
-                if (covered) {
+                if (covered || firstPoll) {
                     covered = false;
+                    firstPoll = false;
                     if (listener != null) listener.onCovered(false);
                 }
             }

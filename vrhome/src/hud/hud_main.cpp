@@ -5,8 +5,8 @@
 // which app owns the physical display underneath.
 //
 // Threading: HudService runs on the main thread and feeds this file through
-// JNI - surface post/gone, rotation-vector samples, key presses. One pthread
-// runs the render loop; all GL and bridge calls happen on it.
+// JNI - surface post/gone, key presses. One pthread runs the render loop and
+// owns the sensor queue; all GL and bridge calls happen on it.
 
 #include "engine.h"
 
@@ -23,8 +23,11 @@
 #include "../render/egl.h"
 #include "../render/frame.h"
 #include "../render/warp.h"
+#include "../sensor/sensor.h"
 
+#include <android/looper.h>
 #include <android/native_window.h>
+#include <android/sensor.h>
 #include <android/native_window_jni.h>
 #include <sys/system_properties.h>
 #include <unistd.h>
@@ -104,11 +107,12 @@ static void hudFrame(HudEngine* e) {
 
     if (e->context == EGL_NO_CONTEXT) { usleep(50000); return; }
 
-    // latest rotation-vector sample from the java listener
-    if (e->haveQ.load()) {
-        e->quat[0] = e->qx.load(); e->quat[1] = e->qy.load();
-        e->quat[2] = e->qz.load(); e->quat[3] = e->qw.load();
-        e->haveQuat = true;
+    // rotation-vector samples land on this thread's looper; drain them into
+    // e->quat the same way the env does
+    int ident, events;
+    void* data;
+    while ((ident = ALooper_pollOnce(0, nullptr, &events, &data)) >= 0) {
+        if (ident == kSensorIdent) drainSensor(e);
     }
 
     // queued key presses from the window
@@ -171,6 +175,32 @@ static void hudFrame(HudEngine* e) {
 
 static void* hudThread(void* arg) {
     HudEngine* e = (HudEngine*)arg;
+    // own looper for the sensor queue: the java listener path never delivers
+    // to a background service on this build, so the HUD reads the same NDK
+    // event queue the env uses
+    ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS);
+    ASensorManager* sensorMgr =
+        ASensorManager_getInstanceForPackage("gitlab.neosalsa.hud");
+    e->sensorMgr = sensorMgr;
+    // take the wakeup variant: the env already owns the non-wakeup handle,
+    // and this HAL only emits the first-flush meta event on a real
+    // activation - a second connection on the streaming handle stays
+    // "First flush pending" forever and never sees a sample
+    const ASensor* rot = ASensorManager_getDefaultSensorEx(sensorMgr,
+        ASENSOR_TYPE_GAME_ROTATION_VECTOR, true);
+    if (!rot)
+        rot = ASensorManager_getDefaultSensor(sensorMgr,
+            ASENSOR_TYPE_GAME_ROTATION_VECTOR);
+    if (!rot)
+        rot = ASensorManager_getDefaultSensor(sensorMgr,
+            ASENSOR_TYPE_ROTATION_VECTOR);
+    e->rotSensor = rot;
+    e->sensorQueue = ASensorManager_createEventQueue(sensorMgr,
+        ALooper_forThread(), kSensorIdent, nullptr, nullptr);
+    if (rot) {
+        ASensorEventQueue_enableSensor(e->sensorQueue, rot);
+        ASensorEventQueue_setEventRate(e->sensorQueue, rot, 2000);
+    }
     // GL up front on the pbuffer: panels and display adoption must work even
     // before the overlay is shown for the first time
     initEglContext(e);
@@ -207,25 +237,6 @@ Java_gitlab_neosalsa_hud_HudService_nativeWindow(JNIEnv* env, jclass,
 extern "C" JNIEXPORT void JNICALL
 Java_gitlab_neosalsa_hud_HudService_nativeWindowGone(JNIEnv*, jclass) {
     gHud.windowGone = true;
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_gitlab_neosalsa_hud_HudService_nativeSetQuat(JNIEnv*, jclass,
-                                                 jfloat x, jfloat y, jfloat z,
-                                                 jfloat w) {
-    HudEngine* e = &gHud;
-    ++e->sensorEv;
-    // game rotation vector may ship xyz only; rebuild w like the NDK path
-    const float q4[4] = {x, y, z, 0.0f};
-    const float ww = isnan(w) ? quatW(q4) : w;
-    const float q[4] = {x, y, z, ww};
-    if (fabsf(x - e->lastQ[0]) > 1e-5f || fabsf(y - e->lastQ[1]) > 1e-5f ||
-        fabsf(z - e->lastQ[2]) > 1e-5f || fabsf(ww - e->lastQ[3]) > 1e-5f) {
-        ++e->sensorNew;
-        memcpy(e->lastQ, q, sizeof(q));
-    }
-    e->qx = x; e->qy = y; e->qz = z; e->qw = ww;
-    e->haveQ = true;
 }
 
 extern "C" JNIEXPORT void JNICALL

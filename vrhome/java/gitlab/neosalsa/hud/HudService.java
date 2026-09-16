@@ -7,13 +7,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.hardware.input.InputManager;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.SystemClock;
@@ -50,7 +44,7 @@ import java.lang.reflect.Method;
  * or recenters the ring in home space; long press goes home.
  */
 public class HudService extends Service implements SurfaceHolder.Callback,
-        SensorEventListener, HudView.KeySink, ShellBridge.CoveredListener {
+        HudView.KeySink, ShellBridge.CoveredListener {
     private static final String TAG = "vrhud";
     private static final int K_SUMMON = 1003;      // DEFINE_HOME
     private static final long LONG_MS = 600;
@@ -63,8 +57,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private ShellBridge bridge;
     private Object monitor;              // android.view.InputMonitor (hidden)
     private InputEventReceiver receiver;
-    private SensorManager sm;
-    private HandlerThread sensorThread;
 
     // start hidden: the first poll decides; a game booting before the
     // service should never see the overlay flash up
@@ -83,7 +75,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         }
         nativeInit(this, bridge);
         buildWindow();
-        startSensors();
         startMonitor();
         foreground();
         Log.i(TAG, "hud up");
@@ -92,8 +83,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     @Override public void onDestroy() {
         if (receiver != null) receiver.dispose();
         disposeMonitor();
-        if (sm != null) sm.unregisterListener(this);
-        if (sensorThread != null) sensorThread.quitSafely();
         nativeShutdown();
         super.onDestroy();
     }
@@ -217,29 +206,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         nativeWindowGone();
     }
 
-    // SensorEventListener: rotation vector -> native quat; w may be absent
-    // on the game variant, the native side rebuilds it
-    @Override public void onSensorChanged(SensorEvent ev) {
-        final float w = ev.values.length >= 4 ? ev.values[3] : Float.NaN;
-        nativeSetQuat(ev.values[0], ev.values[1], ev.values[2], w);
-    }
-    @Override public void onAccuracyChanged(Sensor s, int a) {}
-
-    // --------------------------------------------------------- sensors
-
-    private void startSensors() {
-        sm = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        sensorThread = new HandlerThread("vrhud.sensors");
-        sensorThread.start();
-        Sensor rot = sm.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
-        if (rot == null) rot = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
-        if (rot != null)
-            sm.registerListener(this, rot, 2000,
-                    new Handler(sensorThread.getLooper()));
-        else
-            Log.e(TAG, "no rotation sensor");
-    }
-
     // --------------------------------------------------------- monitor
 
     // InputManager.monitorGestureInput is hidden; the platform signature and
@@ -285,8 +251,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private static native void nativeInit(Context ctx, ShellBridge bridge);
     private static native void nativeWindow(Surface surface);
     private static native void nativeWindowGone();
-    private static native void nativeSetQuat(float x, float y, float z,
-                                             float w);
     private static native void nativeKey(int code, int action, int repeat);
     private static native void nativeRecenter();
     private static native void nativeShutdown();

@@ -41,9 +41,8 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/text/font.cpp src/text/draw.cpp \
                src/render/egl.cpp src/render/frame.cpp \
                src/render/shaders.cpp src/render/warp.cpp \
-               src/render/scene_geo.cpp
-ENV_SRCS := src/env/main.cpp src/render/scene.cpp \
-            src/sensor/sensor.cpp
+               src/render/scene_geo.cpp src/sensor/sensor.cpp
+ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/bridge/bridge.cpp \

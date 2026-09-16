@@ -34,6 +34,9 @@ constexpr float kPitchMax = 1.5f;
 // yaw offsets of the ring slots, relative to ring centre. 0.88 rad apart:
 // a 1.3 m panel at 1.5 m spans ~0.82 rad, so neighbours can no longer overlap
 constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
+// minimum centre-to-centre yaw between panels: just under the slot spacing
+// so a window can never land on top of one that drifted off the slot grid
+constexpr float kPanelMinGap = 0.82f;
 
 // window chrome: label pill under each panel holding the app name
 constexpr float kBarH = 0.085f, kBarGap = 0.012f;

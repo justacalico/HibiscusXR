@@ -144,6 +144,9 @@ void pumpBridge(HudEngine* e) {
         if (!p) break;
         int taskId = env->GetIntField(p, e->fPendTask);
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
+        const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
+        LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
+        if (pc) env->ReleaseStringUTFChars(jpkg, pc);
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
         int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
                             ringPitch(e->panels));

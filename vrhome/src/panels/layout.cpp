@@ -22,16 +22,38 @@ void panelCenter(const Panel& p, float out[3], float right[3], float up[3]) {
 }
 
 float freeSlotYaw(const std::vector<Panel>& panels, float centre) {
-    bool used[kMaxPanels] = {};
-    for (auto& p : panels) {
-        for (int s = 0; s < kMaxPanels; ++s) {
-            const float d = wrapPi(p.yaw - (centre + kSlotYaw[s]));
-            if (fabsf(d) < 0.05f) used[s] = true;
-        }
+    // a slot counts as taken when any panel sits within a window's angular
+    // width of it, not only when it sits exactly on it: the centre is the
+    // current gaze, so a panel spawned under an earlier gaze can hide
+    // between the new slot positions and the next window lands on top of it
+    for (int s = 0; s < kMaxPanels; ++s) {
+        const float cand = centre + kSlotYaw[s];
+        bool used = false;
+        for (auto& p : panels)
+            if (fabsf(wrapPi(p.yaw - cand)) < kPanelMinGap) {
+                used = true;
+                break;
+            }
+        if (!used) return cand;
     }
-    for (int s = 0; s < kMaxPanels; ++s)
-        if (!used[s]) return centre + kSlotYaw[s];
-    return centre;
+    // every slot blocked: drop into the middle of the widest free arc
+    // rather than stacking windows
+    float offs[kMaxPanels];
+    const int n = (int)panels.size();
+    for (int i = 0; i < n; ++i) offs[i] = wrapPi(panels[i].yaw - centre);
+    for (int i = 1; i < n; ++i) {
+        const float t = offs[i];
+        int j = i - 1;
+        while (j >= 0 && offs[j] > t) { offs[j + 1] = offs[j]; --j; }
+        offs[j + 1] = t;
+    }
+    float bestOff = 0.0f, bestGap = -1.0f;
+    for (int i = 0; i <= n; ++i) {
+        const float lo = i == 0 ? -(float)M_PI : offs[i - 1];
+        const float hi = i == n ? (float)M_PI : offs[i];
+        if (hi - lo > bestGap) { bestGap = hi - lo; bestOff = (lo + hi) * 0.5f; }
+    }
+    return centre + bestOff;
 }
 
 float ringPitch(const std::vector<Panel>& panels) {
@@ -145,17 +167,29 @@ int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg) {
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch) {
     const float ep = pitch > kPitchMax ? kPitchMax
                      : pitch < -kPitchMax ? -kPitchMax : pitch;
-    for (auto& p : panels) {
-        // keep the panel's slot offset, re-centre the ring on current gaze
-        const float off = wrapPi(p.yaw - centre);
-        // find nearest slot offset and snap to it around the new centre
-        float best = 1e9f; int bs = 0;
-        for (int s = 0; s < kMaxPanels; ++s) {
-            const float d = fabsf(off - kSlotYaw[s]);
-            if (d < best) { best = d; bs = s; }
+    // windows keep their left-to-right order around the new centre but each
+    // gets its own slot - snapping every panel to its nearest slot can
+    // collapse two windows onto the same one
+    const float asc[kMaxPanels] = {kSlotYaw[1], kSlotYaw[0], kSlotYaw[2]};
+    int ord[kMaxPanels];
+    const int n = (int)panels.size();
+    for (int i = 0; i < n; ++i) ord[i] = i;
+    for (int i = 1; i < n; ++i) {
+        const int t = ord[i];
+        int j = i - 1;
+        while (j >= 0 && wrapPi(panels[ord[j]].yaw - centre) >
+                         wrapPi(panels[t].yaw - centre)) {
+            ord[j + 1] = ord[j];
+            --j;
         }
-        p.yaw = centre + kSlotYaw[bs];
-        p.pitch = ep;
+        ord[j + 1] = t;
+    }
+    // fewer panels than slots sit on the middle-most run, so a lone window
+    // lands dead ahead instead of off to the side
+    const int start = (kMaxPanels - n) / 2;
+    for (int i = 0; i < n; ++i) {
+        panels[ord[i]].yaw = centre + asc[start + i];
+        panels[ord[i]].pitch = ep;
     }
 }
 

@@ -28,7 +28,7 @@
 key 115   VOLUME_UP 
 key 114   VOLUME_DOWN
 #Add by PICO_Driver angran.dong for bug#32597:[SDM845] add confirm and back keys on sdm845 --end
-key 102   HOME
+key 102   DEFINE_HOME
 key 528   FOCUS
 key 766   CAMERA
 key 28    DEFINE_CONFIRM

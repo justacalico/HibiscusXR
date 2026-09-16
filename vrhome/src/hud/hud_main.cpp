@@ -182,18 +182,24 @@ static void* hudThread(void* arg) {
     ASensorManager* sensorMgr =
         ASensorManager_getInstanceForPackage("gitlab.neosalsa.hud");
     e->sensorMgr = sensorMgr;
-    // take the wakeup variant: the env already owns the non-wakeup handle,
-    // and this HAL only emits the first-flush meta event on a real
-    // activation - a second connection on the streaming handle stays
-    // "First flush pending" forever and never sees a sample
-    const ASensor* rot = ASensorManager_getDefaultSensorEx(sensorMgr,
-        ASENSOR_TYPE_GAME_ROTATION_VECTOR, true);
-    if (!rot)
-        rot = ASensorManager_getDefaultSensor(sensorMgr,
-            ASENSOR_TYPE_GAME_ROTATION_VECTOR);
-    if (!rot)
-        rot = ASensorManager_getDefaultSensor(sensorMgr,
-            ASENSOR_TYPE_ROTATION_VECTOR);
+    // pick any handle other than the env's default non-wakeup one: this HAL
+    // only emits the first-flush meta event on a real activation, so a
+    // second connection on the streaming handle stays "First flush pending"
+    // forever and never sees a sample. Non-wakeup first - the wakeup handle
+    // works but the vendor ack path spams sendAck errors per event
+    const ASensor* def = ASensorManager_getDefaultSensor(sensorMgr,
+        ASENSOR_TYPE_GAME_ROTATION_VECTOR);
+    ASensorList list = nullptr;
+    const int n = ASensorManager_getSensorList(sensorMgr, &list);
+    const ASensor* rot = nullptr;
+    for (int i = 0; i < n && !rot; ++i)
+        if (ASensor_getType(list[i]) == ASENSOR_TYPE_GAME_ROTATION_VECTOR &&
+                list[i] != def && !ASensor_isWakeUpSensor(list[i]))
+            rot = list[i];
+    for (int i = 0; i < n && !rot; ++i)
+        if (ASensor_getType(list[i]) == ASENSOR_TYPE_ROTATION_VECTOR)
+            rot = list[i];
+    if (!rot) rot = def;
     e->rotSensor = rot;
     e->sensorQueue = ASensorManager_createEventQueue(sensorMgr,
         ALooper_forThread(), kSensorIdent, nullptr, nullptr);

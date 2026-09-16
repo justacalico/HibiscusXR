@@ -7,14 +7,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
-import android.hardware.input.InputManager;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
-import android.view.InputChannel;
-import android.view.InputEvent;
-import android.view.InputEventReceiver;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -22,8 +18,6 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-
-import java.lang.reflect.Method;
 
 /*
  * The system-overlay half of the shell: a fullscreen transparent
@@ -33,15 +27,17 @@ import java.lang.reflect.Method;
  * and the window can be summoned over them without going home first.
  *
  * Visibility: shown whenever the env activity owns display 0 (home space)
- * or while summoned over another app; hidden otherwise. The window is
- * focusable whenever shown so headset keys reach HudView instead of the app
- * underneath.
+ * or while summoned over another app; hidden otherwise. The window never
+ * takes focus - all menu keys arrive through the key filter instead, so a
+ * covered game keeps focus and never sees the menu's input.
  *
  * The headset home button arrives as keycode 1003 (DEFINE_HOME in
  * gpio-keys.kl - real KEYCODE_HOME is consumed by system_server before
- * dispatch, so a plain keycode had to be substituted). An input monitor
- * watches for it globally: short press toggles the menu over a covered app
- * or recenters the ring in home space; long press goes home.
+ * dispatch, so a plain keycode had to be substituted). SummonKeyService,
+ * an accessibility service with flagRequestFilterKeyEvents, sees every key
+ * before dispatch no matter which app is focused - gesture monitors never
+ * receive keys on this build. Short press toggles the menu over a covered
+ * app or recenters the ring in home space; long press goes home.
  */
 public class HudService extends Service implements SurfaceHolder.Callback,
         HudView.KeySink, ShellBridge.CoveredListener {
@@ -55,8 +51,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private HudView view;
     private WindowManager.LayoutParams lp;
     private ShellBridge bridge;
-    private Object monitor;              // android.view.InputMonitor (hidden)
-    private InputEventReceiver receiver;
+    private static volatile HudService instance;
 
     // start hidden: the first poll decides; a game booting before the
     // service should never see the overlay flash up
@@ -75,14 +70,14 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         }
         nativeInit(this, bridge);
         buildWindow();
-        startMonitor();
+        enableKeyFilter();
+        instance = this;
         foreground();
         Log.i(TAG, "hud up");
     }
 
     @Override public void onDestroy() {
-        if (receiver != null) receiver.dispose();
-        disposeMonitor();
+        instance = null;
         nativeShutdown();
         super.onDestroy();
     }
@@ -129,22 +124,13 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     }
 
     // shown = home space (env is the top task) or summoned over an app.
-    // Going GONE tears the surface down, which parks the render loop; a
-    // hidden window also must not hold focus
+    // Going GONE tears the surface down, which parks the render loop. The
+    // window is always NOT_FOCUSABLE/NOT_TOUCHABLE: the key filter owns all
+    // HUD input, so nothing underneath loses focus when the menu pops
     private void updateWindow() {
         final boolean shown = !covered || summoned;
-        int f = lp.flags;
-        if (shown) f &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        else       f |=  WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-        if (f != lp.flags) {
-            lp.flags = f;
-            wm.updateViewLayout(view, lp);
-        }
         final int vis = shown ? View.VISIBLE : View.GONE;
-        if (view.getVisibility() != vis) {
-            view.setVisibility(vis);
-            if (shown) view.requestFocus();
-        }
+        if (view.getVisibility() != vis) view.setVisibility(vis);
     }
 
     // --------------------------------------------------------- callbacks
@@ -156,7 +142,32 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         updateWindow();
     }
 
-    // summon key from the input monitor: short press toggles the menu over a
+    // SummonKeyService calls these on its own binder thread: bounce to the
+    // main looper so window/flag state stays single-threaded
+    static void onSummonKey(final int action) {
+        final HudService s = instance;
+        if (s != null) s.view.post(new Runnable() {
+            @Override public void run() { s.onSummon(action); }
+        });
+    }
+
+    // true while the menu is shown: at home (env front) or summoned over a
+    // covered app. Menu keys get consumed by the filter and forwarded here
+    // instead of reaching whatever window is focused
+    static boolean menuKeysOwned() {
+        HudService s = instance;
+        return s != null && (!s.covered || s.summoned);
+    }
+
+    static void forwardKey(final int code, final int action,
+                           final int repeat) {
+        final HudService s = instance;
+        if (s != null) s.view.post(new Runnable() {
+            @Override public void run() { s.onKey(code, action, repeat); }
+        });
+    }
+
+    // summon key from the key filter: short press toggles the menu over a
     // covered app or recenters the ring in home space; long press goes home
     private void onSummon(int action) {
         if (action == KeyEvent.ACTION_DOWN) {
@@ -206,44 +217,31 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         nativeWindowGone();
     }
 
-    // --------------------------------------------------------- monitor
+    // ------------------------------------------------------- key filter
 
-    // InputManager.monitorGestureInput is hidden; the platform signature and
-    // the hidden-api exemption cover both the call and MONITOR_INPUT. The
-    // monitor sees display-0 keys regardless of which window is focused -
-    // exactly what a summon key needs
-    private void startMonitor() {
+    // The summon key is a plain keycode to the system, and Android 10 gives
+    // apps no global key monitor (gesture monitors are touch-only). The
+    // accessibility key filter does see every key, and the platform
+    // signature holds WRITE_SECURE_SETTINGS so the service can switch itself
+    // on - no settings trip needed after a flash.
+    private void enableKeyFilter() {
         try {
-            InputManager im =
-                    (InputManager) getSystemService(Context.INPUT_SERVICE);
-            Method m = InputManager.class.getDeclaredMethod(
-                    "monitorGestureInput", String.class, int.class);
-            monitor = m.invoke(im, "vrhud", 0);
-            Method getChan = monitor.getClass().getDeclaredMethod(
-                    "getInputChannel");
-            InputChannel ch = (InputChannel) getChan.invoke(monitor);
-            receiver = new InputEventReceiver(ch, Looper.getMainLooper()) {
-                @Override public void onInputEvent(InputEvent ev) {
-                    if (ev instanceof KeyEvent) {
-                        KeyEvent k = (KeyEvent) ev;
-                        if (k.getKeyCode() == K_SUMMON)
-                            onSummon(k.getAction());
-                    }
-                    finishInputEvent(ev, false);
-                }
-            };
-            Log.i(TAG, "input monitor up");
+            final String svc = getPackageName() + "/"
+                    + SummonKeyService.class.getName();
+            android.content.ContentResolver cr = getContentResolver();
+            String cur = Settings.Secure.getString(cr,
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (cur == null || !cur.contains(svc)) {
+                Settings.Secure.putString(cr,
+                        Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+                        cur == null || cur.isEmpty() ? svc : cur + ":" + svc);
+            }
+            Settings.Secure.putInt(cr, Settings.Secure.ACCESSIBILITY_ENABLED,
+                    1);
+            Log.i(TAG, "key filter enabled");
         } catch (Throwable t) {
-            Log.e(TAG, "no input monitor - summon key dead", t);
+            Log.e(TAG, "cannot enable key filter - summon key dead", t);
         }
-    }
-
-    private void disposeMonitor() {
-        if (monitor == null) return;
-        try {
-            monitor.getClass().getDeclaredMethod("dispose").invoke(monitor);
-        } catch (Throwable ignored) {}
-        monitor = null;
     }
 
     // --------------------------------------------------------- natives

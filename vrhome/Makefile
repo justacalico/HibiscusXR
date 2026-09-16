@@ -132,10 +132,10 @@ $(ENV_UNALIGNED): AndroidManifest.xml $(OUT)/res.zip | toolcheck
 	$(AAPT2) link -I "$(JAR)" --manifest AndroidManifest.xml \
 	    --min-sdk-version 26 --target-sdk-version 29 -o $@ $(OUT)/res.zip
 
-$(HUD_UNALIGNED): hud/AndroidManifest.xml | toolcheck
+$(HUD_UNALIGNED): hud/AndroidManifest.xml $(OUT)/res.zip | toolcheck
 	@mkdir -p $(OUT)
 	$(AAPT2) link -I "$(JAR)" --manifest hud/AndroidManifest.xml \
-	    --min-sdk-version 26 --target-sdk-version 29 -o $@
+	    --min-sdk-version 26 --target-sdk-version 29 -o $@ $(OUT)/res.zip
 
 # aapt2 can't add entries afterwards: inject the .so and dex into a fresh
 # copy of the apk, both stored uncompressed

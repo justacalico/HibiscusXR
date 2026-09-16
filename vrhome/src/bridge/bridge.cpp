@@ -6,6 +6,7 @@
 #include "../common/config.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
+#include "../common/props.h"
 
 #include <deque>
 #include <mutex>
@@ -131,6 +132,10 @@ void pumpBridge(HudEngine* e) {
     }
 
     if (!e->pendingCls) return;
+
+    // test hook: setprop debug.vrhome.noadopt 1 leaves strays on display 0
+    // so the covered/summon cycle can be exercised without a VR game
+    if (propI("debug.vrhome.noadopt", 0)) return;
 
     // stray display-0 tasks the poller wants us to take
     for (;;) {

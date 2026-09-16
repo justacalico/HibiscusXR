@@ -98,7 +98,7 @@ for lib in lib64 lib; do
   debugfs -R "dump /$lib/libinput.so $TMPD/libinput.so" "$IMG" 2>/dev/null
   if [ ! -s "$TMPD/libinput.so" ]; then
     echo "  FAIL    /$lib/libinput.so missing from image"; fail=$((fail+1))
-  elif strings "$TMPD/libinput.so" | grep -q DEFINE_CONFIRM; then
+  elif strings "$TMPD/libinput.so" | grep -q DEFINE_HOME; then
     echo "  OK    /$lib/libinput.so already patched"
   elif python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
       "$TMPD/libinput.so" "$TMPD/libinput.patched.so" >/dev/null 2>&1; then
@@ -127,11 +127,13 @@ echo "=== VRShell x28 patch (recompute struct base from x27) ==="
 put ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so 644
 
 echo
-echo "=== panel shell (gitlab.neosalsa.home) ==="
-# Platform-signed NativeActivity: owns display 0, hosts every 2D app on a
-# per-task virtual display rendered as a world-space panel. HOME role, hidden
-# API whitelist and disabling the stock Pico homes are first-boot work in
-# pn2-home.rc - the role holder lives in /data and cannot be baked in.
+echo "=== shell split: env (gitlab.neosalsa.home) + HUD (gitlab.neosalsa.hud) ==="
+# The env is a platform-signed NativeActivity owning display 0. The HUD is a
+# platform-signed service holding a TYPE_SYSTEM_OVERLAY window; it owns the
+# virtual displays, so panels live over the env and over summoned VR apps.
+# HOME role, hidden API whitelist and disabling the stock Pico homes are
+# first-boot work in pn2-home.rc - the role holder lives in /data and cannot
+# be baked in.
 #
 # Always rebuild from source and verify the platform signature: a debug-signed
 # apk installs fine but gets none of the system permissions, and the shell
@@ -139,11 +141,15 @@ echo "=== panel shell (gitlab.neosalsa.home) ==="
 make -C "$PN2_ROOT/vrhome" apk \
     || { echo "FAIL vrhome build"; fail=$((fail+1)); }
 BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
-"$BT/apksigner" verify --print-certs "$PN2_ROOT/vrhome/out/vrhome.apk" \
-    | grep -q "CN=Android" \
-    || { echo "FAIL vrhome.apk is not platform-signed"; fail=$((fail+1)); }
+for a in vrhome vrhud; do
+  "$BT/apksigner" verify --print-certs "$PN2_ROOT/vrhome/out/$a.apk" \
+      | grep -q "CN=Android" \
+      || { echo "FAIL $a.apk is not platform-signed"; fail=$((fail+1)); }
+done
 mkd /app/PN2Panels
 put "$PN2_ROOT/vrhome/out/vrhome.apk" /app/PN2Panels/PN2Panels.apk 644
+mkd /app/PN2Hud
+put "$PN2_ROOT/vrhome/out/vrhud.apk" /app/PN2Hud/PN2Hud.apk 644
 
 echo
 echo "=== see-through calibration app ==="

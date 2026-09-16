@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
-"""Teach our libinput.so the four Pico keycode labels the headset layouts need.
+"""Teach our libinput.so the keycode labels the headset layouts need.
 
 KeyLayoutMap::parseKey resolves each label through libinput's keycode table; one
 unknown label fails the WHOLE file, so gpio-keys.kl was being discarded and every
@@ -9,6 +9,10 @@ headset button fell through Generic.kl - which is why Confirm arrived as ENTER.
 
 Stock's values, read out of its own table:
     DC_IN 998, HALL_OPEN 999, HALL_CLOSE 1000, DEFINE_CONFIRM 1001
+
+Our own labels:
+    DEFINE_HOME 1003 - the physical home key, remapped off KEYCODE_HOME so the
+    HUD service can see it through an input monitor (system_server eats HOME)
 
 Rather than grow the array (fixed size, would move everything), repurpose entries
 for keycodes this device can never generate. Each donor string is overwritten in
@@ -23,6 +27,7 @@ PATCHES = {
     "TV_TELETEXT":          ("HALL_OPEN",       999),
     "TV_SATELLITE_BS":      ("HALL_CLOSE",     1000),
     "TV_DATA_SERVICE":      ("DC_IN",           998),
+    "TV_CONTENTS_MENU":     ("DEFINE_HOME",    1003),
 }
 
 
@@ -63,6 +68,10 @@ def patch(src, dst):
     print(f"--- {dst}  ({'64' if is64 else '32'}-bit) ---")
     ok = 0
     for donor, (newlabel, newvalue) in PATCHES.items():
+        # idempotent: a lib already carrying this label counts as done, which
+        # lets an older patched image pick up newer labels on a rebuild
+        if data.find(b"\0" + newlabel.encode() + b"\0") >= 0:
+            print(f"  OK    {newlabel} already present"); ok += 1; continue
         i = data.find(b"\0" + donor.encode() + b"\0")
         if i < 0:
             print(f"  SKIP  donor {donor} not found"); continue

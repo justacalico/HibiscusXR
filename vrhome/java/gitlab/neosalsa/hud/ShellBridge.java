@@ -1,4 +1,4 @@
-package gitlab.neosalsa.home;
+package gitlab.neosalsa.hud;
 
 import android.app.ActivityOptions;
 import android.content.ComponentName;
@@ -29,26 +29,37 @@ import java.util.Map;
 import java.util.Set;
 
 /*
- * System-side plumbing for the panel shell. The GL thread owns the OES
- * textures; everything Android (virtual displays, tasks, input injection)
- * goes through here. Hidden API access is expected: the app is platform
- * signed and gitlab.neosalsa.home is in hidden_api_blacklist_exemptions.
+ * System-side plumbing for the panel shell, living in the HUD service now:
+ * virtual displays, tasks and input injection all belong to the process
+ * that renders them, and the HUD's overlay window is that process. Hidden
+ * API access is expected: the app is platform signed and
+ * gitlab.neosalsa.hud is in hidden_api_blacklist_exemptions.
  *
  * Threading: createPanel, launch/adopt/release, the takePending getters and
  * the inject methods are all called from the render thread. The poller and
  * LauncherActivity callbacks run on the main looper.
  */
 public class ShellBridge {
-    private static final String TAG = "vrhome.bridge";
-    private static final String SELF = "gitlab.neosalsa.home";
+    private static final String TAG = "vrhud.bridge";
+    // packages that may legitimately top display 0 without being "covered":
+    // the env activity is the only one, everything else is a covered app.
+    // Our own tasks never sit on display 0 (the library lives on a panel)
+    // but exclude this package anyway so a stray can never be ourselves
+    private static final String ENV_PKG = "gitlab.neosalsa.home";
+    private static final String SELF = "gitlab.neosalsa.hud";
 
     // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
     private static final int VD_FLAGS = 1 | 64;
+
+    public interface CoveredListener {
+        void onCovered(boolean covered);
+    }
 
     private final Context ctx;
     private final DisplayManager dm;
     private final PackageManager pm;
     private final Handler main = new Handler(Looper.getMainLooper());
+    private final CoveredListener listener;
 
     // IActivityTaskManager proxy + the methods we use on it
     private Object atm;
@@ -77,15 +88,20 @@ public class ShellBridge {
     // displays the render thread just launched something onto; don't reap
     // them while the task is still landing
     private final Set<Integer> launching = new HashSet<>();
-    // set by the poller: a non-shell task owns the physical display
+    // set by the poller: a non-env task owns the physical display
     private volatile boolean covered = false;
+    // the listener only hears CHANGES, so the first poll must fire
+    // unconditionally - otherwise a service that starts while the env is
+    // already front keeps its fail-hidden default and never shows
+    private volatile boolean firstPoll = true;
 
     static {
-        System.loadLibrary("vrhome");
+        System.loadLibrary("vrhud");
     }
 
-    public ShellBridge(Context c) throws Exception {
+    public ShellBridge(Context c, CoveredListener l) throws Exception {
         ctx = c;
+        listener = l;
         dm = (DisplayManager) c.getSystemService(Context.DISPLAY_SERVICE);
         pm = c.getPackageManager();
         input = (InputManager) c.getSystemService(Context.INPUT_SERVICE);
@@ -154,7 +170,7 @@ public class ShellBridge {
     // display name for a panel's window bar; the library panel's pseudo
     // package is not a real package so it gets a fixed label
     public String appLabel(String pkg) {
-        if ("gitlab.neosalsa.home.library".equals(pkg)) return "Library";
+        if ("gitlab.neosalsa.hud.library".equals(pkg)) return "Library";
         try {
             return pm.getApplicationLabel(
                     pm.getApplicationInfo(pkg, 0)).toString();
@@ -247,7 +263,7 @@ public class ShellBridge {
         }
     }
 
-    // render thread: true while something other than us owns display 0
+    // render thread: true while something other than the env owns display 0
     public boolean isCovered() { return covered; }
 
     // our own library activity goes on its own panel
@@ -385,30 +401,45 @@ public class ShellBridge {
         }
     };
 
+    private boolean ownPkg(String pkg) {
+        return pkg.equals(ENV_PKG) || pkg.equals(SELF);
+    }
+
     private void pollOnce() throws Exception {
         Set<Integer> liveDisplays = new HashSet<>();
         Set<Integer> liveTasks = new HashSet<>();
         synchronized (pendingAdopts) {
             // the task list is MRU-ordered: the first display-0 entry is the
-            // top one - anything but us means a fullscreen app owns the HMD
+            // top one - anything but the env means an app owns the HMD
             boolean top = true;
             for (Object t : tasks()) {
                 int disp = fDisplayId.getInt(t);
                 if (disp != 0) continue;
                 if (top) {
                     String p = pkgOf(t);
-                    covered = p != null && !p.equals(SELF);
+                    final boolean cov = p != null && !ownPkg(p);
+                    if (cov != covered || firstPoll) {
+                        covered = cov;
+                        firstPoll = false;
+                        if (listener != null) listener.onCovered(cov);
+                    }
                     top = false;
                 }
             }
-            if (top) covered = false;
+            if (top) {
+                if (covered || firstPoll) {
+                    covered = false;
+                    firstPoll = false;
+                    if (listener != null) listener.onCovered(false);
+                }
+            }
 
             for (Object t : tasks()) {
                 int taskId = fTaskId.getInt(t);
                 int disp = fDisplayId.getInt(t);
                 liveTasks.add(taskId);
                 String pkg = pkgOf(t);
-                if (disp == 0 && pkg != null && !pkg.equals(SELF)
+                if (disp == 0 && pkg != null && !ownPkg(pkg)
                         && !isVrApp(pkg)      // VR keeps display 0
                         && !adopting.contains(taskId)) {
                     Pending p = new Pending();

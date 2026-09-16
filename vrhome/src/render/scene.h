@@ -4,5 +4,6 @@
 
 struct Engine;
 
-// sky backdrop + floor grid + all floating panels + gaze cursor
+// env scenery only: sky backdrop + floor grid. The HUD draws its own chrome
+// (panels + cursor) via render/chrome.h instead
 void drawScene(Engine* e, const Mat4& viewProj);

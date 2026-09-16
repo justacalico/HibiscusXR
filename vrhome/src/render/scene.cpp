@@ -1,6 +1,5 @@
 #include "scene.h"
 
-#include "chrome.h"
 #include "../engine.h"
 
 void drawScene(Engine* e, const Mat4& viewProj) {
@@ -28,7 +27,4 @@ void drawScene(Engine* e, const Mat4& viewProj) {
     glDrawArrays(GL_LINES, 0, e->gridVerts);
     glDisableVertexAttribArray(aPos);
     glDisableVertexAttribArray(aCol);
-
-    drawPanels(e, viewProj);
-    drawCursor(e, viewProj);
 }

@@ -66,7 +66,26 @@ void testLayout() {
     ps.push_back(mkPanel(kSlotYaw[1]));
     CHECK_F(freeSlotYaw(ps, 0.0f), kSlotYaw[2], 1e-6f);
     ps.push_back(mkPanel(kSlotYaw[2]));
-    CHECK_F(freeSlotYaw(ps, 0.0f), 0.0f, 1e-6f);  // full: centre
+    // ring full: the answer drops into the widest free arc and must still
+    // clear every panel by the minimum gap rather than stack on the centre
+    {
+        const float fy = freeSlotYaw(ps, 0.0f);
+        for (auto& p : ps)
+            CHECK(fabsf(wrapPi(p.yaw - fy)) >= kPanelMinGap - 1e-4f);
+    }
+
+    // a panel that drifted off the slot grid still blocks the slots it
+    // overlaps - the centre moves with the gaze between adoptions, so an
+    // exact-slot check lets a new window land on top of it
+    ps.clear();
+    ps.push_back(mkPanel(0.52f));
+    CHECK_F(freeSlotYaw(ps, 0.43f), 0.43f + kSlotYaw[1], 1e-6f);
+    ps.push_back(mkPanel(0.43f + kSlotYaw[1]));
+    {
+        const float fy = freeSlotYaw(ps, 0.43f);
+        for (auto& p : ps)
+            CHECK(fabsf(wrapPi(p.yaw - fy)) >= kPanelMinGap - 1e-4f);
+    }
 
     // slots follow the ring centre
     ps.clear();
@@ -98,6 +117,22 @@ void testLayout() {
     CHECK_F(ps[0].pitch, 0.4f, 1e-6f);
     recenterSlots(ps, 1.0f, 9.0f);
     CHECK_F(ps[0].pitch, kPitchMax, 1e-6f);
+
+    // two panels nearest the same slot must not collapse onto each other:
+    // windows keep their left-to-right order but each takes its own slot
+    ps.clear();
+    ps.push_back(mkPanel(1.02f));
+    ps.push_back(mkPanel(0.95f));
+    recenterSlots(ps, 1.0f, 0.0f);
+    CHECK(fabsf(wrapPi(ps[0].yaw - ps[1].yaw)) >= kPanelMinGap - 1e-4f);
+    CHECK_F(ps[0].yaw, 1.0f + kSlotYaw[0], 1e-5f);
+    CHECK_F(ps[1].yaw, 1.0f + kSlotYaw[1], 1e-5f);
+
+    // a lone panel lands dead ahead, not pushed onto a side slot
+    ps.clear();
+    ps.push_back(mkPanel(1.5f));
+    recenterSlots(ps, 1.0f, 0.0f);
+    CHECK_F(ps[0].yaw, 1.0f, 1e-5f);
 
     // gaze pick: identity head looks down -z, hits the centre panel
     Mat4 I = identity();

@@ -40,11 +40,12 @@ static bool initEyeTargets(Engine* e) {
 }
 
 // one-time EGL setup
-static int initEgl(Engine* e) {
+int initEglContext(Engine* e) {
     const EGLint attribs[] = {
         EGL_SURFACE_TYPE, EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-        EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8, EGL_DEPTH_SIZE, 16,
+        EGL_BLUE_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_RED_SIZE, 8,
+        EGL_ALPHA_SIZE, 8, EGL_DEPTH_SIZE, 16,
         EGL_NONE
     };
     EGLDisplay dpy = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -63,13 +64,13 @@ static int initEgl(Engine* e) {
     return 0;
 }
 
-int initWindow(Engine* e) {
-    if (e->display == EGL_NO_DISPLAY && initEgl(e) != 0) return -1;
+int initWindow(Engine* e, ANativeWindow* win) {
+    if (e->display == EGL_NO_DISPLAY && initEglContext(e) != 0) return -1;
     EGLint format = 0;
     eglGetConfigAttrib(e->display, e->eglConfig, EGL_NATIVE_VISUAL_ID, &format);
-    ANativeWindow_setBuffersGeometry(e->app->window, 0, 0, format);
+    ANativeWindow_setBuffersGeometry(win, 0, 0, format);
     e->surface = eglCreateWindowSurface(e->display, e->eglConfig,
-                                      e->app->window, nullptr);
+                                      win, nullptr);
     if (eglMakeCurrent(e->display, e->surface, e->surface, e->context)
             == EGL_FALSE) {
         LOGE("eglMakeCurrent failed"); return -1;

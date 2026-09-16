@@ -1,10 +1,12 @@
 #include "bridge.h"
 
-#include "../engine.h"
+#include "../hud/engine.h"
+#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
+#include "../common/props.h"
 
 #include <deque>
 #include <mutex>
@@ -16,15 +18,10 @@ static std::mutex gLaunchMu;
 static volatile bool gWantRecenter = false;
 
 extern "C" JNIEXPORT void JNICALL
-Java_gitlab_neosalsa_home_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
+Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
     const char* p = env->GetStringUTFChars(pkg, nullptr);
     queueLaunch(p);
     env->ReleaseStringUTFChars(pkg, p);
-}
-
-extern "C" JNIEXPORT void JNICALL
-Java_gitlab_neosalsa_home_PanelActivity_nativeHome(JNIEnv*, jclass) {
-    gWantRecenter = true;
 }
 
 void queueLaunch(const char* pkg) {
@@ -32,43 +29,16 @@ void queueLaunch(const char* pkg) {
     gLaunchQ.push_back(pkg);
 }
 
+void wantRecenter() { gWantRecenter = true; }
+
 bool takeWantRecenter() {
     const bool r = gWantRecenter;
     gWantRecenter = false;
     return r;
 }
 
-JNIEnv* threadEnv(android_app* app) {
-    JNIEnv* env = nullptr;
-    app->activity->vm->AttachCurrentThread(&env, nullptr);
-    return env;
-}
-
-jclass loadAppClass(JNIEnv* env, jobject activity, const char* name) {
-    jclass actCls = env->GetObjectClass(activity);
-    jmethodID getCL = env->GetMethodID(actCls, "getClassLoader",
-                                     "()Ljava/lang/ClassLoader;");
-    jobject cl = env->CallObjectMethod(activity, getCL);
-    jclass clCls = env->FindClass("java/lang/ClassLoader");
-    jmethodID load = env->GetMethodID(clCls, "loadClass",
-                                      "(Ljava/lang/String;)Ljava/lang/Class;");
-    jstring jn = env->NewStringUTF(name);
-    jclass c = (jclass)env->CallObjectMethod(cl, load, jn);
-    env->DeleteLocalRef(jn);
-    return c;
-}
-
-void initBridge(Engine* e) {
-    JNIEnv* env = threadEnv(e->app);
-    jclass bc = loadAppClass(env, e->app->activity->clazz,
-                             "gitlab.neosalsa.home.ShellBridge");
-    if (!bc) { e->bridgeDead = true; LOGE("no ShellBridge class"); return; }
-    jmethodID ctor = env->GetMethodID(bc, "<init>", "(Landroid/content/Context;)V");
-    jobject br = env->NewObject(bc, ctor, e->app->activity->clazz);
-    if (env->ExceptionCheck()) {
-        env->ExceptionDescribe(); env->ExceptionClear();
-        e->bridgeDead = true; LOGE("ShellBridge ctor failed"); return;
-    }
+void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
+    jclass bc = env->GetObjectClass(br);
     e->bridge = env->NewGlobalRef(br);
     e->mCreatePanel  = env->GetMethodID(bc, "createPanel", "(IIII)I");
     e->mPanelTex     = env->GetMethodID(bc, "panelTexture",
@@ -79,7 +49,7 @@ void initBridge(Engine* e) {
     e->mAdopt        = env->GetMethodID(bc, "adoptTaskOn", "(II)V");
     e->mReleasePanel = env->GetMethodID(bc, "releasePanel", "(I)V");
     e->mTakeAdopt    = env->GetMethodID(bc, "takePendingAdopt",
-                        "()Lgitlab/neosalsa/home/ShellBridge$Pending;");
+                        "()Lgitlab/neosalsa/hud/ShellBridge$Pending;");
     e->mTakeRelease  = env->GetMethodID(bc, "takePendingRelease", "()I");
     e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
     e->mInjectTouch  = env->GetMethodID(bc, "injectTouch", "(IFFI)V");
@@ -98,15 +68,15 @@ void initBridge(Engine* e) {
     e->stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
 
     e->pendingCls = (jclass)env->NewGlobalRef(loadAppClass(env,
-        e->app->activity->clazz, "gitlab.neosalsa.home.ShellBridge$Pending"));
+        e->ctx, "gitlab.neosalsa.hud.ShellBridge$Pending"));
     e->fPendTask = env->GetFieldID(e->pendingCls, "taskId", "I");
     e->fPendPkg  = env->GetFieldID(e->pendingCls, "pkg", "Ljava/lang/String;");
     LOGI("bridge ready");
 }
 
-void pumpBridge(Engine* e) {
+void pumpBridge(HudEngine* e) {
     if (!e->bridge) return;
-    JNIEnv* env = threadEnv(e->app);
+    JNIEnv* env = threadEnv(e->vm);
 
     // app launches requested by the library panel / test hook
     for (;;) {
@@ -153,11 +123,19 @@ void pumpBridge(Engine* e) {
         if (env->ExceptionCheck()) { env->ExceptionClear(); }
     }
 
-    // a fullscreen task owns the HMD - suspend scene rendering while covered
-    if (e->mIsCovered)
+    // a fullscreen task owns the HMD; when it lets go the panels come back,
+    // so recenter the ring on wherever the user ended up looking
+    if (e->mIsCovered) {
+        const bool was = e->covered;
         e->covered = env->CallBooleanMethod(e->bridge, e->mIsCovered) == JNI_TRUE;
+        if (was && !e->covered) wantRecenter();
+    }
 
     if (!e->pendingCls) return;
+
+    // test hook: setprop debug.vrhome.noadopt 1 leaves strays on display 0
+    // so the covered/summon cycle can be exercised without a VR game
+    if (propI("debug.vrhome.noadopt", 0)) return;
 
     // stray display-0 tasks the poller wants us to take
     for (;;) {
@@ -166,6 +144,9 @@ void pumpBridge(Engine* e) {
         if (!p) break;
         int taskId = env->GetIntField(p, e->fPendTask);
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
+        const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
+        LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
+        if (pc) env->ReleaseStringUTFChars(jpkg, pc);
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
         int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
                             ringPitch(e->panels));

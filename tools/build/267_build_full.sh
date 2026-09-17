@@ -54,6 +54,13 @@ SHIM=${PN2_ROOT}/shim
 INIT=${PN2_ROOT}/overlay/etc/init
 ST=${PN2_ROOT}/seethrough
 
+# The shims are our own code - rebuild them from source when the .so is absent
+# (fresh checkout), so the image is reproducible without a prebuilt binary.
+if [ ! -s "$SHIM/libshim_pvr.so" ] || [ ! -s "$SHIM/libshim_air.so" ] || [ ! -s "$SHIM/libskia_stub.so" ]; then
+  echo "=== shims missing - building from shim/ source ==="
+  bash "$SHIM/build.sh" || echo "  shim build failed - put() will report the gap"
+fi
+
 echo
 echo "=== linker whitelist (the big one: without this every Pico dlopen returns null) ==="
 put "$OV/public.libraries.txt" /etc/public.libraries.txt 644

@@ -283,6 +283,15 @@ pn2_compute_distortion(struct xrt_device *xdev, uint32_t view, float u, float v,
 	return XRT_SUCCESS;
 }
 
+static xrt_result_t
+pn2_ref_space_usage(struct xrt_device *xdev,
+                    enum xrt_reference_space_type type,
+                    enum xrt_input_name name,
+                    bool used)
+{
+	return XRT_SUCCESS;
+}
+
 struct xrt_device *
 pn2_hmd_create(void)
 {
@@ -299,6 +308,7 @@ pn2_hmd_create(void)
 	d->base.get_view_poses = u_device_get_view_poses;
 	d->base.get_visibility_mask = u_device_get_visibility_mask;
 	d->base.compute_distortion = pn2_compute_distortion;
+	d->base.ref_space_usage = pn2_ref_space_usage;
 	d->base.inputs[0].name = XRT_INPUT_GENERIC_HEAD_POSE;
 	snprintf(d->base.str, XRT_DEVICE_NAME_LEN, "Pico Neo 2");
 	snprintf(d->base.serial, XRT_DEVICE_NAME_LEN, "PICOA7B10");

@@ -10,3 +10,4 @@ turnip/build/
 *.img
 *.tar.gz
 __pycache__/
+out/

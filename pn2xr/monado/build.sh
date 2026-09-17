@@ -73,7 +73,8 @@ cmake -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
     -DANDROID_ABI=arm64-v8a \
     -DANDROID_PLATFORM=android-26 \
-    -DANDROID_STL=c++_shared \
+    -DANDROID_STL=c++_static \
+    -DXRT_FEATURE_AHARDWARE_BUFFER=OFF \
     -DCMAKE_BUILD_TYPE=Release \
     -DXRT_HAVE_WAYLAND=OFF -DXRT_HAVE_XLIB=OFF -DXRT_HAVE_XCB=OFF \
     -DXRT_FEATURE_SERVICE=OFF -DXRT_FEATURE_SERVICE_SYSTEMD=OFF \

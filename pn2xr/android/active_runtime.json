@@ -1,0 +1,10 @@
+{
+    "file_format_version": "1.0.0",
+    "runtime": {
+        "name": "Monado (pn2)",
+        "library_path": "/system/app/MonadoOpenXR/lib/arm64/libopenxr_monado.so",
+        "functions": {
+            "xrNegotiateLoaderRuntimeInterface": "xrNegotiateLoaderRuntimeInterface"
+        }
+    }
+}

@@ -1,7 +1,7 @@
 # build artifacts
 app-xrtest/out/
-monado/_monado-src/
-monado/build-android/
+monado/_monado-src
+monado/build-android
 eigen-*/
 eigen-cmake/
 turnip/_mesa-src/

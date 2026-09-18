@@ -1,6 +1,7 @@
 #include "qvr.h"
 
 #include "../engine.h"
+#include "../common/props.h"
 #include "../math/head.h"
 
 #include <android/log.h>
@@ -80,16 +81,23 @@ static QvrClient* qvrOpen() {
 void qvrPoll(Engine* e) {
     if (!e->qvrClient) {
         e->qvrClient = qvrOpen();
-        if (!e->qvrClient) { e->headPosValid = false; return; }
+        if (!e->qvrClient) { e->headPosValid = false; e->quatFromQvr = false; return; }
     }
     QvrClient* c = (QvrClient*)e->qvrClient;
     QvrPose* p = nullptr;
     if (c->getPose(c->impl, &p) != 0 || !p || p->state == 0) {
         e->headPosValid = false;
+        e->quatFromQvr = false;   // dead pose: let rot-vec take over again
         return;
     }
-    qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, e->sensorHz,
-                p->quat, p->pos);
+    qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, p->quat, p->pos);
     e->haveQuat = true;
     e->headPosValid = true;
+    static int s_n = 0;
+    if (propI("debug.vrhome.qvrlog", 0) && ++s_n % 72 == 0)
+        LOGI("rv %.3f %.3f %.3f %.3f qvr %.3f %.3f %.3f %.3f pos %.3f %.3f %.3f w %.3f %.3f %.3f hz %d",
+             e->quat[0], e->quat[1], e->quat[2], e->quat[3],
+             p->quat[0], p->quat[1], p->quat[2], p->quat[3],
+             p->pos[0], p->pos[1], p->pos[2],
+             e->headPos[0], e->headPos[1], e->headPos[2], e->sensorHz);
 }

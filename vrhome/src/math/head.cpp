@@ -37,24 +37,26 @@ Mat4 eyeMatrix(const Mat4& head, float ipd, int eye) {
     return r;
 }
 
-void qvrPosToWorld(const float rvQuat[4], const float qvrQuat[4],
-                   const float qvrPos[3], float out[3]) {
-    float qc[4], delta[4];
-    quatConj(qvrQuat, qc);
-    quatMul(rvQuat, qc, delta);
-    quatRotate(delta, qvrPos, out);
+void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
+                 const float qvrQuat[4], const float qvrPos[3]) {
+    *quatFromQvr = true;
+    memcpy(quat, qvrQuat, 4 * sizeof(float));
+    memcpy(headPos, qvrPos, 3 * sizeof(float));
 }
 
-void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
-                 int sensorHz, const float qvrQuat[4], const float qvrPos[3]) {
-    if (sensorHz > 0) {
-        *quatFromQvr = false;
-        qvrPosToWorld(quat, qvrQuat, qvrPos, headPos);
-    } else {
-        *quatFromQvr = true;
-        memcpy(quat, qvrQuat, 4 * sizeof(float));
-        memcpy(headPos, qvrPos, 3 * sizeof(float));
-    }
+void sensorPosToWorld(const float pos[3], float sensRoll, float worldX,
+                      float out[3]) {
+    // C = rotZ(sensRoll)*rotX(worldX) maps GL onto sensor axes, so the way
+    // back applies rotZ(-sensRoll) first then rotX(-worldX)
+    const float cs = cosf(sensRoll * (float)M_PI / 180.0f);
+    const float sn = sinf(sensRoll * (float)M_PI / 180.0f);
+    const float x = cs * pos[0] + sn * pos[1];
+    const float y = -sn * pos[0] + cs * pos[1];
+    const float cw = cosf(worldX * (float)M_PI / 180.0f);
+    const float sw = sinf(worldX * (float)M_PI / 180.0f);
+    out[0] = x;
+    out[1] = cw * y + sw * pos[2];
+    out[2] = -sw * y + cw * pos[2];
 }
 
 void gazeDir(const Mat4& head, float out[3]) {

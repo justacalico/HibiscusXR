@@ -11,11 +11,15 @@ void drainSensor(Engine* e) {
     while (ASensorEventQueue_getEvents(e->sensorQueue, &ev, 1) > 0) {
         if (ev.type == ASENSOR_TYPE_GAME_ROTATION_VECTOR ||
             ev.type == ASENSOR_TYPE_ROTATION_VECTOR) {
-            e->quat[0] = ev.data[0]; e->quat[1] = ev.data[1];
-            e->quat[2] = ev.data[2];
-            e->quat[3] = quatW(ev.data);
-            e->haveQuat = true;
             ++e->sensorEv;
+            // QVR owns the pose while it tracks; rot-vec is fallback only,
+            // so it must not clobber e->quat then
+            if (!e->quatFromQvr) {
+                e->quat[0] = ev.data[0]; e->quat[1] = ev.data[1];
+                e->quat[2] = ev.data[2];
+                e->quat[3] = quatW(ev.data);
+                e->haveQuat = true;
+            }
             if (fabsf(ev.data[0] - e->lastQ[0]) > 1e-5f ||
                 fabsf(ev.data[1] - e->lastQ[1]) > 1e-5f ||
                 fabsf(ev.data[2] - e->lastQ[2]) > 1e-5f ||

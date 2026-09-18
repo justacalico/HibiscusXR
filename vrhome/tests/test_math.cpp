@@ -179,39 +179,40 @@ void testHead() {
     CHECK_F(elr.m[13], 0.2f, 1e-4f);
     CHECK_F(elr.m[14], 0.5f, 1e-4f);
 
-    // qvr frame delta: same physical quat in both frames -> pos unchanged
-    float pw[3];
-    qvrPosToWorld(qi, qi, pos, pw);
-    CHECK_F(pw[0], 0.5f, 1e-5f); CHECK_F(pw[1], -0.2f, 1e-5f);
-    CHECK_F(pw[2], 1.0f, 1e-5f);
-    // rv reads identity while qvr says "yawed 90 about z": the delta must
-    // rotate the position back by 90 about z (+x world -> -y here)
-    float pw2[3];
-    qvrPosToWorld(qi, qz90, (const float[]){1, 0, 0}, pw2);
-    CHECK_F(pw2[0], 0.0f, 1e-4f); CHECK_F(pw2[1], -1.0f, 1e-4f);
-
-    // fold: a streaming rot-vec keeps its quat and only takes the position;
-    // a silent one hands orientation to QVR - the old haveQuat check latched
-    // after frame 1 and froze the view, so this must track sensorHz instead
+    // a valid QVR pose always wins outright: quat and pos copy raw since
+    // they share one tracking frame, rot-vec is fallback only
     {
         float fq[4] = {0, 0, 0, 1}, fp[3] = {9, 9, 9};
-        bool fqvr = true;
-        qvrFoldPose(fq, fp, &fqvr, 300, qz90, (const float[]){1, 0, 0});
-        CHECK(!fqvr);
-        CHECK_F(fq[3], 1.0f, 1e-5f);                 // quat left to rot-vec
-        CHECK_F(fp[1], -1.0f, 1e-4f);               // pos through the delta
-        qvrFoldPose(fq, fp, &fqvr, 0,
+        bool fqvr = false;
+        qvrFoldPose(fq, fp, &fqvr,
                     (const float[]){0.1f, 0.2f, 0.3f, 0.9f},
                     (const float[]){0.4f, 0.5f, 0.6f});
         CHECK(fqvr);
         CHECK_F(fq[0], 0.1f, 1e-5f); CHECK_F(fq[1], 0.2f, 1e-5f);
         CHECK_F(fq[3], 0.9f, 1e-5f);
-        CHECK_F(fp[0], 0.4f, 1e-5f); CHECK_F(fp[2], 0.6f, 1e-5f);
-        // qvr keeps owning the quat on every later frame while rv stays dead
-        qvrFoldPose(fq, fp, &fqvr, 0,
+        CHECK_F(fp[0], 0.4f, 1e-5f); CHECK_F(fp[1], 0.5f, 1e-5f);
+        CHECK_F(fp[2], 0.6f, 1e-5f);
+        // every later frame keeps refreshing, never latches
+        qvrFoldPose(fq, fp, &fqvr,
                     (const float[]){0.0f, 0.0f, 0.0f, 1.0f},
                     (const float[]){0.0f, 0.0f, 0.0f});
         CHECK(fqvr); CHECK_F(fq[0], 0.0f, 1e-5f); CHECK_F(fq[3], 1.0f, 1e-5f);
+    }
+
+    // sensor-world position returns to GL through the inverse mount
+    // correction: zero corrections pass it through, 90s swap axes
+    {
+        float pw[3];
+        sensorPosToWorld((const float[]){1, 2, 3}, 0, 0, pw);
+        CHECK_F(pw[0], 1.0f, 1e-5f); CHECK_F(pw[1], 2.0f, 1e-5f);
+        CHECK_F(pw[2], 3.0f, 1e-5f);
+        sensorPosToWorld((const float[]){1, 0, 0}, 90, 0, pw);
+        CHECK_F(pw[0], 0.0f, 1e-4f); CHECK_F(pw[1], -1.0f, 1e-4f);
+        sensorPosToWorld((const float[]){0, 1, 0}, 0, 90, pw);
+        CHECK_F(pw[1], 0.0f, 1e-4f); CHECK_F(pw[2], -1.0f, 1e-4f);
+        sensorPosToWorld((const float[]){1, 2, 3}, 90, 90, pw);
+        CHECK_F(pw[0], 2.0f, 1e-4f); CHECK_F(pw[1], 3.0f, 1e-4f);
+        CHECK_F(pw[2], 1.0f, 1e-4f);
     }
 
     // position arrows: right/up/forward get the positive-direction glyphs,

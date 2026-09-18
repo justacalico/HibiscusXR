@@ -53,16 +53,23 @@ static void drawFrame(Engine* e) {
     const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
                               propF("debug.vrhome.fpy", 0.0f),
                               propF("debug.vrhome.fpz", 0.0f)};
+    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
+                                          : propF("debug.vrhome.sensroll", kSensRoll);
+    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
+                                        : propF("debug.vrhome.worldx", kWorldX);
+    const float* headPos = nullptr;
+    float posGl[3];
+    if (useSensor && e->headPosValid) {
+        sensorPosToWorld(e->headPos, sensRoll, worldX, posGl);
+        headPos = posGl;
+    }
     if (useSensor && (fakePos[0] || fakePos[1] || fakePos[2])) {
         memcpy(e->headPos, fakePos, sizeof(fakePos));
         e->headPosValid = true;
+        headPos = fakePos;
     }
-    const float* headPos = (useSensor && e->headPosValid) ? e->headPos : nullptr;
     const Mat4 head = headMatrix(e->quat, propI("debug.vrhome.tq", 1) != 0,
-        e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
-                       : propF("debug.vrhome.sensroll", kSensRoll),
-        e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
-                       : propF("debug.vrhome.worldx",   kWorldX),
+        sensRoll, worldX,
         propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;

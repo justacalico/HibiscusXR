@@ -21,18 +21,19 @@ Mat4 headMatrix(const float quat[4], bool transpose, float sensRoll,
 // per-eye view: head matrix shifted ±ipd/2 along view-space x
 Mat4 eyeMatrix(const Mat4& head, float ipd, int eye);
 
-// rotate a QVR-frame position into the sensor world frame. rvQuat and
-// qvrQuat describe the same physical orientation in their two frames, so
-// delta = rvQuat * conj(qvrQuat) maps qvr vectors onto world vectors
-void qvrPosToWorld(const float rvQuat[4], const float qvrQuat[4],
-                   const float qvrPos[3], float out[3]);
-
-// fold one QVR pose into the shared quat/headPos fields: while rot-vec
-// streams (sensorHz>0) it keeps orientation and only the position maps
-// over; when the sensor is silent the QVR quat becomes the orientation
-// outright. picking by haveQuat is wrong - it latches after one frame
+// a valid QVR pose always wins: its quat and position share one tracking
+// frame so both are taken raw, and rot-vec stays a pure fallback. mapping
+// the position through a live quat delta was tried and dropped - the two
+// trackers' yaws drift independently so no fixed delta exists
 void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
-                 int sensorHz, const float qvrQuat[4], const float qvrPos[3]);
+                 const float qvrQuat[4], const float qvrPos[3]);
+
+// undo the mount corrections on a sensor-world position. headMatrix builds
+// R = rotZ(roll)*Q*rotZ(sensRoll)*rotX(worldX) where the last two map GL
+// world axes onto the sensor's, so positions arriving in sensor coords
+// come back to GL world through the inverse
+void sensorPosToWorld(const float pos[3], float sensRoll, float worldX,
+                      float out[3]);
 
 // world-space direction the head's -z axis points
 void gazeDir(const Mat4& head, float out[3]);

@@ -12,6 +12,7 @@
 
 set -e
 cd "$(dirname "$0")"
+ROOT="$(pwd -P)"
 
 MONADO_REPO="https://gitlab.freedesktop.org/monado/monado.git"
 MONADO_COMMIT="09741cbcb45236f4f4f79790ea133cd90d68d5eb"
@@ -62,25 +63,25 @@ git checkout -q "$MONADO_COMMIT"
 
 echo "applying pn2 patch + driver"
 git checkout -q . # drop local edits so the patch applies cleanly
-git apply ../patches/pn2-driver-registration.patch
+git apply "$ROOT/patches/pn2-driver-registration.patch"
 mkdir -p src/xrt/drivers/pn2
-cp ../driver/pn2/*.c ../driver/pn2/*.h src/xrt/drivers/pn2/
+cp "$ROOT"/driver/pn2/*.c "$ROOT"/driver/pn2/*.h src/xrt/drivers/pn2/
 cd ..
 
-mkdir -p build-android
-cd build-android
+mkdir -p "$ROOT/build-android"
+cd "$ROOT/build-android"
 cmake -G Ninja \
     -DCMAKE_TOOLCHAIN_FILE="$NDK/build/cmake/android.toolchain.cmake" \
     -DANDROID_ABI=arm64-v8a \
     -DANDROID_PLATFORM=android-26 \
     -DANDROID_STL=c++_static \
-    -DXRT_FEATURE_AHARDWARE_BUFFER=OFF \
+    -DXRT_FEATURE_AHARDWARE_BUFFER=ON \
     -DCMAKE_BUILD_TYPE=Release \
     -DXRT_HAVE_WAYLAND=OFF -DXRT_HAVE_XLIB=OFF -DXRT_HAVE_XCB=OFF \
     -DXRT_FEATURE_SERVICE=OFF -DXRT_FEATURE_SERVICE_SYSTEMD=OFF \
     -DXRT_FEATURE_STEAMVR_PLUGIN=OFF \
     -DEigen3_DIR="$EIGEN_CFG" \
-    "../$WORK"
+    "$ROOT/$WORK"
 ninja openxr_monado
 
 echo "built: $(pwd)/src/xrt/targets/openxr/libopenxr_monado.so"

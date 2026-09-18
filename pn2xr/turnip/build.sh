@@ -15,7 +15,7 @@ BUILD="$SRC/build-android"
 OUT="$ROOT/out"
 
 find_ndk() {
-    for v in "$ANDROID_NDK_HOME" "$ANDROID_NDK"; do
+    for v in "${ANDROID_NDK_HOME:-}" "${ANDROID_NDK:-}"; do
         [ -n "$v" ] && [ -d "$v" ] && { echo "$v"; return; }
     done
     ls -d "$HOME"/Android/sdk/ndk/*/ 2>/dev/null | sort -V | tail -1
@@ -36,6 +36,7 @@ cp "$ROOT/patches/tu_atrace_compat.c" "$SRC/src/freedreno/vulkan/tu_atrace_compa
 if ! grep -q tu_atrace_compat "$SRC/src/freedreno/vulkan/meson.build"; then
     patch -d "$SRC" -p1 < "$ROOT/patches/meson-android-compat.patch"
 fi
+patch -d "$SRC" -p1 --forward < "$ROOT/patches/ahb-mip-storage-fixes.patch" || true
 
 sed "s|@NDK@|$NDK|g" "$ROOT/android-aarch64.cross.in" > "$WORK/android-aarch64.cross"
 

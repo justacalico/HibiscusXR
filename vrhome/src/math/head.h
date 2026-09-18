@@ -2,6 +2,8 @@
 
 #include "mat4.h"
 
+#include <cstddef>
+
 // Head-tracking chain, kept free of Android/GL so the whole transform can be
 // exercised in the host unit tests. This is the path that produced the
 // yaw-into-roll bug; keep it pure and tested.
@@ -37,3 +39,8 @@ float gazePitch(const Mat4& head);
 
 // yaw/pitch/roll in degrees for the HUD
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll);
+
+// world position as direction arrows for the HUD debug line, e.g.
+// " →0.42 ↑0.10 ↗0.05": x is →/←, y is ↑/↓, z is ↗ fwd(-z)/↙ back(+z);
+// '·' under 5mm so the arrows don't flicker at rest
+void fmtPosArrows(const float pos[3], char* out, size_t outSize);

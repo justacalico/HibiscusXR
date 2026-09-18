@@ -1,6 +1,7 @@
 #include "head.h"
 
 #include <cmath>
+#include <cstdio>
 
 float quatW(const float* d) {
     if (d[3] != 0.0f) return d[3];
@@ -67,4 +68,18 @@ void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll) {
     *yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;
     *pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(w*x - y*z)))) * 180.0f / (float)M_PI;
     *roll  = atan2f(2*(w*z + x*y), 1 - 2*(z*z + x*x)) * 180.0f / (float)M_PI;
+}
+
+static const char* arrowFor(float v, const char* pos, const char* neg) {
+    if (v > 0.005f) return pos;
+    if (v < -0.005f) return neg;
+    return "\xC2\xB7"; // '·'
+}
+
+void fmtPosArrows(const float pos[3], char* out, size_t outSize) {
+    // z negates so 'forward' (-z in this world) shows as the up-right arrow
+    snprintf(out, outSize, " %s%.2f %s%.2f %s%.2f",
+        arrowFor(pos[0], "\xE2\x86\x92", "\xE2\x86\x90"), fabsf(pos[0]),
+        arrowFor(pos[1], "\xE2\x86\x91", "\xE2\x86\x93"), fabsf(pos[1]),
+        arrowFor(-pos[2], "\xE2\x86\x97", "\xE2\x86\x99"), fabsf(pos[2]));
 }

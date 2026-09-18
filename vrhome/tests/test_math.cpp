@@ -4,6 +4,8 @@
 #include "math/head.h"
 #include "common/config.h"
 
+#include <cstring>
+
 static void checkIdentity(const Mat4& m) {
     for (int i = 0; i < 16; ++i)
         CHECK_F(m.m[i], (i % 5 == 0) ? 1.0f : 0.0f, 1e-5f);
@@ -187,6 +189,16 @@ void testHead() {
     float pw2[3];
     qvrPosToWorld(qi, qz90, (const float[]){1, 0, 0}, pw2);
     CHECK_F(pw2[0], 0.0f, 1e-4f); CHECK_F(pw2[1], -1.0f, 1e-4f);
+
+    // position arrows: right/up/forward get the positive-direction glyphs,
+    // a small deadband keeps them steady at rest
+    char arr[32];
+    fmtPosArrows((const float[]){0.42f, -0.10f, -0.05f}, arr, sizeof(arr));
+    CHECK(strcmp(arr, " \xE2\x86\x92" "0.42 \xE2\x86\x93" "0.10 \xE2\x86\x97" "0.05") == 0);
+    fmtPosArrows((const float[]){0.0f, 0.0f, 0.0f}, arr, sizeof(arr));
+    CHECK(strcmp(arr, " \xC2\xB7" "0.00 \xC2\xB7" "0.00 \xC2\xB7" "0.00") == 0);
+    fmtPosArrows((const float[]){-1.0f, 0.5f, 0.25f}, arr, sizeof(arr));
+    CHECK(strcmp(arr, " \xE2\x86\x90" "1.00 \xE2\x86\x91" "0.50 \xE2\x86\x99" "0.25") == 0);
 
     // gaze dir of identity head is -z, yaw 0
     float g[3];

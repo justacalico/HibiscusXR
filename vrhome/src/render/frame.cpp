@@ -97,8 +97,12 @@ void updateFps(Engine* e) {
 void updateHud(Engine* e, const char* extra) {
     float yaw, pitch, roll;
     quatToYpr(e->quat, &yaw, &pitch, &roll);
+    char pos[32] = "";
+    if (e->headPosValid)
+        snprintf(pos, sizeof(pos), "  %+5.2f %+5.2f %+5.2f",
+                 e->headPos[0], e->headPos[1], e->headPos[2]);
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d%s%s",
+        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d  %s%s%s",
         yaw, pitch, roll, e->fps, e->sensorNewHz,
-        e->headPosValid ? "  6DOF" : "", extra ? extra : "");
+        e->headPosValid ? "6DOF" : "3DOF", pos, extra ? extra : "");
 }

@@ -52,4 +52,8 @@ libplugin.pxr.so
 libloader.pxr.so
 libruntime.pxr.so
 libcompositor.pxr.so
+# qvrservice client: head-pose ring buffer for the Monado driver and vrhome.
+# libdrm is its dependency, not public on the GSI list.
+libqvrservice_client.so
+libdrm.so
 

@@ -2,17 +2,20 @@
 // SPDX-License-Identifier: BSL-1.0
 /*!
  * @file
- * @brief  Pico Neo 2 HMD driver: raw IMU (ASensorManager) -> m_imu_3dof fusion.
+ * @brief  Pico Neo 2 HMD driver: raw IMU (ASensorManager) -> m_imu_3dof fusion,
+ *         qvrservice client -> fused 6DoF head pose.
  *
  * The device's virtual rotation-vector sensors emit identity quaternions on
  * this build, so we fuse the raw BMG160 gyroscope + BMA2x2 accelerometer
- * ourselves. 6DoF camera tracking is out of scope; QVR standalone fusion
- * does not produce a pose either.
+ * ourselves. When libqvrservice_client.so is reachable the driver also
+ * connects to qvrd, which runs the tracking camera and produces a real
+ * position-tracked pose; the IMU fusion stays as fallback.
  * @ingroup drv_pn2
  */
 
 #include "pn2_interface.h"
 #include "pn2_hmd.h"
+#include "pn2_qvr.h"
 
 #include "util/u_debug.h"
 #include "util/u_device.h"
@@ -47,6 +50,7 @@ DEBUG_GET_ONCE_NUM_OPTION(pn2_axismap, "PN2_AXISMAP", 0)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k1, "PN2_K1", 0.22f)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k2, "PN2_K2", 0.24f)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_ipd, "PN2_IPD", 0.0635f)
+DEBUG_GET_ONCE_BOOL_OPTION(pn2_no_qvr, "PN2_NO_QVR", false)
 
 /*!
  * @implements xrt_device
@@ -71,6 +75,9 @@ struct pn2_device
 	float dist_k2;
 	float chroma_r;
 	float chroma_b;
+
+	struct pn2_qvr *qvr;       //!< qvrservice 6DoF client, NULL when absent
+	uint64_t qvr_last_ts;      //!< last pose timestamp pushed to history
 };
 
 static inline struct pn2_device *
@@ -146,6 +153,34 @@ pn2_push_fused(struct pn2_device *d, uint64_t ts)
 }
 
 static void
+pn2_push_qvr(struct pn2_device *d)
+{
+	struct pn2_qvr_pose pose;
+	if (!pn2_qvr_get_pose(d->qvr, &pose) || pose.timestamp_ns <= d->qvr_last_ts) {
+		return;
+	}
+	d->qvr_last_ts = pose.timestamp_ns;
+
+	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
+	rel.pose.orientation = pose.orientation;
+	rel.pose.position = pose.position;
+	rel.angular_velocity = pose.angular_velocity;
+	rel.linear_velocity = pose.linear_velocity;
+	rel.relation_flags = (enum xrt_space_relation_flags)(
+	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
+	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT | XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT);
+	if (pose.tracking_state == 3) {
+		rel.relation_flags = (enum xrt_space_relation_flags)(
+		    rel.relation_flags | XRT_SPACE_RELATION_POSITION_VALID_BIT |
+		    XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
+	}
+	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns);
+	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
+	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
+	          pose.orientation.z, pose.orientation.w, pose.tracking_state);
+}
+
+static void
 pn2_handle_event(struct pn2_device *d, const ASensorEvent *event)
 {
 	struct xrt_vec3 v;
@@ -169,7 +204,12 @@ pn2_handle_event(struct pn2_device *d, const ASensorEvent *event)
 			accel = d->accel;
 		}
 		m_imu_3dof_update(&d->fusion, (uint64_t)event->timestamp, &accel, &gyro);
-		pn2_push_fused(d, (uint64_t)event->timestamp);
+		// QVR already fuses IMU + camera; mixing flag-less IMU relations into
+		// the history would flicker position validity. The fusion keeps
+		// running for the no-history fallback in get_tracked_pose.
+		if (d->qvr == NULL) {
+			pn2_push_fused(d, (uint64_t)event->timestamp);
+		}
 		PN2_TRACE(d, "gyro %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f", gyro.x, gyro.y, gyro.z, d->fusion.rot.x,
 		          d->fusion.rot.y, d->fusion.rot.z, d->fusion.rot.w);
 		break;
@@ -219,6 +259,11 @@ pn2_run_thread(void *ptr)
 		for (ssize_t i = 0; i < n; i++) {
 			pn2_handle_event(d, &events[i]);
 		}
+		if (d->qvr != NULL) {
+			os_mutex_lock(&d->lock);
+			pn2_push_qvr(d);
+			os_mutex_unlock(&d->lock);
+		}
 	}
 	return NULL;
 }
@@ -228,6 +273,7 @@ pn2_destroy(struct xrt_device *xdev)
 {
 	struct pn2_device *d = pn2_device(xdev);
 	os_thread_helper_destroy(&d->oth);
+	pn2_qvr_destroy(d->qvr);
 	os_mutex_destroy(&d->lock);
 	m_imu_3dof_close(&d->fusion);
 	m_relation_history_destroy(&d->rh);
@@ -303,7 +349,14 @@ pn2_hmd_create(void)
 	d->base.device_type = XRT_DEVICE_TYPE_HMD;
 	d->base.supported.ref_space_usage = true;
 	d->base.supported.orientation_tracking = true;
-	d->base.supported.position_tracking = false;
+
+	if (debug_get_bool_option_pn2_no_qvr()) {
+		d->qvr = NULL;
+	} else {
+		d->qvr = pn2_qvr_create();
+	}
+	d->base.supported.position_tracking = d->qvr != NULL;
+	PN2_INFO(d, "qvrservice 6DoF: %s", d->qvr != NULL ? "connected" : "unavailable");
 	u_device_populate_function_pointers(&d->base, pn2_get_tracked_pose, pn2_destroy);
 	d->base.get_view_poses = u_device_get_view_poses;
 	d->base.get_visibility_mask = u_device_get_visibility_mask;

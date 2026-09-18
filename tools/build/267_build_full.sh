@@ -180,12 +180,11 @@ echo "=== OpenXR stack: Turnip Vulkan + Monado runtime ==="
 #     is removed so nothing starts it. qvrd stays - it owns the tracking cams.
 XR=${PN2_ROOT}/pn2xr
 XR_SO="$XR/monado/build-android/src/xrt/targets/openxr/libopenxr_monado.so"
-[ -s "$XR/turnip/out/libvulkan_freedreno.so" ] || bash "$XR/turnip/build.sh" \
-    || echo "  turnip build failed - put() will report the gap"
-[ -s "$XR_SO" ] || bash "$XR/monado/build.sh" \
-    || echo "  monado build failed - put() will report the gap"
-[ -s "$XR/runtime-apk/out/openxr-runtime.apk" ] || bash "$XR/runtime-apk/build.sh" \
-    || echo "  runtime apk build failed - put() will report the gap"
+# Always run the builds - they are incremental, and skipping on a stale out/
+# dir once shipped an unpatched Turnip in the image.
+bash "$XR/turnip/build.sh" || echo "  turnip build failed - put() will report the gap"
+bash "$XR/monado/build.sh" || echo "  monado build failed - put() will report the gap"
+bash "$XR/runtime-apk/build.sh" || echo "  runtime apk build failed - put() will report the gap"
 mkd /lib64/hw
 put "$XR/turnip/out/libvulkan_freedreno.so" /lib64/hw/vulkan.sdm845.so 644
 put "$XR/turnip/out/libc++_shared.so" /lib64/libc++_shared.so 644

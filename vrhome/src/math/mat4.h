@@ -19,5 +19,11 @@ Mat4 quatToMat(const float* q, bool inv);
 // (rotation part only, orthonormal, so transpose == inverse)
 void viewDirToWorld(const Mat4& v, const float in[3], float out[3]);
 
+// quaternion helpers (x,y,z,w): product a*b applies b's rotation first,
+// conj inverts a unit quat, rotate applies a quat to a vec3
+void quatMul(const float a[4], const float b[4], float out[4]);
+void quatConj(const float q[4], float out[4]);
+void quatRotate(const float q[4], const float v[3], float out[3]);
+
 // wrap an angle into [-pi, pi]
 float wrapPi(float a);

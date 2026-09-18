@@ -24,6 +24,7 @@
 #include "../render/frame.h"
 #include "../render/warp.h"
 #include "../sensor/sensor.h"
+#include "../sensor/qvr.h"
 
 #include <android/looper.h>
 #include <android/native_window.h>
@@ -126,11 +127,29 @@ static void hudFrame(HudEngine* e) {
         hudKey(e, k.code, k.action, k.repeat);
     }
 
+    qvrPoll(e);
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
+    const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
+                              propF("debug.vrhome.fpy", 0.0f),
+                              propF("debug.vrhome.fpz", 0.0f)};
+    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
+                                          : propF("debug.vrhome.sensroll", kSensRoll);
+    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
+                                        : propF("debug.vrhome.worldx", kWorldX);
+    const float* headPos = nullptr;
+    float posGl[3];
+    if (useSensor && e->headPosValid) {
+        sensorPosToWorld(e->headPos, sensRoll, worldX, posGl);
+        headPos = posGl;
+    }
+    if (useSensor && (fakePos[0] || fakePos[1] || fakePos[2])) {
+        memcpy(e->headPos, fakePos, sizeof(fakePos));
+        e->headPosValid = true;
+        headPos = fakePos;
+    }
     const Mat4 head = headMatrix(e->quat, propI("debug.vrhome.tq", 1) != 0,
-        propF("debug.vrhome.sensroll", kSensRoll),
-        propF("debug.vrhome.worldx",   kWorldX),
-        propF("debug.vrhome.roll",     kRoll), useSensor);
+        sensRoll, worldX,
+        propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
 
     debugLaunchHook(e);
     debugTapHook(e);

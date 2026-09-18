@@ -45,6 +45,13 @@ struct Engine {
     bool haveQuat = false;
     float lastQ[4] = {0, 0, 0, 0};
 
+    // 6DoF head position in the sensor world frame, fed by qvrservice via
+    // sensor/qvr.cpp; opaque client handle lives in qvrClient
+    float headPos[3] = {0, 0, 0};
+    bool headPosValid = false;
+    bool quatFromQvr = false;   // rot-vec dead: e->quat carries the QVR quat
+    void* qvrClient = nullptr;
+
     bool covered = false;        // a fullscreen app owns the physical display
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     float gazePitch = 0.0f;      // world pitch the user currently faces

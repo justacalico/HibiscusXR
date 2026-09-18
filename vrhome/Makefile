@@ -41,7 +41,8 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/text/font.cpp src/text/draw.cpp \
                src/render/egl.cpp src/render/frame.cpp \
                src/render/shaders.cpp src/render/warp.cpp \
-               src/render/scene_geo.cpp src/sensor/sensor.cpp
+               src/render/scene_geo.cpp src/sensor/sensor.cpp \
+               src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
@@ -98,12 +99,12 @@ $(OUT)/obj/%.o: src/%.cpp | toolcheck
 $(ENV_SO): $(ENV_OBJS) $(GLUE_O)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
-	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -lm -u ANativeActivity_onCreate
+	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ldl -lm -u ANativeActivity_onCreate
 
 $(HUD_SO): $(HUD_OBJS)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
-	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -lm
+	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ldl -lm
 
 $(CLASSES): $(JAVA_SRCS) $(STUB_SRCS) | toolcheck
 	@mkdir -p $(OUT)/classes

@@ -1,0 +1,16 @@
+# OpenXR runtime staging.
+#
+# Ordinary apps cannot dlopen libraries under /system/app (linker namespace
+# rules), and MonadoView's class loader derives <dir>/base.apk from the loaded
+# .so path, so the runtime must live in an app-readable APK layout under /data.
+# /data/local/tmp is the one world-traversable, app-readable spot init can fill.
+
+on post-fs-data
+    mkdir /data/local/tmp/xr 0775 root root
+    mkdir /data/local/tmp/xr/lib 0775 root root
+    mkdir /data/local/tmp/xr/lib/arm64 0775 root root
+    copy /system/app/MonadoOpenXR/MonadoOpenXR.apk /data/local/tmp/xr/base.apk
+    copy /system/app/MonadoOpenXR/lib/arm64/libopenxr_monado.so /data/local/tmp/xr/lib/arm64/libopenxr_monado.so
+    chmod 0644 /data/local/tmp/xr/base.apk
+    chmod 0644 /data/local/tmp/xr/lib/arm64/libopenxr_monado.so
+    restorecon_recursive /data/local/tmp/xr

@@ -88,17 +88,8 @@ void qvrPoll(Engine* e) {
         e->headPosValid = false;
         return;
     }
-    if (e->haveQuat) {
-        // rot-vec alive: keep it for orientation and map the QVR position
-        // into its world frame with the live quat delta
-        e->quatFromQvr = false;
-        qvrPosToWorld(e->quat, p->quat, p->pos, e->headPos);
-    } else {
-        // no rot-vec: QVR is the only pose source, its frame is the world
-        e->quatFromQvr = true;
-        e->haveQuat = true;
-        memcpy(e->quat, p->quat, sizeof(e->quat));
-        memcpy(e->headPos, p->pos, sizeof(e->headPos));
-    }
+    qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, e->sensorHz,
+                p->quat, p->pos);
+    e->haveQuat = true;
     e->headPosValid = true;
 }

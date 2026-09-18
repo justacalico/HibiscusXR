@@ -27,6 +27,13 @@ Mat4 eyeMatrix(const Mat4& head, float ipd, int eye);
 void qvrPosToWorld(const float rvQuat[4], const float qvrQuat[4],
                    const float qvrPos[3], float out[3]);
 
+// fold one QVR pose into the shared quat/headPos fields: while rot-vec
+// streams (sensorHz>0) it keeps orientation and only the position maps
+// over; when the sensor is silent the QVR quat becomes the orientation
+// outright. picking by haveQuat is wrong - it latches after one frame
+void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
+                 int sensorHz, const float qvrQuat[4], const float qvrPos[3]);
+
 // world-space direction the head's -z axis points
 void gazeDir(const Mat4& head, float out[3]);
 

@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 
 float quatW(const float* d) {
     if (d[3] != 0.0f) return d[3];
@@ -42,6 +43,18 @@ void qvrPosToWorld(const float rvQuat[4], const float qvrQuat[4],
     quatConj(qvrQuat, qc);
     quatMul(rvQuat, qc, delta);
     quatRotate(delta, qvrPos, out);
+}
+
+void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
+                 int sensorHz, const float qvrQuat[4], const float qvrPos[3]) {
+    if (sensorHz > 0) {
+        *quatFromQvr = false;
+        qvrPosToWorld(quat, qvrQuat, qvrPos, headPos);
+    } else {
+        *quatFromQvr = true;
+        memcpy(quat, qvrQuat, 4 * sizeof(float));
+        memcpy(headPos, qvrPos, 3 * sizeof(float));
+    }
 }
 
 void gazeDir(const Mat4& head, float out[3]) {

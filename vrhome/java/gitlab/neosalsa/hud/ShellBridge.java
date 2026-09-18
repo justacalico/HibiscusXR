@@ -240,11 +240,24 @@ public class ShellBridge {
         try {
             ApplicationInfo ai = pm.getApplicationInfo(pkg,
                     PackageManager.GET_META_DATA);
-            if (ai.metaData == null) return false;
-            for (String key : new String[]{"pvr.app.type", "com.picovr.type"}) {
-                Object v = ai.metaData.get(key);
-                if (v != null && "vr".equalsIgnoreCase(String.valueOf(v)))
-                    return true;
+            if (ai.metaData != null) {
+                for (String key : new String[]{"pvr.app.type", "com.picovr.type"}) {
+                    Object v = ai.metaData.get(key);
+                    if (v != null && "vr".equalsIgnoreCase(String.valueOf(v)))
+                        return true;
+                }
+            }
+            // OpenXR-style apps mark their activity with an immersive
+            // category instead of Pico's metadata; same rule applies.
+            for (String cat : new String[]{
+                    "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
+                    "com.oculus.intent.category.VR"}) {
+                Intent i = pm.getLaunchIntentForPackage(pkg);
+                if (i != null) {
+                    i.addCategory(cat);
+                    if (!pm.queryIntentActivities(i, 0).isEmpty())
+                        return true;
+                }
             }
         } catch (Throwable ignored) {}
         return false;

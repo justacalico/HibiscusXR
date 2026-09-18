@@ -63,7 +63,15 @@ fi
 
 echo
 echo "=== linker whitelist (the big one: without this every Pico dlopen returns null) ==="
-put "$OV/public.libraries.txt" /etc/public.libraries.txt 644
+PLIB=$(mktemp)
+cp "$OV/public.libraries.txt" "$PLIB"
+# the blobs tarball can lag overlay_pvr; make sure the qvrservice client
+# libs the OpenXR stack needs are whitelisted either way
+for l in libqvrservice_client.so libdrm.so; do
+  grep -qx "$l" "$PLIB" || echo "$l" >> "$PLIB"
+done
+put "$PLIB" /etc/public.libraries.txt 644
+rm -f "$PLIB"
 
 echo
 echo "=== restored blobs, both ABIs ==="

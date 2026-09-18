@@ -129,13 +129,17 @@ static void hudFrame(HudEngine* e) {
 
     qvrPoll(e);
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
+    const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
+                              propF("debug.vrhome.fpy", 0.0f),
+                              propF("debug.vrhome.fpz", 0.0f)};
+    const float* headPos = (useSensor && e->headPosValid) ? e->headPos : nullptr;
+    if (useSensor && (fakePos[0] || fakePos[1] || fakePos[2])) headPos = fakePos;
     const Mat4 head = headMatrix(e->quat, propI("debug.vrhome.tq", 1) != 0,
         e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
                        : propF("debug.vrhome.sensroll", kSensRoll),
         e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
                        : propF("debug.vrhome.worldx",   kWorldX),
-        propF("debug.vrhome.roll",     kRoll), useSensor,
-        (useSensor && e->headPosValid) ? e->headPos : nullptr);
+        propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
 
     debugLaunchHook(e);
     debugTapHook(e);

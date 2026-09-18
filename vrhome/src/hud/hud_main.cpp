@@ -70,6 +70,23 @@ static void debugTapHook(HudEngine* e) {
     }
 }
 
+// test hook: setprop debug.vrhome.summon <n> toggles the dash over the
+// covered app, same as a short summon press. Each new value refires, so
+// the prop doubles as an adb-driven summon for testing
+static void debugSummonHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.summon", tb) > 0 &&
+            strcmp(tb, last) != 0 && e->ctx) {
+        strncpy(last, tb, sizeof(last) - 1);
+        JNIEnv* env = threadEnv(e->vm);
+        jclass c = env->GetObjectClass(e->ctx);
+        jmethodID m = env->GetMethodID(c, "debugSummon", "()V");
+        if (m) env->CallVoidMethod(e->ctx, m);
+        if (env->ExceptionCheck()) env->ExceptionClear();
+    }
+}
+
 // one-time: library panel dead ahead once tracking is live. gazeYaw is
 // still stale on the first quat frame (pick runs below), so take the yaw
 // straight from the head matrix.
@@ -153,6 +170,7 @@ static void hudFrame(HudEngine* e) {
 
     debugLaunchHook(e);
     debugTapHook(e);
+    debugSummonHook(e);
     spawnLauncher(e, head);
 
     if (takeWantRecenter())

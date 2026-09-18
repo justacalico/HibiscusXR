@@ -194,6 +194,20 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         startActivity(i);
     }
 
+    // render-thread debug hook: adb input keyevent never reaches the
+    // accessibility key filter, so debug.vrhome.summon toggles the same
+    // path a short press would
+    public void debugSummon() {
+        view.post(new Runnable() {
+            @Override public void run() {
+                if (!covered) return;
+                summoned = !summoned;
+                updateWindow();
+                if (summoned) nativeRecenter();
+            }
+        });
+    }
+
     // HudView.KeySink: keys that reached the focused HUD window
     @Override public boolean onKey(int code, int action, int repeat) {
         if (code == K_SUMMON) return true;   // the monitor owns this one

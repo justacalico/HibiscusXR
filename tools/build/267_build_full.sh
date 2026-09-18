@@ -124,6 +124,7 @@ put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
 put "$INIT/pn2-adbwifi.rc"    /etc/init/pn2-adbwifi.rc    644
 put "$INIT/pn2-settings.rc"   /etc/init/pn2-settings.rc   644
 put "$INIT/pn2-home.rc"       /etc/init/pn2-home.rc       644
+put "$INIT/pn2-openxr.rc"     /etc/init/pn2-openxr.rc     644
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="

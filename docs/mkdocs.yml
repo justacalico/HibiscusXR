@@ -34,6 +34,7 @@ nav:
     - extracted: repos/extracted.md
     - shim: repos/shim.md
     - vrdemo: repos/vrdemo.md
+    - pn2xr: repos/pn2xr.md
     - vendor_patch: repos/vendor_patch.md
     - lens: repos/lens.md
     - keylayout: repos/keylayout.md

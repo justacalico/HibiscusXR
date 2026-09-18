@@ -15,6 +15,7 @@ the dumped binaries belong to Pico/its vendors and are never distributed.
 | [extracted](extracted.md) | decompiled boot images, dtbs, props, VR binaries |
 | [shim](shim.md) | source for the ABI shim libraries |
 | [vrdemo](vrdemo.md) | minimal native VR test app (`pn2vr`) |
+| [pn2xr](pn2xr.md) | OpenXR stack: Monado + pn2 driver + patched Turnip |
 | [library](library.md) | Flutter app library for vrhome's app window |
 | [vendor_patch](vendor_patch.md) | vendor-side init/vintf patch files |
 | [lens](lens.md) | `/vendor/etc/qvr` lens/distortion configs |

@@ -130,7 +130,11 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private void updateWindow() {
         final boolean shown = !covered || summoned;
         final int vis = shown ? View.VISIBLE : View.GONE;
-        if (view.getVisibility() != vis) view.setVisibility(vis);
+        if (view.getVisibility() != vis) {
+            Log.i(TAG, "window " + (shown ? "shown" : "hidden")
+                    + " covered=" + covered + " summoned=" + summoned);
+            view.setVisibility(vis);
+        }
     }
 
     // --------------------------------------------------------- callbacks

@@ -421,11 +421,14 @@ public class ShellBridge {
     private void pollOnce() throws Exception {
         Set<Integer> liveDisplays = new HashSet<>();
         Set<Integer> liveTasks = new HashSet<>();
+        final List<Object> tl = tasks();
         synchronized (pendingAdopts) {
             // the task list is MRU-ordered: the first display-0 entry is the
-            // top one - anything but the env means an app owns the HMD
-            boolean top = true;
-            for (Object t : tasks()) {
+            // top one - anything but the env means an app owns the HMD. An
+            // empty list means getTasks failed, not "nothing on display 0":
+            // keep the last covered state instead of wiping a summon
+            boolean top = !tl.isEmpty();
+            for (Object t : tl) {
                 int disp = fDisplayId.getInt(t);
                 if (disp != 0) continue;
                 if (top) {

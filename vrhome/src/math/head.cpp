@@ -9,19 +9,38 @@ float quatW(const float* d) {
 }
 
 Mat4 headMatrix(const float quat[4], bool transpose, float sensRoll,
-                float worldX, float roll, bool useSensor) {
+                float worldX, float roll, bool useSensor,
+                const float pos[3]) {
     Mat4 head = useSensor ? quatToMat(quat, transpose) : identity();
     if (useSensor) {
         head = multiply(head, rotZ(sensRoll));
         head = multiply(head, rotX(worldX));
     }
-    return multiply(rotZ(roll), head);
+    head = multiply(rotZ(roll), head);
+    if (pos) {
+        // view = R * T(-pos): the translation column is the world-space
+        // head position negated through the rotation
+        for (int i = 0; i < 3; ++i)
+            head.m[12 + i] = -(head.m[i] * pos[0] + head.m[4 + i] * pos[1] +
+                               head.m[8 + i] * pos[2]);
+    }
+    return head;
 }
 
 Mat4 eyeMatrix(const Mat4& head, float ipd, int eye) {
-    Mat4 shift = identity();
-    shift.m[12] = (eye == 0 ? -ipd : ipd) / 2.0f;
-    return multiply(head, shift);
+    // view = T(-eye) * head: the ±ipd/2 offset lives in view space so it
+    // stays perpendicular to the gaze under head rotation
+    Mat4 r = head;
+    r.m[12] += (eye == 0 ? -ipd : ipd) / 2.0f;
+    return r;
+}
+
+void qvrPosToWorld(const float rvQuat[4], const float qvrQuat[4],
+                   const float qvrPos[3], float out[3]) {
+    float qc[4], delta[4];
+    quatConj(qvrQuat, qc);
+    quatMul(rvQuat, qc, delta);
+    quatRotate(delta, qvrPos, out);
 }
 
 void gazeDir(const Mat4& head, float out[3]) {

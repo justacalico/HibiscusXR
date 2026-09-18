@@ -19,6 +19,7 @@
 #include "../render/frame.h"
 #include "../render/scene.h"
 #include "../sensor/sensor.h"
+#include "../sensor/qvr.h"
 
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
@@ -47,11 +48,15 @@ static void drawFrame(Engine* e) {
     // no GL context at all yet (window never arrived): nothing to do
     if (e->context == EGL_NO_CONTEXT) { usleep(50000); return; }
 
+    qvrPoll(e);
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
     const Mat4 head = headMatrix(e->quat, propI("debug.vrhome.tq", 1) != 0,
-        propF("debug.vrhome.sensroll", kSensRoll),
-        propF("debug.vrhome.worldx",   kWorldX),
-        propF("debug.vrhome.roll",     kRoll), useSensor);
+        e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
+                       : propF("debug.vrhome.sensroll", kSensRoll),
+        e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
+                       : propF("debug.vrhome.worldx",   kWorldX),
+        propF("debug.vrhome.roll",     kRoll), useSensor,
+        (useSensor && e->headPosValid) ? e->headPos : nullptr);
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
 

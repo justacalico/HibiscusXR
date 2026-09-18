@@ -5,6 +5,7 @@ monado/build-android
 eigen-*/
 eigen-cmake/
 turnip/_mesa-src/
+turnip/.work/
 turnip/build/
 *.apk
 *.img

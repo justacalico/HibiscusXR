@@ -66,7 +66,15 @@ zip -q -r "../runtime-unsigned.apk" classes.dex lib
 cd ../..
 
 echo "[4/4] sign"
-"$BT/apksigner" sign --ks "$HOME/.android/debug.keystore" \
+KS="$HOME/.android/debug.keystore"
+if [ ! -f "$KS" ]; then
+    mkdir -p "$HOME/.android"
+    keytool -genkeypair -v -keystore "$KS" -alias androiddebugkey \
+        -keyalg RSA -keysize 2048 -validity 10000 \
+        -storepass android -keypass android \
+        -dname "CN=Android Debug,O=Android,C=US" >/dev/null
+fi
+"$BT/apksigner" sign --ks "$KS" \
     --ks-pass pass:android --out out/openxr-runtime.apk out/runtime-unsigned.apk
 
 echo "built out/openxr-runtime.apk"

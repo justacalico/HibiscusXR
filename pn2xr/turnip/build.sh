@@ -15,10 +15,14 @@ BUILD="$SRC/build-android"
 OUT="$ROOT/out"
 
 find_ndk() {
-    for v in "${ANDROID_NDK_HOME:-}" "${ANDROID_NDK:-}"; do
+    for v in "${ANDROID_NDK_HOME:-}" "${ANDROID_NDK:-}" "${ANDROID_NDK_ROOT:-}"; do
         [ -n "$v" ] && [ -d "$v" ] && { echo "$v"; return; }
     done
-    ls -d "$HOME"/Android/sdk/ndk/*/ 2>/dev/null | sort -V | tail -1
+    for root in "${ANDROID_HOME:-$HOME/Android/sdk}" "$HOME/Android/sdk" /opt/android-sdk; do
+        for n in "$root"/ndk/27.* "$root"/ndk/26.*; do
+            [ -d "$n" ] && { echo "$n"; return; }
+        done
+    done
 }
 
 NDK="$(find_ndk)"

@@ -50,6 +50,7 @@ DEBUG_GET_ONCE_NUM_OPTION(pn2_axismap, "PN2_AXISMAP", 0)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k1, "PN2_K1", 0.22f)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k2, "PN2_K2", 0.24f)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_ipd, "PN2_IPD", 0.0635f)
+DEBUG_GET_ONCE_BOOL_OPTION(pn2_no_qvr, "PN2_NO_QVR", false)
 
 /*!
  * @implements xrt_device
@@ -164,9 +165,10 @@ pn2_push_qvr(struct pn2_device *d)
 	rel.pose.orientation = pose.orientation;
 	rel.pose.position = pose.position;
 	rel.angular_velocity = pose.angular_velocity;
+	rel.linear_velocity = pose.linear_velocity;
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
-	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
+	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT | XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT);
 	if (pose.tracking_state == 3) {
 		rel.relation_flags = (enum xrt_space_relation_flags)(
 		    rel.relation_flags | XRT_SPACE_RELATION_POSITION_VALID_BIT |
@@ -348,7 +350,11 @@ pn2_hmd_create(void)
 	d->base.supported.ref_space_usage = true;
 	d->base.supported.orientation_tracking = true;
 
-	d->qvr = pn2_qvr_create();
+	if (debug_get_bool_option_pn2_no_qvr()) {
+		d->qvr = NULL;
+	} else {
+		d->qvr = pn2_qvr_create();
+	}
 	d->base.supported.position_tracking = d->qvr != NULL;
 	PN2_INFO(d, "qvrservice 6DoF: %s", d->qvr != NULL ? "connected" : "unavailable");
 	u_device_populate_function_pointers(&d->base, pn2_get_tracked_pose, pn2_destroy);

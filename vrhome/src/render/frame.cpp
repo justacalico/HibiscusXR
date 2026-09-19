@@ -12,7 +12,7 @@
 #include <ctime>
 
 void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
-              void (*scene)(Engine*, const Mat4&)) {
+              bool status, void (*scene)(Engine*, const Mat4&)) {
     static int errTick = 0;
     for (int i = 0; i < 2; ++i) {
         Eye& y = e->eye[i];
@@ -27,7 +27,7 @@ void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         const Mat4 vp = multiply(proj, eyeMatrix(head, kIPD, i));
         scene(e, vp);
-        if (propI("debug.vrhome.hud", 1)) drawHud(e, proj);
+        if (status && propI("debug.vrhome.hud", 1)) drawHud(e, proj);
         if (++errTick >= 144) {
             errTick = 0;
             GLenum ge = glGetError();

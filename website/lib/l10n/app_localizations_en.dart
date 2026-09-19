@@ -57,7 +57,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heroEyebrow => 'Pico Neo 2 · LineageOS 17.1';
 
   @override
-  String get heroTitle => 'Android 10, in VR.';
+  String get heroTitle => 'Android back, in VR.';
 
   @override
   String get heroSubtitle =>

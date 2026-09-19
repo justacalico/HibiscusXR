@@ -27,7 +27,27 @@
   "heroSubtitle": "A full port of LineageOS 17.1 to the Pico Neo 2 headset.",
   "heroPrimary": "See the status",
   "heroSecondary": "Read the docs",
-  "heroShotCaption": "The library app window inside vrhome.",
+  "heroShotCaption": "The library window floating inside vrhome.",
+
+  "shotMockTime": "3:52",
+  "shotMockSearch": "Search",
+  "shotMockFilter": "All ({count})",
+  "@shotMockFilter": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "shotMockSort": "A-Z",
+  "shotMockSystem": "System",
+  "shotAppCalendar": "Calendar",
+  "shotAppCamera": "Camera",
+  "shotAppChrome": "Chrome",
+  "shotAppClock": "Clock",
+  "shotAppContacts": "Contacts",
+  "shotAppDrive": "Drive",
+  "shotAppFiles": "Files",
+  "shotAppGemini": "Gemini",
+  "shotAppGlasses": "Glasses",
 
   "statSoc": "Snapdragon 845",
   "statSocLabel": "with Adreno 630",

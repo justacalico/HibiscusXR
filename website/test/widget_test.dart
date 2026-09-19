@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pn2_website/main.dart';
 import 'package:pn2_website/src/settings.dart';
+import 'package:pn2_website/src/ui/hero_shot.dart';
 
 Future<Widget> _app() async {
   SharedPreferences.setMockInitialValues({});
@@ -29,6 +30,23 @@ void main() {
     expect(find.text('Repos'), findsWidgets);
     expect(find.text('See the status'), findsOneWidget);
     expect(find.text('Read the docs'), findsOneWidget);
+  });
+
+  testWidgets('home hero draws the project mark', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(HeroShot), findsOneWidget);
+    expect(find.text('All (21)'), findsWidgets);
+    expect(find.text('Calendar'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+          (w) => w is CustomPaint && w.painter is LibraryMarkPainter),
+      findsWidgets,
+    );
   });
 
   testWidgets('navigates to download page', (tester) async {

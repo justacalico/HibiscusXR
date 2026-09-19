@@ -126,7 +126,7 @@ void dragTick(HudEngine* e, const Mat4& head) {
     for (auto& p : e->panels) {
         if (p.displayId != e->dragDisp) continue;
         float rx, ry;
-        if (dragPoint(p, head, &rx, &ry)) {
+        if (dragPoint(p, head, e->ringPos, e->eyePos, &rx, &ry)) {
             const float px = dragBoost(e->grabX, rx, kVdW);
             const float py = dragBoost(e->grabY, ry, kVdH);
             if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)

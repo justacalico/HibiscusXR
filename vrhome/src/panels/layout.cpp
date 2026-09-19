@@ -5,17 +5,21 @@
 
 #include <cmath>
 
-void panelCenter(const Panel& p, float out[3], float right[3], float up[3]) {
-    // a cylinder, not a sphere: pitch raises the panel without squeezing the
-    // ring's horizontal spread, so three windows can't bunch at the zenith
-    out[0] = sinf(p.yaw) * kPanelDist;
-    out[1] = kPanelY + sinf(p.pitch) * kPanelDist;
-    out[2] = -cosf(p.yaw) * kPanelDist;
+void panelCenter(const Panel& p, const float origin[3], float out[3],
+                 float right[3], float up[3]) {
+    // a cylinder around the anchor, not a sphere: pitch raises the panel
+    // without squeezing the ring's horizontal spread, so three windows
+    // can't bunch at the zenith
+    out[0] = origin[0] + sinf(p.yaw) * kPanelDist;
+    out[1] = origin[1] + kPanelY + sinf(p.pitch) * kPanelDist;
+    out[2] = origin[2] - cosf(p.yaw) * kPanelDist;
     right[0] = cosf(p.yaw); right[1] = 0; right[2] = sinf(p.yaw);
-    // the plane's normal points at the viewer; up = normal x right tilts the
-    // top edge toward you as the ring rises, like a ceiling screen
-    const float l = sqrtf(out[0]*out[0] + out[1]*out[1] + out[2]*out[2]);
-    const float n[3] = {-out[0]/l, -out[1]/l, -out[2]/l};
+    // the plane's normal points back at the anchor; up = normal x right
+    // tilts the top edge toward you as the ring rises, like a ceiling screen
+    const float nx = origin[0] - out[0], ny = origin[1] - out[1],
+                nz = origin[2] - out[2];
+    const float l = sqrtf(nx*nx + ny*ny + nz*nz);
+    const float n[3] = {nx/l, ny/l, nz/l};
     up[0] = n[1]*right[2] - n[2]*right[1];
     up[1] = n[2]*right[0] - n[0]*right[2];
     up[2] = n[0]*right[1] - n[1]*right[0];
@@ -193,26 +197,31 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch) {
     }
 }
 
-bool rayPanel(const Panel& p, const float d[3], float* u, float* v,
-              float* t) {
+bool rayPanel(const Panel& p, const float origin[3], const float o[3],
+              const float d[3], float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    panelCenter(p, c, r, up);
-    // plane normal toward origin: -c direction, tilted with pitch
-    const float nl = sqrtf(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
-    const float n[3] = {-c[0]/nl, -c[1]/nl, -c[2]/nl};
+    panelCenter(p, origin, c, r, up);
+    // the plane's normal points at the anchor, tilted with pitch
+    const float nx = origin[0] - c[0], ny = origin[1] - c[1],
+                nz = origin[2] - c[2];
+    const float nl = sqrtf(nx*nx + ny*ny + nz*nz);
+    const float n[3] = {nx/nl, ny/nl, nz/nl};
     // normal points at the viewer, ray travels into the plane: d.n < 0
     const float dn = d[0]*n[0] + d[1]*n[1] + d[2]*n[2];
     if (dn > -1e-5f) return false;
-    const float t0 = (c[0]*n[0] + c[1]*n[1] + c[2]*n[2]) / dn;
+    const float t0 = ((c[0]-o[0])*n[0] + (c[1]-o[1])*n[1] +
+                      (c[2]-o[2])*n[2]) / dn;
     if (t0 <= 0) return false;
-    const float px = d[0]*t0 - c[0], py = d[1]*t0 - c[1], pz = d[2]*t0 - c[2];
+    const float px = o[0] + d[0]*t0 - c[0], py = o[1] + d[1]*t0 - c[1],
+                pz = o[2] + d[2]*t0 - c[2];
     *u = (px*r[0] + pz*r[2]) / (kPanelW / 2);
     *v = (px*up[0] + py*up[1] + pz*up[2]) / (kPanelH / 2);
     if (t) *t = t0;
     return true;
 }
 
-Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
+Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
+               const float origin[3], const float o[3]) {
     float d[3];
     gazeDir(head, d);
     Pick pick;
@@ -222,7 +231,7 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
         const Panel& p = panels[i];
         if (p.minimized) continue;
         float u, v, t;
-        if (!rayPanel(p, d, &u, &v, &t)) continue;
+        if (!rayPanel(p, origin, o, d, &u, &v, &t)) continue;
         if (t >= bestT) continue;
         int zone = ZONE_NONE;
         if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
@@ -247,10 +256,11 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head) {
     return pick;
 }
 
-bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py) {
+bool dragPoint(const Panel& p, const Mat4& head, const float origin[3],
+               const float o[3], float* px, float* py) {
     float d[3], u, v;
     gazeDir(head, d);
-    if (!rayPanel(p, d, &u, &v, nullptr)) return false;
+    if (!rayPanel(p, origin, o, d, &u, &v, nullptr)) return false;
     // a held drag follows the gaze even past the window's edge
     u = u < -1.0f ? -1.0f : u > 1.0f ? 1.0f : u;
     v = v < -1.0f ? -1.0f : v > 1.0f ? 1.0f : v;

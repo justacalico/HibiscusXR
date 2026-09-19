@@ -29,6 +29,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/system_properties.h>
 
 // QVRSERVICE_TRACKING_MODE_POSITIONAL: verified on device, modes 1/2/4
 // are accepted and 2 switches the head pose to a fused camera+IMU pose.
@@ -80,6 +81,8 @@ struct pn2_qvr
 	pn2_qvr_head_t get_head_data;
 	int64_t clock_offset; //!< qvr_ts - monotonic_ts, learned from first pose
 	bool clock_offset_set;
+	uint64_t last_raw_ts; //!< raw QVR timestamp of the newest read
+	int stall;            //!< consecutive reads with last_raw_ts repeated
 };
 
 static void *
@@ -92,9 +95,22 @@ pn2_qvr_sym(struct pn2_qvr *q, const char *name)
 	return fn;
 }
 
+bool
+pn2_qvr_service_up(void)
+{
+	char v[PROP_VALUE_MAX] = {0};
+	__system_property_get("init.svc.pn2_qvrd", v);
+	// unset on setups that name the service differently: don't gate those
+	return v[0] == '\0' || strcmp(v, "running") == 0;
+}
+
 struct pn2_qvr *
 pn2_qvr_create(void)
 {
+	if (!pn2_qvr_service_up()) {
+		U_LOG_W("pn2_qvr: qvrd not running, not connecting");
+		return NULL;
+	}
 	struct pn2_qvr *q = calloc(1, sizeof(*q));
 
 	// Soname first (app namespaces resolve it through public.libraries.txt),
@@ -164,6 +180,11 @@ pn2_qvr_create(void)
 bool
 pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 {
+	// GetHeadTrackingData dereferences the dead service's binder state and
+	// segfaults: never call it while qvrd is down
+	if (!pn2_qvr_service_up()) {
+		return false;
+	}
 	struct pn2_qvr_head_data *d = NULL;
 	if (q->get_head_data(q->impl, &d) < 0 || d == NULL || d->tracking_state == 0) {
 		// state 0 means this client never got VR mode (or the tracker is
@@ -172,13 +193,23 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 		return false;
 	}
 
+	// a frozen buffer repeats its timestamp: a dead service keeps the last
+	// pose readable (state and all), so repeats are the only liveness check.
+	// resync only on a fresh sample - syncing to a frozen one would pin the
+	// converted timestamp at "now" forever and hide the stall
+	// ts==0 is warm-up (tracker alive, no pose written yet), not a stall
+	q->stall = (d->timestamp_ns != 0 && d->timestamp_ns == q->last_raw_ts)
+	               ? q->stall + 1 : 0;
+	q->last_raw_ts = d->timestamp_ns;
+
 	uint64_t now = os_monotonic_get_ns();
 	int64_t sample_off = (int64_t)d->timestamp_ns - (int64_t)now;
 	if (!q->clock_offset_set) {
 		q->clock_offset = sample_off;
 		q->clock_offset_set = true;
-	} else if (sample_off - q->clock_offset > 50000000 ||
-	           sample_off - q->clock_offset < -50000000) {
+	} else if (q->stall == 0 &&
+	           (sample_off - q->clock_offset > 50000000 ||
+	            sample_off - q->clock_offset < -50000000)) {
 		// suspend cycles shift the service clock against monotonic; a stale
 		// offset lands every converted timestamp in the past/future and
 		// breaks prediction, so resync when drift exceeds 50ms
@@ -205,6 +236,12 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 	out->sensor_quality = d->sensor_quality;
 	out->camera_quality = d->camera_quality;
 	return true;
+}
+
+int
+pn2_qvr_stall(struct pn2_qvr *q)
+{
+	return q->stall;
 }
 
 void

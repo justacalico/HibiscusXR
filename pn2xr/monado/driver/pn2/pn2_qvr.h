@@ -42,11 +42,28 @@ struct pn2_qvr *
 pn2_qvr_create(void);
 
 /*!
+ * True while qvrd is running, judged by init's service property.
+ * GetHeadTrackingData dereferences the dead service's binder state and
+ * segfaults, so it must never be called while this is false. An unset
+ * property counts as up: unknown setups keep the old behaviour.
+ */
+bool
+pn2_qvr_service_up(void);
+
+/*!
  * Copies the newest head pose into @p out. Returns false while tracking
  * has produced no pose yet or the read failed.
  */
 bool
 pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out);
+
+/*!
+ * Count of consecutive reads that returned the same raw timestamp. A dead
+ * service leaves the ring buffer frozen at the last pose (and still claims
+ * state 3), so repeats are the only liveness signal left.
+ */
+int
+pn2_qvr_stall(struct pn2_qvr *q);
 
 /*!
  * Stops VR mode and releases the client.

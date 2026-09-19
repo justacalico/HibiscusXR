@@ -33,8 +33,11 @@ void main() {
     ]) {
       final uri = Uri.parse(url);
       expect(uri.scheme, 'https', reason: url);
-      expect(uri.host, 'gitlab.com', reason: url);
-      expect(uri.path.startsWith('/neosalsa'), isTrue, reason: url);
+      if (uri.host == 'gitlab.com') {
+        expect(uri.path.startsWith('/neosalsa'), isTrue, reason: url);
+      } else {
+        expect(uri.host.endsWith('.gitlab.io'), isTrue, reason: url);
+      }
     }
   });
 

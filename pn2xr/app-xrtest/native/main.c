@@ -425,7 +425,7 @@ void android_main(struct android_app *app) {
         r = pfn_xrLocateViews(sess, &vli, &vstate, 2, &found, views);
 
         frames++;
-        if (frames <= 720 && XR_SUCCEEDED(r)) {
+        if (frames % 36 == 0 && XR_SUCCEEDED(r)) {
             struct timespec mts;
             clock_gettime(CLOCK_MONOTONIC, &mts);
             long long mono = (long long)mts.tv_sec * 1000000000ll + mts.tv_nsec;

@@ -102,13 +102,26 @@ pn2_device(struct xrt_device *xdev)
 #define PN2_INFO(d, ...) U_LOG_XDEV_IFL_I(&d->base, d->log_level, __VA_ARGS__)
 #define PN2_ERROR(d, ...) U_LOG_XDEV_IFL_E(&d->base, d->log_level, __VA_ARGS__)
 
+// Frame rebase from the qvrd tracking frame to the OpenXR view frame.
+//
+// Dumped live poses show qvrd reports the device pose in a world whose +X
+// axis is up: swiveling the headset on a desk lands every delta on world X.
+// The device local frame has the head top at +X, head left at +Y, and the
+// face normal at -Z: nodding up/down lands on local Y, swiveling on X.
+// OpenXR wants a +Y-up world and a -Z-forward / +Y-up view local frame, so
+// poses are rebased on both sides: world by C (rotZ(+90)) and local by M.
+static const struct xrt_quat PN2_QVR_WORLD_TO_VIEW = {
+    .x = 0.0f, .y = 0.0f, .z = 0.7071068f, .w = 0.7071068f}; // rotZ(+90)
+static const struct xrt_quat PN2_DEV_TO_VIEW = {
+    .x = 0.0f, .y = 0.0f, .z = -0.7071068f, .w = 0.7071068f}; // rotZ(-90)
+
 /*
  * Sensor axis maps.
  *
  * Raw dump on the device shows gravity dominated by +X when the unit lies
- * face-up, so sensor +X points out of the face = head +Z (backward).
- * The remaining two axes are unverified; index selects among the proper
- * rotations that keep z_head = x_sensor. Override with PN2_AXISMAP or
+ * face-up, so sensor +X points out of the face. The other two sensor axes
+ * were never dumped, so the maps are unverified: index selects among the
+ * proper rotations for poking at with PN2_AXISMAP /
  * `setprop debug.pn2.axismap`.
  */
 static const struct xrt_quat PN2_AXIS_MAPS[] = {
@@ -154,10 +167,14 @@ static void
 pn2_push_fused(struct pn2_device *d, uint64_t ts)
 {
 	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
-	rel.pose.orientation = d->fusion.rot;
+	// the fusion already runs in a +Y-up world; only the local frame needs
+	// the device -> view rebase
+	math_quat_rotate(&d->fusion.rot, &PN2_DEV_TO_VIEW, &rel.pose.orientation);
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT);
-	rel.angular_velocity = d->fusion.last.gyro;
+	// angular_velocity is world-frame per Monado convention; the gyro reads
+	// body-frame, so rotate by the current pose
+	math_quat_rotate_vec3(&d->fusion.rot, &d->fusion.last.gyro, &rel.angular_velocity);
 	rel.relation_flags =
 	    (enum xrt_space_relation_flags)(rel.relation_flags | XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
 	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)ts);
@@ -188,8 +205,10 @@ pn2_push_qvr(struct pn2_device *d)
 	d->qvr_last_ts = pose.timestamp_ns;
 
 	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
-	rel.pose.orientation = pose.orientation;
-	rel.pose.position = pose.position;
+	struct xrt_quat tmp;
+	math_quat_rotate(&PN2_QVR_WORLD_TO_VIEW, &pose.orientation, &tmp);
+	math_quat_rotate(&tmp, &PN2_DEV_TO_VIEW, &rel.pose.orientation);
+	math_quat_rotate_vec3(&PN2_QVR_WORLD_TO_VIEW, &pose.position, &rel.pose.position);
 	// The service's velocity fields are noise on this build (dumped lv
 	// swings ±2 m/s with the head bolted to a desk), so every display-time
 	// prediction got a random positional kick. Leave them invalid and let
@@ -201,6 +220,7 @@ pn2_push_qvr(struct pn2_device *d)
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
 	          pose.orientation.z, pose.orientation.w, pose.tracking_state);
+	return true;
 }
 
 // polls qvr while alive; a dead stream drops the client after 3s, an
@@ -367,13 +387,15 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 		// a stale newest entry means tracking is degraded or the stream
 		// died: keep the last real pose as anchor and coast on the IMU
 		// delta so the head still turns instead of freezing or snapping
+		struct xrt_quat fusion_view;
+		math_quat_rotate(&d->fusion.rot, &PN2_DEV_TO_VIEW, &fusion_view);
 		int64_t latest_ts = 0;
 		struct xrt_space_relation latest;
 		if (m_relation_history_get_latest(d->rh, &latest_ts, &latest) &&
 		    (int64_t)os_monotonic_get_ns() - latest_ts > 500000000ll) {
 			if (!d->coasting) {
 				d->coasting = true;
-				d->coast_imu_base = d->fusion.rot;
+				d->coast_imu_base = fusion_view;
 				d->coast_orient = latest.pose.orientation;
 				d->coast_pos = latest.pose.position;
 				d->coast_has_pos = (latest.relation_flags &
@@ -381,10 +403,10 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 			}
 			struct xrt_quat inv_base, delta;
 			math_quat_invert(&d->coast_imu_base, &inv_base);
-			math_quat_rotate(&inv_base, &d->fusion.rot, &delta);
+			math_quat_rotate(&inv_base, &fusion_view, &delta);
 			math_quat_rotate(&d->coast_orient, &delta, &rel.pose.orientation);
 			rel.pose.position = d->coast_pos;
-			rel.angular_velocity = d->fusion.last.gyro;
+			math_quat_rotate_vec3(&d->fusion.rot, &d->fusion.last.gyro, &rel.angular_velocity);
 			rel.relation_flags = (enum xrt_space_relation_flags)(
 			    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT |
 			    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
@@ -399,8 +421,8 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 	if (!got || !(rel.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT)) {
 		struct xrt_space_relation zero_rel = XRT_SPACE_RELATION_ZERO;
 		rel = zero_rel;
-		rel.pose.orientation = d->fusion.rot;
-		rel.angular_velocity = d->fusion.last.gyro;
+		math_quat_rotate(&d->fusion.rot, &PN2_DEV_TO_VIEW, &rel.pose.orientation);
+		math_quat_rotate_vec3(&d->fusion.rot, &d->fusion.last.gyro, &rel.angular_velocity);
 		rel.relation_flags = (enum xrt_space_relation_flags)(
 		    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
 		    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);

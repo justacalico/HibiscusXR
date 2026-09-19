@@ -159,7 +159,7 @@ make -C "$PN2_ROOT/vrhome" apk \
 BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
 for a in vrhome vrhud; do
   "$BT/apksigner" verify --print-certs "$PN2_ROOT/vrhome/out/$a.apk" \
-      | grep -q "CN=Android" \
+      | grep -q "CN=PN2" \
       || { echo "FAIL $a.apk is not platform-signed"; fail=$((fail+1)); }
 done
 mkd /app/PN2Panels
@@ -181,7 +181,7 @@ for app in library quick-panel; do
   "$BT/apksigner" sign --key "$PN2_ROOT/build/keys/platform.pk8" \
       --cert "$PN2_ROOT/build/keys/platform.x509.pem" "$APK" \
       || { echo "FAIL $app sign"; fail=$((fail+1)); }
-  "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=Android" \
+  "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=PN2" \
       || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
 done
 mkd /app/PN2Library
@@ -228,6 +228,41 @@ mkd /etc/openxr/1
 put "$XR/android/active_runtime.json" /etc/openxr/1/active_runtime.json 644
 debugfs -w -R "rm /etc/init/pvrservice.rc" "$IMG" >/dev/null 2>&1
 echo "  removed /etc/init/pvrservice.rc"
+
+echo
+echo "=== re-sign every apk with the real platform key ==="
+# The GSI, framework-res and all staged apks carry the public AOSP testkey.
+# Re-sign the whole set in place with our platform key so the framework
+# cert and every package share one private signature - same model as a
+# signed production ROM. /apex is left alone: flattened apexes verify
+# against their own apex_pubkey, not the platform cert.
+W2="$PN2_ROOT/notes/resign-work"
+rm -rf "$W2"; mkdir -p "$W2"
+for d in /app /priv-app /framework /product; do
+  debugfs -R "rdump $d $W2" "$IMG" >/dev/null 2>&1
+done
+mapfile -t APKS < <(cd "$W2" && find . -name '*.apk' -type f)
+echo "  ${#APKS[@]} apks to re-sign"
+printf '%s\0' "${APKS[@]}" | (cd "$W2" && xargs -0 -P4 -I{} "$BT/apksigner" \
+    sign --key "$PN2_ROOT/build/keys/platform.pk8" \
+         --cert "$PN2_ROOT/build/keys/platform.x509.pem" "{}") \
+    || { echo "FAIL apk re-sign pass"; fail=$((fail+1)); }
+# one debugfs session writes them all back
+CMDS="$W2.cmds"
+: > "$CMDS"
+for a in "${APKS[@]}"; do
+  rel="${a#./}"
+  printf 'rm %s\nwrite %s %s\nsif %s mode 0100644\nsif %s uid 0\nsif %s gid 0\nrm %s.idsig\n' \
+      "/$rel" "$W2/$rel" "/$rel" "/$rel" "/$rel" "/$rel" "/$rel" >> "$CMDS"
+done
+debugfs -w -f "$CMDS" "$IMG" >/dev/null 2>&1
+for probe in /framework/framework-res.apk /app/PN2Hud/PN2Hud.apk /product/priv-app/Settings/Settings.apk; do
+  debugfs -R "dump $probe $W2-probe.apk" "$IMG" >/dev/null 2>&1
+  "$BT/apksigner" verify --print-certs "$W2-probe.apk" 2>/dev/null | grep -q "CN=PN2" \
+      || { echo "FAIL $probe not PN2-signed"; fail=$((fail+1)); }
+done
+rm -rf "$W2" "$CMDS" "$W2-probe.apk"
+echo "  re-signed and verified"
 
 echo
 echo "=== repair pass (debugfs write/rm leaves accounting inconsistent) ==="

@@ -344,30 +344,6 @@ abstract class AppLocalizations {
   /// **'Research notes'**
   String get statNotesLabel;
 
-  /// No description provided for @homeShellEyebrow.
-  ///
-  /// In en, this message translates to:
-  /// **'The shell'**
-  String get homeShellEyebrow;
-
-  /// No description provided for @homeShellTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'An open VR home, already running.'**
-  String get homeShellTitle;
-
-  /// No description provided for @homeShellBody.
-  ///
-  /// In en, this message translates to:
-  /// **'vrhome replaces the stock Pico shell with a NativeActivity of our own: 2D apps float as windows, VR apps still launch fullscreen, and the library grid is just another app.'**
-  String get homeShellBody;
-
-  /// No description provided for @homeShellCta.
-  ///
-  /// In en, this message translates to:
-  /// **'See screenshots'**
-  String get homeShellCta;
-
   /// No description provided for @shotCollectionCaption.
   ///
   /// In en, this message translates to:

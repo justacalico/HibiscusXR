@@ -134,19 +134,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statNotesLabel => '篇研究笔记';
 
   @override
-  String get homeShellEyebrow => '桌面环境';
-
-  @override
-  String get homeShellTitle => '开源的 VR 桌面,已经能跑了。';
-
-  @override
-  String get homeShellBody =>
-      'vrhome 用我们自己的 NativeActivity 替换了原厂 Pico 桌面:2D 应用变成悬浮窗口,VR 应用照常全屏启动,library 网格也只是一个普通应用。';
-
-  @override
-  String get homeShellCta => '看截图';
-
-  @override
   String get shotCollectionCaption => '集合与分组,带数量。';
 
   @override

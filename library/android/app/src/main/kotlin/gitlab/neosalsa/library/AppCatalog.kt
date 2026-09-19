@@ -1,5 +1,7 @@
 package gitlab.neosalsa.library
 
+import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -10,6 +12,8 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import java.io.ByteArrayOutputStream
 
@@ -55,7 +59,30 @@ class AppCatalog(private val context: Context) {
         return drawableToPng(drawable)
     }
 
+    // Ask the shell to open the app on a fresh panel first; the ordered
+    // broadcast answers RESULT_OK when vrhud claims it. Anything else -
+    // hud down, broadcast refused - falls back to a plain startActivity.
     fun launch(pkg: String): Boolean {
+        val intent = Intent(SHELL_OPEN_ACTION)
+            .setPackage(SHELL_PKG)
+            .putExtra(SHELL_EXTRA_PACKAGE, pkg)
+        val fallback = object : BroadcastReceiver() {
+            override fun onReceive(context: Context, intent: Intent) {
+                if (resultCode != Activity.RESULT_OK) startDirect(pkg)
+            }
+        }
+        return try {
+            context.sendOrderedBroadcast(
+                intent, null, fallback, Handler(Looper.getMainLooper()),
+                Activity.RESULT_CANCELED, null, null
+            )
+            true
+        } catch (e: Exception) {
+            startDirect(pkg)
+        }
+    }
+
+    private fun startDirect(pkg: String): Boolean {
         val intent = pm.getLaunchIntentForPackage(pkg)
             ?: Intent(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_LAUNCHER)
@@ -155,5 +182,9 @@ class AppCatalog(private val context: Context) {
     companion object {
         private const val ICON_SIZE = 144
         private const val APK_MIME = "application/vnd.android.package-archive"
+        private const val SHELL_PKG = "gitlab.neosalsa.hud"
+        private const val SHELL_OPEN_ACTION =
+            "gitlab.neosalsa.hud.action.OPEN_PACKAGE"
+        private const val SHELL_EXTRA_PACKAGE = "package"
     }
 }

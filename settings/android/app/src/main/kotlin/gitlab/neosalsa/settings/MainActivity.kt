@@ -287,20 +287,29 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
                     .setPackage(packageName),
             )
-            "sleep" -> {
-                try {
-                    getSystemService(PowerManager::class.java)
-                        ?.goToSleep(System.currentTimeMillis())
-                } catch (_: SecurityException) {}
-            }
-            "restart" -> {
-                try {
-                    getSystemService(PowerManager::class.java)
-                        ?.reboot(null)
-                } catch (_: SecurityException) {}
-            }
+            "sleep" -> powerCall("goToSleep", System.currentTimeMillis())
+            "restart" -> powerCall("reboot", null)
         }
     }
+
+    // goToSleep/reboot are @SystemApi - hidden from the SDK but callable
+    // on this platform-signed install through reflection.
+    private fun powerCall(name: String, arg: Any?) {
+        try {
+            val pm = getSystemService(PowerManager::class.java) ?: return
+            val m = PowerManager::class.java.getMethod(name, *argTypes(arg))
+            m.invoke(pm, *spread(arg))
+        } catch (_: Exception) {}
+    }
+
+    private fun argTypes(arg: Any?): Array<Class<*>> = when (arg) {
+        null -> arrayOf(String::class.java)
+        is Long -> arrayOf(java.lang.Long.TYPE)
+        else -> arrayOf(arg.javaClass)
+    }
+
+    private fun spread(arg: Any?): Array<Any?> =
+        if (arg == null) arrayOf(null) else arrayOf(arg)
 
     private fun putGlobal(key: String, on: Boolean) {
         try {

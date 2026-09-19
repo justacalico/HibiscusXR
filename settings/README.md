@@ -1,17 +1,35 @@
-# pn2_settings
+# settings
 
-A new Flutter project.
+System settings app for the Pico Neo 2 running the LineageOS 17.1 port.
 
-## Getting Started
+Two-pane layout modeled on the stock headset settings: a sidebar of
+sections on the left, the selected section's rows on the right.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Wi-Fi, Bluetooth: live radio toggles, SSID display, links into the
+  system pages
+- Display: brightness slider, night mode
+- Sound: volume slider, microphone switch
+- Camera: seethrough toggle (project seam broadcast)
+- Language and Region, Time, Keyboard: jump to the matching system page
+- Headset Tracking: tracking toggle, tracking frequency dropdown,
+  boundary toggle, reset view
+- Backup, Developer, Software Update, Power (battery saver, sleep,
+  restart), About (model / Android version / build), Tips and Support
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+Rows the platform cannot service directly open the matching system
+page instead. Sleep and restart call `PowerManager` through reflection
+and only fire when the app is platform-signed.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Build and test
+
+```sh
+flutter pub get
+flutter gen-l10n
+flutter test
+flutter build apk --release
+```
+
+The dist pipeline re-signs the release apk with the platform key and
+installs it under `/system/app` as `PN2Settings`.

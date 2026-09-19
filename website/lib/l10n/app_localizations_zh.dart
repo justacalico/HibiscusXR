@@ -128,12 +128,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statPanelLabel => 'JDI 4K 屏幕';
 
   @override
-  String get statRepos => '46';
-
-  @override
-  String get statReposLabel => '个仓库';
-
-  @override
   String get statNotes => '约 300';
 
   @override

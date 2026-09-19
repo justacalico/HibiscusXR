@@ -116,7 +116,7 @@ class _Hero extends StatelessWidget {
   }
 }
 
-/// Four-cell spec strip under the hero.
+/// Spec strip under the hero.
 class _Stats extends StatelessWidget {
   const _Stats({required this.l10n});
 
@@ -127,14 +127,13 @@ class _Stats extends StatelessWidget {
     final stats = [
       (l10n.statSoc, l10n.statSocLabel),
       (l10n.statPanel, l10n.statPanelLabel),
-      (l10n.statRepos, l10n.statReposLabel),
       (l10n.statNotes, l10n.statNotesLabel),
     ];
     return Band(
       padding: const EdgeInsets.symmetric(vertical: 56),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 760 ? 4 : 2;
+          final columns = constraints.maxWidth >= 760 ? 3 : 2;
           final width = (constraints.maxWidth - (columns - 1) * 32) / columns;
           return Wrap(
             spacing: 32,

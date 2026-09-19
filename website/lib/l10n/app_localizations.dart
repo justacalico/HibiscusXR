@@ -395,13 +395,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeStatusTitle.
   ///
   /// In en, this message translates to:
-  /// **'Boots. Shell runs. One bug left.'**
+  /// **'Boots. Shell runs. Picture\'s on.'**
   String get homeStatusTitle;
 
   /// No description provided for @homeStatusBody.
   ///
   /// In en, this message translates to:
-  /// **'The port boots with audio, live head rotation and VRShell driving the real Pico compositor. The VR display still shows black - one tracking-state bug between here and a picture.'**
+  /// **'The port boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.'**
   String get homeStatusBody;
 
   /// No description provided for @homeStatusCta.
@@ -506,6 +506,12 @@ abstract class AppLocalizations {
   /// **'Optional wireless adb via persist.pn2.adbwifi'**
   String get statusWorks7;
 
+  /// No description provided for @statusWorks8.
+  ///
+  /// In en, this message translates to:
+  /// **'VR display shows a real picture - tracking state reaches apps'**
+  String get statusWorks8;
+
   /// No description provided for @statusBrokenTitle.
   ///
   /// In en, this message translates to:
@@ -533,13 +539,13 @@ abstract class AppLocalizations {
   /// No description provided for @statusBlockerTitle.
   ///
   /// In en, this message translates to:
-  /// **'One bug between here and a picture.'**
+  /// **'No bug between here and a picture.'**
   String get statusBlockerTitle;
 
   /// No description provided for @statusBlockerBody.
   ///
   /// In en, this message translates to:
-  /// **'pvrservice hands out good rotation, but the SDK inside each app reports trackingstate 0x0,0x0. The pose fails the compositor\'s unit-quaternion check and every frame is dropped. The data exists on the service side and arrives as \"no tracking\" on the client side.'**
+  /// **'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.'**
   String get statusBlockerBody;
 
   /// No description provided for @statusBlockerCta.
@@ -917,7 +923,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadAlphaBody.
   ///
   /// In en, this message translates to:
-  /// **'This is very early alpha. These are testing builds, not production releases. Things will break, features are missing, and the VR display is still black. Only flash if you know what you\'re doing and want to help test.'**
+  /// **'This is very early alpha. These are testing builds, not production releases. Things will break and features are missing. Only flash if you know what you\'re doing and want to help test.'**
   String get downloadAlphaBody;
 
   /// No description provided for @downloadWarnTitle.
@@ -1193,7 +1199,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA1.
   ///
   /// In en, this message translates to:
-  /// **'It boots, VRShell runs and head tracking is live. The one blocker: the VR display still shows black because app-side tracking state arrives as zero. The status page keeps the current list.'**
+  /// **'It boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.'**
   String get faqA1;
 
   /// No description provided for @faqQ2.

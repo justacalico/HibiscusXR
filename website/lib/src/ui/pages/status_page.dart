@@ -22,6 +22,7 @@ class StatusPage extends StatelessWidget {
       l10n.statusWorks5,
       l10n.statusWorks6,
       l10n.statusWorks7,
+      l10n.statusWorks8,
     ];
     final broken = [
       l10n.statusBroken1,
@@ -129,7 +130,7 @@ class _StatusCard extends StatelessWidget {
   }
 }
 
-/// Dark callout explaining the single remaining blocker.
+/// Dark callout noting the last blocker is gone.
 class _BlockerBand extends StatelessWidget {
   const _BlockerBand({required this.l10n});
 

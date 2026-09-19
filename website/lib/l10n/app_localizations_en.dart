@@ -148,13 +148,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.';
 
   @override
-  String get homeWayReposTitle => 'One repo per component';
-
-  @override
-  String get homeWayReposBody =>
-      'Device tree, shim sources, dump repos, staging trees - 46 repositories under one group, each small enough to read in one sitting.';
-
-  @override
   String get homeWayNotesTitle => 'Research in the open';
 
   @override

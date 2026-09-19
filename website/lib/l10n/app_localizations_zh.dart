@@ -147,13 +147,6 @@ class AppLocalizationsZh extends AppLocalizations {
       '系统主体是 LineageOS 17.1 GSI,我们的修复全部放在一个小的 overlay 里。vendor 分区保持和原厂逐字节一致,问题都在 system 侧解决。';
 
   @override
-  String get homeWayReposTitle => '一个仓库一个部件';
-
-  @override
-  String get homeWayReposBody =>
-      '设备树、shim 源码、转储仓库、暂存目录——46 个仓库挂在同一个组下,每个都小到能一次读完。';
-
-  @override
   String get homeWayNotesTitle => '研究过程全部公开';
 
   @override

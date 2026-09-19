@@ -61,8 +61,6 @@
 
   "homeWayOverlayTitle": "GSI plus overlay",
   "homeWayOverlayBody": "A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.",
-  "homeWayReposTitle": "One repo per component",
-  "homeWayReposBody": "Device tree, shim sources, dump repos, staging trees - 46 repositories under one group, each small enough to read in one sitting.",
   "homeWayNotesTitle": "Research in the open",
   "homeWayNotesBody": "Every dead end is written down. The notes repo holds around 300 numbered files of raw findings, from first boot to the last black frame.",
   "homeWayCta": "Browse the repositories",

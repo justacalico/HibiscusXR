@@ -368,18 +368,6 @@ abstract class AppLocalizations {
   /// **'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.'**
   String get homeWayOverlayBody;
 
-  /// No description provided for @homeWayReposTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'One repo per component'**
-  String get homeWayReposTitle;
-
-  /// No description provided for @homeWayReposBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Device tree, shim sources, dump repos, staging trees - 46 repositories under one group, each small enough to read in one sitting.'**
-  String get homeWayReposBody;
-
   /// No description provided for @homeWayNotesTitle.
   ///
   /// In en, this message translates to:

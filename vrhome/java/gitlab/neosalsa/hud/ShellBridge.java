@@ -249,15 +249,19 @@ public class ShellBridge {
             }
             // OpenXR-style apps mark their activity with an immersive
             // category instead of Pico's metadata; same rule applies.
+            // The query must be implicit: getLaunchIntentForPackage sets a
+            // component, and an explicit intent resolves by component with
+            // the category ignored - that classified every app as VR and
+            // sent all of them to display 0. Package-scoped + category, no
+            // action so any activity in the package declaring it counts.
             for (String cat : new String[]{
                     "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
                     "com.oculus.intent.category.VR"}) {
-                Intent i = pm.getLaunchIntentForPackage(pkg);
-                if (i != null) {
-                    i.addCategory(cat);
-                    if (!pm.queryIntentActivities(i, 0).isEmpty())
-                        return true;
-                }
+                Intent i = new Intent();
+                i.addCategory(cat);
+                i.setPackage(pkg);
+                if (!pm.queryIntentActivities(i, 0).isEmpty())
+                    return true;
             }
         } catch (Throwable ignored) {}
         return false;

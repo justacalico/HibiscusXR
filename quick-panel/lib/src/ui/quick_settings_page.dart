@@ -55,14 +55,14 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
             listenable: controller.store,
             builder: (context, _) {
               return Container(
-                margin: const EdgeInsets.all(24),
+                margin: const EdgeInsets.all(14),
                 clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: PanelTheme.panel,
                   borderRadius: BorderRadius.circular(PanelTheme.panelRadius),
                 ),
                 child: SingleChildScrollView(
-                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 10),
                   child: FocusTraversalGroup(
                     policy: ReadingOrderTraversalPolicy(),
                     child: Column(
@@ -74,7 +74,7 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                         onSettings: () =>
                             controller.runAction(ActionId.openSettings),
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 10),
                       PanelSlider(
                         value: controller.store.volume,
                         icon: Icons.volume_up,
@@ -88,7 +88,7 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                         label: l10n.sliderBrightness,
                         onChanged: controller.setBrightness,
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
                       Row(
                         children: [
                           for (var i = 0; i < largeTiles.length; i++) ...[
@@ -108,7 +108,7 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 14),
+                      const SizedBox(height: 10),
                       GridView.count(
                         crossAxisCount: 6,
                         mainAxisSpacing: 10,
@@ -125,7 +125,7 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                             ),
                         ],
                       ),
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 12),
                       NotificationSection(
                         notifications: controller.store.notifications,
                         onDismiss: controller.dismissNotification,

@@ -332,18 +332,6 @@ abstract class AppLocalizations {
   /// **'JDI 4K panel'**
   String get statPanelLabel;
 
-  /// No description provided for @statRepos.
-  ///
-  /// In en, this message translates to:
-  /// **'46'**
-  String get statRepos;
-
-  /// No description provided for @statReposLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Repositories'**
-  String get statReposLabel;
-
   /// No description provided for @statNotes.
   ///
   /// In en, this message translates to:

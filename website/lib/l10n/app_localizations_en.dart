@@ -129,12 +129,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statPanelLabel => 'JDI 4K panel';
 
   @override
-  String get statRepos => '46';
-
-  @override
-  String get statReposLabel => 'Repositories';
-
-  @override
   String get statNotes => '~300';
 
   @override

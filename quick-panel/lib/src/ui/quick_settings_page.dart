@@ -56,15 +56,17 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
             builder: (context, _) {
               return Container(
                 margin: const EdgeInsets.all(24),
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+                clipBehavior: Clip.antiAlias,
                 decoration: BoxDecoration(
                   color: PanelTheme.panel,
                   borderRadius: BorderRadius.circular(PanelTheme.panelRadius),
                 ),
-                child: FocusTraversalGroup(
-                  policy: ReadingOrderTraversalPolicy(),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
+                  child: FocusTraversalGroup(
+                    policy: ReadingOrderTraversalPolicy(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
                     children: [
                       PanelStatusBar(
                         batteryLevel: controller.store.batteryLevel,
@@ -131,6 +133,7 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                       ),
                     ],
                   ),
+                ),
                 ),
               );
             },

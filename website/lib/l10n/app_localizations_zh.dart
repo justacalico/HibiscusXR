@@ -160,11 +160,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeStatusEyebrow => '进展';
 
   @override
-  String get homeStatusTitle => '能开机,桌面能跑,还剩一个 bug。';
+  String get homeStatusTitle => '能开机,桌面能跑,有画面了。';
 
   @override
   String get homeStatusBody =>
-      '移植版可以启动,有声音,头部旋转实时生效,VRShell 驱动着真正的 Pico 合成器。VR 画面仍然是黑的——离显示出画面只差一个 tracking-state bug。';
+      '移植版可以启动,有声音,头部旋转实时生效,VRShell 驱动着真正的 Pico 合成器——VR 画面已经能看到真实内容。';
 
   @override
   String get homeStatusCta => '完整现状';
@@ -220,6 +220,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusWorks7 => '可选无线 adb:persist.pn2.adbwifi';
 
   @override
+  String get statusWorks8 => 'VR 画面正常出图:应用侧 tracking state 有效';
+
+  @override
   String get statusBrokenTitle => '还不行';
 
   @override
@@ -232,11 +235,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusBroken3 => 'Provision 初始化向导——语言选择器里崩溃';
 
   @override
-  String get statusBlockerTitle => '离出画面只差一个 bug。';
+  String get statusBlockerTitle => '离出画面一个 bug 都不剩。';
 
   @override
   String get statusBlockerBody =>
-      'pvrservice 给出的旋转数据是好的,但应用内部 SDK 报回来的 trackingstate 是 0x0,0x0。提交的 pose 过不了合成器的单位四元数校验,每一帧都被丢弃。数据在服务端存在,到客户端就变成了「无追踪」。';
+      'pvrservice 给出的旋转数据是好的,应用内部 SDK 报回来的 tracking state 现在也是真实值。提交的 pose 通过了合成器的单位四元数校验,每一帧都落在屏幕上。';
 
   @override
   String get statusBlockerCta => '看内部原理文档';
@@ -429,7 +432,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadAlphaBody =>
-      '这是非常早期的 alpha。这些是测试构建,不是正式发布版。东西会坏,功能不全,VR 画面还是黑的。只有你知道自己在干什么、愿意帮忙测试的时候才刷。';
+      '这是非常早期的 alpha。这些是测试构建,不是正式发布版。东西会坏,功能也不全。只有你知道自己在干什么、愿意帮忙测试的时候才刷。';
 
   @override
   String get downloadWarnTitle => '刷机风险';
@@ -574,8 +577,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get faqQ1 => '这个移植真的能用吗?';
 
   @override
-  String get faqA1 =>
-      '能开机,VRShell 能跑,头部追踪实时生效。唯一的拦路虎:VR 画面还是黑的,因为应用侧的 tracking state 传回来是零。现状页维护着最新清单。';
+  String get faqA1 => '能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。现状页维护着最新清单。';
 
   @override
   String get faqQ2 => '刷机安全吗?';

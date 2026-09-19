@@ -159,7 +159,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('FAQ'), findsWidgets);
-    final answer = find.textContaining('VR display still shows black');
+    final answer = find.textContaining('VR display shows a real picture');
     expect(answer, findsNothing);
 
     await tester.tap(find.text('Does the port actually work?'));

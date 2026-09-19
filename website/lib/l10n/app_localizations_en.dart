@@ -161,11 +161,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStatusEyebrow => 'Where it stands';
 
   @override
-  String get homeStatusTitle => 'Boots. Shell runs. One bug left.';
+  String get homeStatusTitle => 'Boots. Shell runs. Picture\'s on.';
 
   @override
   String get homeStatusBody =>
-      'The port boots with audio, live head rotation and VRShell driving the real Pico compositor. The VR display still shows black - one tracking-state bug between here and a picture.';
+      'The port boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.';
 
   @override
   String get homeStatusCta => 'Full status';
@@ -225,6 +225,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusWorks7 => 'Optional wireless adb via persist.pn2.adbwifi';
 
   @override
+  String get statusWorks8 =>
+      'VR display shows a real picture - tracking state reaches apps';
+
+  @override
   String get statusBrokenTitle => 'Not yet';
 
   @override
@@ -240,11 +244,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'Provision setup wizard - crashes in its language picker';
 
   @override
-  String get statusBlockerTitle => 'One bug between here and a picture.';
+  String get statusBlockerTitle => 'No bug between here and a picture.';
 
   @override
   String get statusBlockerBody =>
-      'pvrservice hands out good rotation, but the SDK inside each app reports trackingstate 0x0,0x0. The pose fails the compositor\'s unit-quaternion check and every frame is dropped. The data exists on the service side and arrives as \"no tracking\" on the client side.';
+      'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.';
 
   @override
   String get statusBlockerCta => 'Read the internals docs';
@@ -470,7 +474,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadAlphaBody =>
-      'This is very early alpha. These are testing builds, not production releases. Things will break, features are missing, and the VR display is still black. Only flash if you know what you\'re doing and want to help test.';
+      'This is very early alpha. These are testing builds, not production releases. Things will break and features are missing. Only flash if you know what you\'re doing and want to help test.';
 
   @override
   String get downloadWarnTitle => 'Flashing risk';
@@ -620,7 +624,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA1 =>
-      'It boots, VRShell runs and head tracking is live. The one blocker: the VR display still shows black because app-side tracking state arrives as zero. The status page keeps the current list.';
+      'It boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.';
 
   @override
   String get faqQ2 => 'Is it safe to flash?';

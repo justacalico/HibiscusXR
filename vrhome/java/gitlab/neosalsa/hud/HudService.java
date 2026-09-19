@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -110,6 +111,12 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         view = new HudView(this, this);
         SurfaceView sv = new SurfaceView(this);
         sv.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        // pin the buffer to the panel's physical mode: a surface created
+        // during an app's rotation flap otherwise keeps the portrait dims
+        // and both stereo eyes end up squashed into one side of the screen
+        final Display.Mode mode = wm.getDefaultDisplay().getMode();
+        sv.getHolder().setFixedSize(mode.getPhysicalWidth(),
+                                    mode.getPhysicalHeight());
         sv.getHolder().addCallback(this);
         view.addView(sv, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
@@ -152,6 +159,19 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         covered = c;
         if (!c) summoned = false;   // back in home space: no stale summon
         updateWindow();
+    }
+
+    // the dock/launch path asks to drop the menu (immersive app going
+    // foreground): called on the render thread, bounce to the looper
+    @Override public void onDismissMenu() {
+        view.post(new Runnable() {
+            @Override public void run() {
+                if (!summoned && !holdPreview) return;
+                summoned = false;
+                holdPreview = false;
+                updateWindow();
+            }
+        });
     }
 
     // SummonKeyService calls these on its own binder thread: bounce to the
@@ -255,9 +275,41 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     @Override public void surfaceCreated(SurfaceHolder h) {
         nativeWindow(h.getSurface());
     }
+
+    // A surface born while the display was mid-rotation keeps the wrong
+    // orientation: both eye halves then draw side by side on one side of
+    // the panel and the dash looks doubled. Bounce the view so the surface
+    // is recreated at the settled rotation; give up after a few tries in
+    // case the rotation is real.
+    private int surfBad;
+    private final Runnable surfBounce = new Runnable() {
+        @Override public void run() {
+            if (view.getVisibility() != View.VISIBLE) return;
+            view.setVisibility(View.GONE);
+            view.post(new Runnable() {
+                @Override public void run() {
+                    view.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    };
+
     @Override public void surfaceChanged(SurfaceHolder h, int f, int w,
-                                         int ht) {}
+                                         int ht) {
+        Display d = view.getDisplay();
+        final int rot = d != null ? d.getRotation() : Surface.ROTATION_0;
+        final boolean land = rot == Surface.ROTATION_0
+                || rot == Surface.ROTATION_180;
+        if ((w >= ht) == land) { surfBad = 0; return; }
+        if (++surfBad > 4) return;
+        Log.i(TAG, "surface " + w + "x" + ht + " vs rotation " + rot
+                + " - recreating");
+        view.removeCallbacks(surfBounce);
+        view.postDelayed(surfBounce, 350);
+    }
+
     @Override public void surfaceDestroyed(SurfaceHolder h) {
+        view.removeCallbacks(surfBounce);
         nativeWindowGone();
     }
 

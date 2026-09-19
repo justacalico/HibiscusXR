@@ -62,6 +62,16 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mLaunchVr     = env->GetMethodID(bc, "launchVrApp",
                         "(Ljava/lang/String;)V");
     e->mIsCovered    = env->GetMethodID(bc, "isCovered", "()Z");
+    e->mTakePins     = env->GetMethodID(bc, "takePins",
+                        "()[Ljava/lang/String;");
+    e->mSetPins      = env->GetMethodID(bc, "setPins",
+                        "([Ljava/lang/String;)V");
+    e->mAppIcon      = env->GetMethodID(bc, "appIcon",
+                        "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+    e->mVrVer        = env->GetMethodID(bc, "vrVersion", "()I");
+    e->mRunningVr    = env->GetMethodID(bc, "runningVr",
+                        "()[Lgitlab/neosalsa/hud/ShellBridge$Pending;");
+    e->mDismiss      = env->GetMethodID(bc, "dismissMenu", "()V");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");

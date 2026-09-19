@@ -46,6 +46,7 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
 ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
+            src/dock/dock.cpp src/dock/layout.cpp \
             src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp
 
@@ -70,7 +71,7 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 # pure modules only - no Android/GL includes, so they build on the host
 HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
-             src/input/keys.cpp src/render/warp.cpp
+             src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -104,7 +105,7 @@ $(ENV_SO): $(ENV_OBJS) $(GLUE_O)
 $(HUD_SO): $(HUD_OBJS)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
-	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ldl -lm
+	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ljnigraphics -ldl -lm
 
 $(CLASSES): $(JAVA_SRCS) $(STUB_SRCS) | toolcheck
 	@mkdir -p $(OUT)/classes

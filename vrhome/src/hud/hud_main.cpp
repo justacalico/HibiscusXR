@@ -12,6 +12,8 @@
 
 #include "../bridge/bridge.h"
 #include "../common/config.h"
+#include "../dock/dock.h"
+#include "../dock/layout.h"
 #include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/props.h"
@@ -34,6 +36,7 @@
 #include <unistd.h>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <pthread.h>
@@ -105,6 +108,42 @@ static void debugHoldHook(HudEngine* e) {
     }
 }
 
+// test hook: setprop debug.vrhome.docktap <n> activates dock item n, same
+// as a gaze tap landing on it. Fires once per new value
+static void debugDockTapHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.docktap", tb) > 0 &&
+            strcmp(tb, last) != 0) {
+        strncpy(last, tb, sizeof(last) - 1);
+        dockActivate(e, atoi(tb));
+    }
+}
+
+// test hook: setprop debug.vrhome.dockclose <n> hits the close badge on
+// dock item n. Fires once per new value
+static void debugDockCloseHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.dockclose", tb) > 0 &&
+            strcmp(tb, last) != 0) {
+        strncpy(last, tb, sizeof(last) - 1);
+        dockClose(e, atoi(tb));
+    }
+}
+
+// test hook: setprop debug.vrhome.dockpin <pkg> runs the pin toggle the
+// confirm-hold gesture ends in. Fires once per new value
+static void debugDockPinHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.dockpin", tb) > 0 &&
+            strcmp(tb, last) != 0) {
+        strncpy(last, tb, sizeof(last) - 1);
+        dockTogglePin(e, tb);
+    }
+}
+
 // the library panel is permanent: it opens dead ahead once tracking is
 // live, and since the app is its own process now a dead one respawns the
 // same way instead of leaving the shell without a launcher. recenterAngles
@@ -121,6 +160,12 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
     e->launcherSpawned = true;
     float gy = 0.0f, gp = 0.0f;
     recenterAngles(head, &gy, &gp);
+    if (!e->dockAnchored) {
+        // first summon anchors the strip in front of the head
+        e->dockAnchored = true;
+        e->dockYaw = gy;
+        e->dockPitch = dockPitchFor(gp);
+    }
     const float yaw = freeSlotYaw(e->panels, gy);
     const float pitch = e->panels.empty() ? gp : ringPitch(e->panels);
     int idx = openPanel(e, yaw, pitch);
@@ -143,6 +188,7 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
     drawPanels(h, vp);
+    drawDock(h, vp);
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
     // ignores vp entirely, so it stays put while the world shifts around it
@@ -213,6 +259,9 @@ static void hudFrame(HudEngine* e) {
     debugTapHook(e);
     debugSummonHook(e);
     debugHoldHook(e);
+    debugDockTapHook(e);
+    debugDockCloseHook(e);
+    debugDockPinHook(e);
     spawnLauncher(e, head);
 
     // hold-to-recenter fill: the java side owns the threshold and fires the
@@ -234,16 +283,36 @@ static void hudFrame(HudEngine* e) {
         float yaw, pitch;
         recenterAngles(head, &yaw, &pitch);
         recenterSlots(e->panels, yaw, pitch);
+        e->dockYaw = yaw;
+        e->dockPitch = dockPitchFor(pitch);
+        e->dockAnchored = true;
     }
     pumpBridge(e);
 
-    // gaze pick: nearest panel under the head ray, hit in display px
+    // sync first: the pick needs this frame's item list and strip width
+    syncDock(e);
+
+    // gaze pick: the dock strip wins ties against a panel edge so its
+    // icons stay tappable even when one peeks out from behind a window
     const Pick pk = pickPanel(e->panels, head, e->ringPos, e->eyePos);
-    e->hover = pk.idx;
-    e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
-    if (pk.idx >= 0) {
-        e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
-        e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
+    const DockPick dp = pickDock(e->dock, e->dockHW, e->dockYaw, e->dockPitch,
+                                 head, e->ringPos, e->eyePos);
+    if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
+        e->dockHover = dp.idx;
+        e->dockZone = dp.zone;
+        e->dockU = dp.u;
+        e->dockV = dp.v;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+    } else {
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->hover = pk.idx;
+        e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
+        if (pk.idx >= 0) {
+            e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
+            e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
+        }
     }
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
@@ -251,6 +320,7 @@ static void hudFrame(HudEngine* e) {
 
     dragTick(e, head);
     moveTick(e);
+    dockTick(e);
     updatePanels(e);
 
     // hidden or no surface: management above must still run - pumpBridge is

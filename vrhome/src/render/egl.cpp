@@ -77,9 +77,10 @@ int initWindow(Engine* e, ANativeWindow* win) {
     }
     eglQuerySurface(e->display, e->surface, EGL_WIDTH, &e->width);
     eglQuerySurface(e->display, e->surface, EGL_HEIGHT, &e->height);
+    LOGI("surface %dx%d", e->width, e->height);
     if (!e->glInit) {
         e->glInit = true;
-        LOGI("surface %dx%d  %s", e->width, e->height, glGetString(GL_RENDERER));
+        LOGI("renderer %s", glGetString(GL_RENDERER));
 
         e->sceneProg = linkProg(kSceneVS, kSceneFS);
         e->warpProg  = linkProg(kWarpVS,  kWarpFS);
@@ -87,8 +88,9 @@ int initWindow(Engine* e, ANativeWindow* win) {
         e->floatProg = linkProg(kFloatVS, kFloatFS);
         e->shapeProg = linkProg(kShapeVS, kShapeFS);
         e->holdProg  = linkProg(kShapeVS, kHoldFS);
+        e->iconProg  = linkProg(kFloatVS, kIconFS);
         if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg ||
-                !e->shapeProg || !e->holdProg)
+                !e->shapeProg || !e->holdProg || !e->iconProg)
             return -1;
 
         if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
@@ -110,8 +112,13 @@ int initWindow(Engine* e, ANativeWindow* win) {
         glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float),
                      verts.data(), GL_STATIC_DRAW);
 
-        if (!initEyeTargets(e)) return -1;
         glEnable(GL_DEPTH_TEST);
+    }
+    // a surface can come back at a new size (the window was relaid out
+    // after a rotation flap): the eye targets must track it or both eyes
+    // keep the old dims and draw squashed into one side of the panel
+    if (e->eye[0].w != e->width / 2 || e->eye[0].h != e->height) {
+        if (!initEyeTargets(e)) return -1;
     }
     e->ready = true;
     return 0;

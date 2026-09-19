@@ -5,15 +5,16 @@
 
 #include <cmath>
 
-void panelCenter(const Panel& p, const float origin[3], float out[3],
-                 float right[3], float up[3]) {
-    // a cylinder around the anchor, not a sphere: pitch raises the panel
+void ringPoint(float yaw, float pitch, float dist, float y0,
+               const float origin[3], float out[3], float right[3],
+               float up[3]) {
+    // a cylinder around the anchor, not a sphere: pitch raises the quad
     // without squeezing the ring's horizontal spread, so three windows
     // can't bunch at the zenith
-    out[0] = origin[0] + sinf(p.yaw) * kPanelDist;
-    out[1] = origin[1] + kPanelY + sinf(p.pitch) * kPanelDist;
-    out[2] = origin[2] - cosf(p.yaw) * kPanelDist;
-    right[0] = cosf(p.yaw); right[1] = 0; right[2] = sinf(p.yaw);
+    out[0] = origin[0] + sinf(yaw) * dist;
+    out[1] = origin[1] + y0 + sinf(pitch) * dist;
+    out[2] = origin[2] - cosf(yaw) * dist;
+    right[0] = cosf(yaw); right[1] = 0; right[2] = sinf(yaw);
     // the plane's normal points back at the anchor; up = normal x right
     // tilts the top edge toward you as the ring rises, like a ceiling screen
     const float nx = origin[0] - out[0], ny = origin[1] - out[1],
@@ -23,6 +24,11 @@ void panelCenter(const Panel& p, const float origin[3], float out[3],
     up[0] = n[1]*right[2] - n[2]*right[1];
     up[1] = n[2]*right[0] - n[0]*right[2];
     up[2] = n[0]*right[1] - n[1]*right[0];
+}
+
+void panelCenter(const Panel& p, const float origin[3], float out[3],
+                 float right[3], float up[3]) {
+    ringPoint(p.yaw, p.pitch, kPanelDist, kPanelY, origin, out, right, up);
 }
 
 float freeSlotYaw(const std::vector<Panel>& panels, float centre) {
@@ -203,13 +209,12 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch) {
     }
 }
 
-bool rayPanel(const Panel& p, const float origin[3], const float o[3],
-              const float d[3], float* u, float* v, float* t) {
-    float c[3], r[3], up[3];
-    panelCenter(p, origin, c, r, up);
-    // the plane's normal points at the anchor, tilted with pitch
-    const float nx = origin[0] - c[0], ny = origin[1] - c[1],
-                nz = origin[2] - c[2];
+bool rayQuad(const float c[3], const float r[3], const float up[3],
+             const float viewer[3], const float o[3], const float d[3],
+             float hw, float hh, float* u, float* v, float* t) {
+    // the plane's normal points at the viewer, tilted with pitch
+    const float nx = viewer[0] - c[0], ny = viewer[1] - c[1],
+                nz = viewer[2] - c[2];
     const float nl = sqrtf(nx*nx + ny*ny + nz*nz);
     const float n[3] = {nx/nl, ny/nl, nz/nl};
     // normal points at the viewer, ray travels into the plane: d.n < 0
@@ -220,10 +225,18 @@ bool rayPanel(const Panel& p, const float origin[3], const float o[3],
     if (t0 <= 0) return false;
     const float px = o[0] + d[0]*t0 - c[0], py = o[1] + d[1]*t0 - c[1],
                 pz = o[2] + d[2]*t0 - c[2];
-    *u = (px*r[0] + pz*r[2]) / (kPanelW / 2);
-    *v = (px*up[0] + py*up[1] + pz*up[2]) / (kPanelH / 2);
+    *u = (px*r[0] + py*r[1] + pz*r[2]) / hw;
+    *v = (px*up[0] + py*up[1] + pz*up[2]) / hh;
     if (t) *t = t0;
     return true;
+}
+
+bool rayPanel(const Panel& p, const float origin[3], const float o[3],
+              const float d[3], float* u, float* v, float* t) {
+    float c[3], r[3], up[3];
+    panelCenter(p, origin, c, r, up);
+    return rayQuad(c, r, up, origin, o, d, kPanelW / 2, kPanelH / 2,
+                   u, v, t);
 }
 
 Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
@@ -258,6 +271,7 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
         bestT = t;
         pick.idx = i;
         pick.u = u; pick.v = v; pick.zone = zone;
+        pick.t = t;
     }
     return pick;
 }

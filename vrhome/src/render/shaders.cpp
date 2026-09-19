@@ -121,6 +121,26 @@ void main() {
 }
 )";
 
+// dock icon: plain 2D texture (an app-icon bitmap upload), corners rounded
+// off in quad space like the panel shader but with no ST transform and a
+// uniform alpha so minimized items can dim
+const char* const kIconFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uTex;
+uniform vec2 uHalf;
+uniform float uRadius;
+uniform float uAlpha;
+void main() {
+    vec4 c = texture2D(uTex, vUV);
+    vec2 p = (vUV - 0.5) * 2.0 * uHalf;
+    vec2 q = abs(p) - uHalf + vec2(uRadius);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
+}
+)";
+
 // hold-progress ring: a thin circle whose arc lights up clockwise from the
 // top as uProg runs 0..1. aUV is -1..1 across the quad so angles and radii
 // stay in circle space

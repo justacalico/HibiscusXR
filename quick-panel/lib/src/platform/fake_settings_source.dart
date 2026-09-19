@@ -16,6 +16,8 @@ class FakeSettingsSource implements SettingsSource {
   final actionsPerformed = <ActionId>[];
   final volumesSet = <double>[];
   final brightnessSet = <double>[];
+  final notificationsDismissed = <String>[];
+  int dismissAllCount = 0;
 
   /// Test hook: pretend the OS changed something.
   void emit(SettingsSnapshot event) {
@@ -26,6 +28,7 @@ class FakeSettingsSource implements SettingsSource {
       bluetoothDevice: event.bluetoothDevice ?? _snapshot.bluetoothDevice,
       volume: event.volume ?? _snapshot.volume,
       brightness: event.brightness ?? _snapshot.brightness,
+      notifications: event.notifications ?? _snapshot.notifications,
     );
     _events.add(event);
   }
@@ -54,6 +57,16 @@ class FakeSettingsSource implements SettingsSource {
   @override
   Future<void> performAction(ActionId id) async {
     actionsPerformed.add(id);
+  }
+
+  @override
+  Future<void> dismissNotification(String key) async {
+    notificationsDismissed.add(key);
+  }
+
+  @override
+  Future<void> dismissAllNotifications() async {
+    dismissAllCount++;
   }
 
   Future<void> dispose() => _events.close();

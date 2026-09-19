@@ -98,6 +98,57 @@ void main() {
     expect(src.actionsPerformed, [ActionId.resetView, ActionId.openSettings]);
   });
 
+  test('dismissNotification drops the row and forwards the key', () async {
+    const n = NotificationItem(
+      key: 'k1',
+      app: 'A',
+      title: 't',
+      text: '',
+      postMs: 1,
+      clearable: true,
+    );
+    final src = FakeSettingsSource(
+      initial: const SettingsSnapshot(notifications: [n]),
+    );
+    final c = SettingsController(source: src, persistence: MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+    expect(c.store.notifications, [n]);
+
+    await c.dismissNotification('k1');
+    expect(c.store.notifications, isEmpty);
+    expect(src.notificationsDismissed, ['k1']);
+  });
+
+  test('dismissAllNotifications skips locked rows', () async {
+    const open = NotificationItem(
+      key: 'k1',
+      app: 'A',
+      title: 't',
+      text: '',
+      postMs: 1,
+      clearable: true,
+    );
+    const locked = NotificationItem(
+      key: 'k2',
+      app: 'B',
+      title: 't',
+      text: '',
+      postMs: 2,
+      clearable: false,
+    );
+    final src = FakeSettingsSource(
+      initial: const SettingsSnapshot(notifications: [open, locked]),
+    );
+    final c = SettingsController(source: src, persistence: MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+
+    await c.dismissAllNotifications();
+    expect(c.store.notifications, [locked]);
+    expect(src.dismissAllCount, 1);
+  });
+
   test('start is idempotent', () async {
     final src = FakeSettingsSource();
     final c = SettingsController(

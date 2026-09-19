@@ -22,6 +22,10 @@
   "stateOn": "On",
   "stateOff": "Off",
   "stateNotConnected": "Not Connected",
+  "notifTitle": "Notifications",
+  "notifEmpty": "No notifications",
+  "notifDismiss": "Dismiss",
+  "notifClearAll": "Clear all",
   "batteryPercent": "{level}%",
   "@batteryPercent": {
     "description": "Battery charge level in the status bar",

@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../catalog.dart';
 import '../models.dart';
 import '../settings_controller.dart';
+import 'notifications.dart';
 import 'panel_slider.dart';
 import 'status_bar.dart';
 import 'theme.dart';
@@ -121,6 +122,12 @@ class _QuickSettingsPageState extends State<QuickSettingsPage> {
                               onTap: () => _onTileTap(spec),
                             ),
                         ],
+                      ),
+                      const SizedBox(height: 18),
+                      NotificationSection(
+                        notifications: controller.store.notifications,
+                        onDismiss: controller.dismissNotification,
+                        onDismissAll: controller.dismissAllNotifications,
                       ),
                     ],
                   ),

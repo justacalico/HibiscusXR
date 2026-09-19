@@ -11,10 +11,17 @@
 # for hidden API access - they reflect into ActivityTaskManager/InputManager
 # for task adoption, touch injection and the summon-key input monitor.
 #
+# Notification listener access goes through `cmd notification allow_listener`
+# rather than a settings write: this build's NotificationManagerService does
+# not pick up enabled_notification_listeners changes made from app code, but
+# the shell command both writes the setting and rebinds the service. The HUD
+# needs it to draw shade cards in VR; the quick settings panel needs it to
+# list and dismiss notifications.
+#
 # The HUD service is started on every boot, not just the first: it owns the
 # overlay window and the virtual displays, so panel tasks die with it.
 
-service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v3 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud'; touch /data/local/.pn2_panels_done_v3; fi"
+service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v4 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud'; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; cmd notification allow_listener gitlab.neosalsa.quicksettings/gitlab.neosalsa.quicksettings.NotifService 0; touch /data/local/.pn2_panels_done_v4; fi"
     user root
     group root
     seclabel u:r:shell:s0

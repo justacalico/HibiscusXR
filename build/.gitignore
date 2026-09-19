@@ -44,9 +44,12 @@
 # Keys / certs
 *.pk8
 *.keystore
+*.jks
+*.p12
 *.pem
 *.der
 *.key
+credentials.txt
 
 # Patch leftovers
 *.orig

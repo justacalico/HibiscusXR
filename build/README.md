@@ -4,11 +4,26 @@ English | [中文](#中文) | [Русский](#русский)
 
 ## What this is
 
-Android signing material generated locally for this project: the platform test key pair (platform.pk8 private key, platform.x509.pem certificate) used to sign patched system apps, and debug.keystore for regular apks.
+Android signing material generated locally for this project: the real PN2 platform key pair (platform.pk8 private key, platform.x509.pem certificate) used to sign everything in the system image - framework, stock apps, the Pico stack and our shell apps - plus pn2-platform-release.jks, the same keypair as a password-protected keystore, and debug.keystore for regular apks.
 
 ## How to remake this dump
 
-Regenerate the platform key with AOSP `development/tools/make_key platform <subject>` and the debug keystore with `keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android`.
+Generate the keypair and self-signed cert, then convert to both formats:
+
+```
+openssl req -newkey rsa:4096 -nodes -keyout key.pem -x509 -days 10950 -sha256 \
+    -subj "/C=US/ST=California/L=San Francisco/O=Neosalsa/OU=PN2/CN=PN2/emailAddress=pn2@neosalsa.local" \
+    -out keys/platform.x509.pem
+openssl pkcs8 -topk8 -nocrypt -in key.pem -outform DER -out keys/platform.pk8
+openssl pkcs12 -export -inkey key.pem -in keys/platform.x509.pem -name pn2-platform \
+    -passout pass:<storepass> -out tmp.p12
+keytool -importkeystore -srckeystore tmp.p12 -srcstoretype PKCS12 -srcalias pn2-platform \
+    -destkeystore keys/pn2-platform-release.jks -deststoretype JKS \
+    -deststorepass <storepass> -destkeypass <keypass> -destalias pn2-platform
+```
+
+The keystore passwords live in keys/credentials.txt (never committed) and the
+backup copy on the desktop at pn2-platform-signing/.
 
 ## License
 
@@ -18,11 +33,13 @@ Everything in this folder was generated locally by us. The private keys are secr
 
 ### 这是什么
 
-本项目在本地生成的 Android 签名材料：用于给修改过的系统应用签名的 platform 测试密钥对（platform.pk8 私钥、platform.x509.pem 证书），以及用于普通 apk 的 debug.keystore。
+本项目在本地生成的 Android 签名材料：真正的 PN2 platform 密钥对（platform.pk8 私钥、platform.x509.pem 证书），用于给系统镜像里的所有东西签名——framework、系统应用、Pico 栈和我们的 shell 应用；另有 pn2-platform-release.jks（同一密钥对的带密码 keystore），以及给普通 apk 用的 debug.keystore。
 
 ### 如何重新制作这些转储
 
-重新生成：platform 密钥用 AOSP 的 `development/tools/make_key platform <subject>`；debug keystore 用 `keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android`。
+生成密钥对和自签名证书，再转成两种格式（见上方英文命令）。
+
+keystore 密码保存在 keys/credentials.txt（绝不提交），备份在桌面的 pn2-platform-signing/ 目录。
 
 ### 许可证说明
 
@@ -32,11 +49,13 @@ Everything in this folder was generated locally by us. The private keys are secr
 
 ### Что это
 
-Локально сгенерированный материал для подписи Android: тестовая пара ключей platform (platform.pk8 — приватный ключ, platform.x509.pem — сертификат) для подписи пропатченных системных приложений, и debug.keystore для обычных apk.
+Локально сгенерированный материал для подписи Android: настоящая пара ключей PN2 platform (platform.pk8 — приватный ключ, platform.x509.pem — сертификат) для подписи всего в образе системы - framework, системных приложений, стека Pico и наших shell-приложений, плюс pn2-platform-release.jks (та же пара ключей в виде keystore с паролем) и debug.keystore для обычных apk.
 
 ### Как воспроизвести дамп
 
-Пересоздать: ключ platform — через `development/tools/make_key platform <subject>` из AOSP; debug keystore — `keytool -genkeypair -v -keystore debug.keystore -alias androiddebugkey -storepass android -keypass android`.
+Сгенерировать пару ключей и самоподписанный сертификат, затем конвертировать в оба формата (команды выше на английском).
+
+Пароли keystore хранятся в keys/credentials.txt (никогда не коммитится), резервная копия на рабочем столе в pn2-platform-signing/.
 
 ### Лицензия
 
@@ -44,10 +63,12 @@ Everything in this folder was generated locally by us. The private keys are secr
 
 ## Files in this folder / 本目录文件 / Файлы в этой папке
 
-3 files / 共 3 个文件 / всего файлов: 3
+5 files / 共 5 个文件 / всего файлов: 5
 
 ```
    2.6 KiB  debug.keystore
-   1.2 KiB  keys/platform.pk8
-   1.6 KiB  keys/platform.x509.pem
+   0.8 KiB  keys/credentials.txt
+   4.0 KiB  keys/pn2-platform-release.jks
+   2.3 KiB  keys/platform.pk8
+   2.1 KiB  keys/platform.x509.pem
 ```

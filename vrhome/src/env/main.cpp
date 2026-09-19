@@ -95,6 +95,17 @@ static void onAppCmd(android_app* app, int32_t cmd) {
     case APP_CMD_TERM_WINDOW:
         termWindow(e);
         break;
+    case APP_CMD_WINDOW_RESIZED:
+    case APP_CMD_CONTENT_RECT_CHANGED:
+        // the buffer's dims are adopted once at INIT_WINDOW and don't
+        // follow the frame: a surface born during a rotation flap stays
+        // portrait-sized and SurfaceFlinger rejects every frame. Re-adopt
+        // the frame's size whenever the window reports a new one
+        if (app->window) {
+            termWindow(e);
+            initWindow(e, app->window);
+        }
+        break;
     // keep sensors running regardless of focus: the HUD draws from the same
     // head pose source and must not freeze when its window is the focused one
     }

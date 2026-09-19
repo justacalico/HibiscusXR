@@ -62,7 +62,6 @@ struct HudEngine : Engine {
     std::vector<DockItem> dock;
     float dockHW = 0.0f;
     std::vector<std::string> dockPins;
-    bool dockPinsLoaded = false;
     std::vector<XrTask> dockXr;
     int dockXrVer = -1;
     std::map<std::string, DockIcon> dockIcons;

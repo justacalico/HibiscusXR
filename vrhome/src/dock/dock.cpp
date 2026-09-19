@@ -16,10 +16,13 @@
 #include <ctime>
 
 // a rounded quad on the dock plane - the same shape call chrome.cpp uses,
-// ang rotating the shape inside the quad's frame so a capsule can tilt
+// ang rotating the shape inside the quad's frame so a capsule can tilt.
+// qw/qh is the quad's half extent, bw/bh the shape's own: when they differ
+// a soft edge can spread past the box into the quad's padding
 static void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                       const float r[3], const float up[3],
                       float toward, float ang, float qw, float qh,
+                      float bw, float bh,
                       float radius, float border, float soft,
                       const float col[4]) {
     const GLint uMVP    = glGetUniformLocation(e->shapeProg, "uMVP");
@@ -49,7 +52,7 @@ static void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
     for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
     glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
     glUniform2f(uQuad, qw, qh);
-    glUniform2f(uBox, qw, qh);
+    glUniform2f(uBox, bw, bh);
     glUniform1f(uRadius, radius);
     glUniform1f(uBorder, border);
     glUniform1f(uSoft, soft);
@@ -124,7 +127,6 @@ static void pullPins(HudEngine* e, JNIEnv* env) {
         env->ReleaseStringUTFChars(s, c);
         env->DeleteLocalRef(s);
     }
-    e->dockPinsLoaded = true;
 }
 
 static void pullXr(HudEngine* e, JNIEnv* env) {
@@ -303,8 +305,8 @@ static void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
     for (const char* q = label; *q; ++q) h = h * 31 + (unsigned char)*q;
     const float* pc = pal[h % 6];
     const float col[4] = {pc[0], pc[1], pc[2], 1.0f};
-    shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s * 0.38f, 0.0f,
-              0.002f, col);
+    shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * 0.38f,
+              0.0f, 0.002f, col);
     if (*label && e->font.ok) {
         char ch[2] = {*label, 0};
         const float ts = s * 1.1f;
@@ -340,16 +342,17 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
 
     glUseProgram(e->shapeProg);
-    // shadow under the strip
-    const float shc[3] = {c[0] - up[0] * 0.025f, c[1] - up[1] * 0.025f,
-                          c[2] - up[2] * 0.025f};
+    // shadow under the strip: the box is the bar's own silhouette so only
+    // the soft falloff reaches past it - a padded box reads as a dark slab
+    const float shc[3] = {c[0] - up[0] * 0.02f, c[1] - up[1] * 0.02f,
+                          c[2] - up[2] * 0.02f};
     const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
-    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.09f, hh + 0.09f,
-              hh + 0.06f, -1.0f, 0.09f, shCol);
+    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
+              hw, hh, hh, -1.0f, 0.05f, shCol);
     // the bar itself
     const float barCol[4] = {0.07f, 0.08f, 0.11f, 0.82f};
-    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hh, 0.0f, 0.003f,
-              barCol);
+    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, hh, 0.0f,
+              0.003f, barCol);
     // group separators
     const float sepCol[4] = {1.0f, 1.0f, 1.0f, 0.22f};
     for (auto& it : e->dock) {
@@ -358,7 +361,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float sc[3] = {c[0] + r[0] * sx, c[1] + r[1] * sx,
                              c[2] + r[2] * sx};
         shapeQuad(e, vp, sc, r, up, 0.006f, 0.0f, 0.0012f, hh * 0.55f,
-                  0.0012f, 0.0f, 0.0015f, sepCol);
+                  0.0012f, hh * 0.55f, 0.0012f, 0.0f, 0.0015f, sepCol);
     }
 
     for (int i = 0; i < (int)e->dock.size(); ++i) {
@@ -375,7 +378,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         if (hov) {
             const float hl[4] = {1.0f, 1.0f, 1.0f, 0.10f};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.018f,
-                      s + 0.018f, (s + 0.018f) * 0.4f, 0.0f, 0.002f, hl);
+                      s + 0.018f, s + 0.018f, s + 0.018f,
+                      (s + 0.018f) * 0.4f, 0.0f, 0.002f, hl);
         }
 
         const float alpha = it.minimized ? 0.45f : 1.0f;
@@ -432,15 +436,16 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         }
         if (it.minimized) {
             const float dim[4] = {0.0f, 0.0f, 0.0f, 0.35f};
-            shapeQuad(e, vp, ic, r, up, 0.010f, 0.0f, s, s, s * 0.32f,
-                      0.0f, 0.002f, dim);
+            shapeQuad(e, vp, ic, r, up, 0.010f, 0.0f, s, s, s, s,
+                      s * 0.32f, 0.0f, 0.002f, dim);
         }
 
         // immersive marker: an amber ring around live/pinned XR items
         if (it.vr) {
             const float vc[4] = {1.0f, 0.62f, 0.15f, hov ? 0.95f : 0.65f};
             shapeQuad(e, vp, ic, r, up, 0.009f, 0.0f, s + 0.006f,
-                      s + 0.006f, s + 0.006f, 0.0018f, 0.0015f, vc);
+                      s + 0.006f, s + 0.006f, s + 0.006f, s + 0.006f,
+                      0.0018f, 0.0015f, vc);
         }
 
         // running dot under the icon
@@ -453,7 +458,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                                    it.vr ? 0.15f : 1.0f,
                                    it.minimized ? 0.4f : 0.85f};
             shapeQuad(e, vp, dc, r, up, 0.008f, 0.0f, 0.007f, 0.007f,
-                      0.007f, 0.0f, 0.0015f, dcol);
+                      0.007f, 0.007f, 0.007f, 0.0f, 0.0015f, dcol);
         }
 
         // close badge on a live immersive item: a disc off the icon's
@@ -468,13 +473,14 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                                    bhov ? 0.22f : 0.10f,
                                    bhov ? 0.20f : 0.12f, 0.92f};
             shapeQuad(e, vp, bc, r, up, 0.011f, 0.0f, kDockBadgeR,
-                      kDockBadgeR, kDockBadgeR, 0.0f, 0.0015f, bcol);
+                      kDockBadgeR, kDockBadgeR, kDockBadgeR, kDockBadgeR,
+                      0.0f, 0.0015f, bcol);
             const float xcol[4] = {1.0f, 1.0f, 1.0f, 0.95f};
             const float il = kDockBadgeR * 0.52f, it2 = 0.0024f;
             shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, it2,
-                      it2, 0.0f, 0.001f, xcol);
+                      il, it2, it2, 0.0f, 0.001f, xcol);
             shapeQuad(e, vp, bc, r, up, 0.012f, -0.785398f, il, it2,
-                      it2, 0.0f, 0.001f, xcol);
+                      il, it2, it2, 0.0f, 0.001f, xcol);
         }
 
         // pin-hold fill: a white ring tightening around the icon
@@ -482,7 +488,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             const float pr[4] = {1.0f, 1.0f, 1.0f,
                                  0.25f + 0.75f * e->dockPinP};
             shapeQuad(e, vp, ic, r, up, 0.013f, 0.0f, s + 0.014f,
-                      s + 0.014f, s + 0.014f,
+                      s + 0.014f, s + 0.014f, s + 0.014f, s + 0.014f,
                       0.0022f + 0.002f * e->dockPinP, 0.0015f, pr);
         }
 

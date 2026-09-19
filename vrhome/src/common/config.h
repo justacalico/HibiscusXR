@@ -18,6 +18,11 @@ constexpr float kFovY = 90.0f;
 // quatToMat was returning the raw rotation instead of its transpose.
 // Still live-tunable via debug.vrhome.roll.
 constexpr float kRoll = 90.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
+// QVR's device frame is mounted -90 deg about the head's forward axis vs
+// the frame the view expects: with no correction the world reads as
+// permanently rolled. A sensor-mount roll, not a world tilt - VIO's world
+// is already gravity-aligned, so worldX stays 0
+constexpr float kQvrSensRoll = -90.0f, kQvrWorldX = 0.0f;
 
 constexpr int kSensorIdent = 3;
 constexpr int kInputIdent  = 4;
@@ -66,6 +71,12 @@ constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 // must not be HOME at all)
 constexpr int kPicoConfirm = 1001;
 constexpr int kPicoHome = 1003;
+
+// summon-key hold: how long before the recenter fires, and the progress
+// ring's placement in the view
+constexpr int   kHoldMs = 600;
+constexpr float kHoldDist = 1.0f;   // metres ahead of the eye
+constexpr float kHoldSize = 0.10f;  // quad half size, metres
 
 // pseudo-package adopted by the app-library panel
 constexpr const char* kLibraryPkg = "gitlab.neosalsa.hud.library";

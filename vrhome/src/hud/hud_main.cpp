@@ -35,6 +35,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstring>
+#include <ctime>
 #include <pthread.h>
 
 static HudEngine gHud;
@@ -87,18 +88,35 @@ static void debugSummonHook(HudEngine* e) {
     }
 }
 
-// one-time: library panel dead ahead once tracking is live. gazeYaw is
-// still stale on the first quat frame (pick runs below), so take the yaw
-// straight from the head matrix.
+// test hook: setprop debug.vrhome.hold 1|0 feeds a summon-key down/up
+// through the real onSummon path, so the hold ring and long-press recenter
+// are drivable from adb - injected keyevents never reach the key filter
+static void debugHoldHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.hold", tb) > 0 &&
+            strcmp(tb, last) != 0 && e->ctx) {
+        strncpy(last, tb, sizeof(last) - 1);
+        JNIEnv* env = threadEnv(e->vm);
+        jclass c = env->GetObjectClass(e->ctx);
+        jmethodID m = env->GetMethodID(c, "debugSummonKey", "(I)V");
+        if (m) env->CallVoidMethod(e->ctx, m, tb[0] == '1' ? 0 : 1);
+        if (env->ExceptionCheck()) env->ExceptionClear();
+    }
+}
+
+// one-time: library panel dead ahead once tracking is live. recenterAngles
+// covers the desk-flat case too, so a boot with the headset lying on its
+// back still puts the launcher in front of the head's heading
 static void spawnLauncher(HudEngine* e, const Mat4& head) {
     if (!e->bridge || !e->haveQuat || e->launcherSpawned) return;
     e->launcherSpawned = true;
     // the dash's first appearance anchors the ring at the head's spot too,
     // so a fresh boot doesn't park the panels around the tracking origin
     memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
-    float gy = 0.0f;
-    gazeYaw(head, &gy);
-    int idx = openPanel(e, gy, gazePitch(head));
+    float gy = 0.0f, gp = 0.0f;
+    recenterAngles(head, &gy, &gp);
+    int idx = openPanel(e, gy, gp);
     if (idx >= 0) {
         e->panels[idx].pkg = kLibraryPkg;
         JNIEnv* env = threadEnv(e->vm);
@@ -112,8 +130,13 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
 // whatever surface sits underneath (env scenery or a running app)
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
-    drawPanels(h, vp);
-    drawCursor(h, vp);
+    // while the key is held the dash reads as refreshing: chrome drops out
+    // and only the fill ring draws, then the recentered panels pop back in
+    if (h->holdP <= 0.0f) {
+        drawPanels(h, vp);
+        drawCursor(h, vp);
+    }
+    drawHoldRing(h, vp);
 }
 
 static void hudFrame(HudEngine* e) {
@@ -152,9 +175,9 @@ static void hudFrame(HudEngine* e) {
     const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
                               propF("debug.vrhome.fpy", 0.0f),
                               propF("debug.vrhome.fpz", 0.0f)};
-    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
+    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", kQvrSensRoll)
                                           : propF("debug.vrhome.sensroll", kSensRoll);
-    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
+    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", kQvrWorldX)
                                         : propF("debug.vrhome.worldx", kWorldX);
     const float* headPos = nullptr;
     float posGl[3];
@@ -179,13 +202,28 @@ static void hudFrame(HudEngine* e) {
     debugLaunchHook(e);
     debugTapHook(e);
     debugSummonHook(e);
+    debugHoldHook(e);
     spawnLauncher(e, head);
+
+    // hold-to-recenter fill: the java side owns the threshold and fires the
+    // recenter; native just turns the held time into the ring's 0..1
+    if (e->holdStartMs > 0) {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        const long long now = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+        const float p = (float)(now - e->holdStartMs) / (float)kHoldMs;
+        e->holdP = p < 0.0f ? 0.0f : p > 1.0f ? 1.0f : p;
+    } else {
+        e->holdP = 0.0f;
+    }
 
     if (takeWantRecenter()) {
         // the ring re-anchors to where the head is right now: panels keep
         // their slot offsets but the whole dash lands in front of the user
         memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
-        recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
+        float yaw, pitch;
+        recenterAngles(head, &yaw, &pitch);
+        recenterSlots(e->panels, yaw, pitch);
     }
     pumpBridge(e);
 
@@ -306,6 +344,18 @@ Java_gitlab_neosalsa_hud_HudService_nativeKey(JNIEnv*, jclass,
 extern "C" JNIEXPORT void JNICALL
 Java_gitlab_neosalsa_hud_HudService_nativeRecenter(JNIEnv*, jclass) {
     wantRecenter();
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_gitlab_neosalsa_hud_HudService_nativeHoldStart(JNIEnv*, jclass) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    gHud.holdStartMs = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_gitlab_neosalsa_hud_HudService_nativeHoldEnd(JNIEnv*, jclass) {
+    gHud.holdStartMs = 0;
 }
 
 extern "C" JNIEXPORT void JNICALL

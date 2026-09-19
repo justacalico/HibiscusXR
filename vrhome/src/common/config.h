@@ -85,6 +85,22 @@ constexpr float kDockPitchScale = 0.35f, kDockPitchDrop = 0.55f;
 constexpr float kDockPitchMin = -0.95f, kDockPitchMax = -0.20f;
 constexpr float kDockPitchRest = -0.55f;   // before the first anchor
 
+// notification cards: a stack floating just above the dock bar while the
+// dash is up; over a covered app the toast window draws it alone for
+// kNotifToastMs. The stack rides the same anchor cylinder as the strip
+constexpr float kNotifCardW = 0.56f;    // card width
+constexpr float kNotifCardH = 0.115f;   // card height
+constexpr float kNotifGap = 0.014f;     // between stacked cards, and the
+                                        // lift between the bar and stack
+constexpr float kNotifPad = 0.022f;     // card inner side padding
+constexpr float kNotifIconHW = 0.030f;  // app icon half-width on a card
+constexpr float kNotifBadgeR = 0.020f;  // dismiss badge radius
+constexpr int   kNotifMax = 4;          // cards shown at once
+constexpr int   kNotifToastMs = 5000;   // heads-up duration over an app
+// toast stack elevation: slightly above eye level, anchored on the gaze
+// yaw at the moment the toast pops so it never hides behind the user
+constexpr float kNotifToastPitch = 0.14f;
+
 // package the dock's quick-panel button launches
 constexpr const char* kQuickPanelPkg = "gitlab.neosalsa.quicksettings";
 

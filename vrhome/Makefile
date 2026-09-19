@@ -71,7 +71,8 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 # pure modules only - no Android/GL includes, so they build on the host
 HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
-             src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp
+             src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
+             src/notif/layout.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 

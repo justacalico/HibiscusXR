@@ -10,6 +10,7 @@ void testSceneGeo();
 void testKeys();
 void testWarp();
 void testDock();
+void testNotif();
 
 int main() {
     testMat4();
@@ -20,6 +21,7 @@ int main() {
     testKeys();
     testWarp();
     testDock();
+    testNotif();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

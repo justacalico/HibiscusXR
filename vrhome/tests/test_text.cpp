@@ -108,4 +108,18 @@ void testText() {
     CHECK_F(lv[48], 0.12f, 1e-5f);    // first copy of 'b' at pen advance
     // same advance as the regular emit
     CHECK_F(emitText(as, "ab", 0.01f, lv, 0.002f), 0.24f, 1e-6f);
+
+    // clipText: prefix that fits, ellipsis when cut, trims to make room
+    Glyph* el = as.add(0x2026);
+    el->advance = 12;
+    CHECK(clipText(as, "ab", 0.01f, 0.5f) == "ab");      // fits whole
+    CHECK(clipText(as, "abcd", 0.01f, 0.48f) == "abcd"); // exactly fits
+    CHECK(clipText(as, "abcd", 0.01f, 0.36f) == "ab…");  // ellipsis needs room
+    CHECK(clipText(as, "abcd", 0.01f, 0.30f) == "a…");   // trims to fit it
+    CHECK(clipText(as, "", 0.01f, 0.5f).empty());
+    // no ellipsis baked: plain prefix
+    GlyphSet ns;
+    Glyph* ng = ns.add('a');
+    ng->advance = 12;
+    CHECK(clipText(ns, "aaa", 0.01f, 0.20f) == "a");
 }

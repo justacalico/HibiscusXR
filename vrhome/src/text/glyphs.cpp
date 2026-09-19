@@ -25,6 +25,38 @@ float textWidth(const GlyphSet& set, const char* utf8, float mPerPx) {
     return w;
 }
 
+std::string clipText(const GlyphSet& set, const char* utf8, float mPerPx,
+                     float maxW) {
+    const char* p = utf8;
+    const char* last = utf8;        // one past the last accepted cp
+    float w = 0.0f;
+    while (*p) {
+        const Glyph* g = set.find(nextCp(p));
+        const float adv = g ? g->advance * mPerPx : 0.0f;
+        if (w + adv > maxW) break;
+        w += adv;
+        last = p;
+    }
+    const bool dropped = *p != 0 || *last != 0;
+    std::string out(utf8, last);
+    if (!dropped) return out;
+    const Glyph* el = set.find(0x2026);
+    if (!el) return out;
+    const float ew = el->advance * mPerPx;
+    // trim codepoints off the tail until the ellipsis fits
+    while (!out.empty() && w + ew > maxW) {
+        const char* q = out.c_str();
+        const char* tail = q;
+        while (*q) { tail = q; nextCp(q); }
+        const char* t2 = tail;
+        const Glyph* g = set.find(nextCp(t2));
+        if (g) w -= g->advance * mPerPx;
+        out.resize(tail - out.c_str());
+    }
+    out += "\xE2\x80\xA6";
+    return out;
+}
+
 bool textBounds(const GlyphSet& set, const char* utf8, float mPerPx,
                 float* top, float* bot) {
     const char* p = utf8;

@@ -210,22 +210,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusBrokenTitle => 'Not yet';
 
   @override
-  String get statusBroken1 => 'The VR display stays black - the single blocker';
-
-  @override
-  String get statusBroken2 =>
-      '6DoF / SLAM - qvrservice never opens the tracking cameras';
-
-  @override
-  String get statusBroken3 =>
+  String get statusBroken1 =>
       'Passthrough imagery - libgui calls deleted in Android 10';
 
   @override
-  String get statusBroken4 =>
+  String get statusBroken2 =>
       'CVService controllers - crashes on a wifi broadcast, disabled';
 
   @override
-  String get statusBroken5 =>
+  String get statusBroken3 =>
       'Provision setup wizard - crashes in its language picker';
 
   @override

@@ -206,19 +206,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusBrokenTitle => '还不行';
 
   @override
-  String get statusBroken1 => 'VR 画面仍是黑的——唯一的拦路虎';
+  String get statusBroken1 => '透视画面——libgui 接口在 Android 10 里被删了';
 
   @override
-  String get statusBroken2 => '6DoF / SLAM——qvrservice 从不打开追踪摄像头';
+  String get statusBroken2 => 'CVService 手柄——因 wifi 广播崩溃,目前已禁用';
 
   @override
-  String get statusBroken3 => '透视画面——libgui 接口在 Android 10 里被删了';
-
-  @override
-  String get statusBroken4 => 'CVService 手柄——因 wifi 广播崩溃,目前已禁用';
-
-  @override
-  String get statusBroken5 => 'Provision 初始化向导——语言选择器里崩溃';
+  String get statusBroken3 => 'Provision 初始化向导——语言选择器里崩溃';
 
   @override
   String get statusBlockerTitle => '离出画面只差一个 bug。';

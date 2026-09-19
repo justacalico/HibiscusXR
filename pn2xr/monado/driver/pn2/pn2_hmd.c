@@ -78,6 +78,17 @@ struct pn2_device
 
 	struct pn2_qvr *qvr;       //!< qvrservice 6DoF client, NULL when absent
 	uint64_t qvr_last_ts;      //!< last pose timestamp pushed to history
+	uint64_t qvr_dead_ns;      //!< when the pose stream went dead (0 = alive)
+	uint64_t qvr_retry_at;     //!< next allowed client reconnect attempt
+
+	// coast state while the tracker is degraded: the last real pose is the
+	// anchor, the IMU fusion delta keeps the head turning until tracking
+	// returns instead of freezing or snapping to origin
+	bool coasting;
+	struct xrt_quat coast_imu_base;
+	struct xrt_quat coast_orient;
+	struct xrt_vec3 coast_pos;
+	bool coast_has_pos;
 };
 
 static inline struct pn2_device *
@@ -152,18 +163,27 @@ pn2_push_fused(struct pn2_device *d, uint64_t ts)
 	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)ts);
 }
 
-static void
+// returns false when the pose stream is dead - read failure, state 0, or a
+// frozen buffer (the service keeps the last pose readable after it dies,
+// so staleness is the only reliable liveness signal)
+static bool
 pn2_push_qvr(struct pn2_device *d)
 {
 	struct pn2_qvr_pose pose;
-	if (!pn2_qvr_get_pose(d->qvr, &pose) || pose.timestamp_ns <= d->qvr_last_ts) {
-		return;
+	if (!pn2_qvr_get_pose(d->qvr, &pose)) {
+		return false;
+	}
+	// a dead service keeps the last pose readable at st=3 forever: repeated
+	// raw timestamps (~2s worth) or an aged-out sample both mean it's gone
+	if (pn2_qvr_stall(d->qvr) > 900 ||
+	    (int64_t)(os_monotonic_get_ns() - pose.timestamp_ns) > 3000000000ll) {
+		return false;
 	}
 	// Only fully-tracked poses enter the history: a state dip would push
 	// orientation-without-position and snap the world to the head origin
 	// for those frames. Skipping coasts the last tracked pose instead.
-	if (pose.tracking_state != 3) {
-		return;
+	if (pose.timestamp_ns <= d->qvr_last_ts || pose.tracking_state != 3) {
+		return true;
 	}
 	d->qvr_last_ts = pose.timestamp_ns;
 
@@ -181,6 +201,46 @@ pn2_push_qvr(struct pn2_device *d)
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
 	          pose.orientation.z, pose.orientation.w, pose.tracking_state);
+}
+
+// polls qvr while alive; a dead stream drops the client after 3s, an
+// up-but-empty one (tracker warm-up, state 0) after 15s - the fresh client
+// re-requests positional mode, which is also how a wedged tracker gets
+// kicked back to life
+static void
+pn2_pump_qvr(struct pn2_device *d)
+{
+	uint64_t now = os_monotonic_get_ns();
+	if (d->qvr != NULL) {
+		if (pn2_push_qvr(d)) {
+			d->qvr_dead_ns = 0;
+			return;
+		}
+		if (d->qvr_dead_ns == 0) {
+			d->qvr_dead_ns = now;
+			return;
+		}
+		uint64_t fuse = pn2_qvr_service_up() ? 15000000000ull : 3000000000ull;
+		if (now - d->qvr_dead_ns < fuse) {
+			return;
+		}
+		PN2_INFO(d, "qvr pose stream %s, reconnecting",
+		         pn2_qvr_service_up() ? "idle" : "dead");
+		pn2_qvr_destroy(d->qvr);
+		d->qvr = NULL;
+		d->qvr_last_ts = 0;
+		d->qvr_dead_ns = 0;
+		d->qvr_retry_at = now;
+	}
+	if (d->qvr_retry_at != 0 && now >= d->qvr_retry_at) {
+		d->qvr = pn2_qvr_create();
+		if (d->qvr != NULL) {
+			PN2_INFO(d, "qvr client reconnected");
+			d->qvr_retry_at = 0;
+		} else {
+			d->qvr_retry_at = now + 5000000000ull;
+		}
+	}
 }
 
 static void
@@ -262,11 +322,9 @@ pn2_run_thread(void *ptr)
 		for (ssize_t i = 0; i < n; i++) {
 			pn2_handle_event(d, &events[i]);
 		}
-		if (d->qvr != NULL) {
-			os_mutex_lock(&d->lock);
-			pn2_push_qvr(d);
-			os_mutex_unlock(&d->lock);
-		}
+		os_mutex_lock(&d->lock);
+		pn2_pump_qvr(d);
+		os_mutex_unlock(&d->lock);
 	}
 	return NULL;
 }
@@ -304,6 +362,39 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 		// the QVR world frame and snaps the view when hit
 		int64_t latest_ts;
 		got = m_relation_history_get_latest(d->rh, &latest_ts, &rel);
+	}
+	if (got) {
+		// a stale newest entry means tracking is degraded or the stream
+		// died: keep the last real pose as anchor and coast on the IMU
+		// delta so the head still turns instead of freezing or snapping
+		int64_t latest_ts = 0;
+		struct xrt_space_relation latest;
+		if (m_relation_history_get_latest(d->rh, &latest_ts, &latest) &&
+		    (int64_t)os_monotonic_get_ns() - latest_ts > 500000000ll) {
+			if (!d->coasting) {
+				d->coasting = true;
+				d->coast_imu_base = d->fusion.rot;
+				d->coast_orient = latest.pose.orientation;
+				d->coast_pos = latest.pose.position;
+				d->coast_has_pos = (latest.relation_flags &
+				                    XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0;
+			}
+			struct xrt_quat inv_base, delta;
+			math_quat_invert(&d->coast_imu_base, &inv_base);
+			math_quat_rotate(&inv_base, &d->fusion.rot, &delta);
+			math_quat_rotate(&d->coast_orient, &delta, &rel.pose.orientation);
+			rel.pose.position = d->coast_pos;
+			rel.angular_velocity = d->fusion.last.gyro;
+			rel.relation_flags = (enum xrt_space_relation_flags)(
+			    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT |
+			    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
+			if (d->coast_has_pos) {
+				rel.relation_flags = (enum xrt_space_relation_flags)(
+				    rel.relation_flags | XRT_SPACE_RELATION_POSITION_VALID_BIT);
+			}
+		} else {
+			d->coasting = false;
+		}
 	}
 	if (!got || !(rel.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT)) {
 		struct xrt_space_relation zero_rel = XRT_SPACE_RELATION_ZERO;
@@ -365,7 +456,12 @@ pn2_hmd_create(void)
 	} else {
 		d->qvr = pn2_qvr_create();
 	}
-	d->base.supported.position_tracking = d->qvr != NULL;
+	// a failed connect leaves qvr_retry_at seeded so the pump keeps trying:
+	// qvrd often isn't accepting clients yet at process start
+	if (d->qvr == NULL && !debug_get_bool_option_pn2_no_qvr()) {
+		d->qvr_retry_at = os_monotonic_get_ns() + 2000000000ull;
+	}
+	d->base.supported.position_tracking = !debug_get_bool_option_pn2_no_qvr();
 	PN2_INFO(d, "qvrservice 6DoF: %s", d->qvr != NULL ? "connected" : "unavailable");
 	u_device_populate_function_pointers(&d->base, pn2_get_tracked_pose, pn2_destroy);
 	d->base.get_view_poses = u_device_get_view_poses;

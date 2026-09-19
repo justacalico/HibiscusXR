@@ -3,6 +3,7 @@
 #include "mat4.h"
 
 #include <cstddef>
+#include <cstdint>
 
 // Head-tracking chain, kept free of Android/GL so the whole transform can be
 // exercised in the host unit tests. This is the path that produced the
@@ -20,6 +21,21 @@ Mat4 headMatrix(const float quat[4], bool transpose, float sensRoll,
 
 // per-eye view: head matrix shifted ±ipd/2 along view-space x
 Mat4 eyeMatrix(const Mat4& head, float ipd, int eye);
+
+// raw qvrservice tracking states: 3 is camera+IMU fused (position real),
+// any other nonzero is degraded (identity pose, garbage position), 0 is
+// dead. fold only on 3 - folding a degraded sample snaps the head to origin
+enum { QVR_DEAD = 0, QVR_DEGRADED = 1, QVR_TRACKED = 3 };
+int qvrClassify(uint32_t state);
+
+// consecutive-poll stall counter: a live stream's timestamp advances every
+// sample, a dead service leaves the ring buffer frozen at the last pose
+// (and still reports st=3). ts==0 is warm-up, not a stall. returns 0 on a
+// fresh ts, streak+1 on a nonzero repeat
+int qvrStallTick(int streak, uint64_t prevTs, uint64_t ts);
+
+// "3"/"1"/"0"/"-" for the HUD debug line; -1 (client gone) prints "-"
+void fmtTrackState(int state, char* out, size_t outSize);
 
 // a valid QVR pose always wins: its quat and position share one tracking
 // frame so both are taken raw, and rot-vec stays a pure fallback. mapping

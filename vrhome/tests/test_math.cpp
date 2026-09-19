@@ -215,6 +215,31 @@ void testHead() {
         CHECK_F(pw[2], 1.0f, 1e-4f);
     }
 
+    // state classify: only 3 is real tracking; 1/65537 are degraded,
+    // 0 is dead
+    CHECK(qvrClassify(3) == QVR_TRACKED);
+    CHECK(qvrClassify(0) == QVR_DEAD);
+    CHECK(qvrClassify(1) == QVR_DEGRADED);
+    CHECK(qvrClassify(2) == QVR_DEGRADED);
+    CHECK(qvrClassify(65537) == QVR_DEGRADED);
+
+    // stall tick: identical nonzero timestamps count up, fresh or zero
+    // warm-up samples reset
+    int st = 0;
+    st = qvrStallTick(st, 100, 100); CHECK(st == 1);
+    st = qvrStallTick(st, 100, 100); CHECK(st == 2);
+    st = qvrStallTick(st, 100, 103); CHECK(st == 0);
+    st = qvrStallTick(st, 103, 103); CHECK(st == 1);
+    st = qvrStallTick(st, 0, 0); CHECK(st == 0);
+
+    // track-state text: raw state for the HUD, "-" when the client is gone
+    char trk[16];
+    fmtTrackState(3, trk, sizeof(trk)); CHECK(strcmp(trk, "3") == 0);
+    fmtTrackState(1, trk, sizeof(trk)); CHECK(strcmp(trk, "1") == 0);
+    fmtTrackState(0, trk, sizeof(trk)); CHECK(strcmp(trk, "0") == 0);
+    fmtTrackState(65537, trk, sizeof(trk)); CHECK(strcmp(trk, "65537") == 0);
+    fmtTrackState(-1, trk, sizeof(trk)); CHECK(strcmp(trk, "-") == 0);
+
     // position arrows: right/up/forward get the positive-direction glyphs,
     // a small deadband keeps them steady at rest
     char arr[32];

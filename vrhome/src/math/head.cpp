@@ -37,6 +37,20 @@ Mat4 eyeMatrix(const Mat4& head, float ipd, int eye) {
     return r;
 }
 
+int qvrClassify(uint32_t state) {
+    if (state == QVR_TRACKED) return QVR_TRACKED;
+    return state == QVR_DEAD ? QVR_DEAD : QVR_DEGRADED;
+}
+
+int qvrStallTick(int streak, uint64_t prevTs, uint64_t ts) {
+    return ts != 0 && ts == prevTs ? streak + 1 : 0;
+}
+
+void fmtTrackState(int state, char* out, size_t outSize) {
+    if (state < 0) snprintf(out, outSize, "-");
+    else snprintf(out, outSize, "%d", state);
+}
+
 void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
                  const float qvrQuat[4], const float qvrPos[3]) {
     *quatFromQvr = true;

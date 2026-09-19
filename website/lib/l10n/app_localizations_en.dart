@@ -61,7 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heroSubtitle =>
-      'A full port of LineageOS 17.1 to the Pico Neo 2 headset. Stock vendor untouched, Pico\'s VR stack restored on top - and every step of the research in the open.';
+      'A full port of LineageOS 17.1 to the Pico Neo 2 headset.';
 
   @override
   String get heroPrimary => 'See the status';

@@ -60,8 +60,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heroTitle => '在 VR 里跑 Android 10。';
 
   @override
-  String get heroSubtitle =>
-      '把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。原厂 vendor 分区一字节不动,Pico 的 VR 栈从你自已的设备里恢复回来,每一步研究都公开。';
+  String get heroSubtitle => '把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。';
 
   @override
   String get heroPrimary => '查看现状';

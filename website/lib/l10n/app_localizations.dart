@@ -479,32 +479,20 @@ abstract class AppLocalizations {
   /// No description provided for @statusBroken1.
   ///
   /// In en, this message translates to:
-  /// **'The VR display stays black - the single blocker'**
+  /// **'Passthrough imagery - libgui calls deleted in Android 10'**
   String get statusBroken1;
 
   /// No description provided for @statusBroken2.
   ///
   /// In en, this message translates to:
-  /// **'6DoF / SLAM - qvrservice never opens the tracking cameras'**
+  /// **'CVService controllers - crashes on a wifi broadcast, disabled'**
   String get statusBroken2;
 
   /// No description provided for @statusBroken3.
   ///
   /// In en, this message translates to:
-  /// **'Passthrough imagery - libgui calls deleted in Android 10'**
-  String get statusBroken3;
-
-  /// No description provided for @statusBroken4.
-  ///
-  /// In en, this message translates to:
-  /// **'CVService controllers - crashes on a wifi broadcast, disabled'**
-  String get statusBroken4;
-
-  /// No description provided for @statusBroken5.
-  ///
-  /// In en, this message translates to:
   /// **'Provision setup wizard - crashes in its language picker'**
-  String get statusBroken5;
+  String get statusBroken3;
 
   /// No description provided for @statusBlockerTitle.
   ///

@@ -27,8 +27,6 @@ class StatusPage extends StatelessWidget {
       l10n.statusBroken1,
       l10n.statusBroken2,
       l10n.statusBroken3,
-      l10n.statusBroken4,
-      l10n.statusBroken5,
     ];
     return PageBody(
       children: [

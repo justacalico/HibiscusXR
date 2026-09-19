@@ -31,7 +31,13 @@ check /lib64/libshim_pvr.so                  ${PN2_ROOT}/shim/libshim_pvr.so
 check /apex/com.android.runtime.release/lib64/libart.so ${PN2_ROOT}/notes/libart-patched.so
 check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so
 check /etc/init/pn2-qvrd.rc                  ${PN2_ROOT}/overlay/etc/init/pn2-qvrd.rc
-check /priv-app/seethroughsetting/seethroughsetting.apk ${PN2_ROOT}/seethrough/seethroughsetting-signed.apk
+# apks get re-signed with the platform key in 267, so the image copy never
+# md5-matches the staged source - verify the signature instead
+debugfs -R "dump /priv-app/seethroughsetting/seethroughsetting.apk $T/st.apk" "$IMG" >/dev/null 2>&1
+BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
+"$BT/apksigner" verify --print-certs "$T/st.apk" 2>/dev/null | grep -q "CN=PN2" \
+  && printf '  MATCH  %s\n' "/priv-app/seethroughsetting/seethroughsetting.apk (CN=PN2)" \
+  || printf '  DIFFER %s\n' "/priv-app/seethroughsetting/seethroughsetting.apk (not PN2-signed)"
 
 echo
 echo "=== whitelist really has the 22 Pico entries? ==="

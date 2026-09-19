@@ -95,7 +95,7 @@ constexpr float kNotifGap = 0.014f;     // between stacked cards, and the
 constexpr float kNotifPad = 0.022f;     // card inner side padding
 constexpr float kNotifIconHW = 0.030f;  // app icon half-width on a card
 constexpr float kNotifBadgeR = 0.020f;  // dismiss badge radius
-constexpr int   kNotifMax = 4;          // cards shown at once
+constexpr int   kNotifMax = 1;          // cards shown at once
 constexpr int   kNotifToastMs = 5000;   // heads-up duration over an app
 // toast stack elevation: slightly above eye level, anchored on the gaze
 // yaw at the moment the toast pops so it never hides behind the user

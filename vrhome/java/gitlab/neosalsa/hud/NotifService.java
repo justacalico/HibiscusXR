@@ -38,6 +38,10 @@ public class NotifService extends NotificationListenerService {
     private static final List<Info> cur = new ArrayList<>();
     private static volatile int ver = 0;
     private static volatile NotifService live;
+    // shade entries that predate the listener are stale context, not
+    // something to flash in the dash: only posts newer than the bind get
+    // surfaced
+    private static volatile long boundAt = Long.MAX_VALUE;
     // HudService hooks this so a fresh post can pop the toast window over
     // a covered app; a plain Runnable keeps NotifService off the window
     private static volatile Runnable poster;
@@ -64,6 +68,7 @@ public class NotifService extends NotificationListenerService {
 
     @Override public void onListenerConnected() {
         live = this;
+        boundAt = System.currentTimeMillis();
         rebuild();
         Log.i(TAG, "notif listener bound");
     }
@@ -88,7 +93,8 @@ public class NotifService extends NotificationListenerService {
             StatusBarNotification[] act = getActiveNotifications();
             if (act != null) {
                 for (StatusBarNotification sbn : act) {
-                    if (sbn == null || SELF.equals(sbn.getPackageName()))
+                    if (sbn == null || SELF.equals(sbn.getPackageName())
+                            || sbn.getPostTime() <= boundAt)
                         continue;
                     Info i = new Info();
                     i.key = sbn.getKey();

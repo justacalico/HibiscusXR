@@ -24,9 +24,8 @@ void testNotif() {
         auto items = buildNotifs({mkNotif("a", "com.a", 100),
                                   mkNotif("b", "com.b", 300),
                                   mkNotif("c", "com.c", 200)});
-        CHECK(items.size() == 3);
-        CHECK(items[0].key == "b" && items[1].key == "c" &&
-              items[2].key == "a");
+        CHECK(items.size() == (size_t)kNotifMax);
+        CHECK(items[0].key == "b");
     }
     {
         std::vector<NotifItem> many;

@@ -1058,30 +1058,6 @@ abstract class AppLocalizations {
   /// **'A Linux host with adb and fastboot'**
   String get downloadReq3;
 
-  /// No description provided for @downloadSoftwareTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The software on top'**
-  String get downloadSoftwareTitle;
-
-  /// No description provided for @downloadSoftwareBody.
-  ///
-  /// In en, this message translates to:
-  /// **'The image ships vrhome and the library app. To hack on either, clone its repo - vrhome builds with a plain Makefile, library with Flutter.'**
-  String get downloadSoftwareBody;
-
-  /// No description provided for @downloadVrhomeCta.
-  ///
-  /// In en, this message translates to:
-  /// **'vrhome repo'**
-  String get downloadVrhomeCta;
-
-  /// No description provided for @downloadLibraryCta.
-  ///
-  /// In en, this message translates to:
-  /// **'library repo'**
-  String get downloadLibraryCta;
-
   /// No description provided for @issuesButton.
   ///
   /// In en, this message translates to:

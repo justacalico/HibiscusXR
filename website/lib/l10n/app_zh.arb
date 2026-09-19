@@ -176,10 +176,6 @@
   "downloadReq1": "一台 Pico Neo 2(A7B10)——Eye 和非 Eye 版本都可以",
   "downloadReq2": "已 root 的原厂固件和可解锁的 bootloader",
   "downloadReq3": "一台装了 adb 和 fastboot 的 Linux 主机",
-  "downloadSoftwareTitle": "上面的软件",
-  "downloadSoftwareBody": "镜像自带 vrhome 和 library 应用。想改它们就克隆对应仓库——vrhome 用一个普通 Makefile 构建,library 用 Flutter。",
-  "downloadVrhomeCta": "vrhome 仓库",
-  "downloadLibraryCta": "library 仓库",
 
   "issuesButton": "提交 issue",
   "issuesSubtitle": "Bug、功能请求、求助,都欢迎。",

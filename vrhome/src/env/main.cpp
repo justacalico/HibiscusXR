@@ -78,10 +78,9 @@ static void drawFrame(Engine* e) {
     // us, but the GL context stays warm on the pbuffer
     if (!e->ready || e->covered) { usleep(33000); return; }
 
-    updateHud(e, "");
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const float fov = propF("debug.vrhome.fov", kFovY);
-    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), false,
+    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), false, false,
              drawScene);
     warpPresent(e);
     updateFps(e);

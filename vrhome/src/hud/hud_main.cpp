@@ -252,7 +252,7 @@ static void hudFrame(HudEngine* e) {
     updateHud(e, extra);
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const float fov = propF("debug.vrhome.fov", kFovY);
-    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), true,
+    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), true, true,
              hudScene);
     warpPresent(e);
     updateFps(e);

@@ -65,6 +65,29 @@ constexpr float kHandleT = 0.0055f;   // visible line half-thickness
 constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
 constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 
+// the dock: a persistent strip hanging under the panel ring - pinned apps
+// left, running tasks right, quick-panel button on the end. It rides the
+// same anchor cylinder as the windows, slightly closer so it reads as the
+// dash's foreground edge
+constexpr float kDockDist = 1.35f;    // metres; panels sit at 1.5
+constexpr float kDockIconW = 0.15f;   // icon square edge
+constexpr float kDockIconHW = kDockIconW * 0.5f;
+constexpr float kDockIconY = 0.008f;  // icon centre above bar centre
+constexpr float kDockGap = 0.030f;    // between icons
+constexpr float kDockPad = 0.045f;    // bar end padding
+constexpr float kDockSepW = 0.035f;   // extra gap at a group separator
+constexpr float kDockBarH = 0.20f;    // strip height: icon + running dot
+constexpr float kDockBadgeR = 0.024f; // XR close badge radius
+constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
+// dock elevation: scaled with the recenter pitch but clamped so the strip
+// always lands below eye level - never over the windows, never overhead
+constexpr float kDockPitchScale = 0.35f, kDockPitchDrop = 0.55f;
+constexpr float kDockPitchMin = -0.95f, kDockPitchMax = -0.20f;
+constexpr float kDockPitchRest = -0.55f;   // before the first anchor
+
+// package the dock's quick-panel button launches
+constexpr const char* kQuickPanelPkg = "gitlab.neosalsa.quicksettings";
+
 // Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
 // 1003 is the headset home button remapped off HOME (system_server eats
 // KEYCODE_HOME before anything else can see it, so the HUD's summon key

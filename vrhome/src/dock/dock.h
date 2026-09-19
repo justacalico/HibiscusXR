@@ -1,6 +1,9 @@
 #pragma once
 
+#include "item.h"
 #include "../math/mat4.h"
+
+#include <string>
 
 struct HudEngine;
 
@@ -11,6 +14,10 @@ struct HudEngine;
 // per-frame, render thread: pull the pin list + immersive task set from the
 // bridge, rebuild the item list, resolve icons and labels for new entries
 void syncDock(HudEngine* e);
+
+// icon + label + vr flag for one package from the shared cache, fetching
+// what's missing; notification cards resolve their icons through this too
+DockIcon& iconFor(HudEngine* e, const std::string& pkg);
 
 // per-frame: the confirm-hold pin gesture on a dock item; fires once the
 // press passes kDockPinMs, dockPinP carries the 0..1 fill for the ring

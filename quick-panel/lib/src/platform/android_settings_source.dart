@@ -43,4 +43,12 @@ class AndroidSettingsSource implements SettingsSource {
   @override
   Future<void> performAction(ActionId id) =>
       _channel.invokeMethod('performAction', {'id': id.name});
+
+  @override
+  Future<void> dismissNotification(String key) =>
+      _channel.invokeMethod('dismissNotification', {'key': key});
+
+  @override
+  Future<void> dismissAllNotifications() =>
+      _channel.invokeMethod('dismissAllNotifications');
 }

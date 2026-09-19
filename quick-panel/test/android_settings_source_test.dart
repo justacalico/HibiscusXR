@@ -26,6 +26,16 @@ void main() {
             'volume': 0.4,
             'brightness': 0.65,
             'toggles': {'wifi': true, 'bluetooth': true},
+            'notifications': [
+              {
+                'key': '0|com.x|9',
+                'app': 'Library',
+                'title': 'Update',
+                'text': 'Ready',
+                'postMs': 44,
+                'clearable': true,
+              },
+            ],
           };
       }
       return null;
@@ -48,6 +58,10 @@ void main() {
     expect(snap.brightness, 0.65);
     expect(snap.toggles[ToggleId.wifi], isTrue);
     expect(snap.toggles[ToggleId.bluetooth], isTrue);
+    expect(snap.notifications, hasLength(1));
+    expect(snap.notifications!.first.key, '0|com.x|9');
+    expect(snap.notifications!.first.title, 'Update');
+    expect(snap.notifications!.first.clearable, isTrue);
   });
 
   test('intents forward with arguments', () async {
@@ -56,16 +70,21 @@ void main() {
     await src.setBrightness(0.9);
     await src.requestToggle(ToggleId.wifi, false);
     await src.performAction(ActionId.resetView);
+    await src.dismissNotification('0|com.x|9');
+    await src.dismissAllNotifications();
     expect(calls.map((c) => c.method), [
       'setVolume',
       'setBrightness',
       'requestToggle',
       'performAction',
+      'dismissNotification',
+      'dismissAllNotifications',
     ]);
     expect(calls[0].arguments, {'volume': 0.3});
     expect(calls[1].arguments, {'brightness': 0.9});
     expect(calls[2].arguments, {'id': 'wifi', 'on': false});
     expect(calls[3].arguments, {'id': 'resetView'});
+    expect(calls[4].arguments, {'key': '0|com.x|9'});
   });
 
   test('events stream subscribes the event channel', () async {

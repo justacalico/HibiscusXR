@@ -94,6 +94,24 @@ class MainActivity : FlutterActivity() {
             checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
         }.toTypedArray()
         if (needed.isNotEmpty()) requestPermissions(needed, 0)
+        enableNotifAccess()
+    }
+
+    // Privileged install path: add our listener to the enabled list so
+    // the shade mirror binds without a trip through system settings.
+    private fun enableNotifAccess() {
+        try {
+            val svc = "$packageName/${NotifService::class.java.name}"
+            val cr = contentResolver
+            val cur = Settings.Secure.getString(cr, "enabled_notification_listeners")
+            if (cur == null || !cur.contains(svc)) {
+                Settings.Secure.putString(
+                    cr,
+                    "enabled_notification_listeners",
+                    if (cur.isNullOrEmpty()) svc else "$cur:$svc",
+                )
+            }
+        } catch (_: Exception) {}
     }
 
     private fun btDevice(intent: Intent): BluetoothDevice? =
@@ -130,6 +148,16 @@ class MainActivity : FlutterActivity() {
                         performAction(call.argument<String>("id") ?: "")
                         result.success(null)
                     }
+                    "dismissNotification" -> {
+                        NotifService.instance?.dismiss(
+                            call.argument<String>("key") ?: "",
+                        )
+                        result.success(null)
+                    }
+                    "dismissAllNotifications" -> {
+                        NotifService.instance?.dismissAll()
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -137,6 +165,11 @@ class MainActivity : FlutterActivity() {
             .setStreamHandler(object : EventChannel.StreamHandler {
                 override fun onListen(arguments: Any?, sink: EventChannel.EventSink) {
                     eventSink = sink
+                    NotifService.sink = { list ->
+                        runOnUiThread {
+                            eventSink?.success(mapOf("notifications" to list))
+                        }
+                    }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -154,6 +187,7 @@ class MainActivity : FlutterActivity() {
 
                 override fun onCancel(arguments: Any?) {
                     eventSink = null
+                    NotifService.sink = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -177,6 +211,7 @@ class MainActivity : FlutterActivity() {
             "airplaneMode" to airplaneOn(),
             "microphone" to !audio().isMicrophoneMute,
         ),
+        "notifications" to NotifService.lastList,
     )
 
     private fun wifiManager() =

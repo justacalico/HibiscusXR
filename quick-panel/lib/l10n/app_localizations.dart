@@ -208,6 +208,30 @@ abstract class AppLocalizations {
   /// **'Not Connected'**
   String get stateNotConnected;
 
+  /// No description provided for @notifTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifTitle;
+
+  /// No description provided for @notifEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get notifEmpty;
+
+  /// No description provided for @notifDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get notifDismiss;
+
+  /// No description provided for @notifClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear all'**
+  String get notifClearAll;
+
   /// Battery charge level in the status bar
   ///
   /// In en, this message translates to:

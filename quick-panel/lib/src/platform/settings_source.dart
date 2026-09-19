@@ -19,4 +19,10 @@ abstract class SettingsSource {
 
   /// Fire a one-shot tile: recenter, open settings, close the panel...
   Future<void> performAction(ActionId id);
+
+  /// Cancel the notification with this platform key.
+  Future<void> dismissNotification(String key);
+
+  /// Cancel every user-clearable notification.
+  Future<void> dismissAllNotifications();
 }

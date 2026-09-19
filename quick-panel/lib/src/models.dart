@@ -13,6 +13,62 @@ enum ToggleId {
 
 enum ActionId { resetView, reportProblem, aboutDevice, openSettings }
 
+/// One entry in the system notification shade. [key] is the platform's
+/// stable id for the notification and is what dismissal acts on.
+class NotificationItem {
+  const NotificationItem({
+    required this.key,
+    required this.app,
+    required this.title,
+    required this.text,
+    required this.postMs,
+    required this.clearable,
+  });
+
+  final String key;
+  final String app;
+  final String title;
+  final String text;
+  final int postMs;
+  final bool clearable;
+
+  Map<String, dynamic> toJson() => {
+    'key': key,
+    'app': app,
+    'title': title,
+    'text': text,
+    'postMs': postMs,
+    'clearable': clearable,
+  };
+
+  static NotificationItem? fromJson(Object? raw) {
+    if (raw is! Map) return null;
+    final key = raw['key'];
+    if (key is! String || key.isEmpty) return null;
+    return NotificationItem(
+      key: key,
+      app: raw['app'] is String ? raw['app'] as String : '',
+      title: raw['title'] is String ? raw['title'] as String : '',
+      text: raw['text'] is String ? raw['text'] as String : '',
+      postMs: raw['postMs'] is num ? (raw['postMs'] as num).toInt() : 0,
+      clearable: raw['clearable'] == true,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is NotificationItem &&
+      other.key == key &&
+      other.app == app &&
+      other.title == title &&
+      other.text == text &&
+      other.postMs == postMs &&
+      other.clearable == clearable;
+
+  @override
+  int get hashCode => Object.hash(key, app, title, text, postMs, clearable);
+}
+
 /// State pushed up from the platform in one shot or as a change event.
 /// Null fields mean "no information / unchanged".
 class SettingsSnapshot {
@@ -23,6 +79,7 @@ class SettingsSnapshot {
     this.bluetoothDevice,
     this.volume,
     this.brightness,
+    this.notifications,
   });
 
   final Map<ToggleId, bool> toggles;
@@ -32,6 +89,10 @@ class SettingsSnapshot {
   final double? volume;
   final double? brightness;
 
+  /// The full active-notification list when present. Unlike the scalar
+  /// fields this replaces wholesale rather than merging per entry.
+  final List<NotificationItem>? notifications;
+
   Map<String, dynamic> toJson() => {
     'toggles': {for (final e in toggles.entries) e.key.name: e.value},
     if (batteryLevel != null) 'batteryLevel': batteryLevel,
@@ -39,6 +100,8 @@ class SettingsSnapshot {
     if (bluetoothDevice != null) 'bluetoothDevice': bluetoothDevice,
     if (volume != null) 'volume': volume,
     if (brightness != null) 'brightness': brightness,
+    if (notifications != null)
+      'notifications': [for (final n in notifications!) n.toJson()],
   };
 
   static SettingsSnapshot fromJson(Map<String, dynamic> json) {
@@ -56,6 +119,12 @@ class SettingsSnapshot {
       bluetoothDevice: _str(json['bluetoothDevice']),
       volume: _num(json['volume'])?.toDouble(),
       brightness: _num(json['brightness'])?.toDouble(),
+      notifications: json['notifications'] is List
+          ? (json['notifications'] as List)
+                .map(NotificationItem.fromJson)
+                .nonNulls
+                .toList()
+          : null,
     );
   }
 

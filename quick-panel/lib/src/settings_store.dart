@@ -20,6 +20,7 @@ class SettingsStore extends ChangeNotifier {
   int _batteryLevel = 0;
   String? _wifiSsid;
   String? _bluetoothDevice;
+  List<NotificationItem> _notifications = const [];
   DateTime? _now;
 
   double get volume => _volume;
@@ -27,6 +28,7 @@ class SettingsStore extends ChangeNotifier {
   int get batteryLevel => _batteryLevel;
   String? get wifiSsid => _wifiSsid;
   String? get bluetoothDevice => _bluetoothDevice;
+  List<NotificationItem> get notifications => _notifications;
   DateTime get now => _now ?? _clock();
 
   bool isOn(ToggleId id) => _toggles[id] ?? false;
@@ -74,6 +76,15 @@ class SettingsStore extends ChangeNotifier {
     if (snap.brightness != null) {
       _brightness = snap.brightness!.clamp(0.0, 1.0);
     }
+    if (snap.notifications != null) _notifications = snap.notifications!;
+    notifyListeners();
+  }
+
+  /// Drop one row from the list locally. The platform confirms through
+  /// the next snapshot; this just keeps the UI in step with the tap.
+  void removeNotification(String key) {
+    if (!_notifications.any((n) => n.key == key)) return;
+    _notifications = [for (final n in _notifications) if (n.key != key) n];
     notifyListeners();
   }
 

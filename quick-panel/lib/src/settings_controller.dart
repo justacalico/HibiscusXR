@@ -52,6 +52,20 @@ class SettingsController {
 
   Future<void> runAction(ActionId id) => _source.performAction(id);
 
+  /// Remove the row at once, then ask the platform to cancel it. The
+  /// listener pushes the authoritative list back through [events].
+  Future<void> dismissNotification(String key) async {
+    store.removeNotification(key);
+    await _source.dismissNotification(key);
+  }
+
+  Future<void> dismissAllNotifications() async {
+    for (final n in store.notifications) {
+      if (n.clearable) store.removeNotification(n.key);
+    }
+    await _source.dismissAllNotifications();
+  }
+
   Future<void> dispose() async {
     await _events?.cancel();
     store.dispose();

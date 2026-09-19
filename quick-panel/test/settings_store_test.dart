@@ -47,6 +47,38 @@ void main() {
     expect(s.batteryLevel, 100);
   });
 
+  test('notifications replace wholesale and remove drops by key', () {
+    const a = NotificationItem(
+      key: 'a',
+      app: 'A',
+      title: 'ta',
+      text: '',
+      postMs: 1,
+      clearable: true,
+    );
+    const b = NotificationItem(
+      key: 'b',
+      app: 'B',
+      title: 'tb',
+      text: '',
+      postMs: 2,
+      clearable: false,
+    );
+    final s = SettingsStore();
+    s.applySnapshot(const SettingsSnapshot(notifications: [a, b]));
+    expect(s.notifications, [a, b]);
+    // a snapshot without the field leaves the list alone
+    s.applySnapshot(const SettingsSnapshot(batteryLevel: 50));
+    expect(s.notifications, [a, b]);
+    s.applySnapshot(const SettingsSnapshot(notifications: [b]));
+    expect(s.notifications, [b]);
+
+    s.removeNotification('missing');
+    expect(s.notifications, [b]);
+    s.removeNotification('b');
+    expect(s.notifications, isEmpty);
+  });
+
   test('clock uses injected source and tick refreshes', () {
     var t = DateTime(2023, 8, 16, 15, 52);
     final s = SettingsStore(clock: () => t);

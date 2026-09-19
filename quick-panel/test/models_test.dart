@@ -30,6 +30,42 @@ void main() {
     expect(s.batteryLevel, isNull);
   });
 
+  test('notification json roundtrips and drops bad rows', () {
+    const snap = SettingsSnapshot(
+      notifications: [
+        NotificationItem(
+          key: '0|com.x|1',
+          app: 'Library',
+          title: 'Hi',
+          text: 'Body',
+          postMs: 1692,
+          clearable: true,
+        ),
+      ],
+    );
+    final back = SettingsSnapshot.fromJson(snap.toJson());
+    expect(back.notifications, hasLength(1));
+    final n = back.notifications!.first;
+    expect(n.key, '0|com.x|1');
+    expect(n.app, 'Library');
+    expect(n.title, 'Hi');
+    expect(n.text, 'Body');
+    expect(n.postMs, 1692);
+    expect(n.clearable, isTrue);
+
+    final messy = SettingsSnapshot.fromJson({
+      'notifications': [
+        {'key': ''},
+        {'no': 'key'},
+        'junk',
+        {'key': 'k2', 'postMs': 7, 'clearable': 1},
+      ],
+    });
+    expect(messy.notifications, hasLength(1));
+    expect(messy.notifications!.first.key, 'k2');
+    expect(messy.notifications!.first.clearable, isFalse);
+  });
+
   test('catalog covers every toggle exactly once', () {
     final toggled = panelTiles
         .where((t) => t.kind == TileKind.toggle)

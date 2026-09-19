@@ -66,6 +66,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stateNotConnected => 'Not Connected';
 
   @override
+  String get notifTitle => 'Notifications';
+
+  @override
+  String get notifEmpty => 'No notifications';
+
+  @override
+  String get notifDismiss => 'Dismiss';
+
+  @override
+  String get notifClearAll => 'Clear all';
+
+  @override
   String batteryPercent(int level) {
     return '$level%';
   }

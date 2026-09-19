@@ -2,6 +2,7 @@
 
 #include "keys.h"
 #include "../dock/dock.h"
+#include "../notif/notif.h"
 #include "../hud/engine.h"
 #include "../common/jni.h"
 #include "../common/log.h"
@@ -32,6 +33,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->dockPressZone = DZONE_NONE;
             e->dockPinP = 0.0f;
             e->dockPinDone = false;
+            e->notifPress = -1;
+            e->notifPressZone = NZONE_NONE;
+            if (e->notifHover >= 0 &&
+                    e->notifHover < (int)e->notifs.size()) {
+                e->notifPress = e->notifHover;
+                e->notifPressZone = e->notifZone;
+                e->notifPressKey = e->notifs[e->notifHover].key;
+            }
             if (e->dockHover >= 0 && e->dockHover < (int)e->dock.size()) {
                 e->dockPress = e->dockHover;
                 e->dockPressZone = e->dockZone;
@@ -75,7 +84,20 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->confirmHeld = false;
             e->moveHeld = false;
             JNIEnv* env = threadEnv(e->vm);
-            if (e->dockPress >= 0) {
+            if (e->notifPress >= 0) {
+                // a card press fires only when the release lands back on
+                // the same card: the badge dismisses, the body does
+                // nothing - a stray release shouldn't swallow the post
+                const bool same = e->notifHover == e->notifPress &&
+                    e->notifZone == e->notifPressZone &&
+                    e->notifPress < (int)e->notifs.size() &&
+                    e->notifs[e->notifPress].key == e->notifPressKey;
+                if (same && e->notifPressZone == NZONE_CLOSE)
+                    notifDismiss(e, e->notifPress);
+                e->notifPress = -1;
+                e->notifPressZone = NZONE_NONE;
+                e->notifPressKey.clear();
+            } else if (e->dockPress >= 0) {
                 // release over the same dock item (and zone) fires its
                 // action; a completed pin-hold suppresses the tap
                 const bool same = e->dockHover == e->dockPress &&

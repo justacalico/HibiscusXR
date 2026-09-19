@@ -45,8 +45,10 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
+            src/render/shape.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
+            src/notif/notif.cpp src/notif/layout.cpp \
             src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp
 

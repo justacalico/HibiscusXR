@@ -72,6 +72,12 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mRunningVr    = env->GetMethodID(bc, "runningVr",
                         "()[Lgitlab/neosalsa/hud/ShellBridge$Pending;");
     e->mDismiss      = env->GetMethodID(bc, "dismissMenu", "()V");
+    e->mNotifVer     = env->GetMethodID(bc, "notifVersion", "()I");
+    e->mNotifs       = env->GetMethodID(bc, "notifs",
+                        "()[Lgitlab/neosalsa/hud/NotifService$Info;");
+    e->mDismissNotif = env->GetMethodID(bc, "dismissNotif",
+                        "(Ljava/lang/String;)V");
+    e->mToastOnly    = env->GetMethodID(bc, "toastOnly", "()Z");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
@@ -81,6 +87,18 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
         e->ctx, "gitlab.neosalsa.hud.ShellBridge$Pending"));
     e->fPendTask = env->GetFieldID(e->pendingCls, "taskId", "I");
     e->fPendPkg  = env->GetFieldID(e->pendingCls, "pkg", "Ljava/lang/String;");
+    e->notifCls = (jclass)env->NewGlobalRef(loadAppClass(env,
+        e->ctx, "gitlab.neosalsa.hud.NotifService$Info"));
+    e->fNotifKey   = env->GetFieldID(e->notifCls, "key",
+                        "Ljava/lang/String;");
+    e->fNotifPkg   = env->GetFieldID(e->notifCls, "pkg",
+                        "Ljava/lang/String;");
+    e->fNotifTitle = env->GetFieldID(e->notifCls, "title",
+                        "Ljava/lang/String;");
+    e->fNotifText  = env->GetFieldID(e->notifCls, "text",
+                        "Ljava/lang/String;");
+    e->fNotifMs    = env->GetFieldID(e->notifCls, "postMs", "J");
+    e->fNotifClear = env->GetFieldID(e->notifCls, "clearable", "Z");
     LOGI("bridge ready");
 }
 
@@ -146,6 +164,9 @@ void pumpBridge(HudEngine* e) {
         e->covered = env->CallBooleanMethod(e->bridge, e->mIsCovered) == JNI_TRUE;
         if (was && !e->covered) wantRecenter();
     }
+    if (e->mToastOnly)
+        e->toastOnly = env->CallBooleanMethod(e->bridge, e->mToastOnly)
+                       == JNI_TRUE;
 
     if (!e->pendingCls) return;
 

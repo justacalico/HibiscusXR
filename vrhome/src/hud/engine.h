@@ -3,6 +3,7 @@
 #include "../engine.h"
 #include "../panels/panel.h"
 #include "../dock/item.h"
+#include "../notif/item.h"
 #include "../common/config.h"
 
 #include <android/native_window.h>
@@ -29,10 +30,16 @@ struct HudEngine : Engine {
               mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,
               mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr,
               mTakePins = nullptr, mSetPins = nullptr, mAppIcon = nullptr,
-              mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr;
+              mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr,
+              mNotifVer = nullptr, mNotifs = nullptr,
+              mDismissNotif = nullptr, mToastOnly = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
+    jclass notifCls = nullptr;
+    jfieldID fNotifKey = nullptr, fNotifPkg = nullptr,
+             fNotifTitle = nullptr, fNotifText = nullptr,
+             fNotifMs = nullptr, fNotifClear = nullptr;
     bool bridgeDead = false;
 
     std::vector<Panel> panels;
@@ -77,6 +84,21 @@ struct HudEngine : Engine {
     long long dockPressMs = 0;
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
+
+    // notification cards: the live set rebuilt when the listener's version
+    // bumps; hover/press mirror the dock's gesture state. toastOnly means
+    // the window is up over a covered app for a heads-up: only the stack
+    // draws, anchored on the gaze yaw captured when the toast popped
+    std::vector<NotifItem> notifs;
+    int notifVer = -1;
+    int notifHover = -1;
+    int notifZone = NZONE_NONE;
+    int notifPress = -1;
+    int notifPressZone = NZONE_NONE;
+    std::string notifPressKey;   // guards against a rebuild mid-press
+    bool toastOnly = false;
+    bool toastWas = false;
+    float toastYaw = 0.0f;
 
     bool confirmHeld = false;
     bool moveHeld = false;       // confirm held on a drag handle

@@ -41,6 +41,11 @@ class NotificationSection extends StatelessWidget {
             if (clearable)
               TextButton(
                 onPressed: onDismissAll,
+                style: TextButton.styleFrom(
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                ),
                 child: Text(l10n.notifClearAll),
               ),
           ],
@@ -154,6 +159,11 @@ class NotificationRow extends StatelessWidget {
               tooltip: l10n.notifDismiss,
               icon: const Icon(Icons.close, size: 18),
               color: PanelTheme.textSecondary,
+              style: IconButton.styleFrom(
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                padding: const EdgeInsets.all(6),
+              ),
               onPressed: () => onDismiss(item.key),
             ),
         ],

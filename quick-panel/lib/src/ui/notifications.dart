@@ -61,7 +61,7 @@ class NotificationSection extends StatelessWidget {
           )
         else
           ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 172),
+            constraints: const BoxConstraints(maxHeight: 118),
             child: ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.zero,

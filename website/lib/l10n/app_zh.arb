@@ -21,7 +21,7 @@
 
   "heroEyebrow": "Pico Neo 2 · LineageOS 17.1",
   "heroTitle": "在 VR 里跑 Android 10。",
-  "heroSubtitle": "把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。原厂 vendor 分区一字节不动,Pico 的 VR 栈从你自已的设备里恢复回来,每一步研究都公开。",
+  "heroSubtitle": "把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。",
   "heroPrimary": "查看现状",
   "heroSecondary": "阅读文档",
   "heroShotCaption": "vrhome 里的 library 应用窗口。",

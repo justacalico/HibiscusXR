@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @heroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A full port of LineageOS 17.1 to the Pico Neo 2 headset. Stock vendor untouched, Pico\'s VR stack restored on top - and every step of the research in the open.'**
+  /// **'A full port of LineageOS 17.1 to the Pico Neo 2 headset.'**
   String get heroSubtitle;
 
   /// No description provided for @heroPrimary.

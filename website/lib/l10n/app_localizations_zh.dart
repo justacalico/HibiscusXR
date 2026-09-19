@@ -72,6 +72,50 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heroShotCaption => 'vrhome 里的 library 应用窗口。';
 
   @override
+  String get shotMockTime => '3:52';
+
+  @override
+  String get shotMockSearch => '搜索';
+
+  @override
+  String shotMockFilter(int count) {
+    return '全部 ($count)';
+  }
+
+  @override
+  String get shotMockSort => 'A-Z';
+
+  @override
+  String get shotMockSystem => '系统';
+
+  @override
+  String get shotAppCalendar => '日历';
+
+  @override
+  String get shotAppCamera => '相机';
+
+  @override
+  String get shotAppChrome => 'Chrome';
+
+  @override
+  String get shotAppClock => '时钟';
+
+  @override
+  String get shotAppContacts => '联系人';
+
+  @override
+  String get shotAppDrive => '云端硬盘';
+
+  @override
+  String get shotAppFiles => '文件';
+
+  @override
+  String get shotAppGemini => 'Gemini';
+
+  @override
+  String get shotAppGlasses => '眼镜';
+
+  @override
   String get statSoc => '骁龙 845';
 
   @override

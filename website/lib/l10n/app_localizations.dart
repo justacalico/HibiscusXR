@@ -224,6 +224,90 @@ abstract class AppLocalizations {
   /// **'The library app window inside vrhome.'**
   String get heroShotCaption;
 
+  /// No description provided for @shotMockTime.
+  ///
+  /// In en, this message translates to:
+  /// **'3:52'**
+  String get shotMockTime;
+
+  /// No description provided for @shotMockSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get shotMockSearch;
+
+  /// No description provided for @shotMockFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All ({count})'**
+  String shotMockFilter(int count);
+
+  /// No description provided for @shotMockSort.
+  ///
+  /// In en, this message translates to:
+  /// **'A-Z'**
+  String get shotMockSort;
+
+  /// No description provided for @shotMockSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get shotMockSystem;
+
+  /// No description provided for @shotAppCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get shotAppCalendar;
+
+  /// No description provided for @shotAppCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get shotAppCamera;
+
+  /// No description provided for @shotAppChrome.
+  ///
+  /// In en, this message translates to:
+  /// **'Chrome'**
+  String get shotAppChrome;
+
+  /// No description provided for @shotAppClock.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock'**
+  String get shotAppClock;
+
+  /// No description provided for @shotAppContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get shotAppContacts;
+
+  /// No description provided for @shotAppDrive.
+  ///
+  /// In en, this message translates to:
+  /// **'Drive'**
+  String get shotAppDrive;
+
+  /// No description provided for @shotAppFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get shotAppFiles;
+
+  /// No description provided for @shotAppGemini.
+  ///
+  /// In en, this message translates to:
+  /// **'Gemini'**
+  String get shotAppGemini;
+
+  /// No description provided for @shotAppGlasses.
+  ///
+  /// In en, this message translates to:
+  /// **'Glasses'**
+  String get shotAppGlasses;
+
   /// No description provided for @statSoc.
   ///
   /// In en, this message translates to:

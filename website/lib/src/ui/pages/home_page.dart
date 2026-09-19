@@ -7,6 +7,7 @@ import 'package:pn2_website/l10n/app_localizations.dart';
 import '../../links.dart';
 import '../../routes.dart';
 import '../../theme.dart';
+import '../library_shot.dart';
 import '../shell.dart';
 import '../widgets.dart';
 
@@ -106,11 +107,7 @@ class _Hero extends StatelessWidget {
                 ],
               ),
               clipBehavior: Clip.antiAlias,
-              child: Image.asset(
-                'assets/screenshots/library-grid.png',
-                fit: BoxFit.cover,
-                semanticLabel: l10n.heroShotCaption,
-              ),
+              child: const LibraryShot(),
             ),
           ),
         ],

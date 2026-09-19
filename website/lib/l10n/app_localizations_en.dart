@@ -135,19 +135,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statNotesLabel => 'Research notes';
 
   @override
-  String get homeShellEyebrow => 'The shell';
-
-  @override
-  String get homeShellTitle => 'An open VR home, already running.';
-
-  @override
-  String get homeShellBody =>
-      'vrhome replaces the stock Pico shell with a NativeActivity of our own: 2D apps float as windows, VR apps still launch fullscreen, and the library grid is just another app.';
-
-  @override
-  String get homeShellCta => 'See screenshots';
-
-  @override
   String get shotCollectionCaption => 'Collections and groups, with counts.';
 
   @override

@@ -21,7 +21,6 @@ class HomePage extends StatelessWidget {
       children: [
         _Hero(l10n: l10n),
         _Stats(l10n: l10n),
-        _ShellBand(l10n: l10n),
         _Trio(l10n: l10n),
         _StatusBand(l10n: l10n),
         _OpenBand(l10n: l10n),
@@ -168,91 +167,6 @@ class _Stats extends StatelessWidget {
             ],
           );
         },
-      ),
-    );
-  }
-}
-
-/// vrhome + library showcase with the two remaining screenshots.
-class _ShellBand extends StatelessWidget {
-  const _ShellBand({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Band(
-      color: context.colors.surfaceContainerHighest,
-      child: Column(
-        children: [
-          Reveal(child: Eyebrow(l10n.homeShellEyebrow, center: true)),
-          const SizedBox(height: 12),
-          Reveal(
-            child: Text(
-              l10n.homeShellTitle,
-              textAlign: TextAlign.center,
-              style: context.text.displayMedium!.copyWith(
-                fontSize: Layout.isMobile(context) ? 36 : 56,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Reveal(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: Layout.text),
-              child: Text(
-                l10n.homeShellBody,
-                textAlign: TextAlign.center,
-                style: context.text.bodyLarge!
-                    .copyWith(color: context.colors.secondary),
-              ),
-            ),
-          ),
-          const SizedBox(height: 48),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final two = constraints.maxWidth >= 760;
-              final width = two ? (constraints.maxWidth - 32) / 2 : null;
-              return Wrap(
-                spacing: 32,
-                runSpacing: 32,
-                alignment: WrapAlignment.center,
-                children: [
-                  for (final (asset, caption) in [
-                    ('assets/screenshots/collection-menu.png',
-                        l10n.shotCollectionCaption),
-                    ('assets/screenshots/tile-menu.png', l10n.shotMenuCaption),
-                  ])
-                    Reveal(
-                      child: Container(
-                        width: width,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: context.colors.outline,
-                            width: 1,
-                          ),
-                        ),
-                        clipBehavior: Clip.antiAlias,
-                        child: Image.asset(
-                          asset,
-                          fit: BoxFit.cover,
-                          semanticLabel: caption,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 32),
-          Reveal(
-            child: ChevronLink(
-              label: l10n.homeShellCta,
-              onPressed: () => context.go(Routes.screenshots),
-            ),
-          ),
-        ],
       ),
     );
   }

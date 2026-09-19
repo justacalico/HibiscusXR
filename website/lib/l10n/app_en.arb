@@ -56,10 +56,6 @@
   "statNotes": "~300",
   "statNotesLabel": "Research notes",
 
-  "homeShellEyebrow": "The shell",
-  "homeShellTitle": "An open VR home, already running.",
-  "homeShellBody": "vrhome replaces the stock Pico shell with a NativeActivity of our own: 2D apps float as windows, VR apps still launch fullscreen, and the library grid is just another app.",
-  "homeShellCta": "See screenshots",
   "shotCollectionCaption": "Collections and groups, with counts.",
   "shotMenuCaption": "The tile menu on a long press.",
 

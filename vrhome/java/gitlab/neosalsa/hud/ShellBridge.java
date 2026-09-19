@@ -247,6 +247,27 @@ public class ShellBridge {
         if (listener != null) listener.onDismissMenu();
     }
 
+    // ---------------------------------------------------------- notifs
+
+    // set by the window logic: a toast window is up over a covered app,
+    // so the render loop draws only the card stack - no panels, no dock
+    private volatile boolean toastOnly;
+
+    public void setToastOnly(boolean v) { toastOnly = v; }
+
+    // render thread: card-stack-only render mode
+    public boolean toastOnly() { return toastOnly; }
+
+    // render thread: bumped on every post/removal by the listener
+    public int notifVersion() { return NotifService.version(); }
+
+    // render thread: the live notification set, newest first
+    public NotifService.Info[] notifs() { return NotifService.snapshot(); }
+
+    // render thread: dismiss a card's notification back through the
+    // listener; a non-clearable post is refused by the system itself
+    public void dismissNotif(String key) { NotifService.cancel(key); }
+
     // isVrApp does binder calls; the poll hits every display-0 task each
     // 400ms, so cache the answer per package
     private boolean vrApp(String pkg) {

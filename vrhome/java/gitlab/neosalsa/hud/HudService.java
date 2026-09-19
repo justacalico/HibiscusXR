@@ -46,6 +46,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private static final String TAG = "vrhud";
     private static final int K_SUMMON = 1003;      // DEFINE_HOME
     private static final long LONG_MS = 600;
+    private static final long TOAST_MS = 5000;
 
     static { System.loadLibrary("vrhud"); }
 
@@ -68,6 +69,21 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         @Override public void run() { onHoldDone(); }
     };
 
+    // notification toast: a fresh post while an app covers the display pops
+    // the window for a few seconds so the card is visible mid-game. The
+    // window stays NOT_FOCUSABLE so the app keeps focus; a summon during
+    // the toast just turns it into the full dash
+    private volatile boolean toastOn;
+    private long toastEnd;
+    private final Runnable toastOff = new Runnable() {
+        @Override public void run() {
+            final long left = toastEnd - SystemClock.uptimeMillis();
+            if (left > 0) { view.postDelayed(this, left); return; }
+            toastOn = false;
+            updateWindow();
+        }
+    };
+
     // --------------------------------------------------------- lifecycle
 
     @Override public void onCreate() {
@@ -80,6 +96,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         nativeInit(this, bridge);
         buildWindow();
         enableKeyFilter();
+        enableNotifAccess();
+        NotifService.onPosted(new Runnable() {
+            @Override public void run() { onNotifPosted(); }
+        });
         instance = this;
         foreground();
         Log.i(TAG, "hud up");
@@ -143,13 +163,15 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // window is always NOT_FOCUSABLE/NOT_TOUCHABLE: the key filter owns all
     // HUD input, so nothing underneath loses focus when the menu pops
     private void updateWindow() {
-        final boolean shown = !covered || summoned || holdPreview;
+        final boolean shown = !covered || summoned || holdPreview || toastOn;
         final int vis = shown ? View.VISIBLE : View.GONE;
         if (view.getVisibility() != vis) {
             Log.i(TAG, "window " + (shown ? "shown" : "hidden")
                     + " covered=" + covered + " summoned=" + summoned);
             view.setVisibility(vis);
         }
+        if (bridge != null)
+            bridge.setToastOnly(covered && toastOn && !summoned);
     }
 
     // --------------------------------------------------------- callbacks
@@ -157,8 +179,30 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // ShellBridge poller, on the main looper
     @Override public void onCovered(boolean c) {
         covered = c;
-        if (!c) summoned = false;   // back in home space: no stale summon
+        if (!c) {   // back in home space: no stale summon or toast
+            summoned = false;
+            toastOn = false;
+        }
         updateWindow();
+    }
+
+    // NotifService on the listener's binder thread: a fresh post while an
+    // app owns the display pops the cards for a few seconds. At home or
+    // while summoned the dash is already up, so a post just lands in the
+    // stack
+    static void onNotifPosted() {
+        final HudService s = instance;
+        if (s == null) return;
+        s.view.post(new Runnable() {
+            @Override public void run() {
+                if (!s.covered || s.summoned) return;
+                s.toastOn = true;
+                s.toastEnd = SystemClock.uptimeMillis() + TOAST_MS;
+                s.updateWindow();
+                s.view.removeCallbacks(s.toastOff);
+                s.view.postDelayed(s.toastOff, TOAST_MS);
+            }
+        });
     }
 
     // the dock/launch path asks to drop the menu (immersive app going
@@ -166,9 +210,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     @Override public void onDismissMenu() {
         view.post(new Runnable() {
             @Override public void run() {
-                if (!summoned && !holdPreview) return;
+                if (!summoned && !holdPreview && !toastOn) return;
                 summoned = false;
                 holdPreview = false;
+                toastOn = false;
                 updateWindow();
             }
         });
@@ -337,6 +382,26 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             Log.i(TAG, "key filter enabled");
         } catch (Throwable t) {
             Log.e(TAG, "cannot enable key filter - summon key dead", t);
+        }
+    }
+
+    // same self-enable trick as the key filter: the notification listener
+    // binds once the secure setting names it, no settings trip needed
+    private void enableNotifAccess() {
+        try {
+            final String svc = getPackageName() + "/"
+                    + NotifService.class.getName();
+            android.content.ContentResolver cr = getContentResolver();
+            String cur = Settings.Secure.getString(cr,
+                    "enabled_notification_listeners");
+            if (cur == null || !cur.contains(svc)) {
+                Settings.Secure.putString(cr,
+                        "enabled_notification_listeners",
+                        cur == null || cur.isEmpty() ? svc : cur + ":" + svc);
+            }
+            Log.i(TAG, "notif access enabled");
+        } catch (Throwable t) {
+            Log.e(TAG, "cannot enable notif listener", t);
         }
     }
 

@@ -197,7 +197,7 @@ abstract class AppLocalizations {
   /// No description provided for @heroTitle.
   ///
   /// In en, this message translates to:
-  /// **'Android 10, in VR.'**
+  /// **'Android back, in VR.'**
   String get heroTitle;
 
   /// No description provided for @heroSubtitle.

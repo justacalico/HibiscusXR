@@ -57,7 +57,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heroEyebrow => 'Pico Neo 2 · LineageOS 17.1';
 
   @override
-  String get heroTitle => '在 VR 里跑 Android 10。';
+  String get heroTitle => 'Android 回来了,在 VR 里。';
 
   @override
   String get heroSubtitle => '把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。';

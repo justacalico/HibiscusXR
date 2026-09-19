@@ -242,6 +242,56 @@ void testHead() {
     // the fixture quat isn't exactly normalized, so allow slack
     CHECK_F(fabsf(gazePitch(up)), (float)M_PI / 2, 0.01f);
 
+    // recenterAngles: level gaze reports its yaw/pitch; a head pitched
+    // near-vertical - headset flat on a desk - recovers the heading from
+    // the head's right axis and resets the pitch level
+    {
+        float y = 9.0f, p = 9.0f;
+        CHECK(recenterAngles(I, &y, &p));
+        CHECK_F(y, 0.0f, 1e-6f);
+        CHECK_F(p, 0.0f, 1e-6f);
+
+        // face-down on the desk: gaze vertical, right axis still points
+        // the way the head was facing when it was laid down, and the pitch
+        // resets level so the ring sits on the horizon for pickup
+        y = 9.0f; p = 9.0f;
+        CHECK(!recenterAngles(up, &y, &p));
+        CHECK_F(y, 0.0f, 0.01f);     // heading recovered, not noise
+        CHECK_F(p, 0.0f, 1e-6f);     // pitch resets level
+
+        // face-up on the desk recovers the same heading
+        const Mat4 down = quatToMat((const float[]){-0.7071f, 0, 0, 0.7071f},
+                                    false);
+        CHECK(!recenterAngles(down, &y, &p));
+        CHECK_F(y, 0.0f, 0.01f);
+        CHECK_F(p, 0.0f, 1e-6f);
+
+        // face-down after turning 90 deg east: the recovered heading turns
+        // with it - flat on the desk does not lose the facing direction
+        const Mat4 east = multiply(up,
+            quatToMat((const float[]){0, 0.7071f, 0, 0.7071f}, false));
+        CHECK(!recenterAngles(east, &y, &p));
+        CHECK_F(y, (float)M_PI / 2, 0.02f);
+
+        // yawed head reports its yaw
+        const Mat4 yw = quatToMat((const float[]){0, 0.7071f, 0, 0.7071f},
+                                  false);
+        CHECK(recenterAngles(yw, &y, &p));
+        CHECK_F(fabsf(y), (float)M_PI / 2, 0.01f);
+
+        // 60 deg of pitch still has a usable horizontal projection;
+        // ~80 deg takes the desk-flat path
+        const Mat4 tilt = quatToMat((const float[]){0.5f, 0, 0, 0.86603f},
+                                    false);
+        CHECK(recenterAngles(tilt, &y, &p));
+        CHECK_F(fabsf(p), (float)M_PI / 3, 0.02f);
+        const Mat4 steep = quatToMat((const float[]){0.6428f, 0, 0, 0.7660f},
+                                     false);
+        CHECK(!recenterAngles(steep, &y, &p));
+        CHECK_F(y, 0.0f, 0.01f);
+        CHECK_F(p, 0.0f, 1e-6f);
+    }
+
     // euler extraction: identity quat -> all zero
     float yaw, pitch, roll;
     quatToYpr(qi, &yaw, &pitch, &roll);

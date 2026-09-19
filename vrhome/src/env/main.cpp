@@ -53,9 +53,9 @@ static void drawFrame(Engine* e) {
     const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
                               propF("debug.vrhome.fpy", 0.0f),
                               propF("debug.vrhome.fpz", 0.0f)};
-    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", 0.0f)
+    const float sensRoll = e->quatFromQvr ? propF("debug.vrhome.qvrsensroll", kQvrSensRoll)
                                           : propF("debug.vrhome.sensroll", kSensRoll);
-    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", 0.0f)
+    const float worldX = e->quatFromQvr ? propF("debug.vrhome.qvrworldx", kQvrWorldX)
                                         : propF("debug.vrhome.worldx", kWorldX);
     const float* headPos = nullptr;
     float posGl[3];

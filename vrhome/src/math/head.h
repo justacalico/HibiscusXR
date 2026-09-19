@@ -45,6 +45,14 @@ bool gazeYaw(const Mat4& head, float* out);
 // elevation of the gaze direction, radians; always defined
 float gazePitch(const Mat4& head);
 
+// recenter direction from the head: gaze yaw/pitch when the gaze is near
+// enough horizontal. When the head points near-vertical - headset flat on
+// a desk - the horizontal projection collapses and yaw is noise; the head's
+// right axis stays horizontal through the pitch so the heading comes back
+// from it instead, and the pitch resets level so the ring sits on the
+// horizon for when the headset is picked up. false when it had to guess
+bool recenterAngles(const Mat4& head, float* yaw, float* pitch);
+
 // yaw/pitch/roll in degrees for the HUD
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll);
 

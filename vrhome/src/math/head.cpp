@@ -78,6 +78,28 @@ float gazePitch(const Mat4& head) {
     return asinf(fmaxf(-1.0f, fminf(1.0f, d[1])));
 }
 
+bool recenterAngles(const Mat4& head, float* yaw, float* pitch) {
+    float d[3];
+    gazeDir(head, d);
+    if (d[0]*d[0] + d[2]*d[2] >= 0.0669f) {
+        *yaw = atan2f(d[0], -d[2]);
+        *pitch = asinf(fmaxf(-1.0f, fminf(1.0f, d[1])));
+        return true;
+    }
+    // past ~75 deg of pitch the horizontal projection is too small to be a
+    // stable yaw - the dash would recenter on sensor noise. The right axis
+    // is perpendicular to the gaze so it stays horizontal through the
+    // pitch: heading = its yaw minus a quarter turn. Pitch resets level:
+    // nobody is looking through the lenses while the headset lies flat,
+    // and a level ring is what they want in front when they pick it up
+    const float vx[3] = {1.0f, 0.0f, 0.0f};
+    float r[3];
+    viewDirToWorld(head, vx, r);
+    *yaw = wrapPi(atan2f(r[0], -r[2]) - (float)M_PI / 2);
+    *pitch = 0.0f;
+    return false;
+}
+
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll) {
     const float x = q[0], y = q[1], z = q[2], w = q[3];
     *yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;

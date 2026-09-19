@@ -37,7 +37,8 @@ import android.view.WindowManager;
  * an accessibility service with flagRequestFilterKeyEvents, sees every key
  * before dispatch no matter which app is focused - gesture monitors never
  * receive keys on this build. Short press toggles the menu over a covered
- * app or recenters the ring in home space; long press goes home.
+ * app; holding the key fills a progress ring in the view and recenters the
+ * dash when the fill completes.
  */
 public class HudService extends Service implements SurfaceHolder.Callback,
         HudView.KeySink, ShellBridge.CoveredListener {
@@ -58,6 +59,13 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private volatile boolean covered = true;
     private volatile boolean summoned;   // user pulled the HUD over it
     private long summonDownAt = -1;
+    // the hold ring has to be visible while the button is down even over an
+    // app the dash isn't summoned on: the window comes up for the hold and
+    // drops again if the press is released before the fill completes
+    private boolean holdPreview;
+    private final Runnable holdFire = new Runnable() {
+        @Override public void run() { onHoldDone(); }
+    };
 
     // --------------------------------------------------------- lifecycle
 
@@ -128,7 +136,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // window is always NOT_FOCUSABLE/NOT_TOUCHABLE: the key filter owns all
     // HUD input, so nothing underneath loses focus when the menu pops
     private void updateWindow() {
-        final boolean shown = !covered || summoned;
+        final boolean shown = !covered || summoned || holdPreview;
         final int vis = shown ? View.VISIBLE : View.GONE;
         if (view.getVisibility() != vis) {
             Log.i(TAG, "window " + (shown ? "shown" : "hidden")
@@ -171,31 +179,41 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         });
     }
 
-    // summon key from the key filter: short press toggles the menu over a
-    // covered app or recenters the ring in home space; long press goes home
+    // summon key from the key filter: a short press toggles the menu over a
+    // covered app. Holding the key fills the progress ring; when the fill
+    // completes the dash recenters in front of the head, whatever app is
+    // up. Releasing early cancels and counts as a short press
     private void onSummon(int action) {
         if (action == KeyEvent.ACTION_DOWN) {
             summonDownAt = SystemClock.uptimeMillis();
+            nativeHoldStart();
+            if (covered && !summoned) {
+                holdPreview = true;
+                updateWindow();
+            }
+            view.postDelayed(holdFire, LONG_MS);
         } else if (action == KeyEvent.ACTION_UP && summonDownAt >= 0) {
-            final boolean long_ =
-                    SystemClock.uptimeMillis() - summonDownAt > LONG_MS;
             summonDownAt = -1;
-            if (long_) { goHome(); return; }
+            view.removeCallbacks(holdFire);
+            nativeHoldEnd();
+            if (holdPreview) { holdPreview = false; updateWindow(); }
             if (covered) {
                 summoned = !summoned;
                 updateWindow();
                 if (summoned) nativeRecenter();
-            } else {
-                nativeRecenter();
             }
         }
     }
 
-    private void goHome() {
-        Intent i = new Intent(Intent.ACTION_MAIN);
-        i.addCategory(Intent.CATEGORY_HOME);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(i);
+    // the button stayed down through the whole fill: re-anchor the dash on
+    // the head and make sure it's up so the recenter is visible
+    private void onHoldDone() {
+        summonDownAt = -1;
+        nativeHoldEnd();
+        nativeRecenter();
+        if (covered && !summoned) summoned = true;
+        if (holdPreview) holdPreview = false;
+        updateWindow();
     }
 
     // render-thread debug hook: adb input keyevent never reaches the
@@ -209,6 +227,14 @@ public class HudService extends Service implements SurfaceHolder.Callback,
                 updateWindow();
                 if (summoned) nativeRecenter();
             }
+        });
+    }
+
+    // debug.vrhome.hold drives the real onSummon path: 1 = key down,
+    // 0 = key up - exercises the hold ring and the long-press recenter
+    public void debugSummonKey(final int action) {
+        view.post(new Runnable() {
+            @Override public void run() { onSummon(action); }
         });
     }
 
@@ -269,5 +295,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private static native void nativeWindowGone();
     private static native void nativeKey(int code, int action, int repeat);
     private static native void nativeRecenter();
+    private static native void nativeHoldStart();
+    private static native void nativeHoldEnd();
     private static native void nativeShutdown();
 }

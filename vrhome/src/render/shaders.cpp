@@ -121,6 +121,26 @@ void main() {
 }
 )";
 
+// hold-progress ring: a thin circle whose arc lights up clockwise from the
+// top as uProg runs 0..1. aUV is -1..1 across the quad so angles and radii
+// stay in circle space
+const char* const kHoldFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform vec4 uColor;
+uniform float uProg;
+void main() {
+    float r = length(vUV);
+    float ring = 1.0 - smoothstep(0.10, 0.14, abs(r - 0.82));
+    // angle from the top of the circle, clockwise, 0..1
+    float frac = atan(vUV.x, vUV.y) / 6.2831853;
+    if (frac < 0.0) frac += 1.0;
+    float a = ring * (frac <= uProg ? 1.0 : 0.25);
+    if (a < 0.01) discard;
+    gl_FragColor = vec4(uColor.rgb, uColor.a * a);
+}
+)";
+
 const char* const kTextVS = R"(
 attribute vec3 aPos;
 attribute vec2 aUV;

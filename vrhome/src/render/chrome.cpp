@@ -242,6 +242,53 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     glDisable(GL_BLEND);
 }
 
+// summon-key hold feedback: a flat overlay ring whose arc fills while the
+// button is held. The quad is built in clip space so it never touches the
+// head pose - it stays glued to the screen centre no matter how the user
+// moves during the hold
+void drawHoldRing(HudEngine* e) {
+    if (e->holdP <= 0.0f) return;
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(e->holdProg);
+    const GLint uMVP  = glGetUniformLocation(e->holdProg, "uMVP");
+    const GLint uProg = glGetUniformLocation(e->holdProg, "uProg");
+    const GLint uCol  = glGetUniformLocation(e->holdProg, "uColor");
+    const GLint aPos  = glGetAttribLocation(e->holdProg, "aPos");
+    const GLint aUV   = glGetAttribLocation(e->holdProg, "aUV");
+    GLint vpBox[4];
+    glGetIntegerv(GL_VIEWPORT, vpBox);
+    const float aspect = vpBox[3] > 0 ? (float)vpBox[2] / (float)vpBox[3] : 1.0f;
+    const float s = kHoldSize, sx = s / aspect;
+    const float q[4][5] = {
+        {-sx, -s, 0.0f, -1.0f, -1.0f}, { sx, -s, 0.0f,  1.0f, -1.0f},
+        { sx,  s, 0.0f,  1.0f,  1.0f}, {-sx,  s, 0.0f, -1.0f,  1.0f},
+    };
+    const int tris[6] = {0,1,2, 0,2,3};
+    float verts[30];
+    for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
+    const Mat4 mvp = identity();
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
+    glUniform1f(uProg, e->holdP);
+    const float col[4] = {1.0f, 1.0f, 1.0f, 0.95f};
+    glUniform4fv(uCol, 1, col);
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+}
+
 void drawCursor(HudEngine* e, const Mat4& viewProj) {
     if (e->hover < 0 || e->hover >= (int)e->panels.size()) return;
     const Panel& p = e->panels[e->hover];

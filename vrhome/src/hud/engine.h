@@ -40,6 +40,11 @@ struct HudEngine : Engine {
     float ringPos[3] = {0.0f, 0.0f, 0.0f};
     float eyePos[3] = {0.0f, 0.0f, 0.0f};
 
+    // summon-key hold state: holdStartMs is the CLOCK_MONOTONIC ms the key
+    // went down (0 = not held); holdP is the 0..1 fill the ring draws
+    long long holdStartMs = 0;
+    float holdP = 0.0f;
+
     int hover = -1;              // panel index under the gaze ray
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit

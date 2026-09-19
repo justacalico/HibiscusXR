@@ -100,8 +100,10 @@ void updateHud(Engine* e, const char* extra) {
     char pos[32] = "";
     if (e->headPosValid)
         fmtPosArrows(e->headPos, pos, sizeof(pos));
+    char trk[12];
+    fmtTrackState(e->qvrState, trk, sizeof(trk));
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d  %s%s%s",
-        yaw, pitch, roll, e->fps, e->sensorNewHz,
-        e->headPosValid ? "6DOF" : "3DOF", pos, extra ? extra : "");
+        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d  TRK %s  %s%s%s",
+        yaw, pitch, roll, e->fps, e->sensorNewHz, trk,
+        e->qvrState == QVR_TRACKED ? "6DOF" : "3DOF", pos, extra ? extra : "");
 }

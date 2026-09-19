@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/system_properties.h>
 
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "vrhome-qvr", __VA_ARGS__)
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "vrhome-qvr", __VA_ARGS__)
@@ -32,6 +33,9 @@ struct QvrClient {
     void (*dtor)(void*) = nullptr;
     int (*stopVR)(void*) = nullptr;
     int (*getPose)(void*, QvrPose**) = nullptr;
+    uint64_t lastTs = 0;
+    int stall = 0;
+    int empty = 0;
 };
 
 // QVRSERVICE_TRACKING_MODE_POSITIONAL: verified on device, mode 2 switches
@@ -78,24 +82,99 @@ static QvrClient* qvrOpen() {
     return c;
 }
 
+// no stopVR: VR mode is service-global, another process may still need it
+static void qvrClose(QvrClient* c) {
+    if (c->dtor && c->obj) c->dtor(c->obj);
+    free(c->obj);
+    if (c->lib) dlclose(c->lib);
+    free(c);
+}
+
+// GetHeadTrackingData dereferences the dead service's binder state and
+// segfaults: it must never run while qvrd is down. An unset property means
+// a differently-named service on another setup - don't gate those.
+static bool qvrServiceUp() {
+    char v[PROP_VALUE_MAX] = {0};
+    __system_property_get("init.svc.pn2_qvrd", v);
+    return v[0] == '\0' || strcmp(v, "running") == 0;
+}
+
 void qvrPoll(Engine* e) {
+    if (!qvrServiceUp()) {
+        if (e->qvrClient) {
+            LOGW("qvrd down, dropping client");
+            qvrClose((QvrClient*)e->qvrClient);
+            e->qvrClient = nullptr;
+        }
+        e->qvrState = -1;
+        e->headPosValid = false;
+        e->quatFromQvr = false;
+        return;
+    }
+    static int s_retryWait = 0;
     if (!e->qvrClient) {
+        if (s_retryWait > 0) {
+            --s_retryWait;
+            e->qvrState = -1;
+            e->headPosValid = false;
+            e->quatFromQvr = false;
+            return;
+        }
         e->qvrClient = qvrOpen();
-        if (!e->qvrClient) { e->headPosValid = false; e->quatFromQvr = false; return; }
+        if (!e->qvrClient) {
+            s_retryWait = 72;
+            e->headPosValid = false;
+            e->quatFromQvr = false;
+            e->qvrState = -1;
+            return;
+        }
     }
     QvrClient* c = (QvrClient*)e->qvrClient;
     QvrPose* p = nullptr;
-    if (c->getPose(c->impl, &p) != 0 || !p || p->state == 0) {
+    if (c->getPose(c->impl, &p) != 0 || !p) {
+        e->qvrState = -1;
         e->headPosValid = false;
-        e->quatFromQvr = false;   // dead pose: let rot-vec take over again
+        e->quatFromQvr = false;   // dead client: let rot-vec take over again
         return;
     }
-    qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, p->quat, p->pos);
-    e->haveQuat = true;
-    e->headPosValid = true;
+    // a dead service keeps the last pose readable at st=3 forever: repeated
+    // timestamps are the only liveness signal left. a long empty stretch
+    // (state 0 while the service is up) also earns a reconnect - the fresh
+    // client re-requests positional mode, which kicks a wedged tracker
+    c->stall = qvrStallTick(c->stall, c->lastTs, p->timestamp);
+    c->lastTs = p->timestamp;
+    c->empty = p->state == 0 ? c->empty + 1 : 0;
+    if (c->stall > 90 || c->empty > 72 * 15) {
+        LOGW("pose stream %s, reconnecting", c->stall > 90 ? "stalled" : "idle");
+        qvrClose(c);
+        e->qvrClient = nullptr;
+        e->qvrState = -1;
+        e->headPosValid = false;
+        e->quatFromQvr = false;
+        return;
+    }
+    e->qvrState = (int)p->state;
+    switch (qvrClassify(p->state)) {
+    case QVR_TRACKED:
+        qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, p->quat, p->pos);
+        e->haveQuat = true;
+        e->headPosValid = true;
+        break;
+    case QVR_DEGRADED:
+        // degraded samples carry an identity pose: hold the last real
+        // position and hand orientation back to rot-vec so the view keeps
+        // moving instead of snapping to origin or freezing
+        e->quatFromQvr = false;
+        break;
+    default:
+        e->headPosValid = false;
+        e->quatFromQvr = false;
+        break;
+    }
     static int s_n = 0;
     if (propI("debug.vrhome.qvrlog", 0) && ++s_n % 72 == 0)
-        LOGI("rv %.3f %.3f %.3f %.3f qvr %.3f %.3f %.3f %.3f pos %.3f %.3f %.3f w %.3f %.3f %.3f hz %d",
+        LOGI("st %d rv %.3f %.3f %.3f %.3f qvr %.3f %.3f %.3f %.3f pos %.3f %.3f %.3f w %.3f %.3f %.3f hz %d",
+             e->qvrState,
              e->quat[0], e->quat[1], e->quat[2], e->quat[3],
              p->quat[0], p->quat[1], p->quat[2], p->quat[3],
              p->pos[0], p->pos[1], p->pos[2],

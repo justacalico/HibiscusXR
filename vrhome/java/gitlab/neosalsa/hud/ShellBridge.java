@@ -1,9 +1,12 @@
 package gitlab.neosalsa.hud;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.SurfaceTexture;
@@ -37,7 +40,7 @@ import java.util.Set;
  *
  * Threading: createPanel, launch/adopt/release, the takePending getters and
  * the inject methods are all called from the render thread. The poller and
- * LauncherActivity callbacks run on the main looper.
+ * the open-package receiver run on the main looper.
  */
 public class ShellBridge {
     private static final String TAG = "vrhud.bridge";
@@ -47,6 +50,14 @@ public class ShellBridge {
     // but exclude this package anyway so a stray can never be ourselves
     private static final String ENV_PKG = "gitlab.neosalsa.home";
     private static final String SELF = "gitlab.neosalsa.hud";
+    private static final String LIB_PKG = "gitlab.neosalsa.library";
+
+    // cross-process launch contract: the library app (or anything else on
+    // a panel) asks the shell for a fresh window with a package-scoped
+    // ordered broadcast; RESULT_OK tells the sender the launch was claimed
+    public static final String ACTION_OPEN_PACKAGE =
+            "gitlab.neosalsa.hud.action.OPEN_PACKAGE";
+    public static final String EXTRA_PACKAGE = "package";
 
     // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
     private static final int VD_FLAGS = 1 | 64;
@@ -134,6 +145,7 @@ public class ShellBridge {
         mSetLaunchDisplayId = ActivityOptions.class.getDeclaredMethod(
                 "setLaunchDisplayId", int.class);
 
+        ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
         main.postDelayed(poll, 800);
         Log.i(TAG, "bridge up");
     }
@@ -167,10 +179,10 @@ public class ShellBridge {
         return v != null ? v.st : null;
     }
 
-    // display name for a panel's window bar; the library panel's pseudo
-    // package is not a real package so it gets a fixed label
+    // display name for a panel's window bar; the library gets a fixed label
+    // so the pill matches whatever the app itself is called
     public String appLabel(String pkg) {
-        if ("gitlab.neosalsa.hud.library".equals(pkg)) return "Library";
+        if (LIB_PKG.equals(pkg)) return "Library";
         try {
             return pm.getApplicationLabel(
                     pm.getApplicationInfo(pkg, 0)).toString();
@@ -282,19 +294,6 @@ public class ShellBridge {
 
     // render thread: true while something other than the env owns display 0
     public boolean isCovered() { return covered; }
-
-    // our own library activity goes on its own panel
-    public void launchLauncherOn(int displayId) {
-        try {
-            Intent i = new Intent();
-            i.setComponent(new ComponentName(ctx, LauncherActivity.class));
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            launching.add(displayId);
-            startWithRetry(i, displayId, 3);
-        } catch (Throwable t) {
-            Log.e(TAG, "launchLauncherOn", t);
-        }
-    }
 
     // a task that spawned on the physical display gets moved into a panel.
     // Prefer moveStackToDisplay (atomic, keeps the running activity); the
@@ -503,8 +502,19 @@ public class ShellBridge {
 
     // ---------------------------------------------------------- entry points
 
-    // called by LauncherActivity on the UI thread: ask the render thread for
-    // a fresh panel and launch this package on it
+    // package-scoped ordered broadcast from a panel app (the library): a
+    // claimed launch answers RESULT_OK so the sender skips its own
+    // startActivity, then queues the same render-thread path the old
+    // in-apk grid used
+    private final BroadcastReceiver openReq = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            String pkg = i.getStringExtra(EXTRA_PACKAGE);
+            if (pkg == null || pkg.isEmpty()) return;
+            setResultCode(Activity.RESULT_OK);
+            openPackage(pkg);
+        }
+    };
+
     public static void openPackage(String pkg) {
         nativeQueueLaunch(pkg);
     }

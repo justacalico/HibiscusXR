@@ -77,5 +77,6 @@ constexpr int kPicoHome = 1003;
 constexpr int   kHoldMs = 600;
 constexpr float kHoldSize = 0.10f;  // quad half height in clip space
 
-// pseudo-package adopted by the app-library panel
-constexpr const char* kLibraryPkg = "gitlab.neosalsa.hud.library";
+// package adopted by the app-library panel: the standalone Flutter app,
+// hosted on its own virtual display like every other panel window
+constexpr const char* kLibraryPkg = "gitlab.neosalsa.library";

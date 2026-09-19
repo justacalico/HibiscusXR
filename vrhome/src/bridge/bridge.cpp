@@ -8,10 +8,11 @@
 #include "../panels/panels.h"
 #include "../common/props.h"
 
+#include <cstring>
 #include <deque>
 #include <mutex>
 
-// launch requests arrive from Java (LauncherActivity, test hook)
+// launch requests arrive from Java (open-package broadcast, test hook)
 static std::deque<std::string> gLaunchQ;
 static std::mutex gLaunchMu;
 
@@ -45,7 +46,6 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
                         "(I)Landroid/graphics/SurfaceTexture;");
     e->mLaunchPkg    = env->GetMethodID(bc, "launchPackageOn",
                         "(Ljava/lang/String;I)V");
-    e->mLaunchLauncher = env->GetMethodID(bc, "launchLauncherOn", "(I)V");
     e->mAdopt        = env->GetMethodID(bc, "adoptTaskOn", "(II)V");
     e->mReleasePanel = env->GetMethodID(bc, "releasePanel", "(I)V");
     e->mTakeAdopt    = env->GetMethodID(bc, "takePendingAdopt",
@@ -87,6 +87,12 @@ void pumpBridge(HudEngine* e) {
             pkg = gLaunchQ.front(); gLaunchQ.pop_front();
         }
         jstring jpkg = env->NewStringUTF(pkg.c_str());
+        // the library is the one window that must never duplicate: a second
+        // launch request just keeps the existing panel
+        if (pkg == kLibraryPkg && libraryIndex(e->panels) >= 0) {
+            env->DeleteLocalRef(jpkg);
+            continue;
+        }
         // Pico VR apps take over the headset; no panel is spent on them
         if (e->mIsVr && env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)) {
             env->CallVoidMethod(e->bridge, e->mLaunchVr, jpkg);
@@ -146,7 +152,17 @@ void pumpBridge(HudEngine* e) {
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
         const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
         LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
+        const bool dupLib = pc != nullptr && strcmp(pc, kLibraryPkg) == 0
+                            && libraryIndex(e->panels) >= 0;
         if (pc) env->ReleaseStringUTFChars(jpkg, pc);
+        if (dupLib) {
+            // a stray library task would double the launcher: kill it and
+            // keep the canonical panel
+            env->CallVoidMethod(e->bridge, e->mRemoveTask, taskId);
+            if (env->ExceptionCheck()) { env->ExceptionClear(); }
+            env->DeleteLocalRef(p);
+            continue;
+        }
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
         int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
                             ringPitch(e->panels));

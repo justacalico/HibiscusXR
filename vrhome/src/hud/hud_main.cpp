@@ -105,23 +105,35 @@ static void debugHoldHook(HudEngine* e) {
     }
 }
 
-// one-time: library panel dead ahead once tracking is live. recenterAngles
+// the library panel is permanent: it opens dead ahead once tracking is
+// live, and since the app is its own process now a dead one respawns the
+// same way instead of leaving the shell without a launcher. recenterAngles
 // covers the desk-flat case too, so a boot with the headset lying on its
 // back still puts the launcher in front of the head's heading
 static void spawnLauncher(HudEngine* e, const Mat4& head) {
-    if (!e->bridge || !e->haveQuat || e->launcherSpawned) return;
+    if (!e->bridge || !e->haveQuat) return;
+    if (libraryIndex(e->panels) >= 0) { e->launcherSpawned = true; return; }
+    if (!e->launcherSpawned)
+        // the dash's first appearance anchors the ring at the head's spot
+        // too, so a fresh boot doesn't park the panels around the tracking
+        // origin; a respawn keeps the ring where the user left it
+        memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
     e->launcherSpawned = true;
-    // the dash's first appearance anchors the ring at the head's spot too,
-    // so a fresh boot doesn't park the panels around the tracking origin
-    memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
     float gy = 0.0f, gp = 0.0f;
     recenterAngles(head, &gy, &gp);
-    int idx = openPanel(e, gy, gp);
+    const float yaw = freeSlotYaw(e->panels, gy);
+    const float pitch = e->panels.empty() ? gp : ringPitch(e->panels);
+    int idx = openPanel(e, yaw, pitch);
+    // the library stays even under slot pressure: an app window goes first
+    if (idx < 0 && evictOldestApp(e))
+        idx = openPanel(e, yaw, pitch);
     if (idx >= 0) {
         e->panels[idx].pkg = kLibraryPkg;
         JNIEnv* env = threadEnv(e->vm);
-        env->CallVoidMethod(e->bridge, e->mLaunchLauncher,
+        jstring jpkg = env->NewStringUTF(kLibraryPkg);
+        env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
                             e->panels[idx].displayId);
+        env->DeleteLocalRef(jpkg);
         if (env->ExceptionCheck()) env->ExceptionClear();
     }
 }

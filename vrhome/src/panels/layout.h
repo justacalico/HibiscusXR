@@ -26,6 +26,9 @@ float ringPitch(const std::vector<Panel>& panels);
 // launcher), or -1 when nothing can go
 int evictIndex(const std::vector<Panel>& panels);
 
+// index of the library panel, or -1 - there is at most one
+int libraryIndex(const std::vector<Panel>& panels);
+
 // snap every panel to its nearest ring slot around a new centre yaw and pull
 // the whole ring to the given elevation
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);

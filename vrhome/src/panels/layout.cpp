@@ -70,6 +70,12 @@ int evictIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
+int libraryIndex(const std::vector<Panel>& panels) {
+    for (int i = 0; i < (int)panels.size(); ++i)
+        if (panels[i].pkg == kLibraryPkg) return i;
+    return -1;
+}
+
 float pillHalfWidth(float textW, float winHW, bool btns) {
     const float cap = winHW - kBarInset;
     float w = textW * 0.5f + kPillPadX + (btns ? kPillBtnW : 0.0f);

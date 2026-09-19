@@ -83,7 +83,7 @@ src/text/        utf8, glyph layout, font atlas, text drawing
 src/input/       headset button handling (HUD)
 src/sensor/      rotation vector drain (environment)
 java/gitlab/neosalsa/home/    PanelActivity, CoverWatch
-java/gitlab/neosalsa/hud/     HudService, HudView, ShellBridge, LauncherActivity, BootReceiver
+java/gitlab/neosalsa/hud/     HudService, HudView, ShellBridge, BootReceiver
 stubs/           compile-only stubs for hidden framework classes
 tests/           host unit tests
 ```

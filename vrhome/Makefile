@@ -108,6 +108,7 @@ $(HUD_SO): $(HUD_OBJS)
 
 $(CLASSES): $(JAVA_SRCS) $(STUB_SRCS) | toolcheck
 	@mkdir -p $(OUT)/classes
+	rm -rf $(OUT)/classes/gitlab
 	javac -source 8 -target 8 -cp "$(JAR)" -d $(OUT)/classes \
 	    $(JAVA_SRCS) $(STUB_SRCS)
 	@touch $@

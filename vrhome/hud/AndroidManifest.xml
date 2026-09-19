@@ -66,13 +66,5 @@
             </intent-filter>
         </receiver>
 
-        <!-- the app library; lives on a virtual display, never on the panel -->
-        <activity
-            android:name=".LauncherActivity"
-            android:label="Library"
-            android:exported="false"
-            android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize|screenLayout|density"
-            android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen" />
     </application>
 </manifest>

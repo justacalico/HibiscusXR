@@ -47,10 +47,16 @@
 
 DEBUG_GET_ONCE_LOG_OPTION(pn2_log, "PN2_LOG", U_LOGGING_WARN)
 DEBUG_GET_ONCE_NUM_OPTION(pn2_axismap, "PN2_AXISMAP", 0)
-DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k1, "PN2_K1", 0.22f)
-DEBUG_GET_ONCE_FLOAT_OPTION(pn2_k2, "PN2_K2", 0.24f)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_ipd, "PN2_IPD", 0.0635f)
 DEBUG_GET_ONCE_BOOL_OPTION(pn2_no_qvr, "PN2_NO_QVR", false)
+
+// Stock Pico lens field, same constants verified on-device in vrhome:
+// the texture offset scales by K0 + K2 r^2 + K4 r^4 + K6 r^6 where r is the
+// tan-angle radius of the panel pixel from the lens centre.
+#define PN2_LENS_K0 0.740740741f
+#define PN2_LENS_K2 0.192360375f
+#define PN2_LENS_K4 -0.020400088f
+#define PN2_LENS_K6 0.216338258f
 
 /*!
  * @implements xrt_device
@@ -71,8 +77,10 @@ struct pn2_device
 
 	enum u_logging_level log_level;
 	struct xrt_quat sens_to_head; //!< maps raw sensor axes into head frame
-	float dist_k1;
-	float dist_k2;
+	float lens_cx[2];             //!< lens centre uv in each half-panel
+	float lens_cy;
+	float tan_x;                  //!< panel-uv offset -> tan(angle) scales
+	float tan_y;
 	float chroma_r;
 	float chroma_b;
 
@@ -437,18 +445,22 @@ static xrt_result_t
 pn2_compute_distortion(struct xrt_device *xdev, uint32_t view, float u, float v, struct xrt_uv_triplet *result)
 {
 	struct pn2_device *d = pn2_device(xdev);
-	(void)view;
 
-	// Barrel pre-distortion per eye, same family as the verified GLES demo.
-	float px = u * 2.0f - 1.0f;
-	float py = v * 2.0f - 1.0f;
-	float r2 = px * px + py * py;
-	float scale = 1.0f + d->dist_k1 * r2 + d->dist_k2 * r2 * r2;
+	// panel-pixel offset from this eye's lens centre, in half-panel uv
+	const float cx = d->lens_cx[view];
+	const float cy = d->lens_cy;
+	float px = u - cx;
+	float py = v - cy;
+	float qx = px * d->tan_x;
+	float qy = py * d->tan_y;
+	float r2 = qx * qx + qy * qy;
+	float scale = PN2_LENS_K0 + r2 * (PN2_LENS_K2 + r2 * (PN2_LENS_K4 + r2 * PN2_LENS_K6));
 
-	struct xrt_vec2 g = {0.5f + px * scale * 0.5f, 0.5f + py * scale * 0.5f};
-	result->g = g;
-	result->r = (struct xrt_vec2){0.5f + (g.x - 0.5f) * d->chroma_r, 0.5f + (g.y - 0.5f) * d->chroma_r};
-	result->b = (struct xrt_vec2){0.5f + (g.x - 0.5f) * d->chroma_b, 0.5f + (g.y - 0.5f) * d->chroma_b};
+	float gx = cx + px * scale;
+	float gy = cy + py * scale;
+	result->g = (struct xrt_vec2){gx, gy};
+	result->r = (struct xrt_vec2){cx + (gx - cx) * d->chroma_r, cy + (gy - cy) * d->chroma_r};
+	result->b = (struct xrt_vec2){cx + (gx - cx) * d->chroma_b, cy + (gy - cy) * d->chroma_b};
 	return XRT_SUCCESS;
 }
 
@@ -495,8 +507,6 @@ pn2_hmd_create(void)
 	snprintf(d->base.serial, XRT_DEVICE_NAME_LEN, "PICOA7B10");
 
 	d->log_level = debug_get_log_option_pn2_log();
-	d->dist_k1 = debug_get_float_option_pn2_k1();
-	d->dist_k2 = debug_get_float_option_pn2_k2();
 	d->chroma_r = 0.992f;
 	d->chroma_b = 1.012f;
 
@@ -523,9 +533,22 @@ pn2_hmd_create(void)
 	info.display.h_meters = 0.0670f;
 	info.lens_horizontal_separation_meters = debug_get_float_option_pn2_ipd();
 	info.lens_vertical_position_meters = info.display.h_meters / 2.0f;
-	const float per_eye_fov = 89.5f * (float)(M_PI / 180.0);
-	info.fov[0] = per_eye_fov;
-	info.fov[1] = per_eye_fov;
+
+	// Geometry matching the lens field above: the vertical panel edge sits
+	// at tan = 1 (90 deg total), so the eye relief is half the panel height.
+	// The horizontal total falls out of the per-eye half width and the lens
+	// offset: 63.5mm IPD vs a 59.55mm half puts each lens centre ~2mm
+	// outboard of its half's centre.
+	const float half_w_m = info.display.w_meters / 2.0f;
+	const float eye_relief = info.display.h_meters / 2.0f;
+	const float lens_cx_m = info.lens_horizontal_separation_meters / 2.0f;
+	info.fov[0] = info.fov[1] =
+	    atanf(lens_cx_m / eye_relief) + atanf((half_w_m - lens_cx_m) / eye_relief);
+	d->lens_cx[0] = (half_w_m - lens_cx_m) / half_w_m;
+	d->lens_cx[1] = lens_cx_m / half_w_m;
+	d->lens_cy = 0.5f;
+	d->tan_x = half_w_m / eye_relief;
+	d->tan_y = info.display.h_meters / eye_relief;
 	if (!u_device_setup_split_side_by_side(&d->base, &info)) {
 		PN2_ERROR(d, "u_device_setup_split_side_by_side failed");
 		pn2_destroy(&d->base);

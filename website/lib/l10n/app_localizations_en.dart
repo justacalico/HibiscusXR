@@ -70,51 +70,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heroSecondary => 'Read the docs';
 
   @override
-  String get heroShotCaption => 'The library app window inside vrhome.';
-
-  @override
-  String get shotMockTime => '3:52';
-
-  @override
-  String get shotMockSearch => 'Search';
-
-  @override
-  String shotMockFilter(int count) {
-    return 'All ($count)';
-  }
-
-  @override
-  String get shotMockSort => 'A-Z';
-
-  @override
-  String get shotMockSystem => 'System';
-
-  @override
-  String get shotAppCalendar => 'Calendar';
-
-  @override
-  String get shotAppCamera => 'Camera';
-
-  @override
-  String get shotAppChrome => 'Chrome';
-
-  @override
-  String get shotAppClock => 'Clock';
-
-  @override
-  String get shotAppContacts => 'Contacts';
-
-  @override
-  String get shotAppDrive => 'Drive';
-
-  @override
-  String get shotAppFiles => 'Files';
-
-  @override
-  String get shotAppGemini => 'Gemini';
-
-  @override
-  String get shotAppGlasses => 'Glasses';
+  String get heroShotCaption => 'The Neosalsa headset mark.';
 
   @override
   String get statSoc => 'Snapdragon 845';

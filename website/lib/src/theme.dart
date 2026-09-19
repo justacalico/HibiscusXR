@@ -22,26 +22,11 @@ abstract final class AppColors {
   static const ok = Color(0xFF30D158);
   static const bad = Color(0xFFFF453A);
 
-  // The hero's fake library window. Always dark - it renders the
-  // headset's own UI, not the site theme.
+  // The hero's painted mark. Always dark - a product shot, not a page
+  // surface, so it ignores the site theme.
   static const shotSurface = Color(0xFF0E131A);
-  static const shotWell = Color(0xFF1C2530);
-  static const shotPill = Color(0xFF151B23);
-  static const shotInk = Color(0xFFE8EAED);
-  static const shotMuted = Color(0xFF99A1A9);
+  static const shotIcon = Color(0xFF1D1D21);
   static const shotDisc = Color(0xFFF4F5F7);
-  static const shotPaper = Color(0xFFFFFFFF);
-  static const shotBlue = Color(0xFF33415B);
-  static const shotSlate = Color(0xFF3A4350);
-  static const shotOlive = Color(0xFF474D39);
-  static const shotPine = Color(0xFF3D4942);
-  static const shotAccent = Color(0xFF64A6FF);
-  static const shotViolet = Color(0xFF9B72CB);
-  static const shotGoogle = Color(0xFF4285F4);
-  static const shotRed = Color(0xFFEA4335);
-  static const shotYellow = Color(0xFFFBBC04);
-  static const shotGreen = Color(0xFF34A853);
-  static const shotMarkInk = Color(0xFF3C4043);
 }
 
 /// Layout constants shared by every page.

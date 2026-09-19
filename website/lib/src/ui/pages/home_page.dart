@@ -172,7 +172,7 @@ class _Stats extends StatelessWidget {
   }
 }
 
-/// The three pillars: overlay approach, repo structure, research log.
+/// The two pillars: overlay approach and research log.
 class _Trio extends StatelessWidget {
   const _Trio({required this.l10n});
 
@@ -182,7 +182,6 @@ class _Trio extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       (l10n.homeWayOverlayTitle, l10n.homeWayOverlayBody),
-      (l10n.homeWayReposTitle, l10n.homeWayReposBody),
       (l10n.homeWayNotesTitle, l10n.homeWayNotesBody),
     ];
     return Band(
@@ -190,7 +189,8 @@ class _Trio extends StatelessWidget {
         children: [
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns = constraints.maxWidth >= 760 ? 3 : 1;
+              final columns =
+                  constraints.maxWidth >= 760 ? items.length : 1;
               final width =
                   (constraints.maxWidth - (columns - 1) * 48) / columns;
               return Wrap(

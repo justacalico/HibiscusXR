@@ -168,6 +168,28 @@ mkd /app/PN2Hud
 put "$PN2_ROOT/vrhome/out/vrhud.apk" /app/PN2Hud/PN2Hud.apk 644
 
 echo
+echo "=== shell flutter apps: library + quick settings ==="
+# Same contract as vrhome: cloned at pinned refs, built from source here,
+# platform-signed, non-uninstallable under /system/app. flutter must be on
+# PATH - the dist runner installs the pinned toolchain (manifest.env).
+for app in library quick-panel; do
+  command -v flutter >/dev/null 2>&1 || { echo "FAIL flutter not on PATH"; fail=$((fail+1)); break; }
+  [ -d "$PN2_ROOT/$app" ] || { echo "FAIL $PN2_ROOT/$app not cloned"; fail=$((fail+1)); continue; }
+  (cd "$PN2_ROOT/$app" && flutter build apk --release) \
+      || { echo "FAIL $app flutter build"; fail=$((fail+1)); continue; }
+  APK="$PN2_ROOT/$app/build/app/outputs/flutter-apk/app-release.apk"
+  "$BT/apksigner" sign --key "$PN2_ROOT/build/keys/platform.pk8" \
+      --cert "$PN2_ROOT/build/keys/platform.x509.pem" "$APK" \
+      || { echo "FAIL $app sign"; fail=$((fail+1)); }
+  "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=Android" \
+      || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
+done
+mkd /app/PN2Library
+put "$PN2_ROOT/library/build/app/outputs/flutter-apk/app-release.apk" /app/PN2Library/PN2Library.apk 644
+mkd /app/PN2QuickSettings
+put "$PN2_ROOT/quick-panel/build/app/outputs/flutter-apk/app-release.apk" /app/PN2QuickSettings/PN2QuickSettings.apk 644
+
+echo
 echo "=== see-through calibration app ==="
 mkd /priv-app/seethroughsetting
 mkd /priv-app/seethroughsetting/lib

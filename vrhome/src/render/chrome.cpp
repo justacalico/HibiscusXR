@@ -79,7 +79,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     for (auto& p : e->panels) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
-        panelCenter(p, c, r, up);
+        panelCenter(p, e->ringPos, c, r, up);
         const float shw = hw + 0.10f, shh = (hh + kBarGap + kBarH) + 0.10f;
         const float shd = (kBarGap + kBarH) * 0.5f + 0.02f;
         const float shc[3] = {c[0] - up[0] * shd, c[1] - up[1] * shd,
@@ -94,7 +94,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         Panel& p = e->panels[i];
         if (p.minimized) continue;
         float c[3], r[3], up[3];
-        panelCenter(p, c, r, up);
+        panelCenter(p, e->ringPos, c, r, up);
         const bool hov = (e->hover == i);
         // the library panel is the shell's own launcher: no window buttons
         const bool btns = p.pkg != kLibraryPkg;
@@ -246,7 +246,7 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
     if (e->hover < 0 || e->hover >= (int)e->panels.size()) return;
     const Panel& p = e->panels[e->hover];
     float c[3], r[3], up[3];
-    panelCenter(p, c, r, up);
+    panelCenter(p, e->ringPos, c, r, up);
     const float u = e->hitX / kVdW * 2.0f - 1.0f;
     const float v = 1.0f - e->hitY / kVdH * 2.0f;
     const float hw = kPanelW / 2, hh = kPanelH / 2;

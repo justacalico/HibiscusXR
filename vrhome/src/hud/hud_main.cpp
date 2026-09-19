@@ -93,6 +93,9 @@ static void debugSummonHook(HudEngine* e) {
 static void spawnLauncher(HudEngine* e, const Mat4& head) {
     if (!e->bridge || !e->haveQuat || e->launcherSpawned) return;
     e->launcherSpawned = true;
+    // the dash's first appearance anchors the ring at the head's spot too,
+    // so a fresh boot doesn't park the panels around the tracking origin
+    memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
     float gy = 0.0f;
     gazeYaw(head, &gy);
     int idx = openPanel(e, gy, gazePitch(head));
@@ -164,6 +167,11 @@ static void hudFrame(HudEngine* e) {
         e->headPosValid = true;
         headPos = fakePos;
     }
+    // the gaze ray starts where the head actually is: the mapped position
+    // that went into the view matrix, or the world origin when position is
+    // out - the pick must see the same eye the render does
+    if (headPos) memcpy(e->eyePos, headPos, sizeof(e->eyePos));
+    else memset(e->eyePos, 0, sizeof(e->eyePos));
     const Mat4 head = headMatrix(e->quat, propI("debug.vrhome.tq", 1) != 0,
         sensRoll, worldX,
         propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
@@ -173,12 +181,16 @@ static void hudFrame(HudEngine* e) {
     debugSummonHook(e);
     spawnLauncher(e, head);
 
-    if (takeWantRecenter())
+    if (takeWantRecenter()) {
+        // the ring re-anchors to where the head is right now: panels keep
+        // their slot offsets but the whole dash lands in front of the user
+        memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
         recenterSlots(e->panels, e->gazeYaw, e->gazePitch);
+    }
     pumpBridge(e);
 
     // gaze pick: nearest panel under the head ray, hit in display px
-    const Pick pk = pickPanel(e->panels, head);
+    const Pick pk = pickPanel(e->panels, head, e->ringPos, e->eyePos);
     e->hover = pk.idx;
     e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
     if (pk.idx >= 0) {

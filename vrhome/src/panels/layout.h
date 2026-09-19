@@ -8,10 +8,12 @@
 // Panel ring policy + geometry. Pure functions over a panel list so the whole
 // layout is host-testable: no GL, no JNI.
 
-// panel quad in world space, facing the viewer at the origin. `right` is the
-// unit vector along the panel's right edge, `up` its top edge - the plane
-// tilts with pitch so an elevated window still looks at you
-void panelCenter(const Panel& p, float out[3], float right[3], float up[3]);
+// panel quad in world space, facing the viewer at `origin` - the point the
+// whole ring hangs around, re-anchored to the head's position on recenter.
+// `right` is the unit vector along the panel's right edge, `up` its top
+// edge - the plane tilts with pitch so an elevated window still looks at you
+void panelCenter(const Panel& p, const float origin[3], float out[3],
+                 float right[3], float up[3]);
 
 // yaw of the next free ring slot around a centre yaw; centre when full
 float freeSlotYaw(const std::vector<Panel>& panels, float centre);
@@ -72,9 +74,11 @@ void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch);
 // is minimized brings the same window back instead of opening a new one
 int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg);
 
-// gaze ray vs one panel's plane; u,v in panel coords, may fall outside -1..1
-bool rayPanel(const Panel& p, const float d[3], float* u, float* v,
-              float* t = nullptr);
+// gaze ray vs one panel's plane; u,v in panel coords, may fall outside -1..1.
+// The ray starts at o - the head's live position - while the plane sits on
+// the ring anchored at origin; the two differ once the head moves
+bool rayPanel(const Panel& p, const float origin[3], const float o[3],
+              const float d[3], float* u, float* v, float* t = nullptr);
 
 struct Pick {
     int idx = -1;                // panel under the ray
@@ -82,14 +86,17 @@ struct Pick {
     int zone = ZONE_NONE;        // which chrome part the hit landed on
 };
 
-// gaze ray (head's -z from the origin) vs all panels: the window rects plus
-// the pill band under them; minimized panels are skipped. nearest wins
-Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head);
+// gaze ray (head's -z, starting at the live eye position o) vs all panels:
+// the window rects plus the pill band under them; minimized panels are
+// skipped. nearest wins
+Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
+               const float origin[3], const float o[3]);
 
 // gaze point on one panel in display px, clamped inside the window so a held
 // drag keeps streaming events after the cursor leaves the edges; false when
 // the ray can never reach the panel's plane
-bool dragPoint(const Panel& p, const Mat4& head, float* px, float* py);
+bool dragPoint(const Panel& p, const Mat4& head, const float origin[3],
+               const float o[3], float* px, float* py);
 
 // drag speed gain: the injected point runs ahead of the raw gaze point,
 // measured from where the drag grabbed; clamps to the display edge

@@ -32,6 +32,14 @@ struct HudEngine : Engine {
 
     std::vector<Panel> panels;
 
+    // ringPos: the world point the whole panel ring hangs around. Recenter
+    // and summon re-anchor it to the head's position so the dash opens in
+    // front of where the user is; between anchors the ring is world-locked.
+    // eyePos: the head's live position each frame, used as the gaze-ray
+    // origin - world origin when position tracking is out.
+    float ringPos[3] = {0.0f, 0.0f, 0.0f};
+    float eyePos[3] = {0.0f, 0.0f, 0.0f};
+
     int hover = -1;              // panel index under the gaze ray
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit

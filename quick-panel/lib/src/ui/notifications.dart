@@ -33,7 +33,7 @@ class NotificationSection extends StatelessWidget {
               l10n.notifTitle,
               style: const TextStyle(
                 color: PanelTheme.textSecondary,
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -45,10 +45,10 @@ class NotificationSection extends StatelessWidget {
               ),
           ],
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 4),
         if (notifications.isEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             child: Center(
               child: Text(
                 l10n.notifEmpty,
@@ -61,7 +61,7 @@ class NotificationSection extends StatelessWidget {
           )
         else
           ConstrainedBox(
-            constraints: const BoxConstraints(maxHeight: 118),
+            constraints: const BoxConstraints(maxHeight: 112),
             child: ListView.separated(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
@@ -91,7 +91,7 @@ class NotificationRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
         color: PanelTheme.surface,
         borderRadius: BorderRadius.circular(PanelTheme.smallTileRadius),
@@ -99,7 +99,7 @@ class NotificationRow extends StatelessWidget {
       child: Row(
         children: [
           CircleAvatar(
-            radius: 16,
+            radius: 14,
             backgroundColor: PanelTheme.surfaceHigh,
             child: Text(
               item.app.isEmpty ? '?' : item.app.characters.first,
@@ -110,7 +110,7 @@ class NotificationRow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +120,7 @@ class NotificationRow extends StatelessWidget {
                   item.app,
                   style: const TextStyle(
                     color: PanelTheme.textSecondary,
-                    fontSize: 12,
+                    fontSize: 11,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -130,7 +130,7 @@ class NotificationRow extends StatelessWidget {
                     item.title,
                     style: const TextStyle(
                       color: PanelTheme.textPrimary,
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
@@ -141,7 +141,7 @@ class NotificationRow extends StatelessWidget {
                     item.text,
                     style: const TextStyle(
                       color: PanelTheme.textSecondary,
-                      fontSize: 13,
+                      fontSize: 12,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -152,7 +152,7 @@ class NotificationRow extends StatelessWidget {
           if (item.clearable)
             IconButton(
               tooltip: l10n.notifDismiss,
-              icon: const Icon(Icons.close, size: 20),
+              icon: const Icon(Icons.close, size: 18),
               color: PanelTheme.textSecondary,
               onPressed: () => onDismiss(item.key),
             ),

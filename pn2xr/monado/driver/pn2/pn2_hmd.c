@@ -159,21 +159,24 @@ pn2_push_qvr(struct pn2_device *d)
 	if (!pn2_qvr_get_pose(d->qvr, &pose) || pose.timestamp_ns <= d->qvr_last_ts) {
 		return;
 	}
+	// Only fully-tracked poses enter the history: a state dip would push
+	// orientation-without-position and snap the world to the head origin
+	// for those frames. Skipping coasts the last tracked pose instead.
+	if (pose.tracking_state != 3) {
+		return;
+	}
 	d->qvr_last_ts = pose.timestamp_ns;
 
 	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
 	rel.pose.orientation = pose.orientation;
 	rel.pose.position = pose.position;
-	rel.angular_velocity = pose.angular_velocity;
-	rel.linear_velocity = pose.linear_velocity;
+	// The service's velocity fields are noise on this build (dumped lv
+	// swings ±2 m/s with the head bolted to a desk), so every display-time
+	// prediction got a random positional kick. Leave them invalid and let
+	// the history estimate motion by finite-differencing the poses.
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
-	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT | XRT_SPACE_RELATION_LINEAR_VELOCITY_VALID_BIT);
-	if (pose.tracking_state == 3) {
-		rel.relation_flags = (enum xrt_space_relation_flags)(
-		    rel.relation_flags | XRT_SPACE_RELATION_POSITION_VALID_BIT |
-		    XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
-	}
+	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
 	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns);
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
@@ -294,6 +297,13 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 	bool got = false;
 	if (at_timestamp_ns > 0) {
 		got = m_relation_history_get(d->rh, at_timestamp_ns, &rel) != M_RELATION_HISTORY_RESULT_INVALID;
+	}
+	if (!got) {
+		// at_timestamp_ns == 0 means "latest": serve the newest history
+		// entry, not the IMU fallback - that fusion frame disagrees with
+		// the QVR world frame and snaps the view when hit
+		int64_t latest_ts;
+		got = m_relation_history_get_latest(d->rh, &latest_ts, &rel);
 	}
 	if (!got || !(rel.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT)) {
 		struct xrt_space_relation zero_rel = XRT_SPACE_RELATION_ZERO;

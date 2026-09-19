@@ -189,10 +189,6 @@
   "downloadReq1": "A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work",
   "downloadReq2": "Rooted stock firmware and an unlockable bootloader",
   "downloadReq3": "A Linux host with adb and fastboot",
-  "downloadSoftwareTitle": "The software on top",
-  "downloadSoftwareBody": "The image ships vrhome and the library app. To hack on either, clone its repo - vrhome builds with a plain Makefile, library with Flutter.",
-  "downloadVrhomeCta": "vrhome repo",
-  "downloadLibraryCta": "library repo",
 
   "issuesButton": "Report an issue",
   "issuesSubtitle": "Bugs, feature requests, help - all welcome.",

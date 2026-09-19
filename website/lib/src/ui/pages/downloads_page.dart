@@ -54,8 +54,6 @@ class _DownloadsPageState extends State<DownloadsPage> {
               ),
               const SizedBox(height: 48),
               Reveal(child: _Requirements(l10n: l10n)),
-              const SizedBox(height: 48),
-              Reveal(child: _Software(l10n: l10n)),
               const SizedBox(height: 64),
               Reveal(
                 child: _Locked(
@@ -427,43 +425,6 @@ class _Requirements extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _Software extends StatelessWidget {
-  const _Software({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return _Card(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(l10n.downloadSoftwareTitle, style: context.text.titleMedium),
-          const SizedBox(height: 12),
-          Text(l10n.downloadSoftwareBody, style: context.text.bodyMedium),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 24,
-            runSpacing: 12,
-            children: [
-              ChevronLink(
-                label: l10n.downloadVrhomeCta,
-                large: false,
-                onPressed: () => launchUrl(Uri.parse(Links.vrhome)),
-              ),
-              ChevronLink(
-                label: l10n.downloadLibraryCta,
-                large: false,
-                onPressed: () => launchUrl(Uri.parse(Links.library)),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

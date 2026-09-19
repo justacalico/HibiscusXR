@@ -507,19 +507,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadReq3 => '一台装了 adb 和 fastboot 的 Linux 主机';
 
   @override
-  String get downloadSoftwareTitle => '上面的软件';
-
-  @override
-  String get downloadSoftwareBody =>
-      '镜像自带 vrhome 和 library 应用。想改它们就克隆对应仓库——vrhome 用一个普通 Makefile 构建,library 用 Flutter。';
-
-  @override
-  String get downloadVrhomeCta => 'vrhome 仓库';
-
-  @override
-  String get downloadLibraryCta => 'library 仓库';
-
-  @override
   String get issuesButton => '提交 issue';
 
   @override

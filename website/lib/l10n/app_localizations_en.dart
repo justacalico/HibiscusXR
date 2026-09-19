@@ -552,19 +552,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get downloadReq3 => 'A Linux host with adb and fastboot';
 
   @override
-  String get downloadSoftwareTitle => 'The software on top';
-
-  @override
-  String get downloadSoftwareBody =>
-      'The image ships vrhome and the library app. To hack on either, clone its repo - vrhome builds with a plain Makefile, library with Flutter.';
-
-  @override
-  String get downloadVrhomeCta => 'vrhome repo';
-
-  @override
-  String get downloadLibraryCta => 'library repo';
-
-  @override
   String get issuesButton => 'Report an issue';
 
   @override

@@ -20,7 +20,7 @@ struct HudEngine : Engine {
     // ShellBridge java object + cached method ids
     jobject bridge = nullptr;
     jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
-              mLaunchLauncher = nullptr, mAdopt = nullptr, mReleasePanel = nullptr,
+              mAdopt = nullptr, mReleasePanel = nullptr,
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
               mInjectTouch = nullptr,
               mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,

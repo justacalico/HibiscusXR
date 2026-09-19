@@ -8,7 +8,7 @@ struct HudEngine;
 // the java object HudService constructed (it owns the covered-listener wiring)
 void initBridge(HudEngine* e, JNIEnv* env, jobject br);
 
-// queue an app launch from any thread (LauncherActivity JNI + test hook)
+// queue an app launch from any thread (open-package broadcast + test hook)
 void queueLaunch(const char* pkg);
 
 // drain everything the bridge has queued; run on the render thread

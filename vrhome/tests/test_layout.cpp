@@ -164,6 +164,14 @@ void testLayout() {
     ps.clear();
     CHECK(evictIndex(ps) == -1);
 
+    // the library panel is found by package, exactly once
+    CHECK(libraryIndex(ps) == -1);
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1], kLibraryPkg));
+    CHECK(libraryIndex(ps) == 1);
+    ps.push_back(mkPanel(kSlotYaw[2], kLibraryPkg));
+    CHECK(libraryIndex(ps) == 1);
+
     // recenter snaps each panel to its nearest slot around the new centre
     ps.clear();
     ps.push_back(mkPanel(1.02f));   // near the centre slot -> stays

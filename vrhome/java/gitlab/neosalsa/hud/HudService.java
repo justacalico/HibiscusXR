@@ -130,7 +130,11 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private void updateWindow() {
         final boolean shown = !covered || summoned;
         final int vis = shown ? View.VISIBLE : View.GONE;
-        if (view.getVisibility() != vis) view.setVisibility(vis);
+        if (view.getVisibility() != vis) {
+            Log.i(TAG, "window " + (shown ? "shown" : "hidden")
+                    + " covered=" + covered + " summoned=" + summoned);
+            view.setVisibility(vis);
+        }
     }
 
     // --------------------------------------------------------- callbacks
@@ -192,6 +196,20 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         i.addCategory(Intent.CATEGORY_HOME);
         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(i);
+    }
+
+    // render-thread debug hook: adb input keyevent never reaches the
+    // accessibility key filter, so debug.vrhome.summon toggles the same
+    // path a short press would
+    public void debugSummon() {
+        view.post(new Runnable() {
+            @Override public void run() {
+                if (!covered) return;
+                summoned = !summoned;
+                updateWindow();
+                if (summoned) nativeRecenter();
+            }
+        });
     }
 
     // HudView.KeySink: keys that reached the focused HUD window

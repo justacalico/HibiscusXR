@@ -425,9 +425,13 @@ void android_main(struct android_app *app) {
         r = pfn_xrLocateViews(sess, &vli, &vstate, 2, &found, views);
 
         frames++;
-        if (frames % 72 == 1 && XR_SUCCEEDED(r)) {
+        if (frames <= 720 && XR_SUCCEEDED(r)) {
+            struct timespec mts;
+            clock_gettime(CLOCK_MONOTONIC, &mts);
+            long long mono = (long long)mts.tv_sec * 1000000000ll + mts.tv_nsec;
             XrPosef *p = &views[0].pose;
-            LOGI("pose q=(%.3f %.3f %.3f %.3f) p=(%.2f %.2f %.2f) flags=%llx",
+            LOGI("pose t=%lld mono=%lld q=(%.5f %.5f %.5f %.5f) p=(%.5f %.5f %.5f) flags=%llx",
+                 (long long)fstate.predictedDisplayTime, mono,
                  p->orientation.x, p->orientation.y, p->orientation.z, p->orientation.w,
                  p->position.x, p->position.y, p->position.z,
                  (unsigned long long)vstate.viewStateFlags);

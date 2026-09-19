@@ -173,9 +173,16 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 	}
 
 	uint64_t now = os_monotonic_get_ns();
+	int64_t sample_off = (int64_t)d->timestamp_ns - (int64_t)now;
 	if (!q->clock_offset_set) {
-		q->clock_offset = (int64_t)d->timestamp_ns - (int64_t)now;
+		q->clock_offset = sample_off;
 		q->clock_offset_set = true;
+	} else if (sample_off - q->clock_offset > 50000000 ||
+	           sample_off - q->clock_offset < -50000000) {
+		// suspend cycles shift the service clock against monotonic; a stale
+		// offset lands every converted timestamp in the past/future and
+		// breaks prediction, so resync when drift exceeds 50ms
+		q->clock_offset = sample_off;
 	}
 
 	out->orientation.x = d->quat[0];

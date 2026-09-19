@@ -40,10 +40,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(HeroShot), findsOneWidget);
+    expect(find.text('All (21)'), findsWidgets);
+    expect(find.text('Calendar'), findsWidgets);
     expect(
       find.byWidgetPredicate(
-          (w) => w is CustomPaint && w.painter is NeosalsaMarkPainter),
-      findsOneWidget,
+          (w) => w is CustomPaint && w.painter is LibraryMarkPainter),
+      findsWidgets,
     );
   });
 

@@ -130,13 +130,11 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
 // whatever surface sits underneath (env scenery or a running app)
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
-    // while the key is held the dash reads as refreshing: chrome drops out
-    // and only the fill ring draws, then the recentered panels pop back in
-    if (h->holdP <= 0.0f) {
-        drawPanels(h, vp);
-        drawCursor(h, vp);
-    }
-    drawHoldRing(h, vp);
+    drawPanels(h, vp);
+    drawCursor(h, vp);
+    // the hold ring is a flat overlay: it draws on top of the live scene and
+    // ignores vp entirely, so it stays put while the world shifts around it
+    drawHoldRing(h);
 }
 
 static void hudFrame(HudEngine* e) {

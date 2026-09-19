@@ -242,10 +242,11 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     glDisable(GL_BLEND);
 }
 
-// summon-key hold feedback: a ring locked to the view centre whose arc
-// fills while the button is held. The quad is built in view space so the
-// same vp matrix drops it dead-centre in each eye
-void drawHoldRing(HudEngine* e, const Mat4& viewProj) {
+// summon-key hold feedback: a flat overlay ring whose arc fills while the
+// button is held. The quad is built in clip space so it never touches the
+// head pose - it stays glued to the screen centre no matter how the user
+// moves during the hold
+void drawHoldRing(HudEngine* e) {
     if (e->holdP <= 0.0f) return;
     glDisable(GL_DEPTH_TEST);
     glDepthMask(GL_FALSE);
@@ -258,15 +259,19 @@ void drawHoldRing(HudEngine* e, const Mat4& viewProj) {
     const GLint uCol  = glGetUniformLocation(e->holdProg, "uColor");
     const GLint aPos  = glGetAttribLocation(e->holdProg, "aPos");
     const GLint aUV   = glGetAttribLocation(e->holdProg, "aUV");
-    const float s = kHoldSize, d = -kHoldDist;
+    GLint vpBox[4];
+    glGetIntegerv(GL_VIEWPORT, vpBox);
+    const float aspect = vpBox[3] > 0 ? (float)vpBox[2] / (float)vpBox[3] : 1.0f;
+    const float s = kHoldSize, sx = s / aspect;
     const float q[4][5] = {
-        {-s, -s, d, -1.0f, -1.0f}, { s, -s, d,  1.0f, -1.0f},
-        { s,  s, d,  1.0f,  1.0f}, {-s,  s, d, -1.0f,  1.0f},
+        {-sx, -s, 0.0f, -1.0f, -1.0f}, { sx, -s, 0.0f,  1.0f, -1.0f},
+        { sx,  s, 0.0f,  1.0f,  1.0f}, {-sx,  s, 0.0f, -1.0f,  1.0f},
     };
     const int tris[6] = {0,1,2, 0,2,3};
     float verts[30];
     for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
+    const Mat4 mvp = identity();
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
     glUniform1f(uProg, e->holdP);
     const float col[4] = {1.0f, 1.0f, 1.0f, 0.95f};
     glUniform4fv(uCol, 1, col);

@@ -73,10 +73,9 @@ constexpr int kPicoConfirm = 1001;
 constexpr int kPicoHome = 1003;
 
 // summon-key hold: how long before the recenter fires, and the progress
-// ring's placement in the view
+// ring's size as a screen-space overlay
 constexpr int   kHoldMs = 600;
-constexpr float kHoldDist = 1.0f;   // metres ahead of the eye
-constexpr float kHoldSize = 0.10f;  // quad half size, metres
+constexpr float kHoldSize = 0.10f;  // quad half height in clip space
 
 // pseudo-package adopted by the app-library panel
 constexpr const char* kLibraryPkg = "gitlab.neosalsa.hud.library";

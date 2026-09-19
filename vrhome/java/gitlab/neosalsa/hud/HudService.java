@@ -154,6 +154,19 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         updateWindow();
     }
 
+    // the dock/launch path asks to drop the menu (immersive app going
+    // foreground): called on the render thread, bounce to the looper
+    @Override public void onDismissMenu() {
+        view.post(new Runnable() {
+            @Override public void run() {
+                if (!summoned && !holdPreview) return;
+                summoned = false;
+                holdPreview = false;
+                updateWindow();
+            }
+        });
+    }
+
     // SummonKeyService calls these on its own binder thread: bounce to the
     // main looper so window/flag state stays single-threaded
     static void onSummonKey(final int action) {

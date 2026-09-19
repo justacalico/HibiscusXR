@@ -64,11 +64,13 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
         out.push_back(it);
     }
     // live tasks that aren't pinned fill the running section; a pkg shows
-    // once - a running pin carries the dot instead of a duplicate icon
+    // once - a running pin carries the dot instead of a duplicate icon,
+    // and the quick-panel app lights its permanent slot instead
     bool runSep = false;
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
-        if (p.pkg.empty() || inPins(pins, p.pkg)) continue;
+        if (p.pkg.empty() || inPins(pins, p.pkg) ||
+                p.pkg == kQuickPanelPkg) continue;
         DockItem it;
         it.kind = DK_RUN;
         it.pkg = p.pkg;
@@ -96,6 +98,15 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
     q.kind = DK_QUICK;
     q.pkg = kQuickPanelPkg;
     q.sep = !out.empty();
+    // a running quick-panel task rides its own button rather than adding a
+    // second icon to the strip
+    const int qi = findPanel(panels, kQuickPanelPkg);
+    if (qi >= 0) {
+        q.running = true;
+        q.panelIdx = qi;
+        q.taskId = panels[qi].taskId;
+        q.minimized = panels[qi].minimized;
+    }
     out.push_back(q);
     return out;
 }

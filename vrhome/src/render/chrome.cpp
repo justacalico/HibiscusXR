@@ -2,6 +2,7 @@
 
 #include "../hud/engine.h"
 #include "../common/config.h"
+#include "../dock/layout.h"
 #include "../panels/layout.h"
 #include "../text/draw.h"
 
@@ -290,16 +291,26 @@ void drawHoldRing(HudEngine* e) {
 }
 
 void drawCursor(HudEngine* e, const Mat4& viewProj) {
-    if (e->hover < 0 || e->hover >= (int)e->panels.size()) return;
-    const Panel& p = e->panels[e->hover];
-    float c[3], r[3], up[3];
-    panelCenter(p, e->ringPos, c, r, up);
-    const float u = e->hitX / kVdW * 2.0f - 1.0f;
-    const float v = 1.0f - e->hitY / kVdH * 2.0f;
-    const float hw = kPanelW / 2, hh = kPanelH / 2;
-    float pos[3] = {c[0] + r[0]*u*hw + up[0]*v*hh,
-                    c[1] + r[1]*u*hw + up[1]*v*hh,
-                    c[2] + r[2]*u*hw + up[2]*v*hh};
+    float c[3], r[3], up[3], pos[3];
+    if (e->dockHover >= 0) {
+        // on the dock the cursor sits on the strip's own plane
+        dockCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
+        const float hw = e->dockHW, hh = kDockBarH * 0.5f;
+        pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
+        pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
+        pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
+    } else if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
+        const Panel& p = e->panels[e->hover];
+        panelCenter(p, e->ringPos, c, r, up);
+        const float u = e->hitX / kVdW * 2.0f - 1.0f;
+        const float v = 1.0f - e->hitY / kVdH * 2.0f;
+        const float hw = kPanelW / 2, hh = kPanelH / 2;
+        pos[0] = c[0] + r[0]*u*hw + up[0]*v*hh;
+        pos[1] = c[1] + r[1]*u*hw + up[1]*v*hh;
+        pos[2] = c[2] + r[2]*u*hw + up[2]*v*hh;
+    } else {
+        return;
+    }
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

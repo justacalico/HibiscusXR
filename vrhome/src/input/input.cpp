@@ -1,6 +1,7 @@
 #include "input.h"
 
 #include "keys.h"
+#include "../dock/dock.h"
 #include "../hud/engine.h"
 #include "../common/jni.h"
 #include "../common/log.h"
@@ -12,6 +13,7 @@
 #include <android/keycodes.h>
 
 #include <cmath>
+#include <ctime>
 
 // KeyEvent action/motion constants come from android/input.h; the events
 // themselves arrive from the java window, never the NDK input queue
@@ -19,12 +21,26 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
     if (isConfirm(code)) {
         const bool down = action == AKEY_EVENT_ACTION_DOWN && repeat == 0;
         if (down) {
-            LOGI("confirm down, hover %d zone %d", e->hover, e->hoverZone);
+            LOGI("confirm down, hover %d zone %d dock %d", e->hover,
+                 e->hoverZone, e->dockHover);
             e->confirmHeld = true;
             e->moveHeld = false;
             e->dragDisp = -1;
             e->pressDisp = -1;
             e->pressZone = e->hoverZone;
+            e->dockPress = -1;
+            e->dockPressZone = DZONE_NONE;
+            e->dockPinP = 0.0f;
+            e->dockPinDone = false;
+            if (e->dockHover >= 0 && e->dockHover < (int)e->dock.size()) {
+                e->dockPress = e->dockHover;
+                e->dockPressZone = e->dockZone;
+                e->dockPressPkg = e->dock[e->dockHover].pkg;
+                timespec ts;
+                clock_gettime(CLOCK_MONOTONIC, &ts);
+                e->dockPressMs = (uint64_t)ts.tv_sec * 1000 +
+                                 (uint64_t)ts.tv_nsec / 1000000;
+            }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 const Panel& p = e->panels[e->hover];
                 e->pressDisp = p.displayId;
@@ -50,6 +66,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     e->moveHeld = true;
                     e->moveGrabYaw = e->gazeYaw;
                     e->moveGrabPitch = e->gazePitch;
+                    e->dockGrabYaw = e->dockYaw;
                     grabRing(e->panels);
                     LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
                 }
@@ -58,7 +75,25 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->confirmHeld = false;
             e->moveHeld = false;
             JNIEnv* env = threadEnv(e->vm);
-            if (e->bridge && e->dragDisp >= 0) {
+            if (e->dockPress >= 0) {
+                // release over the same dock item (and zone) fires its
+                // action; a completed pin-hold suppresses the tap
+                const bool same = e->dockHover == e->dockPress &&
+                    e->dockZone == e->dockPressZone &&
+                    e->dockPress < (int)e->dock.size() &&
+                    e->dock[e->dockPress].pkg == e->dockPressPkg;
+                if (same && !e->dockPinDone) {
+                    if (e->dockPressZone == DZONE_CLOSE)
+                        dockClose(e, e->dockPress);
+                    else
+                        dockActivate(e, e->dockPress);
+                }
+                e->dockPress = -1;
+                e->dockPressZone = DZONE_NONE;
+                e->dockPressPkg.clear();
+                e->dockPinP = 0.0f;
+                e->dockPinDone = false;
+            } else if (e->bridge && e->dragDisp >= 0) {
                 env->CallVoidMethod(e->bridge, e->mInjectTouch, e->dragDisp,
                                     e->dragX, e->dragY, AMOTION_EVENT_ACTION_UP);
                 if (env->ExceptionCheck()) env->ExceptionClear();
@@ -146,6 +181,8 @@ void dragTick(HudEngine* e, const Mat4& head) {
 // the viewer with the gaze, up and down as well as side to side
 void moveTick(HudEngine* e) {
     if (!e->moveHeld) return;
-    dragRing(e->panels, wrapPi(e->gazeYaw - e->moveGrabYaw),
-             e->gazePitch - e->moveGrabPitch);
+    const float dYaw = wrapPi(e->gazeYaw - e->moveGrabYaw);
+    dragRing(e->panels, dYaw, e->gazePitch - e->moveGrabPitch);
+    // the dock rides the same ring and follows a handle drag
+    e->dockYaw = wrapPi(e->dockGrabYaw + dYaw);
 }

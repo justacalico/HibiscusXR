@@ -7,9 +7,13 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.hardware.input.InputManager;
@@ -25,6 +29,8 @@ import android.view.Surface;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +70,9 @@ public class ShellBridge {
 
     public interface CoveredListener {
         void onCovered(boolean covered);
+        // the menu should drop so the user lands inside the app - an
+        // immersive launch or a dock tap on a live XR item
+        void onDismissMenu();
     }
 
     private final Context ctx;
@@ -99,6 +108,14 @@ public class ShellBridge {
     // displays the render thread just launched something onto; don't reap
     // them while the task is still landing
     private final Set<Integer> launching = new HashSet<>();
+    // dock state: pinned pkgs persisted in prefs, immersive tasks on the
+    // physical display rebuilt every poll (vrVer bumps on change so the
+    // render thread only pulls the array when it moved)
+    private final List<String> pins = new ArrayList<>();
+    private volatile boolean pinsDirty = true;
+    private final List<Pending> vrRunning = new ArrayList<>();
+    private volatile int vrVer = 0;
+    private final Map<String, Boolean> vrCache = new HashMap<>();
     // set by the poller: a non-env task owns the physical display
     private volatile boolean covered = false;
     // the listener only hears CHANGES, so the first poll must fire
@@ -146,8 +163,99 @@ public class ShellBridge {
                 "setLaunchDisplayId", int.class);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
+        loadPins();
         main.postDelayed(poll, 800);
         Log.i(TAG, "bridge up");
+    }
+
+    // ---------------------------------------------------------- dock
+
+    // persisted pin list; first boot seeds the library so the strip is
+    // never empty - everything else pins/unpins from the dock itself
+    private void loadPins() {
+        SharedPreferences sp = ctx.getSharedPreferences("dock", 0);
+        String saved = sp.getString("pins", null);
+        synchronized (pins) {
+            if (saved == null) {
+                pins.add(LIB_PKG);
+                savePins();
+            } else if (!saved.isEmpty()) {
+                pins.addAll(Arrays.asList(saved.split(",")));
+            }
+        }
+    }
+
+    private void savePins() {
+        StringBuilder b = new StringBuilder();
+        synchronized (pins) {
+            for (String p : pins) {
+                if (b.length() > 0) b.append(',');
+                b.append(p);
+            }
+        }
+        ctx.getSharedPreferences("dock", 0).edit()
+                .putString("pins", b.toString()).apply();
+    }
+
+    // render thread: the pin list when it changed since the last take,
+    // else null. Called every frame, so keep it cheap when clean
+    public String[] takePins() {
+        if (!pinsDirty) return null;
+        pinsDirty = false;
+        synchronized (pins) {
+            return pins.toArray(new String[0]);
+        }
+    }
+
+    // render thread: the dock long-press pushed a new pin list
+    public void setPins(String[] pkgs) {
+        synchronized (pins) {
+            pins.clear();
+            pins.addAll(Arrays.asList(pkgs));
+        }
+        savePins();
+    }
+
+    // render thread: app icon as a 96px ARGB bitmap for the dock texture,
+    // or null - the dock falls back to a letter tile
+    public Bitmap appIcon(String pkg) {
+        try {
+            Drawable d = pm.getApplicationIcon(pkg);
+            Bitmap b = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
+            Canvas c = new Canvas(b);
+            d.setBounds(0, 0, 96, 96);
+            d.draw(c);
+            return b;
+        } catch (Throwable t) {
+            return null;
+        }
+    }
+
+    // render thread: bumped when the immersive task set changes
+    public int vrVersion() { return vrVer; }
+
+    // render thread: immersive tasks on display 0 right now (at most one in
+    // practice; the launch rule keeps it that way)
+    public Pending[] runningVr() {
+        synchronized (vrRunning) {
+            return vrRunning.toArray(new Pending[0]);
+        }
+    }
+
+    // render thread: drop the summoned menu so the user lands in the app
+    public void dismissMenu() {
+        if (listener != null) listener.onDismissMenu();
+    }
+
+    // isVrApp does binder calls; the poll hits every display-0 task each
+    // 400ms, so cache the answer per package
+    private boolean vrApp(String pkg) {
+        Boolean v = vrCache.get(pkg);
+        if (v == null) {
+            v = isVrApp(pkg);
+            vrCache.put(pkg, v);
+        }
+        return v;
     }
 
     // ---------------------------------------------------------- displays
@@ -279,14 +387,33 @@ public class ShellBridge {
         return false;
     }
 
-    // VR apps launch plain on display 0: no panel, no display override
+    // VR apps launch plain on display 0: no panel, no display override.
+    // One immersive app at a time - the Monado runtime lives in-process, so
+    // two live XR apps would fight over the panel, the IMU and the Vulkan
+    // device. A second launch kills the running one first; relaunching the
+    // running one just refocuses it
     public void launchVrApp(String pkg) {
         try {
+            for (Object t : tasks()) {
+                String p = pkgOf(t);
+                if (p == null || p.equals(pkg) || !vrApp(p)) continue;
+                Log.i(TAG, "closing vr app " + p + " for " + pkg);
+                mRemoveTask.invoke(atm, fTaskId.getInt(t));
+            }
+            for (Object t : tasks()) {
+                if (pkg.equals(pkgOf(t))) {
+                    mSetFocusedTask.invoke(atm, fTaskId.getInt(t));
+                    Log.i(TAG, "vr app " + pkg + " already running, focused");
+                    if (listener != null) listener.onDismissMenu();
+                    return;
+                }
+            }
             Intent i = pm.getLaunchIntentForPackage(pkg);
             if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(i);
             Log.i(TAG, "launched vr app " + pkg + " on display 0");
+            if (listener != null) listener.onDismissMenu();
         } catch (Throwable t) {
             Log.e(TAG, "launchVrApp " + pkg, t);
         }
@@ -453,13 +580,25 @@ public class ShellBridge {
                 }
             }
 
-            for (Object t : tasks()) {
+            List<Pending> vr = new ArrayList<>();
+            for (Object t : tl) {
                 int taskId = fTaskId.getInt(t);
                 int disp = fDisplayId.getInt(t);
                 liveTasks.add(taskId);
                 String pkg = pkgOf(t);
-                if (disp == 0 && pkg != null && !ownPkg(pkg)
-                        && !isVrApp(pkg)      // VR keeps display 0
+                if (pkg == null) continue;
+                if (vrApp(pkg)) {
+                    // immersive tasks on the physical display feed the
+                    // dock's running section - panels never host them
+                    if (disp == 0) {
+                        Pending p = new Pending();
+                        p.taskId = taskId;
+                        p.pkg = pkg;
+                        vr.add(p);
+                    }
+                    continue;
+                }
+                if (disp == 0 && !ownPkg(pkg)
                         && !adopting.contains(taskId)) {
                     Pending p = new Pending();
                     p.taskId = taskId;
@@ -473,6 +612,17 @@ public class ShellBridge {
             }
             adopting.retainAll(liveTasks);
 
+            // publish the immersive set for the dock; bump the version only
+            // on a real change so the render thread isn't rebuilding every
+            // poll
+            synchronized (vrRunning) {
+                if (!sameVr(vr, vrRunning)) {
+                    vrRunning.clear();
+                    vrRunning.addAll(vr);
+                    ++vrVer;
+                }
+            }
+
             long now = SystemClock.uptimeMillis();
             for (Map.Entry<Integer, Vd> e : vds.entrySet()) {
                 int id = e.getKey();
@@ -483,6 +633,13 @@ public class ShellBridge {
                 pendingReleases.add(id);
             }
         }
+    }
+
+    private static boolean sameVr(List<Pending> a, List<Pending> b) {
+        if (a.size() != b.size()) return false;
+        for (int i = 0; i < a.size(); ++i)
+            if (a.get(i).taskId != b.get(i).taskId) return false;
+        return true;
     }
 
     // render thread: next stray task waiting for a panel, or null

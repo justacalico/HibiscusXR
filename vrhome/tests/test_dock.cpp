@@ -55,6 +55,17 @@ void testDock() {
         CHECK(items[1].kind == DK_QUICK);
     }
 
+    // a running quick-panel task rides its own button: no duplicate icon,
+    // the button carries the running dot and the task
+    {
+        std::vector<Panel> panels = {mkPanel(kQuickPanelPkg, 9)};
+        auto items = buildDock({}, panels, {});
+        CHECK(items.size() == 1);
+        CHECK(items[0].kind == DK_QUICK && items[0].running);
+        CHECK(items[0].taskId == 9 && items[0].panelIdx == 0);
+        CHECK(!items[0].sep);              // alone: nothing to split off
+    }
+
     // minimized panels stay listed as running, marked minimized
     {
         std::vector<Panel> panels = {mkPanel("com.c.free", 5)};

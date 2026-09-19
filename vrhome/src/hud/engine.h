@@ -2,11 +2,14 @@
 
 #include "../engine.h"
 #include "../panels/panel.h"
+#include "../dock/item.h"
+#include "../common/config.h"
 
 #include <android/native_window.h>
 
 #include <atomic>
 #include <deque>
+#include <map>
 #include <mutex>
 #include <vector>
 
@@ -24,7 +27,9 @@ struct HudEngine : Engine {
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
               mInjectTouch = nullptr,
               mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,
-              mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr;
+              mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr,
+              mTakePins = nullptr, mSetPins = nullptr, mAppIcon = nullptr,
+              mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -49,6 +54,31 @@ struct HudEngine : Engine {
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
     bool launcherSpawned = false;
+
+    // dock: rebuilt each frame by syncDock from the pin list, the live
+    // panels and the immersive tasks the java poller sees. dockYaw anchors
+    // the strip to the dash's centre yaw; dockPitch is its own elevation
+    // band under the windows
+    std::vector<DockItem> dock;
+    float dockHW = 0.0f;
+    std::vector<std::string> dockPins;
+    bool dockPinsLoaded = false;
+    std::vector<XrTask> dockXr;
+    int dockXrVer = -1;
+    std::map<std::string, DockIcon> dockIcons;
+    float dockYaw = 0.0f, dockPitch = kDockPitchRest;
+    float dockGrabYaw = 0.0f;      // dockYaw snapshot when a ring drag grabs
+    bool dockAnchored = false;
+    int dockHover = -1;            // item under the gaze ray
+    int dockZone = DZONE_NONE;
+    float dockU = 0.0f, dockV = 0.0f;   // bar coords of the hit
+    int dockPress = -1;            // item a confirm press started on
+    int dockPressZone = DZONE_NONE;
+    std::string dockPressPkg;      // guards against a rebuild mid-press
+    long long dockPressMs = 0;
+    bool dockPinDone = false;      // long-press already toggled the pin
+    float dockPinP = 0.0f;         // pin hold fill 0..1
+
     bool confirmHeld = false;
     bool moveHeld = false;       // confirm held on a drag handle
     float moveGrabYaw = 0.0f;    // gaze yaw when the ring drag grabbed

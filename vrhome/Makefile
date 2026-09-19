@@ -105,7 +105,7 @@ $(ENV_SO): $(ENV_OBJS) $(GLUE_O)
 $(HUD_SO): $(HUD_OBJS)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
-	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ldl -lm
+	    -o $@ $^ -landroid -lEGL -lGLESv2 -llog -ljnigraphics -ldl -lm
 
 $(CLASSES): $(JAVA_SRCS) $(STUB_SRCS) | toolcheck
 	@mkdir -p $(OUT)/classes

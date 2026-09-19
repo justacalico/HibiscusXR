@@ -87,8 +87,9 @@ int initWindow(Engine* e, ANativeWindow* win) {
         e->floatProg = linkProg(kFloatVS, kFloatFS);
         e->shapeProg = linkProg(kShapeVS, kShapeFS);
         e->holdProg  = linkProg(kShapeVS, kHoldFS);
+        e->iconProg  = linkProg(kFloatVS, kIconFS);
         if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg ||
-                !e->shapeProg || !e->holdProg)
+                !e->shapeProg || !e->holdProg || !e->iconProg)
             return -1;
 
         if (!loadFont(e)) LOGE("font load failed, HUD text disabled");

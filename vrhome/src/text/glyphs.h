@@ -23,8 +23,15 @@ struct GlyphSet {
     Glyph* add(int c);
 };
 
+#include <string>
+
 // sum of advances in metres at mPerPx scale
 float textWidth(const GlyphSet& set, const char* utf8, float mPerPx);
+
+// longest prefix of utf8 that stays under maxW metres at mPerPx; when text
+// is dropped an ellipsis is appended if it still fits
+std::string clipText(const GlyphSet& set, const char* utf8, float mPerPx,
+                     float maxW);
 
 // tightest vertical extent of the shaped string in text-local units:
 // top > 0 above the baseline, bot < 0 below it. false when the string has

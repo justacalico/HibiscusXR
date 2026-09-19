@@ -14,6 +14,8 @@
 #include "../common/config.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../notif/notif.h"
+#include "../notif/layout.h"
 #include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/props.h"
@@ -144,6 +146,18 @@ static void debugDockPinHook(HudEngine* e) {
     }
 }
 
+// test hook: setprop debug.vrhome.notifclose <n> hits the dismiss badge on
+// card n. Fires once per new value
+static void debugNotifCloseHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.notifclose", tb) > 0 &&
+            strcmp(tb, last) != 0) {
+        strncpy(last, tb, sizeof(last) - 1);
+        notifDismiss(e, atoi(tb));
+    }
+}
+
 // the library panel is permanent: it opens dead ahead once tracking is
 // live, and since the app is its own process now a dead one respawns the
 // same way instead of leaving the shell without a launcher. recenterAngles
@@ -187,8 +201,19 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
 // whatever surface sits underneath (env scenery or a running app)
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
+    if (h->toastOnly) {
+        // heads-up over a covered app: only the card stack and the cursor
+        // draw - the window never takes focus and no menu chrome shows,
+        // so the app underneath keeps running undisturbed
+        drawNotifStack(h, vp, h->toastYaw, kNotifToastPitch, 0.0f);
+        drawCursor(h, vp);
+        drawHoldRing(h);
+        return;
+    }
     drawPanels(h, vp);
     drawDock(h, vp);
+    drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
+                   notifLift((int)h->notifs.size()));
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
     // ignores vp entirely, so it stays put while the world shifts around it
@@ -262,6 +287,7 @@ static void hudFrame(HudEngine* e) {
     debugDockTapHook(e);
     debugDockCloseHook(e);
     debugDockPinHook(e);
+    debugNotifCloseHook(e);
     spawnLauncher(e, head);
 
     // hold-to-recenter fill: the java side owns the threshold and fires the
@@ -291,13 +317,35 @@ static void hudFrame(HudEngine* e) {
 
     // sync first: the pick needs this frame's item list and strip width
     syncDock(e);
+    syncNotifs(e);
 
-    // gaze pick: the dock strip wins ties against a panel edge so its
+    // the card stack anchors over the dock bar in the dash, or on the
+    // toast's own yaw while heads-up over an app; the yaw is captured when
+    // the toast pops so the cards stay world-locked for its seconds
+    const float nYaw = e->toastOnly ? e->toastYaw : e->dockYaw;
+    const float nPitch = e->toastOnly ? kNotifToastPitch : e->dockPitch;
+    const float nLift = e->toastOnly ? 0.0f
+                                     : notifLift((int)e->notifs.size());
+
+    // gaze pick: the card stack floats in front of the dock plane so it
+    // wins by distance; the dock wins ties against a panel edge so its
     // icons stay tappable even when one peeks out from behind a window
     const Pick pk = pickPanel(e->panels, head, e->ringPos, e->eyePos);
     const DockPick dp = pickDock(e->dock, e->dockHW, e->dockYaw, e->dockPitch,
                                  head, e->ringPos, e->eyePos);
-    if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
+    const NotifPick np = pickNotif(e->notifs, nYaw, nPitch, nLift,
+                                   head, e->ringPos, e->eyePos);
+    if (np.stack && (!dp.bar || np.t <= dp.t) &&
+            (pk.idx < 0 || np.t <= pk.t)) {
+        e->notifHover = np.idx;
+        e->notifZone = np.zone;
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+    } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
         e->dockHover = dp.idx;
         e->dockZone = dp.zone;
         e->dockU = dp.u;
@@ -305,6 +353,8 @@ static void hudFrame(HudEngine* e) {
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
     } else {
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
         e->dockHover = -1;
         e->dockZone = DZONE_NONE;
         e->hover = pk.idx;
@@ -317,6 +367,8 @@ static void hudFrame(HudEngine* e) {
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
     e->gazePitch = gazePitch(head);
+    if (e->toastOnly && !e->toastWas) e->toastYaw = e->gazeYaw;
+    e->toastWas = e->toastOnly;
 
     dragTick(e, head);
     moveTick(e);

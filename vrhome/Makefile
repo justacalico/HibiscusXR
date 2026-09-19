@@ -45,8 +45,10 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
+            src/render/shape.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
+            src/notif/notif.cpp src/notif/layout.cpp \
             src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp
 
@@ -71,7 +73,8 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 # pure modules only - no Android/GL includes, so they build on the host
 HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
-             src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp
+             src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
+             src/notif/layout.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 

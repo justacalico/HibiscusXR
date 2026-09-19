@@ -87,8 +87,8 @@ class SettingsSnapshot {
   static Map<ItemId, bool> _boolMap(Object? raw) => raw is Map
       ? {
           for (final e in raw.entries)
-            if (itemIdByName('${e.key}') != null)
-              itemIdByName('${e.key}')!: e.value == true,
+            if (itemIdByName('${e.key}') != null && e.value is bool)
+              itemIdByName('${e.key}')!: e.value as bool,
         }
       : const {};
 

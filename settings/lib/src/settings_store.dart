@@ -24,7 +24,7 @@ class SettingsStore extends ChangeNotifier {
   bool isOn(ItemId id) => _toggles[id] ?? false;
 
   void setToggle(ItemId id, bool on) {
-    if (_toggles[id] == on) return;
+    if (isOn(id) == on) return;
     _toggles[id] = on;
     notifyListeners();
   }

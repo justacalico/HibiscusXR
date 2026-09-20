@@ -38,6 +38,11 @@ class ControllerClient(private val context: Context) {
 
         private const val POLL_MS = 2000L
         private const val BATTERY_INDEX = 8
+
+        // The station keeps scanning after the one-shot pair command;
+        // getStationPairState only reports the command result, so the
+        // open window is tracked here and expires on its own.
+        private const val SCAN_TIMEOUT_MS = 60_000L
     }
 
     var service: CVControllerAIDLService? = null
@@ -53,6 +58,11 @@ class ControllerClient(private val context: Context) {
     val serials = arrayOf("", "")
     var pairState = 0
     var mainController = -1
+    var scanning = false
+        private set
+
+    val pairingActive: Boolean
+        get() = scanning || pairState > 0
 
     var onChange: (() -> Unit)? = null
 
@@ -62,6 +72,13 @@ class ControllerClient(private val context: Context) {
             poll()
             handler.postDelayed(this, POLL_MS)
         }
+    }
+
+    private val scanTimeout = Runnable {
+        Log.i(TAG, "scan window expired")
+        scanning = false
+        poll()
+        onChange?.invoke()
     }
 
     private val connection = object : ServiceConnection {
@@ -152,6 +169,13 @@ class ControllerClient(private val context: Context) {
         override fun feedbackControllerDeviceVersion(d: Int, v: String?) {}
         override fun feedbackControllerStatus(s: Int) {
             Log.i(TAG, "controller status cb: $s")
+            // 2 is the station confirming it entered pair scan.
+            if (s == 2) {
+                scanning = true
+                handler.removeCallbacks(scanTimeout)
+                handler.postDelayed(scanTimeout, SCAN_TIMEOUT_MS)
+                handler.post { onChange?.invoke() }
+            }
         }
         override fun feedbackControllerBusyStatus(s: Int) {}
         override fun feedbackControllerOTAStatusCode(d: Int, c: Int) {}
@@ -183,6 +207,8 @@ class ControllerClient(private val context: Context) {
 
     fun unbind() {
         handler.removeCallbacks(poll)
+        handler.removeCallbacks(scanTimeout)
+        scanning = false
         if (!bound) return
         try {
             service?.stopCVControllerThread(HEAD_SENSOR, HAND_SENSOR)
@@ -208,6 +234,8 @@ class ControllerClient(private val context: Context) {
                 svc.enterPairMode(i)
                 Log.i(TAG, "enterPairMode($i) sent")
             }
+            scanning = true
+            handler.postDelayed(scanTimeout, SCAN_TIMEOUT_MS)
         } catch (e: RemoteException) {
             Log.w(TAG, "enterPairMode failed", e)
         }
@@ -221,6 +249,8 @@ class ControllerClient(private val context: Context) {
         } catch (e: RemoteException) {
             Log.w(TAG, "interruptPairMode failed", e)
         }
+        scanning = false
+        handler.removeCallbacks(scanTimeout)
         poll()
     }
 
@@ -260,9 +290,14 @@ class ControllerClient(private val context: Context) {
                     }
                 charging[i] = svc.isChargeing(i)
             }
+            if (scanning && states[0] == 1 && states[1] == 1) {
+                Log.i(TAG, "both slots linked, closing scan window")
+                scanning = false
+                handler.removeCallbacks(scanTimeout)
+            }
             Log.i(
                 TAG,
-                "poll pair=$pairState main=$mainController " +
+                "poll pair=$pairState scan=$scanning main=$mainController " +
                     "L{st=${states[0]} bat=${batteries[0]} " +
                     "chg=${charging[0]} mac=${macs[0]} sn=${serials[0]}} " +
                     "R{st=${states[1]} bat=${batteries[1]} " +

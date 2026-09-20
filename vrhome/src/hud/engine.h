@@ -32,7 +32,8 @@ struct HudEngine : Engine {
               mTakePins = nullptr, mSetPins = nullptr, mAppIcon = nullptr,
               mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr,
               mNotifVer = nullptr, mNotifs = nullptr,
-              mDismissNotif = nullptr, mToastOnly = nullptr;
+              mDismissNotif = nullptr, mToastOnly = nullptr,
+              mSysStatus = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -84,6 +85,14 @@ struct HudEngine : Engine {
     long long dockPressMs = 0;
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
+
+    // status cluster on the strip's left end: dockSys carries the layout
+    // positions, the rest is the last bridge pull + the formatted clock
+    DockStatus dockSys;
+    char sysClock[8] = "--:--";
+    int sysWifi = 0;               // wifi link state: 1 connected
+    int sysBatt = 0;               // battery percent 0..100
+    int sysChg = 0;                // charging flag
 
     // notification cards: notifsAll is the live record set rebuilt when
     // the listener's version bumps; notifs is the visible subset filtered

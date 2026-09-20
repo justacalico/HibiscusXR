@@ -187,7 +187,7 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                       kNotifIconHW * kIconRad, 0.0f, 0.002f, pc);
             if (*lb && e->font.ok) {
                 char ch[2] = {*lb, 0};
-                const float ts = kNotifIconHW * 1.1f;
+                const float ts = kNotifIconHW * 0.04f;
                 const float tw = measureText(e, ch, ts) * 0.5f;
                 float gt, gb, yo = 0.0f;
                 if (textBounds(e->font.set, ch, ts, &gt, &gb))

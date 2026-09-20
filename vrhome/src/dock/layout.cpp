@@ -111,13 +111,30 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
     return out;
 }
 
-float dockLayout(std::vector<DockItem>& items) {
-    float total = 2.0f * kDockPad;
+float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
+    // status cluster on the left: clock + wifi + battery + bell slots,
+    // then a separator gap before the app icons like the group seps use
+    const float clusterW = st.clockW + kSysIconW * 3.0f + kSysGap * 3.0f;
+    const float lead = items.empty() ? clusterW
+                                     : clusterW + kDockGap + kDockSepW;
+    float total = 2.0f * kDockPad + lead;
     for (auto& it : items)
         total += kDockIconW + (it.sep ? kDockSepW : 0.0f);
     if (!items.empty()) total += (items.size() - 1) * kDockGap;
     const float halfW = total * 0.5f;
-    float x = -halfW + kDockPad + kDockIconHW;
+    float x = -halfW + kDockPad;
+    st.clockX = x;
+    x += st.clockW + kSysGap;
+    st.wifiX = x + kSysIconW * 0.5f;
+    x += kSysIconW + kSysGap;
+    st.battX = x + kSysIconW * 0.5f;
+    x += kSysIconW + kSysGap;
+    st.bellX = x + kSysIconW * 0.5f;
+    x += kSysIconW;
+    if (!items.empty()) {
+        st.sepX = x + (kDockGap + kDockSepW) * 0.5f;
+        x += kDockGap + kDockSepW + kDockIconHW;
+    }
     for (auto& it : items) {
         if (it.sep) x += kDockSepW;
         it.x = x;

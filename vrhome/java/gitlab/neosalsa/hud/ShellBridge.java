@@ -21,6 +21,9 @@ import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.hardware.input.InputManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -242,6 +245,31 @@ public class ShellBridge {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    // render thread: status bits for the dock cluster - wifi link state,
+    // battery percent, charging flag. Local reads, cheap enough per frame
+    public int[] sysStatus() {
+        int wifi = 0, pct = 0, chg = 0;
+        try {
+            ConnectivityManager cm = (ConnectivityManager)
+                ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo wi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+            if (wi != null && wi.isConnected()) wifi = 1;
+        } catch (Throwable ignored) {}
+        try {
+            Intent batt = ctx.registerReceiver(null,
+                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            if (batt != null) {
+                int lv = batt.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+                int sc = batt.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+                if (lv >= 0 && sc > 0) pct = lv * 100 / sc;
+                int st = batt.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                if (st == BatteryManager.BATTERY_STATUS_CHARGING ||
+                        st == BatteryManager.BATTERY_STATUS_FULL) chg = 1;
+            }
+        } catch (Throwable ignored) {}
+        return new int[]{wifi, pct, chg};
     }
 
     // render thread: bumped when the immersive task set changes

@@ -83,17 +83,52 @@ void testDock() {
         DockItem b; b.pkg = "b"; b.kind = DK_RUN; b.sep = true;
         DockItem c; c.pkg = "c"; c.kind = DK_QUICK; c.sep = true;
         items = {a, b, c};
-        const float hw = dockLayout(items);
-        // 3 icons + 2 seps + pad both ends + 2 gaps
-        const float want = (2 * kDockPad + 3 * kDockIconW +
-                            2 * kDockSepW + 2 * kDockGap) * 0.5f;
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        // cluster + its separator + 3 icons + 2 seps + pad + gaps
+        const float clusterW = st.clockW + 3.0f * kSysIconW + 3.0f * kSysGap;
+        const float want = (2 * kDockPad + clusterW + kDockGap + kDockSepW +
+                            3 * kDockIconW + 2 * kDockSepW +
+                            2 * kDockGap) * 0.5f;
         CHECK_F(hw, want, 1e-6f);
         CHECK(items[0].x < items[1].x && items[1].x < items[2].x);
-        CHECK_F(items[0].x, -hw + kDockPad + kDockIconHW, 1e-6f);
         CHECK_F(items[2].x, hw - kDockPad - kDockIconHW, 1e-6f);
         // the separator gap is wider than a plain icon gap
         CHECK(items[1].x - items[0].x > kDockIconW + kDockGap);
         CHECK(items[2].x - items[1].x > kDockIconW + kDockGap);
+    }
+
+    // status cluster: left edge anchors at the pad, slots march right in
+    // clock-wifi-battery-bell order, separator lands before the icons
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
+        items = {a};
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        CHECK_F(st.clockX, -hw + kDockPad, 1e-6f);
+        CHECK(st.wifiX < st.battX && st.battX < st.bellX);
+        CHECK(st.bellX < st.sepX && st.sepX < items[0].x);
+        // a wider clock string pushes the whole cluster right
+        DockStatus wide; wide.clockW = 0.12f;
+        std::vector<DockItem> items2 = items;
+        dockLayout(items2, wide);
+        CHECK(wide.wifiX > st.wifiX);
+        CHECK(wide.sepX > st.sepX);
+        // the first icon sits past the cluster separator
+        CHECK(items[0].x > st.sepX);
+    }
+
+    // an empty item list still places the cluster, just with no separator
+    {
+        std::vector<DockItem> items;
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        CHECK_F(st.clockX, -hw + kDockPad, 1e-6f);
+        CHECK(hw > st.clockW);
     }
 
     // hit test: icon centres hit, gaps and off-bar points miss; a live XR
@@ -104,7 +139,9 @@ void testDock() {
         DockItem b; b.pkg = "b"; b.kind = DK_RUN; b.vr = true;
                 b.running = true; b.sep = true;
         items = {a, b};
-        const float hw = dockLayout(items);
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
         int zone = DZONE_NONE;
         const float ua = items[0].x / hw, ub = items[1].x / hw;
         const float uy = kDockIconY / (kDockBarH * 0.5f);

@@ -155,8 +155,13 @@ class MainActivity : FlutterActivity() {
     // app: a per-slot map plus the pairing flag and main-hand choice.
     private fun controllerSnapshot(): Map<String, Any?> {
         val c = controllers
+        val pairing = (c?.pairState ?: 0) != 0
         fun slot(i: Int) = mapOf(
-            "state" to (c?.states?.get(i) ?: 0),
+            // A slot that has not linked shows "pairing" while the
+            // station scan is open.
+            "state" to (c?.states?.get(i) ?: 0).let {
+                if (it == 0 && pairing) 2 else it
+            },
             "battery" to (c?.batteries?.get(i) ?: -1),
             "charging" to (c?.charging?.get(i) ?: false),
             "mac" to (c?.macs?.get(i) ?: ""),

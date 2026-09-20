@@ -521,8 +521,11 @@ void android_main(struct android_app *app) {
         pfn_xrDestroySpace(space);
     if (sess != XR_NULL_HANDLE)
         pfn_xrDestroySession(sess);
-    if (inst != XR_NULL_HANDLE)
-        pfn_xrDestroyInstance(inst);
+    if (inst != XR_NULL_HANDLE) {
+        r = pfn_xrDestroyInstance(inst);
+        LOGI("xrDestroyInstance -> %d", r);
+    }
     (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
+    usleep(100000); // let logd flush the destroy lines before we die
     exit(0);
 }

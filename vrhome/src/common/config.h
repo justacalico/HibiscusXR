@@ -74,6 +74,9 @@ constexpr float kDockDist = 1.35f;    // metres; panels sit at 1.5
 constexpr float kDockIconW = 0.15f;   // icon square edge
 constexpr float kDockIconHW = kDockIconW * 0.5f;
 constexpr float kDockIconY = 0.008f;  // icon centre above bar centre
+// icon corner radius as a fraction of the icon's half-width: 0.44 is about
+// 22% of the edge - the macOS squircle, squarer than a circle crop
+constexpr float kIconRad = 0.44f;
 constexpr float kDockGap = 0.030f;    // between icons
 constexpr float kDockPad = 0.045f;    // bar end padding
 constexpr float kDockSepW = 0.035f;   // extra gap at a group separator

@@ -12,6 +12,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
@@ -223,8 +227,17 @@ public class ShellBridge {
             Drawable d = pm.getApplicationIcon(pkg);
             Bitmap b = Bitmap.createBitmap(96, 96, Bitmap.Config.ARGB_8888);
             Canvas c = new Canvas(b);
+            // every icon rides the same squircle tile: full-bleed bitmaps get
+            // clipped to it, transparent glyphs sit on the plate
+            Paint pt = new Paint(Paint.ANTI_ALIAS_FLAG);
+            RectF box = new RectF(0.0f, 0.0f, 96.0f, 96.0f);
+            float r = 96.0f * 0.22f;
+            pt.setColor(0xFF262B33);
+            c.drawRoundRect(box, r, r, pt);
             d.setBounds(0, 0, 96, 96);
             d.draw(c);
+            pt.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_IN));
+            c.drawRoundRect(box, r, r, pt);
             return b;
         } catch (Throwable t) {
             return null;

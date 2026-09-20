@@ -31,13 +31,17 @@
 
 #include "xrt/xrt_device.h"
 
+#include "android/android_globals.h"
+
 #include <android/sensor.h>
 #include <android/looper.h>
 
+#include <jni.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 // Workaround to avoid the inclusion of "android_native_app_glue.h".
 #ifndef LOOPER_ID_USER
@@ -344,8 +348,41 @@ pn2_run_thread(void *ptr)
 		ASensorEventQueue_setEventRate(queue, gyro, min_delay > 0 ? min_delay : 2000);
 	}
 
+	// Watch the activity that created the instance: an app that gets closed
+	// without calling xrDestroyInstance leaves this thread running in the
+	// cached process, so the sensor subscription, the qvrd client and the
+	// compositor stay alive and a relaunched app wedges behind the stale
+	// state. Poll isFinishing here - the callback is main-thread state and
+	// still fires while the app hangs inside its own destroy.
+	JNIEnv *env = NULL;
+	jobject activity = NULL;
+	jmethodID is_finishing = NULL;
+	jmethodID is_destroyed = NULL;
+	struct _JavaVM *vm = android_globals_get_vm();
+	jobject act = vm != NULL ? (jobject)android_globals_get_activity() : NULL;
+	if (act != NULL &&
+	    vm->functions->AttachCurrentThread(&vm->functions, &env, NULL) == JNI_OK &&
+	    env != NULL) {
+		activity = (*env)->NewGlobalRef(env, act);
+		if (activity != NULL) {
+			jclass cls = (*env)->GetObjectClass(env, activity);
+			if (cls != NULL) {
+				is_finishing = (*env)->GetMethodID(env, cls, "isFinishing", "()Z");
+				is_destroyed = (*env)->GetMethodID(env, cls, "isDestroyed", "()Z");
+				// context can be a service: neither method exists there
+				if ((*env)->ExceptionCheck(env)) {
+					(*env)->ExceptionClear(env);
+				}
+				(*env)->DeleteLocalRef(env, cls);
+			}
+		}
+	}
+
+	bool orphan = false;
 	ASensorEvent events[32];
-	while (ALooper_pollOnce(-1, NULL, NULL, NULL) >= 0) {
+	uint64_t next_check = 0;
+	while (os_thread_helper_is_running(&d->oth)) {
+		ALooper_pollOnce(50, NULL, NULL, NULL);
 		ssize_t n = ASensorEventQueue_getEvents(queue, events, 32);
 		for (ssize_t i = 0; i < n; i++) {
 			pn2_handle_event(d, &events[i]);
@@ -353,6 +390,61 @@ pn2_run_thread(void *ptr)
 		os_mutex_lock(&d->lock);
 		pn2_pump_qvr(d);
 		os_mutex_unlock(&d->lock);
+
+		if (activity == NULL || is_finishing == NULL) {
+			continue;
+		}
+		uint64_t now = os_monotonic_get_ns();
+		if (now < next_check) {
+			continue;
+		}
+		next_check = now + 100000000ull;
+		jboolean gone = (*env)->CallBooleanMethod(env, activity, is_finishing);
+		if (!gone && is_destroyed != NULL) {
+			gone = (*env)->CallBooleanMethod(env, activity, is_destroyed);
+		}
+		if ((*env)->ExceptionCheck(env)) {
+			(*env)->ExceptionClear(env);
+			gone = false;
+		}
+		if (gone) {
+			// The owning activity is closing. A well-behaved app calls
+			// xrDestroyInstance now, which stops this thread; give that a
+			// short window, then assume the instance was abandoned.
+			uint64_t deadline = now + 500000000ull;
+			while (os_monotonic_get_ns() < deadline &&
+			       os_thread_helper_is_running(&d->oth)) {
+				usleep(5000);
+			}
+			orphan = os_thread_helper_is_running(&d->oth);
+			if (orphan) {
+				PN2_INFO(d, "activity finished with live instance, tearing down");
+			}
+			break;
+		}
+	}
+
+	if (accel != NULL) {
+		ASensorEventQueue_disableSensor(queue, accel);
+	}
+	if (gyro != NULL) {
+		ASensorEventQueue_disableSensor(queue, gyro);
+	}
+	ASensorManager_destroyEventQueue(sm, queue);
+
+	if (env != NULL) {
+		if (activity != NULL) {
+			(*env)->DeleteGlobalRef(env, activity);
+		}
+		vm->functions->DetachCurrentThread(&vm->functions);
+	}
+
+	if (orphan) {
+		// Nothing else will tear the runtime down now: kill the cached
+		// process so the compositor, sessions, windows and service
+		// connections die with the activity instead of leaking into the
+		// next XR app.
+		_exit(0);
 	}
 	return NULL;
 }
@@ -519,6 +611,7 @@ pn2_hmd_create(void)
 
 	m_imu_3dof_init(&d->fusion, M_IMU_3DOF_USE_GRAVITY_DUR_20MS);
 	m_relation_history_create(&d->rh);
+	os_thread_helper_init(&d->oth);
 
 	if (os_mutex_init(&d->lock) != 0) {
 		PN2_ERROR(d, "mutex init failed");

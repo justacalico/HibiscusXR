@@ -178,7 +178,10 @@ class ControllerClient(private val context: Context) {
             handler.post { onChange?.invoke() }
         }
 
-        override fun feedbackDeviceInfo(i1: String?, i2: String?, f: Int) {}
+        override fun feedbackDeviceInfo(i1: String?, i2: String?, f: Int) {
+            Log.i(TAG, "device info cb: $i1 $i2 flag=$f")
+            markThreadReady()
+        }
         override fun feedbackMainControllerSerialNumChanged(i: Int) {
             Log.i(TAG, "main controller cb: $i")
             markThreadReady()
@@ -302,6 +305,52 @@ class ControllerClient(private val context: Context) {
             Log.i(TAG, "scanRaw device=$device sent")
         } catch (e: RemoteException) {
             Log.w(TAG, "scanRaw failed", e)
+        }
+    }
+
+    // Push known BLE MACs into the station bond table (opcode 0x11).
+    fun usbPair(mac1: String, mac2: String) {
+        val svc = service ?: return
+        if (!threadReady) {
+            Log.w(TAG, "usbPair: thread not ready")
+            return
+        }
+        try {
+            svc.enterUSBPairMode(mac1, mac2)
+            Log.i(TAG, "enterUSBPairMode mac1=$mac1 mac2=$mac2 sent")
+        } catch (e: RemoteException) {
+            Log.w(TAG, "usbPair failed", e)
+        }
+    }
+
+    // Dumps the station bond table; the MAC list lands in the
+    // service's own log (getStationWhiteList buf_rx).
+    fun whiteList() {
+        val svc = service ?: return
+        if (!threadReady) {
+            Log.w(TAG, "whiteList: thread not ready")
+            return
+        }
+        try {
+            svc.getStationWhiteListNumber()
+            Log.i(TAG, "getStationWhiteListNumber sent")
+        } catch (e: RemoteException) {
+            Log.w(TAG, "whiteList failed", e)
+        }
+    }
+
+    // Paired-scan probe (opcode 0x0d), reconnects a stored bond for a slot.
+    fun enterPair(slot: Int) {
+        val svc = service ?: return
+        if (!threadReady) {
+            Log.w(TAG, "enterPair: thread not ready")
+            return
+        }
+        try {
+            svc.enterPairMode(slot)
+            Log.i(TAG, "enterPairMode($slot) sent")
+        } catch (e: RemoteException) {
+            Log.w(TAG, "enterPair failed", e)
         }
     }
 

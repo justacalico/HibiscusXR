@@ -397,12 +397,13 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         glUseProgram(e->shapeProg);
     }
 
-    // wifi fan: the apex dot sits low in the slot, three arcs open upward;
-    // bright while the link is up, dim when it drops
+    // wifi fan: the apex dot anchors the fan and three arcs open upward;
+    // wy drops the apex just enough that the fan's bounding box centres on
+    // the slot like the battery and clock do
     {
         const float wcol[4] = {1.0f, 1.0f, 1.0f,
                                e->sysWifi ? 0.92f : 0.25f};
-        const float wy = -0.026f;
+        const float wy = -0.019f;
         const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
                              c[1] + r[1]*st.wifiX + up[1]*wy,
                              c[2] + r[2]*st.wifiX + up[2]*wy};

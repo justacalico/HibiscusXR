@@ -10,7 +10,6 @@ import android.content.IntentFilter
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.Build
-import android.os.PowerManager
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -275,8 +274,6 @@ class MainActivity : FlutterActivity() {
             "devOptions" -> startActivity(
                 Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
             )
-            "batterySaver" ->
-                startActivity(Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS))
             "aboutOpen" ->
                 startActivity(Intent(Settings.ACTION_DEVICE_INFO_SETTINGS))
             "resetView" -> sendBroadcast(
@@ -287,29 +284,8 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
                     .setPackage(packageName),
             )
-            "sleep" -> powerCall("goToSleep", System.currentTimeMillis())
-            "restart" -> powerCall("reboot", null)
         }
     }
-
-    // goToSleep/reboot are @SystemApi - hidden from the SDK but callable
-    // on this platform-signed install through reflection.
-    private fun powerCall(name: String, arg: Any?) {
-        try {
-            val pm = getSystemService(PowerManager::class.java) ?: return
-            val m = PowerManager::class.java.getMethod(name, *argTypes(arg))
-            m.invoke(pm, *spread(arg))
-        } catch (_: Exception) {}
-    }
-
-    private fun argTypes(arg: Any?): Array<Class<*>> = when (arg) {
-        null -> arrayOf(String::class.java)
-        is Long -> arrayOf(java.lang.Long.TYPE)
-        else -> arrayOf(arg.javaClass)
-    }
-
-    private fun spread(arg: Any?): Array<Any?> =
-        if (arg == null) arrayOf(null) else arrayOf(arg)
 
     private fun putGlobal(key: String, on: Boolean) {
         try {

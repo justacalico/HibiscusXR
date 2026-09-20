@@ -64,8 +64,8 @@ void main() {
     expect(store.section, SectionId.wifi);
     store.selectSection(SectionId.wifi);
     expect(ticks, 0);
-    store.selectSection(SectionId.power);
-    expect(store.section, SectionId.power);
+    store.selectSection(SectionId.about);
+    expect(store.section, SectionId.about);
     expect(ticks, 1);
   });
 

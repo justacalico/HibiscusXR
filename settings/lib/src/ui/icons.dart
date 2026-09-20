@@ -30,8 +30,6 @@ IconData iconFor(SectionId id) {
       return Icons.developer_mode;
     case SectionId.softwareUpdate:
       return Icons.system_update_alt;
-    case SectionId.power:
-      return Icons.power_settings_new;
     case SectionId.about:
       return Icons.info_outline;
     case SectionId.tips:

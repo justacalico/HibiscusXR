@@ -55,11 +55,6 @@ const kSections = <SectionDef>[
     ItemId.buildNumber,
     ItemId.updateCheck,
   ]),
-  SectionDef(SectionId.power, [
-    ItemId.batterySaver,
-    ItemId.sleep,
-    ItemId.restart,
-  ]),
   SectionDef(SectionId.about, [
     ItemId.modelName,
     ItemId.androidVersion,
@@ -92,9 +87,6 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.devOptions: ItemKind.action,
   ItemId.updateCheck: ItemKind.action,
   ItemId.buildNumber: ItemKind.info,
-  ItemId.batterySaver: ItemKind.action,
-  ItemId.sleep: ItemKind.action,
-  ItemId.restart: ItemKind.action,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
   ItemId.aboutOpen: ItemKind.action,

@@ -16,7 +16,6 @@ enum SectionId {
   backup,
   developer,
   softwareUpdate,
-  power,
   about,
   tips,
 }
@@ -45,9 +44,6 @@ enum ItemId {
   devOptions,
   updateCheck,
   buildNumber,
-  batterySaver,
-  sleep,
-  restart,
   modelName,
   androidVersion,
   aboutOpen,

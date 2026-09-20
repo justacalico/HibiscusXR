@@ -29,8 +29,6 @@ String sectionTitle(AppLocalizations l10n, SectionId id) {
       return l10n.sectionDeveloper;
     case SectionId.softwareUpdate:
       return l10n.sectionSoftwareUpdate;
-    case SectionId.power:
-      return l10n.sectionPower;
     case SectionId.about:
       return l10n.sectionAbout;
     case SectionId.tips:
@@ -82,12 +80,6 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemUpdateCheck;
     case ItemId.buildNumber:
       return l10n.itemBuildNumber;
-    case ItemId.batterySaver:
-      return l10n.itemBatterySaver;
-    case ItemId.sleep:
-      return l10n.itemSleep;
-    case ItemId.restart:
-      return l10n.itemRestart;
     case ItemId.modelName:
       return l10n.itemModelName;
     case ItemId.androidVersion:
@@ -143,12 +135,6 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemUpdateCheckDesc;
     case ItemId.buildNumber:
       return l10n.itemBuildNumberDesc;
-    case ItemId.batterySaver:
-      return l10n.itemBatterySaverDesc;
-    case ItemId.sleep:
-      return l10n.itemSleepDesc;
-    case ItemId.restart:
-      return l10n.itemRestartDesc;
     case ItemId.modelName:
       return l10n.itemModelNameDesc;
     case ItemId.androidVersion:

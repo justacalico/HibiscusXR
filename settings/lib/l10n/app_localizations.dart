@@ -253,13 +253,13 @@ abstract class AppLocalizations {
   /// No description provided for @itemControllerPair.
   ///
   /// In en, this message translates to:
-  /// **'Pair controllers'**
+  /// **'Scan for controllers'**
   String get itemControllerPair;
 
   /// No description provided for @itemControllerPairDesc.
   ///
   /// In en, this message translates to:
-  /// **'Hold the pairing button on each controller until it rumbles'**
+  /// **'Starts the link scan, then hold the pairing button on each controller until it rumbles'**
   String get itemControllerPairDesc;
 
   /// No description provided for @itemControllerLeft.

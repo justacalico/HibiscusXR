@@ -87,11 +87,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemBluetoothSettingsDesc => 'Pairing and connected devices';
 
   @override
-  String get itemControllerPair => 'Pair controllers';
+  String get itemControllerPair => 'Scan for controllers';
 
   @override
   String get itemControllerPairDesc =>
-      'Hold the pairing button on each controller until it rumbles';
+      'Starts the link scan, then hold the pairing button on each controller until it rumbles';
 
   @override
   String get itemControllerLeft => 'Left controller';

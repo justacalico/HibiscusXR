@@ -86,8 +86,9 @@ void testDock() {
         DockStatus st;
         st.clockW = 0.06f;
         const float hw = dockLayout(items, st);
-        // cluster + its separator + 3 icons + 2 seps + pad + gaps
-        const float clusterW = st.clockW + 3.0f * kSysIconW + 3.0f * kSysGap;
+        // cluster pills + their separator + 3 icons + 2 seps + pad + gaps
+        const float clusterW = kSysPillPad * 4.0f + 3.0f * kSysIconW +
+                               2.0f * kSysGap + kSysPillGap + st.clockW;
         const float want = (2 * kDockPad + clusterW + kDockGap + kDockSepW +
                             3 * kDockIconW + 2 * kDockSepW +
                             2 * kDockGap) * 0.5f;
@@ -99,8 +100,8 @@ void testDock() {
         CHECK(items[2].x - items[1].x > kDockIconW + kDockGap);
     }
 
-    // status cluster: left edge anchors at the pad, slots march right in
-    // clock-wifi-battery-bell order, separator lands before the icons
+    // status cluster: pill A wraps clock-battery-wifi, pill B wraps the
+    // bell alone, separator lands before the icons
     {
         std::vector<DockItem> items;
         DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
@@ -108,17 +109,19 @@ void testDock() {
         DockStatus st;
         st.clockW = 0.06f;
         const float hw = dockLayout(items, st);
-        CHECK_F(st.clockX, -hw + kDockPad, 1e-6f);
-        CHECK(st.wifiX < st.battX && st.battX < st.bellX);
-        CHECK(st.bellX < st.sepX && st.sepX < items[0].x);
-        // a wider clock string pushes the whole cluster right
+        CHECK_F(st.pillAL, -hw + kDockPad, 1e-6f);
+        CHECK(st.pillAL < st.clockX && st.clockX < st.battX);
+        CHECK(st.battX < st.wifiX && st.wifiX < st.pillAR);
+        CHECK(st.pillAR < st.pillBL && st.pillBL < st.bellX);
+        CHECK(st.bellX < st.pillBR && st.pillBR < st.sepX);
+        CHECK(st.sepX < items[0].x);
+        // a wider clock string widens pill A and pushes the rest right
         DockStatus wide; wide.clockW = 0.12f;
         std::vector<DockItem> items2 = items;
         dockLayout(items2, wide);
-        CHECK(wide.wifiX > st.wifiX);
+        CHECK(wide.pillAR > st.pillAR);
+        CHECK(wide.pillBL > st.pillBL);
         CHECK(wide.sepX > st.sepX);
-        // the first icon sits past the cluster separator
-        CHECK(items[0].x > st.sepX);
     }
 
     // an empty item list still places the cluster, just with no separator
@@ -127,7 +130,8 @@ void testDock() {
         DockStatus st;
         st.clockW = 0.06f;
         const float hw = dockLayout(items, st);
-        CHECK_F(st.clockX, -hw + kDockPad, 1e-6f);
+        CHECK_F(st.pillAL, -hw + kDockPad, 1e-6f);
+        CHECK_F(st.clockX, st.pillAL + kSysPillPad, 1e-6f);
         CHECK(hw > st.clockW);
     }
 

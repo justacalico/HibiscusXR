@@ -112,9 +112,13 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
 }
 
 float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
-    // status cluster on the left: clock + wifi + battery + bell slots,
-    // then a separator gap before the app icons like the group seps use
-    const float clusterW = st.clockW + kSysIconW * 3.0f + kSysGap * 3.0f;
+    // status cluster on the left in two pills: clock + battery + wifi in
+    // the first, the bell alone in the second, then a separator gap
+    // before the app icons like the group seps use
+    const float pillAW = kSysPillPad * 2.0f + st.clockW + kSysIconW * 2.0f +
+                         kSysGap * 2.0f;
+    const float pillBW = kSysPillPad * 2.0f + kSysIconW;
+    const float clusterW = pillAW + kSysPillGap + pillBW;
     const float lead = items.empty() ? clusterW
                                      : clusterW + kDockGap + kDockSepW;
     float total = 2.0f * kDockPad + lead;
@@ -123,14 +127,19 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
     if (!items.empty()) total += (items.size() - 1) * kDockGap;
     const float halfW = total * 0.5f;
     float x = -halfW + kDockPad;
-    st.clockX = x;
-    x += st.clockW + kSysGap;
-    st.wifiX = x + kSysIconW * 0.5f;
-    x += kSysIconW + kSysGap;
+    st.pillAL = x;
+    st.clockX = x + kSysPillPad;
+    x = st.clockX + st.clockW + kSysGap;
     st.battX = x + kSysIconW * 0.5f;
     x += kSysIconW + kSysGap;
-    st.bellX = x + kSysIconW * 0.5f;
-    x += kSysIconW;
+    st.wifiX = x + kSysIconW * 0.5f;
+    x += kSysIconW + kSysPillPad;
+    st.pillAR = x;
+    x += kSysPillGap;
+    st.pillBL = x;
+    st.bellX = x + kSysPillPad + kSysIconW * 0.5f;
+    x += kSysPillPad + kSysIconW + kSysPillPad;
+    st.pillBR = x;
     if (!items.empty()) {
         st.sepX = x + (kDockGap + kDockSepW) * 0.5f;
         x += kDockGap + kDockSepW + kDockIconHW;

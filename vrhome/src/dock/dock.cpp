@@ -349,10 +349,26 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                   0.0012f, hh * 0.55f, 0.0012f, 0.0f, 0.0015f, sepCol);
     }
 
-    // status cluster on the left: clock, wifi fan, battery and bell, then
-    // the separator that splits them off the app icons. Positions came out
-    // of dockLayout, state out of the last bridge pull
+    // status cluster on the left in two pills: clock + battery + wifi in
+    // the first, the bell alone in the second, then the separator that
+    // splits them off the app icons. Positions came out of dockLayout,
+    // state out of the last bridge pull
     const DockStatus& st = e->dockSys;
+    const float pillCol[4] = {0.17f, 0.19f, 0.26f, 0.90f};
+    {
+        const float ax = (st.pillAL + st.pillAR) * 0.5f;
+        const float aw = (st.pillAR - st.pillAL) * 0.5f;
+        const float ac[3] = {c[0] + r[0] * ax, c[1] + r[1] * ax,
+                             c[2] + r[2] * ax};
+        shapeQuad(e, vp, ac, r, up, 0.006f, 0.0f, aw, kSysPillHH,
+                  aw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+        const float bx = (st.pillBL + st.pillBR) * 0.5f;
+        const float bw = (st.pillBR - st.pillBL) * 0.5f;
+        const float bc[3] = {c[0] + r[0] * bx, c[1] + r[1] * bx,
+                             c[2] + r[2] * bx};
+        shapeQuad(e, vp, bc, r, up, 0.006f, 0.0f, bw, kSysPillHH,
+                  bw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+    }
     if (!e->dock.empty()) {
         const float sc[3] = {c[0] + r[0] * st.sepX, c[1] + r[1] * st.sepX,
                              c[2] + r[2] * st.sepX};

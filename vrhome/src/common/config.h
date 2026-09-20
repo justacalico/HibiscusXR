@@ -81,11 +81,15 @@ constexpr float kDockGap = 0.030f;    // between icons
 constexpr float kDockPad = 0.045f;    // bar end padding
 constexpr float kDockSepW = 0.035f;   // extra gap at a group separator
 constexpr float kDockBarH = 0.16f;    // strip height: icon + running dot
-// status cluster pinned to the strip's left end: clock, wifi, battery and
-// a notification bell, then the same separator the app groups use
+// status cluster pinned to the strip's left end: clock, battery and wifi
+// grouped in one pill, the notification bell in a second, then the same
+// separator the app groups use
 constexpr float kSysIconW = 0.10f;    // status slot width
-constexpr float kSysGap = 0.020f;     // between status slots
+constexpr float kSysGap = 0.020f;     // between slots inside a pill
 constexpr float kSysPx = 0.0013f;     // status text metres per font px
+constexpr float kSysPillPad = 0.014f; // pill inset around its slots
+constexpr float kSysPillGap = 0.022f; // between the two pills
+constexpr float kSysPillHH = 0.056f;  // pill half-height
 constexpr float kDockBadgeR = 0.024f; // XR close badge radius
 constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 // dock elevation: scaled with the recenter pitch but clamped so the strip

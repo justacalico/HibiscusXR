@@ -181,7 +181,7 @@ class ControllerClient(private val context: Context) {
         poll()
     }
 
-    fun setMainController(index: Int) {
+    fun setMain(index: Int) {
         try {
             service?.setMainControllerSerialNum(index)
         } catch (e: RemoteException) {

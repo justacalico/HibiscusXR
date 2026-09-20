@@ -295,7 +295,7 @@ class MainActivity : FlutterActivity() {
             )
         }
         if (id == "controllerMain") {
-            controllers?.setMainController(
+            controllers?.setMain(
                 if (value == "left") {
                     ControllerClient.CONTROLLER_LEFT
                 } else {

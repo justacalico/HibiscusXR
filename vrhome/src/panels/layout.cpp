@@ -82,58 +82,50 @@ int libraryIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
-float pillHalfWidth(float textW, float winHW, bool btns) {
-    const float cap = winHW - kBarInset;
-    float w = textW * 0.5f + kPillPadX + (btns ? kPillBtnW : 0.0f);
-    // a pill is wider than it is tall: floor at 2:1 so a missing label
-    // still leaves a readable lozenge instead of a dot
-    if (w < kBarH) w = kBarH;
-    return w < cap ? w : cap;
+float barTextLimit(float winHW, bool btns) {
+    return 2.0f * (winHW - kBarPadX - (btns ? kBarBtnW : 0.0f));
 }
 
-float pillTextLimit(float winHW, bool btns) {
-    return (winHW - kBarInset - kPillPadX - (btns ? kPillBtnW : 0.0f)) * 2.0f;
+float barCloseX(float winHW) {
+    return winHW - kBarBtnPad - kBarBtnR;
 }
 
-float pillCloseX(float pillHW) {
-    return pillHW - kPillBtnPad - kPillBtnR;
+float barMinX(float winHW) {
+    return barCloseX(winHW) - kBarBtnGap - 2.0f * kBarBtnR;
 }
 
-float pillMinX(float pillHW) {
-    return pillCloseX(pillHW) - kPillBtnGap - 2.0f * kPillBtnR;
-}
-
-// panel-coord point -> world offset from the pill's centre, which hangs
-// centred under the window's bottom edge
-static void pillLocal(float u, float v, float* x, float* y) {
+// panel-coord point -> world offset from the bar's centre, which floats
+// centred over the window's top edge
+static void barLocal(float u, float v, float* x, float* y) {
     *x = u * (kPanelW * 0.5f);
-    *y = v * (kPanelH * 0.5f) + kPanelH * 0.5f + kBarGap + kBarH * 0.5f;
+    *y = v * (kPanelH * 0.5f) - kPanelH * 0.5f - kBarGap - kBarH * 0.5f;
 }
 
-bool onPill(float u, float v, float pillHW) {
+bool onBar(float u, float v) {
     float x, y;
-    pillLocal(u, v, &x, &y);
-    return fabsf(x) <= pillHW && fabsf(y) <= kBarH * 0.5f;
+    barLocal(u, v, &x, &y);
+    return fabsf(x) <= kPanelW * 0.5f && fabsf(y) <= kBarH * 0.5f;
 }
 
-int pillButtonAt(float u, float v, float pillHW) {
+int barButtonAt(float u, float v) {
     float x, y;
-    pillLocal(u, v, &x, &y);
+    barLocal(u, v, &x, &y);
     // square hit area a touch bigger than the disc: gaze aim is coarse
-    const float r = kPillBtnR + 0.008f;
-    if (fabsf(x - pillCloseX(pillHW)) <= r && fabsf(y) <= r)
+    const float r = kBarBtnR + 0.008f;
+    const float winHW = kPanelW * 0.5f;
+    if (fabsf(x - barCloseX(winHW)) <= r && fabsf(y) <= r)
         return ZONE_CLOSE;
-    if (fabsf(x - pillMinX(pillHW)) <= r && fabsf(y) <= r)
+    if (fabsf(x - barMinX(winHW)) <= r && fabsf(y) <= r)
         return ZONE_MIN;
     return ZONE_LABEL;
 }
 
 float handleDrop() {
-    return kPanelH * 0.5f + kBarGap + kBarH + kHandleGap + kHandleT;
+    return kPanelH * 0.5f + kHandleGap + kHandleT;
 }
 
 // panel-coord point -> world offset from the handle's centre, which hangs
-// centred under the pill
+// centred under the window
 static void handleLocal(float u, float v, float* x, float* y) {
     *x = u * (kPanelW * 0.5f);
     *y = v * (kPanelH * 0.5f) + handleDrop();
@@ -256,14 +248,9 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
         if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
             zone = ZONE_WINDOW;
         } else {
-            // pillHW is filled in by the renderer once the label is
-            // measured; before that the empty-pill floor still hits
-            const float phw = p.pillHW > 0.0f ? p.pillHW
-                    : pillHalfWidth(0.0f, kPanelW * 0.5f,
-                                    p.pkg != kLibraryPkg);
-            if (onPill(u, v, phw))
+            if (onBar(u, v))
                 zone = p.pkg == kLibraryPkg ? ZONE_LABEL
-                                            : pillButtonAt(u, v, phw);
+                                            : barButtonAt(u, v);
             else if (i == mid && onHandle(u, v))
                 zone = ZONE_HANDLE;
         }

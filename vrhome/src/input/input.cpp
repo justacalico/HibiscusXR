@@ -55,9 +55,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->pressDisp = p.displayId;
                 // a press on the window surface starts a real gesture:
                 // DOWN here, MOVEs while held, UP on release - a quick press
-                // still lands as a plain tap. a press on the pill only arms
-                // its chrome action, fired if the release lands on the same
-                // spot
+                // still lands as a plain tap. a press on the top bar only
+                // arms its chrome action, fired if the release lands on the
+                // same spot
                 if (e->bridge && e->hoverZone == ZONE_WINDOW) {
                     JNIEnv* env = threadEnv(e->vm);
                     e->dragDisp = p.displayId;
@@ -126,14 +126,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         break;
                     }
             } else if (e->pressDisp >= 0 && e->hoverZone == e->pressZone) {
-                // pill press: fire only when the release is still on the
+                // bar press: fire only when the release is still on the
                 // same panel and the same zone it started on
                 for (int i = 0; i < (int)e->panels.size(); ++i) {
                     Panel& p = e->panels[i];
                     if (p.displayId != e->pressDisp || e->hover != i)
                         continue;
                     if (e->pressZone == ZONE_CLOSE) {
-                        LOGI("pill close disp %d", p.displayId);
+                        LOGI("bar close disp %d", p.displayId);
                         if (e->bridge && p.taskId >= 0) {
                             env->CallVoidMethod(e->bridge, e->mRemoveTask,
                                                 p.taskId);
@@ -141,7 +141,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         }
                         closePanel(e, i);
                     } else if (e->pressZone == ZONE_MIN) {
-                        LOGI("pill minimize disp %d", p.displayId);
+                        LOGI("bar minimize disp %d", p.displayId);
                         p.minimized = true;
                         e->hover = -1;
                         e->hoverZone = ZONE_NONE;

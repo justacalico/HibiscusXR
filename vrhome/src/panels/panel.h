@@ -6,10 +6,10 @@
 enum Zone {
     ZONE_NONE   = -1,
     ZONE_WINDOW = 0,   // the app surface
-    ZONE_LABEL,        // the pill, off both buttons
+    ZONE_LABEL,        // the top bar, off both buttons
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
-    ZONE_HANDLE,       // the drag line under the pill: moves the whole ring
+    ZONE_HANDLE,       // the drag line under the window: moves the whole ring
 };
 
 // One floating window: a GL texture fed by a virtual display plus the task
@@ -28,7 +28,6 @@ struct Panel {
     std::string pkg;
     std::string label;        // resolved app label for the window bar
     bool minimized = false;   // hidden window; task and display stay alive
-    float pillHW = 0;         // last drawn pill half-width, feeds hit tests
     float grabYaw = 0;        // yaw snapped when a ring drag grabbed
     float grabPitch = 0;      // pitch snapped when a ring drag grabbed
 };

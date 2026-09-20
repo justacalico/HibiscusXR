@@ -41,30 +41,27 @@ int libraryIndex(const std::vector<Panel>& panels);
 // the whole ring to the given elevation
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);
 
-// half-width of the label pill under a window: hugs the text with side
-// padding plus the button strip when the window has one, clamped inside the
-// window's edges so it reads as a pill
-float pillHalfWidth(float textW, float winHW, bool btns);
+// widest the label may get before it must shrink to stay inside the top
+// bar: the bar spans the window's full width, so the text region is what
+// the left pad and the button strip leave over
+float barTextLimit(float winHW, bool btns);
 
-// widest the label may get before it must shrink to stay inside the pill
-float pillTextLimit(float winHW, bool btns);
+// x of the minimize/close button centres inside the bar, in world units
+// measured from the bar centre toward its right edge
+float barMinX(float winHW);
+float barCloseX(float winHW);
 
-// x of the minimize/close button centres inside the pill, in world units
-// measured from the pill centre toward its right edge
-float pillMinX(float pillHW);
-float pillCloseX(float pillHW);
+// is (u,v) in panel coords inside the top bar band above the window
+bool onBar(float u, float v);
 
-// is (u,v) in panel coords inside the pill band under the window
-bool onPill(float u, float v, float pillHW);
-
-// which button a point on the pill hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
-int pillButtonAt(float u, float v, float pillHW);
+// which button a point on the bar hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
+int barButtonAt(float u, float v);
 
 // how far under the panel centre the drag handle's centre hangs, world units
 float handleDrop();
 
-// is (u,v) in panel coords on the drag handle under the pill; the hit box is
-// padded past the drawn line since gaze aim is coarse
+// is (u,v) in panel coords on the drag handle under the window; the hit box
+// is padded past the drawn line since gaze aim is coarse
 bool onHandle(float u, float v);
 
 // the panel in the middle of the ring - the only one that gets a drag
@@ -106,7 +103,7 @@ struct Pick {
 };
 
 // gaze ray (head's -z, starting at the live eye position o) vs all panels:
-// the window rects plus the pill band under them; minimized panels are
+// the window rects plus the top bar above them; minimized panels are
 // skipped. nearest wins
 Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
                const float origin[3], const float o[3]);

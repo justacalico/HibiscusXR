@@ -43,8 +43,6 @@ int openPanel(HudEngine* e, float yaw, float pitch) {
     p.pitch = pitch;
     p.grabYaw = yaw;
     p.grabPitch = pitch;
-    // the pick can hit the pill before the first draw measures the label
-    p.pillHW = pillHalfWidth(0.0f, kPanelW * 0.5f, true);
     e->panels.push_back(p);
     LOGI("panel %d on display %d yaw %.2f", (int)e->panels.size() - 1,
          dispId, yaw);

@@ -36,6 +36,14 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 int dockItemAt(const std::vector<DockItem>& items, float halfW,
                float u, float v, int* zone);
 
+// how far under the strip's centre the move handle's centre hangs, world
+// units
+float dockHandleDrop();
+
+// is a bar-local point on the move handle under the strip; the hit box is
+// padded past the drawn line since gaze aim is coarse
+bool onDockHandle(float u, float v, float halfW);
+
 // gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1
 bool rayDock(float yaw, float pitch, const float origin[3],
              const float o[3], const float d[3], float halfW,

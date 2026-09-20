@@ -628,6 +628,18 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             glUseProgram(e->shapeProg);
         }
     }
+
+    // move handle: a short white line centred under the strip; holding it
+    // drags the whole ring, so brighten it while gazed
+    {
+        const bool hhov = e->dockZone == DZONE_HANDLE;
+        const float hd = dockHandleDrop();
+        const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
+                             c[2] - up[2] * hd};
+        const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
+        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
+                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+    }
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 }

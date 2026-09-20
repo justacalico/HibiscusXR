@@ -211,6 +211,40 @@ void testDock() {
         CHECK_F(t, dl, 1e-4f);
     }
 
+    // move handle: a padded line centred under the strip; the bar body and
+    // points far below or to the side miss
+    {
+        const float hw = 0.4f;
+        const float hv = -dockHandleDrop() / (kDockBarH * 0.5f);
+        CHECK(onDockHandle(0.0f, hv, hw));
+        CHECK(!onDockHandle(0.0f, 0.0f, hw));
+        CHECK(!onDockHandle(0.0f, hv - 0.30f, hw));
+        CHECK(!onDockHandle((kHandleW + kHandlePad + 0.02f) / hw, hv, hw));
+    }
+
+    // the handle pick lives outside the bar box: pickDock reports it
+    // before the in-bar bounds reject, with no item index
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
+        items = {a};
+        DockStatus st; st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        float c[3], r[3], up[3];
+        dockCenter(0.0f, -0.55f, o0, c, r, up);
+        const float hd = dockHandleDrop();
+        Mat4 aim = identity();
+        aim.m[2]  = -(c[0] - up[0] * hd);   // -z column aims at the handle
+        aim.m[6]  = -(c[1] - up[1] * hd);
+        aim.m[10] = -(c[2] - up[2] * hd);
+        DockPick pk = pickDock(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        CHECK(pk.bar && pk.idx == -1 && pk.zone == DZONE_HANDLE);
+        // aiming at the bar body still picks the bar, not the handle
+        aim.m[2] = -c[0]; aim.m[6] = -c[1]; aim.m[10] = -c[2];
+        pk = pickDock(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        CHECK(pk.bar && pk.zone != DZONE_HANDLE);
+    }
+
     // pinnable: everything but the quick button
     {
         DockItem q; q.kind = DK_QUICK;

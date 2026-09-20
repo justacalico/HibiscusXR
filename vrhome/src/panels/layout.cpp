@@ -121,39 +121,6 @@ int barButtonAt(float u, float v) {
     return ZONE_LABEL;
 }
 
-float handleDrop() {
-    return kPanelH * 0.5f + kHandleGap + kHandleT;
-}
-
-// panel-coord point -> world offset from the handle's centre, which hangs
-// centred under the window
-static void handleLocal(float u, float v, float* x, float* y) {
-    *x = u * (kPanelW * 0.5f);
-    *y = v * (kPanelH * 0.5f) + handleDrop();
-}
-
-bool onHandle(float u, float v) {
-    float x, y;
-    handleLocal(u, v, &x, &y);
-    return fabsf(x) <= kHandleW + kHandlePad &&
-           fabsf(y) <= kHandleT + kHandlePad;
-}
-
-int middleIndex(const std::vector<Panel>& panels) {
-    int best = -1;
-    float bestSum = 1e9f;
-    for (int i = 0; i < (int)panels.size(); ++i) {
-        if (panels[i].minimized) continue;
-        float sum = 0.0f;
-        for (int j = 0; j < (int)panels.size(); ++j) {
-            if (panels[j].minimized) continue;
-            sum += fabsf(wrapPi(panels[i].yaw - panels[j].yaw));
-        }
-        if (sum < bestSum) { bestSum = sum; best = i; }
-    }
-    return best;
-}
-
 void grabRing(std::vector<Panel>& panels) {
     for (auto& p : panels) { p.grabYaw = p.yaw; p.grabPitch = p.pitch; }
 }
@@ -238,7 +205,6 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
     gazeDir(head, d);
     Pick pick;
     float bestT = 1e9f;
-    const int mid = middleIndex(panels);
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
         if (p.minimized) continue;
@@ -253,8 +219,6 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
             zone = p.pkg == kLibraryPkg ? ZONE_LABEL : barButtonAt(u, v);
         } else if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
             zone = ZONE_WINDOW;
-        } else if (i == mid && onHandle(u, v)) {
-            zone = ZONE_HANDLE;
         }
         if (zone == ZONE_NONE) continue;
         bestT = t;

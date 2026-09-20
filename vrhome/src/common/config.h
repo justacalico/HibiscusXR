@@ -71,16 +71,25 @@ constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 // same anchor cylinder as the windows, slightly closer so it reads as the
 // dash's foreground edge
 constexpr float kDockDist = 1.35f;    // metres; panels sit at 1.5
-constexpr float kDockIconW = 0.15f;   // icon square edge
+constexpr float kDockIconW = 0.125f;  // icon square edge
 constexpr float kDockIconHW = kDockIconW * 0.5f;
-constexpr float kDockIconY = 0.008f;  // icon centre above bar centre
+constexpr float kDockIconY = 0.006f;  // icon centre above bar centre
 // icon corner radius as a fraction of the icon's half-width: 0.44 is about
 // 22% of the edge - the macOS squircle, squarer than a circle crop
 constexpr float kIconRad = 0.44f;
 constexpr float kDockGap = 0.030f;    // between icons
 constexpr float kDockPad = 0.045f;    // bar end padding
 constexpr float kDockSepW = 0.035f;   // extra gap at a group separator
-constexpr float kDockBarH = 0.20f;    // strip height: icon + running dot
+constexpr float kDockBarH = 0.16f;    // strip height: icon + running dot
+// status cluster pinned to the strip's left end: clock, battery and wifi
+// grouped in one pill, the notification bell in a second, then the same
+// separator the app groups use
+constexpr float kSysIconW = 0.10f;    // status slot width
+constexpr float kSysGap = 0.020f;     // between slots inside a pill
+constexpr float kSysPx = 0.0013f;     // status text metres per font px
+constexpr float kSysPillPad = 0.014f; // pill inset around its slots
+constexpr float kSysPillGap = 0.022f; // between the two pills
+constexpr float kSysPillHH = 0.056f;  // pill half-height
 constexpr float kDockBadgeR = 0.024f; // XR close badge radius
 constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 // dock elevation: scaled with the recenter pitch but clamped so the strip

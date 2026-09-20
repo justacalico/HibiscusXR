@@ -78,6 +78,7 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mDismissNotif = env->GetMethodID(bc, "dismissNotif",
                         "(Ljava/lang/String;)V");
     e->mToastOnly    = env->GetMethodID(bc, "toastOnly", "()Z");
+    e->mSysStatus    = env->GetMethodID(bc, "sysStatus", "()[I");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");

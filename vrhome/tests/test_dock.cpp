@@ -83,17 +83,56 @@ void testDock() {
         DockItem b; b.pkg = "b"; b.kind = DK_RUN; b.sep = true;
         DockItem c; c.pkg = "c"; c.kind = DK_QUICK; c.sep = true;
         items = {a, b, c};
-        const float hw = dockLayout(items);
-        // 3 icons + 2 seps + pad both ends + 2 gaps
-        const float want = (2 * kDockPad + 3 * kDockIconW +
-                            2 * kDockSepW + 2 * kDockGap) * 0.5f;
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        // cluster pills + their separator + 3 icons + 2 seps + pad + gaps
+        const float clusterW = kSysPillPad * 4.0f + 3.0f * kSysIconW +
+                               2.0f * kSysGap + kSysPillGap + st.clockW;
+        const float want = (2 * kDockPad + clusterW + kDockGap + kDockSepW +
+                            3 * kDockIconW + 2 * kDockSepW +
+                            2 * kDockGap) * 0.5f;
         CHECK_F(hw, want, 1e-6f);
         CHECK(items[0].x < items[1].x && items[1].x < items[2].x);
-        CHECK_F(items[0].x, -hw + kDockPad + kDockIconHW, 1e-6f);
         CHECK_F(items[2].x, hw - kDockPad - kDockIconHW, 1e-6f);
         // the separator gap is wider than a plain icon gap
         CHECK(items[1].x - items[0].x > kDockIconW + kDockGap);
         CHECK(items[2].x - items[1].x > kDockIconW + kDockGap);
+    }
+
+    // status cluster: pill A wraps clock-battery-wifi, pill B wraps the
+    // bell alone, separator lands before the icons
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
+        items = {a};
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        CHECK_F(st.pillAL, -hw + kDockPad, 1e-6f);
+        CHECK(st.pillAL < st.clockX && st.clockX < st.battX);
+        CHECK(st.battX < st.wifiX && st.wifiX < st.pillAR);
+        CHECK(st.pillAR < st.pillBL && st.pillBL < st.bellX);
+        CHECK(st.bellX < st.pillBR && st.pillBR < st.sepX);
+        CHECK(st.sepX < items[0].x);
+        // a wider clock string widens pill A and pushes the rest right
+        DockStatus wide; wide.clockW = 0.12f;
+        std::vector<DockItem> items2 = items;
+        dockLayout(items2, wide);
+        CHECK(wide.pillAR > st.pillAR);
+        CHECK(wide.pillBL > st.pillBL);
+        CHECK(wide.sepX > st.sepX);
+    }
+
+    // an empty item list still places the cluster, just with no separator
+    {
+        std::vector<DockItem> items;
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        CHECK_F(st.pillAL, -hw + kDockPad, 1e-6f);
+        CHECK_F(st.clockX, st.pillAL + kSysPillPad, 1e-6f);
+        CHECK(hw > st.clockW);
     }
 
     // hit test: icon centres hit, gaps and off-bar points miss; a live XR
@@ -104,7 +143,9 @@ void testDock() {
         DockItem b; b.pkg = "b"; b.kind = DK_RUN; b.vr = true;
                 b.running = true; b.sep = true;
         items = {a, b};
-        const float hw = dockLayout(items);
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
         int zone = DZONE_NONE;
         const float ua = items[0].x / hw, ub = items[1].x / hw;
         const float uy = kDockIconY / (kDockBarH * 0.5f);

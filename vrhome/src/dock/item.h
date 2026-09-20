@@ -55,3 +55,20 @@ struct DockPick {
     float t = 1e9f;         // ray distance, for pick arbitration
     int zone = DZONE_NONE;
 };
+
+// status cluster pinned to the strip's left end: clock, battery and wifi
+// grouped in one pill, the notification bell alone in a second, then a
+// separator before the app icons. clockW goes in measured; the rest come
+// back positioned by dockLayout
+struct DockStatus {
+    float clockW = 0;   // measured width of the time text
+    float clockX = 0;   // text's left edge in bar coords
+    float wifiX = 0;    // icon centres
+    float battX = 0;
+    float bellX = 0;
+    float pillAL = 0;   // first pill's left/right edges
+    float pillAR = 0;
+    float pillBL = 0;   // bell pill's left/right edges
+    float pillBR = 0;
+    float sepX = 0;     // separator line before the app icons
+};

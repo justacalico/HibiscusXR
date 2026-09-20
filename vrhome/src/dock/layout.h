@@ -26,8 +26,10 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
                                 const std::vector<Panel>& panels,
                                 const std::vector<XrTask>& xr);
 
-// place each item along the bar and return the bar's half-width in metres
-float dockLayout(std::vector<DockItem>& items);
+// place the status cluster on the left and each item after it, then return
+// the bar's half-width in metres. st.clockW comes in measured, the other
+// positions come out
+float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 
 // which item a bar-local point hits (u -1..1 across the bar, v -1..1 across
 // its height); *zone gets DZONE_CLOSE on a live immersive item's badge

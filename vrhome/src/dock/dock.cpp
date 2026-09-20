@@ -106,6 +106,26 @@ static void pullXr(HudEngine* e, JNIEnv* env) {
     }
 }
 
+// wifi link, battery level and charging flag for the status cluster;
+// a plain int array keeps the JNI shape trivial
+static void pullSys(HudEngine* e, JNIEnv* env) {
+    if (!e->mSysStatus) return;
+    jintArray arr =
+        (jintArray)env->CallObjectMethod(e->bridge, e->mSysStatus);
+    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    if (!arr) return;
+    if (env->GetArrayLength(arr) >= 3) {
+        jint* v = env->GetIntArrayElements(arr, nullptr);
+        if (v) {
+            e->sysWifi = v[0];
+            e->sysBatt = v[1];
+            e->sysChg = v[2];
+            env->ReleaseIntArrayElements(arr, v, JNI_ABORT);
+        }
+    }
+    env->DeleteLocalRef(arr);
+}
+
 // icon + label + vr flag for one package, fetched once and kept in
 // e->dockIcons; the notification cards share the same cache
 DockIcon& iconFor(HudEngine* e, const std::string& pkg) {
@@ -144,9 +164,16 @@ void syncDock(HudEngine* e) {
     if (e->bridge) {
         pullPins(e, env);
         pullXr(e, env);
+        pullSys(e, env);
     }
+    // the clock drives the layout: its measured width is the cluster's
+    // first slot
+    std::time_t tt = std::time(nullptr);
+    std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
+                  std::localtime(&tt));
+    e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
     e->dock = buildDock(e->dockPins, e->panels, e->dockXr);
-    e->dockHW = dockLayout(e->dock);
+    e->dockHW = dockLayout(e->dock, e->dockSys);
     if (!e->bridge) return;
     for (auto& it : e->dock) {
         const DockIcon& ic = iconFor(e, it.pkg);
@@ -265,7 +292,9 @@ static void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
               0.0f, 0.002f, col);
     if (*label && e->font.ok) {
         char ch[2] = {*label, 0};
-        const float ts = s * 1.1f;
+        // glyph height lands a bit under the tile's: mPerPx is metres per
+        // font pixel, not a fraction of the tile
+        const float ts = s * 0.04f;
         const float tw = measureText(e, ch, ts) * 0.5f;
         float gt, gb;
         float yo = 0.0f;
@@ -318,6 +347,135 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                              c[2] + r[2] * sx};
         shapeQuad(e, vp, sc, r, up, 0.006f, 0.0f, 0.0012f, hh * 0.55f,
                   0.0012f, hh * 0.55f, 0.0012f, 0.0f, 0.0015f, sepCol);
+    }
+
+    // status cluster on the left in two pills: clock + battery + wifi in
+    // the first, the bell alone in the second, then the separator that
+    // splits them off the app icons. Positions came out of dockLayout,
+    // state out of the last bridge pull
+    const DockStatus& st = e->dockSys;
+    const float pillCol[4] = {0.17f, 0.19f, 0.26f, 0.90f};
+    {
+        const float ax = (st.pillAL + st.pillAR) * 0.5f;
+        const float aw = (st.pillAR - st.pillAL) * 0.5f;
+        const float ac[3] = {c[0] + r[0] * ax, c[1] + r[1] * ax,
+                             c[2] + r[2] * ax};
+        shapeQuad(e, vp, ac, r, up, 0.006f, 0.0f, aw, kSysPillHH,
+                  aw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+        const float bx = (st.pillBL + st.pillBR) * 0.5f;
+        const float bw = (st.pillBR - st.pillBL) * 0.5f;
+        const float bc[3] = {c[0] + r[0] * bx, c[1] + r[1] * bx,
+                             c[2] + r[2] * bx};
+        shapeQuad(e, vp, bc, r, up, 0.006f, 0.0f, bw, kSysPillHH,
+                  bw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+    }
+    if (!e->dock.empty()) {
+        const float sc[3] = {c[0] + r[0] * st.sepX, c[1] + r[1] * st.sepX,
+                             c[2] + r[2] * st.sepX};
+        shapeQuad(e, vp, sc, r, up, 0.006f, 0.0f, 0.0012f, hh * 0.55f,
+                  0.0012f, hh * 0.55f, 0.0012f, 0.0f, 0.0015f, sepCol);
+    }
+
+    // clock, vertically centred on the bar like the window labels
+    if (e->font.ok) {
+        float gt, gb, yo = 0.0f;
+        if (textBounds(e->font.set, e->sysClock, kSysPx, &gt, &gb))
+            yo = -(gt + gb) * 0.5f;
+        float co[3] = {c[0] + r[0] * st.clockX + up[0] * yo,
+                       c[1] + r[1] * st.clockX + up[1] * yo,
+                       c[2] + r[2] * st.clockX + up[2] * yo};
+        co[0] -= c[0] * 0.010f; co[1] -= c[1] * 0.010f; co[2] -= c[2] * 0.010f;
+        glUseProgram(e->textProg);
+        glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
+                           1, GL_FALSE, vp.m);
+        glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
+                    1.0f, 1.0f, 1.0f);
+        glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, e->font.tex);
+        drawTextPanel(e, e->sysClock, co, r, up, kSysPx, 0.0f);
+        glUseProgram(e->shapeProg);
+    }
+
+    // wifi fan: the apex dot anchors the fan and three arcs open upward;
+    // wy drops the apex just enough that the fan's bounding box centres on
+    // the slot like the battery and clock do
+    {
+        const float wcol[4] = {1.0f, 1.0f, 1.0f,
+                               e->sysWifi ? 0.92f : 0.25f};
+        const float wy = -0.019f;
+        const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
+                             c[1] + r[1]*st.wifiX + up[1]*wy,
+                             c[2] + r[2]*st.wifiX + up[2]*wy};
+        const float wr[3] = {0.014f, 0.027f, 0.040f};
+        for (int a = 0; a < 3; ++a)
+            shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f,
+                      wr[a] + 0.008f, wr[a] + 0.008f, wr[a], wr[a],
+                      wr[a], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
+        shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f, 0.006f, 0.006f,
+                  0.0045f, 0.0045f, 0.0045f, 0.0f, 0.0015f, wcol);
+    }
+
+    // battery: outline body, level fill inside, tip nub on the right;
+    // amber while charging, red under a fifth, white otherwise
+    {
+        const float bw = 0.044f, bh = 0.024f, bt = 0.0030f;
+        const float bc[3] = {c[0] + r[0]*st.battX, c[1] + r[1]*st.battX,
+                             c[2] + r[2]*st.battX};
+        const float ocol[4] = {1.0f, 1.0f, 1.0f, 0.80f};
+        shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, bw * 0.5f + 0.006f,
+                  bh * 0.5f + 0.006f, bw * 0.5f, bh * 0.5f, bh * 0.30f,
+                  bt, 0.002f, ocol);
+        float lvl = e->sysBatt / 100.0f;
+        if (lvl < 0.0f) lvl = 0.0f; else if (lvl > 1.0f) lvl = 1.0f;
+        const float fw = (bw - bt * 4.0f) * lvl, fhh = bh * 0.5f - bt * 2.0f;
+        // the fill hugs the body's left inner edge
+        const float fx = -(bw * 0.5f) + bt * 2.0f + fw * 0.5f;
+        const float fc[3] = {bc[0] + r[0] * fx, bc[1] + r[1] * fx,
+                             bc[2] + r[2] * fx};
+        const float fcol[4] = {
+            e->sysChg ? 1.0f : lvl < 0.20f ? 0.95f : 1.0f,
+            e->sysChg ? 0.62f : lvl < 0.20f ? 0.30f : 1.0f,
+            e->sysChg ? 0.15f : lvl < 0.20f ? 0.25f : 1.0f, 0.85f};
+        if (fw > 0.001f)
+            shapeQuad(e, vp, fc, r, up, 0.008f, 0.0f, fw * 0.5f, fhh,
+                      fw * 0.5f, fhh, fhh * 0.3f, 0.0f, 0.0015f, fcol);
+        const float tc[3] = {c[0] + r[0]*(st.battX + bw * 0.5f + 0.004f),
+                             c[1] + r[1]*(st.battX + bw * 0.5f + 0.004f),
+                             c[2] + r[2]*(st.battX + bw * 0.5f + 0.004f)};
+        shapeQuad(e, vp, tc, r, up, 0.008f, 0.0f, 0.0025f, bh * 0.18f,
+                  0.0025f, bh * 0.18f, 0.002f, 0.0f, 0.0012f, ocol);
+    }
+
+    // bell: rounded-top body over a lip with a clapper dot; dim while the
+    // shade is empty, a red shoulder dot while notifications wait
+    {
+        const bool any = !e->notifsAll.empty();
+        const float bcol[4] = {1.0f, 1.0f, 1.0f, any ? 0.90f : 0.30f};
+        const float bx = st.bellX;
+        const float bc[3] = {c[0] + r[0]*bx + up[0]*0.002f,
+                             c[1] + r[1]*bx + up[1]*0.002f,
+                             c[2] + r[2]*bx + up[2]*0.002f};
+        shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, 0.015f, 0.017f,
+                  0.013f, 0.015f, 0.012f, 0.0f, 0.0018f, bcol, 0.002f);
+        const float lc[3] = {c[0] + r[0]*bx - up[0]*0.014f,
+                             c[1] + r[1]*bx - up[1]*0.014f,
+                             c[2] + r[2]*bx - up[2]*0.014f};
+        shapeQuad(e, vp, lc, r, up, 0.008f, 0.0f, 0.021f, 0.004f,
+                  0.019f, 0.004f, 0.003f, 0.0f, 0.0015f, bcol);
+        const float kc[3] = {c[0] + r[0]*bx - up[0]*0.023f,
+                             c[1] + r[1]*bx - up[1]*0.023f,
+                             c[2] + r[2]*bx - up[2]*0.023f};
+        shapeQuad(e, vp, kc, r, up, 0.008f, 0.0f, 0.005f, 0.005f,
+                  0.004f, 0.004f, 0.004f, 0.0f, 0.0015f, bcol);
+        if (any) {
+            const float dc[3] = {c[0] + r[0]*(bx + 0.014f) + up[0]*0.018f,
+                                 c[1] + r[1]*(bx + 0.014f) + up[1]*0.018f,
+                                 c[2] + r[2]*(bx + 0.014f) + up[2]*0.018f};
+            const float dcol[4] = {0.95f, 0.25f, 0.20f, 0.95f};
+            shapeQuad(e, vp, dc, r, up, 0.009f, 0.0f, 0.007f, 0.007f,
+                      0.006f, 0.006f, 0.006f, 0.0f, 0.0015f, dcol);
+        }
     }
 
     for (int i = 0; i < (int)e->dock.size(); ++i) {

@@ -75,6 +75,7 @@ uniform float uRadius;   // top corners
 uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
+uniform float uArc;      // >0 clips to an upward wedge: tan(half-angle)
 void main() {
     vec2 p = vUV * uQuad;
     float r = p.y > 0.0 ? uRadius : uRadiusB;
@@ -87,6 +88,8 @@ void main() {
         a = 1.0 - smoothstep(0.0, uSoft, d);
     else
         a = 1.0 - smoothstep(-uSoft, uSoft, d);
+    if (uArc > 0.0)
+        a *= 1.0 - smoothstep(-uSoft, uSoft, abs(p.x) - uArc * p.y);
     if (a < 0.01) discard;
     gl_FragColor = vec4(uColor.rgb, uColor.a * a);
 }

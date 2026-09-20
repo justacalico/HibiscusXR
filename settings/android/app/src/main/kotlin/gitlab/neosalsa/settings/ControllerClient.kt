@@ -31,6 +31,11 @@ class ControllerClient(private val context: Context) {
         // service into per-controller (CV2) reporting.
         private const val CLIENT_VERSION = "3.0.0.0"
 
+        // Sensor mode args for the SPI worker thread; same defaults the
+        // stock manager uses (no head sensor feed, controller IMU on).
+        private const val HEAD_SENSOR = 0
+        private const val HAND_SENSOR = 1
+
         private const val POLL_MS = 2000L
         private const val BATTERY_INDEX = 8
     }
@@ -68,6 +73,10 @@ class ControllerClient(private val context: Context) {
                 service?.setUnityVersion(CLIENT_VERSION)
                 Log.i(TAG, "setUnityVersion($CLIENT_VERSION) sent")
                 service?.registerCallback(callback)
+                // The SPI link to the RF station only exists while this
+                // worker thread runs; pairing/state calls no-op without it.
+                service?.startCVControllerThread(HEAD_SENSOR, HAND_SENSOR)
+                Log.i(TAG, "startCVControllerThread sent")
                 // These answer through the callback, not the return value.
                 // getDeviceBleMac numbers devices 1/2 (ctr1/ctr2 in
                 // /persist/ndi), getControllerSn takes the 0-based slot.
@@ -133,7 +142,13 @@ class ControllerClient(private val context: Context) {
         override fun feedbackMainControllerSerialNumChanged(i: Int) {
             Log.i(TAG, "main controller cb: $i")
         }
-        override fun feedbackControllerThreadStarted() {}
+        override fun feedbackControllerThreadStarted() {
+            Log.i(TAG, "controller thread started")
+            handler.post {
+                poll()
+                onChange?.invoke()
+            }
+        }
         override fun feedbackControllerDeviceVersion(d: Int, v: String?) {}
         override fun feedbackControllerStatus(s: Int) {
             Log.i(TAG, "controller status cb: $s")
@@ -170,6 +185,7 @@ class ControllerClient(private val context: Context) {
         handler.removeCallbacks(poll)
         if (!bound) return
         try {
+            service?.stopCVControllerThread(HEAD_SENSOR, HAND_SENSOR)
             service?.unregisterCallback(callback)
             context.unbindService(connection)
         } catch (e: Exception) {

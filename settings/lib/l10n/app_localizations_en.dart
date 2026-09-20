@@ -272,6 +272,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get controllerPairing => 'Pairing…';
 
   @override
+  String get controllerScanning => 'Scanning for controllers…';
+
+  @override
+  String get controllerScanIdle => 'Not scanning';
+
+  @override
   String controllerBattery(int level) {
     return 'Battery $level of 5';
   }

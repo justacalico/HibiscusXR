@@ -88,6 +88,8 @@
   "controllerConnected": "Connected",
   "controllerDisconnected": "Disconnected",
   "controllerPairing": "Pairing…",
+  "controllerScanning": "Scanning for controllers…",
+  "controllerScanIdle": "Not scanning",
   "controllerBattery": "Battery {level} of 5",
   "@controllerBattery": {
     "placeholders": {

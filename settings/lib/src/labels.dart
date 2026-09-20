@@ -197,3 +197,7 @@ String controllerLinkLabel(AppLocalizations l10n, ControllerLink link) {
       return l10n.valueUnknown;
   }
 }
+
+/// Status line under the scan card title.
+String scanStatusLabel(AppLocalizations l10n, bool scanning) =>
+    scanning ? l10n.controllerScanning : l10n.controllerScanIdle;

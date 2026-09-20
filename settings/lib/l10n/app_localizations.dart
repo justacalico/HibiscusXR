@@ -610,6 +610,18 @@ abstract class AppLocalizations {
   /// **'Pairing…'**
   String get controllerPairing;
 
+  /// No description provided for @controllerScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for controllers…'**
+  String get controllerScanning;
+
+  /// No description provided for @controllerScanIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not scanning'**
+  String get controllerScanIdle;
+
   /// No description provided for @controllerBattery.
   ///
   /// In en, this message translates to:

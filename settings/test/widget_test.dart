@@ -160,6 +160,19 @@ void main() {
         [ItemId.controllerPair, ItemId.controllerUnbind]);
   });
 
+  testWidgets('pairing state shows a spinner on the pair row',
+      (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        toggles: {ItemId.controllerPair: true},
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
   testWidgets('controller events refresh the row', (tester) async {
     final (_, source) = await pumpApp(
       tester,

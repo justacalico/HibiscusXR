@@ -7,6 +7,7 @@ import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
 import 'battery_icon.dart';
+import 'scan_card.dart';
 import 'theme.dart';
 
 /// One row in a section page: title + description on the left, the
@@ -22,6 +23,31 @@ class SettingsRow extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final store = controller.store;
     final enabled = implementedOf(id);
+    if (kindOf(id) == ItemKind.scanCard) {
+      final scanning = store.isOn(id);
+      return ScanCard(
+        title: itemTitle(l10n, id),
+        status: scanStatusLabel(l10n, scanning),
+        scanning: scanning,
+        slots: [
+          ScanSlot(
+            name: itemTitle(l10n, ItemId.controllerLeft),
+            state: controllerLinkLabel(
+              l10n,
+              store.controllerOf(ItemId.controllerLeft).link,
+            ),
+          ),
+          ScanSlot(
+            name: itemTitle(l10n, ItemId.controllerRight),
+            state: controllerLinkLabel(
+              l10n,
+              store.controllerOf(ItemId.controllerRight).link,
+            ),
+          ),
+        ],
+        onTap: enabled ? () => controller.runAction(id) : null,
+      );
+    }
     final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
       child: Row(
@@ -112,7 +138,6 @@ class _Control extends StatelessWidget {
               : null,
         );
       case ItemKind.action:
-        final pairing = id == ItemId.controllerPair && store.isOn(id);
         return TextButton(
           onPressed: enabled ? () => controller.runAction(id) : null,
           style: TextButton.styleFrom(
@@ -120,14 +145,11 @@ class _Control extends StatelessWidget {
             minimumSize: const Size(0, 34),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: pairing
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Icon(Icons.chevron_right, size: 26),
+          child: const Icon(Icons.chevron_right, size: 26),
         );
+      case ItemKind.scanCard:
+        // handled in SettingsRow.build, before the row layout
+        return const SizedBox.shrink();
       case ItemKind.controller:
         final info = store.controllerOf(id);
         return Row(

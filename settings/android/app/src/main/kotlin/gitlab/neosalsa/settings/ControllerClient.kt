@@ -196,11 +196,16 @@ class ControllerClient(private val context: Context) {
     }
 
     fun enterPairMode() {
+        val svc = service
+        if (svc == null) {
+            Log.w(TAG, "enterPairMode: not bound")
+            return
+        }
         try {
             // The service takes one 0-based slot per call; fire for
             // both so either controller can complete pairing.
             for (i in 0..1) {
-                service?.enterPairMode(i)
+                svc.enterPairMode(i)
                 Log.i(TAG, "enterPairMode($i) sent")
             }
         } catch (e: RemoteException) {

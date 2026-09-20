@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
+private const val TAG = "SettingsMain"
 
 // Project-owned keys. qvrd / the shell read these through the same seam
 // the quick panel broadcasts on.
@@ -346,9 +347,18 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
                     .setPackage(packageName),
             )
-            "controllerPair" -> controllers?.let {
-                if (it.pairState > 0) it.interruptPairMode()
-                else it.enterPairMode()
+            "controllerPair" -> {
+                val c = controllers
+                if (c == null) {
+                    android.util.Log.w(TAG, "scan tapped with no client")
+                } else {
+                    android.util.Log.i(
+                        TAG,
+                        "scan tapped: bound=${c.bound} pairState=${c.pairState}",
+                    )
+                    if (c.pairState > 0) c.interruptPairMode()
+                    else c.enterPairMode()
+                }
             }
             "controllerUnbind" -> controllers?.unbindAll()
         }

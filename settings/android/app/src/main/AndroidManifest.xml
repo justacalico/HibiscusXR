@@ -55,5 +55,8 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- CVControllerService lives in CVService.apk; on API 30+ the
+             package filter is required for bindService to see it. -->
+        <package android:name="com.picovr.picovrlib.cvcontroller"/>
     </queries>
 </manifest>

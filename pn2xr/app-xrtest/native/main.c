@@ -511,5 +511,18 @@ void android_main(struct android_app *app) {
     }
 
     LOGI("exit frames=%ld", frames);
+
+    for (int eye = 0; eye < 2; eye++) {
+        if (sc[eye] != XR_NULL_HANDLE)
+            pfn_xrDestroySwapchain(sc[eye]);
+        free(imgs[eye]);
+    }
+    if (space != XR_NULL_HANDLE)
+        pfn_xrDestroySpace(space);
+    if (sess != XR_NULL_HANDLE)
+        pfn_xrDestroySession(sess);
+    if (inst != XR_NULL_HANDLE)
+        pfn_xrDestroyInstance(inst);
     (*app->activity->vm)->DetachCurrentThread(app->activity->vm);
+    exit(0);
 }

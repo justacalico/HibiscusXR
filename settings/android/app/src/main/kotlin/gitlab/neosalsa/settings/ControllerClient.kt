@@ -63,8 +63,10 @@ class ControllerClient(private val context: Context) {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             service = CVControllerAIDLService.Stub.asInterface(binder)
             bound = true
+            Log.i(TAG, "bound, iface=${service != null}")
             try {
                 service?.setUnityVersion(CLIENT_VERSION)
+                Log.i(TAG, "setUnityVersion($CLIENT_VERSION) sent")
                 service?.registerCallback(callback)
                 // These answer through the callback, not the return value.
                 // getDeviceBleMac numbers devices 1/2 (ctr1/ctr2 in
@@ -82,6 +84,7 @@ class ControllerClient(private val context: Context) {
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
+            Log.i(TAG, "service disconnected")
             service = null
             bound = false
             handler.removeCallbacks(poll)
@@ -91,6 +94,7 @@ class ControllerClient(private val context: Context) {
 
     private val callback = object : ICVAIDLServiceCallback.Stub() {
         override fun feedbackConnectStatus(controller: Int, status: Int) {
+            Log.i(TAG, "connect cb: controller=$controller status=$status")
             if (controller in 0..1) states[controller] = status
             handler.post {
                 if (status == 1 && controller in 0..1) {
@@ -108,25 +112,32 @@ class ControllerClient(private val context: Context) {
         }
 
         override fun feedbackControllerUnbind(status: Int) {
+            Log.i(TAG, "unbind cb: status=$status")
             handler.post { onChange?.invoke() }
         }
 
         override fun feedbackControllerDeviceBleMac(device: Int, mac: String) {
             // Same numbering as getDeviceBleMac: 1 = left, 2 = right.
+            Log.i(TAG, "mac cb: device=$device mac=$mac")
             if (device in 1..2) macs[device - 1] = mac
             handler.post { onChange?.invoke() }
         }
 
         override fun feedbackControllerControllerSn(device: Int, sn: String) {
+            Log.i(TAG, "sn cb: device=$device sn=$sn")
             if (device in 0..1) serials[device] = sn
             handler.post { onChange?.invoke() }
         }
 
         override fun feedbackDeviceInfo(i1: String?, i2: String?, f: Int) {}
-        override fun feedbackMainControllerSerialNumChanged(i: Int) {}
+        override fun feedbackMainControllerSerialNumChanged(i: Int) {
+            Log.i(TAG, "main controller cb: $i")
+        }
         override fun feedbackControllerThreadStarted() {}
         override fun feedbackControllerDeviceVersion(d: Int, v: String?) {}
-        override fun feedbackControllerStatus(s: Int) {}
+        override fun feedbackControllerStatus(s: Int) {
+            Log.i(TAG, "controller status cb: $s")
+        }
         override fun feedbackControllerBusyStatus(s: Int) {}
         override fun feedbackControllerOTAStatusCode(d: Int, c: Int) {}
         override fun feedbackControllerDeviceVersionSN(d: Int, v: String?) {}
@@ -146,9 +157,10 @@ class ControllerClient(private val context: Context) {
     fun bind() {
         val intent = Intent(ACTION).setPackage(PKG)
         try {
-            context.bindService(
+            val ok = context.bindService(
                 intent, connection, Context.BIND_AUTO_CREATE,
             )
+            Log.i(TAG, "bindService -> $ok")
         } catch (e: Exception) {
             Log.w(TAG, "bind failed", e)
         }
@@ -171,7 +183,10 @@ class ControllerClient(private val context: Context) {
         try {
             // The service takes one 0-based slot per call; fire for
             // both so either controller can complete pairing.
-            for (i in 0..1) service?.enterPairMode(i)
+            for (i in 0..1) {
+                service?.enterPairMode(i)
+                Log.i(TAG, "enterPairMode($i) sent")
+            }
         } catch (e: RemoteException) {
             Log.w(TAG, "enterPairMode failed", e)
         }
@@ -181,6 +196,7 @@ class ControllerClient(private val context: Context) {
     fun interruptPairMode() {
         try {
             service?.interruptPairMode()
+            Log.i(TAG, "interruptPairMode sent")
         } catch (e: RemoteException) {
             Log.w(TAG, "interruptPairMode failed", e)
         }
@@ -190,6 +206,7 @@ class ControllerClient(private val context: Context) {
     fun unbindAll() {
         try {
             for (i in 0..1) service?.setControllerUnbind(i)
+            Log.i(TAG, "setControllerUnbind sent for both slots")
         } catch (e: RemoteException) {
             Log.w(TAG, "setControllerUnbind failed", e)
         }
@@ -199,6 +216,7 @@ class ControllerClient(private val context: Context) {
     fun setMain(index: Int) {
         try {
             service?.setMainControllerSerialNum(index)
+            Log.i(TAG, "setMainControllerSerialNum($index) sent")
         } catch (e: RemoteException) {
             Log.w(TAG, "setMainControllerSerialNum failed", e)
         }
@@ -221,6 +239,14 @@ class ControllerClient(private val context: Context) {
                     }
                 charging[i] = svc.isChargeing(i)
             }
+            Log.i(
+                TAG,
+                "poll pair=$pairState main=$mainController " +
+                    "L{st=${states[0]} bat=${batteries[0]} " +
+                    "chg=${charging[0]} mac=${macs[0]} sn=${serials[0]}} " +
+                    "R{st=${states[1]} bat=${batteries[1]} " +
+                    "chg=${charging[1]} mac=${macs[1]} sn=${serials[1]}}",
+            )
         } catch (e: RemoteException) {
             Log.w(TAG, "poll failed", e)
         }

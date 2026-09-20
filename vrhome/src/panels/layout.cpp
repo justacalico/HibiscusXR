@@ -94,12 +94,12 @@ float barMinX(float winHW) {
     return barCloseX(winHW) - kBarBtnGap - 2.0f * kBarBtnR;
 }
 
-// panel-coord point -> world offset from the bar's centre. The bar binds
-// to the window's top edge, dipping kCornerR into it so its square bottom
-// corners hide inside the surface and cover the rounded-corner notches
+// panel-coord point -> world offset from the bar's centre. The bar sits
+// flush on the window's top edge: its bottom edge is v=1 exactly, nothing
+// of it covers the app surface
 static void barLocal(float u, float v, float* x, float* y) {
     *x = u * (kPanelW * 0.5f);
-    *y = v * (kPanelH * 0.5f) - kPanelH * 0.5f - kBarH * 0.5f + kCornerR;
+    *y = v * (kPanelH * 0.5f) - kPanelH * 0.5f - kBarH * 0.5f;
 }
 
 bool onBar(float u, float v) {
@@ -246,9 +246,9 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
         if (!rayPanel(p, origin, o, d, &u, &v, &t)) continue;
         if (t >= bestT) continue;
         int zone = ZONE_NONE;
-        // the bar's bottom edge overlaps the window's top edge, so the bar
-        // check runs first: gaze on the visible bar is chrome, never a tap
-        // on the app content it covers
+        // the bar's bottom edge is the window's top edge: the bar check
+        // runs first so a ray landing on that shared edge picks chrome,
+        // never a tap on the app surface under it
         if (onBar(u, v)) {
             zone = p.pkg == kLibraryPkg ? ZONE_LABEL : barButtonAt(u, v);
         } else if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {

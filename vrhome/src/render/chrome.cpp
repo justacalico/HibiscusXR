@@ -59,11 +59,11 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             }
         }
 
-        // top bar: bound to the window's top edge, dipping kCornerR into it
-        // so its square bottom corners stay inside the surface and the top
-        // corners continue the window's rounding - one silhouette. App label
-        // left-aligned, buttons on the right end
-        const float barOff = hh + kBarH * 0.5f - kCornerR;
+        // top bar: bound to the window's top edge, sitting flush on it so
+        // no part of the bar covers the app surface. Square bottom corners
+        // meet the surface's square top edge, rounded top corners carry
+        // the silhouette - one shape. Label left, buttons on the right end
+        const float barOff = hh + kBarH * 0.5f;
         const float barHW = hw;
         const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
                                  hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
@@ -116,11 +116,13 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                       kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
         }
 
-        // the app surface itself, corners rounded in the shader
+        // the app surface itself: top corners square so the bound bar
+        // meets a straight edge, bottom corners rounded in the shader
         glUseProgram(e->floatProg);
         glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
         glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
-        glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), kCornerR);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), kCornerR);
         const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
         const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
         const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -156,7 +158,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // bar reads as one rounded shape, brightened while gazed at
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {1.0f, 1.0f, 1.0f, hov ? 0.55f : 0.14f};
-        const float bdUp = (kBarH - kCornerR) * 0.5f;
+        const float bdUp = kBarH * 0.5f;
         const float bdH = hh + bdUp + 0.006f;
         const float bdC[3] = {c[0] + up[0] * bdUp, c[1] + up[1] * bdUp,
                               c[2] + up[2] * bdUp};

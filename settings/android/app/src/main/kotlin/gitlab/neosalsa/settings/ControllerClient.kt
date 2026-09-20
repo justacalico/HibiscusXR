@@ -61,6 +61,11 @@ class ControllerClient(private val context: Context) {
     var mainController = -1
     var scanning = false
         private set
+    // SPI worker is only safe to query once the service reports it
+    // started; calls before that lazily create SpiSensor on a binder
+    // thread and crash the service (no app classloader there).
+    var threadReady = false
+        private set
 
     val pairingActive: Boolean
         get() = scanning || pairState > 0
@@ -86,6 +91,7 @@ class ControllerClient(private val context: Context) {
         override fun onServiceConnected(name: ComponentName, binder: IBinder) {
             service = CVControllerAIDLService.Stub.asInterface(binder)
             bound = true
+            threadReady = false
             Log.i(TAG, "bound, iface=${service != null}")
             try {
                 service?.setUnityVersion(CLIENT_VERSION)
@@ -95,18 +101,9 @@ class ControllerClient(private val context: Context) {
                 // worker thread runs; pairing/state calls no-op without it.
                 service?.startCVControllerThread(HEAD_SENSOR, HAND_SENSOR)
                 Log.i(TAG, "startCVControllerThread sent")
-                // These answer through the callback, not the return value.
-                // getDeviceBleMac numbers devices 1/2 (ctr1/ctr2 in
-                // /persist/ndi), getControllerSn takes the 0-based slot.
-                for (i in 0..1) {
-                    service?.getDeviceBleMac(i + 1)
-                    service?.getControllerSn(i)
-                }
             } catch (e: RemoteException) {
                 Log.w(TAG, "service init failed", e)
             }
-            poll()
-            handler.postDelayed(poll, POLL_MS)
             onChange?.invoke()
         }
 
@@ -114,7 +111,29 @@ class ControllerClient(private val context: Context) {
             Log.i(TAG, "service disconnected")
             service = null
             bound = false
+            threadReady = false
             handler.removeCallbacks(poll)
+            onChange?.invoke()
+        }
+    }
+
+    // Any feedback callback means the SPI worker is alive, so this also
+    // covers binding after the thread-started broadcast already fired.
+    private fun markThreadReady() {
+        if (threadReady) return
+        threadReady = true
+        handler.post {
+            try {
+                for (i in 0..1) {
+                    service?.getDeviceBleMac(i + 1)
+                    service?.getControllerSn(i)
+                }
+            } catch (e: RemoteException) {
+                Log.w(TAG, "id query failed", e)
+            }
+            poll()
+            handler.removeCallbacks(poll)
+            handler.postDelayed(poll, POLL_MS)
             onChange?.invoke()
         }
     }
@@ -122,6 +141,7 @@ class ControllerClient(private val context: Context) {
     private val callback = object : ICVAIDLServiceCallback.Stub() {
         override fun feedbackConnectStatus(controller: Int, status: Int) {
             Log.i(TAG, "connect cb: controller=$controller status=$status")
+            markThreadReady()
             if (controller in 0..1) states[controller] = status
             handler.post {
                 if (status == 1 && controller in 0..1) {
@@ -146,12 +166,14 @@ class ControllerClient(private val context: Context) {
         override fun feedbackControllerDeviceBleMac(device: Int, mac: String) {
             // Same numbering as getDeviceBleMac: 1 = left, 2 = right.
             Log.i(TAG, "mac cb: device=$device mac=$mac")
+            markThreadReady()
             if (device in 1..2) macs[device - 1] = mac
             handler.post { onChange?.invoke() }
         }
 
         override fun feedbackControllerControllerSn(device: Int, sn: String) {
             Log.i(TAG, "sn cb: device=$device sn=$sn")
+            markThreadReady()
             if (device in 0..1) serials[device] = sn
             handler.post { onChange?.invoke() }
         }
@@ -159,17 +181,16 @@ class ControllerClient(private val context: Context) {
         override fun feedbackDeviceInfo(i1: String?, i2: String?, f: Int) {}
         override fun feedbackMainControllerSerialNumChanged(i: Int) {
             Log.i(TAG, "main controller cb: $i")
+            markThreadReady()
         }
         override fun feedbackControllerThreadStarted() {
             Log.i(TAG, "controller thread started")
-            handler.post {
-                poll()
-                onChange?.invoke()
-            }
+            markThreadReady()
         }
         override fun feedbackControllerDeviceVersion(d: Int, v: String?) {}
         override fun feedbackControllerStatus(s: Int) {
             Log.i(TAG, "controller status cb: $s")
+            markThreadReady()
             // 2 is the station confirming it entered pair scan.
             if (s == 2) {
                 scanning = true
@@ -220,21 +241,22 @@ class ControllerClient(private val context: Context) {
         }
         service = null
         bound = false
+        threadReady = false
     }
 
     fun enterPairMode() {
         val svc = service
-        if (svc == null) {
-            Log.w(TAG, "enterPairMode: not bound")
+        if (svc == null || !threadReady) {
+            Log.w(TAG, "enterPairMode: bound=$bound ready=$threadReady")
             return
         }
         try {
-            // The service takes one 0-based slot per call; fire for
-            // both so either controller can complete pairing.
-            for (i in 0..1) {
-                svc.enterPairMode(i)
-                Log.i(TAG, "enterPairMode($i) sent")
-            }
+            // Opcode 0x14 "scanning mode" opens the station discovery
+            // window. Do not also call enterPairMode here: its 0x0d
+            // paired-MAC command switches the station out of scanning
+            // mode, which is why mixing both never found a controller.
+            svc.startPairingMode(0)
+            Log.i(TAG, "startPairingMode(0) sent")
             scanning = true
             handler.postDelayed(scanTimeout, SCAN_TIMEOUT_MS)
         } catch (e: RemoteException) {
@@ -244,9 +266,20 @@ class ControllerClient(private val context: Context) {
     }
 
     fun interruptPairMode() {
+        if (service == null || !threadReady) {
+            Log.w(TAG, "interruptPairMode: bound=$bound ready=$threadReady")
+            scanning = false
+            handler.removeCallbacks(scanTimeout)
+            onChange?.invoke()
+            return
+        }
         try {
             service?.interruptPairMode()
             Log.i(TAG, "interruptPairMode sent")
+            // One stop clears the service's needstartpairing latch and
+            // closes the station scan window.
+            service?.stopPairingMode(0)
+            Log.i(TAG, "stopPairingMode(0) sent")
         } catch (e: RemoteException) {
             Log.w(TAG, "interruptPairMode failed", e)
         }
@@ -255,7 +288,25 @@ class ControllerClient(private val context: Context) {
         poll()
     }
 
+    // Raw probe for the station scan command; the service latches
+    // needstartpairing so stop first to clear it, then start fresh.
+    fun scanRaw(device: Int) {
+        val svc = service ?: return
+        if (!threadReady) {
+            Log.w(TAG, "scanRaw: thread not ready")
+            return
+        }
+        try {
+            svc.stopPairingMode(device)
+            svc.startPairingMode(device)
+            Log.i(TAG, "scanRaw device=$device sent")
+        } catch (e: RemoteException) {
+            Log.w(TAG, "scanRaw failed", e)
+        }
+    }
+
     fun unbindAll() {
+        if (!threadReady) return
         try {
             for (i in 0..1) service?.setControllerUnbind(i)
             Log.i(TAG, "setControllerUnbind sent for both slots")
@@ -266,6 +317,7 @@ class ControllerClient(private val context: Context) {
     }
 
     fun setMain(index: Int) {
+        if (!threadReady) return
         try {
             service?.setMainControllerSerialNum(index)
             Log.i(TAG, "setMainControllerSerialNum($index) sent")
@@ -277,6 +329,7 @@ class ControllerClient(private val context: Context) {
 
     fun poll() {
         val svc = service ?: return
+        if (!threadReady) return
         try {
             pairState = svc.stationPairState
             mainController = svc.mainControllerSerialNum

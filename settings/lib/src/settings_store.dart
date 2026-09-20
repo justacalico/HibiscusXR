@@ -11,6 +11,7 @@ class SettingsStore extends ChangeNotifier {
   final Map<ItemId, double> _sliders = {};
   final Map<ItemId, String> _choices = {};
   final Map<ItemId, String> _texts = {};
+  final Map<ItemId, ControllerInfo> _controllers = {};
   SectionId _section = SectionId.wifi;
 
   SectionId get section => _section;
@@ -42,8 +43,7 @@ class SettingsStore extends ChangeNotifier {
 
   /// Current dropdown value, or the catalog's first option when the
   /// platform has not reported one yet.
-  String choiceOf(ItemId id) =>
-      _choices[id] ?? optionsOf(id).firstOrNull ?? '';
+  String choiceOf(ItemId id) => _choices[id] ?? optionsOf(id).firstOrNull ?? '';
 
   void setChoice(ItemId id, String value) {
     if (_choices[id] == value) return;
@@ -53,6 +53,11 @@ class SettingsStore extends ChangeNotifier {
 
   String? textOf(ItemId id) => _texts[id];
 
+  /// Last reported state of a controller row, or a placeholder when the
+  /// service has not answered yet.
+  ControllerInfo controllerOf(ItemId id) =>
+      _controllers[id] ?? const ControllerInfo();
+
   /// Merge a platform snapshot or change event. Only the keys the
   /// snapshot carries are touched, so partial updates work.
   void applySnapshot(SettingsSnapshot snap) {
@@ -60,6 +65,7 @@ class SettingsStore extends ChangeNotifier {
     _sliders.addAll(snap.sliders);
     _choices.addAll(snap.choices);
     _texts.addAll(snap.texts);
+    _controllers.addAll(snap.controllers);
     notifyListeners();
   }
 

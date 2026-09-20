@@ -37,6 +37,30 @@ void main() {
     expect(choiceLabel(l10n, 'auto'), 'Auto');
     expect(choiceLabel(l10n, '60hz'), '60 Hz');
     expect(choiceLabel(l10n, '50hz'), '50 Hz');
+    expect(choiceLabel(l10n, 'left'), 'Left');
+    expect(choiceLabel(l10n, 'right'), 'Right');
     expect(choiceLabel(l10n, 'anything'), 'Auto');
+  });
+
+  testWidgets('controller link labels cover every state', (tester) async {
+    final l10n = await l10nOf(tester);
+    await tester.pump();
+    expect(controllerLinkLabel(l10n, ControllerLink.connected), 'Connected');
+    expect(
+      controllerLinkLabel(l10n, ControllerLink.disconnected),
+      'Disconnected',
+    );
+    expect(controllerLinkLabel(l10n, ControllerLink.pairing), 'Pairing…');
+    expect(
+      controllerLinkLabel(l10n, ControllerLink.unknown),
+      isNotEmpty,
+    );
+  });
+
+  testWidgets('scan status label flips with the flag', (tester) async {
+    final l10n = await l10nOf(tester);
+    await tester.pump();
+    expect(scanStatusLabel(l10n, true), 'Scanning for controllers…');
+    expect(scanStatusLabel(l10n, false), 'Not scanning');
   });
 }

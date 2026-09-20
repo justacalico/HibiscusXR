@@ -64,4 +64,29 @@ void main() {
       matchesGoldenFile('goldens/settings_tracking.png'),
     );
   });
+
+  testWidgets('controllers section golden', (tester) async {
+    await pump(
+      tester,
+      const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerLeft: ControllerInfo(
+            link: ControllerLink.connected,
+            battery: 4,
+          ),
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.disconnected,
+            battery: -1,
+          ),
+        },
+        choices: {ItemId.controllerMain: 'right'},
+      ),
+      persistence: MemoryPersistence({'section': 'controllers'}),
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/settings_controllers.png'),
+    );
+  });
 }

@@ -1,0 +1,81 @@
+package com.picovr.picovrlib.cvcontrollerlib;
+
+import com.picovr.picovrlib.cvcontrollerlib.ICVAIDLServiceCallback;
+
+// Binder surface of CVService (com.picovr.picovrlib.cvcontroller), the
+// stock controller daemon. Transaction ids are positional, so every
+// method stays in the order the stock client was built against.
+interface CVControllerAIDLService {
+    float[] getControllerSensorState(int controllerSerialNum);
+    int[] getControllerKeyEvent(int controllerSerialNum);
+    int getControllerConnectionState(int controllerSerialNum);
+    void resetControllerSensor(int controllerSerialNum);
+    String getConnectDeviceMac();
+    int getServicePID();
+    void startCVControllerThread(int headSensorState, int handSensorState);
+    void stopCVControllerThread(int headSensorState, int handSensorState);
+    float[] getControllerAngularVelocity(int controllerSerialNum);
+    float[] getControllerAcceleration(int controllerSerialNum);
+    void vibrateControllerStrength(int controllerSerialNum, int strength);
+    void registerCallback(ICVAIDLServiceCallback cb);
+    void unregisterCallback(ICVAIDLServiceCallback cb);
+    void setMainControllerSerialNum(int controllerSerialNum);
+    int getMainControllerSerialNum();
+    void resetHeadSensorForController();
+    void getDeviceVersion(int deviceType);
+    void getControllerSn(int controllerSerialNum);
+    void setControllerUnbind(int controllerSerialNum);
+    void setStationRestart();
+    void startStationOtaUpdate();
+    void startControllerOtaUpdate(int mode, int controllerSerialNum);
+    void enterPairMode(int controllerSerialNum);
+    void setControllerShutdown(int controllerSerialNum);
+    int getStationPairState();
+    int getStationOtaUpdateProgress();
+    int getControllerOtaUpdateProgress();
+    void interruptPairMode();
+    void queryControllerVersionSN(int controllerSerialNum);
+    void queryUniqueIdentifier();
+    float[] getControllerSensorData(int controllerSerialNum, in float[] headData);
+    int GetControllerDofAbilityState(int controllerSerialNum);
+    int getControllerHandness();
+    float[] getControllerSensorStatePredict(int controllerSerialNum, float predictTime);
+    float[] getControllerSensorDataPredict(int controllerSerialNum, in float[] headData, float predictTime);
+    boolean isEnbleTrigger();
+    float[] getControllerDistanceInfo(int controllerSerialNum);
+    void setRFFixedFrequency(int frequency);
+    void getDeviceBleMac(int deviceType);
+    void startCV2StationOtaUpdate(String path);
+    void startCV2ControllerOtaUpdate(int mode, int controllerSerialNum, String path);
+    void resetStationPower();
+    void enterUSBPairMode(String bleMac1, String bleMac2);
+    float[] getController6dofPose(int controllerSerialNum);
+    int getCV2ControllerConnectionState(int controllerSerialNum);
+    int[] getCV2ControllerKeyEvent(int controllerSerialNum);
+    int getType();
+    void startBlePacketLossRate(int controllerSerialNum);
+    void stopBlePacketLossRate(int controllerSerialNum);
+    void startPairingMode(int controllerSerialNum);
+    void stopPairingMode(int controllerSerialNum);
+    void SetCenterTransfer(in float[] center, in float[] transfer, int flag);
+    void vibrateCV2ControllerStrength(float strength, int duration, int controllerSerialNum);
+    void setUnityVersion(String unityVersion);
+    float[] getControllerSensorDataTransfer(int controllerSerialNum);
+    void setIsEnbleHomeKey(boolean isEnble);
+    void getStationWhiteListNumber();
+    int getControllerBindingState(int controllerSerialNum);
+    void SetHeadDataAndPreTime(in float[] headData, float preTime);
+    float[] getControllerSensorStateWithHeadDataAndPreTime(int controllerSerialNum);
+    void getNDIVersion(int deviceType);
+    boolean isChargeing(int controllerSerialNum);
+    int getCtrChannel(int controllerSerialNum);
+    float[] getControllerFixedSensorState(int controllerSerialNum);
+    int getCtrlerPoseStateStatus(int controllerSerialNum);
+    float[] getControllerLinearVelocity(int controllerSerialNum);
+    long getController6dofPoseTime(int controllerSerialNum);
+    int setControllerChannel(int deviceType, int channel);
+    int resetChannel();
+    float[] getHeadSensorState();
+    int setAllControllerChannel(int deviceType, int channel);
+    boolean supportSharmem();
+}

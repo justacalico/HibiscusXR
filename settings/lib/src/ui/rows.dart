@@ -6,6 +6,8 @@ import '../labels.dart';
 import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
+import 'battery_icon.dart';
+import 'scan_card.dart';
 import 'theme.dart';
 
 /// One row in a section page: title + description on the left, the
@@ -21,6 +23,31 @@ class SettingsRow extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final store = controller.store;
     final enabled = implementedOf(id);
+    if (kindOf(id) == ItemKind.scanCard) {
+      final scanning = store.isOn(id);
+      return ScanCard(
+        title: itemTitle(l10n, id),
+        status: scanStatusLabel(l10n, scanning),
+        scanning: scanning,
+        slots: [
+          ScanSlot(
+            name: itemTitle(l10n, ItemId.controllerLeft),
+            state: controllerLinkLabel(
+              l10n,
+              store.controllerOf(ItemId.controllerLeft).link,
+            ),
+          ),
+          ScanSlot(
+            name: itemTitle(l10n, ItemId.controllerRight),
+            state: controllerLinkLabel(
+              l10n,
+              store.controllerOf(ItemId.controllerRight).link,
+            ),
+          ),
+        ],
+        onTap: enabled ? () => controller.runAction(id) : null,
+      );
+    }
     final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
       child: Row(
@@ -81,8 +108,7 @@ class _Control extends StatelessWidget {
       case ItemKind.toggle:
         return Switch(
           value: store.isOn(id),
-          onChanged:
-              enabled ? (_) => controller.toggleItem(id) : null,
+          onChanged: enabled ? (_) => controller.toggleItem(id) : null,
           activeThumbColor: PanelTheme.accent,
         );
       case ItemKind.slider:
@@ -90,8 +116,7 @@ class _Control extends StatelessWidget {
           width: 260,
           child: Slider(
             value: store.sliderValue(id),
-            onChanged:
-                enabled ? (v) => controller.setSlider(id, v) : null,
+            onChanged: enabled ? (v) => controller.setSlider(id, v) : null,
             activeColor: PanelTheme.accent,
             inactiveColor: PanelTheme.surfaceHigh,
           ),
@@ -122,6 +147,25 @@ class _Control extends StatelessWidget {
           ),
           child: const Icon(Icons.chevron_right, size: 26),
         );
+      case ItemKind.scanCard:
+        // handled in SettingsRow.build, before the row layout
+        return const SizedBox.shrink();
+      case ItemKind.controller:
+        final info = store.controllerOf(id);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              controllerLinkLabel(l10n, info.link),
+              style: const TextStyle(
+                fontSize: 15,
+                color: PanelTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 10),
+            BatteryIcon(level: info.battery, charging: info.charging),
+          ],
+        );
       case ItemKind.info:
         final text = store.textOf(id);
         final empty = id == ItemId.wifiSsid
@@ -129,10 +173,7 @@ class _Control extends StatelessWidget {
             : l10n.valueUnknown;
         return Text(
           text == null || text.isEmpty ? empty : text,
-          style: const TextStyle(
-            fontSize: 15,
-            color: PanelTheme.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 15, color: PanelTheme.textSecondary),
         );
     }
   }

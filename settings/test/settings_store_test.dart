@@ -56,6 +56,50 @@ void main() {
     expect(store.textOf(ItemId.modelName), 'A7B10');
   });
 
+  test('controllerOf returns placeholder until the platform reports', () {
+    final store = SettingsStore();
+    expect(store.controllerOf(ItemId.controllerLeft).link,
+        ControllerLink.unknown);
+    expect(store.controllerOf(ItemId.controllerLeft).battery, -1);
+
+    store.applySnapshot(const SettingsSnapshot(controllers: {
+      ItemId.controllerLeft: ControllerInfo(
+        link: ControllerLink.connected,
+        battery: 5,
+      ),
+    }));
+    expect(store.controllerOf(ItemId.controllerLeft).link,
+        ControllerLink.connected);
+    expect(store.controllerOf(ItemId.controllerLeft).battery, 5);
+    // a slot that was not reported keeps its placeholder
+    expect(store.controllerOf(ItemId.controllerRight).link,
+        ControllerLink.unknown);
+  });
+
+  test('controller snapshots merge per slot', () {
+    final store = SettingsStore()
+      ..applySnapshot(const SettingsSnapshot(controllers: {
+        ItemId.controllerLeft: ControllerInfo(
+          link: ControllerLink.connected,
+          battery: 5,
+          charging: true,
+        ),
+        ItemId.controllerRight: ControllerInfo(
+          link: ControllerLink.connected,
+          battery: 3,
+        ),
+      }));
+    // a partial event for the left slot leaves the right slot alone
+    store.applySnapshot(const SettingsSnapshot(controllers: {
+      ItemId.controllerLeft: ControllerInfo(
+        link: ControllerLink.disconnected,
+      ),
+    }));
+    expect(store.controllerOf(ItemId.controllerLeft).link,
+        ControllerLink.disconnected);
+    expect(store.controllerOf(ItemId.controllerRight).battery, 3);
+  });
+
   test('selectSection switches and dedupes', () {
     final store = SettingsStore();
     var ticks = 0;

@@ -18,6 +18,7 @@ import io.flutter.plugin.common.MethodChannel
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
+private const val TAG = "SettingsMain"
 
 // Project-owned keys. qvrd / the shell read these through the same seam
 // the quick panel broadcasts on.
@@ -28,6 +29,67 @@ private const val KEY_BOUNDARY = "pn2_boundary"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
+    private var controllers: ControllerClient? = null
+
+    // adb-triggerable scan toggle, same path as tapping the card.
+    // "device" extra drives a raw startPairingMode probe instead.
+    private val scanReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            android.util.Log.i(TAG, "scan broadcast received")
+            val dev = intent.getIntExtra("device", -1)
+            if (dev >= 0) {
+                controllers?.scanRaw(dev)
+                return
+            }
+            val m1 = intent.getStringExtra("mac1")
+            val m2 = intent.getStringExtra("mac2")
+            if (m1 != null || m2 != null) {
+                controllers?.usbPair(m1.orEmpty(), m2.orEmpty())
+                return
+            }
+            val slot = intent.getIntExtra("enterpair", -1)
+            if (slot >= 0) {
+                controllers?.enterPair(slot)
+                return
+            }
+            if (intent.hasExtra("whitelist")) {
+                controllers?.whiteList()
+                return
+            }
+            if (intent.hasExtra("blescan")) {
+                bleScanProbe()
+                return
+            }
+            performAction("controllerPair")
+        }
+    }
+
+    // BLE probe: lists every advertiser for ~20s to check whether a
+    // pairing-mode controller is broadcasting at all.
+    @Suppress("DEPRECATION")
+    private fun bleScanProbe() {
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        if (adapter == null || !adapter.isEnabled) {
+            android.util.Log.w(TAG, "blescan: bt off")
+            return
+        }
+        val cb = BluetoothAdapter.LeScanCallback { dev, rssi, rec ->
+            val name = try { dev.name } catch (e: SecurityException) { null }
+            android.util.Log.i(
+                TAG,
+                "blescan dev=${dev.address} rssi=$rssi name=$name rec=${rec?.size ?: 0}B",
+            )
+        }
+        if (!adapter.startLeScan(cb)) {
+            android.util.Log.w(TAG, "blescan: startLeScan refused")
+            return
+        }
+        android.util.Log.i(TAG, "blescan started")
+        android.os.Handler(mainLooper).postDelayed({
+            adapter.stopLeScan(cb)
+            android.util.Log.i(TAG, "blescan stopped")
+        }, 40_000)
+    }
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -50,6 +112,14 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        controllers = ControllerClient(applicationContext).also { c ->
+            c.onChange = { eventSink?.success(controllerSnapshot()) }
+            c.bind()
+        }
+        registerReceiver(
+            scanReceiver,
+            IntentFilter("gitlab.neosalsa.settings.CONTROLLER_SCAN"),
+        )
         val messenger = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messenger, "gitlab.neosalsa.settings/system")
             .setMethodCallHandler { call, result ->
@@ -105,7 +175,14 @@ class MainActivity : FlutterActivity() {
             })
     }
 
-    private fun snapshot(): Map<String, Any?> = mapOf(
+    override fun onDestroy() {
+        unregisterReceiver(scanReceiver)
+        controllers?.unbind()
+        controllers = null
+        super.onDestroy()
+    }
+
+    private fun snapshot(): Map<String, Any?> = controllerSnapshot() + mapOf(
         "toggles" to mapOf(
             "wifiToggle" to wifiOn(),
             "bluetoothToggle" to bluetoothOn(),
@@ -114,6 +191,7 @@ class MainActivity : FlutterActivity() {
             "boundary" to globalOn(KEY_BOUNDARY, true),
             "seethrough" to globalOn(KEY_SEETHROUGH, false),
             "nightMode" to nightModeOn(),
+            "controllerPair" to (controllers?.pairingActive ?: false),
         ),
         "sliders" to mapOf(
             "volume" to volume(),
@@ -122,6 +200,14 @@ class MainActivity : FlutterActivity() {
         "choices" to mapOf(
             "trackingFrequency" to
                 globalStr(KEY_TRACKING_FREQ, "auto"),
+            "controllerMain" to
+                if (controllers?.mainController ==
+                    ControllerClient.CONTROLLER_LEFT
+                ) {
+                    "left"
+                } else {
+                    "right"
+                },
         ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
@@ -130,6 +216,39 @@ class MainActivity : FlutterActivity() {
             "buildNumber" to Build.DISPLAY,
         ),
     )
+
+    // Controller state rides the same snapshot shape as the rest of the
+    // app: a per-slot map plus the pairing flag and main-hand choice.
+    private fun controllerSnapshot(): Map<String, Any?> {
+        val c = controllers
+        val pairing = c?.pairingActive ?: false
+        fun slot(i: Int) = mapOf(
+            // A slot that has not linked shows "pairing" while the
+            // station scan is open.
+            "state" to (c?.states?.get(i) ?: 0).let {
+                if (it != 1 && pairing) 2 else it
+            },
+            "battery" to (c?.batteries?.get(i) ?: -1),
+            "charging" to (c?.charging?.get(i) ?: false),
+            "mac" to (c?.macs?.get(i) ?: ""),
+            "serial" to (c?.serials?.get(i) ?: ""),
+        )
+        return mapOf(
+            "controllers" to mapOf(
+                "controllerLeft" to slot(ControllerClient.CONTROLLER_LEFT),
+                "controllerRight" to slot(ControllerClient.CONTROLLER_RIGHT),
+            ),
+            "toggles" to mapOf("controllerPair" to (c?.pairingActive ?: false)),
+            "choices" to mapOf(
+                "controllerMain" to
+                    if (c?.mainController == ControllerClient.CONTROLLER_LEFT) {
+                        "left"
+                    } else {
+                        "right"
+                    },
+            ),
+        )
+    }
 
     private fun wifiManager() =
         applicationContext.getSystemService(WifiManager::class.java)
@@ -255,6 +374,15 @@ class MainActivity : FlutterActivity() {
                 contentResolver, KEY_TRACKING_FREQ, value,
             )
         }
+        if (id == "controllerMain") {
+            controllers?.setMain(
+                if (value == "left") {
+                    ControllerClient.CONTROLLER_LEFT
+                } else {
+                    ControllerClient.CONTROLLER_RIGHT
+                },
+            )
+        }
     }
 
     private fun performAction(id: String) {
@@ -284,6 +412,21 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
                     .setPackage(packageName),
             )
+            "controllerPair" -> {
+                val c = controllers
+                if (c == null) {
+                    android.util.Log.w(TAG, "scan tapped with no client")
+                } else {
+                    android.util.Log.i(
+                        TAG,
+                        "scan tapped: bound=${c.bound} " +
+                            "pairState=${c.pairState} scanning=${c.scanning}",
+                    )
+                    if (c.pairingActive) c.interruptPairMode()
+                    else c.enterPairMode()
+                }
+            }
+            "controllerUnbind" -> controllers?.unbindAll()
         }
     }
 

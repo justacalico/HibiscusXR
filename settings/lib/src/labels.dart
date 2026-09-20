@@ -9,6 +9,8 @@ String sectionTitle(AppLocalizations l10n, SectionId id) {
       return l10n.sectionWifi;
     case SectionId.bluetooth:
       return l10n.sectionBluetooth;
+    case SectionId.controllers:
+      return l10n.sectionControllers;
     case SectionId.display:
       return l10n.sectionDisplay;
     case SectionId.sound:
@@ -48,6 +50,16 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemBluetoothToggle;
     case ItemId.bluetoothSettings:
       return l10n.itemBluetoothSettings;
+    case ItemId.controllerPair:
+      return l10n.itemControllerPair;
+    case ItemId.controllerLeft:
+      return l10n.itemControllerLeft;
+    case ItemId.controllerRight:
+      return l10n.itemControllerRight;
+    case ItemId.controllerMain:
+      return l10n.itemControllerMain;
+    case ItemId.controllerUnbind:
+      return l10n.itemControllerUnbind;
     case ItemId.brightness:
       return l10n.itemBrightness;
     case ItemId.nightMode:
@@ -103,6 +115,16 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemBluetoothToggleDesc;
     case ItemId.bluetoothSettings:
       return l10n.itemBluetoothSettingsDesc;
+    case ItemId.controllerPair:
+      return l10n.itemControllerPairDesc;
+    case ItemId.controllerLeft:
+      return l10n.itemControllerLeftDesc;
+    case ItemId.controllerRight:
+      return l10n.itemControllerRightDesc;
+    case ItemId.controllerMain:
+      return l10n.itemControllerMainDesc;
+    case ItemId.controllerUnbind:
+      return l10n.itemControllerUnbindDesc;
     case ItemId.brightness:
       return l10n.itemBrightnessDesc;
     case ItemId.nightMode:
@@ -153,7 +175,29 @@ String choiceLabel(AppLocalizations l10n, String value) {
       return l10n.value60hz;
     case '50hz':
       return l10n.value50hz;
+    case 'left':
+      return l10n.valueLeft;
+    case 'right':
+      return l10n.valueRight;
     default:
       return l10n.valueAuto;
   }
 }
+
+/// Link state text for a controller row.
+String controllerLinkLabel(AppLocalizations l10n, ControllerLink link) {
+  switch (link) {
+    case ControllerLink.connected:
+      return l10n.controllerConnected;
+    case ControllerLink.disconnected:
+      return l10n.controllerDisconnected;
+    case ControllerLink.pairing:
+      return l10n.controllerPairing;
+    case ControllerLink.unknown:
+      return l10n.valueUnknown;
+  }
+}
+
+/// Status line under the scan card title.
+String scanStatusLabel(AppLocalizations l10n, bool scanning) =>
+    scanning ? l10n.controllerScanning : l10n.controllerScanIdle;

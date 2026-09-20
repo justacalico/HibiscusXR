@@ -18,6 +18,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionBluetooth => 'Bluetooth';
 
   @override
+  String get sectionControllers => 'Controllers';
+
+  @override
   String get sectionDisplay => 'Display';
 
   @override
@@ -82,6 +85,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemBluetoothSettingsDesc => 'Pairing and connected devices';
+
+  @override
+  String get itemControllerPair => 'Scan for controllers';
+
+  @override
+  String get itemControllerPairDesc =>
+      'Starts the link scan, then hold the pairing button on each controller until it rumbles';
+
+  @override
+  String get itemControllerLeft => 'Left controller';
+
+  @override
+  String get itemControllerLeftDesc => 'Link state and battery level';
+
+  @override
+  String get itemControllerRight => 'Right controller';
+
+  @override
+  String get itemControllerRightDesc => 'Link state and battery level';
+
+  @override
+  String get itemControllerMain => 'Main hand';
+
+  @override
+  String get itemControllerMainDesc =>
+      'The controller used for pointing and system gestures';
+
+  @override
+  String get itemControllerUnbind => 'Unpair all';
+
+  @override
+  String get itemControllerUnbindDesc => 'Forget both paired controllers';
 
   @override
   String get itemBrightness => 'Brightness';
@@ -220,4 +255,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get valueUnknown => 'Unknown';
+
+  @override
+  String get valueLeft => 'Left';
+
+  @override
+  String get valueRight => 'Right';
+
+  @override
+  String get controllerConnected => 'Connected';
+
+  @override
+  String get controllerDisconnected => 'Disconnected';
+
+  @override
+  String get controllerPairing => 'Pairing…';
+
+  @override
+  String get controllerScanning => 'Scanning for controllers…';
+
+  @override
+  String get controllerScanIdle => 'Not scanning';
+
+  @override
+  String controllerBattery(int level) {
+    return 'Battery $level of 5';
+  }
+
+  @override
+  String get controllerCharging => 'Charging';
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/main.dart';
-import 'package:pn2_settings/src/catalog.dart';
 import 'package:pn2_settings/src/models.dart';
 import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
@@ -122,6 +121,99 @@ void main() {
     await tester.tap(find.text('Wi-Fi'));
     await tester.pump();
     expect(find.text('Not connected'), findsOneWidget);
+  });
+
+  testWidgets('controllers section shows state and battery', (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerLeft: ControllerInfo(
+            link: ControllerLink.connected,
+            battery: 4,
+          ),
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.disconnected,
+            battery: -1,
+          ),
+        },
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    // each name/state shows twice: once on the scan card chips and
+    // once on the dedicated rows
+    expect(find.text('Left controller'), findsNWidgets(2));
+    expect(find.text('Right controller'), findsNWidgets(2));
+    expect(find.text('Connected'), findsNWidgets(2));
+    expect(find.text('Disconnected'), findsNWidgets(2));
+  });
+
+  testWidgets('scan card and unpair forward to the source',
+      (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    await tester.tap(find.text('Scan for controllers'));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.chevron_right).first);
+    await tester.pump();
+    expect(source.actionsPerformed,
+        [ItemId.controllerPair, ItemId.controllerUnbind]);
+  });
+
+  testWidgets('scanning state shows on the card', (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        toggles: {ItemId.controllerPair: true},
+        controllers: {
+          ItemId.controllerLeft:
+              ControllerInfo(link: ControllerLink.pairing),
+        },
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Scanning for controllers…'), findsOneWidget);
+    expect(find.text('Pairing…'), findsNWidgets(2));
+  });
+
+  testWidgets('idle scan card shows its status', (tester) async {
+    await pumpApp(tester);
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.text('Not scanning'), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('controller events refresh the row', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerRight:
+              ControllerInfo(link: ControllerLink.disconnected),
+        },
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.text('Disconnected'), findsNWidgets(2));
+
+    source.emit(const SettingsSnapshot(
+      controllers: {
+        ItemId.controllerRight: ControllerInfo(
+          link: ControllerLink.connected,
+          battery: 5,
+          charging: true,
+        ),
+      },
+    ));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Connected'), findsNWidgets(2));
   });
 
   testWidgets('live events update the ui', (tester) async {

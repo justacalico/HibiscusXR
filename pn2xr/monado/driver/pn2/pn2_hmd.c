@@ -408,8 +408,18 @@ pn2_run_thread(void *ptr)
 			gone = false;
 		}
 		if (gone) {
-			PN2_INFO(d, "activity finished with live instance, tearing down");
-			orphan = true;
+			// The owning activity is closing. A well-behaved app calls
+			// xrDestroyInstance now, which stops this thread; give that a
+			// short window, then assume the instance was abandoned.
+			uint64_t deadline = now + 500000000ull;
+			while (os_monotonic_get_ns() < deadline &&
+			       os_thread_helper_is_running(&d->oth)) {
+				usleep(5000);
+			}
+			orphan = os_thread_helper_is_running(&d->oth);
+			if (orphan) {
+				PN2_INFO(d, "activity finished with live instance, tearing down");
+			}
 			break;
 		}
 	}

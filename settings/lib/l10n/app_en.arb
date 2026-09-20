@@ -3,6 +3,7 @@
 
   "sectionWifi": "Wi-Fi",
   "sectionBluetooth": "Bluetooth",
+  "sectionControllers": "Controllers",
   "sectionDisplay": "Display",
   "sectionSound": "Sound",
   "sectionCamera": "Camera",
@@ -26,6 +27,16 @@
   "itemBluetoothToggleDesc": "Pair controllers and accessories",
   "itemBluetoothSettings": "Manage devices",
   "itemBluetoothSettingsDesc": "Pairing and connected devices",
+  "itemControllerPair": "Pair controllers",
+  "itemControllerPairDesc": "Hold the pairing button on each controller until it rumbles",
+  "itemControllerLeft": "Left controller",
+  "itemControllerLeftDesc": "Link state and battery level",
+  "itemControllerRight": "Right controller",
+  "itemControllerRightDesc": "Link state and battery level",
+  "itemControllerMain": "Main hand",
+  "itemControllerMainDesc": "The controller used for pointing and system gestures",
+  "itemControllerUnbind": "Unpair all",
+  "itemControllerUnbindDesc": "Forget both paired controllers",
   "itemBrightness": "Brightness",
   "itemBrightnessDesc": "Adjust the screen brightness",
   "itemNightMode": "Night mode",
@@ -71,5 +82,17 @@
   "value60hz": "60 Hz",
   "value50hz": "50 Hz",
   "valueNotConnected": "Not connected",
-  "valueUnknown": "Unknown"
+  "valueUnknown": "Unknown",
+  "valueLeft": "Left",
+  "valueRight": "Right",
+  "controllerConnected": "Connected",
+  "controllerDisconnected": "Disconnected",
+  "controllerPairing": "Pairing…",
+  "controllerBattery": "Battery {level} of 5",
+  "@controllerBattery": {
+    "placeholders": {
+      "level": {"type": "int"}
+    }
+  },
+  "controllerCharging": "Charging"
 }

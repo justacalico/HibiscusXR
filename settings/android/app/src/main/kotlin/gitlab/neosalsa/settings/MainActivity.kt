@@ -28,6 +28,7 @@ private const val KEY_BOUNDARY = "pn2_boundary"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
+    private var controllers: ControllerClient? = null
 
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -50,6 +51,10 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        controllers = ControllerClient(applicationContext).also { c ->
+            c.onChange = { eventSink?.success(controllerSnapshot()) }
+            c.bind()
+        }
         val messenger = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messenger, "gitlab.neosalsa.settings/system")
             .setMethodCallHandler { call, result ->
@@ -105,6 +110,12 @@ class MainActivity : FlutterActivity() {
             })
     }
 
+    override fun onDestroy() {
+        controllers?.unbind()
+        controllers = null
+        super.onDestroy()
+    }
+
     private fun snapshot(): Map<String, Any?> = mapOf(
         "toggles" to mapOf(
             "wifiToggle" to wifiOn(),
@@ -129,7 +140,35 @@ class MainActivity : FlutterActivity() {
             "androidVersion" to Build.VERSION.RELEASE,
             "buildNumber" to Build.DISPLAY,
         ),
-    )
+    ) + controllerSnapshot()
+
+    // Controller state rides the same snapshot shape as the rest of the
+    // app: a per-slot map plus the pairing flag and main-hand choice.
+    private fun controllerSnapshot(): Map<String, Any?> {
+        val c = controllers
+        fun slot(i: Int) = mapOf(
+            "state" to (c?.states?.get(i) ?: 0),
+            "battery" to (c?.batteries?.get(i) ?: -1),
+            "charging" to (c?.charging?.get(i) ?: false),
+            "mac" to (c?.macs?.get(i) ?: ""),
+            "serial" to (c?.serials?.get(i) ?: ""),
+        )
+        return mapOf(
+            "controllers" to mapOf(
+                "controllerLeft" to slot(ControllerClient.CONTROLLER_LEFT),
+                "controllerRight" to slot(ControllerClient.CONTROLLER_RIGHT),
+            ),
+            "toggles" to mapOf("controllerPair" to ((c?.pairState ?: 0) != 0)),
+            "choices" to mapOf(
+                "controllerMain" to
+                    if (c?.mainController == ControllerClient.CONTROLLER_LEFT) {
+                        "left"
+                    } else {
+                        "right"
+                    },
+            ),
+        )
+    }
 
     private fun wifiManager() =
         applicationContext.getSystemService(WifiManager::class.java)
@@ -255,6 +294,15 @@ class MainActivity : FlutterActivity() {
                 contentResolver, KEY_TRACKING_FREQ, value,
             )
         }
+        if (id == "controllerMain") {
+            controllers?.setMainController(
+                if (value == "left") {
+                    ControllerClient.CONTROLLER_LEFT
+                } else {
+                    ControllerClient.CONTROLLER_RIGHT
+                },
+            )
+        }
     }
 
     private fun performAction(id: String) {
@@ -284,6 +332,11 @@ class MainActivity : FlutterActivity() {
                 Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
                     .setPackage(packageName),
             )
+            "controllerPair" -> controllers?.let {
+                if (it.pairState != 0) it.interruptPairMode()
+                else it.enterPairMode()
+            }
+            "controllerUnbind" -> controllers?.unbindAll()
         }
     }
 

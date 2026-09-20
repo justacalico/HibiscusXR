@@ -43,6 +43,72 @@ void main() {
       expect(snap.sliders, isEmpty);
       expect(snap.choices, isEmpty);
       expect(snap.texts, isEmpty);
+      expect(snap.controllers, isEmpty);
+    });
+
+    test('controller entries roundtrip', () {
+      const snap = SettingsSnapshot(
+        controllers: {
+          ItemId.controllerLeft: ControllerInfo(
+            link: ControllerLink.connected,
+            battery: 4,
+            charging: true,
+            mac: '2C:4D:79:00:00:01',
+            serial: 'PA1111',
+          ),
+        },
+      );
+      final back = SettingsSnapshot.fromJson(snap.toJson());
+      final left = back.controllers[ItemId.controllerLeft];
+      expect(left, isNotNull);
+      expect(left!.link, ControllerLink.connected);
+      expect(left.battery, 4);
+      expect(left.charging, isTrue);
+      expect(left.mac, '2C:4D:79:00:00:01');
+      expect(left.serial, 'PA1111');
+    });
+  });
+
+  group('ControllerInfo', () {
+    test('parses the wire shape', () {
+      final info = ControllerInfo.fromJson({
+        'state': 1,
+        'battery': 3,
+        'charging': false,
+        'mac': 'AA:BB:CC:00:00:01',
+        'serial': 'PB2222',
+      });
+      expect(info.link, ControllerLink.connected);
+      expect(info.battery, 3);
+      expect(info.charging, isFalse);
+      expect(info.mac, 'AA:BB:CC:00:00:01');
+      expect(info.serial, 'PB2222');
+    });
+
+    test('garbage input falls back to unknown', () {
+      final info = ControllerInfo.fromJson({
+        'state': 'soon',
+        'battery': 'lots',
+        'charging': 'maybe',
+        'mac': 4,
+        'serial': true,
+      });
+      expect(info.link, ControllerLink.unknown);
+      expect(info.battery, -1);
+      expect(info.charging, isFalse);
+      expect(info.mac, isEmpty);
+      expect(info.serial, isEmpty);
+    });
+
+    test('raw link values map to enum and back', () {
+      expect(ControllerLink.fromRaw(0), ControllerLink.disconnected);
+      expect(ControllerLink.fromRaw(1), ControllerLink.connected);
+      expect(ControllerLink.fromRaw(2), ControllerLink.pairing);
+      expect(ControllerLink.fromRaw(9), ControllerLink.unknown);
+      expect(ControllerLink.fromRaw('x'), ControllerLink.unknown);
+      for (final link in ControllerLink.values) {
+        expect(ControllerLink.fromRaw(link.raw), link);
+      }
     });
   });
 

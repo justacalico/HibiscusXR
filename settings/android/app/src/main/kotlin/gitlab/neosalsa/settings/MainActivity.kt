@@ -31,6 +31,14 @@ class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
     private var controllers: ControllerClient? = null
 
+    // adb-triggerable scan toggle, same path as tapping the card.
+    private val scanReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            android.util.Log.i(TAG, "scan broadcast received")
+            performAction("controllerPair")
+        }
+    }
+
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val update = mutableMapOf<String, Any?>()
@@ -56,6 +64,10 @@ class MainActivity : FlutterActivity() {
             c.onChange = { eventSink?.success(controllerSnapshot()) }
             c.bind()
         }
+        registerReceiver(
+            scanReceiver,
+            IntentFilter("gitlab.neosalsa.settings.CONTROLLER_SCAN"),
+        )
         val messenger = flutterEngine.dartExecutor.binaryMessenger
         MethodChannel(messenger, "gitlab.neosalsa.settings/system")
             .setMethodCallHandler { call, result ->
@@ -112,6 +124,7 @@ class MainActivity : FlutterActivity() {
     }
 
     override fun onDestroy() {
+        unregisterReceiver(scanReceiver)
         controllers?.unbind()
         controllers = null
         super.onDestroy()

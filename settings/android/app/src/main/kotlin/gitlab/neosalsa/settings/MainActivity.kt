@@ -32,9 +32,15 @@ class MainActivity : FlutterActivity() {
     private var controllers: ControllerClient? = null
 
     // adb-triggerable scan toggle, same path as tapping the card.
+    // "device" extra drives a raw startPairingMode probe instead.
     private val scanReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             android.util.Log.i(TAG, "scan broadcast received")
+            val dev = intent.getIntExtra("device", -1)
+            if (dev >= 0) {
+                controllers?.scanRaw(dev)
+                return
+            }
             performAction("controllerPair")
         }
     }

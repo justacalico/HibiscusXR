@@ -56,4 +56,11 @@ void main() {
       isNotEmpty,
     );
   });
+
+  testWidgets('scan status label flips with the flag', (tester) async {
+    final l10n = await l10nOf(tester);
+    await tester.pump();
+    expect(scanStatusLabel(l10n, true), 'Scanning for controllers…');
+    expect(scanStatusLabel(l10n, false), 'Not scanning');
+  });
 }

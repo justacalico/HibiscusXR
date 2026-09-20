@@ -19,6 +19,13 @@ const kSections = <SectionDef>[
     ItemId.bluetoothToggle,
     ItemId.bluetoothSettings,
   ]),
+  SectionDef(SectionId.controllers, [
+    ItemId.controllerPair,
+    ItemId.controllerLeft,
+    ItemId.controllerRight,
+    ItemId.controllerMain,
+    ItemId.controllerUnbind,
+  ]),
   SectionDef(SectionId.display, [
     ItemId.brightness,
     ItemId.nightMode,
@@ -71,6 +78,11 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.wifiSettings: ItemKind.action,
   ItemId.bluetoothToggle: ItemKind.toggle,
   ItemId.bluetoothSettings: ItemKind.action,
+  ItemId.controllerPair: ItemKind.action,
+  ItemId.controllerLeft: ItemKind.controller,
+  ItemId.controllerRight: ItemKind.controller,
+  ItemId.controllerMain: ItemKind.choice,
+  ItemId.controllerUnbind: ItemKind.action,
   ItemId.brightness: ItemKind.slider,
   ItemId.nightMode: ItemKind.toggle,
   ItemId.volume: ItemKind.slider,
@@ -97,6 +109,7 @@ const kItemKinds = <ItemId, ItemKind>{
 /// when the platform reports nothing.
 const kChoiceOptions = <ItemId, List<String>>{
   ItemId.trackingFrequency: ['auto', '60hz', '50hz'],
+  ItemId.controllerMain: ['right', 'left'],
 };
 
 /// Rows whose platform side does not exist yet. They render greyed out

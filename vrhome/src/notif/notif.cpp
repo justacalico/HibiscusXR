@@ -52,9 +52,9 @@ void syncNotifs(HudEngine* e) {
             env->DeleteLocalRef(o);
         }
     }
-    e->notifs = buildNotifs(raw);
+    e->notifsAll = buildNotifs(raw);
     // icons resolve through the same cache the dock uses
-    for (auto& n : e->notifs) iconFor(e, n.pkg);
+    for (auto& n : e->notifsAll) iconFor(e, n.pkg);
 }
 
 void notifDismiss(HudEngine* e, int idx) {

@@ -85,10 +85,13 @@ struct HudEngine : Engine {
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
 
-    // notification cards: the live set rebuilt when the listener's version
-    // bumps; hover/press mirror the dock's gesture state. toastOnly means
-    // the window is up over a covered app for a heads-up: only the stack
+    // notification cards: notifsAll is the live record set rebuilt when
+    // the listener's version bumps; notifs is the visible subset filtered
+    // each frame by postMs age so cards age out of the dash on their own.
+    // hover/press mirror the dock's gesture state. toastOnly means the
+    // window is up over a covered app for a heads-up: only the stack
     // draws, anchored on the gaze yaw captured when the toast popped
+    std::vector<NotifItem> notifsAll;
     std::vector<NotifItem> notifs;
     int notifVer = -1;
     int notifHover = -1;

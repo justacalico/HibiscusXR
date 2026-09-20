@@ -43,6 +43,14 @@
 #include <ctime>
 #include <pthread.h>
 
+// postMs arrives on the wall-clock epoch, so expiry compares against
+// CLOCK_REALTIME, not the monotonic clock the rest of the engine uses
+static long long epochNowMs() {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+}
+
 static HudEngine gHud;
 static pthread_t gThread;
 static bool gStarted = false;
@@ -318,6 +326,9 @@ static void hudFrame(HudEngine* e) {
     // sync first: the pick needs this frame's item list and strip width
     syncDock(e);
     syncNotifs(e);
+    // cards age out of the dash on postMs + kNotifShowMs; the record
+    // itself stays live for the shade
+    e->notifs = visibleNotifs(e->notifsAll, epochNowMs());
 
     // the card stack anchors over the dock bar in the dash, or on the
     // toast's own yaw while heads-up over an app; the yaw is captured when

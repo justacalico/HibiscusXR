@@ -13,6 +13,12 @@
 // the live stack: newest postMs first, capped at kNotifMax
 std::vector<NotifItem> buildNotifs(const std::vector<NotifItem>& in);
 
+// the subset still inside its visible window: a card shows from postMs
+// until postMs + kNotifShowMs, then the dash drops it even though the
+// shade record stays live. nowMs shares postMs's epoch (wall clock).
+std::vector<NotifItem> visibleNotifs(const std::vector<NotifItem>& in,
+                                     long long nowMs);
+
 // half-height of a stack of `count` cards in metres
 float notifStackHH(int count);
 

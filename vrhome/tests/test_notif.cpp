@@ -36,6 +36,29 @@ void testNotif() {
         CHECK(items[0].postMs == 1000 + kNotifMax + 2);
     }
 
+    // visible window: a card shows from postMs for kNotifShowMs, then the
+    // dash drops it while the record stays live
+    {
+        const long long now = 100000;
+        auto items = visibleNotifs(
+            {mkNotif("fresh", "com.a", now - kNotifShowMs + 1),
+             mkNotif("edge", "com.b", now - kNotifShowMs),
+             mkNotif("stale", "com.c", now - kNotifShowMs - 1)}, now);
+        CHECK(items.size() == 2);
+        CHECK(items[0].key == "fresh");
+        CHECK(items[1].key == "edge");
+    }
+    // missing timestamps stay visible rather than vanishing
+    {
+        auto items = visibleNotifs({mkNotif("noT", "com.a", 0)}, 999999);
+        CHECK(items.size() == 1);
+    }
+    // a postMs in the future counts as inside the window
+    {
+        auto items = visibleNotifs({mkNotif("skew", "com.a", 200)}, 100);
+        CHECK(items.size() == 1);
+    }
+
     // stack geometry: heights and card offsets
     {
         CHECK(notifStackHH(0) == 0.0f);

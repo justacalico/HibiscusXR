@@ -97,6 +97,8 @@ constexpr float kNotifIconHW = 0.030f;  // app icon half-width on a card
 constexpr float kNotifBadgeR = 0.020f;  // dismiss badge radius
 constexpr int   kNotifMax = 1;          // cards shown at once
 constexpr int   kNotifToastMs = 5000;   // heads-up duration over an app
+constexpr long long kNotifShowMs = 5000; // dash card lifetime from postMs;
+                                        // the shade record outlives it
 // toast stack elevation: slightly above eye level, anchored on the gaze
 // yaw at the moment the toast pops so it never hides behind the user
 constexpr float kNotifToastPitch = 0.14f;

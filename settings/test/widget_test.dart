@@ -123,6 +123,71 @@ void main() {
     expect(find.text('Not connected'), findsOneWidget);
   });
 
+  testWidgets('controllers section shows state and battery', (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerLeft: ControllerInfo(
+            link: ControllerLink.connected,
+            battery: 4,
+          ),
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.disconnected,
+            battery: -1,
+          ),
+        },
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.text('Left controller'), findsOneWidget);
+    expect(find.text('Right controller'), findsOneWidget);
+    expect(find.text('Connected'), findsOneWidget);
+    expect(find.text('Disconnected'), findsOneWidget);
+  });
+
+  testWidgets('pair and unpair actions forward to the source',
+      (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.chevron_right).first);
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.chevron_right).last);
+    await tester.pump();
+    expect(source.actionsPerformed,
+        [ItemId.controllerPair, ItemId.controllerUnbind]);
+  });
+
+  testWidgets('controller events refresh the row', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerRight:
+              ControllerInfo(link: ControllerLink.disconnected),
+        },
+      ),
+    );
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(find.text('Disconnected'), findsOneWidget);
+
+    source.emit(const SettingsSnapshot(
+      controllers: {
+        ItemId.controllerRight: ControllerInfo(
+          link: ControllerLink.connected,
+          battery: 5,
+          charging: true,
+        ),
+      },
+    ));
+    await tester.pump();
+    await tester.pump();
+    expect(find.text('Connected'), findsOneWidget);
+  });
+
   testWidgets('live events update the ui', (tester) async {
     final (_, source) = await pumpApp(tester);
     source.emit(const SettingsSnapshot(

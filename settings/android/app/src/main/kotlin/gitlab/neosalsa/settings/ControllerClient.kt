@@ -154,9 +154,9 @@ class ControllerClient(private val context: Context) {
 
     fun enterPairMode() {
         try {
-            // Pair whichever controller is waiting; the service takes
-            // the slot index and handles both slots on 2.
-            service?.enterPairMode(2)
+            // The service takes one 0-based slot per call; fire for
+            // both so either controller can complete pairing.
+            for (i in 0..1) service?.enterPairMode(i)
         } catch (e: RemoteException) {
             Log.w(TAG, "enterPairMode failed", e)
         }

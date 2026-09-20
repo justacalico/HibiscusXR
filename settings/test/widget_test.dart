@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/main.dart';
-import 'package:pn2_settings/src/catalog.dart';
 import 'package:pn2_settings/src/models.dart';
 import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';

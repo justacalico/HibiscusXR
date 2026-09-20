@@ -158,6 +158,16 @@ static void badgeAt(float itemX, float* bx, float* by) {
     *by = kDockIconY + kDockIconHW * 0.72f;
 }
 
+float dockHandleDrop() {
+    return kDockBarH * 0.5f + kHandleGap + kHandleT;
+}
+
+bool onDockHandle(float u, float v, float halfW) {
+    const float x = u * halfW, y = v * (kDockBarH * 0.5f);
+    return fabsf(x) <= kHandleW + kHandlePad &&
+           fabsf(y + dockHandleDrop()) <= kHandleT + kHandlePad;
+}
+
 int dockItemAt(const std::vector<DockItem>& items, float halfW,
                float u, float v, int* zone) {
     *zone = DZONE_NONE;
@@ -202,6 +212,14 @@ DockPick pickDock(const std::vector<DockItem>& items, float halfW,
     gazeDir(head, d);
     float u, v, t;
     if (!rayDock(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
+    // the move handle hangs under the strip: it lives outside the bar box
+    // so it checks before the in-bar bounds
+    if (onDockHandle(u, v, halfW)) {
+        pk.bar = true;
+        pk.u = u; pk.v = v; pk.t = t;
+        pk.zone = DZONE_HANDLE;
+        return pk;
+    }
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.bar = true;
     pk.u = u; pk.v = v; pk.t = t;

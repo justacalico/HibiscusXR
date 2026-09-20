@@ -49,6 +49,16 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 clock_gettime(CLOCK_MONOTONIC, &ts);
                 e->dockPressMs = (uint64_t)ts.tv_sec * 1000 +
                                  (uint64_t)ts.tv_nsec / 1000000;
+            } else if (e->dockZone == DZONE_HANDLE) {
+                // ring drag: the held handle under the dock tracks the
+                // gaze and every panel follows, so the windows stay in
+                // formation. No dockPress: releasing only ends the drag
+                e->moveHeld = true;
+                e->moveGrabYaw = e->gazeYaw;
+                e->moveGrabPitch = e->gazePitch;
+                e->dockGrabYaw = e->dockYaw;
+                grabRing(e->panels);
+                LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
             }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 const Panel& p = e->panels[e->hover];
@@ -69,15 +79,6 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                                         e->hitX, e->hitY,
                                         AMOTION_EVENT_ACTION_DOWN);
                     if (env->ExceptionCheck()) env->ExceptionClear();
-                } else if (e->hoverZone == ZONE_HANDLE) {
-                    // ring drag: the held handle tracks the gaze and every
-                    // panel follows, so the windows stay in formation
-                    e->moveHeld = true;
-                    e->moveGrabYaw = e->gazeYaw;
-                    e->moveGrabPitch = e->gazePitch;
-                    e->dockGrabYaw = e->dockYaw;
-                    grabRing(e->panels);
-                    LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
                 }
             }
         } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {

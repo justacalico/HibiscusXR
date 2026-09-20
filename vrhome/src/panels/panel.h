@@ -9,7 +9,6 @@ enum Zone {
     ZONE_LABEL,        // the top bar, off both buttons
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
-    ZONE_HANDLE,       // the drag line under the window: moves the whole ring
 };
 
 // One floating window: a GL texture fed by a virtual display plus the task

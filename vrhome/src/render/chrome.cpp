@@ -28,15 +28,14 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
-        // chrome hangs both ways: the bound top bar above and the drag
-        // handle below, so the shadow spreads symmetric past the taller side
+        // chrome hangs above: the bound top bar tops the window, so the
+        // shadow spreads symmetric past the taller side
         const float shw = hw + 0.10f, shh = (hh + kBarH) + 0.10f;
         const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f};
         shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, shw, shh,
                   shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
     }
 
-    const int mid = middleIndex(e->panels);
     for (int i = 0; i < (int)e->panels.size(); ++i) {
         Panel& p = e->panels[i];
         if (p.minimized) continue;
@@ -102,18 +101,6 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                               it, il, it, it, 0.0f, 0.0015f, icon);
                 }
             }
-        }
-
-        // drag handle: a short white line centred under the middle window;
-        // holding it drags the whole ring, so brighten it while gazed
-        if (i == mid) {
-            const bool hhov = hov && e->hoverZone == ZONE_HANDLE;
-            const float hd = handleDrop();
-            const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
-                                 c[2] - up[2] * hd};
-            const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
-            shapeQuad(e, viewProj, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
-                      kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
         }
 
         // the app surface itself: top corners square so the bound bar
@@ -244,8 +231,10 @@ void drawHoldRing(HudEngine* e) {
 
 void drawCursor(HudEngine* e, const Mat4& viewProj) {
     float c[3], r[3], up[3], pos[3];
-    if (e->dockHover >= 0) {
-        // on the dock the cursor sits on the strip's own plane
+    if (e->dockHover >= 0 || e->dockZone == DZONE_HANDLE) {
+        // on the dock the cursor sits on the strip's own plane - a handle
+        // hit has no item index but still carries u,v, so it lands on the
+        // line under the bar
         dockCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
         const float hw = e->dockHW, hh = kDockBarH * 0.5f;
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;

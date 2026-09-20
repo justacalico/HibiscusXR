@@ -313,15 +313,6 @@ void testLayout() {
     CHECK(barButtonAt(um, barVC) == ZONE_MIN);
     CHECK(barButtonAt(0.0f, barVC) == ZONE_LABEL);
 
-    // the drag handle hangs under the window's middle: its centre hits,
-    // the window interior and far below do not
-    const float handleVC = -handleDrop() / (kPanelH * 0.5f);
-    CHECK(onHandle(0.0f, handleVC));
-    CHECK(!onHandle(0.0f, 0.0f));
-    CHECK(!onHandle(0.0f, handleVC - 0.30f));
-    CHECK(!onHandle((kHandleW + kHandlePad + 0.02f) / (kPanelW * 0.5f),
-                    handleVC));
-
     // gaze picks report the chrome zone: aim a fake head straight at a
     // world point (pickPanel only reads the head's -z column)
     ps.clear();
@@ -348,42 +339,12 @@ void testLayout() {
     aim.m[6] = -(barY + 0.30f);     // way above the bar: nothing
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
-    // centred under the window: the drag handle
-    const float handleY = kPanelY - handleDrop();
-    aim.m[2] = -0.0f; aim.m[6] = -handleY;
-    pk = pickPanel(ps, aim, o0, o0);
-    CHECK(pk.idx == 0 && pk.zone == ZONE_HANDLE);
-    aim.m[2] = -(kHandleW + kHandlePad + 0.03f);   // past the line: nothing
-    pk = pickPanel(ps, aim, o0, o0);
-    CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
 
     // a ring drag shifts every panel by the same delta, keeping slot offsets
     ps.clear();
     ps.push_back(mkPanel(0.0f));
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps.push_back(mkPanel(kSlotYaw[2]));
-
-    // the middle of the ring is the centre-slot panel; only it owns a handle
-    CHECK(middleIndex(ps) == 0);
-    ps[0].minimized = true;   // centre hidden: a side panel takes over
-    CHECK(middleIndex(ps) == 1);
-    ps[0].minimized = false;
-    ps.clear();
-    CHECK(middleIndex(ps) == -1);
-    ps.push_back(mkPanel(0.5f));
-    CHECK(middleIndex(ps) == 0);
-    ps.pop_back();
-    ps.push_back(mkPanel(0.0f));
-    ps.push_back(mkPanel(kSlotYaw[1]));
-    ps.push_back(mkPanel(kSlotYaw[2]));
-
-    // a side panel has no handle: aiming under its bar hits nothing
-    Mat4 side = identity();
-    side.m[2] = -sinf(kSlotYaw[1]) * kPanelDist;
-    side.m[6] = -handleY;
-    side.m[10] = cosf(kSlotYaw[1]) * kPanelDist;
-    pk = pickPanel(ps, side, o0, o0);
-    CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
 
     grabRing(ps);
     dragRing(ps, 0.30f, 0.0f);

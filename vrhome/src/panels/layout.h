@@ -57,18 +57,6 @@ bool onBar(float u, float v);
 // which button a point on the bar hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
 int barButtonAt(float u, float v);
 
-// how far under the panel centre the drag handle's centre hangs, world units
-float handleDrop();
-
-// is (u,v) in panel coords on the drag handle under the window; the hit box
-// is padded past the drawn line since gaze aim is coarse
-bool onHandle(float u, float v);
-
-// the panel in the middle of the ring - the only one that gets a drag
-// handle. Picked by lowest total angular distance to the others, so the
-// centre slot wins on a full ring; minimized panels don't count
-int middleIndex(const std::vector<Panel>& panels);
-
 // arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
 // offset by the gaze delta
 void grabRing(std::vector<Panel>& panels);

@@ -8,6 +8,7 @@ enum DockZone {
     DZONE_NONE = -1,
     DZONE_ICON = 0,    // the icon body: activate the app
     DZONE_CLOSE,       // the close badge on a live immersive item
+    DZONE_HANDLE,      // the drag line under the strip: moves the whole ring
 };
 
 // item kinds in left-to-right group order: pinned favourites, live tasks,

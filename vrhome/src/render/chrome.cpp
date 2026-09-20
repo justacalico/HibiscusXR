@@ -28,9 +28,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
-        // chrome now hangs both ways: the top bar above and the drag
+        // chrome hangs both ways: the bound top bar above and the drag
         // handle below, so the shadow spreads symmetric past the taller side
-        const float shw = hw + 0.10f, shh = (hh + kBarGap + kBarH) + 0.10f;
+        const float shw = hw + 0.10f, shh = (hh + kBarH) + 0.10f;
         const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f};
         shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, shw, shh,
                   shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
@@ -59,9 +59,11 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             }
         }
 
-        // top bar: dark lozenge spanning the window's width just over its
-        // top edge, app label left-aligned, buttons on the right end
-        const float barOff = hh + kBarGap + kBarH * 0.5f;
+        // top bar: bound to the window's top edge, dipping kCornerR into it
+        // so its square bottom corners stay inside the surface and the top
+        // corners continue the window's rounding - one silhouette. App label
+        // left-aligned, buttons on the right end
+        const float barOff = hh + kBarH * 0.5f - kCornerR;
         const float barHW = hw;
         const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
                                  hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
@@ -69,7 +71,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                                c[2] + up[2] * barOff};
         glUseProgram(e->shapeProg);
         shapeQuad(e, viewProj, barC, r, up, 0.004f, 0.0f, barHW, kBarH * 0.5f,
-                  barHW, kBarH * 0.5f, kBarH * 0.5f, 0.0f, 0.002f, barCol);
+                  barHW, kBarH * 0.5f, kCornerR, 0.0f, 0.002f, barCol, 0.0f);
 
         // minimize + close discs on the bar's right end; glyphs are small
         // capsules, the close pair rotated into an x
@@ -150,11 +152,16 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glDepthMask(GL_FALSE);
 
-        // hairline border, brightened while gazed at
+        // hairline border around the whole silhouette - window plus bound
+        // bar reads as one rounded shape, brightened while gazed at
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {1.0f, 1.0f, 1.0f, hov ? 0.55f : 0.14f};
-        shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
-                  hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
+        const float bdUp = (kBarH - kCornerR) * 0.5f;
+        const float bdH = hh + bdUp + 0.006f;
+        const float bdC[3] = {c[0] + up[0] * bdUp, c[1] + up[1] * bdUp,
+                              c[2] + up[2] * bdUp};
+        shapeQuad(e, viewProj, bdC, r, up, 0.006f, 0.0f, hw + 0.006f,
+                  bdH, hw + 0.006f, bdH, kCornerR + 0.006f,
                   0.0016f, 0.0012f, bdCol);
 
         // app label left-aligned in the bar, bold, shrunk to fit if the

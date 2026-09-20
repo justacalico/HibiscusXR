@@ -68,13 +68,15 @@ varying vec2 vUV;
 uniform vec4 uColor;
 uniform vec2 uQuad;
 uniform vec2 uBox;
-uniform float uRadius;
+uniform float uRadius;   // top corners
+uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
 void main() {
     vec2 p = vUV * uQuad;
-    vec2 q = abs(p) - uBox + vec2(uRadius);
-    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float r = p.y > 0.0 ? uRadius : uRadiusB;
+    vec2 q = abs(p) - uBox + vec2(r);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a;
     if (uBorder > 0.0)
         a = 1.0 - smoothstep(uBorder - uSoft, uBorder + uSoft, abs(d));

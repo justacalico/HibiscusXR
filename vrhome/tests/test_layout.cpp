@@ -292,15 +292,21 @@ void testLayout() {
             winHW - kBarBtnPad - 3.0f * kBarBtnR - kBarBtnGap, 1e-6f);
     CHECK(barMinX(winHW) > 0.0f && barMinX(winHW) < barCloseX(winHW));
 
-    // the bar band floats over the window's top edge: centred v is on it,
-    // the window interior and points above the bar are not
-    const float barVC = (kPanelH * 0.5f + kBarGap + kBarH * 0.5f) /
+    // the bar band is bound to the window's top edge, dipping kCornerR
+    // inside it: centred v is on it, the window's midriff and points above
+    // the bar are not
+    const float barVC = (kPanelH * 0.5f + kBarH * 0.5f - kCornerR) /
                         (kPanelH * 0.5f);
     CHECK(onBar(0.0f, barVC));
     CHECK(!onBar(0.0f, 0.0f));
     CHECK(!onBar(0.0f, barVC + 0.20f));
     CHECK(!onBar(0.0f, barVC - 0.30f));
     CHECK(!onBar(1.05f, barVC));
+    // the overlap strip inside the window's top edge is bar, not window:
+    // the pick prefers chrome over a tap on covered content
+    CHECK(onBar(0.0f, 1.0f));
+    CHECK(onBar(0.0f, 1.0f - (kCornerR - 0.004f) / (kPanelH * 0.5f)));
+    CHECK(!onBar(0.0f, 1.0f - (kCornerR + 0.004f) / (kPanelH * 0.5f)));
     // button hits land on their discs, the middle of the bar is label
     const float uc = barCloseX(winHW) / (kPanelW * 0.5f);
     const float um = barMinX(winHW) / (kPanelW * 0.5f);
@@ -313,7 +319,6 @@ void testLayout() {
     const float handleVC = -handleDrop() / (kPanelH * 0.5f);
     CHECK(onHandle(0.0f, handleVC));
     CHECK(!onHandle(0.0f, 0.0f));
-    CHECK(!onHandle(0.0f, -barVC));
     CHECK(!onHandle(0.0f, handleVC - 0.30f));
     CHECK(!onHandle((kHandleW + kHandlePad + 0.02f) / (kPanelW * 0.5f),
                     handleVC));
@@ -322,7 +327,7 @@ void testLayout() {
     // world point (pickPanel only reads the head's -z column)
     ps.clear();
     ps.push_back(mkPanel(0.0f));
-    const float barY = kPanelY + kPanelH * 0.5f + kBarGap + kBarH * 0.5f;
+    const float barY = kPanelY + kPanelH * 0.5f + kBarH * 0.5f - kCornerR;
     Mat4 aim = identity();
     aim.m[2] = -0.0f; aim.m[6] = -barY; aim.m[10] = kPanelDist;
     pk = pickPanel(ps, aim, o0, o0);   // dead centre of the bar: the label
@@ -333,6 +338,11 @@ void testLayout() {
     aim.m[2] = -barMinX(winHW);     // next to it: minimize
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_MIN);
+    // the strip where the bar dips into the window's top edge picks as bar
+    aim.m[2] = -0.0f;
+    aim.m[6] = -(kPanelY + kPanelH * 0.5f - kCornerR * 0.5f);
+    pk = pickPanel(ps, aim, o0, o0);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
     aim.m[6] = -(barY + 0.30f);     // way above the bar: nothing
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);

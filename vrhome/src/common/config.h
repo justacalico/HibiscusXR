@@ -43,8 +43,10 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 // so a window can never land on top of one that drifted off the slot grid
 constexpr float kPanelMinGap = 0.82f;
 
-// window chrome: a top bar above each panel holding the app name
-constexpr float kBarH = 0.085f, kBarGap = 0.012f;
+// window chrome: a top bar bound to each panel's top edge, holding the app
+// name. Its bottom corners stay square and dip kCornerR into the surface so
+// the pair reads as one rounded shape
+constexpr float kBarH = 0.085f;
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
 constexpr float kBarPadX = 0.070f;    // label padding inside the bar's left end
 // minimize + close circles on the bar's right end; the library panel is the

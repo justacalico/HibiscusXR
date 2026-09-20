@@ -125,7 +125,7 @@ class MainActivity : FlutterActivity() {
             "boundary" to globalOn(KEY_BOUNDARY, true),
             "seethrough" to globalOn(KEY_SEETHROUGH, false),
             "nightMode" to nightModeOn(),
-            "controllerPair" to ((controllers?.pairState ?: 0) != 0),
+            "controllerPair" to ((controllers?.pairState ?: 0) > 0),
         ),
         "sliders" to mapOf(
             "volume" to volume(),
@@ -155,12 +155,12 @@ class MainActivity : FlutterActivity() {
     // app: a per-slot map plus the pairing flag and main-hand choice.
     private fun controllerSnapshot(): Map<String, Any?> {
         val c = controllers
-        val pairing = (c?.pairState ?: 0) != 0
+        val pairing = (c?.pairState ?: 0) > 0
         fun slot(i: Int) = mapOf(
             // A slot that has not linked shows "pairing" while the
             // station scan is open.
             "state" to (c?.states?.get(i) ?: 0).let {
-                if (it == 0 && pairing) 2 else it
+                if (it != 1 && pairing) 2 else it
             },
             "battery" to (c?.batteries?.get(i) ?: -1),
             "charging" to (c?.charging?.get(i) ?: false),
@@ -172,7 +172,7 @@ class MainActivity : FlutterActivity() {
                 "controllerLeft" to slot(ControllerClient.CONTROLLER_LEFT),
                 "controllerRight" to slot(ControllerClient.CONTROLLER_RIGHT),
             ),
-            "toggles" to mapOf("controllerPair" to ((c?.pairState ?: 0) != 0)),
+            "toggles" to mapOf("controllerPair" to ((c?.pairState ?: 0) > 0)),
             "choices" to mapOf(
                 "controllerMain" to
                     if (c?.mainController == ControllerClient.CONTROLLER_LEFT) {
@@ -347,7 +347,7 @@ class MainActivity : FlutterActivity() {
                     .setPackage(packageName),
             )
             "controllerPair" -> controllers?.let {
-                if (it.pairState != 0) it.interruptPairMode()
+                if (it.pairState > 0) it.interruptPairMode()
                 else it.enterPairMode()
             }
             "controllerUnbind" -> controllers?.unbindAll()

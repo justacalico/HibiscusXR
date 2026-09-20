@@ -52,22 +52,46 @@ void main() {
 
   testWidgets('action row forwards to the source', (tester) async {
     final (_, source) = await pumpApp(tester);
-    await tester.tap(find.text('Headset Tracking'));
+    await tester.tap(find.text('Power'));
     await tester.pump();
-    await tester.tap(find.byIcon(Icons.chevron_right).last);
+    await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pump();
-    expect(source.actionsPerformed, contains(ItemId.resetView));
+    expect(source.actionsPerformed, contains(ItemId.batterySaver));
   });
 
-  testWidgets('choice row selects an option', (tester) async {
+  testWidgets('unimplemented rows grey out and ignore input',
+      (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Headset Tracking'));
     await tester.pump();
+    // every row in the section is a stub: all render dimmed and none of
+    // the controls forward anything to the platform
+    expect(find.byType(Opacity), findsWidgets);
+    await tester.tap(find.byType(Switch).first);
+    await tester.pump();
+    expect(source.togglesRequested, isEmpty);
     await tester.tap(find.text('Auto'));
     await tester.pump();
-    await tester.tap(find.text('60 Hz').last);
+    expect(find.text('60 Hz'), findsNothing);
+    await tester.tap(find.byIcon(Icons.chevron_right).last);
     await tester.pump();
-    expect(source.choicesSelected, [(ItemId.trackingFrequency, '60hz')]);
+    expect(source.actionsPerformed, isEmpty);
+  });
+
+  testWidgets('implemented controls stay enabled', (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Camera'));
+    await tester.pump();
+    // seethrough is a stub: its switch takes no taps
+    await tester.tap(find.byType(Switch).first);
+    await tester.pump();
+    expect(source.togglesRequested, isEmpty);
+    // wifi is real: its switch forwards as before
+    await tester.tap(find.text('Wi-Fi'));
+    await tester.pump();
+    await tester.tap(find.byType(Switch).first);
+    await tester.pump();
+    expect(source.togglesRequested, [(ItemId.wifiToggle, true)]);
   });
 
   testWidgets('slider row forwards drag', (tester) async {

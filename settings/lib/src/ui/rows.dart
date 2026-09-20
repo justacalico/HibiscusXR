@@ -20,7 +20,8 @@ class SettingsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final store = controller.store;
-    return Padding(
+    final enabled = implementedOf(id);
+    final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
       child: Row(
         children: [
@@ -47,10 +48,16 @@ class SettingsRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 24),
-          _Control(id: id, store: store, controller: controller),
+          _Control(
+            id: id,
+            store: store,
+            controller: controller,
+            enabled: enabled,
+          ),
         ],
       ),
     );
+    return enabled ? row : Opacity(opacity: 0.45, child: row);
   }
 }
 
@@ -59,11 +66,13 @@ class _Control extends StatelessWidget {
     required this.id,
     required this.store,
     required this.controller,
+    required this.enabled,
   });
 
   final ItemId id;
   final SettingsStore store;
   final SettingsController controller;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +81,8 @@ class _Control extends StatelessWidget {
       case ItemKind.toggle:
         return Switch(
           value: store.isOn(id),
-          onChanged: (_) => controller.toggleItem(id),
+          onChanged:
+              enabled ? (_) => controller.toggleItem(id) : null,
           activeThumbColor: PanelTheme.accent,
         );
       case ItemKind.slider:
@@ -80,7 +90,8 @@ class _Control extends StatelessWidget {
           width: 260,
           child: Slider(
             value: store.sliderValue(id),
-            onChanged: (v) => controller.setSlider(id, v),
+            onChanged:
+                enabled ? (v) => controller.setSlider(id, v) : null,
             activeColor: PanelTheme.accent,
             inactiveColor: PanelTheme.surfaceHigh,
           ),
@@ -95,13 +106,15 @@ class _Control extends StatelessWidget {
             for (final v in optionsOf(id))
               DropdownMenuItem(value: v, child: Text(choiceLabel(l10n, v))),
           ],
-          onChanged: (v) {
-            if (v != null) controller.selectChoice(id, v);
-          },
+          onChanged: enabled
+              ? (v) {
+                  if (v != null) controller.selectChoice(id, v);
+                }
+              : null,
         );
       case ItemKind.action:
         return TextButton(
-          onPressed: () => controller.runAction(id),
+          onPressed: enabled ? () => controller.runAction(id) : null,
           style: TextButton.styleFrom(
             foregroundColor: PanelTheme.accent,
             minimumSize: const Size(0, 34),

@@ -50,7 +50,7 @@ void main() {
       controllerLinkLabel(l10n, ControllerLink.disconnected),
       'Disconnected',
     );
-    expect(controllerLinkLabel(l10n, ControllerLink.pairing), 'Pairing');
+    expect(controllerLinkLabel(l10n, ControllerLink.pairing), 'Pairing…');
     expect(
       controllerLinkLabel(l10n, ControllerLink.unknown),
       isNotEmpty,

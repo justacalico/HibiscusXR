@@ -92,7 +92,19 @@ class ControllerClient(private val context: Context) {
     private val callback = object : ICVAIDLServiceCallback.Stub() {
         override fun feedbackConnectStatus(controller: Int, status: Int) {
             if (controller in 0..1) states[controller] = status
-            handler.post { onChange?.invoke() }
+            handler.post {
+                if (status == 1 && controller in 0..1) {
+                    // Fresh link: identity and battery arrive async.
+                    try {
+                        service?.getDeviceBleMac(controller + 1)
+                        service?.getControllerSn(controller)
+                    } catch (e: RemoteException) {
+                        Log.w(TAG, "id query failed", e)
+                    }
+                }
+                poll()
+                onChange?.invoke()
+            }
         }
 
         override fun feedbackControllerUnbind(status: Int) {

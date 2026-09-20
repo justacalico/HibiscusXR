@@ -18,6 +18,17 @@ std::vector<NotifItem> buildNotifs(const std::vector<NotifItem>& in) {
     return out;
 }
 
+std::vector<NotifItem> visibleNotifs(const std::vector<NotifItem>& in,
+                                     long long nowMs) {
+    std::vector<NotifItem> out;
+    for (const auto& it : in) {
+        // postMs <= 0 means the platform gave no time: keep it visible
+        if (it.postMs <= 0 || nowMs - it.postMs <= kNotifShowMs)
+            out.push_back(it);
+    }
+    return out;
+}
+
 float notifStackHH(int count) {
     if (count <= 0) return 0.0f;
     return (count * kNotifCardH + (count - 1) * kNotifGap) * 0.5f;

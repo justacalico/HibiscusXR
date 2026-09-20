@@ -24,6 +24,7 @@ class FakeSettingsSource implements SettingsSource {
       sliders: {..._snapshot.sliders, ...event.sliders},
       choices: {..._snapshot.choices, ...event.choices},
       texts: {..._snapshot.texts, ...event.texts},
+      controllers: {..._snapshot.controllers, ...event.controllers},
     );
     _events.add(event);
   }

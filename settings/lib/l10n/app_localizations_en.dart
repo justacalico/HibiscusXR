@@ -48,9 +48,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionSoftwareUpdate => 'Software Update';
 
   @override
-  String get sectionPower => 'Power';
-
-  @override
   String get sectionAbout => 'About';
 
   @override
@@ -183,24 +180,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemBuildNumberDesc => 'The build this system image was made from';
-
-  @override
-  String get itemBatterySaver => 'Battery saver';
-
-  @override
-  String get itemBatterySaverDesc => 'Reduce power draw to extend battery life';
-
-  @override
-  String get itemSleep => 'Sleep';
-
-  @override
-  String get itemSleepDesc => 'Put the headset to sleep now';
-
-  @override
-  String get itemRestart => 'Restart';
-
-  @override
-  String get itemRestartDesc => 'Reboot the headset';
 
   @override
   String get itemModelName => 'Model';

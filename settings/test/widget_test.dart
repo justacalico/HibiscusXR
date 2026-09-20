@@ -36,11 +36,11 @@ void main() {
     expect(find.text('Wi-Fi'), findsWidgets);
     expect(find.text('Headset Tracking'), findsOneWidget);
     expect(find.text('Software Update'), findsOneWidget);
-    await tester.tap(find.text('Power'));
+    await tester.tap(find.text('About'));
     await tester.pump();
-    expect(c.store.section, SectionId.power);
-    expect(find.text('Sleep'), findsOneWidget);
-    expect(find.text('Restart'), findsOneWidget);
+    expect(c.store.section, SectionId.about);
+    expect(find.text('Model'), findsOneWidget);
+    expect(find.text('Android version'), findsOneWidget);
   });
 
   testWidgets('toggle row forwards to the source', (tester) async {
@@ -52,11 +52,9 @@ void main() {
 
   testWidgets('action row forwards to the source', (tester) async {
     final (_, source) = await pumpApp(tester);
-    await tester.tap(find.text('Power'));
-    await tester.pump();
     await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pump();
-    expect(source.actionsPerformed, contains(ItemId.batterySaver));
+    expect(source.actionsPerformed, contains(ItemId.wifiSettings));
   });
 
   testWidgets('unimplemented rows grey out and ignore input',

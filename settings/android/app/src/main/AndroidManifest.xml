@@ -13,8 +13,6 @@
     <!-- system-wide brightness + project keys when privileged -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <!-- sleep/reboot rows; only granted when platform-signed -->
-    <uses-permission android:name="android.permission.DEVICE_POWER" />
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"

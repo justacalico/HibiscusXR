@@ -172,12 +172,6 @@ abstract class AppLocalizations {
   /// **'Software Update'**
   String get sectionSoftwareUpdate;
 
-  /// No description provided for @sectionPower.
-  ///
-  /// In en, this message translates to:
-  /// **'Power'**
-  String get sectionPower;
-
   /// No description provided for @sectionAbout.
   ///
   /// In en, this message translates to:
@@ -441,42 +435,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The build this system image was made from'**
   String get itemBuildNumberDesc;
-
-  /// No description provided for @itemBatterySaver.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery saver'**
-  String get itemBatterySaver;
-
-  /// No description provided for @itemBatterySaverDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Reduce power draw to extend battery life'**
-  String get itemBatterySaverDesc;
-
-  /// No description provided for @itemSleep.
-  ///
-  /// In en, this message translates to:
-  /// **'Sleep'**
-  String get itemSleep;
-
-  /// No description provided for @itemSleepDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Put the headset to sleep now'**
-  String get itemSleepDesc;
-
-  /// No description provided for @itemRestart.
-  ///
-  /// In en, this message translates to:
-  /// **'Restart'**
-  String get itemRestart;
-
-  /// No description provided for @itemRestartDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Reboot the headset'**
-  String get itemRestartDesc;
 
   /// No description provided for @itemModelName.
   ///

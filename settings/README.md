@@ -15,12 +15,11 @@ sections on the left, the selected section's rows on the right.
 - Language and Region, Time, Keyboard: jump to the matching system page
 - Headset Tracking: tracking toggle, tracking frequency dropdown,
   boundary toggle, reset view
-- Backup, Developer, Software Update, Power (battery saver, sleep,
-  restart), About (model / Android version / build), Tips and Support
+- Backup, Developer, Software Update, About (model / Android version /
+  build), Tips and Support
 
 Rows the platform cannot service directly open the matching system
-page instead. Sleep and restart call `PowerManager` through reflection
-and only fire when the app is platform-signed.
+page instead.
 
 ## Build and test
 

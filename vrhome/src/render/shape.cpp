@@ -11,11 +11,12 @@ void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                const float r[3], const float up[3],
                float toward, float ang, float qw, float qh,
                float bw, float bh, float radius, float border, float soft,
-               const float col[4]) {
+               const float col[4], float radB) {
     const GLint uMVP    = glGetUniformLocation(e->shapeProg, "uMVP");
     const GLint uQuad   = glGetUniformLocation(e->shapeProg, "uQuad");
     const GLint uBox    = glGetUniformLocation(e->shapeProg, "uBox");
     const GLint uRadius = glGetUniformLocation(e->shapeProg, "uRadius");
+    const GLint uRadiusB = glGetUniformLocation(e->shapeProg, "uRadiusB");
     const GLint uBorder = glGetUniformLocation(e->shapeProg, "uBorder");
     const GLint uSoft   = glGetUniformLocation(e->shapeProg, "uSoft");
     const GLint uColor  = glGetUniformLocation(e->shapeProg, "uColor");
@@ -41,6 +42,7 @@ void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
     glUniform2f(uQuad, qw, qh);
     glUniform2f(uBox, bw, bh);
     glUniform1f(uRadius, radius);
+    glUniform1f(uRadiusB, radB < 0.0f ? radius : radB);
     glUniform1f(uBorder, border);
     glUniform1f(uSoft, soft);
     glUniform4fv(uColor, 1, col);

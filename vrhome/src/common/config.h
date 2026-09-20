@@ -43,26 +43,27 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 // so a window can never land on top of one that drifted off the slot grid
 constexpr float kPanelMinGap = 0.82f;
 
-// window chrome: label pill under each panel holding the app name
-constexpr float kBarH = 0.085f, kBarGap = 0.012f;
-constexpr float kBarInset = 0.030f;   // horizontal margin vs the window edges
+// window chrome: a top bar bound to each panel's top edge, holding the app
+// name. It sits flush on the surface - square bottom corners on a square
+// top edge - so the pair reads as one rounded shape
+constexpr float kBarH = 0.085f;
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
-constexpr float kPillPadX = 0.070f;   // pill side padding around the label
-// minimize + close circles on the pill's right end; the library panel is the
+constexpr float kBarPadX = 0.070f;    // label padding inside the bar's left end
+// minimize + close circles on the bar's right end; the library panel is the
 // shell's own launcher and gets none
-constexpr float kPillBtnR = 0.028f;   // button disc radius
-constexpr float kPillBtnGap = 0.014f; // between the two discs
-constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
-// total strip the buttons reserve on the pill's right end
-constexpr float kPillBtnW = kPillBtnPad + 4.0f * kPillBtnR + kPillBtnGap;
+constexpr float kBarBtnR = 0.028f;    // button disc radius
+constexpr float kBarBtnGap = 0.014f;  // between the two discs
+constexpr float kBarBtnPad = 0.014f;  // close disc's margin to the bar edge
+// total strip the buttons reserve on the bar's right end
+constexpr float kBarBtnW = kBarBtnPad + 4.0f * kBarBtnR + kBarBtnGap;
 constexpr float kCornerR = 0.028f;
 
-// drag handle: a short white line centred under the pill. Holding confirm on
-// it drags the whole ring - every window keeps its slot offset and follows
-// the gaze yaw together
+// drag handle: a short white line centred under the window. Holding confirm
+// on it drags the whole ring - every window keeps its slot offset and
+// follows the gaze yaw together
 constexpr float kHandleW = 0.065f;    // visible line half-width
 constexpr float kHandleT = 0.0055f;   // visible line half-thickness
-constexpr float kHandleGap = 0.016f;  // gap between pill bottom and line top
+constexpr float kHandleGap = 0.016f;  // gap between window bottom and line top
 constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 
 // the dock: a persistent strip hanging under the panel ring - pinned apps

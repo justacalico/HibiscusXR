@@ -31,7 +31,8 @@ void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
 )";
 
 // app panel: samples an external OES texture fed by the virtual display,
-// corners rounded off in panel space
+// corners rounded off in panel space. uRadius rounds the top corners,
+// uRadiusB the bottom ones - the bound top bar wants a square top edge
 const char* const kFloatFS = R"(
 #extension GL_OES_EGL_image_external : require
 precision mediump float;
@@ -40,12 +41,14 @@ uniform samplerExternalOES uTex;
 uniform mat4 uST;
 uniform vec2 uHalf;
 uniform float uRadius;
+uniform float uRadiusB;
 void main() {
     vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
     vec4 c = texture2D(uTex, uv);
     vec2 p = (vUV - 0.5) * 2.0 * uHalf;
-    vec2 q = abs(p) - uHalf + vec2(uRadius);
-    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float r = p.y > 0.0 ? uRadius : uRadiusB;
+    vec2 q = abs(p) - uHalf + vec2(r);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
     gl_FragColor = vec4(c.rgb, c.a * a);
 }
@@ -68,13 +71,15 @@ varying vec2 vUV;
 uniform vec4 uColor;
 uniform vec2 uQuad;
 uniform vec2 uBox;
-uniform float uRadius;
+uniform float uRadius;   // top corners
+uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
 void main() {
     vec2 p = vUV * uQuad;
-    vec2 q = abs(p) - uBox + vec2(uRadius);
-    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
+    float r = p.y > 0.0 ? uRadius : uRadiusB;
+    vec2 q = abs(p) - uBox + vec2(r);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a;
     if (uBorder > 0.0)
         a = 1.0 - smoothstep(uBorder - uSoft, uBorder + uSoft, abs(d));

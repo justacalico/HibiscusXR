@@ -28,12 +28,11 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
-        const float shw = hw + 0.10f, shh = (hh + kBarGap + kBarH) + 0.10f;
-        const float shd = (kBarGap + kBarH) * 0.5f + 0.02f;
-        const float shc[3] = {c[0] - up[0] * shd, c[1] - up[1] * shd,
-                              c[2] - up[2] * shd};
+        // chrome hangs both ways: the bound top bar above and the drag
+        // handle below, so the shadow spreads symmetric past the taller side
+        const float shw = hw + 0.10f, shh = (hh + kBarH) + 0.10f;
         const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f};
-        shapeQuad(e, viewProj, shc, r, up, -0.03f, 0.0f, shw, shh,
+        shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, shw, shh,
                   shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
     }
 
@@ -47,41 +46,41 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // the library panel is the shell's own launcher: no window buttons
         const bool btns = p.pkg != kLibraryPkg;
 
-        // the label is measured first: the pill under the window hugs the
-        // text instead of spanning the window's full width
+        // the label is measured first so it can shrink to fit the bar's
+        // text region left of the button strip
         float s = 0.0014f, bold = 0.0f, w = 0.0f;
         if (!p.label.empty() && e->font.ok) {
             bold = 0.8f * s;
             w = measureText(e, p.label.c_str(), s) + bold;
-            if (w > pillTextLimit(hw, btns)) {
-                s *= pillTextLimit(hw, btns) / w;
+            if (w > barTextLimit(hw, btns)) {
+                s *= barTextLimit(hw, btns) / w;
                 bold = 0.8f * s;
                 w = measureText(e, p.label.c_str(), s) + bold;
             }
         }
 
-        // bottom bar: dark pill under the window with the app label, sized
-        // to the text plus the button strip, capped inside the window's
-        // edges. pillHW is stored so the gaze pick can hit-test the buttons
-        const float barOff = -(hh + kBarGap + kBarH * 0.5f);
-        const float barHW = pillHalfWidth(w, hw, btns);
-        p.pillHW = barHW;
+        // top bar: bound to the window's top edge, sitting flush on it so
+        // no part of the bar covers the app surface. Square bottom corners
+        // meet the surface's square top edge, rounded top corners carry
+        // the silhouette - one shape. Label left, buttons on the right end
+        const float barOff = hh + kBarH * 0.5f;
+        const float barHW = hw;
         const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
                                  hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
         const float barC[3] = {c[0] + up[0] * barOff, c[1] + up[1] * barOff,
                                c[2] + up[2] * barOff};
         glUseProgram(e->shapeProg);
         shapeQuad(e, viewProj, barC, r, up, 0.004f, 0.0f, barHW, kBarH * 0.5f,
-                  barHW, kBarH * 0.5f, kBarH * 0.5f, 0.0f, 0.002f, barCol);
+                  barHW, kBarH * 0.5f, kCornerR, 0.0f, 0.002f, barCol, 0.0f);
 
-        // minimize + close discs on the pill's right end; glyphs are small
+        // minimize + close discs on the bar's right end; glyphs are small
         // capsules, the close pair rotated into an x
         if (btns) {
             const float icon[4] = {1.0f, 1.0f, 1.0f, 0.92f};
-            const float il = kPillBtnR * 0.55f, it = 0.0028f;
+            const float il = kBarBtnR * 0.55f, it = 0.0028f;
             for (int b = 0; b < 2; ++b) {
                 const int zone = b == 0 ? ZONE_MIN : ZONE_CLOSE;
-                const float bx = b == 0 ? pillMinX(barHW) : pillCloseX(barHW);
+                const float bx = b == 0 ? barMinX(barHW) : barCloseX(barHW);
                 const bool bhov = hov && e->hoverZone == zone;
                 const float bc[3] = {c[0] + r[0]*bx + up[0]*barOff,
                                      c[1] + r[1]*bx + up[1]*barOff,
@@ -91,8 +90,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                                      bhov && zone == ZONE_CLOSE ? 0.25f : 1.0f,
                                      bhov ? 0.32f : 0.13f};
                 shapeQuad(e, viewProj, bc, r, up, 0.006f, 0.0f,
-                          kPillBtnR, kPillBtnR, kPillBtnR, kPillBtnR,
-                          kPillBtnR, 0.0f, 0.002f, bg);
+                          kBarBtnR, kBarBtnR, kBarBtnR, kBarBtnR,
+                          kBarBtnR, 0.0f, 0.002f, bg);
                 if (zone == ZONE_MIN) {
                     shapeQuad(e, viewProj, bc, r, up, 0.008f, 0.0f, il, it,
                               il, it, it, 0.0f, 0.0015f, icon);
@@ -105,8 +104,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             }
         }
 
-        // drag handle: a short white line centred under the middle window's
-        // pill; holding it drags the whole ring, so brighten it while gazed
+        // drag handle: a short white line centred under the middle window;
+        // holding it drags the whole ring, so brighten it while gazed
         if (i == mid) {
             const bool hhov = hov && e->hoverZone == ZONE_HANDLE;
             const float hd = handleDrop();
@@ -117,11 +116,13 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                       kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
         }
 
-        // the app surface itself, corners rounded in the shader
+        // the app surface itself: top corners square so the bound bar
+        // meets a straight edge, bottom corners rounded in the shader
         glUseProgram(e->floatProg);
         glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
         glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
-        glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), kCornerR);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), kCornerR);
         const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
         const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
         const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -153,26 +154,30 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glDepthMask(GL_FALSE);
 
-        // hairline border, brightened while gazed at
+        // hairline border around the whole silhouette - window plus bound
+        // bar reads as one rounded shape, brightened while gazed at
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {1.0f, 1.0f, 1.0f, hov ? 0.55f : 0.14f};
-        shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
-                  hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
+        const float bdUp = kBarH * 0.5f;
+        const float bdH = hh + bdUp + 0.006f;
+        const float bdC[3] = {c[0] + up[0] * bdUp, c[1] + up[1] * bdUp,
+                              c[2] + up[2] * bdUp};
+        shapeQuad(e, viewProj, bdC, r, up, 0.006f, 0.0f, hw + 0.006f,
+                  bdH, hw + 0.006f, bdH, kCornerR + 0.006f,
                   0.0016f, 0.0012f, bdCol);
 
-        // app label centred in the bar's text region (the pill minus the
-        // button strip), bold, shrunk to fit if the name is long. Centering
-        // uses the real glyph bounds, not the font's nominal ascent, so
-        // descenders don't push the text off-centre
+        // app label left-aligned in the bar, bold, shrunk to fit if the
+        // name is long. Centering uses the real glyph bounds, not the
+        // font's nominal ascent, so descenders don't push it off-centre
         if (!p.label.empty() && e->font.ok) {
             float boff = barOff;
             float gt, gb;
             if (textBounds(e->font.set, p.label.c_str(), s, &gt, &gb))
                 boff = barOff - (gt + gb) * 0.5f;
-            const float tw = w * 0.5f + (btns ? kPillBtnW * 0.5f : 0.0f);
-            float to[3] = {c[0] - r[0] * tw + up[0] * boff,
-                           c[1] - r[1] * tw + up[1] * boff,
-                           c[2] - r[2] * tw + up[2] * boff};
+            const float tx = -(hw - kBarPadX);
+            float to[3] = {c[0] + r[0] * tx + up[0] * boff,
+                           c[1] + r[1] * tx + up[1] * boff,
+                           c[2] + r[2] * tx + up[2] * boff};
             to[0] -= c[0] * 0.010f; to[1] -= c[1] * 0.010f;
             to[2] -= c[2] * 0.010f;
             glUseProgram(e->textProg);

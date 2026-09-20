@@ -30,11 +30,16 @@ void main() {
         'sliders': {'volume': 'loud', 'bogus': 1},
         'choices': {'trackingFrequency': 5, 'bogus': 'x'},
         'texts': {'wifiSsid': 9, 'bogus': 'x'},
+        'controllers': {
+          'controllerLeft': 'yes',
+          'bogus': {'state': 1},
+        },
       });
       expect(snap.toggles, isEmpty);
       expect(snap.sliders, isEmpty);
       expect(snap.choices, isEmpty);
       expect(snap.texts, isEmpty);
+      expect(snap.controllers, isEmpty);
     });
 
     test('missing maps produce empty maps', () {

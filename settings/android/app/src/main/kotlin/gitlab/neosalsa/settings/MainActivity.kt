@@ -116,7 +116,7 @@ class MainActivity : FlutterActivity() {
         super.onDestroy()
     }
 
-    private fun snapshot(): Map<String, Any?> = mapOf(
+    private fun snapshot(): Map<String, Any?> = controllerSnapshot() + mapOf(
         "toggles" to mapOf(
             "wifiToggle" to wifiOn(),
             "bluetoothToggle" to bluetoothOn(),
@@ -125,6 +125,7 @@ class MainActivity : FlutterActivity() {
             "boundary" to globalOn(KEY_BOUNDARY, true),
             "seethrough" to globalOn(KEY_SEETHROUGH, false),
             "nightMode" to nightModeOn(),
+            "controllerPair" to ((controllers?.pairState ?: 0) != 0),
         ),
         "sliders" to mapOf(
             "volume" to volume(),
@@ -133,6 +134,14 @@ class MainActivity : FlutterActivity() {
         "choices" to mapOf(
             "trackingFrequency" to
                 globalStr(KEY_TRACKING_FREQ, "auto"),
+            "controllerMain" to
+                if (controllers?.mainController ==
+                    ControllerClient.CONTROLLER_LEFT
+                ) {
+                    "left"
+                } else {
+                    "right"
+                },
         ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
@@ -140,7 +149,7 @@ class MainActivity : FlutterActivity() {
             "androidVersion" to Build.VERSION.RELEASE,
             "buildNumber" to Build.DISPLAY,
         ),
-    ) + controllerSnapshot()
+    )
 
     // Controller state rides the same snapshot shape as the rest of the
     // app: a per-slot map plus the pairing flag and main-hand choice.

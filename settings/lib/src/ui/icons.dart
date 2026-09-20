@@ -10,6 +10,8 @@ IconData iconFor(SectionId id) {
       return Icons.wifi;
     case SectionId.bluetooth:
       return Icons.bluetooth;
+    case SectionId.controllers:
+      return Icons.sports_esports_outlined;
     case SectionId.display:
       return Icons.brightness_6_outlined;
     case SectionId.sound:

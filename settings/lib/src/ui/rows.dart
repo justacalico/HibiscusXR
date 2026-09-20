@@ -6,6 +6,7 @@ import '../labels.dart';
 import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
+import 'battery_icon.dart';
 import 'theme.dart';
 
 /// One row in a section page: title + description on the left, the
@@ -81,8 +82,7 @@ class _Control extends StatelessWidget {
       case ItemKind.toggle:
         return Switch(
           value: store.isOn(id),
-          onChanged:
-              enabled ? (_) => controller.toggleItem(id) : null,
+          onChanged: enabled ? (_) => controller.toggleItem(id) : null,
           activeThumbColor: PanelTheme.accent,
         );
       case ItemKind.slider:
@@ -90,8 +90,7 @@ class _Control extends StatelessWidget {
           width: 260,
           child: Slider(
             value: store.sliderValue(id),
-            onChanged:
-                enabled ? (v) => controller.setSlider(id, v) : null,
+            onChanged: enabled ? (v) => controller.setSlider(id, v) : null,
             activeColor: PanelTheme.accent,
             inactiveColor: PanelTheme.surfaceHigh,
           ),
@@ -113,6 +112,7 @@ class _Control extends StatelessWidget {
               : null,
         );
       case ItemKind.action:
+        final pairing = id == ItemId.controllerPair && store.isOn(id);
         return TextButton(
           onPressed: enabled ? () => controller.runAction(id) : null,
           style: TextButton.styleFrom(
@@ -120,7 +120,29 @@ class _Control extends StatelessWidget {
             minimumSize: const Size(0, 34),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
-          child: const Icon(Icons.chevron_right, size: 26),
+          child: pairing
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Icon(Icons.chevron_right, size: 26),
+        );
+      case ItemKind.controller:
+        final info = store.controllerOf(id);
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              controllerLinkLabel(l10n, info.link),
+              style: const TextStyle(
+                fontSize: 15,
+                color: PanelTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(width: 10),
+            BatteryIcon(level: info.battery, charging: info.charging),
+          ],
         );
       case ItemKind.info:
         final text = store.textOf(id);
@@ -129,10 +151,7 @@ class _Control extends StatelessWidget {
             : l10n.valueUnknown;
         return Text(
           text == null || text.isEmpty ? empty : text,
-          style: const TextStyle(
-            fontSize: 15,
-            color: PanelTheme.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 15, color: PanelTheme.textSecondary),
         );
     }
   }

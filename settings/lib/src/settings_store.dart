@@ -43,8 +43,7 @@ class SettingsStore extends ChangeNotifier {
 
   /// Current dropdown value, or the catalog's first option when the
   /// platform has not reported one yet.
-  String choiceOf(ItemId id) =>
-      _choices[id] ?? optionsOf(id).firstOrNull ?? '';
+  String choiceOf(ItemId id) => _choices[id] ?? optionsOf(id).firstOrNull ?? '';
 
   void setChoice(ItemId id, String value) {
     if (_choices[id] == value) return;

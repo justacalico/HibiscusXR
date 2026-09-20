@@ -103,16 +103,13 @@ class ControllerInfo {
     'serial': serial,
   };
 
-  static ControllerInfo fromJson(Map<String, dynamic> json) =>
-      ControllerInfo(
-        link: ControllerLink.fromRaw(json['state']),
-        battery: json['battery'] is num
-            ? (json['battery'] as num).toInt()
-            : -1,
-        charging: json['charging'] == true,
-        mac: json['mac'] is String ? json['mac'] as String : '',
-        serial: json['serial'] is String ? json['serial'] as String : '',
-      );
+  static ControllerInfo fromJson(Map<String, dynamic> json) => ControllerInfo(
+    link: ControllerLink.fromRaw(json['state']),
+    battery: json['battery'] is num ? (json['battery'] as num).toInt() : -1,
+    charging: json['charging'] == true,
+    mac: json['mac'] is String ? json['mac'] as String : '',
+    serial: json['serial'] is String ? json['serial'] as String : '',
+  );
 }
 
 /// State pushed up from the platform in one shot or as a change event.
@@ -175,16 +172,15 @@ class SettingsSnapshot {
         }
       : const {};
 
-  static Map<ItemId, ControllerInfo> _controllerMap(Object? raw) =>
-      raw is Map
-          ? {
-              for (final e in raw.entries)
-                if (itemIdByName('${e.key}') != null && e.value is Map)
-                  itemIdByName('${e.key}')!: ControllerInfo.fromJson(
-                    (e.value as Map).map((k, v) => MapEntry('$k', v)),
-                  ),
-            }
-          : const {};
+  static Map<ItemId, ControllerInfo> _controllerMap(Object? raw) => raw is Map
+      ? {
+          for (final e in raw.entries)
+            if (itemIdByName('${e.key}') != null && e.value is Map)
+              itemIdByName('${e.key}')!: ControllerInfo.fromJson(
+                (e.value as Map).map((k, v) => MapEntry('$k', v)),
+              ),
+        }
+      : const {};
 }
 
 final _itemIds = {for (final i in ItemId.values) i.name: i};

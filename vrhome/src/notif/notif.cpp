@@ -159,7 +159,7 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                 memcpy(verts + t*5, q[tris[t]], 20);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
             glUniform2f(uHalf, s, s);
-            glUniform1f(uRad, s * 0.32f);
+            glUniform1f(uRad, s * kIconRad);
             glUniform1f(uAl, 1.0f);
             glUniform1i(uTex, 0);
             glActiveTexture(GL_TEXTURE0);
@@ -184,7 +184,7 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
             const float pc[4] = {0.24f, 0.30f, 0.44f, 1.0f};
             shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, kNotifIconHW,
                       kNotifIconHW, kNotifIconHW, kNotifIconHW,
-                      kNotifIconHW * 0.38f, 0.0f, 0.002f, pc);
+                      kNotifIconHW * kIconRad, 0.0f, 0.002f, pc);
             if (*lb && e->font.ok) {
                 char ch[2] = {*lb, 0};
                 const float ts = kNotifIconHW * 1.1f;

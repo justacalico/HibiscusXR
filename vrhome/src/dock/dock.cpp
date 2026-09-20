@@ -261,7 +261,7 @@ static void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
     for (const char* q = label; *q; ++q) h = h * 31 + (unsigned char)*q;
     const float* pc = pal[h % 6];
     const float col[4] = {pc[0], pc[1], pc[2], 1.0f};
-    shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * 0.38f,
+    shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * kIconRad,
               0.0f, 0.002f, col);
     if (*label && e->font.ok) {
         char ch[2] = {*label, 0};
@@ -335,7 +335,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             const float hl[4] = {1.0f, 1.0f, 1.0f, 0.10f};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.018f,
                       s + 0.018f, s + 0.018f, s + 0.018f,
-                      (s + 0.018f) * 0.4f, 0.0f, 0.002f, hl);
+                      (s + 0.018f) * kIconRad, 0.0f, 0.002f, hl);
         }
 
         const float alpha = it.minimized ? 0.45f : 1.0f;
@@ -365,7 +365,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                 memcpy(verts + t*5, q[tris[t]], 20);
             glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
             glUniform2f(uHalf, s, s);
-            glUniform1f(uRad, s * 0.32f);
+            glUniform1f(uRad, s * kIconRad);
             glUniform1f(uAl, alpha);
             glUniform1i(uTex, 0);
             glActiveTexture(GL_TEXTURE0);
@@ -393,7 +393,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         if (it.minimized) {
             const float dim[4] = {0.0f, 0.0f, 0.0f, 0.35f};
             shapeQuad(e, vp, ic, r, up, 0.010f, 0.0f, s, s, s, s,
-                      s * 0.32f, 0.0f, 0.002f, dim);
+                      s * kIconRad, 0.0f, 0.002f, dim);
         }
 
         // immersive marker: an amber ring around live/pinned XR items

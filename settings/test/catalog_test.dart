@@ -39,4 +39,21 @@ void main() {
     expect(kindOf(ItemId.wifiToggle), ItemKind.toggle);
     expect(kindOf(ItemId.tipsBody), ItemKind.info);
   });
+
+  test('implementedOf marks only the stub rows', () {
+    const stubs = {
+      ItemId.seethrough,
+      ItemId.trackingToggle,
+      ItemId.trackingFrequency,
+      ItemId.boundary,
+      ItemId.resetView,
+      ItemId.updateCheck,
+      ItemId.nightMode,
+    };
+    for (final id in ItemId.values) {
+      expect(implementedOf(id), !stubs.contains(id), reason: '$id');
+    }
+    // every stub is a real catalog row, not a stray id
+    expect(kUnimplemented, stubs);
+  });
 }

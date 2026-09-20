@@ -41,8 +41,54 @@ class MainActivity : FlutterActivity() {
                 controllers?.scanRaw(dev)
                 return
             }
+            val m1 = intent.getStringExtra("mac1")
+            val m2 = intent.getStringExtra("mac2")
+            if (m1 != null || m2 != null) {
+                controllers?.usbPair(m1.orEmpty(), m2.orEmpty())
+                return
+            }
+            val slot = intent.getIntExtra("enterpair", -1)
+            if (slot >= 0) {
+                controllers?.enterPair(slot)
+                return
+            }
+            if (intent.hasExtra("whitelist")) {
+                controllers?.whiteList()
+                return
+            }
+            if (intent.hasExtra("blescan")) {
+                bleScanProbe()
+                return
+            }
             performAction("controllerPair")
         }
+    }
+
+    // BLE probe: lists every advertiser for ~20s to check whether a
+    // pairing-mode controller is broadcasting at all.
+    @Suppress("DEPRECATION")
+    private fun bleScanProbe() {
+        val adapter = BluetoothAdapter.getDefaultAdapter()
+        if (adapter == null || !adapter.isEnabled) {
+            android.util.Log.w(TAG, "blescan: bt off")
+            return
+        }
+        val cb = BluetoothAdapter.LeScanCallback { dev, rssi, rec ->
+            val name = try { dev.name } catch (e: SecurityException) { null }
+            android.util.Log.i(
+                TAG,
+                "blescan dev=${dev.address} rssi=$rssi name=$name rec=${rec?.size ?: 0}B",
+            )
+        }
+        if (!adapter.startLeScan(cb)) {
+            android.util.Log.w(TAG, "blescan: startLeScan refused")
+            return
+        }
+        android.util.Log.i(TAG, "blescan started")
+        android.os.Handler(mainLooper).postDelayed({
+            adapter.stopLeScan(cb)
+            android.util.Log.i(TAG, "blescan stopped")
+        }, 40_000)
     }
 
     private val receiver = object : BroadcastReceiver() {

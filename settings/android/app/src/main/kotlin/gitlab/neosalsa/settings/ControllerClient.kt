@@ -67,8 +67,10 @@ class ControllerClient(private val context: Context) {
                 service?.setUnityVersion(CLIENT_VERSION)
                 service?.registerCallback(callback)
                 // These answer through the callback, not the return value.
+                // getDeviceBleMac numbers devices 1/2 (ctr1/ctr2 in
+                // /persist/ndi), getControllerSn takes the 0-based slot.
                 for (i in 0..1) {
-                    service?.getDeviceBleMac(i)
+                    service?.getDeviceBleMac(i + 1)
                     service?.getControllerSn(i)
                 }
             } catch (e: RemoteException) {
@@ -98,7 +100,8 @@ class ControllerClient(private val context: Context) {
         }
 
         override fun feedbackControllerDeviceBleMac(device: Int, mac: String) {
-            if (device in 0..1) macs[device] = mac
+            // Same numbering as getDeviceBleMac: 1 = left, 2 = right.
+            if (device in 1..2) macs[device - 1] = mac
             handler.post { onChange?.invoke() }
         }
 

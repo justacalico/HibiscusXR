@@ -58,12 +58,12 @@ constexpr float kBarBtnPad = 0.014f;  // close disc's margin to the bar edge
 constexpr float kBarBtnW = kBarBtnPad + 4.0f * kBarBtnR + kBarBtnGap;
 constexpr float kCornerR = 0.028f;
 
-// drag handle: a short white line centred under the window. Holding confirm
-// on it drags the whole ring - every window keeps its slot offset and
-// follows the gaze yaw together
-constexpr float kHandleW = 0.065f;    // visible line half-width
-constexpr float kHandleT = 0.0055f;   // visible line half-thickness
-constexpr float kHandleGap = 0.016f;  // gap between window bottom and line top
+// drag handle: a short white line centred under the dock strip. Holding
+// confirm on it drags the whole ring - every window keeps its slot offset
+// and follows the gaze yaw together
+constexpr float kHandleW = 0.085f;    // visible line half-width
+constexpr float kHandleT = 0.0085f;   // visible line half-thickness
+constexpr float kHandleGap = 0.026f;  // gap between bar bottom and line top
 constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
 
 // the dock: a persistent strip hanging under the panel ring - pinned apps

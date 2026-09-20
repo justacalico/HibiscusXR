@@ -58,7 +58,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.wifiSettings: ItemKind.action,
   ItemId.bluetoothToggle: ItemKind.toggle,
   ItemId.bluetoothSettings: ItemKind.action,
-  ItemId.controllerPair: ItemKind.action,
+  ItemId.controllerPair: ItemKind.scanCard,
   ItemId.controllerLeft: ItemKind.controller,
   ItemId.controllerRight: ItemKind.controller,
   ItemId.controllerMain: ItemKind.choice,

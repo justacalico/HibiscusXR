@@ -1,6 +1,6 @@
 /// What a row in a settings section does. Pure data - the platform
 /// channel and the UI both key off these ids.
-enum ItemKind { toggle, slider, choice, action, info, controller }
+enum ItemKind { toggle, slider, choice, action, info, controller, scanCard }
 
 /// Sidebar sections, top to bottom in display order.
 enum SectionId {

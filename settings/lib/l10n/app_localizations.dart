@@ -112,6 +112,12 @@ abstract class AppLocalizations {
   /// **'Bluetooth'**
   String get sectionBluetooth;
 
+  /// No description provided for @sectionControllers.
+  ///
+  /// In en, this message translates to:
+  /// **'Controllers'**
+  String get sectionControllers;
+
   /// No description provided for @sectionDisplay.
   ///
   /// In en, this message translates to:
@@ -243,6 +249,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pairing and connected devices'**
   String get itemBluetoothSettingsDesc;
+
+  /// No description provided for @itemControllerPair.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair controllers'**
+  String get itemControllerPair;
+
+  /// No description provided for @itemControllerPairDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the pairing button on each controller until it rumbles'**
+  String get itemControllerPairDesc;
+
+  /// No description provided for @itemControllerLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left controller'**
+  String get itemControllerLeft;
+
+  /// No description provided for @itemControllerLeftDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Link state and battery level'**
+  String get itemControllerLeftDesc;
+
+  /// No description provided for @itemControllerRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right controller'**
+  String get itemControllerRight;
+
+  /// No description provided for @itemControllerRightDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Link state and battery level'**
+  String get itemControllerRightDesc;
+
+  /// No description provided for @itemControllerMain.
+  ///
+  /// In en, this message translates to:
+  /// **'Main hand'**
+  String get itemControllerMain;
+
+  /// No description provided for @itemControllerMainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The controller used for pointing and system gestures'**
+  String get itemControllerMainDesc;
+
+  /// No description provided for @itemControllerUnbind.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpair all'**
+  String get itemControllerUnbind;
+
+  /// No description provided for @itemControllerUnbindDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget both paired controllers'**
+  String get itemControllerUnbindDesc;
 
   /// No description provided for @itemBrightness.
   ///
@@ -513,6 +579,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get valueUnknown;
+
+  /// No description provided for @valueLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get valueLeft;
+
+  /// No description provided for @valueRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get valueRight;
+
+  /// No description provided for @controllerConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get controllerConnected;
+
+  /// No description provided for @controllerDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnected'**
+  String get controllerDisconnected;
+
+  /// No description provided for @controllerPairing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pairing…'**
+  String get controllerPairing;
+
+  /// No description provided for @controllerBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery {level} of 5'**
+  String controllerBattery(int level);
+
+  /// No description provided for @controllerCharging.
+  ///
+  /// In en, this message translates to:
+  /// **'Charging'**
+  String get controllerCharging;
 }
 
 class _AppLocalizationsDelegate

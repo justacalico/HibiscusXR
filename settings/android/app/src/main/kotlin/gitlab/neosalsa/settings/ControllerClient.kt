@@ -31,9 +31,10 @@ class ControllerClient(private val context: Context) {
         // service into per-controller (CV2) reporting.
         private const val CLIENT_VERSION = "3.0.0.0"
 
-        // Sensor mode args for the SPI worker thread; same defaults the
-        // stock manager uses (no head sensor feed, controller IMU on).
-        private const val HEAD_SENSOR = 0
+        // Sensor mode args for the SPI worker thread. Stock PUI starts
+        // the thread with both sensors on (1,1); with head=0 the station
+        // only ran partial tracking and pairing never found controllers.
+        private const val HEAD_SENSOR = 1
         private const val HAND_SENSOR = 1
 
         private const val POLL_MS = 2000L

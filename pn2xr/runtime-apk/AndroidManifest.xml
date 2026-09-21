@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.freedesktop.monado.openxr_runtime.in_process"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
+
+    <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
+
+    <application
+        android:label="Monado (pn2)"
+        android:hasCode="true"
+        android:extractNativeLibs="true">
+
+        <service
+            android:name="org.freedesktop.monado.android_common.RuntimeService"
+            android:exported="true"
+            android:label="Monado Runtime">
+            <meta-data
+                android:name="org.khronos.openxr.OpenXRRuntime.SoFilename"
+                android:value="libopenxr_monado.so" />
+            <meta-data
+                android:name="org.khronos.openxr.OpenXRRuntime.MajorVersion"
+                android:value="1" />
+            <intent-filter>
+                <action android:name="org.khronos.openxr.OpenXRRuntimeService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

@@ -1,0 +1,19 @@
+[binaries]
+c = '@NDK@/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang'
+cpp = '@NDK@/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang++'
+ar = '@NDK@/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-ar'
+strip = '@NDK@/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-strip'
+c_ld = 'lld'
+cpp_ld = 'lld'
+pkg-config = 'false'
+cmake = 'false'
+
+[built-in options]
+c_args = ['-D__ANDROID__']
+cpp_args = ['-D__ANDROID__']
+
+[host_machine]
+system = 'android'
+cpu_family = 'aarch64'
+cpu = 'aarch64'
+endian = 'little'

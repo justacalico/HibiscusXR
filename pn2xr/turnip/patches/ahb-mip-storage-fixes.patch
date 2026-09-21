@@ -1,0 +1,62 @@
+diff --git i/src/freedreno/vulkan/tu_image.cc w/src/freedreno/vulkan/tu_image.cc
+index fc23167..1f3869b 100644
+--- i/src/freedreno/vulkan/tu_image.cc
++++ w/src/freedreno/vulkan/tu_image.cc
+@@ -943,6 +943,8 @@ tu_BindImageMemory2(VkDevice _device,
+       if (vk_image_is_android_hardware_buffer(&image->vk)) {
+          VkImageDrmFormatModifierExplicitCreateInfoEXT eci;
+          VkSubresourceLayout a_plane_layouts[TU_MAX_PLANE_COUNT];
++         const VkSubresourceLayout *plane_layouts = NULL;
++         uint64_t modifier = DRM_FORMAT_MOD_INVALID;
+          result =
+             vk_android_get_ahb_layout(mem->vk.ahardware_buffer, &eci,
+                                       a_plane_layouts, TU_MAX_PLANE_COUNT);
+@@ -952,8 +954,19 @@ tu_BindImageMemory2(VkDevice _device,
+             return result;
+          }
+ 
++         /* Gralloc can only describe a flat single-level buffer. For
++          * mipmapped or layered images that layout is meaningless, so
++          * compute the layout ourselves - it is consistent at both ends
++          * when the buffer was allocated by this driver anyway.
++          */
++         if (image->vk.mip_levels == 1 && image->vk.array_layers == 1 &&
++             image->vk.extent.depth == 1) {
++            plane_layouts = a_plane_layouts;
++            modifier = eci.drmFormatModifier;
++         }
++
+          result = TU_CALLX(device, tu_image_update_layout)(
+-            device, image, eci.drmFormatModifier, a_plane_layouts);
++            device, image, modifier, plane_layouts);
+          if (result != VK_SUCCESS) {
+             if (status)
+                *status->pResult = result;
+diff --git i/src/vulkan/runtime/vk_android.c w/src/vulkan/runtime/vk_android.c
+index 9b2bfce..72e1d61 100644
+--- i/src/vulkan/runtime/vk_android.c
++++ w/src/vulkan/runtime/vk_android.c
+@@ -619,7 +619,8 @@ vk_image_usage_to_ahb_usage(const VkImageCreateFlags vk_create,
+                    VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT))
+       ahb_usage |= AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER;
+ 
+-   if (vk_usage & VK_IMAGE_USAGE_STORAGE_BIT)
++   if (vk_usage & VK_IMAGE_USAGE_STORAGE_BIT &&
++       !(ahb_usage & AHARDWAREBUFFER_USAGE_GPU_FRAMEBUFFER))
+       ahb_usage |= AHARDWAREBUFFER_USAGE_GPU_DATA_BUFFER;
+ 
+    if (vk_create & VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT)
+@@ -690,6 +691,13 @@ vk_alloc_ahardware_buffer(const VkMemoryAllocateInfo *pAllocateInfo)
+ 
+       w = image->extent.width;
+       h = image->extent.height;
++      /* An AHB has no notion of mipmaps, so a mipmapped image's extra
++       * levels have to be carved out of the flat buffer. A mip chain
++       * adds at most a third of the base level's size; doubling the
++       * height leaves room for per-level alignment as well.
++       */
++      if (image->mip_levels > 1)
++         h *= 2;
+       layers = image->array_layers;
+       format = image->ahb_format;
+       usage = vk_image_usage_to_ahb_usage(image->create_flags,

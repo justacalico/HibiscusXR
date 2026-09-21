@@ -88,16 +88,12 @@ but sending chunks that large kills the USB link partway through
   lensSeparation 0.062, eyeTextureFov 80)
 - See-through calibration app installed, platform-signed and launching
 - 2D Pico apps render (VRUserCenter, Pico Store)
+- **VR renders on the display.** VRShell presents frames to the panel with
+  live head rotation tracking
 - Optional wireless adb: `setprop persist.pn2.adbwifi 1` (off by default)
 
 ## What does not work yet
 
-- **The display stays black in VR.** `pvrservice` publishes good rotation, but the
-  SDK *inside the app* reports `trackingstate = 0x0,0x0`, so the pose it submits
-  fails the compositor's unit-quaternion check and every frame is dropped
-  (`SelectRT Bad Pose.Orientation` → `Nothing to draw, draw black!`). This is the
-  single blocker for seeing anything, and it is a client-side problem: the data
-  exists on the service side and arrives as "no tracking" on the client side.
 - **6DoF / SLAM.** Needs the tracking cameras. `qvrservice` starts but never opens
   them (`Plugin not valid`, ~15 MB resident vs stock's ~187 MB, no
   `QVRServiceCamDeviceHAL3` activity). It is an 8.1 binary trying to reach

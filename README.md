@@ -14,9 +14,9 @@ happens today. Other headsets, like the Oculus Quest 1 and Pico Neo 3, are
 planned once the OS is split from the drivers.
 
 **This is an early work in progress, not a finished product.** On the Neo 2
-the system boots, audio and head rotation work, and the VR home launches,
-but the VR display currently stays black. Don't install this expecting a
-usable headset yet.
+the system boots, audio works, and the VR home launches and renders on the
+headset display with head tracking. Controllers, 6DoF tracking and
+passthrough still don't work.
 
 ## Before you install
 

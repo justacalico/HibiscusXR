@@ -1,0 +1,14 @@
+pages:
+  stage: deploy
+  image: python:3.12
+  tags:
+    - linux-truenas
+  before_script:
+    - pip install mkdocs-material
+  script:
+    - mkdocs build --strict -d public
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

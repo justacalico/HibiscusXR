@@ -31,6 +31,10 @@ variables:
 github-sync:
   stage: sync
   image: alpine:3.20
+  # Full clone - pushing a shallow history to the empty mirror fails on the
+  # pack negotiation ("did not receive expected object").
+  variables:
+    GIT_DEPTH: "0"
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_TAG
@@ -55,6 +59,8 @@ github-dispatch:
   stage: build
   image: alpine:3.20
   timeout: 4h
+  variables:
+    GIT_DEPTH: "0"
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "api"

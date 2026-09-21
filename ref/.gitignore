@@ -1,0 +1,74 @@
+# Firmware / images / archives
+*.img
+*.bin
+*.dat
+*.br
+*.new
+*.dtb
+*.fw
+*.rom
+*.raw
+*.elf
+*.xz
+*.gz
+*.zst
+*.zip
+*.tar
+*.tar.*
+*.7z
+*.rar
+
+# Android / Java binaries
+*.apk
+*.apks
+*.dex
+*.odex
+*.vdex
+*.art
+*.oat
+*.idsig
+*.jar
+*.class
+*.aar
+
+# Native libs / objects
+*.so
+*.so.*
+*.a
+*.o
+*.ko
+*.exe
+*.dll
+*.dylib
+
+# Keys / certs
+*.pk8
+*.keystore
+*.pem
+*.der
+*.key
+
+# Patch leftovers
+*.orig
+*.rej
+*.patched
+*.patched2
+*.p3
+
+# Media
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.mp4
+*.mkv
+*.mov
+*.wav
+*.mp3
+/alvr-pico-legacy/.git/index
+/alvr-pico-legacy/.git/objects/pack/pack-7e11131c2073c02433a0fa38a891bafa0c5482a6.idx
+/alvr-pico-legacy/.git/objects/pack/pack-7e11131c2073c02433a0fa38a891bafa0c5482a6.pack
+/alvr-pico-legacy/.git/objects/pack/pack-7e11131c2073c02433a0fa38a891bafa0c5482a6.rev
+/alvr-pico-legacy/

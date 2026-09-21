@@ -1,0 +1,38 @@
+{
+  "@@locale": "en",
+  "appTitle": "Quick Settings",
+  "@appTitle": {
+    "description": "App and panel title"
+  },
+  "settings": "Settings",
+  "tileWifi": "Wi-Fi",
+  "tileBluetooth": "Bluetooth",
+  "tileSeethrough": "Seethrough",
+  "tileBoundary": "Boundary",
+  "tileMicrophone": "Microphone",
+  "tileNightMode": "Night mode",
+  "tileDoNotDisturb": "Do Not Disturb",
+  "tileAirplaneMode": "Airplane mode",
+  "tileBatterySaver": "Battery saver",
+  "actionResetView": "Reset view",
+  "actionReportProblem": "Report problem",
+  "actionAboutDevice": "About device",
+  "sliderVolume": "Volume",
+  "sliderBrightness": "Brightness",
+  "stateOn": "On",
+  "stateOff": "Off",
+  "stateNotConnected": "Not Connected",
+  "notifTitle": "Notifications",
+  "notifEmpty": "No notifications",
+  "notifDismiss": "Dismiss",
+  "notifClearAll": "Clear all",
+  "batteryPercent": "{level}%",
+  "@batteryPercent": {
+    "description": "Battery charge level in the status bar",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  }
+}

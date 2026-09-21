@@ -43,6 +43,7 @@ nav:
     - pvr_stack: repos/pvr_stack.md
     - fullstage: repos/fullstage.md
     - docs: repos/docs.md
+    - library: repos/library.md
     - Firmware dumps:
       - images: repos/dumps/images.md
       - backup_nonEye: repos/dumps/backup_nonEye.md

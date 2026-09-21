@@ -113,14 +113,35 @@ website-test:
       changes:
         - websites/website/**/*
 
+# docs build in their own image (the flutter image has no pip) and ship as
+# an artifact - the pages job drops them into public/docs/ so the site has
+# one deployment: app at /, docs at /docs/.
+docs-build:
+  stage: deploy
+  image: python:3.12
+  before_script:
+    - pip install mkdocs-material
+  script:
+    - cd websites/docs
+    - mkdocs build --strict -d "$CI_PROJECT_DIR/docs-public"
+  artifacts:
+    paths:
+      - docs-public
+    expire_in: 1 hour
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
 pages:
   stage: deploy
   image: ghcr.io/cirruslabs/flutter:3.44.0
+  needs: ["docs-build"]
   script:
     - cd websites/website
     - flutter pub get
-    - flutter build web --release --no-web-resources-cdn --base-href "/HibiscusXR/"
+    - flutter build web --release --no-web-resources-cdn --base-href "/"
     - cp -r build/web "$CI_PROJECT_DIR/public"
+    - mkdir -p "$CI_PROJECT_DIR/public/docs"
+    - cp -r "$CI_PROJECT_DIR/docs-public/." "$CI_PROJECT_DIR/public/docs/"
   artifacts:
     paths:
       - public
@@ -128,21 +149,4 @@ pages:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - websites/website/**/*
-
-docs-pages:
-  stage: deploy
-  image: python:3.12
-  pages:
-    path_prefix: "docs"
-  before_script:
-    - pip install mkdocs-material
-  script:
-    - cd websites/docs
-    - mkdocs build --strict -d "$CI_PROJECT_DIR/public"
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
         - websites/docs/**/*

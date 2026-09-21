@@ -1,0 +1,19 @@
+# Neutralise Pico's bogus boot-control HAL declaration WITHOUT touching /vendor.
+#
+# /vendor/manifest.xml declares android.hardware.boot@1.0::IBootControl/default,
+# but the vendor ships no implementation (no /vendor/bin/hw binary, no
+# bootctrl.*.so) and the device is not A/B at all - no slot_suffix, no _a/_b
+# partitions. Android 8.1 never called IBootControl so the false claim was free.
+#
+# Android 10 vold calls it on every boot from cp_needsCheckpoint(). libhidl blocks
+# forever on an interface that VINTF declares but nobody registers, so vold's main
+# thread never returns, its mutex is held, and every later remountUid/setListener
+# piles up behind it. StorageManagerService then trips the watchdog and
+# system_server is killed roughly every 80 seconds, forever.
+#
+# Rather than editing the stock vendor partition, shadow the one file with a copy
+# that has the <hal> block removed. The partition stays byte-identical; only the
+# mounted view changes. Must land before anything queries VINTF.
+
+on early-init
+    mount none /system/etc/pn2/vendor_manifest.xml /vendor/manifest.xml bind

@@ -1,6 +1,6 @@
 # pvr_dex
 
-[gitlab.com/neosalsa/pvr_dex](https://gitlab.com/neosalsa/pvr_dex)
+[HibiscusXR/pvr/pvr_dex](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_dex)
 
 The deodexed dex code of every PVR system app - `<app>_classes.dex` plus an
 `_extract.log` per app. This is the study copy used to find which native libs

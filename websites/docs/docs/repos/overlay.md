@@ -1,6 +1,6 @@
 # overlay
 
-[gitlab.com/neosalsa/overlay](https://gitlab.com/neosalsa/overlay)
+[HibiscusXR/system/overlay](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/overlay)
 
 The files written on top of the GSI when building `system-pn2.img`. This is
 the actual fix set - everything here is our own work.

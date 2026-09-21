@@ -28,5 +28,5 @@ remaining blocker is the VR display staying black - see
 
 ## The repositories
 
-Everything lives under the [neosalsa group](https://gitlab.com/neosalsa).
-See the [repository map](repos/index.md) - there is one repo per component.
+Everything lives in the [HibiscusXR monorepo](https://gitlab.com/neosalsa/HibiscusXR).
+See the [repository map](repos/index.md) - one tree per component.

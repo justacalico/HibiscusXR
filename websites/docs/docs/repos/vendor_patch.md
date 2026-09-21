@@ -1,6 +1,6 @@
 # vendor_patch
 
-[gitlab.com/neosalsa/vendor_patch](https://gitlab.com/neosalsa/vendor_patch)
+[HibiscusXR/system/vendor_patch](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/vendor_patch)
 
 The vendor-side patch files - what changes (or rather, what gets overridden)
 on the stock `/vendor` partition. The vendor itself is never reflashed; these

@@ -1,6 +1,6 @@
 # pvr_apps_signed
 
-[gitlab.com/neosalsa/pvr_apps_signed](https://gitlab.com/neosalsa/pvr_apps_signed)
+[HibiscusXR/pvr/pvr_apps_signed](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_apps_signed)
 
 ## What this is
 

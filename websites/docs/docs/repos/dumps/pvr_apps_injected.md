@@ -1,6 +1,6 @@
 # pvr_apps_injected
 
-[gitlab.com/neosalsa/pvr_apps_injected](https://gitlab.com/neosalsa/pvr_apps_injected)
+[HibiscusXR/pvr/pvr_apps_injected](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_apps_injected)
 
 ## What this is
 

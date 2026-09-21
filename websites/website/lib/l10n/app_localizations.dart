@@ -425,7 +425,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeOpenSource.
   ///
   /// In en, this message translates to:
-  /// **'Browse the group'**
+  /// **'Browse the repo'**
   String get homeOpenSource;
 
   /// No description provided for @homeDownloadTitle.
@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @reposSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'One repo per component under the neosalsa group.'**
+  /// **'One tree per component in the HibiscusXR monorepo.'**
   String get reposSubtitle;
 
   /// No description provided for @reposSoftwareTitle.
@@ -605,7 +605,7 @@ abstract class AppLocalizations {
   /// No description provided for @reposCount.
   ///
   /// In en, this message translates to:
-  /// **'{count} repos'**
+  /// **'{count} trees'**
   String reposCount(int count);
 
   /// No description provided for @repoVrhome.
@@ -1277,13 +1277,13 @@ abstract class AppLocalizations {
   /// No description provided for @aboutGroupTitle.
   ///
   /// In en, this message translates to:
-  /// **'The group'**
+  /// **'The monorepo'**
   String get aboutGroupTitle;
 
   /// No description provided for @aboutGroupBody.
   ///
   /// In en, this message translates to:
-  /// **'Forty-six repositories under neosalsa, one per component: the device tree, the shims, the research notes, the dump repos, the VR home and this site.'**
+  /// **'Everything lives in one repo on GitLab, one directory per component: the device tree, the shims, the research notes, the dumps, the VR home and this site.'**
   String get aboutGroupBody;
 
   /// No description provided for @aboutLicenseTitle.
@@ -1301,7 +1301,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutRepoCta.
   ///
   /// In en, this message translates to:
-  /// **'GitLab group'**
+  /// **'GitLab repo'**
   String get aboutRepoCta;
 
   /// No description provided for @aboutDocsCta.

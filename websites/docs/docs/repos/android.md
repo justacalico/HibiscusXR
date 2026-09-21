@@ -1,6 +1,6 @@
 # android
 
-[gitlab.com/neosalsa/android](https://gitlab.com/neosalsa/android)
+[HibiscusXR/system/android](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/android)
 
 The LineageOS device tree for the Pico Neo 2: `device/pico/A7B10`.
 

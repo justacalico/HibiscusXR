@@ -1,6 +1,6 @@
 # cdsp
 
-[gitlab.com/neosalsa/cdsp](https://gitlab.com/neosalsa/cdsp)
+[HibiscusXR/vendor/cdsp](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/vendor/cdsp)
 
 ## What this is
 

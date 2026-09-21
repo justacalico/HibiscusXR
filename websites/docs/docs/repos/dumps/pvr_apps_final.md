@@ -1,6 +1,6 @@
 # pvr_apps_final
 
-[gitlab.com/neosalsa/pvr_apps_final](https://gitlab.com/neosalsa/pvr_apps_final)
+[HibiscusXR/pvr/pvr_apps_final](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_apps_final)
 
 ## What this is
 

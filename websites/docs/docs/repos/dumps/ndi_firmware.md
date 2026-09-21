@@ -1,6 +1,6 @@
 # ndi_firmware
 
-[gitlab.com/neosalsa/ndi_firmware](https://gitlab.com/neosalsa/ndi_firmware)
+[HibiscusXR/dumps/ndi_firmware](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/dumps/ndi_firmware)
 
 ## What this is
 

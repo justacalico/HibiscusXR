@@ -1,6 +1,6 @@
 # eyeunit
 
-[gitlab.com/neosalsa/eyeunit](https://gitlab.com/neosalsa/eyeunit)
+[HibiscusXR/dumps/eyeunit](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/dumps/eyeunit)
 
 ## What this is
 

@@ -1,6 +1,6 @@
 # fan
 
-[gitlab.com/neosalsa/fan](https://gitlab.com/neosalsa/fan)
+[HibiscusXR/system/fan](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/fan)
 
 ## What this is
 

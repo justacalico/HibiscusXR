@@ -322,7 +322,7 @@ class _OpenBand extends StatelessWidget {
               Reveal(
                 child: ChevronLink(
                   label: l10n.homeOpenSource,
-                  onPressed: () => launchUrl(Uri.parse(Links.group)),
+                  onPressed: () => launchUrl(Uri.parse(Links.repo)),
                 ),
               ),
             ],

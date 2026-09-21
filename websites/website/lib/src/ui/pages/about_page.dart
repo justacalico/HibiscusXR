@@ -35,7 +35,7 @@ class AboutPage extends StatelessWidget {
                 children: [
                   ChevronLink(
                     label: l10n.aboutRepoCta,
-                    onPressed: () => launchUrl(Uri.parse(Links.group)),
+                    onPressed: () => launchUrl(Uri.parse(Links.repo)),
                   ),
                   ChevronLink(
                     label: l10n.aboutDocsCta,

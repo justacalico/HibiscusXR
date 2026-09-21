@@ -1,6 +1,6 @@
 # pvr_stack
 
-[gitlab.com/neosalsa/pvr_stack](https://gitlab.com/neosalsa/pvr_stack)
+[HibiscusXR/pvr/pvr_stack](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_stack)
 
 The pulled PVR service stack - the daemons and resources that make up the
 runtime, kept as a study/install set.

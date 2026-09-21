@@ -1,6 +1,6 @@
 # notes
 
-[gitlab.com/neosalsa/notes](https://gitlab.com/neosalsa/notes)
+[HibiscusXR/research/notes](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/research/notes)
 
 The research log behind every fix - roughly 280 numbered files mirroring the
 numbered tools scripts. Each `NN_*.log` / `NN_*.txt` is the captured output of

@@ -1,6 +1,6 @@
 # airsvc
 
-[gitlab.com/neosalsa/airsvc](https://gitlab.com/neosalsa/airsvc)
+[HibiscusXR/system/airsvc](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/airsvc)
 
 ## What this is
 

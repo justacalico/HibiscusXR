@@ -72,7 +72,7 @@
 
   "homeOpenTitle": "Open all the way down.",
   "homeOpenBody": "Everything we wrote is AGPL-3.0. Pico's binaries stay Pico's - pulled from your own device, mapped in a manifest, never redistributed.",
-  "homeOpenSource": "Browse the group",
+  "homeOpenSource": "Browse the repo",
 
   "homeDownloadTitle": "Flash it yourself.",
   "homeDownloadBody": "A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.",
@@ -98,14 +98,14 @@
   "statusBlockerCta": "Read the internals docs",
 
   "reposTitle": "Repositories",
-  "reposSubtitle": "One repo per component under the neosalsa group.",
+  "reposSubtitle": "One tree per component in the HibiscusXR monorepo.",
   "reposSoftwareTitle": "Software",
   "reposSoftwareBody": "Things people run or read.",
   "reposSourceTitle": "Port source",
   "reposSourceBody": "Device tree, fixes, tooling and the research log - all our own work.",
   "reposDumpsTitle": "Dumps & staging",
   "reposDumpsBody": "Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary Pico files belong to Pico and are never redistributed.",
-  "reposCount": "{count} repos",
+  "reposCount": "{count} trees",
   "@reposCount": {
     "placeholders": {
       "count": {"type": "int"}
@@ -229,11 +229,11 @@
   "aboutWhatBody": "Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
   "aboutHowTitle": "How it works",
   "aboutHowBody": "GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.",
-  "aboutGroupTitle": "The group",
-  "aboutGroupBody": "Forty-six repositories under neosalsa, one per component: the device tree, the shims, the research notes, the dump repos, the VR home and this site.",
+  "aboutGroupTitle": "The monorepo",
+  "aboutGroupBody": "Everything lives in one repo on GitLab, one directory per component: the device tree, the shims, the research notes, the dumps, the VR home and this site.",
   "aboutLicenseTitle": "License",
   "aboutLicenseBody": "All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.",
-  "aboutRepoCta": "GitLab group",
+  "aboutRepoCta": "GitLab repo",
   "aboutDocsCta": "Project docs",
   "aboutNotesCta": "Research notes",
 

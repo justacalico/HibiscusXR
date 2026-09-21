@@ -1,6 +1,6 @@
 # pn2xr
 
-[gitlab.com/neosalsa/pn2xr](https://gitlab.com/neosalsa/pn2xr)
+[HibiscusXR/system/pn2xr](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/pn2xr)
 
 OpenXR runtime stack for the Neo 2 - the PVR-free path to real VR apps.
 

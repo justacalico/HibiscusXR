@@ -1,6 +1,6 @@
 # out
 
-[gitlab.com/neosalsa/out](https://gitlab.com/neosalsa/out)
+[HibiscusXR/system/out](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/out)
 
 ## What this is
 

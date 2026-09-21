@@ -1,6 +1,6 @@
 # vrdemo
 
-[gitlab.com/neosalsa/vrdemo](https://gitlab.com/neosalsa/vrdemo)
+[HibiscusXR/applications/vrdemo](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/applications/vrdemo)
 
 Minimal stereo VR renderer - the "does the open path work at all" smoke test.
 

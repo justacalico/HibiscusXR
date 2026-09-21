@@ -1,6 +1,6 @@
 # persist_calib
 
-[gitlab.com/neosalsa/persist_calib](https://gitlab.com/neosalsa/persist_calib)
+[HibiscusXR/system/persist_calib](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/persist_calib)
 
 Calibration data pulled from `/persist` - the one partition you cannot
 rebuild.

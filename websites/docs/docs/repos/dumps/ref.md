@@ -1,6 +1,6 @@
 # ref
 
-[gitlab.com/neosalsa/ref](https://gitlab.com/neosalsa/ref)
+[HibiscusXR/research/ref](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/research/ref)
 
 ## What this is
 

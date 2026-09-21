@@ -218,8 +218,8 @@ void testLayout() {
 
     // head yawed to the left slot: quat about +Y is a view-space yaw
     const float a = kSlotYaw[1];   // turn toward the panel
-    Mat4 v = quatToMat((const float[]){0, sinf(a / 2), 0, cosf(a / 2)},
-                       false);
+    const float qa[] = {0, sinf(a / 2), 0, cosf(a / 2)};
+    Mat4 v = quatToMat(qa, false);
     pk = pickPanel(ps, v, o0, o0);
     CHECK(pk.idx == 0);
     CHECK_F(pk.u, 0.0f, 1e-3f);

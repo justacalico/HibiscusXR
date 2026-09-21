@@ -133,8 +133,8 @@ void testHead() {
     float qYawed[4];
     quatMul(qz, qMount, qYawed);
     Mat4 v = headMatrix(qYawed, true, 0.0f, 90.0f, 90.0f, true, nullptr);
-    Mat4 ry = quatToMat((const float[]){0, -sinf(d / 2), 0, cosf(d / 2)},
-                        false);
+    const float qry[] = {0, -sinf(d / 2), 0, cosf(d / 2)};
+    Mat4 ry = quatToMat(qry, false);
     checkEqual(v, ry, 1e-4f);
 
     // eye shift: left eye at -ipd/2 on view x, right at +ipd/2

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<DeviceConfiguration deviceUID="2218225873" cameraModel="ov9282">
+    <Camera id="0" name="left">
+        <Calibration size="640 400 " principal_point="317.24615 193.11517 " focal_length="281.73862 281.73862 " fish_eye="true" radial_distortion_8="-0.0045746076 0.0086789979 0.0029770986 -0.002549811 0 0 0 0 " model="FISHEYE_4_PARAMETERS" radial_distortion="-0.0045746076 0.0086789979 0.0029770986 -0.002549811 0 0 " />
+        <Rig translation="0 0 0 " rowMajorRotationMat="1 0 0 0 1 0 0 0 1 " />
+    </Camera>
+    <Camera id="1" name="right">
+        <Calibration size="640 400 " principal_point="325.47928 197.44791 " focal_length="282.79599 282.79599 " fish_eye="true" radial_distortion_8="-0.0072340132 0.012080994 -0.00052855152 -0.0014428395 0 0 0 0 " model="FISHEYE_4_PARAMETERS" radial_distortion="-0.0072340132 0.012080994 -0.00052855152 -0.0014428395 0 0 " />
+        <Rig translation="-0.080548413 -0.0012274092 -7.0658512e-05 " rowMajorRotationMat="0.99995261 -0.0061981697 0.0075062183 0.0062645124 0.99994123 -0.0088473503 -0.0074509396 0.0088939536 0.99993271 " />
+    </Camera>
+    <Image format="interleaved" />
+    <SFConfig>
+        <Stateinit ombc="-2.2071528 2.2230101 -0.035003662 " tbc="0.0022199627 0.015305609 0.00076851097 " aBias="-0.076847665 -0.026992152 -0.11225916 " wBias="-0.00044431261 -0.00027628543 4.6613044e-05 " ka="-0.0014462618 0.0024698263 -0.00097454735 " kg="-0.00045071894 -0.0027343149 0.0050666737 " delta="0.001778" />
+    </SFConfig>
+</DeviceConfiguration>
+<!--Device ID 2218225873
+Sat, 30 May 2020 00:20:50 GMT
+
+***Pattern detection***
+Pattern detection success 627/747 (83.9357%)
+numFailForNoApexCandidates 26/747 (3.48059%)
+numFailForNoApexCandidatesWithNeighbors 79/747 (10.5756%)
+numFailForMultipleApexCandidates 10/747 (1.33869%)
+numFailForNoIntermediateDots 5/747 (0.669344%)
+Pattern detection success 629/747 (84.2035%)
+numFailForNoApexCandidates 32/747 (4.2838%)
+numFailForNoApexCandidatesWithNeighbors 73/747 (9.77242%)
+numFailForMultipleApexCandidates 7/747 (0.937082%)
+numFailForNoIntermediateDots 6/747 (0.803213%)
+
+
+***Pattern selection***
+Remove redundant detections: Selected 348/638 timestamps
+
+***Intrinsic calibration***
+Prior-numRDParams4 1987 constraints, 4 vbles, 4 free vbles, 0.157023 pixels RMS residual. 
+Prior-numRDParams4 2042 constraints, 4 vbles, 4 free vbles, 0.182991 pixels RMS residual. 
+0/685 target prior estimations failed; 33/376207 outlier dot detections removed (0.00877177%)
+
+Subset1-numRDParams4 85706 constraints, 175 vbles, 175 free vbles, 0.137965 pixels RMS residual. 
+Subset0-numRDParams4 97895 constraints, 172 vbles, 172 free vbles, 0.178444 pixels RMS residual. 
+Subset1-numRDParams4 83462 constraints, 169 vbles, 169 free vbles, 0.146811 pixels RMS residual. 
+Subset0-numRDParams4 97361 constraints, 173 vbles, 173 free vbles, 0.172707 pixels RMS residual. 
+Full-numRDParams4 183067 constraints, 347 vbles, 347 free vbles, 0.1596 pixels RMS residual. 
+Full-numRDParams4 181357 constraints, 340 vbles, 340 free vbles, 0.167345 pixels RMS residual. 
+
+
+***Extrinsic/IMU calibration***
+Trajectory prior: 0/299 target prior estimations failed; 5/451555 outlier dot detections removed (0.00110728%)
+
+Ombc/Tbc as (R | t) matrix:
+(-0.0072633, -0.999732, 0.0219726, 0.00221996)
+(-0.999928, 0.007052, -0.00967173, 0.0153056)
+(0.00951419, -0.0220413, -0.999712, 0.000768511)
+
+
+
+***Pattern detection time 9.69717s, calibration time 29.1424s, total 38.8395s
+!validateRobotArmTrajectory-->

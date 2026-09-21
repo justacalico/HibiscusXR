@@ -1,0 +1,30 @@
+# Qualcomm VR Service (qvrd), which owns the tracking/passthrough cameras.
+#
+# airservice gets NULL from QVRServiceClient_Create because qvrd never runs. init
+# DOES know the vendor definition in /vendor/etc/init/hw/init.target.rc, but that
+# block has no seclabel, and init refuses it:
+#
+#     init: service qvrd does not have a SELinux domain defined
+#
+# Adding seclabel to a copy named 'qvrd' does not help - first definition wins and
+# ours is discarded:
+#
+#     init: pn2-qvrd.rc: ignored duplicate definition of service 'qvrd'
+#
+# So run the same binary under a name init has not already claimed. The socket
+# names are what matter to clients, and those are set by the socket directives
+# rather than the service name, so /dev/socket/qvrservice* come out identical.
+#
+# Verified the binary itself is fine: run by hand it loads its full config
+# (tracking cameras, ov6211_stereo eye camera, 800 Hz sensor) and only exits on
+# SIGTERM.
+
+service pn2_qvrd /system/bin/qvrservice
+    class main
+    user system
+    group system camera graphics
+    socket qvrservice stream 0666 system system
+    socket qvrservice_camera stream 0666 system system
+    socket qvrservice_hvx_camera stream 0660 system system
+    capabilities SYS_NICE
+    seclabel u:r:qvrd:s0

@@ -1,0 +1,4 @@
+seethroughtype 0
+ground -1.700
+seethroughtype C:/Users/yuri.wang/AppData/LocalLow/Pico/Seethrough Setting/boundary/stdataextra.txt
+seethroughtype C:/Users/yuri.wang/AppData/LocalLow/Pico/Seethrough Setting/boundary/stdata.txt

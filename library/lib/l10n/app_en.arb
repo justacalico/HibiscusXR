@@ -1,0 +1,228 @@
+{
+  "@@locale": "en",
+  "appTitle": "App Library",
+  "@appTitle": {
+    "description": "Title shown in the library window title bar"
+  },
+  "searchHint": "Search",
+  "@searchHint": {
+    "description": "Placeholder inside the search field"
+  },
+  "clearSearch": "Clear search",
+  "@clearSearch": {
+    "description": "Tooltip for the button that clears the search field"
+  },
+  "collectionAll": "All",
+  "@collectionAll": {
+    "description": "Collection filter showing every app"
+  },
+  "collectionAllCount": "All ({count})",
+  "@collectionAllCount": {
+    "description": "Collection filter label with the number of apps",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "collectionCount": "{label} ({count})",
+  "@collectionCount": {
+    "description": "Collection or group label with the number of apps",
+    "placeholders": {
+      "label": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "collectionPinned": "Pinned",
+  "@collectionPinned": {
+    "description": "Collection filter showing only pinned apps"
+  },
+  "collectionUserApps": "Apps",
+  "@collectionUserApps": {
+    "description": "Collection filter showing user-installed apps"
+  },
+  "collectionSystemApps": "System",
+  "@collectionSystemApps": {
+    "description": "Collection filter showing system apps"
+  },
+  "collectionGroups": "Groups",
+  "@collectionGroups": {
+    "description": "Section header above user groups in the collection menu"
+  },
+  "sortCustom": "Custom order",
+  "@sortCustom": {
+    "description": "Sort option for the manually arranged order"
+  },
+  "sortNameAsc": "A-Z",
+  "@sortNameAsc": {
+    "description": "Sort option, alphabetical ascending"
+  },
+  "sortNameDesc": "Z-A",
+  "@sortNameDesc": {
+    "description": "Sort option, alphabetical descending"
+  },
+  "sortNewest": "Recently installed",
+  "@sortNewest": {
+    "description": "Sort option, newest installs first"
+  },
+  "sortUpdated": "Recently updated",
+  "@sortUpdated": {
+    "description": "Sort option, newest updates first"
+  },
+  "openApp": "Open",
+  "@openApp": {
+    "description": "Context menu action that launches the app"
+  },
+  "pinApp": "Pin",
+  "@pinApp": {
+    "description": "Context menu action that pins the app to the top"
+  },
+  "unpinApp": "Unpin",
+  "@unpinApp": {
+    "description": "Context menu action that removes the pin"
+  },
+  "uninstallApp": "Uninstall",
+  "@uninstallApp": {
+    "description": "Context menu action that uninstalls the app"
+  },
+  "appInfo": "App info",
+  "@appInfo": {
+    "description": "Context menu action that opens the system app info page"
+  },
+  "addToGroup": "Add to group",
+  "@addToGroup": {
+    "description": "Context menu action that adds the app to a group"
+  },
+  "removeFromGroup": "Remove from group",
+  "@removeFromGroup": {
+    "description": "Context menu action that removes the app from the current group"
+  },
+  "newGroup": "New group",
+  "@newGroup": {
+    "description": "Button and menu item that creates a group"
+  },
+  "renameGroup": "Rename group",
+  "@renameGroup": {
+    "description": "Menu item that renames the active group"
+  },
+  "deleteGroup": "Delete group",
+  "@deleteGroup": {
+    "description": "Menu item that deletes the active group"
+  },
+  "deleteGroupConfirm": "Delete \"{name}\"? The apps stay installed.",
+  "@deleteGroupConfirm": {
+    "description": "Confirmation text when deleting a group",
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "groupNameHint": "Group name",
+  "@groupNameHint": {
+    "description": "Placeholder inside the group name text field"
+  },
+  "noGroupsYet": "No groups yet",
+  "@noGroupsYet": {
+    "description": "Shown in the group picker when no group exists"
+  },
+  "installApp": "Install app",
+  "@installApp": {
+    "description": "Action that installs an APK file picked by the user"
+  },
+  "emptyLibrary": "No apps installed",
+  "@emptyLibrary": {
+    "description": "Shown when the device reports no launchable apps"
+  },
+  "emptySearch": "No results for \"{query}\"",
+  "@emptySearch": {
+    "description": "Shown when the search query matches nothing",
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "emptyGroup": "No apps in this group",
+  "@emptyGroup": {
+    "description": "Shown when the active group has no members"
+  },
+  "loadingApps": "Loading apps…",
+  "@loadingApps": {
+    "description": "Shown while the app list is being fetched"
+  },
+  "loadFailed": "Couldn't load apps",
+  "@loadFailed": {
+    "description": "Shown when the platform bridge fails to list apps"
+  },
+  "launchFailed": "Couldn't open {app}",
+  "@launchFailed": {
+    "description": "Snackbar when launching an app fails",
+    "placeholders": {
+      "app": { "type": "String" }
+    }
+  },
+  "uninstallFailed": "Couldn't uninstall {app}",
+  "@uninstallFailed": {
+    "description": "Snackbar when uninstalling an app fails",
+    "placeholders": {
+      "app": { "type": "String" }
+    }
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Button that retries loading the app list"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Generic cancel button"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Generic create button"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Generic save button"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Generic delete button"
+  },
+  "appCount": "{count, plural, =0{No apps} =1{1 app} other{{count} apps}}",
+  "@appCount": {
+    "description": "App count label in the title area",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "systemBadge": "System",
+  "@systemBadge": {
+    "description": "Badge on tiles for preinstalled system apps"
+  },
+  "details": "Details",
+  "@details": {
+    "description": "Context menu action opening the app details dialog"
+  },
+  "detailsTitle": "About {app}",
+  "@detailsTitle": {
+    "description": "Title of the app details dialog",
+    "placeholders": {
+      "app": { "type": "String" }
+    }
+  },
+  "detailsPackage": "Package",
+  "@detailsPackage": {
+    "description": "Label for the package name row in the details dialog"
+  },
+  "detailsVersion": "Version",
+  "@detailsVersion": {
+    "description": "Label for the version row in the details dialog"
+  },
+  "detailsInstalled": "Installed",
+  "@detailsInstalled": {
+    "description": "Label for the install date row in the details dialog"
+  },
+  "detailsUpdated": "Updated",
+  "@detailsUpdated": {
+    "description": "Label for the update date row in the details dialog"
+  },
+  "notAvailable": "—",
+  "@notAvailable": {
+    "description": "Shown for a missing value in the details dialog"
+  }
+}

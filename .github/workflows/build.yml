@@ -93,8 +93,10 @@ jobs:
 
       - name: layout sources
         run: |
-          # The monorepo checkout is the source - link the dirs the tools/
-          # scripts expect under $PN2_ROOT instead of cloning repos.
+          # The monorepo checkout is the source - copy (not symlink) the dirs
+          # the tools/ scripts expect under $PN2_ROOT. Input packages extract
+          # into overlay/ and tar refuses to write through symlinked dirs, so
+          # real directories are required.
           mkdir -p "$PN2_ROOT"/{notes,out}
           for pair in \
             "system/tools:tools" \
@@ -106,7 +108,7 @@ jobs:
             "applications/quick-panel:quick-panel" \
             "applications/settings:settings"; do
             src="${pair%%:*}"; dst="${pair##*:}"
-            ln -s "$GITHUB_WORKSPACE/$src" "$PN2_ROOT/$dst"
+            cp -a "$GITHUB_WORKSPACE/$src" "$PN2_ROOT/$dst"
           done
           ls -la "$PN2_ROOT"
 

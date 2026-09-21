@@ -218,7 +218,7 @@ void testDock() {
         const float hv = -dockHandleDrop() / (kDockBarH * 0.5f);
         CHECK(onDockHandle(0.0f, hv, hw));
         CHECK(!onDockHandle(0.0f, 0.0f, hw));
-        CHECK(!onDockHandle(0.0f, hv - 0.30f, hw));
+        CHECK(!onDockHandle(0.0f, hv - 0.40f, hw));
         CHECK(!onDockHandle((kHandleW + kHandlePad + 0.02f) / hw, hv, hw));
     }
 

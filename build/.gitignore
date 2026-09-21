@@ -1,0 +1,72 @@
+# Firmware / images / archives
+*.img
+*.bin
+*.dat
+*.br
+*.new
+*.dtb
+*.fw
+*.rom
+*.raw
+*.elf
+*.xz
+*.gz
+*.zst
+*.zip
+*.tar
+*.tar.*
+*.7z
+*.rar
+
+# Android / Java binaries
+*.apk
+*.apks
+*.dex
+*.odex
+*.vdex
+*.art
+*.oat
+*.idsig
+*.jar
+*.class
+*.aar
+
+# Native libs / objects
+*.so
+*.so.*
+*.a
+*.o
+*.ko
+*.exe
+*.dll
+*.dylib
+
+# Keys / certs
+*.pk8
+*.keystore
+*.jks
+*.p12
+*.pem
+*.der
+*.key
+credentials.txt
+
+# Patch leftovers
+*.orig
+*.rej
+*.patched
+*.patched2
+*.p3
+
+# Media
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.mp4
+*.mkv
+*.mov
+*.wav
+*.mp3

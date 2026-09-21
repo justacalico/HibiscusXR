@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Minimal NativeActivity shell. Deliberately no Java at all: NativeActivity lives
+  in the framework, so the APK is just a manifest plus one .so. That keeps the
+  build to aapt2 + zipalign + apksigner and avoids Gradle/AGP entirely.
+
+  Landscape is forced because the panel is a 2160x3840 portrait surface; VR wants
+  it rotated so each eye gets its own half of a 3840x2160 landscape frame.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.pn2.vrdemo"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
+
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <!-- 3DoF comes from the IMU via ASensorManager; not fatal if absent -->
+    <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
+
+    <application
+        android:label="PN2 VR Demo"
+        android:hasCode="false"
+        android:debuggable="true">
+
+        <activity
+            android:name="android.app.NativeActivity"
+            android:label="PN2 VR Demo"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode|density"
+            android:launchMode="singleTask"
+            android:exported="true">
+            <meta-data android:name="android.app.lib_name" android:value="pn2vr" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

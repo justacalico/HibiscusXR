@@ -1,0 +1,12 @@
+# Pico's fan daemon. Stock ships it as /system/bin/fancontrol with
+# /system/etc/init/fanservice.rc; the GSI has neither, so on our build the fan
+# never spins and the SoC sits above 80 C under VR load.
+#
+# Stock's service block has no seclabel because its policy defines a fancontrol
+# domain (fancontrol_exec). Ours does not - vendor sepolicy is not loaded on this
+# build - so init would refuse the service without an explicit label.
+service pn2_fancontrol /system/bin/fancontrol
+    class core
+    user root
+    group root
+    seclabel u:r:shell:s0

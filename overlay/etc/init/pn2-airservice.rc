@@ -1,0 +1,39 @@
+# Passthrough camera service + virtual input, restored from stock.
+#
+# The see-through/calibration app blocks forever on
+#     ServiceManager: Waiting for service 'airservice'
+# because /system/bin/airservice, its init entry and libairservice/libaircamera
+# were never copied into the port. libaircamera.so is the giveaway: "air" is the
+# passthrough camera path.
+#
+# libaircamera.so pulls in 8.1's libskia.so, which in turn needs 8.1's ICU. Android
+# 10 ships ICU from an APEX, so dropping those copies into /system/lib64 would
+# shadow the framework's ICU for every process. Instead the whole 8.1 chain lives
+# in /system/lib64/pvr_air and only this service sees it, via LD_LIBRARY_PATH.
+#
+# seclabel is load-bearing: init refuses to start a service with no SELinux domain
+# even when permissive (learned from pvrservice and the settings service).
+
+service airservice /system/bin/airservice
+    class core
+    user root
+    group root
+    seclabel u:r:shell:s0
+    setenv LD_LIBRARY_PATH /system/lib64/pvr_air:/system/lib64
+    # libaircamera.so references five android:: symbols Q dropped from libgui/libui.
+    # libshim_air.so forwards the three that still have a Q equivalent and stubs the
+    # two libgui internals that were deleted outright. See shim/shim_air.cpp.
+    setenv LD_PRELOAD /system/lib64/pvr_air/libshim_air.so
+
+# virtual_input is the daemon behind libvirtualinputclient.so (pvrVirtualInputCreate),
+# the 2D-app-in-VR input bridge. Its client library was restored earlier; this is the
+# other half. Stock starts it after boot rather than at class core.
+service virtual_input /system/bin/virtual_input
+    disabled
+    user system
+    group system input uhid
+    seclabel u:r:shell:s0
+    writepid /dev/cpuset/system/tasks
+
+on property:sys.boot_completed=1
+    start virtual_input

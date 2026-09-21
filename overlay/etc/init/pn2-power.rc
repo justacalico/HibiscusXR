@@ -1,0 +1,27 @@
+# Stop the device dying when it tries to enter kernel suspend.
+#
+# Symptom: "PowerManagerService: Going to sleep due to timeout", then silence,
+# then the watchdog reboots. No pstore and no bootreason on this kernel, so
+# nothing is recoverable after the fact - it hangs below the framework.
+#
+# The stock unit never hits this. Comparing kernel wakelocks on both:
+#
+#   stock (8.1) : PowerManagerService.WakeLocks  pvrservice.platform
+#   port  (10)  : (none)
+#
+# Pico's pvrservice holds a kernel wakelock the whole time it runs, so the stock
+# firmware never enters suspend - "sleep" there is display-off only. Our
+# pvrservice does not hold it consistently under Android 10, nothing else blocks
+# suspend, and the device walks into a path the vendor never exercises.
+#
+# Take the wakelock ourselves and match the stock behaviour. This is better than
+# `svc power stayon true`, which was the stopgap: that forces the SCREEN to stay
+# on and is lost on every reboot. This lets the display sleep normally and only
+# prevents the kernel suspend that breaks.
+#
+# Cost: no deep sleep, so idle battery drain is higher. That is exactly the
+# tradeoff stock already makes. Proper fix is finding which driver hangs in
+# suspend, which needs a working pstore or a serial console.
+
+on boot
+    write /sys/power/wake_lock pn2_nosuspend

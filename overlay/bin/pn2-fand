@@ -1,0 +1,61 @@
+#!/system/bin/sh
+# Fan governor for the Neo 2.
+#
+# The gpio-fan is exposed as cooling_device with type "gpio-fan" (states 0-3) but
+# nothing on this build drives it: no thermal zone trip binds to it, and Pico's
+# own daemon that would is not present. Left alone the fan never spins and the
+# SoC sits above 80 C under VR load.
+#
+# Simple thresholds with hysteresis, driven off the hottest CPU/GPU zone. Cheap:
+# one pass every 5 s, all sysfs reads.
+
+FAN=""
+for c in /sys/class/thermal/cooling_device*; do
+    [ "$(cat "$c/type" 2>/dev/null)" = "gpio-fan" ] && FAN="$c" && break
+done
+[ -n "$FAN" ] || { log -t pn2-fand "no gpio-fan cooling device, exiting"; exit 0; }
+
+MAX=$(cat "$FAN/max_state" 2>/dev/null)
+[ -n "$MAX" ] || MAX=3
+log -t pn2-fand "using $FAN (max_state $MAX)"
+
+# zones worth watching - the cores and the GPU, not the ADC/skin sensors
+ZONES=""
+for z in /sys/class/thermal/thermal_zone*; do
+    case "$(cat "$z/type" 2>/dev/null)" in
+        cpu*-usr|gpu*-usr|ddr-usr|compute-hvx-usr) ZONES="$ZONES $z/temp" ;;
+    esac
+done
+
+state=-1
+while true; do
+    hot=0
+    for t in $ZONES; do
+        v=$(cat "$t" 2>/dev/null)
+        [ -n "$v" ] && [ "$v" -gt "$hot" ] 2>/dev/null && hot=$v
+    done
+    c=$((hot / 1000))
+
+    # hysteresis: step down 5 C below the level that stepped us up
+    case $state in
+        0) on1=48; on2=60; on3=70 ;;
+        1) on1=43; on2=60; on3=70 ;;
+        2) on1=43; on2=55; on3=70 ;;
+        3) on1=43; on2=55; on3=65 ;;
+        *) on1=48; on2=60; on3=70 ;;
+    esac
+
+    if   [ "$c" -ge "$on3" ]; then want=3
+    elif [ "$c" -ge "$on2" ]; then want=2
+    elif [ "$c" -ge "$on1" ]; then want=1
+    else want=0
+    fi
+    [ "$want" -gt "$MAX" ] && want=$MAX
+
+    if [ "$want" != "$state" ]; then
+        echo "$want" > "$FAN/cur_state" 2>/dev/null
+        log -t pn2-fand "hottest ${c}C -> fan state $want"
+        state=$want
+    fi
+    sleep 5
+done

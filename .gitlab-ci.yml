@@ -102,8 +102,21 @@ github-release-sync:
 
 apps-test:
   stage: test
-  image: ghcr.io/cirruslabs/flutter:3.44.0
+  # No pinned cirruslabs image is new enough (pn2_library wants Dart
+  # ^3.12.2 -> Flutter 3.44.6+). Keep the tarball version in sync with
+  # FLUTTER_VERSION in system/dist/manifest.env.
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ ca-certificates libglu1-mesa
+    - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.44.6-stable.tar.xz"
+    - tar -xJf /tmp/flutter.tar.xz -C /opt
+    - export PATH="/opt/flutter/bin:$PATH"
+    - git config --global --add safe.directory /opt/flutter
+    - flutter config --no-analytics
+    - flutter --version
   script:
+    - export PATH="/opt/flutter/bin:$PATH"
     - |
       for d in applications/*/; do
         if [ -f "$d/pubspec.yaml" ]; then

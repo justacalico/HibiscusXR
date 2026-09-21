@@ -1,0 +1,149 @@
+﻿audioserver=23437  hal=23438  uptime=295s
+audioserver alive for:            
+      00:44
+
+=== is media.audio_flinger published yet? ===
+Service media.audio_flinger: found
+Service media.audio_policy: not found
+
+=== audioserver stack NOW ===
+"audioserver" sysTid=23437
+    #00 pc 00000000000cdb34  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008a3d4  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+132) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 000000000009b760  /system/lib64/libhidlbase.so (android::hardware::IPCThreadState::transact(int, unsigned int, android::hardware::Parcel const&, android::hardware::Parcel*, unsigned int)+1776) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #03 pc 000000000009677c  /system/lib64/libhidlbase.so (android::hardware::BpHwBinder::transact(unsigned int, android::hardware::Parcel const&, android::hardware::Parcel*, unsigned int, std::__1::function<void (android::hardware::Parcel&)>)+72) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #04 pc 0000000000052ee4  /system/lib64/android.hardware.audio@2.0.so (android::hardware::audio::V2_0::BpHwDevicesFactory::_hidl_openDevice(android::hardware::IInterface*, android::hardware::details::HidlInstrumentor*, android::hardware::audio::V2_0::IDevicesFactory::Device, std::__1::function<void (android::hardware::audio::V2_0::Result, android::sp<android::hardware::audio::V2_0::IDevice> const&)>)+240) (BuildId: 9a375228cea599a867d4060cb8cc2ede)
+    #05 pc 00000000000534ec  /system/lib64/android.hardware.audio@2.0.so (android::hardware::audio::V2_0::BpHwDevicesFactory::openDevice(android::hardware::audio::V2_0::IDevicesFactory::Device, std::__1::function<void (android::hardware::audio::V2_0::Result, android::sp<android::hardware::audio::V2_0::IDevice> const&)>)+148) (BuildId: 9a375228cea599a867d4060cb8cc2ede)
+    #06 pc 000000000001ea00  /system/lib64/libaudiohal@2.0.so (android::V2_0::DevicesFactoryHalHidl::openDevice(char const*, android::sp<android::DeviceHalInterface>*)+340) (BuildId: 259662169ef1e0d216ad4b69b06fbb9f)
+    #07 pc 000000000003f560  /system/lib64/libaudioflinger.so (android::AudioFlinger::loadHwModule_l(char const*)+528) (BuildId: 898688b87f23cb2061b0646e18e54808)
+    #08 pc 00000000000329f8  /system/lib64/libaudioflinger.so (android::AudioFlinger::loadHwModule(char const*)+84) (BuildId: 898688b87f23cb2061b0646e18e54808)
+    #09 pc 000000000003372c  /system/lib64/libaudiopolicyservice.so (android::AudioPolicyService::AudioPolicyClient::loadHwModule(char const*)+92) (BuildId: 5f17df03ef4446f01e1c5a86d2e32864)
+"HwBinder:23437_" sysTid=23752
+    #00 pc 00000000000cdb34  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008a3d4  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+132) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000993f4  /system/lib64/libhidlbase.so (android::hardware::IPCThreadState::getAndExecuteCommand()+464) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #03 pc 000000000009acc0  /system/lib64/libhidlbase.so (android::hardware::IPCThreadState::joinThreadPool(bool)+152) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #04 pc 00000000000a9d54  /system/lib64/libhidlbase.so (android::hardware::PoolThread::threadLoop()+24) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #05 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #06 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #07 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+"HwBinder:23437_" sysTid=23753
+    #00 pc 00000000000cdb34  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008a3d4  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+132) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000993f4  /system/lib64/libhidlbase.so (android::hardware::IPCThreadState::getAndExecuteCommand()+464) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #03 pc 000000000009acc0  /system/lib64/libhidlbase.so (android::hardware::IPCThreadState::joinThreadPool(bool)+152) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #04 pc 00000000000a9d54  /system/lib64/libhidlbase.so (android::hardware::PoolThread::threadLoop()+24) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #05 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #06 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #07 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+"ApmAudio" sysTid=23755
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e18d8  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_wait+60) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 000000000001e9b8  /system/lib64/libaudiopolicyservice.so (android::AudioPolicyService::AudioCommandThread::threadLoop()+5588) (BuildId: 5f17df03ef4446f01e1c5a86d2e32864)
+    #04 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #05 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #06 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+"ApmOutput" sysTid=23756
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+=== audio HAL stack NOW ===
+"audio@2.0-servi" sysTid=23438
+    #00 pc 00097424  /apex/com.android.runtime/lib/bionic/libc.so (__ioctl+8) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #01 pc 00065109  /apex/com.android.runtime/lib/bionic/libc.so (ioctl+28) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #02 pc 0001024d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::talkWithDriver(bool)+204) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #03 pc 0001035d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::getAndExecuteCommand()+8) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #04 pc 000109b7  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::joinThreadPool(bool)+38) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #05 pc 000013c5  /vendor/bin/hw/android.hardware.audio@2.0-service (main+276) (BuildId: 8356a001f451fc41040bc52b6d0f9462)
+    #06 pc 00059d1f  /apex/com.android.runtime/lib/bionic/libc.so (__libc_init+66) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #07 pc 000011d0  /vendor/bin/hw/android.hardware.audio@2.0-service (_start_main+88) (BuildId: 8356a001f451fc41040bc52b6d0f9462)
+"HwBinder:23438_" sysTid=23750
+    #00 pc 00097424  /apex/com.android.runtime/lib/bionic/libc.so (__ioctl+8) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #01 pc 00065109  /apex/com.android.runtime/lib/bionic/libc.so (ioctl+28) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #02 pc 0001024d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::talkWithDriver(bool)+204) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #03 pc 0001035d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::getAndExecuteCommand()+8) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #04 pc 000109b7  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::joinThreadPool(bool)+38) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #05 pc 000178d9  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::PoolThread::threadLoop()+12) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #06 pc 0000d161  /system/lib/vndk-sp-27/libutils.so (android::Thread::_threadLoop(void*)+148) (BuildId: c5140034dc497cebfe6d5171fe144a66)
+    #07 pc 000a7163  /apex/com.android.runtime/lib/bionic/libc.so (__pthread_start(void*)+20) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #08 pc 00060bbd  /apex/com.android.runtime/lib/bionic/libc.so (__start_thread+30) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+"HwBinder:23438_" sysTid=23751
+    #00 pc 00098138  /apex/com.android.runtime/lib/bionic/libc.so (nanosleep+8) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #01 pc 0007de25  /apex/com.android.runtime/lib/bionic/libc.so (usleep+52) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #02 pc 00029eab  /vendor/lib/hw/audio.primary.sdm845.so (audio_extn_utils_get_snd_card_num+170) (BuildId: 8e1f6db1c3387b6db4a5c4949dadb324)
+    #03 pc 00019e0f  /vendor/lib/hw/audio.primary.sdm845.so (platform_init+74) (BuildId: 8e1f6db1c3387b6db4a5c4949dadb324)
+    #04 pc 00013e63  /vendor/lib/hw/audio.primary.sdm845.so (adev_open+534) (BuildId: 8e1f6db1c3387b6db4a5c4949dadb324)
+    #05 pc 0001c507  /vendor/lib/hw/android.hardware.audio@2.0-impl.so (android::hardware::audio::V2_0::implementation::DevicesFactory::loadAudioInterface(char const*, audio_hw_device**)+74) (BuildId: 1bf7f991abc6a2d0a4debfe8377b615e)
+    #06 pc 0001c5cd  /vendor/lib/hw/android.hardware.audio@2.0-impl.so (android::hardware::audio::V2_0::implementation::DevicesFactory::openDevice(android::hardware::audio::V2_0::IDevicesFactory::Device, std::__1::function<void (android::hardware::audio::V2_0::Result, android::sp<android::hardware::audio::V2_0::IDevice> const&)>)+40) (BuildId: 1bf7f991abc6a2d0a4debfe8377b615e)
+    #07 pc 0004074d  /system/lib/vndk-27/android.hardware.audio@2.0.so (android::hardware::audio::V2_0::BnHwDevicesFactory::_hidl_openDevice(android::hidl::base::V1_0::BnHwBase*, android::hardware::Parcel const&, android::hardware::Parcel*, std::__1::function<void (android::hardware::Parcel&)>)+144) (BuildId: 731245b90bf1302dcbfc5ac22413c886)
+    #08 pc 000409f7  /system/lib/vndk-27/android.hardware.audio@2.0.so (android::hardware::audio::V2_0::BnHwDevicesFactory::onTransact(unsigned int, android::hardware::Parcel const&, android::hardware::Parcel*, unsigned int, std::__1::function<void (android::hardware::Parcel&)>)+454) (BuildId: 731245b90bf1302dcbfc5ac22413c886)
+    #09 pc 0000e067  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::BHwBinder::transact(unsigned int, android::hardware::Parcel const&, android::hardware::Parcel*, unsigned int, std::__1::function<void (android::hardware::Parcel&)>)+66) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+"HwBinder:23438_" sysTid=23817
+    #00 pc 00097424  /apex/com.android.runtime/lib/bionic/libc.so (__ioctl+8) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #01 pc 00065109  /apex/com.android.runtime/lib/bionic/libc.so (ioctl+28) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #02 pc 0001024d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::talkWithDriver(bool)+204) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #03 pc 0001035d  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::getAndExecuteCommand()+8) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #04 pc 000109b7  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::IPCThreadState::joinThreadPool(bool)+38) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #05 pc 000178d9  /system/lib/vndk-sp-27/libhwbinder.so (android::hardware::PoolThread::threadLoop()+12) (BuildId: 7bb75360dce25c8da8c6c4490acf91e3)
+    #06 pc 0000d161  /system/lib/vndk-sp-27/libutils.so (android::Thread::_threadLoop(void*)+148) (BuildId: c5140034dc497cebfe6d5171fe144a66)
+    #07 pc 000a7163  /apex/com.android.runtime/lib/bionic/libc.so (__pthread_start(void*)+20) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+    #08 pc 00060bbd  /apex/com.android.runtime/lib/bionic/libc.so (__start_thread+30) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+
+=== sound card present? ===
+--- no soundcards ---
+timer
+
+=== ADSP / q6 state ===
+[    7.081272] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+[    7.108863] ueventd: firmware: loading 'adsp.b12' for '/devices/platform/soc/17300000.qcom,lpass/firmware/adsp.b12'
+[    7.110642] ueventd: loading /devices/platform/soc/17300000.qcom,lpass/firmware/adsp.b12 took 1ms
+[    7.111582] ueventd: firmware: loading 'adsp.b13' for '/devices/platform/soc/17300000.qcom,lpass/firmware/adsp.b13'
+[    7.113727] ueventd: loading /devices/platform/soc/17300000.qcom,lpass/firmware/adsp.b13 took 2ms
+[    7.276777] subsys-pil-tz 17300000.qcom,lpass: adsp: Brought out of reset
+[    7.283343] apr_tal_link_state_cb: edge[lpass] link state[0]
+[    7.288149] sysmon-qmi: sysmon_clnt_svc_arrive: Connection established between QMI handle and adsp's SSCTL service
+[    7.295375] subsys-pil-tz 17300000.qcom,lpass: adsp: Power/Clock ready interrupt received
+[    7.486490] audio_notifer_reg_service: service PDR_ADSP is in use
+[    7.861327] pil-q6v5-mss 4080000.qcom,mss: modem: loading from 0x000000008e000000 to 0x0000000091000000
+[    7.866395] pil-q6v5-mss 4080000.qcom,mss: Debug policy not present - msadp. Continue.
+[    7.866432] pil-q6v5-mss 4080000.qcom,mss: Loading MBA and DP (if present) from 0x0000000096500000 to 0x0000000096600000
+[    7.905401] pil-q6v5-mss 4080000.qcom,mss: MBA boot done
+[    7.936215] init: starting service 'adsprpcd'...
+[    7.972021] 'opened /dev/adsprpc-smd c 225 0'
+[    8.123721] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+[    8.353511] pil-q6v5-mss 4080000.qcom,mss: modem: Brought out of reset
+[    8.367616] apr_tal_link_state_cb: edge[mpss] link state[0]
+[    8.386499] pil-q6v5-mss 4080000.qcom,mss: Subsystem error monitoring/handling services are up
+[    8.618020] pil-q6v5-mss 4080000.qcom,mss: modem: Power/Clock ready interrupt received
+[    9.111419] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+[   10.112933] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+[   11.113506] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+[   12.113940] init: no such service 'android.hardware.camera.provider@2.4::ICameraProvider/legacy/0'
+
+=== a2dp offload props ===
+[audio.offload.video]: [true]
+[persist.vendor.bt.a2dp_offload_cap]: [sbc-aac]
+[vendor.audio.offload.buffer.size.kb]: [32]
+[vendor.audio.offload.gapless.enabled]: [true]
+[vendor.audio.offload.multiaac.enable]: [true]
+[vendor.audio.offload.multiple.enabled]: [false]
+[vendor.audio.offload.passthrough]: [false]
+[vendor.audio.offload.pstimeout.secs]: [3]
+[vendor.audio.offload.track.enable]: [true]
+[vendor.fm.a2dp.conc.disabled]: [true]
+
+=== vendor audio config files present ===
+-rw-r--r-- 1 root root  12629 2008-12-31 11:00 /vendor/etc/audio_policy_configuration.xml
+-rw-r--r-- 1 root root  11256 2008-12-31 11:00 /vendor/etc/mixer_paths_i2s.xml
+-rw-r--r-- 1 root root  98221 2008-12-31 11:00 /vendor/etc/mixer_paths_qvr.xml
+-rw-r--r-- 1 root root  85302 2008-12-31 11:00 /vendor/etc/mixer_paths_skuk.xml
+-rw-r--r-- 1 root root 104812 2008-12-31 11:00 /vendor/etc/mixer_paths_tavil.xml
+-rw-r--r-- 1 root root  20964 2008-12-31 11:00 /vendor/lib/hw/audio.primary.default.so
+-rw-r--r-- 1 root root 394044 2008-12-31 11:00 /vendor/lib/hw/audio.primary.sdm845.so
+-rw-r--r-- 1 root root  11504 2008-12-31 11:00 /vendor/lib64/hw/audio.primary.default.so
+-rw-r--r-- 1 root root 467456 2008-12-31 11:00 /vendor/lib64/hw/audio.primary.sdm845.so
+
+=== /data/vendor/audio exists? ===
+drwxrwx--- 3 media audio 4096 1971-07-17 10:38 /data/vendor/audio
+DONE

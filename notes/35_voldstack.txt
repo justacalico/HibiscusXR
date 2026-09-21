@@ -1,0 +1,228 @@
+﻿vold pid=889 uptime=666s
+
+############ debuggerd native backtrace ############
+
+
+----- pid 889 at 2021-08-08 13:08:36 -----
+Cmd line: /system/bin/vold
+ABI: 'arm64'
+
+"Binder:889_2" sysTid=889
+    #00 pc 000000000007f240  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+32) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e197c  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_timedwait+120) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 0000000000071714  /system/lib64/libc++.so (_ZNSt3__118condition_variable15__do_timed_waitERNS_11unique_lockINS_5mutexEEENS_6chrono10time_pointINS5_12system_clockENS5_8durationIxNS_5ratioILl1ELl1000000000EEEEEEE+108) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000005c248  /system/lib64/libhidlbase.so (android::hardware::details::Waiter::wait(bool)+256) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #05 pc 000000000005cbc0  /system/lib64/libhidlbase.so (android::hardware::details::getRawServiceInternal(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool)+1192) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #06 pc 0000000000011a18  /system/lib64/android.hardware.boot@1.0.so (_ZN7android8hardware7details18getServiceInternalINS0_4boot4V1_015BpHwBootControlENS4_12IBootControlEvvEENS_2spIT0_EERKNSt3__112basic_stringIcNSA_11char_traitsIcEENSA_9allocatorIcEEEEbb+204) (BuildId: 2daf6e9462b1e1bfac2120d8049fd14c)
+    #07 pc 000000000004d08c  /system/bin/vold (android::vold::cp_needsCheckpoint()+140) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #08 pc 000000000003520c  /system/bin/vold (android::vold::VoldNativeService::needsCheckpoint(bool*)+116) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #09 pc 00000000000cf5d4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+4844) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #10 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #12 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #13 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #14 pc 0000000000027ad8  /system/bin/vold (main+2696) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #15 pc 000000000007d780  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+108) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_1" sysTid=892
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 0000000000031c18  /system/bin/vold (android::vold::VoldNativeService::remountUid(int, int)+84) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf130  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+3656) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #08 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #09 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #10 pc 000000000007ee44  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #12 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #13 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_2" sysTid=893
+    #00 pc 00000000000cdb74  /apex/com.android.runtime/lib64/bionic/libc.so (__ppoll+4) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008c3ac  /apex/com.android.runtime/lib64/bionic/libc.so (poll+88) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 0000000000005a24  /system/lib64/libsysutils.so (SocketListener::runListener()+1200) (BuildId: 4d9785b47abca3fa4896335ad18b07ae)
+    #03 pc 00000000000053cc  /system/lib64/libsysutils.so (SocketListener::threadStart(void*)+8) (BuildId: 4d9785b47abca3fa4896335ad18b07ae)
+    #04 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #05 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_3" sysTid=894
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000002fb4c  /system/bin/vold (android::vold::VoldNativeService::monitor()+68) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf7b4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+5324) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #08 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #09 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #10 pc 000000000007ee44  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #12 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #13 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_4" sysTid=896
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000002fb4c  /system/bin/vold (android::vold::VoldNativeService::monitor()+68) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf7b4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+5324) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #08 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #09 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #10 pc 000000000007ee44  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #12 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #13 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+
+############ latest ANR: vold section ############
+file: /data/anr/anr_2021-08-08-13-08-25-900
+Cmd line: /system/bin/vold
+ABI: 'arm64'
+
+"Binder:889_2" sysTid=889
+    #00 pc 000000000007f240  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+32) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e197c  /apex/com.android.runtime/lib64/bionic/libc.so (pthread_cond_timedwait+120) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 0000000000071714  /system/lib64/libc++.so (_ZNSt3__118condition_variable15__do_timed_waitERNS_11unique_lockINS_5mutexEEENS_6chrono10time_pointINS5_12system_clockENS5_8durationIxNS_5ratioILl1ELl1000000000EEEEEEE+108) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000005c248  /system/lib64/libhidlbase.so (android::hardware::details::Waiter::wait(bool)+256) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #05 pc 000000000005cbc0  /system/lib64/libhidlbase.so (android::hardware::details::getRawServiceInternal(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char>> const&, bool, bool)+1192) (BuildId: c03ff86cf4f39e7c094fc544fab298b3)
+    #06 pc 0000000000011a18  /system/lib64/android.hardware.boot@1.0.so (_ZN7android8hardware7details18getServiceInternalINS0_4boot4V1_015BpHwBootControlENS4_12IBootControlEvvEENS_2spIT0_EERKNSt3__112basic_stringIcNSA_11char_traitsIcEENSA_9allocatorIcEEEEbb+204) (BuildId: 2daf6e9462b1e1bfac2120d8049fd14c)
+    #07 pc 000000000004d08c  /system/bin/vold (android::vold::cp_needsCheckpoint()+140) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #08 pc 000000000003520c  /system/bin/vold (android::vold::VoldNativeService::needsCheckpoint(bool*)+116) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #09 pc 00000000000cf5d4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+4844) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #10 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #12 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #13 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #14 pc 0000000000027ad8  /system/bin/vold (main+2696) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #15 pc 000000000007d780  /apex/com.android.runtime/lib64/bionic/libc.so (__libc_init+108) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_1" sysTid=892
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 0000000000031c18  /system/bin/vold (android::vold::VoldNativeService::remountUid(int, int)+84) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf130  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+3656) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #08 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #09 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #10 pc 000000000007ee44  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #12 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #13 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_2" sysTid=893
+    #00 pc 00000000000cdb74  /apex/com.android.runtime/lib64/bionic/libc.so (__ppoll+4) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008c3ac  /apex/com.android.runtime/lib64/bionic/libc.so (poll+88) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 0000000000005a24  /system/lib64/libsysutils.so (SocketListener::runListener()+1200) (BuildId: 4d9785b47abca3fa4896335ad18b07ae)
+    #03 pc 00000000000053cc  /system/lib64/libsysutils.so (SocketListener::threadStart(void*)+8) (BuildId: 4d9785b47abca3fa4896335ad18b07ae)
+    #04 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #05 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_3" sysTid=894
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000002fb4c  /system/bin/vold (android::vold::VoldNativeService::monitor()+68) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf7b4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+5324) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #08 pc 0000000000058504  /system/lib64/libbinder.so (android::IPCThreadState::getAndExecuteCommand()+156) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #09 pc 0000000000058c40  /system/lib64/libbinder.so (android::IPCThreadState::joinThreadPool(bool)+60) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #10 pc 000000000007ee44  /system/lib64/libbinder.so (android::PoolThread::threadLoop()+24) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #11 pc 000000000001366c  /system/lib64/libutils.so (android::Thread::_threadLoop(void*)+288) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+    #12 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #13 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+
+"Binder:889_4" sysTid=896
+    #00 pc 000000000007f23c  /apex/com.android.runtime/lib64/bionic/libc.so (syscall+28) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #01 pc 000000000008274c  /apex/com.android.runtime/lib64/bionic/libc.so (__futex_wait_ex(void volatile*, bool, int, bool, timespec const*)+140) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #02 pc 00000000000e3160  /apex/com.android.runtime/lib64/bionic/libc.so (NonPI::MutexLockWithTimeout(pthread_mutex_internal_t*, bool, timespec const*)+212) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+    #03 pc 00000000000afb44  /system/lib64/libc++.so (std::__1::mutex::lock()+8) (BuildId: a6337afacd0434ce424e2324ab79d9b7)
+    #04 pc 000000000002fb4c  /system/bin/vold (android::vold::VoldNativeService::monitor()+68) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #05 pc 00000000000cf7b4  /system/bin/vold (android::os::BnVold::onTransact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+5324) (BuildId: 5809da199054b6ad9ae534242a06fc5f)
+    #06 pc 000000000004c670  /system/lib64/libbinder.so (android::BBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+136) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+    #07 pc 000000000005898c  /system/lib64/libbinder.so (android::IPCThreadState::executeCommand(int)+980) (BuildId: a89e45d260b01b8e9d61f6c8f72b19d2)
+
+############ ANR: system_server android.fg + main ############
+"main" prio=5 tid=1 Native
+  | group="main" sCount=1 dsCount=0 flags=1 obj=0x71327d98 self=0x7746f96c00
+  | sysTid=5468 nice=-2 cgrp=default sched=0/0 handle=0x77484f4ed0
+  | state=S schedstat=( 553512847 51155534 712 ) utm=41 stm=14 core=6 HZ=100
+  | stack=0x7ff5234000-0x7ff5236000 stackSize=8192KB
+  | held mutexes=
+  kernel: __switch_to+0x90/0xc4
+  kernel: binder_thread_read+0x9ec/0x1080
+  kernel: binder_ioctl_write_read.constprop.55+0x20c/0x348
+  kernel: binder_ioctl+0x568/0x808
+  kernel: do_vfs_ioctl+0xb8/0x800
+  kernel: SyS_ioctl+0x84/0x98
+  kernel: el0_svc_naked+0x24/0x28
+  native: #00 pc 00000000000cdb34  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4)
+  native: #01 pc 000000000008a3d4  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+132)
+  native: #02 pc 00000000000582ac  /system/lib64/libbinder.so (android::IPCThreadState::talkWithDriver(bool)+256)
+  native: #03 pc 0000000000059160  /system/lib64/libbinder.so (android::IPCThreadState::waitForResponse(android::Parcel*, int*)+60)
+  native: #04 pc 0000000000058efc  /system/lib64/libbinder.so (android::IPCThreadState::transact(int, unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+180)
+  native: #05 pc 000000000004df38  /system/lib64/libbinder.so (android::BpBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+72)
+  native: #06 pc 0000000000149594  /system/lib64/libandroid_runtime.so (android_os_BinderProxy_transact(_JNIEnv*, _jobject*, int, _jobject*, _jobject*, int)+152)
+  at android.os.BinderProxy.transactNative(Native method)
+  at android.os.BinderProxy.transact(BinderProxy.java:511)
+  at android.os.IVold$Stub$Proxy.setListener(IVold.java:1332)
+  at com.android.server.StorageManagerService.connectVold(StorageManagerService.java:1620)
+  at com.android.server.StorageManagerService.start(StorageManagerService.java:1565)
+  at com.android.server.StorageManagerService.access$000(StorageManagerService.java:189)
+  at com.android.server.StorageManagerService$Lifecycle.onStart(StorageManagerService.java:219)
+  at com.android.server.SystemServiceManager.startService(SystemServiceManager.java:130)
+  at com.android.server.SystemServiceManager.startService(SystemServiceManager.java:117)
+  at com.android.server.SystemServiceManager.startService(SystemServiceManager.java:76)
+  at com.android.server.SystemServer.startOtherServices(SystemServer.java:1172)
+  at com.android.server.SystemServer.run(SystemServer.java:529)
+  at com.android.server.SystemServer.main(SystemServer.java:356)
+  at java.lang.reflect.Method.invoke(Native method)
+  at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:918)
+
+-----
+"android.fg" prio=5 tid=15 Native
+  | group="main" sCount=1 dsCount=0 flags=1 obj=0x14880438 self=0x76b1b80400
+  | sysTid=5487 nice=0 cgrp=default sched=0/0 handle=0x7658d5dd50
+  | state=S schedstat=( 4130673 2721822 135 ) utm=0 stm=0 core=4 HZ=100
+  | stack=0x7658c5b000-0x7658c5d000 stackSize=1039KB
+  | held mutexes=
+  kernel: __switch_to+0x90/0xc4
+  kernel: binder_thread_read+0x9ec/0x1080
+  kernel: binder_ioctl_write_read.constprop.55+0x20c/0x348
+  kernel: binder_ioctl+0x568/0x808
+  kernel: do_vfs_ioctl+0xb8/0x800
+  kernel: SyS_ioctl+0x84/0x98
+  kernel: el0_svc_naked+0x24/0x28
+  native: #00 pc 00000000000cdb34  /apex/com.android.runtime/lib64/bionic/libc.so (__ioctl+4)
+  native: #01 pc 000000000008a3d4  /apex/com.android.runtime/lib64/bionic/libc.so (ioctl+132)
+  native: #02 pc 00000000000582ac  /system/lib64/libbinder.so (android::IPCThreadState::talkWithDriver(bool)+256)
+  native: #03 pc 0000000000059160  /system/lib64/libbinder.so (android::IPCThreadState::waitForResponse(android::Parcel*, int*)+60)
+  native: #04 pc 0000000000058efc  /system/lib64/libbinder.so (android::IPCThreadState::transact(int, unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+180)
+  native: #05 pc 000000000004df38  /system/lib64/libbinder.so (android::BpBinder::transact(unsigned int, android::Parcel const&, android::Parcel*, unsigned int)+72)
+  native: #06 pc 0000000000149594  /system/lib64/libandroid_runtime.so (android_os_BinderProxy_transact(_JNIEnv*, _jobject*, int, _jobject*, _jobject*, int)+152)
+  at android.os.BinderProxy.transactNative(Native method)
+  at android.os.BinderProxy.transact(BinderProxy.java:511)
+  at android.os.IVold$Stub$Proxy.monitor(IVold.java:1350)
+  at com.android.server.StorageManagerService.monitor(StorageManagerService.java:3939)
+  at com.android.server.Watchdog$HandlerChecker.run(Watchdog.java:234)
+  at android.os.Handler.handleCallback(Handler.java:883)
+  at android.os.Handler.dispatchMessage(Handler.java:100)
+  at android.os.Looper.loop(Looper.java:214)
+  at android.os.HandlerThread.run(HandlerThread.java:67)
+  at com.android.server.ServiceThread.run(ServiceThread.java:44)
+
+DONE

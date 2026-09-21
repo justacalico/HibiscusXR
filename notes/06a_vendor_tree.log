@@ -1,0 +1,140 @@
+=== vendor top level ===
+total 156
+drwxr-xr-x 14 justin justin  4096 Dec 31  1969 .
+drwxr-xr-x  4 justin justin  4096 Aug 13 07:38 ..
+drwxr-xr-x 14 justin justin  4096 Dec 31  2008 app
+drwxr-xr-x  4 justin justin 12288 Dec 31  2008 bin
+-rw-------  1 justin justin  5327 Dec 31  2008 build.prop
+-rw-r--r--  1 justin justin  1886 Dec 31  2008 compatibility_matrix.xml
+-rw-------  1 justin justin   592 Dec 31  2008 default.prop
+drwxr-xr-x 21 justin justin  4096 Dec 31  2008 etc
+drwxr-xr-x  3 justin justin  4096 Dec 31  2008 firmware
+drwxr-xr-x  2 justin justin  4096 Dec 31  2008 framework
+drwxr-xr-x 12 justin justin 20480 Dec 31  2008 lib
+drwxr-xr-x  8 justin justin 20480 Dec 31  2008 lib64
+drwx------  2 justin justin  4096 Dec 31  1969 lost+found
+-rw-r--r--  1 justin justin 22604 Dec 31  2008 manifest.xml
+drwxr-xr-x  4 justin justin  4096 Dec 31  2008 overlay
+drwxr-xr-x  3 justin justin  4096 Dec 31  2008 package
+drwxr-xr-x  3 justin justin  4096 Dec 31  2008 radio
+drwxr-xr-x  5 justin justin  4096 Dec 31  2008 rfs
+-rw-r--r--  1 justin justin 17833 Dec 31  2008 ueventd.rc
+
+=== vendor dir sizes ===
+382M	/home/justin/pn2/vendor/lib64
+287M	/home/justin/pn2/vendor/lib
+45M	/home/justin/pn2/vendor/etc
+23M	/home/justin/pn2/vendor/bin
+6.3M	/home/justin/pn2/vendor/app
+3.8M	/home/justin/pn2/vendor/firmware
+100K	/home/justin/pn2/vendor/rfs
+88K	/home/justin/pn2/vendor/radio
+40K	/home/justin/pn2/vendor/framework
+28K	/home/justin/pn2/vendor/overlay
+24K	/home/justin/pn2/vendor/manifest.xml
+20K	/home/justin/pn2/vendor/ueventd.rc
+20K	/home/justin/pn2/vendor/package
+8.0K	/home/justin/pn2/vendor/build.prop
+4.0K	/home/justin/pn2/vendor/lost+found
+4.0K	/home/justin/pn2/vendor/default.prop
+4.0K	/home/justin/pn2/vendor/compatibility_matrix.xml
+
+=== vendor/bin/hw (HAL daemons) ===
+total 3340
+drwxr-xr-x 2 justin justin    4096 Dec 31  2008 .
+drwxr-xr-x 4 justin justin   12288 Dec 31  2008 ..
+-rwxr-xr-x 1 justin justin   20288 Dec 31  2008 android.hardware.audio@2.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.bluetooth@1.0-service-qti
+-rwxr-xr-x 1 justin justin   16204 Dec 31  2008 android.hardware.camera.provider@2.4-service
+-rwxr-xr-x 1 justin justin   47244 Dec 31  2008 android.hardware.cas@1.0-service
+-rwxr-xr-x 1 justin justin   15808 Dec 31  2008 android.hardware.configstore@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.contexthub@1.0-service
+-rwxr-xr-x 1 justin justin   16200 Dec 31  2008 android.hardware.drm@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.gatekeeper@1.0-service-qti
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.graphics.allocator@2.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.graphics.composer@2.1-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.health@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.keymaster@3.0-service-qti
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.light@2.0-service
+-rwxr-xr-x 1 justin justin   24612 Dec 31  2008 android.hardware.media.omx@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.memtrack@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.power@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.sensors@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.thermal@1.0-service
+-rwxr-xr-x 1 justin justin   48808 Dec 31  2008 android.hardware.usb@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.vibrator@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 android.hardware.vr@1.0-service
+-rwxr-xr-x 1 justin justin  312248 Dec 31  2008 android.hardware.wifi@1.0-service
+-rwxr-xr-x 1 justin justin   15256 Dec 31  2008 rild
+-rwxr-xr-x 1 justin justin   40880 Dec 31  2008 vendor.display.color@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 vendor.nxp.hardware.nfc@1.0-service
+-rwxr-xr-x 1 justin justin   11112 Dec 31  2008 vendor.qti.esepowermanager@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 vendor.qti.gnss@1.1-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 vendor.qti.hardware.factory@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 vendor.qti.hardware.iop@2.0-service
+-rwxr-xr-x 1 justin justin   15512 Dec 31  2008 vendor.qti.hardware.perf@1.0-service
+-rwxr-xr-x 1 justin justin   11344 Dec 31  2008 vendor.qti.hardware.qdutils_disp@1.0-service-qti
+-rwxr-xr-x 1 justin justin   11096 Dec 31  2008 vendor.qti.hardware.qteeconnector@1.0-service
+-rwxr-xr-x 1 justin justin   11024 Dec 31  2008 vendor.qti.hardware.sensorscalibrate@1.0-service
+-rwxr-xr-x 1 justin justin   27976 Dec 31  2008 vendor.qti.hardware.tui_comm@1.0-service-qti
+-rwxr-xr-x 1 justin justin 2517656 Dec 31  2008 wpa_supplicant
+
+=== vendor/lib64/hw ===
+total 12152
+drwxr-xr-x 2 justin justin    4096 Dec 31  2008 .
+drwxr-xr-x 8 justin justin   20480 Dec 31  2008 ..
+-rw-r--r-- 1 justin justin  288608 Dec 31  2008 android.hardware.audio.effect@2.0-impl.so
+-rw-r--r-- 1 justin justin  274368 Dec 31  2008 android.hardware.audio@2.0-impl.so
+-rw-r--r-- 1 justin justin  196936 Dec 31  2008 android.hardware.bluetooth@1.0-impl-qti.so
+-rw-r--r-- 1 justin justin  213224 Dec 31  2008 android.hardware.camera.provider@2.4-impl.so
+-rw-r--r-- 1 justin justin   94416 Dec 31  2008 android.hardware.contexthub@1.0-impl.generic.so
+-rw-r--r-- 1 justin justin   23440 Dec 31  2008 android.hardware.gatekeeper@1.0-impl-qti.so
+-rw-r--r-- 1 justin justin  148064 Dec 31  2008 android.hardware.gnss@1.0-impl-qti.so
+-rw-r--r-- 1 justin justin   35624 Dec 31  2008 android.hardware.graphics.allocator@2.0-impl.so
+-rw-r--r-- 1 justin justin  142976 Dec 31  2008 android.hardware.graphics.composer@2.1-impl.so
+-rw-r--r-- 1 justin justin   44136 Dec 31  2008 android.hardware.graphics.mapper@2.0-impl.so
+-rw-r--r-- 1 justin justin   35928 Dec 31  2008 android.hardware.health@1.0-impl.so
+-rw-r--r-- 1 justin justin   81264 Dec 31  2008 android.hardware.keymaster@3.0-impl-qti.so
+-rw-r--r-- 1 justin justin   23632 Dec 31  2008 android.hardware.light@2.0-impl.so
+-rw-r--r-- 1 justin justin   19232 Dec 31  2008 android.hardware.memtrack@1.0-impl.so
+-rw-r--r-- 1 justin justin   23688 Dec 31  2008 android.hardware.nfc@1.0-impl.so
+-rw-r--r-- 1 justin justin   23392 Dec 31  2008 android.hardware.power@1.0-impl.so
+-rw-r--r-- 1 justin justin   68776 Dec 31  2008 android.hardware.renderscript@1.0-impl.so
+-rw-r--r-- 1 justin justin   77648 Dec 31  2008 android.hardware.sensors@1.0-impl.so
+-rw-r--r-- 1 justin justin   23456 Dec 31  2008 android.hardware.thermal@1.0-impl.so
+-rw-r--r-- 1 justin justin   19272 Dec 31  2008 android.hardware.vibrator@1.0-impl.so
+-rw-r--r-- 1 justin justin   15168 Dec 31  2008 android.hardware.vr@1.0-impl.so
+-rw-r--r-- 1 justin justin   11504 Dec 31  2008 audio.primary.default.so
+-rw-r--r-- 1 justin justin  467456 Dec 31  2008 audio.primary.sdm845.so
+-rw-r--r-- 1 justin justin   41048 Dec 31  2008 audio.r_submix.default.so
+-rw-r--r-- 1 justin justin   23880 Dec 31  2008 audio.usb.default.so
+-rw-r--r-- 1 justin justin 4326384 Dec 31  2008 camera.qcom.so
+-rw-r--r-- 1 justin justin  994744 Dec 31  2008 com.qti.chi.override.so
+-rw-r--r-- 1 justin justin   23776 Dec 31  2008 com.qualcomm.qti.ant@1.0-impl.so
+-rw-r--r-- 1 justin justin   36112 Dec 31  2008 com.qualcomm.qti.bluetooth_audio@1.0-impl.so
+-rw-r--r-- 1 justin justin   15904 Dec 31  2008 gralloc.default.so
+-rw-r--r-- 1 justin justin   77480 Dec 31  2008 gralloc.sdm845.so
+-rw-r--r-- 1 justin justin  317352 Dec 31  2008 hwcomposer.sdm845.so
+-rw-r--r-- 1 justin justin   15480 Dec 31  2008 lights.sdm845.so
+-rw-r--r-- 1 justin justin    6976 Dec 31  2008 local_time.default.so
+-rw-r--r-- 1 justin justin   11208 Dec 31  2008 memtrack.sdm845.so
+-rw-r--r-- 1 justin justin  248008 Dec 31  2008 nfc_nci.nqx.default.so
+-rw-r--r-- 1 justin justin    7080 Dec 31  2008 power.default.so
+-rw-r--r-- 1 justin justin   28184 Dec 31  2008 power.qcom.so
+-rw-r--r-- 1 justin justin  163528 Dec 31  2008 sound_trigger.primary.sdm845.so
+-rw-r--r-- 1 justin justin   15384 Dec 31  2008 thermal.sdm845.so
+-rw-r--r-- 1 justin justin   15184 Dec 31  2008 vendor.nxp.hardware.nfc@1.0-impl.so
+-rw-r--r-- 1 justin justin   27784 Dec 31  2008 vendor.qti.esepowermanager@1.0-impl.so
+-rw-r--r-- 1 justin justin  276320 Dec 31  2008 vendor.qti.gnss@1.1-impl.so
+-rw-r--r-- 1 justin justin   31832 Dec 31  2008 vendor.qti.hardware.factory@1.0-impl.so
+-rw-r--r-- 1 justin justin   23776 Dec 31  2008 vendor.qti.hardware.fm@1.0-impl.so
+-rw-r--r-- 1 justin justin   19232 Dec 31  2008 vendor.qti.hardware.iop@2.0-impl.so
+-rw-r--r-- 1 justin justin   77176 Dec 31  2008 vendor.qti.hardware.qteeconnector@1.0-impl.so
+-rw-r--r-- 1 justin justin   23488 Dec 31  2008 vendor.qti.hardware.sensorscalibrate@1.0-impl.so
+-rw-r--r-- 1 justin justin   11152 Dec 31  2008 vibrator.default.so
+-rw-r--r-- 1 justin justin   11368 Dec 31  2008 vr.sdm845.so
+-rw-r--r-- 1 justin justin 3126648 Dec 31  2008 vulkan.sdm845.so
+
+=== vendor/firmware (count + VR/cam/eye related) ===
+41
+CAMERA_ICP.elf

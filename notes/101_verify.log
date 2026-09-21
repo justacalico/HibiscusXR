@@ -1,0 +1,43 @@
+=== deodexed pico apps verify 08/13/2026 13:01:37 ===
+[13:01:37] rebooting
+[13:02:18] boot_completed=1 uptime=35s
+[13:02:18] stayon re-applied
+[13:02:38] --- packages registered ---
+[13:02:38]    package:com.pvr.configuration
+[13:02:38]    package:com.pvr.shortcut
+[13:02:38]    package:com.pvr.verify
+[13:02:38]    package:com.alvr.pico2
+[13:02:38]    package:com.pvr.adapter
+[13:02:38]    package:com.picovr.vrusercenter
+[13:02:38]    package:com.pico.provider.settings
+[13:02:38]    package:com.pvr.vrdisplay
+[13:02:38]    package:com.pico.picotosvr
+[13:02:38]    package:com.picovr.initserver
+[13:02:38]    package:com.pvr.vrshell
+[13:02:38]    package:com.picovr.picovrlib.cvcontroller
+[13:02:38] --- dex problems (want 0) ---
+[13:02:39]    no-original-dex : 0
+[13:02:39]    ClassNotFound   : 0
+[13:02:39] --- pico processes alive ---
+[13:02:39]     1143     0 pvrservice
+[13:02:39]     2621  1000 com.pvr.configuration
+[13:02:39]     2730  1000 com.picovr.picovrlib.cvcontroller
+[13:02:39]     3257 10013 com.picovr.initserver
+[13:02:39]     3294 10012 com.picovr.vrusercenter
+[13:02:39]     3310 10013 com.picovr.initserver:ServerSettingProvider
+[13:02:39]     3363 10012 com.picovr.vrusercenter:BootService
+[13:02:39]     3384  1000 com.pvr.vrdisplay
+[13:02:39]     3695 10014 com.pico.picotosvr
+[13:02:39]     4082 10001 com.alvr.pico2
+[13:02:39]     4141 10001 com.alvr.pico2
+[13:02:39] --- crashes ---
+[13:02:39]    08-13 13:02:42.446  4133  4133 F DEBUG   :       #04 pc 004e8141  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+[13:02:39]    08-13 13:02:42.446  4133  4133 F DEBUG   :       #05 pc 004e56d5  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+[13:02:39]    08-13 13:02:42.446  4133  4133 F DEBUG   :       #06 pc 004d9f13  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+[13:02:39]    08-13 13:02:42.446  4133  4133 F DEBUG   :       #07 pc 00510b47  /data/app/com.alvr.pico2-wmweXr59yIZ-3XupkYWfYQ==/lib/arm/libalvr_client_core.so
+[13:02:39]    08-13 13:02:42.454  4115  4115 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 4115
+[13:02:39]    08-13 13:02:42.454  4115  4115 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+[13:02:39]    08-13 13:02:42.598  4143  4143 E AndroidRuntime: Process: com.picovr.picovrlib.cvcontroller:RemoteService, PID: 4143
+[13:02:39]    08-13 13:02:42.598  4143  4143 E AndroidRuntime: 	at com.picovr.picovrlib.cvcontrollerlib.CVControllerService.<clinit>(CVControllerService.java:182)
+[13:02:39] system_server=1651 pvrservice=1143
+[13:02:39] === done ===

@@ -1,0 +1,86 @@
+﻿=== panic message + preceding context ===
+08-13 12:10:01.572  3627  3658 W [ALVR NATIVE-RUST]: EGL_MESA_platform_surfaceless not available. Using default platform
+08-13 12:10:01.572   556   556 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+08-13 12:10:01.572  3627  3658 W [ALVR NATIVE-RUST]: EGL says it can present to the window but not natively
+08-13 12:10:01.573  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked (message): panicked at alvr\graphics\src\lib.rs:245:65:
+08-13 12:10:01.573  3627  3658 E [ALVR NATIVE-RUST]: removal index (is 0) should be < len (is 0)
+08-13 12:10:01.573  3627  3649 W Gralloc3: mapper 3.x is not supported
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked: What happened:
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: panicked at alvr\graphics\src\lib.rs:245:65:
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: removal index (is 0) should be < len (is 0)
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: 
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: Backtrace:
+--
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: 
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked (message): panicked at library/core/src/panicking.rs:225:5:
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked: What happened:
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: panicked at library/core/src/panicking.rs:225:5:
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: 
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: Backtrace:
+
+=== everything ALVR logged this run ===
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:    6: <unknown>
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:    7: <unknown>
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:    8: <unknown>
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: 
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked (message): panicked at library/core/src/panicking.rs:225:5:
+08-13 12:10:01.576  3627  3658 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: ALVR panicked: What happened:
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: panicked at library/core/src/panicking.rs:225:5:
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: panic in a function that cannot unwind
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: 
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    0: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    1: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    2: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    3: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    4: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    5: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    6: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    7: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    8: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:    9: <unknown>
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:   10: alvr_initialize_opengl
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:   11: _Z12renderThreadPv
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:   12: _ZL15__pthread_startPv
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]:   13: __start_thread
+08-13 12:10:01.577  3627  3658 E [ALVR NATIVE-RUST]: 
+
+=== EGL / GL / gralloc complaints ===
+08-13 12:10:14.780  1927  2157 D ImageWallpaperRenderer: loadBitmap done, surface size=Rect(0, 0 - 2560, 2560)
+08-13 12:10:15.070  1139  1139 D SurfaceFlinger: Finished setting power mode 0 on display 0
+08-13 12:10:16.428  1139  1139 D SurfaceFlinger: Setting power mode 2 on display 0
+08-13 12:10:16.706  1139  1139 D SurfaceFlinger: Finished setting power mode 2 on display 0
+08-13 12:10:26.532  1139  1139 D SurfaceFlinger: Setting power mode 0 on display 0
+08-13 12:10:26.831  1139  1139 D SurfaceFlinger: Finished setting power mode 0 on display 0
+08-13 12:10:26.883  1927  2157 D ImageWallpaperRenderer: loadBitmap done, surface size=Rect(0, 0 - 2560, 2560)
+08-13 12:10:29.054  1139  1139 D SurfaceFlinger: Setting power mode 2 on display 0
+08-13 12:10:29.335  1139  1139 D SurfaceFlinger: Finished setting power mode 2 on display 0
+08-13 12:10:43.693  1139  1139 E Layer   : [Surface(name=AppWindowToken{7a8500a token=Token{6926875 ActivityRecord{cab43ac u0 com.android.settings/.homepage.SettingsHomepageActivity t77}}})/@0x9fccfba - animation-leash#0] No local sync point found
+08-13 12:10:43.693  1139  1139 E Layer   : [Surface(name=AppWindowToken{7a8500a token=Token{6926875 ActivityRecord{cab43ac u0 com.android.settings/.homepage.SettingsHomepageActivity t77}}})/@0x9fccfba - animation-leash#0] No local sync point found
+08-13 12:10:43.693  1139  1139 E Layer   : [Surface(name=AppWindowToken{94511ad token=Token{7f66ec4 ActivityRecord{c0345d7 u0 com.android.launcher3/.lineage.LineageLauncher t75}}})/@0xe2be939 - animation-leash#0] No local sync point found
+08-13 12:10:43.693  1139  1139 E Layer   : [Surface(name=AppWindowToken{94511ad token=Token{7f66ec4 ActivityRecord{c0345d7 u0 com.android.launcher3/.lineage.LineageLauncher t75}}})/@0xe2be939 - animation-leash#0] No local sync point found
+08-13 12:10:49.709   556   556 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+08-13 12:10:49.709  3320  3905 W Gralloc3: mapper 3.x is not supported
+08-13 12:11:04.313  3320  3320 D PHH     : Set surface flinger forced fps/mode to -1
+08-13 12:11:04.383  3320  3320 D PHH     : Set surface flinger hwc overlay to true
+08-13 12:11:14.359  1139  1139 D SurfaceFlinger: Setting power mode 0 on display 0
+08-13 12:11:14.650  1139  1139 D SurfaceFlinger: Finished setting power mode 0 on display 0
+08-13 12:11:14.651  1637  1903 D SurfaceControl: Excessive delay in setPowerMode()
+08-13 12:11:14.817  1927  2157 D ImageWallpaperRenderer: loadBitmap done, surface size=Rect(0, 0 - 2560, 2560)
+08-13 12:11:15.058  1139  1139 D SurfaceFlinger: Setting power mode 2 on display 0
+08-13 12:11:15.337  1139  1139 D SurfaceFlinger: Finished setting power mode 2 on display 0
+08-13 12:11:15.338  1637  1903 D SurfaceControl: Excessive delay in setPowerMode()
+08-13 12:11:15.345  1637  4057 W system_server: Long monitor contention with owner android.anim (1671) at void com.android.server.wm.WindowAnimator.animate(long)(WindowAnimator.java:141) waiters=2 in int com.android.server.wm.WindowManagerService.relayoutWindow(com.android.server.wm.Session, android.view.IWindow, int, android.view.WindowManager$LayoutParams, int, int, int, int, long, android.graphics.Rect, android.graphics.Rect, android.graphics.Rect, android.graphics.Rect, android.graphics.Rect, android.graphics.Rect, android.graphics.Rect, android.view.DisplayCutout$ParcelableWrapper, android.util.MergedConfiguration, android.view.SurfaceControl, android.view.InsetsState) for 218ms
+DONE

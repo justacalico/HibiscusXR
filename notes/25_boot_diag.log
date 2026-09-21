@@ -1,0 +1,176 @@
+﻿=== boot state ===
+boot_completed : 
+bootanim       : running
+zygote         : running
+surfaceflinger : running
+vendor.qvr     : 
+uptime         : 59.29 347.39
+
+=== mounts ===
+/dev/block/platform/soc/1d84000.ufshc/by-name/vendor /vendor ext4 ro,seclabel,relatime,discard,data=ordered 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /system ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.runtime@1 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.runtime ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.tzdata@290000000 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.tzdata ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/bootdevice/by-name/oem /oem ext4 rw,seclabel,relatime,data=ordered 0 0
+/dev/block/bootdevice/by-name/dsp /dsp ext4 ro,seclabel,nosuid,nodev,relatime,data=ordered 0 0
+/dev/block/bootdevice/by-name/persist /persist ext4 rw,seclabel,nosuid,nodev,noatime,data=ordered 0 0
+none /vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /system/lib64/vndk-26/libsoftkeymasterdevice.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /system/lib/vndk-26/libsoftkeymasterdevice.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /system/lib/vndk-27/libsoftkeymasterdevice.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /system/lib64/vndk-27/libsoftkeymasterdevice.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /system/etc/permissions/android.hardware.fingerprint.xml ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /vendor/overlay/SysuiDarkTheme/SysuiDarkThemeOverlay.apk ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+none /vendor/etc/audio tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /vendor/lib/hw/com.qti.chi.override.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+none /vendor/lib64/hw/com.qti.chi.override.so tmpfs rw,seclabel,nodev,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /vendor/etc/usb_audio_policy_configuration.xml ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /vendor/lib64/libminijail_vendor.so ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /vendor/lib/libminijail_vendor.so ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.resolv@290000000 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.resolv ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.media@290000000 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.media ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.media.swcodec@290000000 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.media.swcodec ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.conscrypt@299900000 ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+/dev/block/platform/soc/1d84000.ufshc/by-name/system /apex/com.android.conscrypt ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+tmpfs /system/xbin/su tmpfs rw,seclabel,nosuid,relatime,size=2892760k,nr_inodes=723190,mode=755 0 0
+
+=== is /vendor populated? ===
+app
+bin
+build.prop
+compatibility_matrix.xml
+default.prop
+etc
+firmware
+framework
+lib
+lib64
+lost+found
+manifest.xml
+overlay
+package
+radio
+rfs
+ueventd.rc
+vendor/lib64 count: 395
+vendor/bin/hw count: 35
+
+=== vendor build.prop ===
+head: /vendor/build.prop: Permission denied
+
+=== running processes (top 25 by name) ===
+ATFWD-daemon
+NAME                       
+[DIAG_CNTL_SOCKE]
+[DIAG_GLINK_DIAG]
+[DIAG_SOCKCDSP_C]
+[DIAG_SOCKCDSP_D]
+[DIAG_SOCKDIAG_C]
+[DIAG_SOCKDIAG_D]
+[DIAG_SOCKLPASS_]
+[DIAG_SOCKMODEM_]
+[DIAG_SOCKSENSOR]
+[DIAG_SOCKWCNSS_]
+[DIAG_USB_diag]
+[IPCRTR_cdsp_sme]
+[IPCRTR_dsps_sme]
+[IPCRTR_lpass_sm]
+[IPCRTR_mpss_sme]
+[adsp]
+[apr_driver]
+[at_usb0]
+[at_usb1]
+[at_usb2]
+[bioset]
+[bond0]
+[cam-cpas]
+[cam_cci_wq]
+[cdsp_IPCRTR]
+[cdsp_smem_glink]
+[cfg80211]
+[core_ctl/0]
+[core_ctl/4]
+[cpuhp/0]
+[cpuhp/1]
+[cpuhp/2]
+[cpuhp/3]
+[cpuhp/4]
+[cpuhp/5]
+[cpuhp/6]
+[cpuhp/7]
+[crtc_commit:117]
+
+=== recent kernel messages ===
+[   59.331402] type=1400 audit(1786627015.473:303): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/rild" dev="sde16" ino=148 scontext=u:r:shell:s0 tcontext=u:object_r:rild_exec:s0 tclass=file permissive=1
+[   59.331422] type=1400 audit(1786627015.473:303): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/rild" dev="sde16" ino=148 scontext=u:r:shell:s0 tcontext=u:object_r:rild_exec:s0 tclass=file permissive=1
+[   59.331426] type=1400 audit(1786627015.473:304): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.display.color@1.0-service" dev="sde16" ino=149 scontext=u:r:shell:s0 tcontext=u:object_r:hal_display_color_default_exec:s0 tclass=file permissive=1
+[   59.331445] type=1400 audit(1786627015.473:304): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.display.color@1.0-service" dev="sde16" ino=149 scontext=u:r:shell:s0 tcontext=u:object_r:hal_display_color_default_exec:s0 tclass=file permissive=1
+[   59.331449] type=1400 audit(1786627015.473:305): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.nxp.hardware.nfc@1.0-service" dev="sde16" ino=150 scontext=u:r:shell:s0 tcontext=u:object_r:hal_nfc_default_exec:s0 tclass=file permissive=1
+[   59.331468] type=1400 audit(1786627015.473:305): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.nxp.hardware.nfc@1.0-service" dev="sde16" ino=150 scontext=u:r:shell:s0 tcontext=u:object_r:hal_nfc_default_exec:s0 tclass=file permissive=1
+[   59.331471] type=1400 audit(1786627015.473:306): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.esepowermanager@1.0-service" dev="sde16" ino=151 scontext=u:r:shell:s0 tcontext=u:object_r:hal_esepowermanager_qti_exec:s0 tclass=file permissive=1
+[   59.331491] type=1400 audit(1786627015.473:306): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.esepowermanager@1.0-service" dev="sde16" ino=151 scontext=u:r:shell:s0 tcontext=u:object_r:hal_esepowermanager_qti_exec:s0 tclass=file permissive=1
+[   59.331495] type=1400 audit(1786627015.473:307): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.gnss@1.1-service" dev="sde16" ino=152 scontext=u:r:shell:s0 tcontext=u:object_r:hal_gnss_qti_exec:s0 tclass=file permissive=1
+[   59.331514] type=1400 audit(1786627015.473:307): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.gnss@1.1-service" dev="sde16" ino=152 scontext=u:r:shell:s0 tcontext=u:object_r:hal_gnss_qti_exec:s0 tclass=file permissive=1
+[   59.331517] type=1400 audit(1786627015.473:308): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.factory@1.0-service" dev="sde16" ino=153 scontext=u:r:shell:s0 tcontext=u:object_r:hal_factory_qti_default_exec:s0 tclass=file permissive=1
+[   59.331537] type=1400 audit(1786627015.473:308): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.factory@1.0-service" dev="sde16" ino=153 scontext=u:r:shell:s0 tcontext=u:object_r:hal_factory_qti_default_exec:s0 tclass=file permissive=1
+[   59.331540] type=1400 audit(1786627015.473:309): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.iop@2.0-service" dev="sde16" ino=154 scontext=u:r:shell:s0 tcontext=u:object_r:hal_iop_default_exec:s0 tclass=file permissive=1
+[   59.331561] type=1400 audit(1786627015.473:309): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.iop@2.0-service" dev="sde16" ino=154 scontext=u:r:shell:s0 tcontext=u:object_r:hal_iop_default_exec:s0 tclass=file permissive=1
+[   59.331565] type=1400 audit(1786627015.473:310): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.perf@1.0-service" dev="sde16" ino=155 scontext=u:r:shell:s0 tcontext=u:object_r:hal_perf_default_exec:s0 tclass=file permissive=1
+[   59.331585] type=1400 audit(1786627015.473:310): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.perf@1.0-service" dev="sde16" ino=155 scontext=u:r:shell:s0 tcontext=u:object_r:hal_perf_default_exec:s0 tclass=file permissive=1
+[   59.331589] type=1400 audit(1786627015.473:311): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.qdutils_disp@1.0-service-qti" dev="sde16" ino=156 scontext=u:r:shell:s0 tcontext=u:object_r:hal_qdutils_disp_qti_exec:s0 tclass=file permissive=1
+[   59.331610] type=1400 audit(1786627015.473:311): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.qdutils_disp@1.0-service-qti" dev="sde16" ino=156 scontext=u:r:shell:s0 tcontext=u:object_r:hal_qdutils_disp_qti_exec:s0 tclass=file permissive=1
+[   59.331615] type=1400 audit(1786627015.473:312): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.qteeconnector@1.0-service" dev="sde16" ino=157 scontext=u:r:shell:s0 tcontext=u:object_r:hal_qteeconnector_qti_exec:s0 tclass=file permissive=1
+[   59.331637] type=1400 audit(1786627015.473:312): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.qteeconnector@1.0-service" dev="sde16" ino=157 scontext=u:r:shell:s0 tcontext=u:object_r:hal_qteeconnector_qti_exec:s0 tclass=file permissive=1
+[   59.331641] type=1400 audit(1786627015.473:313): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.sensorscalibrate@1.0-service" dev="sde16" ino=158 scontext=u:r:shell:s0 tcontext=u:object_r:hal_sensorscalibrate_qti_default_exec:s0 tclass=file permissive=1
+[   59.331662] type=1400 audit(1786627015.473:313): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.sensorscalibrate@1.0-service" dev="sde16" ino=158 scontext=u:r:shell:s0 tcontext=u:object_r:hal_sensorscalibrate_qti_default_exec:s0 tclass=file permissive=1
+[   59.331666] type=1400 audit(1786627015.473:314): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.tui_comm@1.0-service-qti" dev="sde16" ino=159 scontext=u:r:shell:s0 tcontext=u:object_r:hal_tui_comm_qti_exec:s0 tclass=file permissive=1
+[   59.331686] type=1400 audit(1786627015.473:314): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/vendor.qti.hardware.tui_comm@1.0-service-qti" dev="sde16" ino=159 scontext=u:r:shell:s0 tcontext=u:object_r:hal_tui_comm_qti_exec:s0 tclass=file permissive=1
+[   59.331689] type=1400 audit(1786627015.473:315): avc: denied { getattr } for comm="ls" path="/vendor/bin/hw/wpa_supplicant" dev="sde16" ino=160 scontext=u:r:shell:s0 tcontext=u:object_r:hal_wifi_supplicant_default_exec:s0 tclass=file permissive=1
+
+=== logcat: errors and fatals ===
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source BT SCO Headset Mic
+08-13 09:16:44.362   959   959 E APM::Serializer: Looking at route 1
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With sink Telephony Tx
+08-13 09:16:44.362   959   959 E APM::Serializer: Looking at route 1
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With sink primary input
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source Built-In Mic
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source Built-In Back Mic
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source Wired Headset Mic
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source BT SCO Headset Mic
+08-13 09:16:44.362   959   959 E APM::Serializer: Looking at route 1
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With sink voice_rx
+08-13 09:16:44.362   959   959 E APM::Serializer: ... With source Telephony Rx
+08-13 09:16:44.362   959   959 E APM::Serializer: Done looking for existing routes
+08-13 09:16:44.362   959   959 E APM::Serializer: No existing route found... 1 1
+08-13 09:16:44.363   959   959 E APM::Serializer: Adding our own.
+08-13 09:16:44.363   959   959 E APM::Serializer: Got sink 0x75ce3e3c40
+08-13 09:16:44.363   959   959 E APM::Serializer: Got source 0x75ce4002a0
+08-13 09:16:44.363   959   959 E APM::Serializer: Got source 0x75ce400380
+08-13 09:16:44.363   959   959 E APM::Serializer: Got source 0x75ce400460
+08-13 09:16:44.363   959   959 E APM::Serializer: Got source 0x75ce3e4880
+08-13 09:16:44.363   959   959 E APM::Serializer: route add returned 7
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning2
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning
+08-13 09:16:44.363   959   959 E APM::Serializer: No BT SCO Headset device found, don't patch policy
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning2
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning
+08-13 09:16:44.363   959   959 E APM::Serializer: No BT SCO Headset device found, don't patch policy
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning2
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning
+08-13 09:16:44.363   959   959 E APM::Serializer: No BT SCO Headset device found, don't patch policy
+08-13 09:16:44.363   959   959 E APM::Serializer: Good morning2
+08-13 09:16:44.363   959   959 E APM::AudioPolicyEngine/Config: parse: Could not parse document /vendor/etc/audio_policy_engine_configuration.xml
+08-13 09:16:44.363   959   959 E APM::AudioPolicyEngine/Config: parseLegacyVolumeFile: Could not parse document /odm/etc/audio_policy_configuration.xml
+08-13 09:16:44.587  1867  1867 F linker  : CANNOT LINK EXECUTABLE "/vendor/bin/wigignpt": library "vendor.qti.hardware.wigig.netperftuner@1.0.so" not found
+08-13 09:16:49.008  1420  1558 E LocSvc_api_v02: locClientSendReq:2097]: invalid handle 
+08-13 09:16:49.008  1420  1558 E LocSvc_IzatApiV02: sendBestAvailablePosReq:1038]: error! status = 10, zpp_ind.status = 0
+08-13 09:16:49.150  1869  1869 F linker  : CANNOT LINK EXECUTABLE "/vendor/bin/hw/vendor.qti.hardware.factory@1.0-service": library "vendor.qti.hardware.factory@1.0.so" not found
+08-13 09:16:49.588  1871  1871 F linker  : CANNOT LINK EXECUTABLE "/vendor/bin/wigignpt": library "vendor.qti.hardware.wigig.netperftuner@1.0.so" not found
+08-13 09:16:54.151  1873  1873 F linker  : CANNOT LINK EXECUTABLE "/vendor/bin/hw/vendor.qti.hardware.factory@1.0-service": library "vendor.qti.hardware.factory@1.0.so" not found
+08-13 09:16:54.588  1875  1875 F linker  : CANNOT LINK EXECUTABLE "/vendor/bin/wigignpt": library "vendor.qti.hardware.wigig.netperftuner@1.0.so" not found

@@ -1,0 +1,5 @@
+=== revert ART patch 08/13/2026 16:58:09 ===
+[16:58:10]    reverted to stock ART
+[16:58:10]    7ee5ba3c7c99b10c933082f48588c5fc  /system/apex/com.android.runtime.release/lib64/libart.so
+[16:58:10]    7ee5ba3c7c99b10c933082f48588c5fc  /system/apex/com.android.runtime.release/lib64/libart.so.orig
+[16:58:10] rebooting

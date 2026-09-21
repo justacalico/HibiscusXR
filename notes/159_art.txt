@@ -1,0 +1,85 @@
+art_quick_generic_jni_trampoline @ 0x13f2c0
+faulting pc = +176 = 0x13f370
+
+  +0    0013f2c0  sub        sp, sp, #0xe0
+  +4    0013f2c4  stp        d0, d1, [sp, #0x10]
+  +8    0013f2c8  stp        d2, d3, [sp, #0x20]
+  +12   0013f2cc  stp        d4, d5, [sp, #0x30]
+  +16   0013f2d0  stp        d6, d7, [sp, #0x40]
+  +20   0013f2d4  stp        x1, x2, [sp, #0x50]
+  +24   0013f2d8  stp        x3, x4, [sp, #0x60]
+  +28   0013f2dc  stp        x5, x6, [sp, #0x70]
+  +32   0013f2e0  stp        x7, x20, [sp, #0x80]
+  +36   0013f2e4  stp        x21, x22, [sp, #0x90]
+  +40   0013f2e8  stp        x23, x24, [sp, #0xa0]
+  +44   0013f2ec  stp        x25, x26, [sp, #0xb0]
+  +48   0013f2f0  stp        x27, x28, [sp, #0xc0]
+  +52   0013f2f4  stp        x29, x30, [sp, #0xd0]
+  +56   0013f2f8  str        x0, [sp]
+  +60   0013f2fc  mov        x16, sp
+  +64   0013f300  str        x16, [x19, #0xb0]
+  +68   0013f304  mov        x28, sp
+  +72   0013f308  mov        x29, sp
+  +76   0013f30c  mov        x16, #0x1400
+  +80   0013f310  sub        sp, sp, x16
+  +84   0013f314  mov        x0, x19
+  +88   0013f318  mov        x1, x29
+  +92   0013f31c  bl         #0x58ef68
+  +96   0013f320  cbz        x0, #0x13f3b4
+  +100  0013f324  mov        sp, x1   *** installs a new stack pointer ***
+  +104  0013f328  mov        x16, x0
+  +108  0013f32c  ldp        x0, x1, [sp]
+  +112  0013f330  ldp        x2, x3, [sp, #0x10]
+  +116  0013f334  ldp        x4, x5, [sp, #0x20]
+  +120  0013f338  ldp        x6, x7, [sp, #0x30]
+  +124  0013f33c  ldp        d0, d1, [sp, #0x40]
+  +128  0013f340  ldp        d2, d3, [sp, #0x50]
+  +132  0013f344  ldp        d4, d5, [sp, #0x60]
+  +136  0013f348  ldp        d6, d7, [sp, #0x70]
+  +140  0013f34c  add        sp, sp, #0x80
+  +144  0013f350  blr        x16
+  +148  0013f354  mov        x1, x0
+  +152  0013f358  mov        x0, x19
+  +156  0013f35c  fmov       x2, d0
+  +160  0013f360  bl         #0x58f6ac
+  +164  0013f364  ldr        x2, [x19, #0xa0]
+  +168  0013f368  cbnz       x2, #0x13f3b4
+  +172  0013f36c  mov        sp, x28   <-- lr points here (the call before)
+  +176  0013f370  ldp        d0, d1, [sp, #0x10]   <=========== FAULTING INSTRUCTION (pc)
+  +180  0013f374  ldp        d2, d3, [sp, #0x20]
+  +184  0013f378  ldp        d4, d5, [sp, #0x30]
+  +188  0013f37c  ldp        d6, d7, [sp, #0x40]
+  +192  0013f380  ldp        x1, x2, [sp, #0x50]
+  +196  0013f384  ldp        x3, x4, [sp, #0x60]
+  +200  0013f388  ldp        x5, x6, [sp, #0x70]
+  +204  0013f38c  ldp        x7, x20, [sp, #0x80]
+  +208  0013f390  ldp        x21, x22, [sp, #0x90]
+  +212  0013f394  ldp        x23, x24, [sp, #0xa0]
+  +216  0013f398  ldp        x25, x26, [sp, #0xb0]
+  +220  0013f39c  ldp        x27, x28, [sp, #0xc0]
+  +224  0013f3a0  ldp        x29, x30, [sp, #0xd0]
+  +228  0013f3a4  add        sp, sp, #0xe0
+  +232  0013f3a8  ldr        w20, [x19, #0x34]
+  +236  0013f3ac  fmov       d0, x0
+  +240  0013f3b0  ret        
+  +244  0013f3b4  ldr        x1, [x19, #0xb0]
+  +248  0013f3b8  sub        sp, x1, #1
+  +252  0013f3bc  adrp       x16, #0x5c4000
+  +256  0013f3c0  ldr        x16, [x16, #0xa80]
+  +260  0013f3c4  ldr        x16, [x16]
+  +264  0013f3c8  sub        sp, sp, #0xb0
+  +268  0013f3cc  stp        d8, d9, [sp, #0x10]
+  +272  0013f3d0  stp        d10, d11, [sp, #0x20]
+  +276  0013f3d4  stp        d12, d13, [sp, #0x30]
+  +280  0013f3d8  stp        d14, d15, [sp, #0x40]
+  +284  0013f3dc  stp        x19, x20, [sp, #0x50]
+  +288  0013f3e0  stp        x21, x22, [sp, #0x60]
+  +292  0013f3e4  stp        x23, x24, [sp, #0x70]
+  +296  0013f3e8  stp        x25, x26, [sp, #0x80]
+  +300  0013f3ec  stp        x27, x28, [sp, #0x90]
+  +304  0013f3f0  stp        x29, x30, [sp, #0xa0]
+  +308  0013f3f4  str        x16, [sp]
+  +312  0013f3f8  mov        x16, sp
+  +316  0013f3fc  str        x16, [x19, #0xb0]
+
+DONE

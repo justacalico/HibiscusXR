@@ -1,0 +1,116 @@
+################ 1. w25q_write_bin : what does it open? ################
+ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /system/bin/linker64, for Android 27, BuildID[md5/uuid]=9a787cc415658603446b67e503900f52, stripped
+--- NEEDED ---
+0x0000000000000001 (NEEDED)             Shared library: [libc++.so]
+0x0000000000000001 (NEEDED)             Shared library: [libc.so]
+0x0000000000000001 (NEEDED)             Shared library: [libm.so]
+0x0000000000000001 (NEEDED)             Shared library: [libdl.so]
+
+--- ALL strings (this binary is tiny; show everything) ---
+!.qd{#
+"w&
+-y"W
+.data
+.dynamic
+.dynstr
+.dynsym
+.eh_frame
+.eh_frame_hdr
+.fini_array
+.gnu.hash
+.gnu.version
+.gnu.version_r
+.gnu_debugdata
+.got
+.got.plt
+.init_array
+.interp
+.note.android.ident
+.note.gnu.build-id
+.note.gnu.gold-version
+.preinit_array
+.rela.dyn
+.rela.plt
+.rodata
+.shstrtab
+.text
+/Nx
+/data/media/0/top_level_bitmap.bin
+/dev/w25q
+/system/bin/linker64
+0|WoZ
+3;.k
+7zXZ
+:^=v*Vs:
+:v71ecC
+<5T
+>PJ
+@9_
+A+q
+A9M
+A9U
+Android
+Check result:fail
+Check result:success
+Dkg
+ELF
+Ei8
+GNU
+GTcY
+H/Q9
+LIBC
+Qbgu
+T,0`LW
+The size of firmware : 0x%lx,being written......
+Tls
+U)I
+W"i
+Write finish,checking......
+X',
+Y,Q
+ZRJ
+__bss_start
+__cxa_atexit
+__libc_init
+__open_2
+__register_atfork
+_edata
+_end
+can't open device w25q
+can't open firmware data
+close
+dest:month:[0x%x,0x%x,0x%x] date:[0x%x,0x%x]
+fclose
+fopen
+fread
+free
+fseek
+ftell
+gZNe
+gold 1.11
+libc++.so
+libc.so
+libdl.so
+libm.so
+malloc
+memset
+printf
+puts
+qArs
+read
+res :month:[0x%x,0x%x,0x%x] date:[0x%x,0x%x]
+rewind
+s?~B_
+the date:
+vjA
+w4T
+write
+yIe
+|CE
+
+################ 2. /system/etc listing (is there an ndi dir at all?) ################
+(full /system/etc entry count:)
+189
+
+################ 3. filename string search across images ################
+system   HIT (1 occurrences)

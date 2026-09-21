@@ -1,0 +1,33 @@
+################ system-pn2.img ################
+  before: 4658 bytes
+  glued lines before:
+    129:ro.sf.hwrotation=90ro.product.device=PICOA7B10
+  after : 4813 bytes
+  glued lines after:
+  written OK (4813 bytes)
+  fsck CLEAN
+  --- the managed keys as they now read ---
+    50:ro.build.product=PICOA7B10
+    123:persist.bluetooth.a2dp_offload.disabled=true
+    130:ro.surface_flinger.primary_display_orientation=ORIENTATION_90
+    131:ro.sf.hwrotation=90
+    134:ro.product.device=PICOA7B10
+    135:ro.product.model=Pico Neo 2
+
+################ system-pn2-full.img ################
+  before: 4658 bytes
+  glued lines before:
+    129:ro.sf.hwrotation=90ro.product.device=PICOA7B10
+  after : 4813 bytes
+  glued lines after:
+  written OK (4813 bytes)
+  fsck CLEAN
+  --- the managed keys as they now read ---
+    50:ro.build.product=PICOA7B10
+    123:persist.bluetooth.a2dp_offload.disabled=true
+    130:ro.surface_flinger.primary_display_orientation=ORIENTATION_90
+    131:ro.sf.hwrotation=90
+    134:ro.product.device=PICOA7B10
+    135:ro.product.model=Pico Neo 2
+
+DONE

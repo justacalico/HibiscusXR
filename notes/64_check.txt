@@ -1,0 +1,16 @@
+-rwxrwxrwx 1 justin justin 227192 Aug 13 11:24 /mnt/f/PN2Lineage/sensorpatch/libsensorservice.so
+
+no linux llvm-objdump at /mnt/f/Android/Sdk/ndk/23.1.7779620/toolchains/llvm/prebuilt/linux-x86_64/bin/llvm-objdump; falling back to what's on PATH
+objdump: /usr/bin/objdump
+
+=== the assert string and who references it ===
+   9dab , (int32_t)SensorType::DEVICE_PRIVATE_BASE=
+   b1cd (int32_t)SensorType::DEVICE_PRIVATE_BASE
+
+=== symbol for convertToSensorEvent ===
+000000000002bc6c g    DF .text	0000000000000388  Base        _ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t
+
+=== disassembly of convertToSensorEvent ===
+
+--------
+DONE

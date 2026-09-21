@@ -1,0 +1,274 @@
+image: /mnt/f/PN2Lineage/images/ota_4.1.3/system.img
+-rwxrwxrwx 1 justin justin 3943694336 Aug 13 09:07 /mnt/f/PN2Lineage/images/ota_4.1.3/system.img
+
+=== root layout ===
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     11   40700 (2)      0      0    4096 31-Dec-1969 19:00 lost+found
+     12   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoAppCheckPrebuild
+     18   40755 (2)      0      0    4096 31-Dec-2008 11:00 app
+    759   40755 (2)      0   2000    8192 31-Dec-2008 11:00 bin
+   1119  100600 (1)      0      0    6761 31-Dec-2008 11:00 build.prop
+   1120  100644 (1)      0      0   84340 31-Dec-2008 11:00 compatibility_matrix.xml
+   1121   40755 (2)      0      0    4096 31-Dec-2008 11:00 etc
+   1686   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs
+   1688   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs64
+   1690   40755 (2)      0      0    8192 31-Dec-2008 11:00 fonts
+   1873   40755 (2)      0      0    4096 31-Dec-2008 11:00 framework
+   2293   40755 (2)      0      0   16384 31-Dec-2008 11:00 lib
+   2847   40755 (2)      0      0   20480 31-Dec-2008 11:00 lib64
+   3439  100644 (1)      0      0    2946 31-Dec-2008 11:00 manifest.xml
+   3440   40755 (2)      0      0    4096 31-Dec-2008 11:00 media
+   3742   40755 (2)      0      0    4096 31-Dec-2008 11:00 pre_resource
+   3768   40755 (2)      0      0    4096 31-Dec-2008 11:00 priv-app
+   4289  100644 (1)      0      0   1364953 31-Dec-2008 11:00 recovery-from-boot.p
+   4290   40755 (2)      0      0    4096 31-Dec-2008 11:00 tts
+   4304   40755 (2)      0      0    4096 31-Dec-2008 11:00 usr
+   4437  120644 (7)      0      0       7 31-Dec-2008 11:00 vendor
+   4438   40755 (2)      0   2000    4096 31-Dec-2008 11:00 xbin
+
+
+using root prefix: ''  (empty means the image root IS /system)
+
+############ /bin  (qvr/pvr/vr) ############
+    990  100755 (1)      0   2000   11112 31-Dec-2008 11:00 pvr_compute
+    991  100755 (1)      0   2000   11088 31-Dec-2008 11:00 pvrservice
+    993  100755 (1)      0   2000   11408 31-Dec-2008 11:00 pxrconfigservicetest
+    994  100755 (1)      0   2000   15552 31-Dec-2008 11:00 pxrnotification_test
+    996  100755 (1)      0   2000   72500 31-Dec-2008 11:00 qvrcameratest
+    997  100755 (1)      0   2000   82584 31-Dec-2008 11:00 qvrcameratest64
+    998  100755 (1)      0   2000   51356 31-Dec-2008 11:00 qvrcameratseq
+    999  100755 (1)      0   2000   61984 31-Dec-2008 11:00 qvrcameratseq64
+   1000  100755 (1)      0   2000   16272 31-Dec-2008 11:00 qvrservice
+   1001  100755 (1)      0   2000   75384 31-Dec-2008 11:00 qvrservicetest
+   1002  100755 (1)      0   2000   90136 31-Dec-2008 11:00 qvrservicetest64
+   1102  100755 (1)      0   2000     152 31-Dec-2008 11:00 vr
+
+############ /lib64 (vr libs) ############
+   2941  100644 (1)      0      0   150592 31-Dec-2008 11:00 libCVControllerClient.pxr.so
+   2959  100644 (1)      0      0   13755328 31-Dec-2008 11:00 libPvr_UESDKExt2.so
+   2960  100644 (1)      0      0   8059145 31-Dec-2008 11:00 libPvr_UnitySDK.so
+   2961  100644 (1)      0      0   8059145 31-Dec-2008 11:00 libPvr_UnitySDKExt1.so
+   2962  100644 (1)      0      0   1914632 31-Dec-2008 11:00 libPvr_UnitySDKExt10.so
+   2963  100644 (1)      0      0   2047864 31-Dec-2008 11:00 libPvr_UnitySDKExt11.so
+   2964  100644 (1)      0      0   13118792 31-Dec-2008 11:00 libPvr_UnitySDKExt5.so
+   2965  100644 (1)      0      0   13237880 31-Dec-2008 11:00 libPvr_UnitySDKExt8.so
+   2966  100644 (1)      0      0   1894024 31-Dec-2008 11:00 libPvr_UnitySDKExt9.so
+   3039  100644 (1)      0      0   1828296 31-Dec-2008 11:00 libcompositor.pxr.so
+   3040  100644 (1)      0      0   64408 31-Dec-2008 11:00 libconfigurationclient.pxr.so
+   3153  100644 (1)      0      0   1018088 31-Dec-2008 11:00 libloader.pxr.so
+   3220  100644 (1)      0      0   1009912 31-Dec-2008 11:00 libplugin.pxr.so
+   3228  100644 (1)      0      0   173992 31-Dec-2008 11:00 libpvrmodule_orientationtracker.so
+   3229  100644 (1)      0      0   202000 31-Dec-2008 11:00 libpvrmodule_platform.so
+   3230  100644 (1)      0      0   138720 31-Dec-2008 11:00 libpvrservice.so
+   3231  100644 (1)      0      0   135824 31-Dec-2008 11:00 libpvrserviceclient.so
+   3232  100644 (1)      0      0   3620152 31-Dec-2008 11:00 libpxr_6dof_optimization.so
+   3233  100644 (1)      0      0   65208 31-Dec-2008 11:00 libpxrnotification.pxr.so
+   3234  100644 (1)      0      0   15088 31-Dec-2008 11:00 libpxrserviceclient.so
+   3244  100644 (1)      0      0   144160 31-Dec-2008 11:00 libqvrcamera_client_system.so
+   3250  100644 (1)      0      0   1238808 31-Dec-2008 11:00 libruntime.pxr.so
+
+############ /lib (vr libs) ############
+   2375  100644 (1)      0      0   98116 31-Dec-2008 11:00 libCVControllerClient.pxr.so
+   2391  100644 (1)      0      0   9448252 31-Dec-2008 11:00 libPvr_UESDKExt2.so
+   2392  100644 (1)      0      0   596116 31-Dec-2008 11:00 libPvr_UnitySDK.so
+   2393  100644 (1)      0      0   608428 31-Dec-2008 11:00 libPvr_UnitySDKExt1.so
+   2394  100644 (1)      0      0   1167280 31-Dec-2008 11:00 libPvr_UnitySDKExt10.so
+   2395  100644 (1)      0      0   1255072 31-Dec-2008 11:00 libPvr_UnitySDKExt11.so
+   2396  100644 (1)      0      0   8981204 31-Dec-2008 11:00 libPvr_UnitySDKExt5.so
+   2397  100644 (1)      0      0   9098752 31-Dec-2008 11:00 libPvr_UnitySDKExt8.so
+   2398  100644 (1)      0      0   1150796 31-Dec-2008 11:00 libPvr_UnitySDKExt9.so
+   2466  100644 (1)      0      0   1467220 31-Dec-2008 11:00 libcompositor.pxr.so
+   2467  100644 (1)      0      0   53488 31-Dec-2008 11:00 libconfigurationclient.pxr.so
+   2534  100644 (1)      0      0   505568 31-Dec-2008 11:00 libloader.pxr.so
+   2592  100644 (1)      0      0   718580 31-Dec-2008 11:00 libplugin.pxr.so
+   2600  100644 (1)      0      0   99860 31-Dec-2008 11:00 libpvrmodule_orientationtracker.so
+   2601  100644 (1)      0      0   160524 31-Dec-2008 11:00 libpvrmodule_platform.so
+   2602  100644 (1)      0      0   106528 31-Dec-2008 11:00 libpvrservice.so
+   2603  100644 (1)      0      0   109712 31-Dec-2008 11:00 libpvrserviceclient.so
+   2604  100644 (1)      0      0   2042104 31-Dec-2008 11:00 libpxr_6dof_optimization.so
+   2605  100644 (1)      0      0   58596 31-Dec-2008 11:00 libpxrnotification.pxr.so
+   2606  100644 (1)      0      0   20344 31-Dec-2008 11:00 libpxrserviceclient.so
+   2617  100644 (1)      0      0   20248 31-Dec-2008 11:00 libqvr_cam_cdsp_driver_stub.so
+   2618  100644 (1)      0      0   24364 31-Dec-2008 11:00 libqvr_cdsp_driver_stub.so
+   2619  100644 (1)      0      0   45716 31-Dec-2008 11:00 libqvr_eyetracking_plugin.so
+   2620  100644 (1)      0      0   16076 31-Dec-2008 11:00 libqvr_mapper_stub.so
+   2621  100644 (1)      0      0   121728 31-Dec-2008 11:00 libqvrcamera_client_system.so
+   2622  100644 (1)      0      0   556684 31-Dec-2008 11:00 libqvrservice.so
+   2629  100644 (1)      0      0   716872 31-Dec-2008 11:00 libruntime.pxr.so
+
+############ /framework (pico jars) ############
+   2264  100644 (1)      0      0   39557 31-Dec-2008 11:00 pxr_sdk_api.jar
+   2288  100644 (1)      0      0     304 31-Dec-2008 11:00 vr.jar
+
+############ /priv-app ############
+   3768   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+   3769   40755 (2)      0      0    4096 31-Dec-2008 11:00 BackupRestoreConfirmation
+   3775   40755 (2)      0      0    4096 31-Dec-2008 11:00 BitVideo
+   3800   40755 (2)      0      0    4096 31-Dec-2008 11:00 BlockedNumberProvider
+   3806   40755 (2)      0      0    4096 31-Dec-2008 11:00 CNEService
+   3812   40755 (2)      0      0    4096 31-Dec-2008 11:00 CVService
+   3830   40755 (2)      0      0    4096 31-Dec-2008 11:00 CellBroadcastReceiver
+   3836   40755 (2)      0      0    4096 31-Dec-2008 11:00 ControllerUpgrade
+   3842   40755 (2)      0      0    4096 31-Dec-2008 11:00 CtsShimPrivPrebuilt
+   3844   40755 (2)      0      0    4096 31-Dec-2008 11:00 DefaultContainerService
+   3853   40755 (2)      0      0    4096 31-Dec-2008 11:00 DocumentsUI
+   3859   40755 (2)      0      0    4096 31-Dec-2008 11:00 DownloadProvider
+   3865   40755 (2)      0      0    4096 31-Dec-2008 11:00 EmergencyInfo
+   3871   40755 (2)      0      0    4096 31-Dec-2008 11:00 ExtServices
+   3877   40755 (2)      0      0    4096 31-Dec-2008 11:00 ExternalStorageProvider
+   3883   40755 (2)      0      0    4096 31-Dec-2008 11:00 FileManager
+   3888   40755 (2)      0      0    4096 31-Dec-2008 11:00 HbService
+   3899   40755 (2)      0      0    4096 31-Dec-2008 11:00 InitServer
+   3908   40755 (2)      0      0    4096 31-Dec-2008 11:00 InnerWeb
+   3917   40755 (2)      0      0    4096 31-Dec-2008 11:00 InputDevices
+   3923   40755 (2)      0      0    4096 31-Dec-2008 11:00 LeboCast
+   3939   40755 (2)      0      0    4096 31-Dec-2008 11:00 LeboCastSend
+   3949   40755 (2)      0      0    4096 31-Dec-2008 11:00 ManagedProvisioning
+   3955   40755 (2)      0      0    4096 31-Dec-2008 11:00 MediaProvider
+   3961   40755 (2)      0      0    4096 31-Dec-2008 11:00 MtpDocumentsProvider
+   3967   40755 (2)      0      0    4096 31-Dec-2008 11:00 MusicFX
+   3973   40755 (2)      0      0    4096 31-Dec-2008 11:00 NestServer
+   3979   40755 (2)      0      0    4096 31-Dec-2008 11:00 OneTimeInitializer
+   3985   40755 (2)      0      0    4096 31-Dec-2008 11:00 PVRVerify
+   3994   40755 (2)      0      0    4096 31-Dec-2008 11:00 PackageInstaller
+   4000   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoLogKit
+   4009   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoLogcatchSettings
+   4015   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoSettingsProvider
+   4021   40755 (2)      0      0    4096 31-Dec-2008 11:00 Provision
+   4027   40755 (2)      0      0    4096 31-Dec-2008 11:00 ProxyHandler
+   4033   40755 (2)      0      0    4096 31-Dec-2008 11:00 PvrDevelopmentSettings
+   4039   40755 (2)      0      0    4096 31-Dec-2008 11:00 Settings
+   4045   40755 (2)      0      0    4096 31-Dec-2008 11:00 SettingsProvider
+   4051   40755 (2)      0      0    4096 31-Dec-2008 11:00 SharedStorageBackup
+   4057   40755 (2)      0      0    4096 31-Dec-2008 11:00 Shell
+   4063   40755 (2)      0      0    4096 31-Dec-2008 11:00 ShortcutMenu
+   4069   40755 (2)      0      0    4096 31-Dec-2008 11:00 StatementService
+   4075   40755 (2)      0      0    4096 31-Dec-2008 11:00 StorageManager
+   4081   40755 (2)      0      0    4096 31-Dec-2008 11:00 StreamingAssistant
+   4096   40755 (2)      0      0    4096 31-Dec-2008 11:00 SystemUI
+   4102   40755 (2)      0      0    4096 31-Dec-2008 11:00 SystemUpdate2
+   4108   40755 (2)      0      0    4096 31-Dec-2008 11:00 Tag
+   4114   40755 (2)      0      0    4096 31-Dec-2008 11:00 TeleService
+   4120   40755 (2)      0      0    4096 31-Dec-2008 11:00 Telecom
+   4126   40755 (2)      0      0    4096 31-Dec-2008 11:00 TelephonyProvider
+   4132   40755 (2)      0      0    4096 31-Dec-2008 11:00 VRShell2
+   4147   40755 (2)      0      0    4096 31-Dec-2008 11:00 VRUserCenter2
+   4156   40755 (2)      0      0    4096 31-Dec-2008 11:00 VRWing2
+   4181   40755 (2)      0      0    4096 31-Dec-2008 11:00 VersionManager
+   4187   40755 (2)      0      0    4096 31-Dec-2008 11:00 VpnDialogs
+   4193   40755 (2)      0      0    4096 31-Dec-2008 11:00 WallpaperCropper
+   4199   40755 (2)      0      0    4096 31-Dec-2008 11:00 a4wpservice
+   4208   40755 (2)      0      0    4096 31-Dec-2008 11:00 assistantHmd
+   4215   40755 (2)      0      0    4096 31-Dec-2008 11:00 configserverservice
+   4221   40755 (2)      0      0    4096 31-Dec-2008 11:00 dpmserviceapp
+   4227   40755 (2)      0      0    4096 31-Dec-2008 11:00 pvr_adapter
+   4233   40755 (2)      0      0    4096 31-Dec-2008 11:00 pvrdisplay
+   4239   40755 (2)      0      0    4096 31-Dec-2008 11:00 qcrilmsgtunnel
+   4245   40755 (2)      0      0    4096 31-Dec-2008 11:00 seccamservice
+   4251   40755 (2)      0      0    4096 31-Dec-2008 11:00 seethroughsetting
+   4262   40755 (2)      0      0    4096 31-Dec-2008 11:00 settings
+   4268   40755 (2)      0      0    4096 31-Dec-2008 11:00 tobSettings
+   4274   40755 (2)      0      0    4096 31-Dec-2008 11:00 wipowerservice
+   4283   40755 (2)      0      0    4096 31-Dec-2008 11:00 xtra_t_app
+
+
+############ /app ############
+     18   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     19   40755 (2)      0      0    4096 31-Dec-2008 11:00 AntHalService
+     25   40755 (2)      0      0    4096 31-Dec-2008 11:00 AutoRegistration
+     31   40755 (2)      0      0    4096 31-Dec-2008 11:00 Bluetooth
+     40   40755 (2)      0      0    4096 31-Dec-2008 11:00 BluetoothExt
+     46   40755 (2)      0      0    4096 31-Dec-2008 11:00 BluetoothMidiService
+     52   40755 (2)      0      0    4096 31-Dec-2008 11:00 BookmarkProvider
+     58   40755 (2)      0      0    4096 31-Dec-2008 11:00 BuiltInPrintService
+     68   40755 (2)      0      0    4096 31-Dec-2008 11:00 CallEnhancement
+     74   40755 (2)      0      0    4096 31-Dec-2008 11:00 CallFeaturesSetting
+     80   40755 (2)      0      0    4096 31-Dec-2008 11:00 CaptivePortalLogin
+     86   40755 (2)      0      0    4096 31-Dec-2008 11:00 CarrierDefaultApp
+     92   40755 (2)      0      0    4096 31-Dec-2008 11:00 CertInstaller
+     98   40755 (2)      0      0    4096 31-Dec-2008 11:00 CompanionDeviceManager
+    104   40755 (2)      0      0    4096 31-Dec-2008 11:00 ConfURIDialer
+    110   40755 (2)      0      0    4096 31-Dec-2008 11:00 ConferenceDialer
+    116   40755 (2)      0      0    4096 31-Dec-2008 11:00 CtsShimPrebuilt
+    118   40755 (2)      0      0    4096 31-Dec-2008 11:00 DeviceInfo
+    124   40755 (2)      0      0    4096 31-Dec-2008 11:00 EasterEgg
+    130   40755 (2)      0      0    4096 31-Dec-2008 11:00 ExtShared
+    136   40755 (2)      0      0    4096 31-Dec-2008 11:00 FirefoxReality
+    167   40755 (2)      0      0    4096 31-Dec-2008 11:00 GooglePinyin
+    183   40755 (2)      0      0    4096 31-Dec-2008 11:00 GooglePinyin_JP
+    192   40755 (2)      0      0    4096 31-Dec-2008 11:00 Googleime
+    203   40755 (2)      0      0    4096 31-Dec-2008 11:00 HTMLViewer
+    209   40755 (2)      0      0    4096 31-Dec-2008 11:00 KeyChain
+    215   40755 (2)      0      0    4096 31-Dec-2008 11:00 LatinIME
+    224   40755 (2)      0      0    4096 31-Dec-2008 11:00 NetworkSetting
+    230   40755 (2)      0      0    4096 31-Dec-2008 11:00 OpenWnn
+    241   40755 (2)      0      0    4096 31-Dec-2008 11:00 PacProcessor
+    250   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoFactoryTest3
+    267   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoToSvrService
+    278   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoVRAlipay
+    295   40755 (2)      0      0    4096 31-Dec-2008 11:00 PrintRecommendationService
+    301   40755 (2)      0      0    4096 31-Dec-2008 11:00 PxrNotification
+    307   40755 (2)      0      0    4096 31-Dec-2008 11:00 QtiSystemService
+    313   40755 (2)      0      0    4096 31-Dec-2008 11:00 QtiTelephonyService
+    319   40755 (2)      0      0    4096 31-Dec-2008 11:00 RussianKeyboard
+    325   40755 (2)      0      0    4096 31-Dec-2008 11:00 SeempService
+    331   40755 (2)      0      0    4096 31-Dec-2008 11:00 SimContacts
+    337   40755 (2)      0      0    4096 31-Dec-2008 11:00 SimSettings
+    343   40755 (2)      0      0    4096 31-Dec-2008 11:00 Sougou_inputmethod
+    357   40755 (2)      0      0    4096 31-Dec-2008 11:00 Stk
+    363   40755 (2)      0      0    4096 31-Dec-2008 11:00 SuperCamera
+    369   40755 (2)      0      0    4096 31-Dec-2008 11:00 TobiiCalibration
+    381   40755 (2)      0      0    4096 31-Dec-2008 11:00 UserDictionaryProvider
+    387   40755 (2)      0      0    4096 31-Dec-2008 11:00 WallpaperBackup
+    393   40755 (2)      0      0    4096 31-Dec-2008 11:00 WebVR
+    589   40755 (2)      0      0    4096 31-Dec-2008 11:00 WfdService
+    595   40755 (2)      0      0    4096 31-Dec-2008 11:00 access-qcom-logkit
+    601   40755 (2)      0      0    4096 31-Dec-2008 11:00 atfwd
+    607   40755 (2)      0      0    4096 31-Dec-2008 11:00 btmultisim
+    613   40755 (2)      0      0    4096 31-Dec-2008 11:00 com.qualcomm.qti.services.secureui
+    619   40755 (2)      0      0    4096 31-Dec-2008 11:00 com.quicinc.wbcserviceapp
+    625   40755 (2)      0      0    4096 31-Dec-2008 11:00 datastatusnotification
+    631   40755 (2)      0      0    4096 31-Dec-2008 11:00 embms
+    637   40755 (2)      0      0    4096 31-Dec-2008 11:00 iQIYIVR
+    694   40755 (2)      0      0    4096 31-Dec-2008 11:00 imssettings
+    700   40755 (2)      0      0    4096 31-Dec-2008 11:00 ohshape
+    724   40755 (2)      0      0    4096 31-Dec-2008 11:00 remoteSimLockAuthentication
+    726   40755 (2)      0      0    4096 31-Dec-2008 11:00 remotesimlockservice
+    732   40755 (2)      0      0    4096 31-Dec-2008 11:00 smcinvokepkgmgr
+    738   40755 (2)      0      0    4096 31-Dec-2008 11:00 uceShimService
+    744   40755 (2)      0      0    4096 31-Dec-2008 11:00 uimlpaservice
+    750   40755 (2)      0      0    4096 31-Dec-2008 11:00 webview
+
+
+############ /etc/permissions (pico) ############
+   1323  100644 (1)      0      0     920 31-Dec-2008 11:00 privapp-permissions-com.qualcomm.location.xml
+   1324  100644 (1)      0      0   22790 31-Dec-2008 11:00 privapp-permissions-platform.xml
+   1325  100644 (1)      0      0    1562 31-Dec-2008 11:00 privapp-permissions-qti.xml
+
+############ /etc/pvr  (the dangling psmvrapi symlink target) ############
+   1339   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+   1121   40755 (2)      0      0    4096 31-Dec-2008 11:00 ..
+   1340   40755 (2)      0      0    4096 31-Dec-2008 11:00 boundary
+   1394  100644 (1)      0      0   711772 31-Dec-2008 11:00 libsvrapi.so
+   1395  100644 (1)      0      0   2717684 31-Dec-2008 11:00 libwvr_api.so
+   1396  100644 (1)      0      0    3880 31-Dec-2008 11:00 psmvrapi_config.txt
+   1397  100644 (1)      0      0    3880 31-Dec-2008 11:00 psmvrapi_config1.txt
+   1398  100644 (1)      0      0    3880 31-Dec-2008 11:00 psmvrapi_config2.txt
+   1399  100644 (1)      0      0    1547 31-Dec-2008 11:00 pvrservice_platform.ini
+   1400  100644 (1)      0      0    1555 31-Dec-2008 11:00 pvrservice_platform_G2U3_PU.ini
+   1401  100644 (1)      0      0    1555 31-Dec-2008 11:00 pvrservice_platform_N2A2_Fabric.ini
+   1402  100644 (1)      0      0    1555 31-Dec-2008 11:00 pvrservice_platform_N2A2_PU.ini
+   1403  100644 (1)      0      0      54 31-Dec-2008 11:00 pxr_canary_version.txt
+   1404  100644 (1)      0      0    2832 31-Dec-2008 11:00 pxr_config.txt
+   1405  100644 (1)      0      0   127365 31-Dec-2008 11:00 res.json
+   1406   40755 (2)      0      0    4096 31-Dec-2008 11:00 slam
+
+
+############ /etc/init (vr services) ############
+   1188  100644 (1)      0      0     299 31-Dec-2008 11:00 pvrservice.rc
+
+############ /vendor symlink? / etc/vintf ############
+DONE

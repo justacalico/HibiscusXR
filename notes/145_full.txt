@@ -1,0 +1,36 @@
+=== starting from the clean image ===
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 14:21 /mnt/f/PN2Lineage/out/system-pn2-full.img
+
+=== grow to 3400M (partition is 3943694336 bytes) ===
+Resizing the filesystem on /mnt/f/PN2Lineage/out/system-pn2-full.img to 870400 (4k) blocks.
+The filesystem on /mnt/f/PN2Lineage/out/system-pn2-full.img is now 870400 (4k) blocks long.
+
+Block count:              870400
+Free blocks:              403061
+
+=== writing the Pico stack ===
+  directories created: 46
+  FAIL /bin/vr (want 152 got 169)
+  FAIL /framework/vr.jar (want 304 got 4189)
+  files written: 210 ok, 2 failed
+
+=== spot check ===
+  /bin/pvrservice                                      11088
+  /lib64/libcompositor.pxr.so                          1828296
+  /lib64/lib6DofReset.so                               9928
+  /framework/pxr_sdk_api.jar                           39557
+  /etc/pvr/slam/ORBvoc.bin                             44365017
+  /priv-app/VRShell2/VRShell2.apk                      89003676
+  /priv-app/VRShell2/lib/arm64/libmain.so              6144
+  /priv-app/PVRLauncher/PVRLauncher.apk                1018993
+  /media/LoadingRes/inside_background_img.png          3016
+
+=== repair + verify ===
+Pass 5: Checking group summary information
+system: 6471/11232 files (0.4% non-contiguous), 547307/870400 blocks
+  CLEAN
+
+image: 3565158400 bytes (partition 3943694336)
+  fits
+-rwxrwxrwx 1 justin justin 3565158400 Aug 13 14:22 /mnt/f/PN2Lineage/out/system-pn2-full.img
+DONE

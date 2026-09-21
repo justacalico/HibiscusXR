@@ -1,0 +1,68 @@
+=== pvrservice tombstone ===
+--- is our shim preloaded into pvrservice? ---
+  pvrservice pid: 4088
+  env: Binary file (standard input) matches
+  map: /system/lib64/libshim_pvr.so
+
+--- newest tombstone ---
+file: /data/tombstones/tombstone_19
+   *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+   LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+   Build fingerprint: 'unknown/unknown/PICOA7B10:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+   Revision: '0'
+   ABI: 'arm64'
+   Timestamp: 2026-08-13 15:27:04-0400
+   pid: 1150, tid: 1852, name: pvrservice  >>> /system/bin/pvrservice <<<
+   uid: 0
+   signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0
+   Cause: null pointer dereference
+       x0  00000073b8e02008  x1  0000000000000000  x2  00000073b8e01590  x3  00000073b8e016f0
+       x4  0000000000000000  x5  00000073b8e01810  x6  00000073c0a23c00  x7  0000000000000000
+       x8  0000000000000001  x9  00000073b8e00fe8  x10 00000073b8e01464  x11 00000073b8e01400
+       x12 00000073b8e00ffa  x13 0000000000000080  x14 0000000000000010  x15 00000073bfd3d40a
+       x16 00000073bfd437d0  x17 00000073bfcd4e88  x18 0000000000000000  x19 00000073b8e015b8
+       x20 0000000000000000  x21 00000073b8e01590  x22 00000073b8e02020  x23 00000073b8e02008
+       x24 000000007fffffff  x25 00000073be5d77ac  x26 00000073c0a17480  x27 0000000000000000
+       x28 0000000000000000  x29 00000073b8e01580
+       sp  00000073b8e00e00  lr  00000073bfd1215c  pc  00000073bfd1232c
+   
+   backtrace:
+         #00 pc 00000000000bf32c  /apex/com.android.runtime/lib64/bionic/libc.so (__vfprintf+524) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+         #01 pc 00000000000dd5a4  /apex/com.android.runtime/lib64/bionic/libc.so (vsnprintf+148) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+         #02 pc 00000000000a9260  /apex/com.android.runtime/lib64/bionic/libc.so (__vsnprintf_chk+60) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+         #03 pc 00000000000087a0  /system/lib64/liblog.so (__android_log_print+140) (BuildId: abc9e34f45037deab475aefb9194f1bd)
+         #04 pc 000000000000d0d4  /system/lib64/libpvrservice.so (PVR::serviceStatusCallback(void*)+472) (BuildId: ef73632132c7a65384410709437d5734)
+         #05 pc 00000000000e2390  /apex/com.android.runtime/lib64/bionic/libc.so (__pthread_start(void*)+36) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+         #06 pc 0000000000083ab0  /apex/com.android.runtime/lib64/bionic/libc.so (__start_thread+64) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+   
+   stack:
+            00000073b8e00d80  0000000000000000
+            00000073b8e00d88  0000000000000000
+            00000073b8e00d90  00000073b8e00fe0
+            00000073b8e00d98  00000073b8e02008
+            00000073b8e00da0  000000000000002b
+            00000073b8e00da8  eaff40a7c08d1a4b
+            00000073b8e00db0  0000000000000000
+            00000073b8e00db8  0000000000000000
+            00000073b8e00dc0  00000073b8e01010
+            00000073b8e00dc8  00000073b8e02008
+            00000073b8e00dd0  00000073b8e02020
+            00000073b8e00dd8  000000000000002b
+            00000073b8e00de0  0000000000000016
+            00000073b8e00de8  00000073b8e015b8
+            00000073b8e00df0  00000073b8e01580
+            00000073b8e00df8  00000073bfd14964  /apex/com.android.runtime/lib64/bionic/libc.so
+       #00  00000073b8e00e00  00000073b8e01433
+            00000073b8e00e08  0000000000000000
+            00000073b8e00e10  00000073b8e01598
+            00000073b8e00e18  00000073b8e00ffb
+            00000073b8e00e20  00000073b8e02008
+            00000073b8e00e28  00000000b8e01578
+            00000073b8e00e30  00000073b8e01463
+            00000073b8e00e38  0000007300000014
+            00000073b8e00e40  00000073b8e00ffa
+            00000073b8e00e48  00000073b8e00fed
+            00000073b8e00e50  00000073bff56008  [anon:.bss]
+            00000073b8e00e58  00000073b8e015a8
+            00000073b8e00e60  00000073b8e01590
+            00000073b8e00e68  00000073b8e017f0

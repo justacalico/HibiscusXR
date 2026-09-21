@@ -1,0 +1,23 @@
+=== free before ===
+Free blocks:              251778
+
+=== QVR client libraries (from /vendor, both ABIs) ===
+  OK    /lib64/libqvrservice_client.so                       123544
+  OK    /lib/libqvrservice_client.so                         101244
+  OK    /lib64/libqvrcamera_client.so                        144160
+  OK    /lib/libqvrcamera_client.so                          121732
+
+=== repair + verify ===
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6527/11232 files (0.5% non-contiguous), 618744/870400 blocks
+Pass 5: Checking group summary information
+system: 6527/11232 files (0.5% non-contiguous), 618744/870400 blocks
+  CLEAN
+
+=== free after ===
+Free blocks:              251656
+
+QVR CLIENT ADDED OK
+DONE

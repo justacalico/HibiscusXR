@@ -1,0 +1,21 @@
+=== fancontrol install 08/14/2026 03:52:15 ===
+[03:52:29]    -rwxr-xr-x 1 root shell 25768 2026-08-14 03:52 /system/bin/fancontrol
+[03:52:29]    -rw-r--r-- 1 root root    553 2026-08-14 03:52 /system/etc/init/pn2-fanservice.rc
+[03:52:29]    
+[03:52:29]    --- fan before ---
+[03:52:29]      pwm1=85 pwm1_enable=1 rpm=7600
+[03:52:29]      cur_state=1
+[03:52:29]    
+[03:52:29]    --- run it directly first (init only parses the new rc on boot) ---
+[03:52:29]      fancontrol pid 31615 31715
+[03:52:29]    --- fan after ---
+[03:52:29]      pwm1=85 pwm1_enable=1 rpm=7600
+[03:52:29]      cur_state=1
+[03:52:29]    --- what it logged ---
+[03:52:29]    --- hottest zones ---
+[03:52:29]      aoss0-usr = 61 C
+[03:52:29]      cpu0-silver-usr = 61 C
+[03:52:29]      cpu3-gold-usr = 62 C
+[03:52:29]      gpu1-usr = 60 C
+[03:52:29]      aoss1-usr = 61 C
+[03:52:29]      mdm-dsp-usr = 61 C

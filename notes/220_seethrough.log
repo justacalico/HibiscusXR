@@ -1,0 +1,7 @@
+=== seethrough setting install 08/13/2026 18:02:20 ===
+[18:02:20] pulling the apk from stock (203 MB, over wifi - takes a moment)
+[18:02:26]    /system/priv-app/seethroughsetting/seethroughsetting.apk: 1 file pulled, 0 skipped. 31.1 MB/s (203237138 bytes in 6.228s)
+[18:02:28] libs staged: 7/7
+[18:02:28] package: com.pvr.seethrough.setting
+[18:02:28] aligning + platform-signing
+[18:02:31] signed: 193.8 MB   platform cert: OK   aapt2: OK

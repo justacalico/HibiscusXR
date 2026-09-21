@@ -1,0 +1,18 @@
+=== libqvrservice_client -> /system 08/14/2026 02:41:40 ===
+[02:42:17]    --- deps of the vendor copy ---
+[02:42:17]    -rw-r--r-- 1 root root 144160 2026-08-14 02:41 /system/lib64/libqvrcamera_client.so
+[02:42:17]    -rw-r--r-- 1 root root 123544 2026-08-14 02:41 /system/lib64/libqvrservice_client.so
+[02:42:17]    --- restart pvrservice so it re-asks QVR ---
+[02:42:17]    --- launch the shell ---
+[02:42:17]      pid 8622
+[02:42:17]    --- QVR verdict now ---
+[02:42:17]    7555  8125 I svr     : Calling QVRServiceClient_Create()...
+[02:42:17]    7555  8125 I svr     :   QVR Service supports rotational tracking
+[02:42:17]    7555  8125 I svr     :   QVR Service supports positional tracking
+[02:42:17]    7555  8119 I svr     : Calling QVRServiceClient_Create()...
+[02:42:17]    7555  8119 I svr     :   QVR Service supports rotational tracking
+[02:42:17]    7555  8119 I svr     :   QVR Service supports positional tracking
+[02:42:17]    --- does pvrservice map the client now? ---
+[02:42:17]    libqvrservice_client.so
+[02:42:17]    --- compositor ---
+[02:42:17]      BadPose=0  kLost=0  ts0=0

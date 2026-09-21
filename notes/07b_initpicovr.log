@@ -1,0 +1,182 @@
+################ init.picovr.rc : services and execs ################
+37:on fs
+38:    exec /system/bin/tune2fs -O has_journal -r 4096 /dev/block/bootdevice/by-name/userdata
+40:on early-boot
+43:    exec /vendor/bin/sh /vendor/etc/pvr/pxr.vendorhw.check.sh
+45:on boot
+47:    chown system system /sys/class/hwmon/hwmon1/fan1_input
+48:    chown system system /sys/class/hwmon/hwmon1/fan1_max
+49:    chown system system /sys/class/hwmon/hwmon1/fan1_min
+50:    chown system system /sys/class/hwmon/hwmon1/fan1_target	
+51:    chown system system /sys/class/hwmon/hwmon1/pwm1
+52:    chown system system /sys/class/hwmon/hwmon1/pwm_rpm
+55:    chown system system /sys/kernel/debug/fg/dc_detect/fg_status
+56:    chown system system /sys/kernel/debug/fg/dc_detect/dc_status
+60:    chown system system /sys/class/leds/red/pico_blink
+61:    chown system system /sys/class/leds/red/pico_blink_on_ms
+62:    chown system system /sys/class/leds/red/pico_blink_off_ms
+63:    chown system system /sys/class/leds/green/pico_blink
+64:    chown system system /sys/class/leds/green/pico_blink_on_ms
+65:    chown system system /sys/class/leds/green/pico_blink_off_ms
+66:    chown system system /sys/class/leds/blue/pico_blink
+67:    chown system system /sys/class/leds/blue/pico_blink_on_ms
+68:    chown system system /sys/class/leds/blue/pico_blink_off_ms
+72:    chown system system /sys/class/leds/i2c-red/brightness
+73:    chown system system /sys/class/leds/i2c-red/pico_blink
+74:    chown system system /sys/class/leds/i2c-red/pico_blink_on_ms
+75:    chown system system /sys/class/leds/i2c-red/pico_blink_off_ms
+76:    chown system system /sys/class/leds/i2c-green/brightness
+77:    chown system system /sys/class/leds/i2c-green/pico_blink
+78:    chown system system /sys/class/leds/i2c-green/pico_blink_on_ms
+79:    chown system system /sys/class/leds/i2c-green/pico_blink_off_ms
+80:    chown system system /sys/class/leds/i2c-blue/brightness
+81:    chown system system /sys/class/leds/i2c-blue/pico_blink
+82:    chown system system /sys/class/leds/i2c-blue/pico_blink_on_ms
+83:    chown system system /sys/class/leds/i2c-blue/pico_blink_off_ms
+89:    exec /vendor/bin/sh /vendor/etc/pvr/init.pico.sh
+90:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.prop.default.sh
+104:    start picovrserver
+116:     write /sys/bus/msm_subsys/devices/subsys6/restart_level "related"
+120:    write /sys/kernel/debug/mcu52840/mcu_power 1
+122:    chmod 0666 /sys/devices/platform/soc/a8c000.spi/spi_master/spi1/spi1.0/picovr_gpio129
+126:    chmod 0666 /sys/bus/i2c/drivers/at24/1-0050/eeprom
+132:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.display.swtich_eb.sh
+138:    chmod 0666 /dev/i2c-eeprom
+142:on post-fs-data
+146:	chmod 777 /data/misc/pxr
+168:    chmod 666 /dev/spidev1.0
+169:    chown system system /dev/spidev1.0
+172:    chmod 666 /dev/spidev2.0
+173:    chown system system /dev/spidev2.0
+176:    chmod 666 /dev/w25q
+177:    chown system system /dev/w25q
+180:    chmod 775 /persist
+183:    chmod 775 /persist/pvr
+184:    chmod 775 /persist/pvr/camera
+187:    chmod 755 /persist/calibration
+188:    chmod 755 /persist/calibration/mag
+189:    chmod 755 /persist/calibration/mag/Geomagnetic_Matrix.txt
+192:    chmod 666 /persist/Geomagnetic_Switch.txt
+196:     chown system system /sys/devices/platform/soc/soc:gpio_keys/hall_state
+198:     chown system system /data/picovr/hall/state
+201:     chown system system /persist/etc
+202:     chmod 664 /persist/etc
+204:     chown system system /persist/ndi
+205:     chmod 777 /persist/ndi
+207:     chown root system /sys/module/qpnp_fg_gen3/parameters/restart
+208:     chmod 664 /sys/module/qpnp_fg_gen3/parameters/restart
+210:service logcatch /system/bin/LogCatch
+217:service factory_reset /vendor/bin/sh /vendor/etc/pvr/init.factory_reset.sh
+224:on property:persist.pvr.logcatch=1
+225:    start logcatch
+226:on property:persist.pvr.logcatch=0
+227:    stop logcatch
+230:on property:sys.picovr.lineptr.value=*
+231:    write /sys/devices/virtual/graphics/fb0/lineptr_value ${sys.picovr.lineptr.value}
+232:    write /sys/devices/virtual/graphics/fb1/lineptr_value ${sys.picovr.lineptr.value}
+235:on property:sys.pvr.cpufre.action=1
+253:    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq 1324800
+254:    write /sys/devices/system/cpu/cpu1/cpufreq/scaling_min_freq 1324800
+255:    write /sys/devices/system/cpu/cpu2/cpufreq/scaling_min_freq 1324800
+256:    write /sys/devices/system/cpu/cpu3/cpufreq/scaling_min_freq 1324800
+257:    write /sys/devices/system/cpu/cpu4/cpufreq/scaling_min_freq 1363200
+258:    write /sys/devices/system/cpu/cpu5/cpufreq/scaling_min_freq 1363200
+259:    write /sys/devices/system/cpu/cpu6/cpufreq/scaling_min_freq 1363200
+260:    write /sys/devices/system/cpu/cpu7/cpufreq/scaling_min_freq 1363200
+261:    write /sys/class/kgsl/kgsl-3d0/devfreq/min_freq 414000000
+262:    setprop sys.pvr.cpufre.action 0
+263:    setprop pxr.splash.update 1
+266:on property:picovr.hmd.type.refresh=*
+267:    exec /vendor/bin/sh /vendor/etc/pvr/pico.hmd.check.sh
+270:on property:picovr.factorytest.wipedata=1
+271:    exec /vendor/bin/sh /vendor/etc/pvr/pico.factory.wipedata.sh
+274:on property:sys.boot_completed=1
+275:    start factory_reset
+276:    write /sys/devices/virtual/graphics/fb0/lineptr_value 1
+277:    write /sys/devices/virtual/graphics/fb1/lineptr_value 1
+280:    setprop pvr.camera.warmstart.action recoverWarmData
+282:    setprop pvr.launcher.openrecenter ${persist.pvr.openrecenter}
+285:    exec /system/bin/tune2fs -O has_journal -r 51200 /dev/block/bootdevice/by-name/userdata
+287:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.main.mci.check.sh
+289:    exec /vendor/bin/sh /vendor/etc/pvr/pxr.vendorhw.check.sh
+291:    exec /vendor/bin/sh /vendor/etc/pvr/pxr.ndifirmware.update.sh
+293:	exec /vendor/bin/sh /vendor/etc/pvr/pvr.display.check.sh
+296:on property:sys.usb.config=picofactorytest,adb && property:sys.usb.configfs=1
+297:    start adbd
+299:on property:sys.usb.ffs.ready=1 && property:sys.usb.config=picofactorytest,adb && property:sys.usb.configfs=1
+300:    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "picofactorytest adb"
+306:    write /config/usb_gadget/g1/idVendor 0x05C6
+307:    write /config/usb_gadget/g1/idProduct 0x9018
+313:    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+314:    setprop sys.usb.state ${sys.usb.config}
+316:on property:sys.usb.ffs.ready=1 && property:sys.usb.config=picofactorytest && property:sys.usb.configfs=1
+317:    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "picofactorytest"
+322:    write /config/usb_gadget/g1/idVendor 0x05C6
+323:    write /config/usb_gadget/g1/idProduct 0x9019
+328:    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+329:    setprop sys.usb.state ${sys.usb.config}
+335:on property:persist.pico.btmac=*
+336:    exec /vendor/bin/sh /vendor/etc/pvr/init.btmac.sh
+340:on property:picovr.factorytest.cmd=*
+341:    exec /vendor/bin/sh /vendor/etc/pvr/init.pico.factory.cmd.sh
+345:on property:picovr.wifi.config.request=0
+346:    exec /vendor/bin/sh /vendor/etc/pvr/pico.wifi.config.sh "getConfig"
+347:on property:picovr.wifi.config.request=1
+348:    exec /vendor/bin/sh /vendor/etc/pvr/pico.wifi.config.sh "setConfig"
+349:on property:picovr.local.config.enable=0
+350:    chmod 771 /data/local/tmp
+351:on property:picovr.local.config.enable=1
+352:    chmod 777 /data/local/tmp
+356:on property:picovr.pvrsensor.checkstatus=0
+357:    stop pvrservice
+358:on property:picovr.pvrsensor.checkstatus=1
+359:    start pvrservice
+363:on property:pvr.camera.calibration.action=*
+364:    exec /vendor/bin/sh /vendor/etc/pvr/init.pvr.camera.calibration.sh ${pvr.camera.calibration.action}
+367:on property:pvr.camera.warmstart.action=*
+368:    exec /vendor/bin/sh /vendor/etc/pvr/init.pvr.camera.warmstart.sh ${pvr.camera.warmstart.action}
+371:on property:pvr.chmod.file.action=*
+372:    exec /vendor/bin/sh /vendor/etc/pvr/init.pvr.chmod.file.sh ${pvr.chmod.file.action}
+375:on property:persist.pvr.bcl.mode=0
+376:    write /sys/class/thermal/thermal_zone59/mode disabled
+377:on property:persist.pvr.bcl.mode=1
+378:    write /sys/class/thermal/thermal_zone59/mode enable
+382:on property:persist.pvr.prebootmode=0
+383:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.preboot.mode.sh "0"
+384:on property:persist.pvr.prebootmode=1
+385:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.preboot.mode.sh "1"
+387:on property:persist.pvr.debug.sysstatus=1
+388:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.vrdisplay.ui.sh "50"
+390:on property:persist.pvr.debug.sysstatus=0
+391:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.vrdisplay.ui.sh "51"
+395:on property:persist.pvr.otgmode=0
+396:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.otg.mode.sh "0"
+397:on property:persist.pvr.otgmode=1
+398:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.otg.mode.sh "1"
+400:on property:pvr.calibration.qcom_modify=1
+401:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.calibration.qcom.sh
+403:on property:pvr.calibration.qcom_modify=2
+404:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.calibration2.qcom.sh
+406:on property:pxr.splash.update=1
+407:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.update.splash.sh
+409:on property:pxr.ndifirmware.update=1
+410:    exec /vendor/bin/sh /vendor/etc/pvr/pxr.ndifirmware.update.sh
+412:on property:pvr.display.type=*
+413:    exec /vendor/bin/sh /vendor/etc/pvr/pvr.display.fps.sh ${pvr.display.type}
+415:on property:pxr.eyetracking.fps=*
+416:	setprop persist.pxr.eyetracking.fps ${pxr.eyetracking.fps}
+418:    exec /vendor/bin/sh /vendor/etc/pvr/pxr.vendorhw.check.sh
+420:on property:sys.pxr.memrefresh=1
+421:    write /proc/sys/vm/drop_caches "3"
+422:	setprop sys.pxr.memrefresh 0
+
+################ init.picovr.rc : service blocks mentioning vr/track/cam ################
+service factory_reset /vendor/bin/sh /vendor/etc/pvr/init.factory_reset.sh
+   user root
+   group root
+   disabled
+   oneshot
+# Add by PICO_Driver clark.tian for bug5249: cp /system/pre_sources/xx to /xx --start--
+
+on property:persist.pvr.logcatch=1
+    start logcatch

@@ -1,0 +1,78 @@
+/mnt/f/PN2Lineage/notes/vrshell_lib/libPvr_UnitySDK.so
+window 0xf6ec0 .. 0xf6fec   target 0xf6ec0
+
+  000f6ec0  stp       x29, x30, [sp, #-0x20]!   <=========== FAULTING INSTRUCTION
+  000f6ec4  mov       x29, sp
+  000f6ec8  str       x0, [x29, #0x18]
+  000f6ecc  bl        #0xf6d60
+  000f6ed0  uxtb      w0, w0
+  000f6ed4  cbz       w0, #0xf6f00
+  000f6ed8  adrp      x0, #0x1ee000
+  000f6edc  ldr       x1, [x29, #0x18]
+  000f6ee0  ldr       x0, [x0, #0x6b0]
+  000f6ee4  ldr       x2, [x0]
+  000f6ee8  mov       x0, x2
+  000f6eec  ldr       x2, [x2]
+  000f6ef0  ldr       x2, [x2, #0x10]
+  000f6ef4  blr       x2
+  000f6ef8  ldp       x29, x30, [sp], #0x20
+  000f6efc  ret       
+  000f6f00  adrp      x1, #0x191000
+  000f6f04  adrp      x2, #0x191000
+  000f6f08  mov       w0, #4
+  000f6f0c  add       x1, x1, #0x870        ; "D:/PicoSDK_Work/SDK2.0/PicoSDK_Mobile_CoreLib_bk/CoreLib/src/main/jni/VrServiceApi.cpp"
+  000f6f10  add       x2, x2, #0xa30        ; "SetClientStatusCallback: VR Service Client is NULL!"
+  000f6f14  bl        #0x6d458
+  000f6f18  mov       w0, #-1
+  000f6f1c  b         #0xf6ef8
+  000f6f20  stp       x29, x30, [sp, #-0x20]!
+  000f6f24  mov       x29, sp
+  000f6f28  str       x19, [sp, #0x10]
+  000f6f2c  mov       x19, x0
+  000f6f30  cbz       x0, #0xf6f94
+  000f6f34  bl        #0xf6d60
+  000f6f38  uxtb      w0, w0
+  000f6f3c  cbnz      w0, #0xf6f68
+  000f6f40  adrp      x1, #0x191000
+  000f6f44  adrp      x2, #0x191000
+  000f6f48  mov       w0, #4
+  000f6f4c  add       x1, x1, #0x870        ; "D:/PicoSDK_Work/SDK2.0/PicoSDK_Mobile_CoreLib_bk/CoreLib/src/main/jni/VrServiceApi.cpp"
+  000f6f50  add       x2, x2, #0xa90        ; "GetDeviceInfo: VR Service Client is NULL!"
+  000f6f54  bl        #0x6d458
+  000f6f58  mov       w0, #-1
+  000f6f5c  ldr       x19, [sp, #0x10]
+  000f6f60  ldp       x29, x30, [sp], #0x20
+  000f6f64  ret       
+  000f6f68  adrp      x0, #0x1ee000
+  000f6f6c  mov       x1, x19
+  000f6f70  ldr       x0, [x0, #0x6b0]
+  000f6f74  ldr       x2, [x0]
+  000f6f78  mov       x0, x2
+  000f6f7c  ldr       x2, [x2]
+  000f6f80  ldr       x2, [x2, #0x18]
+  000f6f84  blr       x2
+  000f6f88  ldr       x19, [sp, #0x10]
+  000f6f8c  ldp       x29, x30, [sp], #0x20
+  000f6f90  ret       
+  000f6f94  adrp      x1, #0x191000
+  000f6f98  adrp      x2, #0x191000
+  000f6f9c  mov       w0, #4
+  000f6fa0  add       x1, x1, #0x870        ; "D:/PicoSDK_Work/SDK2.0/PicoSDK_Mobile_CoreLib_bk/CoreLib/src/main/jni/VrServiceApi.cpp"
+  000f6fa4  add       x2, x2, #0xa68        ; "GetDeviceInfo: pDevInfo is NULL!"
+  000f6fa8  bl        #0x6d458
+  000f6fac  mov       w0, #-2
+  000f6fb0  b         #0xf6f5c
+  000f6fb4  stp       x29, x30, [sp, #-0x20]!
+  000f6fb8  mov       x29, sp
+  000f6fbc  str       x0, [x29, #0x18]
+  000f6fc0  bl        #0xf6d60
+  000f6fc4  uxtb      w0, w0
+  000f6fc8  cbz       w0, #0xf6ff4
+  000f6fcc  adrp      x0, #0x1ee000
+  000f6fd0  ldr       x1, [x29, #0x18]
+  000f6fd4  ldr       x0, [x0, #0x6b0]
+  000f6fd8  ldr       x2, [x0]
+  000f6fdc  mov       x0, x2
+  000f6fe0  ldr       x2, [x2]
+  000f6fe4  ldr       x2, [x2, #0x20]
+  000f6fe8  blr       x2

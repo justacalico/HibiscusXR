@@ -1,0 +1,33 @@
+=== BitTube null guard 08/14/2026 03:38:20 ===
+[03:39:37]    --- back up the original once ---
+[03:39:37]    ad7b078f28b56049fc8dd72d5b4eed1a  /system/lib/libpvrserviceclient.so
+[03:39:37]    ad7b078f28b56049fc8dd72d5b4eed1a  /data/local/tmp/pvrsc32p.so
+[03:39:37]    
+[03:39:37]    --- clean slate: healthy pvrservice, controller service on ---
+[03:39:37]      pvrservice pid 20279
+[03:39:37]    Package com.picovr.picovrlib.cvcontroller new state: enabled
+[03:39:37]    
+[03:39:37]    --- launch the shell (this is what binds the controller service) ---
+[03:39:37]    --- watch 60s ---
+[03:39:37]      t+10s  segv=9  cvPid=none  vrshell=20326
+[03:39:37]      t+20s  segv=22  cvPid=21422  vrshell=20326
+[03:39:37]      t+30s  segv=35  cvPid=21936 21965  vrshell=20326
+[03:39:37]      t+40s  segv=46  cvPid=22454 22482  vrshell=20326
+[03:39:37]      t+50s  segv=57  cvPid=22970 22997  vrshell=20326
+[03:39:37]      t+60s  segv=67  cvPid=23474 23502  vrshell=20326
+[03:39:37]    
+[03:39:37]    --- pvrservice health ---
+[03:39:37]      contended=0  zombies=3
+[03:39:37]    --- tracking + compositor ---
+[03:39:37]    grep: Pose": No such file or directory
+[03:39:37]      BadPose=  kLost=0
+[03:39:37]      vrshell threads=73
+[03:39:37]    --- controller service alive and talking? ---
+[03:39:37]    20326 20326 I ControllerClient: scv ServiceConnection Connected 
+[03:39:37]    20326 20326 D ControllerClient: shareMemoryMappedFile = java.io.RandomAccessFile@abca2d9
+[03:39:37]    20326 20326 D ControllerClient: shareMemoryMappedFile sharebuffer = java.nio.DirectByteBuffer[pos=0 lim=1024 cap=1024]
+[03:39:37]    20326 20326 D ControllerClient: shareMemoryMappedFile.close()
+[03:39:37]    20326 20326 D ControllerClient: sharMemBuff = java.nio.DirectByteBuffer[pos=0 lim=1024 cap=1024]
+[03:39:37]    20326 20366 D ControllerClient: call client startControllerThread(1,1)
+[03:39:37]    --- any remaining getPvrService crash ---
+[03:39:37]      (empty = the guard held)

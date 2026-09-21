@@ -1,0 +1,27 @@
+=== tail of /build.prop ===
+ro.lineagelegal.url=https://lineageos.org/legal
+ro.lineage.display.version=17.1-20210808-UNOFFICIAL-
+ro.lineage.build.version.plat.sdk=9
+ro.lineage.build.version.plat.rev=0
+
+# --- added for Pico Neo 2 bring-up -------------------------------------------
+# Fresh /data has no persisted USB config, so default the gadget to adb+mtp and
+# drop adb auth. Bring-up only; remove for any release build.
+persist.sys.usb.config=adb,mtp
+ro.adb.secure=0
+ro.debuggable=1
+ro.secure=0
+
+=== the keys we care about ===
+115:persist.sys.usb.config=adb,mtp
+116:ro.adb.secure=0
+117:ro.debuggable=1
+118:ro.secure=0
+
+=== /etc/prop.default keys ===
+44:persist.sys.usb.config=adb,mtp
+45:ro.adb.secure=0
+46:ro.debuggable=1
+47:ro.secure=0
+
+DONE

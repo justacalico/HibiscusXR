@@ -1,0 +1,25 @@
+  OK lib6DofReset.so
+  OK libCVControllerClient.pxr.so
+  OK libImageGrid.so
+  OK libPvr_UESDKExt2.so
+  OK libPvr_UnitySDK.so
+  OK libPvr_UnitySDKExt1.so
+  OK libPvr_UnitySDKExt10.so
+  OK libPvr_UnitySDKExt11.so
+  OK libPvr_UnitySDKExt5.so
+  OK libPvr_UnitySDKExt8.so
+  OK libPvr_UnitySDKExt9.so
+  OK libSafetyArea.so
+  OK libairclient.so
+  OK libcompositor.pxr.so
+  OK libconfigurationclient.pxr.so
+  OK libloader.pxr.so
+  OK libplugin.pxr.so
+  OK libpvrserviceclient.so
+  OK libpxrnotification.pxr.so
+  OK libpxrserviceclient.so
+  OK libruntime.pxr.so
+  OK libvirtualinputclient.so
+
+ALL 32-BIT DEPENDENCIES SATISFIED
+DONE

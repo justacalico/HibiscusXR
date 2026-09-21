@@ -1,0 +1,11 @@
+=== tinyxml2 for airservice 08/13/2026 18:13:11 ===
+[18:13:11] pulled 8.1 libtinyxml2.so: 64744 bytes
+[18:13:16]    libaircamera.so
+[18:13:16]    libairservice.so
+[18:13:16]    libicui18n.so
+[18:13:16]    libicuuc.so
+[18:13:16]    libskia.so
+[18:13:16]    libtinyxml2.so
+[18:13:16]    --- restarting airservice ---
+[18:13:16]    restarting
+[18:13:16] --- any remaining link errors ---

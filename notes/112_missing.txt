@@ -1,0 +1,28 @@
+=== /lib64 ===
+  PULLED lib64/lib6DofReset.so                        9928
+  PULLED lib64/libWnnJpnDic.so                     1342952
+  PULLED lib64/libjni_trackingfocus.so               11016
+  PULLED lib64/libsensor_calibration.so              64152
+  PULLED lib64/libwnndict.so                         76792
+=== /lib ===
+  PULLED lib/lib6DofReset.so                         17872
+  PULLED lib/libWnnJpnDic.so                       1342336
+  PULLED lib/libeye_tracking_dsp_sample_stub.so      16072
+  PULLED lib/libjni_trackingfocus.so                 20356
+  PULLED lib/libpico_factorytest3.so                 19152
+  PULLED lib/libpico_factorytest_jni.so              16060
+  PULLED lib/libpico_factorytest_sensor.so           19288
+  PULLED lib/libpico_gyrocalibration.so              15028
+  PULLED lib/libpico_imucalibration.so               23344
+  PULLED lib/libpico_node_connection.so              23404
+  PULLED lib/libsensor_calibration.so                41404
+  PULLED lib/libwnndict.so                           62176
+
+=== does lib6DofReset.so really export what VRShell wants ===
+--- lib64 ---
+0000000000001358 T getResetPos
+00000000000010f8 T updateOffsets
+--- lib ---
+00001bed T getResetPos
+00001a85 T updateOffsets
+DONE

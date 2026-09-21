@@ -1,0 +1,42 @@
+=== what is actually inside /priv-app/VRShell2 ===
+   4132   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+   3768   40755 (2)      0      0    4096 31-Dec-2008 11:00 ..
+   4133  100644 (1)      0      0   88061447 31-Dec-2008 11:00 VRShell2.apk
+   4134   40755 (2)      0      0    4096 31-Dec-2008 11:00 lib
+   4143   40755 (2)      0      0    4096 31-Dec-2008 11:00 oat
+
+
+--- /priv-app/VRShell2/lib ---
+   4134   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+   4132   40755 (2)      0      0    4096 31-Dec-2008 11:00 ..
+   4135   40755 (2)      0      0    4096 31-Dec-2008 11:00 arm64
+
+--- /priv-app/VRShell2/lib/arm64 ---
+   4135   40755 (2)      0      0    4096 31-Dec-2008 11:00 .
+   4134   40755 (2)      0      0    4096 31-Dec-2008 11:00 ..
+   4136  100644 (1)      0      0   2051960 31-Dec-2008 11:00 libPvr_UnitySDK.so
+   4137  100644 (1)      0      0   15768728 31-Dec-2008 11:00 libil2cpp.so
+   4138  100644 (1)      0      0    5808 31-Dec-2008 11:00 libinput_virtual_display.so
+   4139  100644 (1)      0      0    6144 31-Dec-2008 11:00 libmain.so
+   4140  100644 (1)      0      0   293144 31-Dec-2008 11:00 libnative.so
+   4141  100644 (1)      0      0   276408 31-Dec-2008 11:00 libtracking_module.so
+   4142  100644 (1)      0      0   14628920 31-Dec-2008 11:00 libunity.so
+
+--- /priv-app/VRShell2/lib/arm ---
+
+=== pull the whole VRShell2 dir so nothing else is missed ===
+VRShell2/lib/arm64/libil2cpp.so              15768728
+VRShell2/lib/arm64/libinput_virtual_display.so       5808
+VRShell2/lib/arm64/libmain.so                    6144
+VRShell2/lib/arm64/libnative.so                293144
+VRShell2/lib/arm64/libPvr_UnitySDK.so         2051960
+VRShell2/lib/arm64/libtracking_module.so       276408
+VRShell2/lib/arm64/libunity.so               14628920
+VRShell2/oat/arm64/VRShell2.odex                70352
+VRShell2/oat/arm64/VRShell2.vdex              2878884
+VRShell2/VRShell2.apk                        88061447
+
+total files: 10  size: 119M
+
+=== is libmain.so anywhere in the image at all? ===
+DONE

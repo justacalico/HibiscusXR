@@ -1,0 +1,48 @@
+=== 09:59:04 flashing CLEAN stock boot.img (no Magisk) ===
+devices: 5c178a65	 fastboot
+image: F:\PN2Lineage\images\ota_4.1.3\boot.img  64 MB
+unlock: OKAY [  0.000s] Finished. Total time: 0.020s
+--- flash boot ---
+fastboot.exe : Warning: skip copying boot image avb footer (boot partition size: 0, boot image size: 67108864).
+At line:14 char:1
++ & $fb flash boot $img 2>&1 | Tee-Object -FilePath $log -Append | Out- ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Warning: skip c...ize: 67108864).:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Sending 'boot' (65536 KB)                          OKAY [  1.972s]
+Writing 'boot'                                     OKAY [  0.005s]
+Finished. Total time: 1.983s
+flash rc=0
+--- reboot ---
+fastboot.exe : Rebooting                                          OKAY [  0.002s]
+At line:20 char:1
++ & $fb reboot 2>&1 | Tee-Object -FilePath $log -Append | Out-Null
++ ~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Rebooting      ...OKAY [  0.002s]:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Finished. Total time: 0.007s
+=== rebooted 09:59:07, watching for adb ===
+[0 s] no adb yet
+[15 s] no adb yet
+[31 s] no adb yet
+[46 s] no adb yet
+[61 s] no adb yet
+[76 s] no adb yet
+[91 s] no adb yet
+[106 s] no adb yet
+[121 s] no adb yet
+[137 s] no adb yet
+[152 s] no adb yet
+[167 s] no adb yet
+[182 s] no adb yet
+[197 s] no adb yet
+[212 s] no adb yet
+[228 s] no adb yet
+[243 s] no adb yet
+[258 s] no adb yet
+[273 s] no adb yet
+[289 s] no adb yet
+=== still no adb after 304s ===
+=== end 10:04:11 ===

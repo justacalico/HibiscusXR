@@ -1,0 +1,21 @@
+=== free before ===
+Free blocks:              251656
+
+=== fan daemon ===
+  OK    /bin/fancontrol                                   25768
+  OK    /etc/init/pn2-fanservice.rc                         553
+
+=== repair + verify ===
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6529/11232 files (0.5% non-contiguous), 618752/870400 blocks
+Pass 5: Checking group summary information
+system: 6529/11232 files (0.5% non-contiguous), 618752/870400 blocks
+  CLEAN
+
+=== free after ===
+Free blocks:              251648
+
+FAN DAEMON ADDED OK
+DONE

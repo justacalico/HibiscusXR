@@ -1,0 +1,85 @@
+﻿=== VR services running right now ===
+qvrservice = 
+qvrd = 
+pvrservice = 
+vr_hwc = running
+sensors.qti = running
+system        1063     1   97756   7188 binder_thread_read  0 S vr_hwc
+
+=== VR composer HAL (the direct-mode path) ===
+FM    Y android.hardware.graphics.composer@2.1::IComposer/vr                      0/2        1063   557
+
+=== what VR bits exist on /vendor (survived) ===
+-rwxr-xr-x 1 root      shell       72516 2008-12-31 11:00 qvrcameratest
+-rwxr-xr-x 1 root      shell       82584 2008-12-31 11:00 qvrcameratest64
+-rwxr-xr-x 1 root      shell       51408 2008-12-31 11:00 qvrcameratseq
+-rwxr-xr-x 1 root      shell       66128 2008-12-31 11:00 qvrcameratseq64
+-rwxr-xr-x 1 root      shell       84500 2008-12-31 11:00 qvrdatalogger
+-rwxr-xr-x 1 root      shell       90528 2008-12-31 11:00 qvrdatalogger64
+-rwxr-xr-x 1 root      shell      133992 2008-12-31 11:00 qvrservicetest
+-rwxr-xr-x 1 root      shell      160496 2008-12-31 11:00 qvrservicetest64
+--- libs ---
+libpvr.so
+libqvrcamera_client.so
+libqvrservice_client.so
+sensors-common-eeprom.pvr.so
+sensors-common-imu.pvr.so
+sensors-common-ndifpga.pvr.so
+sensors-icmxx.pvr.so
+sensors-light.pvr.so
+libpvr.so
+libqvrcamera_client.so
+libqvrcameraplayback.so
+libqvrservice_client.so
+sensors-common-eeprom.pvr.so
+sensors-common-imu.pvr.so
+sensors-common-ndifpga.pvr.so
+sensors-icmxx.pvr.so
+sensors-light.pvr.so
+--- vendor etc configs ---
+mixer_paths_qvr.xml
+pvr
+qvr
+
+=== VR bits on the current /system (GSI - expect almost nothing) ===
+
+=== does the framework expose VR mode at all? ===
+feature:android.hardware.vr.high_performance
+feature:android.software.vr.mode
+********* Dump of VrManagerService *********
+VR mode is currently: disallowed
+Persistent VR mode is currently: disabled
+Currently bound VR listener service: None
+Currently bound VR compositor service: None
+Previous state transitions:
+
+  None
+
+
+
+=== persist calibration still intact? ===
+total 4
+-rw-rw-rw- 1 root root 3576 2020-05-29 20:20 device_calibration.xml
+
+=== sensors available to an NDK app (what my renderer will use) ===
+0x00000001) gravity  Wakeup           | qualcomm        | ver: 1 | type: android.sensor.gravity(9) | perm: n/a | flags: 0x00000001
+0x00000002) gravity  Non-wakeup       | qualcomm        | ver: 1 | type: android.sensor.gravity(9) | perm: n/a | flags: 0x00000000
+0x00000003) pedometer  Wakeup         | qualcomm        | ver: 1 | type: android.sensor.step_counter(19) | perm: android.permission.ACTIVITY_RECOGNITION | flags: 0x00000003
+0x00000004) pedometer  Non-wakeup     | qualcomm        | ver: 1 | type: android.sensor.step_counter(19) | perm: android.permission.ACTIVITY_RECOGNITION | flags: 0x00000002
+0x00000005) bu52053nvx Hall Effect Sensor Wakeup | ROHM            | ver: 3 | type: qti.sensor.hall_effect(33171002) | perm: n/a | flags: 0x00000003
+0x00000006) bu52053nvx Hall Effect Sensor Non-wakeup | ROHM            | ver: 3 | type: qti.sensor.hall_effect(33171002) | perm: n/a | flags: 0x00000002
+0x00000007) sns_smd  Wakeup           | qualcomm        | ver: 1 | type: android.sensor.significant_motion(17) | perm: n/a | flags: 0x00000005
+0x00000008) pedometer  Wakeup         | qualcomm        | ver: 1 | type: android.sensor.step_detector(18) | perm: android.permission.ACTIVITY_RECOGNITION | flags: 0x00000007
+0x00000009) pedometer  Non-wakeup     | qualcomm        | ver: 1 | type: android.sensor.step_detector(18) | perm: android.permission.ACTIVITY_RECOGNITION | flags: 0x00000006
+0x0000000a) stk_stk3x1x_prox Proximity Sensor Wakeup | sensortek       | ver: 314 | type: android.sensor.proximity(8) | perm: n/a | flags: 0x00000003
+0x0000000b) stk_stk3x1x_prox Proximity Sensor Non-wakeup | sensortek       | ver: 314 | type: android.sensor.proximity(8) | perm: n/a | flags: 0x00000002
+0x0000000c) Game Rotation Vector  Wakeup | qualcomm        | ver: 1 | type: android.sensor.game_rotation_vector(15) | perm: n/a | flags: 0x00000001
+0x0000000d) Game Rotation Vector  Non-wakeup | qualcomm        | ver: 1 | type: android.sensor.game_rotation_vector(15) | perm: n/a | flags: 0x00000000
+0x0000000e) bosch_bmm150 Magnetometer-Uncalibrated Wakeup | Bosch           | ver: 8457 | type: android.sensor.magnetic_field_uncalibrated(14) | perm: n/a | flags: 0x00000881
+0x0000000f) bosch_bmm150 Magnetometer-Uncalibrated Non-wakeup | Bosch           | ver: 8457 | type: android.sensor.magnetic_field_uncalibrated(14) | perm: n/a | flags: 0x00000880
+0x00000010) bosch_bmm150 Magnetometer Wakeup | Bosch           | ver: 8457 | type: android.sensor.magnetic_field(2) | perm: n/a | flags: 0x00000881
+0x00000011) bosch_bmm150 Magnetometer Non-wakeup | Bosch           | ver: 8457 | type: android.sensor.magnetic_field(2) | perm: n/a | flags: 0x00000880
+0x00000012) sns_tilt  Wakeup          | qualcomm        | ver: 1 | type: android.sensor.tilt_detector(22) | perm: n/a | flags: 0x00000007
+0x00000013) linear_acceleration_wakeup | qualcomm        | ver: 1 | type: android.sensor.linear_acceleration(10) | perm: n/a | flags: 0x00000001
+0x00000014) linear_acceleration       | qualcomm        | ver: 1 | type: android.sensor.linear_acceleration(10) | perm: n/a | flags: 0x00000000
+DONE

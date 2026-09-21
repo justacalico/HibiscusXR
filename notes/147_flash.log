@@ -1,0 +1,54 @@
+=== flash full image 08/13/2026 14:25:01 ===
+[14:25:01] image: 3565158400 bytes
+[14:25:01] rebooting to bootloader
+[14:25:12] fastboot: 5c178a65	 fastboot
+[14:25:13] unlock: OKAY [  0.001s] Finished. Total time: 0.031s
+[14:25:13] flashing system (3.5GB in 128M chunks - this takes a few minutes)
+    Sending sparse 'system' 1/17 (131008 KB)           OKAY [  3.234s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 2/17 (130584 KB)           OKAY [  5.339s]
+    Writing 'system'                                   OKAY [  0.001s]
+    Sending sparse 'system' 3/17 (131068 KB)           OKAY [  5.740s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 4/17 (126996 KB)           OKAY [  5.715s]
+    Writing 'system'                                   OKAY [  0.001s]
+    Sending sparse 'system' 5/17 (130577 KB)           OKAY [  5.119s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 6/17 (130157 KB)           OKAY [  4.579s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 7/17 (131012 KB)           OKAY [  4.180s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 8/17 (130280 KB)           OKAY [  5.559s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 9/17 (130884 KB)           OKAY [  5.350s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 10/17 (130576 KB)          OKAY [  5.310s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 11/17 (130864 KB)          OKAY [  5.729s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 12/17 (131036 KB)          OKAY [  5.789s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 13/17 (131060 KB)          OKAY [  5.699s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 14/17 (128430 KB)          OKAY [  5.718s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 15/17 (131068 KB)          OKAY [  5.169s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 16/17 (130932 KB)          OKAY [  5.209s]
+    Writing 'system'                                   OKAY [  0.000s]
+    Sending sparse 'system' 17/17 (90384 KB)           OKAY [  4.360s]
+    Writing 'system'                                   OKAY [  0.000s]
+[14:27:13] flash finished rc=0 in 120s
+[14:27:13] rebooting
+[14:32:17] boot_completed=1 uptime=213s
+[14:32:32] --- does the port still work end to end ---
+[14:32:32]    sound card     0 [sdm845tavilsndc]: sdm845-tavil-sn - sdm845-tavil-snd-card                       sdm845-tavil-snd-card
+[14:32:32]    audio_policy   Service media.audio_policy: found
+[14:32:33]    wm size        Physical size: 3840x2160
+[14:32:33]    pvrservice     1146
+[14:32:33]    system_server  1655
+[14:32:33]    wakelock       stopped
+[14:32:33]    sensor aborts  0
+[14:32:33] --- pico packages ---
+[14:32:33]    18 pico packages registered
+[14:32:33] === done ===

@@ -1,0 +1,27 @@
+=== x24 patch test 08/14/2026 02:36:49 ===
+[02:37:16]    d9c9b8abf7d9c71e44c77abc58723518  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+[02:37:16]    d9c9b8abf7d9c71e44c77abc58723518  /data/local/tmp/x24.so
+[02:37:16]    --- launching ---
+[02:37:16]      pid 21819
+[02:37:16]    --- did pvrservice finally ask QVR? ---
+[02:37:16]    12000 12000 I svr     : Calling QVRServiceClient_Create()...
+[02:37:16]    12000 12000 E svr     :     QVR Serivce reported VR not supported
+[02:37:16]    12000 21607 I svr     : Calling QVRServiceClient_Create()...
+[02:37:16]    12000 21607 E svr     :     QVR Serivce reported VR not supported
+[02:37:16]    --- does pvrservice load the qvr client now? ---
+[02:37:16]    --- compositor ---
+[02:37:16]    grep: Pose": No such file or directory
+[02:37:16]      BadPose  = 
+[02:37:16]      kLost    = 0
+[02:37:16]    grep: =: No such file or directory
+[02:37:16]    grep: 0x0": No such file or directory
+[02:37:16]      ts0      = 
+[02:37:16]    --- hmdInfo (did EnterVrMode read sane values?) ---
+[02:37:16]    21546 21583 I VrApi   : ---------- pvr_EnterVrMode ----------
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.lensSeparation = 0.062000
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.widthMeters = 0.129600
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.heightMeters = 0.072000
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.widthPixels = 3840
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.heightPixels = 2160
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.eyeTextureResolution[0] = 1080
+[02:37:16]    21546 21583 I VrApi   : hmdInfo.eyeTextureResolution[1] = 1200

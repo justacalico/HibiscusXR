@@ -1,0 +1,9 @@
+=== wireless adb init trigger 08/13/2026 17:16:22 ===
+[17:16:26]    -rw-r--r-- 1 root root 954 2026-08-13 17:16 /system/etc/init/pn2-adbwifi.rc
+[17:16:26]    --- enabling ---
+[17:16:26]    service.adb.tcp.port = 
+[17:16:26]    persist.pn2.adbwifi  = 1
+[17:16:26] --- connecting wirelessly ---
+[17:16:30] cannot connect to 192.168.0.172:5555: No connection could be made because the target machine actively refused it. (10061)
+[17:16:30]    PA7B40NGE5300009W	device
+[17:16:30]    192.168.0.139:5555	device

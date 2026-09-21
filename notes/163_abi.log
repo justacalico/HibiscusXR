@@ -1,0 +1,19 @@
+=== VRShell ABI: ours vs stock ===
+
+################ OURS ################
+  pkg: codePath=/system/priv-app/VRShell2
+  pkg: legacyNativeLibraryDir=/system/priv-app/VRShell2/lib
+  pkg: primaryCpuAbi=arm64-v8a
+  pkg: secondaryCpuAbi=null
+  pid: 
+
+################ STOCK ################
+  pkg: codePath=/system/priv-app/VRShell2
+  pkg: legacyNativeLibraryDir=/system/priv-app/VRShell2/lib
+  pkg: primaryCpuAbi=arm64-v8a
+  pkg: secondaryCpuAbi=null
+  pid: 6272
+  exe: /system/bin/app_process64
+  lib64 mappings: 628
+
+=== done ===

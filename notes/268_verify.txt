@@ -1,0 +1,39 @@
+=== content verification ===
+  MATCH  /etc/public.libraries.txt
+  MATCH  /lib64/libvirtualinputclient.so
+  MATCH  /lib64/libSafetyArea.so
+  MATCH  /bin/airservice
+  MATCH  /bin/virtual_input
+  MATCH  /lib64/pvr_air/libshim_air.so
+  MATCH  /lib64/pvr_air/libskia.so
+  MATCH  /lib64/libshim_pvr.so
+  MATCH  /apex/com.android.runtime.release/lib64/libart.so
+  MATCH  /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+  MATCH  /etc/init/pn2-qvrd.rc
+  MATCH  /priv-app/seethroughsetting/seethroughsetting.apk
+
+=== whitelist really has the 22 Pico entries? ===
+  total .so entries: 49
+  pico entries: 15
+
+=== the ART patch is actually the patched byte? ===
+  bytes at 0x13f36c:  bf 03 00 91
+  (expect bf 03 00 91 = mov sp, x29; the original was 9f 03 00 91)
+
+=== init scripts present ===
+  pn2-vintf.rc                 1098 bytes
+  pn2-snd.rc                   1219 bytes
+  pn2-settings.rc              1323 bytes
+  pn2-power.rc                 1325 bytes
+  pn2-airservice.rc            1802 bytes
+  pn2-qvrd.rc                  1259 bytes
+  pn2-adbwifi.rc               954 bytes
+
+=== pvr_air directory ===
+  .                            4096
+  ..                           24576
+  libairservice.so             172040
+  libaircamera.so              56704
+  libskia.so                   5312
+  libshim_air.so               8880
+DONE

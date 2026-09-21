@@ -1,0 +1,484 @@
+
+F:\PN2Lineage\notes\vrshell_lib\libPvr_UnitySDK.so:	file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+000000000005fa1c <pvr_EnterVrMode>:
+   5fa1c: ff 83 0e d1  	sub	sp, sp, #928
+   5fa20: 84 0c 00 90  	adrp	x4, 0x1ef000 <pvr_LeaveVrMode+0x8c>
+   5fa24: 82 08 00 90  	adrp	x2, 0x16f000 <pvr_EnterVrMode+0x448>
+   5fa28: fd 7b ba a9  	stp	x29, x30, [sp, #-96]!
+   5fa2c: fd 03 00 91  	mov	x29, sp
+   5fa30: 84 00 42 f9  	ldr	x4, [x4, #1024]
+   5fa34: f3 53 01 a9  	stp	x19, x20, [sp, #16]
+   5fa38: a3 7f 00 b9  	str	w3, [x29, #124]
+   5fa3c: 53 e0 0a 91  	add	x19, x2, #696
+   5fa40: 83 00 40 f9  	ldr	x3, [x4]
+   5fa44: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_EnterVrMode+0x470>
+   5fa48: f5 5b 02 a9  	stp	x21, x22, [sp, #32]
+   5fa4c: f7 63 03 a9  	stp	x23, x24, [sp, #48]
+   5fa50: 42 a0 0a 91  	add	x2, x2, #680
+   5fa54: 76 0c 00 f0  	adrp	x22, 0x1ee000 <pvr_LeaveVrMode+0xbc>
+   5fa58: f5 03 00 aa  	mov	x21, x0
+   5fa5c: f7 03 01 aa  	mov	x23, x1
+   5fa60: 80 00 80 52  	mov	w0, #4
+   5fa64: e1 03 13 aa  	mov	x1, x19
+   5fa68: f9 6b 04 a9  	stp	x25, x26, [sp, #64]
+   5fa6c: a3 ff 01 f9  	str	x3, [x29, #1016]
+   5fa70: b9 23 06 91  	add	x25, x29, #392
+   5fa74: fb 73 05 a9  	stp	x27, x28, [sp, #80]
+   5fa78: 78 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fa7c: c0 76 42 f9  	ldr	x0, [x22, #1256]
+   5fa80: e1 03 19 aa  	mov	x1, x25
+   5fa84: 3f 03 00 f9  	str	xzr, [x25]
+   5fa88: 02 00 80 d2  	mov	x2, #0
+   5fa8c: 03 00 40 f9  	ldr	x3, [x0]
+   5fa90: e0 03 03 aa  	mov	x0, x3
+   5fa94: 63 00 40 f9  	ldr	x3, [x3]
+   5fa98: 63 10 40 f9  	ldr	x3, [x3, #32]
+   5fa9c: 60 00 3f d6  	blr	x3
+   5faa0: e3 03 00 2a  	mov	w3, w0
+   5faa4: c0 28 00 35  	cbnz	w0, 0x5ffbc <pvr_EnterVrMode+0x5a0>
+   5faa8: a7 03 02 91  	add	x7, x29, #128
+   5faac: 00 51 80 d2  	mov	x0, #648
+   5fab0: a7 33 00 f9  	str	x7, [x29, #96]
+   5fab4: 94 0c 00 b0  	adrp	x20, 0x1f0000 <pvr_LeaveVrMode+0x124>
+   5fab8: 5b a0 02 94  	bl	0x107c24 <_Znwm>
+   5fabc: fc 03 00 aa  	mov	x28, x0
+   5fac0: 1b 20 05 91  	add	x27, x0, #328
+   5fac4: 21 00 80 52  	mov	w1, #1
+   5fac8: 00 60 05 91  	add	x0, x0, #344
+   5facc: a0 3b 00 f9  	str	x0, [x29, #112]
+   5fad0: 81 23 05 39  	strb	w1, [x28, #328]
+   5fad4: f8 03 1c aa  	mov	x24, x28
+   5fad8: 61 07 00 39  	strb	w1, [x27, #1]
+   5fadc: 9a 82 00 91  	add	x26, x20, #32
+   5fae0: 7f 0b 00 39  	strb	wzr, [x27, #2]
+   5fae4: 7f 07 00 f9  	str	xzr, [x27, #8]
+   5fae8: 41 54 00 94  	bl	0x74bec <_ZN3PVR6StringC2Ev>
+   5faec: 7f 8f 00 f9  	str	xzr, [x27, #280]
+   5faf0: 20 03 40 f9  	ldr	x0, [x25]
+   5faf4: 7f 93 00 f9  	str	xzr, [x27, #288]
+   5faf8: 7f 97 00 f9  	str	xzr, [x27, #296]
+   5fafc: 7f 33 01 b9  	str	wzr, [x27, #304]
+   5fb00: 7f 37 01 b9  	str	wzr, [x27, #308]
+   5fb04: 80 07 00 f9  	str	x0, [x28, #8]
+   5fb08: 86 bf ff 97  	bl	0x4f920 <.plt+0x690>
+   5fb0c: 80 13 00 b9  	str	w0, [x28, #16]
+   5fb10: 82 83 04 91  	add	x2, x28, #288
+   5fb14: a3 12 40 f9  	ldr	x3, [x21, #32]
+   5fb18: aa 2e 40 a9  	ldp	x10, x11, [x21]
+   5fb1c: 83 a3 00 f9  	str	x3, [x28, #320]
+   5fb20: a0 06 41 a9  	ldp	x0, x1, [x21, #16]
+   5fb24: 4a 2c 00 a9  	stp	x10, x11, [x2]
+   5fb28: 40 04 01 a9  	stp	x0, x1, [x2, #16]
+   5fb2c: 1f 07 02 38  	strb	wzr, [x24], #32
+   5fb30: d1 e9 ff 97  	bl	0x5a274 <pvr_GetTimeInSeconds>
+   5fb34: a8 43 06 91  	add	x8, x29, #400
+   5fb38: e3 f2 ff 97  	bl	0x5c6c4 <pvr_GetSensorStateInternal>
+   5fb3c: ac d5 01 94  	bl	0xd51ec <_ZN3PVR17GL_FindExtensionsEv>
+   5fb40: 00 00 80 d2  	mov	x0, #0
+   5fb44: 3b c1 ff 97  	bl	0x50030 <.plt+0xda0>
+   5fb48: f9 03 00 aa  	mov	x25, x0
+   5fb4c: 20 0b 86 52  	mov	w0, #12377
+   5fb50: 84 c2 ff 97  	bl	0x50560 <.plt+0x12d0>
+   5fb54: e8 03 00 aa  	mov	x8, x0
+   5fb58: e1 03 08 aa  	mov	x1, x8
+   5fb5c: e2 0a 86 52  	mov	w2, #12375
+   5fb60: 43 13 00 91  	add	x3, x26, #4
+   5fb64: e0 03 19 aa  	mov	x0, x25
+   5fb68: a8 37 00 f9  	str	x8, [x29, #104]
+   5fb6c: 71 c1 ff 97  	bl	0x50130 <.plt+0xea0>
+   5fb70: a8 37 40 f9  	ldr	x8, [x29, #104]
+   5fb74: 43 23 00 91  	add	x3, x26, #8
+   5fb78: c2 0a 86 52  	mov	w2, #12374
+   5fb7c: e0 03 19 aa  	mov	x0, x25
+   5fb80: e1 03 08 aa  	mov	x1, x8
+   5fb84: 6b c1 ff 97  	bl	0x50130 <.plt+0xea0>
+   5fb88: 25 32 00 94  	bl	0x6c41c <_Z21GetUnityPluginHMDTypev>
+   5fb8c: a7 33 40 f9  	ldr	x7, [x29, #96]
+   5fb90: a7 37 00 f9  	str	x7, [x29, #104]
+   5fb94: e8 03 07 aa  	mov	x8, x7
+   5fb98: 5d 80 00 94  	bl	0x7fd0c <_ZN3PVR16GetDeviceHmdInfoENS_9hmdType_tE>
+   5fb9c: a1 37 40 f9  	ldr	x1, [x29, #104]
+   5fba0: 82 1f 80 d2  	mov	x2, #252
+   5fba4: e0 03 18 aa  	mov	x0, x24
+   5fba8: ca bd ff 97  	bl	0x4f2d0 <.plt+0x40>
+   5fbac: 43 07 40 b9  	ldr	w3, [x26, #4]
+   5fbb0: 80 b3 03 91  	add	x0, x28, #236
+   5fbb4: 42 0b 40 b9  	ldr	w2, [x26, #8]
+   5fbb8: 81 c3 03 91  	add	x1, x28, #240
+   5fbbc: 83 f7 00 b9  	str	w3, [x28, #244]
+   5fbc0: 82 fb 00 b9  	str	w2, [x28, #248]
+   5fbc4: 1b 32 00 94  	bl	0x6c430 <_Z26GetUnityPluginScreenMetersRfS_>
+   5fbc8: 80 eb 40 bd  	ldr	s0, [x28, #232]
+   5fbcc: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0x40>
+   5fbd0: 80 00 80 52  	mov	w0, #4
+   5fbd4: e1 03 13 aa  	mov	x1, x19
+   5fbd8: 00 c0 22 1e  	fcvt	d0, s0
+   5fbdc: 42 40 0b 91  	add	x2, x2, #720
+   5fbe0: 1e 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fbe4: 80 ef 40 bd  	ldr	s0, [x28, #236]
+   5fbe8: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0x5c>
+   5fbec: 80 00 80 52  	mov	w0, #4
+   5fbf0: e1 03 13 aa  	mov	x1, x19
+   5fbf4: 00 c0 22 1e  	fcvt	d0, s0
+   5fbf8: 42 c0 0b 91  	add	x2, x2, #752
+   5fbfc: 17 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc00: 80 f3 40 bd  	ldr	s0, [x28, #240]
+   5fc04: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0x78>
+   5fc08: 80 00 80 52  	mov	w0, #4
+   5fc0c: e1 03 13 aa  	mov	x1, x19
+   5fc10: 00 c0 22 1e  	fcvt	d0, s0
+   5fc14: 42 40 0c 91  	add	x2, x2, #784
+   5fc18: 10 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc1c: 83 f7 40 b9  	ldr	w3, [x28, #244]
+   5fc20: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0x94>
+   5fc24: 80 00 80 52  	mov	w0, #4
+   5fc28: e1 03 13 aa  	mov	x1, x19
+   5fc2c: 42 c0 0c 91  	add	x2, x2, #816
+   5fc30: 0a 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc34: 83 fb 40 b9  	ldr	w3, [x28, #248]
+   5fc38: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0xac>
+   5fc3c: 80 00 80 52  	mov	w0, #4
+   5fc40: e1 03 13 aa  	mov	x1, x19
+   5fc44: 42 40 0d 91  	add	x2, x2, #848
+   5fc48: 04 36 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc4c: 83 0f 41 b9  	ldr	w3, [x28, #268]
+   5fc50: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0xc4>
+   5fc54: 80 00 80 52  	mov	w0, #4
+   5fc58: e1 03 13 aa  	mov	x1, x19
+   5fc5c: 42 c0 0d 91  	add	x2, x2, #880
+   5fc60: fe 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc64: 83 13 41 b9  	ldr	w3, [x28, #272]
+   5fc68: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0xdc>
+   5fc6c: 80 00 80 52  	mov	w0, #4
+   5fc70: e1 03 13 aa  	mov	x1, x19
+   5fc74: 42 60 0e 91  	add	x2, x2, #920
+   5fc78: f8 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc7c: 80 17 41 bd  	ldr	s0, [x28, #276]
+   5fc80: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0xf4>
+   5fc84: 80 00 80 52  	mov	w0, #4
+   5fc88: e1 03 13 aa  	mov	x1, x19
+   5fc8c: 00 c0 22 1e  	fcvt	d0, s0
+   5fc90: 42 00 0f 91  	add	x2, x2, #960
+   5fc94: f1 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fc98: 80 1b 41 bd  	ldr	s0, [x28, #280]
+   5fc9c: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_LeaveVrMode+0x110>
+   5fca0: 42 80 0f 91  	add	x2, x2, #992
+   5fca4: e1 03 13 aa  	mov	x1, x19
+   5fca8: 00 c0 22 1e  	fcvt	d0, s0
+   5fcac: 80 00 80 52  	mov	w0, #4
+   5fcb0: ea 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fcb4: 20 00 80 52  	mov	w0, #1
+   5fcb8: 4a 7c 00 94  	bl	0x7ede0 <_Z20psmvr_GetFloatConfig18GlobalFloatConfigs>
+   5fcbc: 00 c0 22 1e  	fcvt	d0, s0
+   5fcc0: f6 29 00 94  	bl	0x6a498 <Pvr_SetVsyncFrameRate>
+   5fcc4: e0 00 80 52  	mov	w0, #7
+   5fcc8: 78 3c 00 94  	bl	0x6eea8 <_Z18pvr_GetBuildString12eBuildString>
+   5fccc: 81 08 00 90  	adrp	x1, 0x16f000 <pvr_LeaveVrMode+0x138>
+   5fcd0: 21 60 0d 91  	add	x1, x1, #856
+   5fcd4: c7 52 00 94  	bl	0x747f0 <_ZN3PVR11PVR_stricmpEPKcS1_>
+   5fcd8: 00 01 80 52  	mov	w0, #8
+   5fcdc: 2d 7c 00 94  	bl	0x7ed90 <_Z18psmvr_GetIntConfig16GlobalIntConfigs>
+   5fce0: 1f 04 00 71  	cmp	w0, #1
+   5fce4: 00 12 00 54  	b.eq	0x5ff24 <pvr_EnterVrMode+0x508>
+   5fce8: 81 07 40 f9  	ldr	x1, [x28, #8]
+   5fcec: e0 03 01 aa  	mov	x0, x1
+   5fcf0: 21 00 40 f9  	ldr	x1, [x1]
+   5fcf4: 21 3c 40 f9  	ldr	x1, [x1, #120]
+   5fcf8: 20 00 3f d6  	blr	x1
+   5fcfc: 80 01 00 b4  	cbz	x0, 0x5fd2c <pvr_EnterVrMode+0x310>
+   5fd00: 81 07 40 f9  	ldr	x1, [x28, #8]
+   5fd04: e0 03 01 aa  	mov	x0, x1
+   5fd08: 21 00 40 f9  	ldr	x1, [x1]
+   5fd0c: 21 44 40 f9  	ldr	x1, [x1, #136]
+   5fd10: 20 00 3f d6  	blr	x1
+   5fd14: 81 08 00 90  	adrp	x1, 0x16f000 <pvr_IPDRefreshNotify+0x18>
+   5fd18: 82 08 00 d0  	adrp	x2, 0x171000 <pvr_IPDRefreshNotify+0x24>
+   5fd1c: 80 00 80 52  	mov	w0, #4
+   5fd20: 21 e0 0a 91  	add	x1, x1, #696
+   5fd24: 42 a0 11 91  	add	x2, x2, #1128
+   5fd28: cc 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5fd2c: 81 83 44 39  	ldrb	w1, [x28, #288]
+   5fd30: 20 01 80 52  	mov	w0, #9
+   5fd34: 81 27 05 39  	strb	w1, [x28, #329]
+   5fd38: 93 83 05 91  	add	x19, x28, #352
+   5fd3c: 15 7c 00 94  	bl	0x7ed90 <_Z18psmvr_GetIntConfig16GlobalIntConfigs>
+   5fd40: 1f 00 1f 6b  	cmp	w0, wzr
+   5fd44: 82 97 40 f9  	ldr	x2, [x28, #296]
+   5fd48: e0 d7 9f 1a  	cset	w0, gt
+   5fd4c: 81 8b 44 39  	ldrb	w1, [x28, #290]
+   5fd50: 82 ab 00 f9  	str	x2, [x28, #336]
+   5fd54: 82 1f 80 d2  	mov	x2, #252
+   5fd58: 80 23 05 39  	strb	w0, [x28, #328]
+   5fd5c: e0 03 13 aa  	mov	x0, x19
+   5fd60: 81 2b 05 39  	strb	w1, [x28, #330]
+   5fd64: e1 03 18 aa  	mov	x1, x24
+   5fd68: 5a bd ff 97  	bl	0x4f2d0 <.plt+0x40>
+   5fd6c: d6 76 42 f9  	ldr	x22, [x22, #1256]
+   5fd70: 20 0d 00 b0  	adrp	x0, 0x204000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1fc>
+   5fd74: 82 a3 40 f9  	ldr	x2, [x28, #320]
+   5fd78: 00 c0 26 91  	add	x0, x0, #2480
+   5fd7c: 81 33 41 b9  	ldr	w1, [x28, #304]
+   5fd80: c6 02 40 f9  	ldr	x6, [x22]
+   5fd84: 86 33 01 f9  	str	x6, [x28, #608]
+   5fd88: 03 f4 42 f9  	ldr	x3, [x0, #1512]
+   5fd8c: 80 22 40 b9  	ldr	w0, [x20, #32]
+   5fd90: 80 7f 02 b9  	str	w0, [x28, #636]
+   5fd94: a0 7f 40 b9  	ldr	w0, [x29, #124]
+   5fd98: 83 37 01 f9  	str	x3, [x28, #616]
+   5fd9c: 82 3b 01 f9  	str	x2, [x28, #624]
+   5fda0: 81 7b 02 b9  	str	w1, [x28, #632]
+   5fda4: 40 0a 00 34  	cbz	w0, 0x5feec <pvr_EnterVrMode+0x4d0>
+   5fda8: a0 7f 40 b9  	ldr	w0, [x29, #124]
+   5fdac: 1f 04 00 71  	cmp	w0, #1
+   5fdb0: 40 0b 00 54  	b.eq	0x5ff18 <pvr_EnterVrMode+0x4fc>
+   5fdb4: 80 0c 00 90  	adrp	x0, 0x1ef000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1ec>
+   5fdb8: 01 00 80 d2  	mov	x1, #0
+   5fdbc: b6 e3 0a 91  	add	x22, x29, #696
+   5fdc0: 00 5c 47 f9  	ldr	x0, [x0, #3768]
+   5fdc4: 2f c0 ff 97  	bl	0x4fe80 <.plt+0xbf0>
+   5fdc8: 80 0c 00 90  	adrp	x0, 0x1ef000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x200>
+   5fdcc: 01 00 80 d2  	mov	x1, #0
+   5fdd0: 00 28 41 f9  	ldr	x0, [x0, #592]
+   5fdd4: 87 c1 ff 97  	bl	0x503f0 <.plt+0x1160>
+   5fdd8: 87 23 45 39  	ldrb	w7, [x28, #328]
+   5fddc: c0 42 00 91  	add	x0, x22, #16
+   5fde0: 66 07 40 39  	ldrb	w6, [x27, #1]
+   5fde4: 63 0b 40 39  	ldrb	w3, [x27, #2]
+   5fde8: 62 07 40 f9  	ldr	x2, [x27, #8]
+   5fdec: a1 3b 40 f9  	ldr	x1, [x29, #112]
+   5fdf0: c7 02 00 39  	strb	w7, [x22]
+   5fdf4: c6 06 00 39  	strb	w6, [x22, #1]
+   5fdf8: c3 0a 00 39  	strb	w3, [x22, #2]
+   5fdfc: c2 06 00 f9  	str	x2, [x22, #8]
+   5fe00: 84 53 00 94  	bl	0x74c10 <_ZN3PVR6StringC2ERKS0_>
+   5fe04: e1 03 13 aa  	mov	x1, x19
+   5fe08: 82 1f 80 d2  	mov	x2, #252
+   5fe0c: c0 62 00 91  	add	x0, x22, #24
+   5fe10: 30 bd ff 97  	bl	0x4f2d0 <.plt+0x40>
+   5fe14: 61 3f 41 b9  	ldr	w1, [x27, #316]
+   5fe18: e0 03 16 aa  	mov	x0, x22
+   5fe1c: 69 8f 40 f9  	ldr	x9, [x27, #280]
+   5fe20: 68 93 40 f9  	ldr	x8, [x27, #288]
+   5fe24: 67 97 40 f9  	ldr	x7, [x27, #296]
+   5fe28: 66 33 41 b9  	ldr	w6, [x27, #304]
+   5fe2c: 63 37 41 b9  	ldr	w3, [x27, #308]
+   5fe30: 62 3b 41 b9  	ldr	w2, [x27, #312]
+   5fe34: a1 f7 03 b9  	str	w1, [x29, #1012]
+   5fe38: a9 eb 01 f9  	str	x9, [x29, #976]
+   5fe3c: a8 ef 01 f9  	str	x8, [x29, #984]
+   5fe40: a7 f3 01 f9  	str	x7, [x29, #992]
+   5fe44: a6 eb 03 b9  	str	w6, [x29, #1000]
+   5fe48: a3 ef 03 b9  	str	w3, [x29, #1004]
+   5fe4c: a2 f3 03 b9  	str	w2, [x29, #1008]
+   5fe50: 40 23 02 94  	bl	0xe8b50 <_ZN3PVR8TimeWarp7FactoryENS_17TimeWarpInitParmsE>
+   5fe54: c1 0a 40 f9  	ldr	x1, [x22, #16]
+   5fe58: 80 0f 00 f9  	str	x0, [x28, #24]
+   5fe5c: 21 f4 7e 92  	and	x1, x1, #0xfffffffffffffffc
+   5fe60: 20 20 00 91  	add	x0, x1, #8
+   5fe64: 02 fc 5f 88  	ldaxr	w2, [x0]
+   5fe68: 43 04 00 51  	sub	w3, w2, #1
+   5fe6c: 03 fc 04 88  	stlxr	w4, w3, [x0]
+   5fe70: a4 ff ff 35  	cbnz	w4, 0x5fe64 <pvr_EnterVrMode+0x448>
+   5fe74: 5f 04 00 71  	cmp	w2, #1
+   5fe78: 00 04 00 54  	b.eq	0x5fef8 <pvr_EnterVrMode+0x4dc>
+   5fe7c: 81 17 41 b9  	ldr	w1, [x28, #276]
+   5fe80: 82 13 41 b9  	ldr	w2, [x28, #272]
+   5fe84: 80 1b 41 b9  	ldr	w0, [x28, #280]
+   5fe88: 83 0f 41 b9  	ldr	w3, [x28, #268]
+   5fe8c: e3 02 00 b9  	str	w3, [x23]
+   5fe90: 94 82 00 91  	add	x20, x20, #32
+   5fe94: e2 06 00 b9  	str	w2, [x23, #4]
+   5fe98: e1 0a 00 b9  	str	w1, [x23, #8]
+   5fe9c: e0 0e 00 b9  	str	w0, [x23, #12]
+   5fea0: f5 e8 ff 97  	bl	0x5a274 <pvr_GetTimeInSeconds>
+   5fea4: 80 0c 00 90  	adrp	x0, 0x1ef000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x2dc>
+   5fea8: a2 ff 41 f9  	ldr	x2, [x29, #1016]
+   5feac: 01 90 62 1e  	fmov	d1, #5.00000000
+   5feb0: 15 00 42 f9  	ldr	x21, [x0, #1024]
+   5feb4: e0 03 1c aa  	mov	x0, x28
+   5feb8: 00 28 61 1e  	fadd	d0, d0, d1
+   5febc: a1 02 40 f9  	ldr	x1, [x21]
+   5fec0: 5f 00 01 eb  	cmp	x2, x1
+   5fec4: 80 0a 00 fd  	str	d0, [x20, #16]
+   5fec8: 81 07 00 54  	b.ne	0x5ffb8 <pvr_EnterVrMode+0x59c>
+   5fecc: f3 53 41 a9  	ldp	x19, x20, [sp, #16]
+   5fed0: f5 5b 42 a9  	ldp	x21, x22, [sp, #32]
+   5fed4: f7 63 43 a9  	ldp	x23, x24, [sp, #48]
+   5fed8: f9 6b 44 a9  	ldp	x25, x26, [sp, #64]
+   5fedc: fb 73 45 a9  	ldp	x27, x28, [sp, #80]
+   5fee0: fd 7b c6 a8  	ldp	x29, x30, [sp], #96
+   5fee4: ff 83 0e 91  	add	sp, sp, #928
+   5fee8: c0 03 5f d6  	ret
+   5feec: 40 11 86 52  	mov	w0, #12426
+   5fef0: 80 87 02 b9  	str	w0, [x28, #644]
+   5fef4: b0 ff ff 17  	b	0x5fdb4 <pvr_EnterVrMode+0x398>
+   5fef8: 80 0c 00 90  	adrp	x0, 0x1ef000 <pvr_GetPowerLevelStateThrottled+0x10>
+   5fefc: 00 8c 47 f9  	ldr	x0, [x0, #3864]
+   5ff00: 02 00 40 f9  	ldr	x2, [x0]
+   5ff04: e0 03 02 aa  	mov	x0, x2
+   5ff08: 42 00 40 f9  	ldr	x2, [x2]
+   5ff0c: 42 0c 40 f9  	ldr	x2, [x2, #24]
+   5ff10: 40 00 3f d6  	blr	x2
+   5ff14: da ff ff 17  	b	0x5fe7c <pvr_EnterVrMode+0x460>
+   5ff18: 20 11 86 52  	mov	w0, #12425
+   5ff1c: 80 87 02 b9  	str	w0, [x28, #644]
+   5ff20: a5 ff ff 17  	b	0x5fdb4 <pvr_EnterVrMode+0x398>
+   5ff24: 40 01 80 52  	mov	w0, #10
+   5ff28: 9a 7b 00 94  	bl	0x7ed90 <_Z18psmvr_GetIntConfig16GlobalIntConfigs>
+   5ff2c: 80 02 00 34  	cbz	w0, 0x5ff7c <pvr_EnterVrMode+0x560>
+   5ff30: 1f 10 00 71  	cmp	w0, #4
+   5ff34: 81 00 00 54  	b.ne	0x5ff44 <pvr_EnterVrMode+0x528>
+   5ff38: 60 0c 00 f0  	adrp	x0, 0x1ee000 <pvr_GetPowerLevelStateThrottled+0x4c>
+   5ff3c: 00 ac 44 f9  	ldr	x0, [x0, #2392]
+   5ff40: c2 5c 02 94  	bl	0xf7248 <_Z27SetDisplayInterruptCallbackPFvmE>
+   5ff44: 20 0d 00 b0  	adrp	x0, 0x204000 <pvr_GetPowerLevelStateMinimum+0x40>
+   5ff48: 13 c0 26 91  	add	x19, x0, #2480
+   5ff4c: 80 0c 00 90  	adrp	x0, 0x1ef000 <pvr_GetPowerLevelStateThrottled+0x64>
+   5ff50: 00 e0 44 f9  	ldr	x0, [x0, #2496]
+   5ff54: db 5b 02 94  	bl	0xf6ec0 <_Z23SetClientStatusCallbackPFvN3PVR13_clientStatusEPiiE>
+   5ff58: 80 07 40 f9  	ldr	x0, [x28, #8]
+   5ff5c: 82 08 00 d0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x19c>
+   5ff60: 61 f6 42 f9  	ldr	x1, [x19, #1512]
+   5ff64: 83 08 00 d0  	adrp	x3, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1a4>
+   5ff68: 42 c0 10 91  	add	x2, x2, #1072
+   5ff6c: 63 20 11 91  	add	x3, x3, #1096
+   5ff70: 2a 32 00 94  	bl	0x6c818 <_Z21pvr_GetStaticMethodIDP7_JNIEnvP7_jclassPKcS4_>
+   5ff74: 60 fa 02 f9  	str	x0, [x19, #1520]
+   5ff78: 5c ff ff 17  	b	0x5fce8 <pvr_EnterVrMode+0x2cc>
+   5ff7c: 20 0d 00 b0  	adrp	x0, 0x204000 <pvr_WarpSwap+0x8>
+   5ff80: 82 08 00 d0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1c0>
+   5ff84: 13 c0 26 91  	add	x19, x0, #2480
+   5ff88: 83 08 00 d0  	adrp	x3, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1c8>
+   5ff8c: 80 07 40 f9  	ldr	x0, [x28, #8]
+   5ff90: 42 00 10 91  	add	x2, x2, #1024
+   5ff94: 63 40 10 91  	add	x3, x3, #1040
+   5ff98: 61 f6 42 f9  	ldr	x1, [x19, #1512]
+   5ff9c: 1f 32 00 94  	bl	0x6c818 <_Z21pvr_GetStaticMethodIDP7_JNIEnvP7_jclassPKcS4_>
+   5ffa0: e2 03 00 aa  	mov	x2, x0
+   5ffa4: 61 f6 42 f9  	ldr	x1, [x19, #1512]
+   5ffa8: 80 07 40 f9  	ldr	x0, [x28, #8]
+   5ffac: 83 a3 40 f9  	ldr	x3, [x28, #320]
+   5ffb0: 65 e7 ff 97  	bl	0x59d44 <_ZN7_JNIEnv20CallStaticVoidMethodEP7_jclassP10_jmethodIDz>
+   5ffb4: e4 ff ff 17  	b	0x5ff44 <pvr_EnterVrMode+0x528>
+   5ffb8: e2 c0 ff 97  	bl	0x50340 <.plt+0x10b0>
+   5ffbc: 82 08 00 d0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x1fc>
+   5ffc0: c0 00 80 52  	mov	w0, #6
+   5ffc4: e1 03 13 aa  	mov	x1, x19
+   5ffc8: 42 00 06 91  	add	x2, x2, #384
+   5ffcc: 23 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   5ffd0: f8 bf ff 97  	bl	0x4ffb0 <.plt+0xd20>
+
+000000000005ffd4 <pvr_LeaveVrMode>:
+   5ffd4: fd 7b bd a9  	stp	x29, x30, [sp, #-48]!
+   5ffd8: 82 08 00 d0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x218>
+   5ffdc: fd 03 00 91  	mov	x29, sp
+   5ffe0: f3 53 01 a9  	stp	x19, x20, [sp, #16]
+   5ffe4: 94 08 00 90  	adrp	x20, 0x16f000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x21c>
+   5ffe8: f3 03 00 aa  	mov	x19, x0
+   5ffec: 94 e2 0a 91  	add	x20, x20, #696
+   5fff0: 80 00 80 52  	mov	w0, #4
+   5fff4: e1 03 14 aa  	mov	x1, x20
+   5fff8: 42 00 12 91  	add	x2, x2, #1152
+   5fffc: f5 5b 02 a9  	stp	x21, x22, [sp, #32]
+   60000: 16 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   60004: b3 06 00 b4  	cbz	x19, 0x600d8 <pvr_LeaveVrMode+0x104>
+   60008: 60 02 40 39  	ldrb	w0, [x19]
+   6000c: 60 06 00 35  	cbnz	w0, 0x600d8 <pvr_LeaveVrMode+0x104>
+   60010: 44 be ff 97  	bl	0x4f920 <.plt+0x690>
+   60014: e3 03 00 2a  	mov	w3, w0
+   60018: 64 12 40 b9  	ldr	w4, [x19, #16]
+   6001c: 1f 00 04 6b  	cmp	w0, w4
+   60020: e0 01 00 54  	b.eq	0x6005c <pvr_LeaveVrMode+0x88>
+   60024: 82 08 00 b0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x260>
+   60028: 80 00 80 52  	mov	w0, #4
+   6002c: e1 03 14 aa  	mov	x1, x20
+   60030: 42 a0 12 91  	add	x2, x2, #1192
+   60034: 09 35 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   60038: 60 0c 00 d0  	adrp	x0, 0x1ee000 <pvr_GetAndroidOSVersion+0x2c>
+   6003c: 00 74 42 f9  	ldr	x0, [x0, #1256]
+   60040: 00 00 40 f9  	ldr	x0, [x0]
+   60044: 00 07 00 b4  	cbz	x0, 0x60124 <pvr_LeaveVrMode+0x150>
+   60048: 03 00 40 f9  	ldr	x3, [x0]
+   6004c: 61 22 00 91  	add	x1, x19, #8
+   60050: 02 00 80 d2  	mov	x2, #0
+   60054: 63 10 40 f9  	ldr	x3, [x3, #32]
+   60058: 60 00 3f d6  	blr	x3
+   6005c: 60 0e 40 f9  	ldr	x0, [x19, #24]
+   60060: 80 00 00 b4  	cbz	x0, 0x60070 <pvr_LeaveVrMode+0x9c>
+   60064: 01 00 40 f9  	ldr	x1, [x0]
+   60068: 21 04 40 f9  	ldr	x1, [x1, #8]
+   6006c: 20 00 3f d6  	blr	x1
+   60070: 34 0d 00 90  	adrp	x20, 0x204000 <pvr_GetBatteryState+0x4>
+   60074: 21 00 80 52  	mov	w1, #1
+   60078: 95 c2 26 91  	add	x21, x20, #2480
+   6007c: 7f 0e 00 f9  	str	xzr, [x19, #24]
+   60080: 00 01 80 52  	mov	w0, #8
+   60084: 61 02 00 39  	strb	w1, [x19]
+   60088: 96 08 00 b0  	adrp	x22, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x2c4>
+   6008c: bf fa 02 f9  	str	xzr, [x21, #1520]
+   60090: 40 7b 00 94  	bl	0x7ed90 <_Z18psmvr_GetIntConfig16GlobalIntConfigs>
+   60094: 1f 04 00 71  	cmp	w0, #1
+   60098: 80 02 00 54  	b.eq	0x600e8 <pvr_LeaveVrMode+0x114>
+   6009c: 94 c2 26 91  	add	x20, x20, #2480
+   600a0: 60 06 40 f9  	ldr	x0, [x19, #8]
+   600a4: 82 08 00 b0  	adrp	x2, 0x171000 <_Z24pvr_CheckPowerLevelStateP9pvrMobile+0x2e0>
+   600a8: c3 42 10 91  	add	x3, x22, #1040
+   600ac: 42 60 14 91  	add	x2, x2, #1304
+   600b0: 81 f6 42 f9  	ldr	x1, [x20, #1512]
+   600b4: d9 31 00 94  	bl	0x6c818 <_Z21pvr_GetStaticMethodIDP7_JNIEnvP7_jclassPKcS4_>
+   600b8: e2 03 00 aa  	mov	x2, x0
+   600bc: 81 f6 42 f9  	ldr	x1, [x20, #1512]
+   600c0: 60 06 40 f9  	ldr	x0, [x19, #8]
+   600c4: 63 a2 40 f9  	ldr	x3, [x19, #320]
+   600c8: f5 5b 42 a9  	ldp	x21, x22, [sp, #32]
+   600cc: f3 53 41 a9  	ldp	x19, x20, [sp, #16]
+   600d0: fd 7b c3 a8  	ldp	x29, x30, [sp], #48
+   600d4: 1c e7 ff 17  	b	0x59d44 <_ZN7_JNIEnv20CallStaticVoidMethodEP7_jclassP10_jmethodIDz>
+   600d8: f3 53 41 a9  	ldp	x19, x20, [sp, #16]
+   600dc: f5 5b 42 a9  	ldp	x21, x22, [sp, #32]
+   600e0: fd 7b c3 a8  	ldp	x29, x30, [sp], #48
+   600e4: c0 03 5f d6  	ret
+   600e8: 40 01 80 52  	mov	w0, #10
+   600ec: 29 7b 00 94  	bl	0x7ed90 <_Z18psmvr_GetIntConfig16GlobalIntConfigs>
+   600f0: 60 fd ff 35  	cbnz	w0, 0x6009c <pvr_LeaveVrMode+0xc8>
+   600f4: a1 f6 42 f9  	ldr	x1, [x21, #1512]
+   600f8: 82 08 00 b0  	adrp	x2, 0x171000 <pvr_GetPowerLevelStateThrottled+0x14>
+   600fc: 60 06 40 f9  	ldr	x0, [x19, #8]
+   60100: c3 42 10 91  	add	x3, x22, #1040
+   60104: 42 20 14 91  	add	x2, x2, #1288
+   60108: c4 31 00 94  	bl	0x6c818 <_Z21pvr_GetStaticMethodIDP7_JNIEnvP7_jclassPKcS4_>
+   6010c: e2 03 00 aa  	mov	x2, x0
+   60110: a1 f6 42 f9  	ldr	x1, [x21, #1512]
+   60114: 60 06 40 f9  	ldr	x0, [x19, #8]
+   60118: 63 a2 40 f9  	ldr	x3, [x19, #320]
+   6011c: 0a e7 ff 97  	bl	0x59d44 <_ZN7_JNIEnv20CallStaticVoidMethodEP7_jclassP10_jmethodIDz>
+   60120: df ff ff 17  	b	0x6009c <pvr_LeaveVrMode+0xc8>
+   60124: 82 08 00 b0  	adrp	x2, 0x171000 <pvr_GetPowerLevelStateThrottled+0x40>
+   60128: c0 00 80 52  	mov	w0, #6
+   6012c: e1 03 14 aa  	mov	x1, x20
+   60130: 42 80 13 91  	add	x2, x2, #1248
+   60134: c9 34 00 94  	bl	0x6d458 <_Z14LogWithFileTagiPKcS0_z>
+   60138: c9 ff ff 17  	b	0x6005c <pvr_LeaveVrMode+0x88>
+
+000000000006013c <pvr_IPDRefreshNotify>:
+   6013c: fd 7b bd a9  	stp	x29, x30, [sp, #-48]!
+   60140: 82 08 00 b0  	adrp	x2, 0x171000 <pvr_GetPowerLevelStateThrottled+0x5c>
+   60144: fd 03 00 91  	mov	x29, sp
+   60148: e8 13 00 fd  	str	d8, [sp, #32]
+   6014c: 42 a0 14 91  	add	x2, x2, #1320
+   60150: 08 c0 22 1e  	fcvt	d8, s0
+   60154: f3 53 01 a9  	stp	x19, x20, [sp, #16]
+   60158: 74 08 00 f0  	adrp	x20, 0x16f000 <pvr_GetPowerLevelStateThrottled+0x6c>
+   6015c: f3 03 00 aa  	mov	x19, x0
+   60160: 94 e2 0a 91  	add	x20, x20, #696
+   60164: 80 00 80 52  	mov	w0, #4
+   60168: 00 41 60 1e  	fmov	d0, d8
+   6016c: e1 03 14 aa  	mov	x1, x20
+   60170: e8 38 00 94  	bl	0x6e510 <_Z14LogWithFileNewiPKcS0_z>
+   60174: eb bd ff 97  	bl	0x4f920 <.plt+0x690>
+   60178: 61 12 40 b9  	ldr	w1, [x19, #16]
+   6017c: 1f 00 01 6b  	cmp	w0, w1

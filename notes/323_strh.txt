@@ -1,0 +1,74 @@
+3 candidate stores at +0x570/+0x572
+
+===== 0x52cc8 (str) =====
+  00052c88  cbz       x0, #0x54aa0
+  00052c8c  mov       x1, #1
+  00052c90  str       x1, [x0, #0x30]
+  00052c94  adrp      x22, #0x17a000
+  00052c98  add       x1, x19, #0x8c0
+  00052c9c  add       x22, x22, #0x40
+  00052ca0  mov       x0, x22
+  00052ca4  str       w21, [x1, #0x56c]
+  00052ca8  bl        #0x80790
+  00052cac  cbz       x0, #0x54ab4
+  00052cb0  mov       x1, #1
+  00052cb4  str       x1, [x0, #0x30]
+  00052cb8  adrp      x22, #0x17a000
+  00052cbc  add       x1, x19, #0x8c0
+  00052cc0  add       x22, x22, #0x58
+  00052cc4  mov       x0, x22
+  00052cc8  str       w20, [x1, #0x570]   <== the store
+  00052ccc  bl        #0x80790
+  00052cd0  cbz       x0, #0x54ac8
+  00052cd4  mov       x1, #1
+  00052cd8  str       x1, [x0, #0x30]
+  00052cdc  adrp      x22, #0x17a000
+
+===== 0x5bc94 (str) =====
+  0005bc54  mov       w0, #6
+  0005bc58  mov       x1, x27
+  0005bc5c  mov       x2, x26
+  0005bc60  mov       w3, w28
+  0005bc64  bl        #0x6d458
+  0005bc68  cmp       w28, #3
+  0005bc6c  b.eq      #0x5bf88
+  0005bc70  mov       x0, x21
+  0005bc74  mov       x1, x25
+  0005bc78  bl        #0xf8668
+  0005bc7c  cbnz      w0, #0x5bc50
+  0005bc80  add       x0, x22, #0x9b0
+  0005bc84  ldr       w2, [x25, #0x9c]
+  0005bc88  ldr       w7, [x25]
+  0005bc8c  ldr       w1, [x25, #0x1c]
+  0005bc90  ldr       w6, [x25, #4]
+  0005bc94  str       w2, [x0, #0x570]   <== the store
+  0005bc98  ldr       w5, [x25, #8]
+  0005bc9c  ldr       w4, [x25, #0xc]
+  0005bca0  ldr       w3, [x25, #0x10]
+  0005bca4  ldr       w2, [x25, #0x14]
+  0005bca8  ldr       w0, [x25, #0x18]
+
+===== 0xe85fc (str) =====
+  000e85bc  str       wzr, [x1, #0x2c]
+  000e85c0  str       wzr, [x1, #0x10]
+  000e85c4  str       wzr, [x1, #4]
+  000e85c8  str       wzr, [x1, #0x38]
+  000e85cc  str       wzr, [x1, #0x20]
+  000e85d0  str       wzr, [x1, #0x18]
+  000e85d4  str       wzr, [x1, #8]
+  000e85d8  str       wzr, [x1, #0x30]
+  000e85dc  str       wzr, [x1, #0x24]
+  000e85e0  str       wzr, [x1, #0x1c]
+  000e85e4  str       wzr, [x1, #0xc]
+  000e85e8  stp       xzr, xzr, [x11]
+  000e85ec  str       w0, [x26, #0x578]
+  000e85f0  ldr       w0, #0xe8b4c
+  000e85f4  str       xzr, [x26, #0x580]
+  000e85f8  str       wzr, [x26, #0x588]
+  000e85fc  str       wzr, [x26, #0x570]   <== the store
+  000e8600  str       w0, [x26, #0x574]
+  000e8604  ldaxr     w0, [x19]
+  000e8608  add       w1, w0, #1
+  000e860c  stlxr     w2, w1, [x19]
+  000e8610  cbnz      w2, #0xe8604
+

@@ -1,0 +1,13 @@
+  PVRHome            dex=1  5.2M
+  PVRLauncher        dex=1  896K
+  ToBToolService     dex=1  720K
+  provision2d        dex=1  2.5M
+  store2d            dex=1  5.7M
+
+=== extracted ===
+provision2d/provision2d_classes.dex    2557304
+PVRHome/PVRHome_classes.dex           5379116
+PVRLauncher/PVRLauncher_classes.dex     913608
+store2d/store2d_classes.dex           5884660
+ToBToolService/ToBToolService_classes.dex     736804
+DONE

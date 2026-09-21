@@ -1,0 +1,24 @@
+=== install dsp rpc libs 08/13/2026 19:26:00 ===
+[19:26:11]    --- installed ---
+[19:26:11]    -rw-r--r-- 1 root root 114532 2026-08-13 19:26 /system/lib/libadsprpc.so
+[19:26:11]    -rw-r--r-- 1 root root 114532 2026-08-13 19:26 /system/lib/libadsprpc_system.so
+[19:26:11]    -rw-r--r-- 1 root root 110484 2026-08-13 19:26 /system/lib/libcdsprpc.so
+[19:26:11]    -rw-r--r-- 1 root root 110484 2026-08-13 19:26 /system/lib/libcdsprpc_system.so
+[19:26:11]    -rw-r--r-- 1 root root 110472 2026-08-13 19:26 /system/lib/libsdsprpc.so
+[19:26:11]    -rw-r--r-- 1 root root 110472 2026-08-13 19:26 /system/lib/libsdsprpc_system.so
+[19:26:11]    --- restarting qvrd ---
+[19:26:11]    --- rss (stock ~7.4MB when the tracker is up) ---
+[19:26:11]    VmRSS:	    6080 kB
+[19:26:11]    --- QVR now ---
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_sensor : ov6211_stereo
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_driver : native
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_res : 800 400
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_frame_logging_mode : disabled
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_default_flash_mode : torch
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_default_resolution_mode : full
+[19:26:11]    8849  8849 E QVRServiceConfiguration: 	eye-tracking_camera_resolution_mode : 
+[19:26:11]    8849  8849 E QVRServiceConfiguration: tracking_6dof_pose_logging_mode : 0
+[19:26:11]    8849  8849 E QVRServiceConfiguration: display_id : 0
+[19:26:11]    8849  8849 E QVRServiceConfiguration: sensor_orientation : (1 2 3)
+[19:26:11]    8849  8849 E QVRServiceConfiguration: magnetometer_orientation: has 0 inputs
+[19:26:11]    8849  8849 E QVRServiceConfiguration: sensor_frequency_hz : 800

@@ -1,0 +1,97 @@
+=== toolchain ===
+brotli      OK
+dtc         OK
+simg2img    OK
+unzip       OK
+7z          OK
+cpio        OK
+debugfs     OK
+readelf     OK
+
+=== decompress vendor.new.dat.br ===
+brotli exit 0
+-rwxrwxrwx 1 justin justin 817709056 Aug 13 07:27 /mnt/f/PN2Lineage/images/ota_4.1.3/vendor.new.dat
+
+=== rebuild vendor.img ===
+transfer list v4, 205037 total blocks, 213 new ranges, max block 262144
+wrote /mnt/f/PN2Lineage/images/vendor.img (1073741824 bytes)
+-rwxrwxrwx 1 justin justin 1073741824 Aug 13 07:37 /mnt/f/PN2Lineage/images/vendor.img
+/mnt/f/PN2Lineage/images/vendor.img: Linux rev 1.0 ext4 filesystem data, UUID=6d16bab1-58d9-3c5d-8f14-f608f924affd, volume name "vendor" (extents) (large files)
+
+=== image identification ===
+/mnt/f/PN2Lineage/images/snapshot_lun0/system.bin Linux rev 1.0 ext4 filesystem data, UUID=da594c53-9beb-f85c-85c5-cedf76546f7a, volume name "system" (extents) (large files)
+/mnt/f/PN2Lineage/images/vendor.img            Linux rev 1.0 ext4 filesystem data, UUID=6d16bab1-58d9-3c5d-8f14-f608f924affd, volume name "vendor" (extents) (large files)
+/mnt/f/PN2Lineage/images/ota_4.1.3/oem.bin     Linux rev 1.0 ext4 filesystem data, UUID=8ec89b07-796d-0757-b45e-ed3b3b960e08, volume name "oem" (extents) (large files)
+
+=== root listing: system.bin ===
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     11   40700 (2)      0      0    4096 31-Dec-1969 19:00 lost+found
+     12   40755 (2)      0      0    4096 31-Dec-2008 11:00 PicoAppCheckPrebuild
+     18   40755 (2)      0      0    4096 31-Dec-2008 11:00 app
+    759   40755 (2)      0   2000    8192 31-Dec-2008 11:00 bin
+   1119  100600 (1)      0      0    6761 31-Dec-2008 11:00 build.prop
+   1120  100644 (1)      0      0   84340 31-Dec-2008 11:00 compatibility_matrix.xml
+   1121   40755 (2)      0      0    4096 31-Dec-2008 11:00 etc
+   1686   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs
+   1688   40755 (2)      0      0    4096 31-Dec-2008 11:00 fake-libs64
+   1690   40755 (2)      0      0    8192 31-Dec-2008 11:00 fonts
+   1873   40755 (2)      0      0    4096 31-Dec-2008 11:00 framework
+   2293   40755 (2)      0      0   16384 31-Dec-2008 11:00 lib
+   2847   40755 (2)      0      0   20480 31-Dec-2008 11:00 lib64
+   3439  100644 (1)      0      0    2946 31-Dec-2008 11:00 manifest.xml
+   3440   40755 (2)      0      0    4096 31-Dec-2008 11:00 media
+   3742   40755 (2)      0      0    4096 31-Dec-2008 11:00 pre_resource
+   3768   40755 (2)      0      0    4096 31-Dec-2008 11:00 priv-app
+   4289  100644 (1)      0      0   1364953 31-Dec-2008 11:00 recovery-from-boot.p
+   4290   40755 (2)      0      0    4096 31-Dec-2008 11:00 tts
+   4304   40755 (2)      0      0    4096 31-Dec-2008 11:00 usr
+   4437  120644 (7)      0      0       7 31-Dec-2008 11:00 vendor
+   4438   40755 (2)      0   2000    4096 31-Dec-2008 11:00 xbin
+
+
+=== root listing: vendor.img ===
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     11   40700 (2)      0      0    4096 31-Dec-1969 19:00 lost+found
+     12   40755 (2)      0   2000    4096 31-Dec-2008 11:00 app
+     37   40755 (2)      0   2000    8192 31-Dec-2008 11:00 bin
+    367  100600 (1)      0      0    5327 31-Dec-2008 11:00 build.prop
+    368  100644 (1)      0      0    1886 31-Dec-2008 11:00 compatibility_matrix.xml
+    369  100600 (1)      0      0     592 31-Dec-2008 11:00 default.prop
+    370   40755 (2)      0   2000    4096 31-Dec-2008 11:00 etc
+    798   40755 (2)      0   2000    4096 31-Dec-2008 11:00 firmware
+    843   40755 (2)      0   2000    4096 31-Dec-2008 11:00 framework
+    848   40755 (2)      0   2000   12288 31-Dec-2008 11:00 lib
+   1423   40755 (2)      0   2000   12288 31-Dec-2008 11:00 lib64
+   1944  100644 (1)      0      0   22604 31-Dec-2008 11:00 manifest.xml
+   1945   40755 (2)      0   2000    4096 31-Dec-2008 11:00 overlay
+   1950   40755 (2)      0   2000    4096 31-Dec-2008 11:00 package
+   1956   40755 (2)      0   2000    4096 31-Dec-2008 11:00 radio
+   1959   40755 (2)      0   2000    4096 31-Dec-2008 11:00 rfs
+   2029  100644 (1)      0      0   17833 31-Dec-2008 11:00 ueventd.rc
+
+
+=== root listing: oem.bin ===
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 .
+      2   40755 (2)      0      0    4096 31-Dec-1969 19:00 ..
+     11   40700 (2)      0      0    4096 31-Dec-1969 19:00 lost+found
+     12   40755 (2)      0      0    4096  9-Apr-2021 07:44 priv-app
+
+
+=== pulling build.prop files ===
+OK   system-build.prop  (251 lines)
+MISS /mnt/f/PN2Lineage/images/snapshot_lun0/system.bin : /system/build.prop
+MISS /mnt/f/PN2Lineage/images/snapshot_lun0/system.bin : /default.prop
+OK   vendor-build.prop  (162 lines)
+OK   vendor-default.prop  (23 lines)
+MISS /mnt/f/PN2Lineage/images/ota_4.1.3/oem.bin : /build.prop
+
+=== vintf manifests ===
+MISS /mnt/f/PN2Lineage/images/vendor.img : /etc/vintf/manifest.xml
+OK   vendor-manifest-root.xml  (732 lines)
+MISS /mnt/f/PN2Lineage/images/vendor.img : /etc/vintf/compatibility_matrix.xml
+OK   system-manifest.xml  (97 lines)
+OK   system-matrix.xml  (2672 lines)
+
+RECON DONE

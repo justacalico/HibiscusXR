@@ -1,0 +1,56 @@
+﻿=== ownership now ===
+-rwxr-xr-x 1 root root   11088 2026-08-13 11:39 /system/bin/pvrservice
+-rw-r--r-- 1 root root 1828296 2026-08-13 11:39 /system/lib64/libcompositor.pxr.so
+
+=== did init parse pvrservice.rc? ===
+[    2.754509] init: Parsing file /system/etc/init/pvrservice.rc...
+[    7.356852] init: service pvrservice does not have a SELinux domain defined
+
+=== try starting it ===
+init.svc.pvrservice = 
+pid = 
+
+=== if it did not start, run it by hand to see the real error ===
+--- manual run pid: 4190 ---
+
+=== linker view: what does pvrservice need and can it find it? ===
+FORTIFY: pthread_mutex_lock called on a destroyed mutex (0x723f446728)
+adb.exe : Terminated 
+At line:1 char:407
++ ... | Out-Null; & $adb shell "chmod 755 /data/local/tmp/69_pvr_start.sh;  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Terminated :String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+---
+vendor client libs pvrservice may want:
+-rw-r--r-- 1 root root  10856 2008-12-31 11:00 /vendor/lib64/libpvr.so
+-rw-r--r-- 1 root root 123544 2008-12-31 11:00 /vendor/lib64/libqvrservice_client.so
+
+=== recent logcat for pvr/qvr ===
+08-13 11:49:02.050  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:02.050  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:04.327  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:04.327  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:04.327  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:05.473  4207  4212 D PvrService: threadLoop continue: 1
+08-13 11:49:06.635  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:06.635  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:06.635  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:08.923  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:08.924  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:08.924  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:11.202  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:11.203  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:11.203  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:11.204  4207  4212 D PvrService: PvrService::setShareMemoryData(0):
+08-13 11:49:11.204  4207  4212 D PvrService:  0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,-0.080500	[411374732758]	[411373608852]	[1627604]	[1132708]
+08-13 11:49:11.204  4207  4212 D PvrService: threadLoop continue: 1
+08-13 11:49:13.467  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:13.468  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:13.468  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:15.751  4207  4212 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 11:49:15.751  4207  4212 E PvrService: PvrService getTrackingDataExt rotation(0.000000, 0.000000, 0.000000, 1.000000)
+08-13 11:49:15.751  4207  4212 E PvrService: PvrService getTrackingDataExt position(0.000000, 0.000000, -0.080500)
+08-13 11:49:16.398   560   560 I ServiceManager: service 'pvrservice' died
+DONE

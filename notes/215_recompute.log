@@ -1,0 +1,32 @@
+=== recompute-x28 test 08/13/2026 17:21:50 ===
+[17:21:50]    F:\PN2Lineage\notes\vrshell_lib\libPvr_UnitySDK.patched2.so: 1 file pushed, 0 skipped. 1253.0 MB/s (2051960 bytes in 0.002s)
+[17:21:50]    120a6620340083fccde87c9591f62c63  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+[17:21:50] --- launching VRShell ---
+[17:22:11]    vrshell pid: 4176  *** SURVIVED ***
+[17:22:11] --- progress past the old crash point ---
+[17:22:11]    I/ConfigApi( 4176): DIATW Update Config Parameters From VRService
+[17:22:11]    I/Unity   ( 4176): LauncherSceneManager:LoadSeeThroughScene()
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Main Thread unityMainThreadTid: 4218
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Main Thread SetThreadAffinity Default
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Main Thread SetThreadPriority Default
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Render Thread up.renderThreadTid: 4218
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Render Thread SetThreadAffinity Default
+[17:22:11]    I/UnityPlugin( 4176): DIATW Unity Render Thread SetThreadPriority Default
+[17:22:11]    I/VrApi   ( 4176): ---------- pvr_EnterVrMode ----------
+[17:22:11]    I/VrApi   ( 4176): Cleared JNI exception
+[17:22:11]    I/TimeWarp( 4176): -------------------- Instantiate TimeWarp --------------------
+[17:22:11]    I/TimeWarp( 4176): BuildPresentationGraphics len > 0
+[17:22:11]    I/TimeWarp( 4176): BuildPresentationGraphics ret0 = 128, ret1 = 0
+[17:22:11]    I/TimeWarp( 4176): DISFT Stencil = 0 TilingQCOM = 0
+[17:22:11]    I/TimeWarp( 4176): Read VrViewer Surface Size: [3840x2160]
+[17:22:11]    I/TimeWarp( 4176): 	 eglMainThreadWindowSurface : 0x7871313c80
+[17:22:11]    I/Vsync   ( 4176): DIATW UpdateVSync deltaCount !=1, delta 43461, 603630479266   -   0.000 = 603630479266.000
+[17:22:11]    I/TimeWarp( 4176): config: ASYNC  = 1
+[17:22:11]    I/TimeWarp( 4176): Aysnc, with SINGLE_BUFFER = 1
+[17:22:11]    I/TimeWarp( 4176): Requesting EGL_CONTEXT_PRIORITY_HIGH_IMG
+[17:22:11]    I/TimeWarp( 4176): WarpThreadInit enableBack = 1
+[17:22:11]    I/TimeWarp( 4176): WarpThreadInit forceRenderAngle = 0
+[17:22:11]    I/TimeWarp( 4176): WarpThreadInit() miniVsyncBackStep = 2 ,forceRenderAngle =  0
+[17:22:11]    I/TimeWarp( 4176): DIATW SetThreadAffinity core: 6, res 0
+[17:22:11]    I/TimeWarp( 4176): SINGLE_BUFFER
+[17:22:11]    I/TimeWarp( 4176): DIATW GPUTYPE = 0x1000

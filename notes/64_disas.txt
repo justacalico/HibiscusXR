@@ -1,0 +1,233 @@
+﻿
+F:\PN2Lineage\sensorpatch\libsensorservice.so:	file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+000000000002bc6c <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t>:
+   2bc6c: ff c3 01 d1  	sub	sp, sp, #112
+   2bc70: fc 6f 01 a9  	stp	x28, x27, [sp, #16]
+   2bc74: fa 67 02 a9  	stp	x26, x25, [sp, #32]
+   2bc78: f8 5f 03 a9  	stp	x24, x23, [sp, #48]
+   2bc7c: f6 57 04 a9  	stp	x22, x21, [sp, #64]
+   2bc80: f4 4f 05 a9  	stp	x20, x19, [sp, #80]
+   2bc84: fd 7b 06 a9  	stp	x29, x30, [sp, #96]
+   2bc88: fd 83 01 91  	add	x29, sp, #96
+   2bc8c: 48 d0 3b d5  	mrs	x8, TPIDR_EL0
+   2bc90: 09 15 40 f9  	ldr	x9, [x8, #40]
+   2bc94: 0a 0d 80 52  	mov	w10, #104
+   2bc98: 00 e4 00 6f  	movi	v0.2d, #0000000000000000
+   2bc9c: e9 07 00 f9  	str	x9, [sp, #8]
+   2bca0: 0b 30 40 a9  	ldp	x11, x12, [x0]
+   2bca4: e9 03 01 aa  	mov	x9, x1
+   2bca8: 2a 00 00 b9  	str	w10, [x1]
+   2bcac: 3f 0c 00 b9  	str	wzr, [x1, #12]
+   2bcb0: 20 80 85 3c  	stur	q0, [x1, #88]
+   2bcb4: 20 80 84 3c  	stur	q0, [x1, #72]
+   2bcb8: 20 80 83 3c  	stur	q0, [x1, #56]
+   2bcbc: 2c 40 00 f8  	stur	x12, [x1, #4]
+   2bcc0: 2b 08 00 f9  	str	x11, [x1, #16]
+   2bcc4: 20 8d 81 3c  	str	q0, [x9, #24]!
+   2bcc8: 20 80 82 3c  	stur	q0, [x1, #40]
+   2bccc: 13 0c 40 b9  	ldr	w19, [x0, #12]
+   2bcd0: 7f 8e 00 71  	cmp	w19, #35
+   2bcd4: a8 0e 00 54  	b.hi	0x2bea8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x23c>
+   2bcd8: 0a ff ff 90  	adrp	x10, 0xb000 <_ZN7android8hardware7sensors4V1_014implementation22convertFromSensorEventERK15sensors_event_tPNS2_5EventE+0x360>
+   2bcdc: 4a b1 24 91  	add	x10, x10, #2348
+   2bce0: 8b 00 00 10  	adr	x11, #16
+   2bce4: 4c 69 73 38  	ldrb	w12, [x10, x19]
+   2bce8: 6b 09 0c 8b  	add	x11, x11, x12, lsl #2
+   2bcec: 60 01 1f d6  	br	x11
+   2bcf0: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bcf4: 29 18 00 b9  	str	w9, [x1, #24]
+   2bcf8: 74 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bcfc: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bd00: 29 18 00 b9  	str	w9, [x1, #24]
+   2bd04: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bd08: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bd0c: 09 18 40 b9  	ldr	w9, [x0, #24]
+   2bd10: 29 20 00 b9  	str	w9, [x1, #32]
+   2bd14: 09 70 40 39  	ldrb	w9, [x0, #28]
+   2bd18: 29 90 00 39  	strb	w9, [x1, #36]
+   2bd1c: 6b 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bd20: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bd24: 29 18 00 b9  	str	w9, [x1, #24]
+   2bd28: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bd2c: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bd30: 09 18 40 b9  	ldr	w9, [x0, #24]
+   2bd34: 29 20 00 b9  	str	w9, [x1, #32]
+   2bd38: 09 1c 40 b9  	ldr	w9, [x0, #28]
+   2bd3c: 29 24 00 b9  	str	w9, [x1, #36]
+   2bd40: 09 20 40 b9  	ldr	w9, [x0, #32]
+   2bd44: 29 28 00 b9  	str	w9, [x1, #40]
+   2bd48: 09 24 40 b9  	ldr	w9, [x0, #36]
+   2bd4c: 29 2c 00 b9  	str	w9, [x1, #44]
+   2bd50: 5e 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bd54: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bd58: 29 18 00 b9  	str	w9, [x1, #24]
+   2bd5c: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bd60: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bd64: 09 18 40 b9  	ldr	w9, [x0, #24]
+   2bd68: 29 20 00 b9  	str	w9, [x1, #32]
+   2bd6c: 09 1c 40 b9  	ldr	w9, [x0, #28]
+   2bd70: 29 24 00 b9  	str	w9, [x1, #36]
+   2bd74: 09 20 40 b9  	ldr	w9, [x0, #32]
+   2bd78: 29 28 00 b9  	str	w9, [x1, #40]
+   2bd7c: 53 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bd80: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bd84: 29 18 00 b9  	str	w9, [x1, #24]
+   2bd88: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bd8c: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bd90: 09 18 40 b9  	ldr	w9, [x0, #24]
+   2bd94: 29 20 00 b9  	str	w9, [x1, #32]
+   2bd98: 09 1c 40 b9  	ldr	w9, [x0, #28]
+   2bd9c: 29 24 00 b9  	str	w9, [x1, #36]
+   2bda0: 4a 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bda4: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bda8: 29 18 00 b9  	str	w9, [x1, #24]
+   2bdac: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bdb0: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bdb4: 09 24 40 f9  	ldr	x9, [x0, #72]
+   2bdb8: 00 80 c3 3c  	ldur	q0, [x0, #56]
+   2bdbc: 01 80 c1 3c  	ldur	q1, [x0, #24]
+   2bdc0: 02 80 c2 3c  	ldur	q2, [x0, #40]
+   2bdc4: 29 28 00 f9  	str	x9, [x1, #80]
+   2bdc8: 21 08 80 3d  	str	q1, [x1, #32]
+   2bdcc: 22 80 01 ad  	stp	q2, q0, [x1, #48]
+   2bdd0: 3e 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bdd4: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2bdd8: 29 18 00 b9  	str	w9, [x1, #24]
+   2bddc: 09 08 40 b9  	ldr	w9, [x0, #8]
+   2bde0: 3f 04 00 b9  	str	wzr, [x1, #4]
+   2bde4: 29 1c 00 b9  	str	w9, [x1, #28]
+   2bde8: 38 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bdec: 09 40 40 39  	ldrb	w9, [x0, #16]
+   2bdf0: 29 18 00 b9  	str	w9, [x1, #24]
+   2bdf4: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2bdf8: 3f 10 00 f9  	str	xzr, [x1, #32]
+   2bdfc: 29 1c 00 b9  	str	w9, [x1, #28]
+   2be00: 00 80 c1 3c  	ldur	q0, [x0, #24]
+   2be04: 20 80 82 3c  	stur	q0, [x1, #40]
+   2be08: 30 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2be0c: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2be10: 29 18 00 b9  	str	w9, [x1, #24]
+   2be14: 09 14 40 b9  	ldr	w9, [x0, #20]
+   2be18: 29 1c 00 b9  	str	w9, [x1, #28]
+   2be1c: 09 18 40 b9  	ldr	w9, [x0, #24]
+   2be20: 29 20 00 b9  	str	w9, [x1, #32]
+   2be24: 09 1c 40 b9  	ldr	w9, [x0, #28]
+   2be28: 29 24 00 b9  	str	w9, [x1, #36]
+   2be2c: 09 20 40 b9  	ldr	w9, [x0, #32]
+   2be30: 29 28 00 b9  	str	w9, [x1, #40]
+   2be34: 09 24 40 b9  	ldr	w9, [x0, #36]
+   2be38: 29 2c 00 b9  	str	w9, [x1, #44]
+   2be3c: 09 28 40 b9  	ldr	w9, [x0, #40]
+   2be40: 29 30 00 b9  	str	w9, [x1, #48]
+   2be44: 09 2c 40 b9  	ldr	w9, [x0, #44]
+   2be48: 29 34 00 b9  	str	w9, [x1, #52]
+   2be4c: 09 30 40 b9  	ldr	w9, [x0, #48]
+   2be50: 29 38 00 b9  	str	w9, [x1, #56]
+   2be54: 09 34 40 b9  	ldr	w9, [x0, #52]
+   2be58: 29 3c 00 b9  	str	w9, [x1, #60]
+   2be5c: 09 38 40 b9  	ldr	w9, [x0, #56]
+   2be60: 29 40 00 b9  	str	w9, [x1, #64]
+   2be64: 09 3c 40 b9  	ldr	w9, [x0, #60]
+   2be68: 29 44 00 b9  	str	w9, [x1, #68]
+   2be6c: 09 40 40 b9  	ldr	w9, [x0, #64]
+   2be70: 29 48 00 b9  	str	w9, [x1, #72]
+   2be74: 09 44 40 b9  	ldr	w9, [x0, #68]
+   2be78: 29 4c 00 b9  	str	w9, [x1, #76]
+   2be7c: 09 48 40 b9  	ldr	w9, [x0, #72]
+   2be80: 29 50 00 b9  	str	w9, [x1, #80]
+   2be84: 11 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2be88: 0a 08 40 f9  	ldr	x10, [x0, #16]
+   2be8c: 2a 01 00 f9  	str	x10, [x9]
+   2be90: 0e 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2be94: 09 10 40 b9  	ldr	w9, [x0, #16]
+   2be98: 29 18 00 b9  	str	w9, [x1, #24]
+   2be9c: 09 50 40 39  	ldrb	w9, [x0, #20]
+   2bea0: 29 70 00 39  	strb	w9, [x1, #28]
+   2bea4: 09 00 00 14  	b	0x2bec8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x25c>
+   2bea8: 7f 42 40 71  	cmp	w19, #16, lsl #12
+   2beac: 6b 02 00 54  	b.lt	0x2bef8 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x28c>
+   2beb0: 01 80 41 ad  	ldp	q1, q0, [x0, #48]
+   2beb4: 03 88 40 ad  	ldp	q3, q2, [x0, #16]
+   2beb8: 20 80 84 3c  	stur	q0, [x1, #72]
+   2bebc: 21 80 83 3c  	stur	q1, [x1, #56]
+   2bec0: 22 80 82 3c  	stur	q2, [x1, #40]
+   2bec4: 23 80 81 3c  	stur	q3, [x1, #24]
+   2bec8: 08 15 40 f9  	ldr	x8, [x8, #40]
+   2becc: e9 07 40 f9  	ldr	x9, [sp, #8]
+   2bed0: 1f 01 09 eb  	cmp	x8, x9
+   2bed4: e1 08 00 54  	b.ne	0x2bff0 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x384>
+   2bed8: fd 7b 46 a9  	ldp	x29, x30, [sp, #96]
+   2bedc: f4 4f 45 a9  	ldp	x20, x19, [sp, #80]
+   2bee0: f6 57 44 a9  	ldp	x22, x21, [sp, #64]
+   2bee4: f8 5f 43 a9  	ldp	x24, x23, [sp, #48]
+   2bee8: fa 67 42 a9  	ldp	x26, x25, [sp, #32]
+   2beec: fc 6f 41 a9  	ldp	x28, x27, [sp, #16]
+   2bef0: ff c3 01 91  	add	sp, sp, #112
+   2bef4: c0 03 5f d6  	ret
+   2bef8: 14 ff ff 90  	adrp	x20, 0xb000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x20c>
+   2befc: f5 fe ff f0  	adrp	x21, 0xa000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x20c>
+   2bf00: f6 fe ff f0  	adrp	x22, 0xa000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x210>
+   2bf04: f7 fe ff d0  	adrp	x23, 0x9000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x210>
+   2bf08: f8 fe ff d0  	adrp	x24, 0x9000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x214>
+   2bf0c: 19 ff ff 90  	adrp	x25, 0xb000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x220>
+   2bf10: fa fe ff f0  	adrp	x26, 0xa000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x220>
+   2bf14: fb fe ff d0  	adrp	x27, 0x9000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x220>
+   2bf18: 1c ff ff 90  	adrp	x28, 0xb000 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x22c>
+   2bf1c: 94 fa 0a 91  	add	x20, x20, #702
+   2bf20: b5 6e 25 91  	add	x21, x21, #2395
+   2bf24: d6 8a 18 91  	add	x22, x22, #1570
+   2bf28: f7 1e 3d 91  	add	x23, x23, #3911
+   2bf2c: 18 07 34 91  	add	x24, x24, #3329
+   2bf30: 39 37 07 91  	add	x25, x25, #461
+   2bf34: 5a e7 07 91  	add	x26, x26, #505
+   2bf38: 7b af 36 91  	add	x27, x27, #3499
+   2bf3c: 9c 03 1a 91  	add	x28, x28, #1664
+   2bf40: e0 03 00 91  	mov	x0, sp
+   2bf44: c2 29 80 52  	mov	w2, #334
+   2bf48: e4 07 1f 32  	orr	w4, wzr, #0x6
+   2bf4c: 06 00 80 12  	mov	w6, #-1
+   2bf50: e1 03 14 aa  	mov	x1, x20
+   2bf54: e3 03 1f 2a  	mov	w3, wzr
+   2bf58: e5 03 1f aa  	mov	x5, xzr
+   2bf5c: 61 05 00 94  	bl	0x2d4e0 <_ZN7android4base10LogMessageC1EPKcjNS0_5LogIdENS0_11LogSeverityES3_i@plt>
+   2bf60: e0 03 00 91  	mov	x0, sp
+   2bf64: 63 05 00 94  	bl	0x2d4f0 <_ZN7android4base10LogMessage6streamEv@plt>
+   2bf68: e2 0b 1f 32  	orr	w2, wzr, #0xe
+   2bf6c: e1 03 15 aa  	mov	x1, x21
+   2bf70: d6 b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bf74: e2 02 80 52  	mov	w2, #23
+   2bf78: e1 03 16 aa  	mov	x1, x22
+   2bf7c: d3 b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bf80: e2 03 00 32  	orr	w2, wzr, #0x1
+   2bf84: e1 03 17 aa  	mov	x1, x23
+   2bf88: d0 b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bf8c: e2 03 1f 32  	orr	w2, wzr, #0x2
+   2bf90: e1 03 18 aa  	mov	x1, x24
+   2bf94: cd b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bf98: e2 03 00 32  	orr	w2, wzr, #0x1
+   2bf9c: e1 03 17 aa  	mov	x1, x23
+   2bfa0: ca b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bfa4: 02 05 80 52  	mov	w2, #40
+   2bfa8: e1 03 19 aa  	mov	x1, x25
+   2bfac: c7 b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bfb0: 42 03 80 52  	mov	w2, #26
+   2bfb4: e1 03 1a aa  	mov	x1, x26
+   2bfb8: c4 b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bfbc: e1 03 13 2a  	mov	w1, w19
+   2bfc0: dc 07 00 94  	bl	0x2df30 <_ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi@plt>
+   2bfc4: 62 05 80 52  	mov	w2, #43
+   2bfc8: e1 03 1b aa  	mov	x1, x27
+   2bfcc: bf b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bfd0: e1 03 10 32  	orr	w1, wzr, #0x10000
+   2bfd4: d7 07 00 94  	bl	0x2df30 <_ZNSt3__113basic_ostreamIcNS_11char_traitsIcEEElsEi@plt>
+   2bfd8: e2 03 1f 32  	orr	w2, wzr, #0x2
+   2bfdc: e1 03 1c aa  	mov	x1, x28
+   2bfe0: ba b9 ff 97  	bl	0x1a6c8 <.text+0x96c8>
+   2bfe4: e0 03 00 91  	mov	x0, sp
+   2bfe8: 46 05 00 94  	bl	0x2d500 <_ZN7android4base10LogMessageD1Ev@plt>
+   2bfec: d5 ff ff 17  	b	0x2bf40 <_ZN7android8hardware7sensors4V1_014implementation20convertToSensorEventERKNS2_5EventEP15sensors_event_t+0x2d4>
+   2bff0: 4c 04 00 94  	bl	0x2d120 <__stack_chk_fail@plt>

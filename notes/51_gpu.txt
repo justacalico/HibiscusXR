@@ -1,0 +1,70 @@
+﻿=== what SurfaceFlinger actually got ===
+app: state=Idle VSyncState={displayId=0, count=47}
+   powerMode=2, activeConfig=0, numLayers=4
+EGL implementation : 1.5
+GLES: Qualcomm, Adreno (TM) 630, OpenGL ES 3.2 V@378.0 (GIT@2d5c972, I8302e904d2) (Date:03/29/19)
+RenderEngine last dataspace conversion: (Default) to (Default)
+
+=== egl props ===
+ro.hardware.egl = 
+ro.hardware.vulkan = 
+ro.opengles.version = 196610
+debug.sf.hw = 
+ro.sf.lcd_density = 640
+persist.sys.sf.native_mode = 
+debug.renderengine.backend = 
+
+=== vendor GL drivers present ===
+total 8508
+-rw-r--r-- 1 root root   44256 2008-12-31 11:00 eglSubDriverAndroid.so
+-rw-r--r-- 1 root root   39664 2008-12-31 11:00 libEGL_adreno.so
+-rw-r--r-- 1 root root  241968 2008-12-31 11:00 libGLESv1_CM_adreno.so
+-rw-r--r-- 1 root root 7188600 2008-12-31 11:00 libGLESv2_adreno.so
+-rw-r--r-- 1 root root   14880 2008-12-31 11:00 libQTapGLES.so
+-rw-r--r-- 1 root root  852680 2008-12-31 11:00 libq3dtools_adreno.so
+-rw-r--r-- 1 root root  314344 2008-12-31 11:00 libq3dtools_esx.so
+--- vulkan ---
+-rw-r--r-- 1 root root 3126648 2008-12-31 11:00 /vendor/lib64/hw/vulkan.sdm845.so
+
+=== is swiftshader loaded anywhere? (bad sign) ===
+ls: /system/lib64/egl/: No such file or directory
+
+=== which GL libs has surfaceflinger actually mapped ===
+/system/lib64/libEGL.so
+/system/lib64/libGLESv1_CM.so
+/system/lib64/libGLESv2.so
+/vendor/lib64/egl/libEGL_adreno.so
+/vendor/lib64/egl/libGLESv1_CM_adreno.so
+/vendor/lib64/egl/libGLESv2_adreno.so
+/vendor/lib64/libadreno_utils.so
+
+=== composer / gralloc HALs ===
+DM,FC Y android.hardware.graphics.allocator@2.0::IAllocator/default               N/A        N/A    
+DM,FC Y android.hardware.graphics.composer@2.1::IComposer/default                 N/A        N/A    
+FM    Y android.hardware.graphics.composer@2.1::IComposer/vr                      0/2        1063   557
+FC    ? android.hardware.graphics.allocator@2.0::IAllocator/default         N/A        1071   1071
+FC    ? android.hardware.graphics.composer@2.1::IComposer/default           N/A        1072   1072
+DM,FC ? android.hardware.graphics.mapper@2.0::IMapper/default               N/A        N/A    1072 1108 1842 2043 2112
+FC    ? android.hardware.graphics.allocator@2.0::I*/* (/vendor/lib/hw/)      N/A        N/A    
+FC    ? android.hardware.graphics.allocator@2.0::I*/* (/vendor/lib64/hw/)    N/A        N/A    1071
+FC    ? android.hardware.graphics.composer@2.1::I*/* (/vendor/lib/hw/)       N/A        N/A    
+FC    ? android.hardware.graphics.composer@2.1::I*/* (/vendor/lib64/hw/)     N/A        N/A    1072
+DM,FC ? android.hardware.graphics.mapper@2.0::I*/* (/vendor/lib/hw/)         N/A        N/A    1306 2002 3258
+DM,FC ? android.hardware.graphics.mapper@2.0::I*/* (/vendor/lib64/hw/)       N/A        N/A    1072 1108 1305 1619 1820 1842 1947 2017 2043 2076 2112 2161 2409 2558 2584 2617 2641 2657 2681 2699 2796 2825 2857 2888 2910 2935 2969 3009 3045 3080 3113 3154 3178 3202 3230 3288 3401 3622
+DM,FC ? android.hardware.renderscript@1.0::I*/* (/vendor/lib/hw/)            N/A        N/A    
+DM,FC ? android.hardware.renderscript@1.0::I*/* (/vendor/lib64/hw/)          N/A        N/A    
+
+=== kgsl (adreno kernel driver) ===
+crw-rw-rw- 1 system system 239,   0 2021-08-08 12:58 /dev/kgsl-3d0
+Adreno630v2
+  58569 1010877
+257000000
+
+=== display config as the framework sees it ===
+  DisplayDeviceInfo{"Built-in Screen": uniqueId="local:0", 2160 x 3840, modeId 1, defaultModeId 1, supportedModes [{id=1, width=2160, height=3840, fps=72.00001}], colorMode 0, supportedColorModes [0], HdrCapabilities android.view.Display$HdrCapabilities@5271296a, density 640, 818.865 x 819.63 dpi, appVsyncOff 1000000, presDeadline 13888888, touch INTERNAL, rotation 0, type BUILT_IN, address {port=0}, state ON, FLAG_DEFAULT_DISPLAY, FLAG_ROTATES_WITH_CONTENT, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS}
+      PhysicalDisplayInfo{2160 x 3840, 72.00001 fps, density 4.0, 818.865 x 819.63 dpi, secure true, appVsyncOffset 1000000, bufferDeadline 13888888}
+    mBaseDisplayInfo=DisplayInfo{"Built-in Screen, displayId 0", uniqueId "local:0", app 2160 x 3840, real 2160 x 3840, largest app 2160 x 3840, smallest app 2160 x 3840, mode 1, defaultMode 1, modes [{id=1, width=2160, height=3840, fps=72.00001}], colorMode 0, supportedColorModes [0], hdrCapabilities android.view.Display$HdrCapabilities@5271296a, rotation 0, density 640 (818.865 x 819.63) dpi, layerStack 0, appVsyncOff 1000000, presDeadline 13888888, type BUILT_IN, address {port=0}, state ON, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, removeMode 0}
+    mOverrideDisplayInfo=DisplayInfo{"Built-in Screen, displayId 0", uniqueId "local:0", app 2160 x 3648, real 2160 x 3840, largest app 3648 x 3552, smallest app 2160 x 2064, mode 1, defaultMode 1, modes [{id=1, width=2160, height=3840, fps=72.00001}], colorMode 0, supportedColorModes [0], hdrCapabilities android.view.Display$HdrCapabilities@5271296a, rotation 0, density 640 (818.865 x 819.63) dpi, layerStack 0, appVsyncOff 1000000, presDeadline 13888888, type BUILT_IN, address {port=0}, state ON, FLAG_SECURE, FLAG_SUPPORTS_PROTECTED_BUFFERS, removeMode 0}
+Physical size: 2160x3840
+Physical density: 640
+DONE

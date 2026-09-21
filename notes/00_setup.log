@@ -1,0 +1,68 @@
+=== distro ===
+PRETTY_NAME="Ubuntu 26.04 LTS"
+NAME="Ubuntu"
+VERSION_ID="26.04"
+
+=== sudo check ===
+SUDO NEEDS PASSWORD
+
+=== pre-existing tools ===
+python3     present  /usr/bin/python3
+pip3        present  /usr/bin/pip3
+brotli      MISSING
+dtc         MISSING
+readelf     present  /usr/bin/readelf
+objdump     present  /usr/bin/objdump
+strings     present  /usr/bin/strings
+unzip       MISSING
+file        present  /usr/bin/file
+simg2img    MISSING
+mkfs.ext4   present  /usr/sbin/mkfs.ext4
+debugfs     present  /usr/sbin/debugfs
+git         present  /usr/bin/git
+cpio        MISSING
+lz4         MISSING
+xz          present  /usr/bin/xz
+gzip        present  /usr/bin/gzip
+
+=== installing missing packages ===
+sudo: interactive authentication is required
+sudo: interactive authentication is required
+apt exit: 0
+
+=== post-install verify ===
+python3     present
+brotli      STILL MISSING
+dtc         STILL MISSING
+readelf     present
+simg2img    STILL MISSING
+debugfs     present
+7z          STILL MISSING
+
+=== workspace ===
+total 0
+drwxrwxrwx 1 justin justin 512 Aug 13 07:25 .
+drwxrwxrwx 1 justin justin 512 Aug 13 07:25 ..
+drwxrwxrwx 1 justin justin 512 Aug 13 07:25 extracted
+drwxrwxrwx 1 justin justin 512 Aug 13 07:27 images
+drwxrwxrwx 1 justin justin 512 Aug 13 07:29 notes
+drwxrwxrwx 1 justin justin 512 Aug 13 07:29 tools
+
+total 2339168
+drwxrwxrwx 1 justin justin        512 Aug 13 07:27 .
+drwxrwxrwx 1 justin justin        512 Aug 13 07:27 ..
+-rwxrwxrwx 1 justin justin     667648 Aug 13 07:27 BTFM.bin
+-rwxrwxrwx 1 justin justin   45617152 Aug 13 07:27 NON-HLOS.bin
+-rwxrwxrwx 1 justin justin   67108864 Aug 13 07:27 boot.img
+-rwxrwxrwx 1 justin justin   33554432 Aug 13 07:27 dspso.bin
+-rwxrwxrwx 1 justin justin    8388608 Aug 13 07:27 dtbo.img
+-rwxrwxrwx 1 justin justin    1618790 Aug 13 07:27 file_contexts.bin
+-rwxrwxrwx 1 justin justin        179 Aug 13 07:27 metadata
+-rwxrwxrwx 1 justin justin 2040102912 Aug 13 07:27 oem.bin
+-rwxrwxrwx 1 justin justin      19688 Aug 13 07:27 system.transfer.list
+-rwxrwxrwx 1 justin justin       3350 Aug 13 07:27 updater-script
+-rwxrwxrwx 1 justin justin       4096 Aug 13 07:27 vbmeta.img
+-rwxrwxrwx 1 justin justin  198208634 Aug 13 07:27 vendor.new.dat.br
+-rwxrwxrwx 1 justin justin          0 Aug 13 07:27 vendor.patch.dat
+-rwxrwxrwx 1 justin justin       4424 Aug 13 07:27 vendor.transfer.list
+SETUP DONE

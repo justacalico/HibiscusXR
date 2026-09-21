@@ -1,0 +1,55 @@
+=== simg2img ===
+exit 0
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 09:10 /mnt/f/PN2Lineage/gsi/gsi_raw.img
+Linux rev 1.0 ext2 filesystem data, UUID=7a7b8b6d-59c1-4b82-a6a2-ab5e0da5a98d, volume name "system" (extents) (large files) (huge files)
+
+=== root layout ===
+      2   40755 (2)      0      0    4096  8-Aug-2021 12:57 .
+      2   40755 (2)      0      0    4096  8-Aug-2021 12:57 ..
+     11   40700 (2)      0      0   16384  8-Aug-2021 12:57 lost+found
+     12   40755 (2)      0      0    4096  8-Aug-2021 12:37 addon.d
+     14   40755 (2)      0      0    4096  8-Aug-2021 12:48 apex
+    306   40755 (2)      0      0    4096  8-Aug-2021 12:56 app
+    539   40751 (2)      0   2000    8192  8-Aug-2021 12:56 bin
+    988  100600 (1)      0      0    3733  8-Aug-2021 12:35 build.prop
+    989   40755 (2)      0      0    4096  8-Aug-2021 12:57 etc
+   1629   40755 (2)      0      0   12288  8-Aug-2021 12:48 fonts
+   1884   40755 (2)      0      0    4096  8-Aug-2021 12:57 framework
+   2233   40755 (2)      0      0   12288  8-Aug-2021 12:56 lib
+   3561   40755 (2)      0      0   16384  8-Aug-2021 12:56 lib64
+   4969   40755 (2)      0      0    4096  8-Aug-2021 12:41 media
+   4971   40755 (2)      0      0    4096  8-Aug-2021 12:37 ph
+   4973   40755 (2)      0      0    4096  8-Aug-2021 12:37 phh
+   4995   40755 (2)      0      0    4096  8-Aug-2021 12:57 priv-app
+   5250   40755 (2)      0      0    4096  8-Aug-2021 12:54 product
+   5997   40755 (2)      0      0    4096  8-Aug-2021 12:48 usr
+   6201  120644 (7)      0      0       7  8-Aug-2021 12:57 vendor
+   6202   40751 (2)      0   2000    4096  8-Aug-2021 12:54 xbin
+
+
+=== build.prop ===
+--- found at /build.prop ---
+ro.product.system.name=treble_arm64_avS
+ro.build.version.sdk=29
+ro.build.version.release=10
+ro.build.flavor=treble_arm64_avS-userdebug
+ro.treble.enabled=true
+ro.lineage.version=17.1-20210808-UNOFFICIAL-
+
+=== VNDK snapshot dirs present in the GSI ===
+under /lib64:
+   vndk-26
+   vndk-27
+   vndk-28
+   vndk-29
+   vndk-sp-26
+   vndk-sp-27
+   vndk-sp-28
+   vndk-sp-29
+
+=== CRITICAL: is VNDK 27 present? ===
+vndk-27    libs: 0
+vndk-sp-27 libs: 0
+RESULT: NO VNDK 27 snapshot. The Android 8.1 vendor partition will not
+        find its VNDK libs. Expect a boot loop or a dead vendor HAL layer.
+DONE

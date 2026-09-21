@@ -1,0 +1,60 @@
+=== DTBO header ===
+magic          0xd7b7ab1e OK
+total_size     7120765
+entry_size     32
+entry_count    40
+entries_offset 32
+page_size      4096
+version        0
+
+entry  0  size=188722   offset=0x520      id=0x0        rev=0x0         fdt=OK  -> dtbo_00.dtb
+entry  1  size=182570   offset=0x2e652    id=0x0        rev=0x0         fdt=OK  -> dtbo_01.dtb
+entry  2  size=174860   offset=0x5af7c    id=0x0        rev=0x0         fdt=OK  -> dtbo_02.dtb
+entry  3  size=174860   offset=0x85a88    id=0x0        rev=0x0         fdt=OK  -> dtbo_03.dtb
+entry  4  size=174860   offset=0xb0594    id=0x0        rev=0x0         fdt=OK  -> dtbo_04.dtb
+entry  5  size=188722   offset=0xdb0a0    id=0x0        rev=0x0         fdt=OK  -> dtbo_05.dtb
+entry  6  size=171102   offset=0x1091d2   id=0x0        rev=0x0         fdt=OK  -> dtbo_06.dtb
+entry  7  size=176100   offset=0x132e30   id=0x0        rev=0x0         fdt=OK  -> dtbo_07.dtb
+entry  8  size=176104   offset=0x15de14   id=0x0        rev=0x0         fdt=OK  -> dtbo_08.dtb
+entry  9  size=176096   offset=0x188dfc   id=0x0        rev=0x0         fdt=OK  -> dtbo_09.dtb
+entry 10  size=170034   offset=0x1b3ddc   id=0x0        rev=0x0         fdt=OK  -> dtbo_10.dtb
+entry 11  size=171102   offset=0x1dd60e   id=0x0        rev=0x0         fdt=OK  -> dtbo_11.dtb
+entry 12  size=174860   offset=0x20726c   id=0x0        rev=0x0         fdt=OK  -> dtbo_12.dtb
+entry 13  size=190002   offset=0x231d78   id=0x0        rev=0x0         fdt=OK  -> dtbo_13.dtb
+entry 14  size=170034   offset=0x2603aa   id=0x0        rev=0x0         fdt=OK  -> dtbo_14.dtb
+entry 15  size=188722   offset=0x289bdc   id=0x0        rev=0x0         fdt=OK  -> dtbo_15.dtb
+entry 16  size=171106   offset=0x2b7d0e   id=0x0        rev=0x0         fdt=OK  -> dtbo_16.dtb
+entry 17  size=170034   offset=0x2e1970   id=0x0        rev=0x0         fdt=OK  -> dtbo_17.dtb
+entry 18  size=188722   offset=0x30b1a2   id=0x0        rev=0x0         fdt=OK  -> dtbo_18.dtb
+entry 19  size=165049   offset=0x3392d4   id=0x0        rev=0x0         fdt=OK  -> dtbo_19.dtb
+entry 20  size=182570   offset=0x36178d   id=0x0        rev=0x0         fdt=OK  -> dtbo_20.dtb
+entry 21  size=190010   offset=0x38e0b7   id=0x0        rev=0x0         fdt=OK  -> dtbo_21.dtb
+entry 22  size=171106   offset=0x3bc6f1   id=0x0        rev=0x0         fdt=OK  -> dtbo_22.dtb
+entry 23  size=170034   offset=0x3e6353   id=0x0        rev=0x0         fdt=OK  -> dtbo_23.dtb
+entry 24  size=174860   offset=0x40fb85   id=0x0        rev=0x0         fdt=OK  -> dtbo_24.dtb
+entry 25  size=188722   offset=0x43a691   id=0x0        rev=0x0         fdt=OK  -> dtbo_25.dtb
+entry 26  size=176096   offset=0x4687c3   id=0x0        rev=0x0         fdt=OK  -> dtbo_26.dtb
+entry 27  size=170034   offset=0x4937a3   id=0x0        rev=0x0         fdt=OK  -> dtbo_27.dtb
+entry 28  size=190002   offset=0x4bcfd5   id=0x0        rev=0x0         fdt=OK  -> dtbo_28.dtb
+entry 29  size=190010   offset=0x4eb607   id=0x0        rev=0x0         fdt=OK  -> dtbo_29.dtb
+entry 30  size=171110   offset=0x519c41   id=0x0        rev=0x0         fdt=OK  -> dtbo_30.dtb
+entry 31  size=164296   offset=0x5438a7   id=0x0        rev=0x0         fdt=OK  -> dtbo_31.dtb
+entry 32  size=176104   offset=0x56ba6f   id=0x0        rev=0x0         fdt=OK  -> dtbo_32.dtb
+entry 33  size=190006   offset=0x596a57   id=0x0        rev=0x0         fdt=OK  -> dtbo_33.dtb
+entry 34  size=190006   offset=0x5c508d   id=0x0        rev=0x0         fdt=OK  -> dtbo_34.dtb
+entry 35  size=171110   offset=0x5f36c3   id=0x0        rev=0x0         fdt=OK  -> dtbo_35.dtb
+entry 36  size=176100   offset=0x61d329   id=0x0        rev=0x0         fdt=OK  -> dtbo_36.dtb
+entry 37  size=170034   offset=0x64830d   id=0x0        rev=0x0         fdt=OK  -> dtbo_37.dtb
+entry 38  size=174860   offset=0x671b3f   id=0x0        rev=0x0         fdt=OK  -> dtbo_38.dtb
+entry 39  size=188722   offset=0x69c64b   id=0x0        rev=0x0         fdt=OK  -> dtbo_39.dtb
+
+=== scanning /mnt/f/PN2Lineage/extracted/boot_ota/kernel.raw (34988040 bytes) for appended FDT ===
+  no embedded FDT blobs found
+
+=== scanning /mnt/f/PN2Lineage/extracted/boot_ota/kernel.bin (13983302 bytes) for appended FDT ===
+  FDT at 0x00ae0897  size=430836  -> kernel_fdt_ae0897.dtb
+  FDT at 0x00b49b8b  size=427081  -> kernel_fdt_b49b8b.dtb
+  FDT at 0x00bb1fd4  size=430914  -> kernel_fdt_bb1fd4.dtb
+  FDT at 0x00c1b316  size=427081  -> kernel_fdt_c1b316.dtb
+  FDT at 0x00c8375f  size=430914  -> kernel_fdt_c8375f.dtb
+  FDT at 0x00cecaa1  size=430836  -> kernel_fdt_cecaa1.dtb

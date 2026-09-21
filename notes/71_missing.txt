@@ -1,0 +1,35 @@
+=== every libpvrmodule_* / calibrate / shim-ish lib in the stock image ===
+--- /lib64 ---
+libCVControllerClient.pxr.so 0
+libpvrmodule_orientationtracker.so 0
+libpvrmodule_platform.so 0
+--- /lib ---
+libCVControllerClient.pxr.so 0
+libpvrmodule_orientationtracker.so 0
+libpvrmodule_platform.so 0
+
+=== pulling the ones we are missing ===
+
+=== undefined framework symbols that Android 10 no longer provides ===
+### lib64/libpvrmodule_platform.so
+    _ZN7android20DisplayEventReceiverC1ENS_16ISurfaceComposer11VsyncSourceE
+    _ZN7android21SurfaceComposerClient14getDisplayInfoERKNS_2spINS_7IBinderEEEPNS_11DisplayInfoE
+    _ZN7android21SurfaceComposerClient17getBuiltInDisplayEi
+    _ZN7android21SurfaceComposerClientC1Ev
+    _ZN7android21SurfaceComposerClientD1Ev
+### lib/libpvrmodule_platform.so
+    _ZN7android20DisplayEventReceiverC1ENS_16ISurfaceComposer11VsyncSourceE
+    _ZN7android21SurfaceComposerClient14getDisplayInfoERKNS_2spINS_7IBinderEEEPNS_11DisplayInfoE
+    _ZN7android21SurfaceComposerClient17getBuiltInDisplayEi
+    _ZN7android21SurfaceComposerClientC1Ev
+    _ZN7android21SurfaceComposerClientD1Ev
+### lib/libqvrservice.so
+    _ZN7android13GraphicBuffer6unlockEv
+    _ZN7android13GraphicBuffer9lockYCbCrEjP13android_ycbcr
+    _ZN7android13GraphicBufferC1EjjijyNSt3__112basic_stringIcNS1_11char_traitsIcEENS1_9allocatorIcEEEE
+    _ZNK7android13GraphicBuffer15getNativeBufferEv
+
+=== specifically: who wants getBuiltInDisplay ===
+  lib64/libpvrmodule_platform.so
+  lib/libpvrmodule_platform.so
+DONE

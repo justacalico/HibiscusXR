@@ -1,0 +1,62 @@
+=== manual see-through launch 08/14/2026 03:40:25 ===
+[03:40:58]    === what is still crashing? ===
+[03:40:58]    24762 24762 F DEBUG   :       #00 pc 000109b8  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24762 24762 F DEBUG   :       #01 pc 00010685  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24762 24762 F DEBUG   :       #02 pc 00010481  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24762 24762 F DEBUG   :       #03 pc 000123fb  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24805 24805 F DEBUG   :       #00 pc 000109b8  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24805 24805 F DEBUG   :       #01 pc 00010685  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24805 24805 F DEBUG   :       #02 pc 00010481  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24805 24805 F DEBUG   :       #03 pc 000123fb  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24847 24847 F DEBUG   :       #00 pc 000109b8  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]    24847 24847 F DEBUG   :       #01 pc 00010685  /system/lib/libpvrserviceclient.so (deleted)
+[03:40:58]      --- and which process ---
+[03:40:58]    25741 25741 F DEBUG   : pid: 25716, tid: 25716, name: r:RemoteService  >>> com.picovr.picovrlib.cvcontroller:RemoteService <<<
+[03:40:58]    25783 25783 F DEBUG   : pid: 25756, tid: 25756, name: r:RemoteService  >>> com.picovr.picovrlib.cvcontroller:RemoteService <<<
+[03:40:58]    25840 25840 F DEBUG   : pid: 25813, tid: 25831, name: Binder:25813_1  >>> com.picovr.picovrlib.cvcontroller:RemoteService <<<
+[03:40:58]    
+[03:40:58]    === launch see-through ===
+[03:40:58]    Starting: Intent { cmp=com.pvr.seethrough.setting/.MainActivity }
+[03:40:58]      pid   threads=0
+[03:40:58]      mCurrentFocus=null
+[03:40:58]    
+[03:40:58]    === did it reach VR mode / open the cameras? ===
+[03:40:58]    27309 27332 E psmvrConfig: Undefined variable -- fDstcToShowSeeThrough
+[03:40:58]    27309 27332 E psmvrConfig: Undefined variable -- fDstcToShowSeeThroughComp
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Bad Pose.Orientation in bufferNum 564!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Nothing to draw, draw black!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Bad Pose.Orientation in bufferNum 564!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Nothing to draw, draw black!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Bad Pose.Orientation in bufferNum 564!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Nothing to draw, draw black!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Bad Pose.Orientation in bufferNum 565!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Nothing to draw, draw black!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Bad Pose.Orientation in bufferNum 566!
+[03:40:58]    20326 26479 I TimeWarp: DIATW SelectRT Nothing to draw, draw black!
+[03:40:58]    
+[03:40:58]    === app log tail ===
+[03:40:58]    27335 27335 F DEBUG   :       #54 pc 000a7163  /apex/com.android.runtime/lib/bionic/libc.so (__pthread_start(void*)+20) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+[03:40:58]    27335 27335 F DEBUG   :       #55 pc 00060bbd  /apex/com.android.runtime/lib/bionic/libc.so (__start_thread+30) (BuildId: 0ed890fabaa2d5c71dbd8eea0c83fadd)
+[03:40:58]    1384 26458 E QVRServiceCamDeviceHAL3: 'tracking' - throttling the submission of new frames to the camera stack
+[03:40:58]    20326 20366 I Unity   : PvrLog Bind Service
+[03:40:58]    20326 20366 I Unity   : Pvr_ControllerLink:BindService()
+[03:40:58]    20326 20366 I Unity   :  
+[03:40:58]    20326 20366 I Unity   : (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+[03:40:58]    20326 20366 I Unity   : 
+[03:40:58]    1676  1714 D HalDevMgr: onDebugRingBufferDataAvailable
+[03:40:58]    1676  1714 D HalDevMgr: onDebugRingBufferDataAvailable
+[03:40:58]    1676  1714 D HalDevMgr: onDebugRingBufferDataAvailable
+[03:40:58]    1676  1714 D HalDevMgr: onDebugRingBufferDataAvailable
+[03:40:58]    20326 20366 I UnityClient: System proc = 4 configfile =  4
+[03:40:58]    1676  1852 D HalDevMgr: onDebugRingBufferDataAvailable
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    1384 26458 E QVRServiceCamDeviceHAL3: 'tracking' - throttling the submission of new frames to the camera stack
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    1384 26458 E QVRServiceCamDeviceHAL3: 'tracking' - throttling the submission of new frames to the camera stack
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    20326 20366 E VrApi   : trackingstate = 0x0,0x0
+[03:40:58]    
+[03:40:58]    === tracking still alive? ===
+[03:40:58]      kLost=68

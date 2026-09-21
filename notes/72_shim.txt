@@ -1,0 +1,39 @@
+﻿-rw-r--r-- 1 root root 2840 2026-08-13 11:53 /system/lib64/libshim_pvr.so
+
+=== does the shim resolve libpvrmodule_platform.so now? ===
+=== start pvrservice WITH the shim ===
+pid = 
+
+=== platform module: loaded or still failing? ===
+08-13 11:49:17.866  4422  4422 E PvrService: Open library<libHeadImuCalibrate_int.so> failed:dlopen failed: library "libHeadImuCalibrate_int.so" not found
+08-13 11:49:17.867  4422  4422 E PvrService: Open library<libpvrmodule_platform.so> failed:dlopen failed: cannot locate symbol "_ZN7android21SurfaceComposerClient17getBuiltInDisplayEi" referenced by "/system/lib64/libpvrmodule_platform.so"...
+08-13 11:49:17.867  4422  4422 E PvrService: load platform module failed
+08-13 11:49:17.868  4422  4422 E PvrService: Open library<libpvrmodule_externalhmd.so> failed:dlopen failed: library "libpvrmodule_externalhmd.so" not found
+08-13 11:49:17.868  4422  4422 E PvrService: load external hmd module failed
+08-13 11:49:17.869  4422  4422 E PvrService: Open library<libpvrmodule_controller.so> failed:dlopen failed: library "libpvrmodule_controller.so" not found
+08-13 11:49:17.869  4422  4422 E PvrService: load controller module failed
+08-13 11:53:22.194  4577  4577 I PvrService: Load libpvrmodule_orientationtracker.so success
+08-13 11:53:22.196  4577  4577 E PvrService: Open library<libHeadImuCalibrate_int.so> failed:dlopen failed: library "libHeadImuCalibrate_int.so" not found
+08-13 11:53:22.197  4577  4577 I PvrService: Load libpvrmodule_platform.so success
+08-13 11:53:22.200  4577  4577 I PvrPlatform: Platform config file path:/system/etc/pvr/pvrservice_platform_G2U3_PU.ini
+08-13 11:53:22.205  4577  4577 E PvrService: Open library<libpvrmodule_externalhmd.so> failed:dlopen failed: library "libpvrmodule_externalhmd.so" not found
+08-13 11:53:22.205  4577  4577 E PvrService: load external hmd module failed
+08-13 11:53:22.306  4577  4577 E PvrService: Open library<libpvrmodule_controller.so> failed:dlopen failed: library "libpvrmodule_controller.so" not found
+08-13 11:53:22.306  4577  4577 E PvrService: load controller module failed
+
+=== is libpvrmodule_platform actually mapped in? ===
+
+=== tracking output ===
+08-13 11:53:22.307  4577  4577 I PvrService: Call setTrackingMode in ServiceCore, cur=1 new=1
+08-13 11:53:22.307  4577  4577 E PvrService: setTrackingMode:Try to get tracking lock mutex
+08-13 11:53:22.307  4577  4577 E PvrService: setTrackingMode:Get tracking lock mutex
+08-13 11:53:22.307  4577  4577 I PvrService: Call setTrackingModeThread
+08-13 11:53:22.307  4577  4577 I PvrService: Call setEyeTrackingMode in ServiceCore, cur=0 new=1
+08-13 11:53:22.307  4577  4577 E PvrService: setTrackingModeThread:release tracking lock mutex
+08-13 11:53:22.314  4577  4598 D PvrService: PvrService::setShareMemoryData(0):
+08-13 11:53:22.314  4577  4598 D PvrService:  0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,-0.080500	[662484467454]	[662482782766]	[662484467454]	[1718490]
+08-13 11:53:22.314  4577  4598 D PvrService: threadLoop continue: 1
+08-13 11:53:22.317  4577  4596 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 11:53:22.403  4604  4604 F DEBUG   : pid: 4577, tid: 4597, name: PVR_VsyncListen  >>> /system/bin/pvrservice <<<
+08-13 11:53:22.542   560   560 I ServiceManager: service 'pvrservice' died
+DONE

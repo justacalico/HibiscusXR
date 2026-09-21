@@ -1,0 +1,422 @@
+--------- beginning of main
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice expire 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 11 secend
+E/cmd     ( 4027): open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+E/libprocessgroup( 4027): CgroupMap::LoadRcFile called for [4027] failed
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller memory is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller memory is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller memory is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller cpu is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): Controller cpu is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller schedtune is not found
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: STunePreferIdle
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: STunePreferIdle
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller blkio is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller blkio is not found
+--------- beginning of system
+I/ActivityTaskManager( 1657): START u0 {flg=0x10000000 cmp=com.pvr.vrshell/.MainActivity} from uid 0
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller blkio is not found
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller blkio is not found
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: MemSoftLimit
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: MemSwappiness
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: MemSoftLimit
+W/libprocessgroup( 4027): SetAttribute: unknown attribute: MemSwappiness
+E/libprocessgroup( 4027): CgroupMap::FindController called for [4027] failed, RC file was not initialized properly
+W/libprocessgroup( 4027): JoinCgroup: controller memory is not found
+W/system_server( 1657): resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+E/system_server( 1657): Invalid ID 0x00000000.
+W/System  ( 1657): ClassLoader referenced unknown path: 
+D/Zygote  ( 1370): Forked child process 4030
+I/ActivityManager( 1657): Start proc 4030:com.pvr.vrshell/1000 for pre-top-activity {com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+E/libprocessgroup( 4030): CgroupMap::FindController called for [4030] failed, RC file was not initialized properly
+E/libprocessgroup( 4030): CgroupMap::FindController called for [4030] failed, RC file was not initialized properly
+E/libprocessgroup( 4030): Failed to make and chown /uid_1000: Read-only file system
+W/Zygote  ( 4030): createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+I/Zygote  ( 4030): seccomp disabled by setenforce 0
+E/libprocessgroup( 4030): CgroupMap::FindController called for [4030] failed, RC file was not initialized properly
+I/hwservicemanager(  562): getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+W/Gralloc3( 1657): mapper 3.x is not supported
+W/OomAdjuster( 1657): Fallback pre-set sched group to default: not expected top priority
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:758): avc: denied { getattr } for path="/system/priv-app/VRShell2/VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:759): avc: denied { getattr } for path="/system/priv-app/VRShell2" dev="sda7" ino=6251 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=dir permissive=1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:760): avc: denied { read } for name="VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:761): avc: denied { open } for path="/system/priv-app/VRShell2/VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+W/com.pvr.vrshel( 4030): JIT profile information will not be recorded: profile file does not exits.
+W/com.pvr.vrshel( 4030): resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+E/GraphicsEnv( 4030): Failed to get gpu service
+D/ImageWallpaper( 1918): wallpaper visibility changes to: false
+I/ashmem  ( 4030): memfd: device VNDK version (27) is < Q so using ashmem.
+I/UnityNativeActivityPico( 4030): onCreate enter
+D/PvrClient( 4030): android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_2 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:762): avc: denied { execute } for path="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so" dev="sda7" ino=6466 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+D/UnityNativeActivityPico( 4030): DISFT isJavaService =falseisPhoneHmdType = false
+I/VrApi   ( 4030): open replaceable Scuccessed libPvr_UnitySDKExt11.so
+I/VrApi   ( 4030): couldBeLoaded
+I/VrApi   ( 4030): 0x771d767c18
+I/VrApi   ( 4030): open replaceable Scuccessed 2
+I/VrApi   ( 4030): current version >=2.7.4.4
+I/VrApi   ( 4030): APP version, 2, 8, 6, 16
+I/VrApi   ( 4030): lib version, 2, 8, 6, 15
+I/VrApi   ( 4030): open replaceable aborted
+I/VrApi   ( 4030): pvr_OnLoad()
+I/VrApi   ( 4030): Using caller's JNIEnv
+I/VrApi   ( 4030): Get SdcardPath = /storage/emulated/0, 0x76bc353110
+I/VrApi   ( 4030): BuildVersionSDK 29
+I/VrApi   ( 4030): pvr_Init
+I/UnityNativeActivityPico( 4030): bypass_presentation = -1
+W/ContextImpl( 4030): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+D/VRDataUtils( 4030): HMD not exist
+D/PvrClient( 4030): mirroring or not lg return
+D/Zygote  ( 1370): Forked child process 4066
+E/libprocessgroup( 4066): CgroupMap::FindController called for [4066] failed, RC file was not initialized properly
+E/libprocessgroup( 4066): CgroupMap::FindController called for [4066] failed, RC file was not initialized properly
+E/libprocessgroup( 4066): Failed to make and chown /uid_1000: Read-only file system
+W/Zygote  ( 4066): createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+I/Zygote  ( 4066): seccomp disabled by setenforce 0
+I/ActivityManager( 1657): Start proc 4066:com.pvr.verify/1000 for service {com.pvr.verify/com.pvr.verify.VerifyService}
+E/ConfigApi( 4030): Not Initialize Global Configs
+I/ConfigApi( 4030): Initialize Global Configs
+I/ConfigApi( 4030): file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+I/psmvrConfig( 4030): Load file /system/etc/pvr/psmvrapi_config.txt, 1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:763): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:764): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 4030): type=1400 audit(0.0:765): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+E/psmvrConfig( 4030): Undefined variable -- iEnableStageLevel
+E/psmvrConfig( 4030): Undefined variable -- fCylinderDistortionBoundThreshold
+E/psmvrConfig( 4030): Undefined variable -- fCylinderDistortionBoundSetValue
+I/ConfigApi( 4030): DIATW Update Config Parameters From VRService
+E/VrServiceApi( 4030): InitServiceClient: priority native or java service : order = 0
+I/VrServiceApi( 4030): load service priority default
+I/VrServiceApi( 4030): dlopen ok
+I/VrServiceApi( 4030): dlsym for getPVRModule ok
+V/PvrService( 1149): registerClient() client 0x7e2544d640, pid 4030
+E/Paul    ( 4030): IsInitialized
+E/HaveDir ( 4030): HaveDir
+E/Paul    ( 4030): open_calib_file_ok
+E/GyroMatrix( 4030): c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+E/SensorConstruct( 4030): SensorConstruct
+E/PvrServiceClient( 4030): Open library<lib6DofReset.so> failed:(null)
+E/PvrServiceClient( 4030): Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+E/PvrServiceClient( 4030): Get function<mGetResetPos> failed:undefined symbol: getResetPos
+E/PvrPlatform( 1149): Override displayinfo:w=3840 h=2160 fps=72.000008
+D/RefBase ( 1149): RefBase: Explicit destruction, weak count = 0 (in 0x7e1bc06598)
+W/RefBase ( 1149): CallStack::getCurrentInternal not linked, returning null
+W/RefBase ( 1149): CallStack::logStackInternal not linked
+I/ConfigApi( 4030): UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+D/PvrPlatform( 1149): Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+I/PvrPlatform( 1149): Override configs by config file
+I/PvrPlatform( 1149): Override fov value:101.000000
+I/ConfigApi( 4030): psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+--------- beginning of crash
+F/libc    ( 4030): Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10 in tid 4030 (com.pvr.vrshell), pid 4030 (com.pvr.vrshell)
+W/com.pvr.verify( 4066): JIT profile information will not be recorded: profile file does not exits.
+W/com.pvr.verify( 4066): resources.arsc in APK '/system/priv-app/PVRVerify/PVRVerify.apk' is compressed.
+I/Binder:1381_2( 1381): type=1400 audit(0.0:766): avc: denied { sys_admin } for capability=21 scontext=u:r:netd:s0 tcontext=u:r:netd:s0 tclass=capability permissive=1
+I/VerifyApplication( 4066): onCreate# 
+I/c       ( 4066): check# change host url
+I/initServerJar( 4066): ??DoGetUrlFromDBWithSuffix,uriStr=content://com.picovr.initserver.serverSetting/server_setting/store-AppStore3
+I/InitServer( 3413): Porvider????query,projection = null***selection = null**selectionArgs = null
+I/ashmem  ( 4066): memfd: device VNDK version (27) is < Q so using ashmem.
+E/TrafficController( 1381): Failed to set the counterSet: Bad file descriptor, fd: -1
+I/initServerJar( 4066): cursor::count=0
+I/initServerJar( 4066): content=
+I/initServerJar( 4066): urlViaSuffix=
+I/initServerJar( 4066): ????,????DoGetUrlFromDBWithSuffix,uriCommon=content://com.picovr.initserver.serverSetting/server_setting/AppStore3
+I/InitServer( 3413): Porvider????query,projection = null***selection = null**selectionArgs = null
+I/initServerJar( 4066): cursor::count=1
+I/initServerJar( 4066): content=https://us-appstore.picovr.com/api/
+I/initServerJar( 4066): urlViaSuffix=https://us-appstore.picovr.com/api/
+W/ContextImpl( 4066): Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1576 android.content.ContextWrapper.startForegroundService:674 com.pvr.verify.utils.CommonUtils.startService:6 com.pvr.verify.a.b.a:14 com.pvr.verify.VerifyService.onCreate:30 
+W/ActivityManager( 1657): Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+W/ContextImpl( 4066): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.pvr.verify.a.b.a:20 com.pvr.verify.VerifyService.onCreate:30 android.app.ActivityThread.handleCreateService:3953 
+W/ActivityManager( 1657): Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+I/b       ( 4066): check# bind: bind Verify Service
+I/VerifyService( 4066): onCreate# 
+I/VerifyService( 4066): onBind: ---
+I/crash_dump64( 4091): obtaining output fd from tombstoned, type: kDebuggerdTombstone
+I//system/bin/tombstoned( 1442): received crash request for pid 4030
+I/crash_dump64( 4091): performing dump of process 4030 (target tid = 4030)
+F/DEBUG   ( 4091): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+F/DEBUG   ( 4091): LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+F/DEBUG   ( 4091): Build fingerprint: 'unknown/unknown/PICOA7B10:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+F/DEBUG   ( 4091): Revision: '0'
+F/DEBUG   ( 4091): ABI: 'arm64'
+F/DEBUG   ( 4091): Timestamp: 2026-08-13 17:08:37-0400
+F/DEBUG   ( 4091): pid: 4030, tid: 4030, name: com.pvr.vrshell  >>> com.pvr.vrshell <<<
+F/DEBUG   ( 4091): uid: 1000
+F/DEBUG   ( 4091): signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10
+F/DEBUG   ( 4091): Cause: null pointer dereference
+F/DEBUG   ( 4091):     x0  0000000000000004  x1  0000000000000007  x2  0000000000000000  x3  c08f3f3333333333
+F/DEBUG   ( 4091):     x4  00000077aa402950  x5  0000007fe87f2ad8  x6  0000000000000000  x7  0000000000000000
+F/DEBUG   ( 4091):     x8  9a6ff49d62b34908  x9  9a6ff49d62b34908  x10 0000007727b0b4ec  x11 000000000000002f
+F/DEBUG   ( 4091):     x12 0000000000000000  x13 0000000000000006  x14 0000007fe87f29e8  x15 0000000000000000
+F/DEBUG   ( 4091):     x16 0000000000000001  x17 00000077a8f13004  x18 0000000000006574  x19 00000077ac932c00
+F/DEBUG   ( 4091):     x20 0000000000000000  x21 00000077ac932c00  x22 0000007fe87f2d50  x23 000000771a227407
+F/DEBUG   ( 4091):     x24 0000000000000004  x25 00000077acc2a020  x26 00000077ac932cb0  x27 0000000000000001
+F/DEBUG   ( 4091):     x28 0000000000000000  x29 0000007fe87f2ae0
+F/DEBUG   ( 4091):     sp  0000000000000000  lr  00000077276c2364  pc  00000077276c2370
+F/DEBUG   ( 4091): 
+F/DEBUG   ( 4091): backtrace:
+F/DEBUG   ( 4091):       #00 pc 000000000013f370  /apex/com.android.runtime/lib64/libart.so (art_quick_generic_jni_trampoline+176) (BuildId: 305e71e8e3ac3377f1ac1cc192146d00)
+I/ImsServiceController( 2106): Granting Runtime permissions to:ComponentInfo{com.android.phone/com.android.internal.telephony.ims.ImsResolver}
+I/DefaultPermGrantPolicy( 1657): Granting permissions to enabled ImsServices for user:0
+I/ImsServiceController( 2106): Binding ImsService:ComponentInfo{com.android.phone/com.android.internal.telephony.ims.ImsResolver}
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+E//system/bin/tombstoned( 1442): Tombstone written to: /data/tombstones/tombstone_05
+D/PvrPlatform( 1149): Already keep stationary state for 0 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 0 secend
+W/ActivityTaskManager( 1657):   Force finishing activity com.pvr.vrshell/.MainActivity
+D/PermissionCache( 1151): checking android.permission.READ_FRAME_BUFFER for uid=1000 => granted (1340 us)
+I/BootReceiver( 1657): Copying /data/tombstones/tombstone_05 to DropBox (SYSTEM_TOMBSTONE)
+I/DropBoxManagerService( 1657): add tag=SYSTEM_TOMBSTONE isTagEnabled=true flags=0x2
+I/DropBoxManagerService( 1657): add tag=system_app_native_crash isTagEnabled=true flags=0x2
+E/PvrPlatform( 1149): ALOOPER_POLL_TIMEOUT
+I/Zygote  ( 1370): Process 4030 exited due to signal 11 (Segmentation fault)
+W/ActivityTaskManager( 1657): Exception thrown during pause
+W/ActivityTaskManager( 1657): android.os.DeadObjectException
+W/ActivityTaskManager( 1657): 	at android.os.BinderProxy.transactNative(Native Method)
+W/ActivityTaskManager( 1657): 	at android.os.BinderProxy.transact(BinderProxy.java:511)
+W/ActivityTaskManager( 1657): 	at android.app.IApplicationThread$Stub$Proxy.scheduleTransaction(IApplicationThread.java:2448)
+W/ActivityTaskManager( 1657): 	at android.app.servertransaction.ClientTransaction.schedule(ClientTransaction.java:135)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ClientLifecycleManager.scheduleTransaction(ClientLifecycleManager.java:47)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ClientLifecycleManager.scheduleTransaction(ClientLifecycleManager.java:69)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ActivityStack.startPausingLocked(ActivityStack.java:1701)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ActivityStack.finishActivityLocked(ActivityStack.java:4052)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ActivityStack.finishActivityLocked(ActivityStack.java:3986)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ActivityStack.finishTopCrashedActivityLocked(ActivityStack.java:3871)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.RootActivityContainer.finishTopCrashedActivities(RootActivityContainer.java:1136)
+W/ActivityTaskManager( 1657): 	at com.android.server.wm.ActivityTaskManagerService$LocalService.finishTopCrashedActivities(ActivityTaskManagerService.java:7294)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.AppErrors.handleAppCrashLocked(AppErrors.java:756)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.AppErrors.makeAppCrashingLocked(AppErrors.java:604)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.AppErrors.crashApplicationInner(AppErrors.java:493)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.AppErrors.crashApplication(AppErrors.java:408)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.ActivityManagerService.handleApplicationCrashInner(ActivityManagerService.java:9267)
+W/ActivityTaskManager( 1657): 	at com.android.server.am.NativeCrashListener$NativeCrashReporter.run(NativeCrashListener.java:84)
+V/PvrService( 1149): removeNotificationClient() pid 4030
+E/PvrService( 1149): VRModeStateClient::onClientDied pid=4030
+I/PvrService( 1149): mPrevTrackingMode 1, trackingMode 1
+D/PvrService( 1149): removeNotificationClient done
+I/ActivityManager( 1657): Process com.pvr.vrshell (pid 4030) has died: fore TOP 
+E/libprocessgroup( 1657): CgroupMap::FindController called for [1657] failed, RC file was not initialized properly
+E/libprocessgroup( 1657): CgroupMap::FindController called for [1657] failed, RC file was not initialized properly
+I/libprocessgroup( 1657): Successfully killed process cgroup uid 1000 pid 4030 in 0ms
+I/Adreno  ( 1657): QUALCOMM build                   : 2d5c972, I8302e904d2
+I/Adreno  ( 1657): Build Date                       : 03/29/19
+I/Adreno  ( 1657): OpenGL ES Shader Compiler Version: EV031.26.03.00
+I/Adreno  ( 1657): Local Branch                     : mybranche951d0e9-8bc7-f187-be97-5cb90179c3d8
+I/Adreno  ( 1657): Remote Branch                    : quic/gfx-adreno.lnx.1.0.r65-rel
+I/Adreno  ( 1657): Remote Branch                    : NONE
+I/Adreno  ( 1657): Reconstruct Branch               : NOTHING
+I/Adreno  ( 1657): Build Config                     : S L 4.0.10 AArch64
+I/Adreno  ( 1657): PFP: 0x016ee183, ME: 0x00000000
+I/b       ( 4066): check# unBind: unBind Verify Service
+W/ActivityManager( 1657): Unbind failed: could not find connection for android.os.BinderProxy@5cde616
+D/ImageWallpaper( 1918): wallpaper visibility changes to: true
+E/TrafficController( 1381): Failed to delete the counterSet: Bad file descriptor
+I/ActivityManager( 1657): Killing 2125:com.android.settings/1000 (adj 975): empty #17
+E/libprocessgroup( 1657): CgroupMap::FindController called for [1657] failed, RC file was not initialized properly
+E/libprocessgroup( 1657): CgroupMap::FindController called for [1657] failed, RC file was not initialized properly
+I/libprocessgroup( 1657): Successfully killed process cgroup uid 1000 pid 2125 in 0ms
+I/droid.launcher( 2222): Waiting for a blocking GC ProfileSaver
+I/droid.launcher( 2222): WaitForGcToComplete blocked ProfileSaver on HeapTrim for 26.313ms
+W/InputChannel-JNI( 2222): Input channel object 'recents_animation_input_consumer (client)' was finalized without being disposed!
+I/Zygote  ( 1370): Process 2125 exited due to signal 9 (Killed)
+W/ActivityManager( 1657): setHasOverlayUi called on unknown pid: 2125
+E/PvrPlatform( 1149): ALOOPER_POLL_TIMEOUT
+V/MediaPlayer( 1657): resetDrmState:  mDrmInfo=null mDrmProvisioningThread=null mPrepareDrmInProgress=false mActiveDrmScheme=false
+V/MediaPlayer( 1657): cleanDrmObj: mDrmObj=null mDrmSessionId=null
+V/AvrcpMediaPlayerList( 1896): onPlaybackConfigChanged(): Configs list size=2
+D/NuPlayerDriver(  959): reset(0xee46ef00) at state 6
+D/NuPlayerDriver(  959): notifyResetComplete(0xee46ef00)
+W/AMessage(  959): failed to post message as target looper for handler 0 is gone.
+W/ActivityTaskManager( 1657): Activity top resumed state loss timeout for ActivityRecord{a9c5365 u0 com.pvr.vrshell/.MainActivity t-1 f}
+D/PvrPlatform( 1149): Already keep stationary state for 1 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 1 secend
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047064, -0.009761, -0.011166, 0.998782)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003227, -0.007936, -0.087163)
+D/PvrService( 1149): PvrService::setShareMemoryData(606306):
+D/PvrService( 1149):  -0.047064,-0.009761,-0.011166,0.998782,0.003227,-0.007936,-0.087163	[621148551584]	[621147625125]	[1378282]	[1142813]
+D/PvrService( 1149): threadLoop continue: 1
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_2 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1149): Already keep stationary state for 2 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 2 secend
+D/PvrPlatform( 1149): Already keep stationary state for 3 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 3 secend
+I/MSM-irqbalance( 1596): Discovered a new IRQ: 203
+I/MSM-irqbalance( 1596): Discovered a new IRQ: 204
+E/MSM-irqbalance( 1596): IRQ 76 not found in internal structure or should be ignored
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047130, -0.009675, -0.011305, 0.998777)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003232, -0.007949, -0.087172)
+D/PvrPlatform( 1149): Already keep stationary state for 4 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 4 secend
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_1 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+V/CameraService(  958): isHiddenPhysicalCamera: for camera ID = 0
+V/CameraService(  958): supportsCameraApi: for camera ID = 0
+V/CameraService(  958): supportsCameraApi: Camera id 0 uses HAL3.2 or newer, supports api1/api2 directly
+D/PvrPlatform( 1149): Already keep stationary state for 5 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 5 secend
+D/PvrPlatform( 1149): Already keep stationary state for 6 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 6 secend
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047531, -0.009550, -0.011105, 0.998761)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003182, -0.008018, -0.087226)
+D/PvrPlatform( 1149): Already keep stationary state for 7 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 7 secend
+D/PvrService( 1149): threadLoop continue: 1
+E/PvrPlatform( 1149): ALOOPER_POLL_TIMEOUT
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_1 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_2 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1149): Already keep stationary state for 8 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 8 secend
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047294, -0.009435, -0.011259, 0.998773)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003185, -0.007977, -0.087195)
+E/MSM-irqbalance( 1596): IRQ 76 not found in internal structure or should be ignored
+D/PvrPlatform( 1149): Already keep stationary state for 9 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 9 secend
+D/PvrPlatform( 1149): Already keep stationary state for 10 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 10 secend
+E/PvrPlatform( 1149): ALOOPER_POLL_TIMEOUT
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_3 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_2 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1149): Already keep stationary state for 11 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 11 secend
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047217, -0.009386, -0.011220, 0.998777)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003171, -0.007963, -0.087185)
+D/PvrPlatform( 1149): Already keep stationary state for 12 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 12 secend
+D/PvrPlatform( 1149): Already keep stationary state for 13 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 13 secend
+E/PvrService( 1149): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1149): PvrService getTrackingDataExt rotation(-0.047272, -0.008695, -0.011066, 0.998783)
+E/PvrService( 1149): PvrService getTrackingDataExt position(0.003034, -0.007971, -0.087196)
+D/PvrService( 1149): PvrService::setShareMemoryData(618699):
+D/PvrService( 1149):  -0.047272,-0.008695,-0.011066,0.998783,0.003034,-0.007971,-0.087196	[633343490329]	[633342718350]	[1236094]	[988594]
+D/PvrService( 1149): threadLoop continue: 1
+E/MSM-irqbalance( 1596): IRQ 76 not found in internal structure or should be ignored
+E/MSM-irqbalance( 1596): IRQ 76 not found in internal structure or should be ignored
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 3 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1149): Already keep stationary state for 14 secend
+I/chatty  ( 1149): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1149): Already keep stationary state for 14 secend
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_4 identical 1 line
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+I/chatty  ( 1657): uid=1000(system) HwBinder:1657_1 identical 4 lines
+D/HalDevMgr( 1657): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1149): Already keep stationary state for 15 secend

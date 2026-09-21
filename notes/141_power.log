@@ -1,0 +1,6 @@
+=== apply suspend fix 08/13/2026 14:10:49 ===
+[14:12:55] device up, boot_completed=1 uptime=157s
+[14:12:56]    rc installed: -rw-r--r-- 1 root root 1325 2026-08-13 14:12 /system/etc/init/pn2-power.rc
+[14:12:56]    wakelocks now: PowerManager.SuspendLockout PowerManagerService.Display PowerManagerService.WakeLocks pn2_nosuspend pvrservice.platform
+[14:12:56] stayon turned OFF - the wakelock is now the only thing preventing suspend
+[14:12:56] === done ===

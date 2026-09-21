@@ -1,0 +1,30 @@
+=== vrshell after product identity fix 08/13/2026 13:48:50 ===
+[13:48:50] rebooting
+[13:50:02] boot_completed=1
+[13:50:03] stayon re-applied
+[13:50:03] ro.build.product = PICOA7B10
+[13:50:03] ro.product.model = Pico Neo 2
+[13:50:15] --- which platform profile did pvrservice choose ---
+[13:50:15] --- launching VRShell ---
+[13:50:27] vrshell pid   : 
+[13:50:27] pvrservice pid: 1138
+[13:50:27] --- last lines ---
+[13:50:28]    pvr_OnLoad()
+[13:50:28]    Not Initialize Global Configs
+[13:50:28]    Initialize Global Configs
+[13:50:28]    file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+[13:50:28]    Load file /system/etc/pvr/psmvrapi_config.txt, 1
+[13:50:28]    Undefined variable -- fCylinderDistortionBoundThreshold
+[13:50:28]    Undefined variable -- fCylinderDistortionBoundSetValue
+[13:50:28]    DIATW Update Config Parameters From VRService
+[13:50:28]    getDisplayInfo
+[13:50:28]    getDisplayInfo env is null
+[13:50:28]    ERROR occured getParameter! env = 0xf24aa140,obj_pvrClient = 0x0
+[13:50:28]    ERROR occured getParameter! env = 0xf24aa140,obj_pvrClient = 0x0
+[13:50:28]    psmvr_UpdateCylinderInfoFromVRService Failed!
+[13:50:28]    pvr_OnLoad() called , return false
+[13:50:28]    this is a Main Sensor
+[13:50:28]    PVR_SERVICE_QUATERNION_MODE Start GlobalTracking = 2
+[13:50:28]    PVR_SERVICE_QUATERNION_MODE, ENABLE_BOUNDARY, change GlobalTracking to 2 from 2
+[13:50:28]    SetTrackingMode failed, ret = -1024 
+[13:50:28] === done ===

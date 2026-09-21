@@ -1,0 +1,46 @@
+=== reproducibility ===
+15270bc31a9013cef386deccb8626996  /mnt/f/PN2Lineage/eyeunit/eye_262144.bin
+15270bc31a9013cef386deccb8626996  /mnt/f/PN2Lineage/eyeunit/eye_verify.bin
+IDENTICAL across two independent reads - dump is stable
+
+=== tail of the data region ===
+last non-0xFF byte: 0x007e2a (32298)  -> payload length 32299
+007dcb  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+007ddb  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+007deb  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+007dfb  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+007e0b  00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  |................|
+007e1b  00 00 00 00 00 00 00 00 00 00 22 95 01 01 06 00  |..........".....|
+007e2b  ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff  |................|
+
+=== carve candidates ===
+A exact      : 32299 bytes (0x7e2b)
+B page-pad   : 32512 bytes (0x7f00)
+C 32KB       : 32768 bytes (0x8000)
+D full 256KB : 262144 bytes (0x40000)
+
+=== iCE40 bitstream sanity ===
+preamble 7EAA997E at 0x53
+header records:
+   'Lattice'
+   'iCEcube2 2017.08.27940'
+   'Part: iCE40LP1K-CM49'
+   'Date: Oct 10 2019 09:46:'
+   '�24'
+
+config payload length after preamble: 32216 bytes
+expected iCE40LP1K config ~32220 bytes
+
+=== final listing ===
+total 864
+-rwxrwxrwx 1 justin justin 262144 Aug 13 08:23 eye_262144.bin
+-rwxrwxrwx 1 justin justin 262144 Aug 13 08:26 eye_verify.bin
+-rwxrwxrwx 1 justin justin  32299 Aug 13 08:26 top_level_bitmap_A_exact.bin
+-rwxrwxrwx 1 justin justin  32512 Aug 13 08:26 top_level_bitmap_B_page.bin
+-rwxrwxrwx 1 justin justin  32768 Aug 13 08:26 top_level_bitmap_C_32k.bin
+-rwxrwxrwx 1 justin justin 262144 Aug 13 08:26 top_level_bitmap_D_full256k.bin
+4905be617db6690e9f733c35753fa0fa  /mnt/f/PN2Lineage/eyeunit/top_level_bitmap_A_exact.bin
+ae9e70b018c76cc0d41765712c69061b  /mnt/f/PN2Lineage/eyeunit/top_level_bitmap_B_page.bin
+eaf57aab8c9920611c3fd5fff355ad11  /mnt/f/PN2Lineage/eyeunit/top_level_bitmap_C_32k.bin
+15270bc31a9013cef386deccb8626996  /mnt/f/PN2Lineage/eyeunit/top_level_bitmap_D_full256k.bin
+DONE

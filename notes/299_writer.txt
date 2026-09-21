@@ -1,0 +1,24 @@
+39 sites materialise the global
+
+  WRITE at 0x5c79c: str x1, [x21, #0x578]
+      0005c76c  strb      w1, [x3, w2, sxtw]
+      0005c770  add       w2, w2, #1
+      0005c774  add       x0, x0, #1
+      0005c778  ldrb      w1, [x0]
+      0005c77c  add       x3, x4, #0x5c0
+      0005c780  add       w19, w19, #1
+      0005c784  cmp       w1, #0x3b
+      0005c788  b.ne      #0x5c758
+      0005c78c  add       x21, x21, #0x9b0
+      0005c790  sub       w2, w2, #1
+      0005c794  add       x1, x21, #0x5c0
+      0005c798  mov       w0, w22
+      0005c79c  str       x1, [x21, #0x578]  <==
+      0005c7a0  strb      wzr, [x1, w2, sxtw]
+      0005c7a4  bl        #0x4f4a0
+      0005c7a8  mov       w0, #0
+      0005c7ac  ldp       x19, x20, [sp, #0x10]
+      0005c7b0  ldp       x21, x22, [sp, #0x20]
+      0005c7b4  ldp       x29, x30, [sp], #0x30
+      0005c7b8  ret       
+

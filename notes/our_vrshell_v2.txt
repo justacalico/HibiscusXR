@@ -1,0 +1,50 @@
+﻿vrshell pid: 
+
+(process already gone - dumping anything that mentions vrshell)
+1653  2064 I ActivityManager: Force stopping com.pvr.vrshell appid=1000 user=0: from pid 19147
+1653 12596 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.pvr.vrshell/.MainActivity} from uid 2000
+1653  1684 I ActivityManager: Start proc 19491:com.pvr.vrshell/1000 for pre-top-activity {com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+19491 19491 W com.pvr.vrshel: resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+19491 19491 I UnityNativeActivityPico: onCreate enter
+19491 19491 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+19491 19491 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+19491 19491 I VrApi   : couldBeLoaded
+19491 19491 I VrApi   : 0x7bdf670c18
+19491 19491 I VrApi   : open replaceable Scuccessed 2
+19491 19491 I VrApi   : current version >=2.7.4.4
+19491 19491 I VrApi   : APP version, 2, 8, 6, 16
+19491 19491 I VrApi   : lib version, 2, 8, 6, 15
+19491 19491 I VrApi   : open replaceable aborted
+19491 19491 I VrApi   : pvr_OnLoad()
+19491 19491 I VrApi   : Using caller's JNIEnv
+19491 19491 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x7bdfa4c110
+19491 19491 I VrApi   : BuildVersionSDK 29
+19491 19491 I VrApi   : pvr_Init
+19491 19491 I UnityNativeActivityPico: bypass_presentation = -1
+19491 19491 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+19491 19491 E ConfigApi: Not Initialize Global Configs
+19491 19491 I ConfigApi: Initialize Global Configs
+19491 19491 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+19491 19491 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+19491 19491 I com.pvr.vrshell: type=1400 audit(0.0:473): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+19491 19491 I com.pvr.vrshell: type=1400 audit(0.0:474): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+19491 19491 I com.pvr.vrshell: type=1400 audit(0.0:475): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+19491 19491 E psmvrConfig: Undefined variable -- iEnableStageLevel
+19491 19491 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+19491 19491 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+19491 19491 I ConfigApi: DIATW Update Config Parameters From VRService
+19491 19491 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+19491 19491 I VrServiceApi: load service priority default
+19491 19491 I VrServiceApi: dlopen ok
+19491 19491 I VrServiceApi: dlsym for getPVRModule ok
+19491 19491 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+19491 19491 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+19491 19491 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+19491 19491 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+19491 19491 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+19491 19491 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10 in tid 19491 (com.pvr.vrshell), pid 19491 (com.pvr.vrshell)
+19567 19567 F DEBUG   : pid: 19491, tid: 19491, name: com.pvr.vrshell  >>> com.pvr.vrshell <<<
+1653 19613 W ActivityTaskManager:   Force finishing activity com.pvr.vrshell/.MainActivity
+1653  2095 I ActivityManager: Process com.pvr.vrshell (pid 19491) has died: fore TOP 
+1653  1677 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{90b6c u0 com.pvr.vrshell/.MainActivity t-1 f}
+##### END #####

@@ -1,0 +1,4 @@
+writes to x28 between 0xcae0 and 0xd0d4:
+
+  00cf00  stp      x28, x27, [sp, #0x30]
+  00cf6c  add      x28, x28, #0x247        ; "Notification Client[%d] onClientStatusChange done"

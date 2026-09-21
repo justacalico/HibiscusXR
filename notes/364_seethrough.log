@@ -1,0 +1,29 @@
+=== see-through app 08/14/2026 03:30:13 ===
+[03:30:37]    --- what the app exposes ---
+[03:30:37]      Non-Data Actions:
+[03:30:37]          android.intent.action.MAIN:
+[03:30:37]            82bba55 com.pvr.seethrough.setting/.MainActivity filter 7fac028
+[03:30:37]              Action: "android.intent.action.MAIN"
+[03:30:37]              Category: "android.intent.category.LAUNCHER"
+[03:30:37]    
+[03:30:37]    Service Resolver Table:
+[03:30:37]    
+[03:30:37]    --- match stock: seethrough enabled ---
+[03:30:37]      persist.pvrcon.seethrough.enable = 1
+[03:30:37]    
+[03:30:37]    --- airservice is what feeds the camera passthrough; make sure it is up ---
+[03:30:37]      airservice pid 10918
+[03:30:37]    
+[03:30:37]    --- launch ---
+[03:30:37]    Starting: Intent { cmp=com.pvr.seethrough.setting/com.unity3d.player.UnityPlayerNativeActivityPico }
+[03:30:37]    Error type 3
+[03:30:37]    Error: Activity class {com.pvr.seethrough.setting/com.unity3d.player.UnityPlayerNativeActivityPico} does not exist.
+[03:30:37]      pid 8136  threads=15
+[03:30:37]    --- focus ---
+[03:30:37]      mCurrentFocus=null
+[03:30:37]      mCurrentFocus=Window{2194266 u0 com.pvr.launcher/com.pvr.launcher.LightActivity}
+[03:30:37]    --- crashes ---
+[03:30:37]      (empty = no crash)
+[03:30:37]    --- camera / passthrough ---
+[03:30:37]    1676 10314 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.pvr.seethrough.setting/com.unity3d.player.UnityPlayerNativeActivityPico} from uid 0
+[03:30:37]    --- app log ---

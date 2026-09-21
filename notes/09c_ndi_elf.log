@@ -1,0 +1,72 @@
+############ sensors-common-ndifpga.pvr.so ############
+ELF 64-bit LSB shared object, ARM aarch64, version 1 (SYSV), dynamically linked, for Android 27, BuildID[md5/uuid]=c7e15f33ddf1d755c7924eeae98773ea, stripped
+--- NEEDED ---
+0x0000000000000001 (NEEDED)             Shared library: [liblog.so]
+0x0000000000000001 (NEEDED)             Shared library: [libcutils.so]
+0x0000000000000001 (NEEDED)             Shared library: [libutils.so]
+0x0000000000000001 (NEEDED)             Shared library: [libprotobuf-cpp-full.so]
+0x0000000000000001 (NEEDED)             Shared library: [libsensorslog.so]
+0x0000000000000001 (NEEDED)             Shared library: [libssc.so]
+0x0000000000000001 (NEEDED)             Shared library: [libc++.so]
+0x0000000000000001 (NEEDED)             Shared library: [libc.so]
+0x0000000000000001 (NEEDED)             Shared library: [libm.so]
+0x0000000000000001 (NEEDED)             Shared library: [libdl.so]
+--- exported FUNC ---
+SLPIInit
+_ZN22sensors_poll_context_t10pollEventsEP22sensors_event_common_ti
+_ZN22sensors_poll_context_t10readEventsEP22sensors_event_common_ti
+_ZN22sensors_poll_context_t5flushEi
+_ZN22sensors_poll_context_t9setEnableEi
+_ZN22sensors_poll_context_tC1Ev
+_ZN22sensors_poll_context_tC2Ev
+_ZN22sensors_poll_context_tD1Ev
+_ZN22sensors_poll_context_tD2Ev
+_ZN24InputEventCircularReader9readEventEP22sensors_event_common_t
+_ZN24InputEventCircularReaderC1Ev
+_ZN24InputEventCircularReaderC2Ev
+_ZN24InputEventCircularReaderD1Ev
+_ZN24InputEventCircularReaderD2Ev
+_ZNKSt3__110__function6__funcIPFvPKhmENS_9allocatorIS5_EES4_E7__cloneEPNS0_6__baseIS4_EE
+_ZNKSt3__110__function6__funcIPFvPKhmENS_9allocatorIS5_EES4_E7__cloneEv
+_ZNKSt3__110__function6__funcIPFvRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEERKNS_6vectorI10sensor_uidNS5_ISB_EEEEENS5_ISH_EESG_E7__cloneEPNS0_6__baseISG_EE
+_ZNKSt3__110__function6__funcIPFvRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEERKNS_6vectorI10sensor_uidNS5_ISB_EEEEENS5_ISH_EESG_E7__cloneEv
+_ZNSt3__110__function6__funcIPFvPKhmENS_9allocatorIS5_EES4_E18destroy_deallocateEv
+_ZNSt3__110__function6__funcIPFvPKhmENS_9allocatorIS5_EES4_E7destroyEv
+_ZNSt3__110__function6__funcIPFvPKhmENS_9allocatorIS5_EES4_EclEOS3_Om
+_ZNSt3__110__function6__funcIPFvRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEERKNS_6vectorI10sensor_uidNS5_ISB_EEEEENS5_ISH_EESG_E18destroy_deallocateEv
+_ZNSt3__110__function6__funcIPFvRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEERKNS_6vectorI10sensor_uidNS5_ISB_EEEEENS5_ISH_EESG_E7destroyEv
+_ZNSt3__110__function6__funcIPFvRKNS_12basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEEERKNS_6vectorI10sensor_uidNS5_ISB_EEEEENS5_ISH_EESG_EclES9_SF_
+_ZNSt3__112__deque_baseIP22sensors_event_common_tNS_9allocatorIS2_EEED2Ev
+_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE21__grow_by_and_replaceEmmmmmmPKc
+_ZNSt3__112basic_stringIcNS_11char_traitsIcEENS_9allocatorIcEEE6assignEPKc
+_ZNSt3__114__split_bufferIPP22sensors_event_common_tNS_9allocatorIS3_EEE10push_frontEOS3_
+_ZNSt3__114__split_bufferIPP22sensors_event_common_tNS_9allocatorIS3_EEE9push_backEOS3_
+_ZNSt3__114__split_bufferIPP22sensors_event_common_tRNS_9allocatorIS3_EEE10push_frontERKS3_
+_ZNSt3__114__split_bufferIPP22sensors_event_common_tRNS_9allocatorIS3_EEE9push_backEOS3_
+_ZNSt3__15dequeIP22sensors_event_common_tNS_9allocatorIS2_EEE19__add_back_capacityEv
+pollEvents
+setEnable
+setEventCb
+
+--- strings: device nodes / paths / firmware ---
+Received QMI indication with length %zu
+Received sample ndifpga[%llu] ts = %llu <%u, %u, %u, %u, %u, %u> ts[%llu:%llu] last_ts[%llu] - %d
+_ZN17sns_ndi_fpga_dataC1Ev
+_ZN17sns_ndi_fpga_dataD1Ev
+ndi_fpga
+sensors-common-ndifpga.pvr.so
+
+############ sensors-common-imu.pvr.so : paths ############
+accel_icm206xx
+
+############ sensors-icmxx.pvr.so : chip ids ############
+/persist/calibration/Invensense/IMUParams.txt
+AccelerAndGyroSensor ICM206XX: Control set disable
+AccelerAndGyroSensor ICM206XX: Control set enable
+AccelerAndGyroSensor ICM206XX: Control set enable 0 %d err(%s)
+AccelerAndGyroSensor ICM206XX: Control set enable 1 %d err(%s)
+ICM206XX 3-axis Accelerometer and Gyroscope sensor
+InputEventCircularReader ICM206XX: can not connect
+InputEventCircularReader ICM206XX: connect failed
+InputEventCircularReader ICM206XX: set enable
+accel_icm206xx

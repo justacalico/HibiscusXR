@@ -1,0 +1,44 @@
+=== provision-related strings ===
+Provision component is 
+Provision disabled
+com.picovr.provision
+start Provision
+
+=== recline / 3dof / calibrat ===
+ persist.pvrcon.seethrough.enable
+#persist.pvrcon.seethrough.enable = 
+$com.pvr.seethrough.setting is usable
+com.pvr.seethrough.setting
+
+=== property names it reads (pvr.* / persist.*) ===
+persist.pvr.openrecenter
+persist.pvr.raycast.enable
+pvr.app.type
+pvr.launcher.open.guide
+pvr.launcher.open.tob
+pvr.launcher.openlight
+
+=== settings keys it might use ===
+AutoCompleteTextView
+FIRSTSTRONG_LTR
+FIRSTSTRONG_RTL
+MultiAutoCompleteTextView
+SearchAutoComplete
+autoCompleteTextViewStyle
+completeWork
+finish
+finishAffinity
+firstBaselineToTopHeight
+getFirstBaselineToTopHeight
+getFirstVisiblePosition
+isFinished
+isFinishing
+onActionModeFinished
+onFinishInflate
+refreshAutoCompleteResults
+setFirstBaselineToTopHeight
+setGuidelineBegin
+setGuidelineEnd
+setGuidelinePercent
+setUpdateListener
+DONE

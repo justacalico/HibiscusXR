@@ -1,0 +1,30 @@
+=== airservice camera contention test 08/14/2026 03:17:56 ===
+[03:19:14]    --- who else is holding QVR / cameras ---
+[03:19:14]      root airservice
+[03:19:14]    --- stop the competition ---
+[03:19:14]    --- restart pvrservice so the tracker starts clean ---
+[03:19:14]      pvrservice pid 7104
+[03:19:14]    --- launch the shell ---
+[03:19:14]    --- watch tracking for 60s ---
+[03:19:14]      t+10s  BadPose=0  trackerExit=0  camStopping=0
+[03:19:14]      t+20s  BadPose=511  trackerExit=0  camStopping=0
+[03:19:14]      t+30s  BadPose=929  trackerExit=0  camStopping=0
+[03:19:14]      t+40s  BadPose=885  trackerExit=0  camStopping=0
+[03:19:14]      t+50s  BadPose=844  trackerExit=0  camStopping=0
+[03:19:14]      t+60s  BadPose=810  trackerExit=0  camStopping=0
+[03:19:14]    --- tracker thread history ---
+[03:19:14]    7104  7127 D PvrService: ================6dof camera status:1===============
+[03:19:14]    7104  7127 I PvrService: Set m6DofCameraReady = true
+[03:19:14]    1384  7257 E QVRServiceTracker: Created Thread VRTrackerF
+[03:19:14]    1384  1645 E QVRServiceCamDspWrapper: QVRSERVICE_DSP_CDSP - qvr_cam_dsp_driver version: 1.0.0-mmager-95105f4
+[03:19:14]    7104  7127 I PvrPlatform: gEnableOptimize6dof 0, gEnableOptimize6dofLog 0
+[03:19:14]    7104  7187 E PvrPlatform: USE_QCOM_6DOF
+[03:19:14]    --- who opened the cameras ---
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 97 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 99 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 101 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 103 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 105 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 107 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 109 size 512000
+[03:19:14]    1384  7257 E QVRServiceCamDeviceHAL3: tracking: LockBuffer register_buf buf 0xed9051e0 fd 81 size 512000

@@ -1,0 +1,145 @@
+############ DSI panel nodes across all DTS ############
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_00.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_01.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_02.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_03.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_04.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_05.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_06.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_07.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_08.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_09.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_10.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_11.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_12.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_13.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_14.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_15.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_16.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_17.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_18.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_19.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_20.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_21.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_22.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_23.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_24.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_25.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_26.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_27.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_28.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_29.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_30.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_31.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_32.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_33.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_34.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_35.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_36.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_37.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_38.dts
+/mnt/f/PN2Lineage/extracted/dtb/dtbo_39.dts
+
+############ panel node names ############
+			dsi_panel_chahei_pwr_supply
+			dsi_panel_pwr_supply
+			dsi_panel_pwr_supply_no_labibb
+			dsi_panel_pwr_supply_vdd_no_labibb
+		dsi_dual_nt35597_cmd
+		dsi_dual_nt35597_cmd_config0
+		dsi_dual_nt35597_cmd_config1
+		dsi_dual_nt35597_cmd_display
+		dsi_dual_nt35597_truly_cmd
+		dsi_dual_nt35597_truly_cmd_display
+		dsi_dual_nt35597_truly_video
+		dsi_dual_nt35597_truly_video_display
+		dsi_dual_nt35597_video
+		dsi_dual_nt35597_video_config0
+		dsi_dual_nt35597_video_config1
+		dsi_dual_nt35597_video_display
+		dsi_dual_nt36850_truly_cmd
+		dsi_dual_nt36850_truly_cmd_display
+		dsi_dual_s6e3ha3_amoled_cmd
+		dsi_dual_samsung_cmd
+		dsi_dual_sharp_1080_120hz_cmd
+		dsi_dual_sharp_1080_120hz_cmd_display
+		dsi_dual_sim_cmd
+		dsi_dual_sim_cmd_display
+		dsi_dual_sim_dsc_375_cmd
+		dsi_dual_sim_dsc_375_cmd_display
+		dsi_dual_sim_vid
+		dsi_dual_sim_vid_display
+		dsi_dual_test_cmd
+		dsi_dual_test_cmd_display
+		dsi_jdi_2kt4k_55uhd_video
+		dsi_jdi_475a_lcd_dual_video_display
+		dsi_jdi_475a_video
+		dsi_jdi_4k_55uhd_70_new_video
+		dsi_jdi_4k_55uhd_72_new_video
+		dsi_jdi_4k_55uhd_75_new_video
+		dsi_jdi_4k_55uhd_video
+		dsi_jdi_55uhd_video
+		dsi_jdi_55uhd_video_2kto4k
+		dsi_jdi_uhd_552kt4klcd_dual_video_display
+
+############ JDI / 4k / timing properties ############
+dsi_jdi_2kt4k_55uhd_video = "/fragment@27/__overlay__/qcom,mdss_dsi_jdi_2kt4k_55uhd_video";
+dsi_jdi_475a_lcd_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@21";
+dsi_jdi_475a_video = "/fragment@22/__overlay__/qcom,mdss_dsi_jdi_475a_video";
+dsi_jdi_4k_55uhd_70_new_video = "/fragment@26/__overlay__/qcom,mdss_dsi_jdi_4k_55uhd_70_new_video";
+dsi_jdi_4k_55uhd_72_new_video = "/fragment@25/__overlay__/qcom,mdss_dsi_jdi_4k_55uhd_72_new_video";
+dsi_jdi_4k_55uhd_75_new_video = "/fragment@24/__overlay__/qcom,mdss_dsi_jdi_4k_55uhd_75_new_video";
+dsi_jdi_4k_55uhd_video = "/fragment@23/__overlay__/qcom,mdss_dsi_jdi_4k_55uhd_video";
+dsi_jdi_55uhd_video = "/fragment@20/__overlay__/qcom,mdss_dsi_jdi_55uhd_video";
+dsi_jdi_55uhd_video_2kto4k = "/fragment@21/__overlay__/qcom,mdss_dsi_jdi_55uhd_video_2kto4k";
+dsi_jdi_uhd_552kt4klcd_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@23";
+dsi_jdi_uhd_55lcd_70_new_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@25";
+dsi_jdi_uhd_55lcd_72_new_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@26";
+dsi_jdi_uhd_55lcd_75_new_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@24";
+dsi_jdi_uhd_55lcd_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@22";
+dsi_jdi_uhd_lcd_dual_video_display = "/fragment@28/__overlay__/qcom,dsi-display@19";
+dsi_jdi_uhd_lcd_dual_video_display_2kto4k = "/fragment@28/__overlay__/qcom,dsi-display@20";
+label = "dsi_jdi_475a_lcd_dual_video_display";
+label = "dsi_jdi_uhd_552kt4klcd_dual_video_display";
+label = "dsi_jdi_uhd_55lcd_70_new_dual_video_display";
+label = "dsi_jdi_uhd_55lcd_72_new_dual_video_display";
+label = "dsi_jdi_uhd_55lcd_75_new_dual_video_display";
+label = "dsi_jdi_uhd_55lcd_dual_video_display";
+label = "dsi_jdi_uhd_lcd_dual_video_display";
+label = "dsi_jdi_uhd_lcd_dual_video_display_2kto4k";
+qcom,mdss-dsi-bpp = <0x18>;
+qcom,mdss-dsi-h-back-porch = <0x00>;
+qcom,mdss-dsi-h-back-porch = <0x04>;
+qcom,mdss-dsi-h-back-porch = <0x08>;
+qcom,mdss-dsi-h-back-porch = <0x14>;
+qcom,mdss-dsi-h-back-porch = <0x1cc>;
+qcom,mdss-dsi-h-back-porch = <0x20>;
+qcom,mdss-dsi-h-back-porch = <0x2c>;
+qcom,mdss-dsi-h-back-porch = <0x348>;
+qcom,mdss-dsi-h-back-porch = <0x60>;
+qcom,mdss-dsi-h-back-porch = <0x64>;
+qcom,mdss-dsi-h-back-porch = <0x6e>;
+qcom,mdss-dsi-h-back-porch = <0x70>;
+qcom,mdss-dsi-h-back-porch = <0x8c>;
+qcom,mdss-dsi-h-front-porch = <0x00>;
+qcom,mdss-dsi-h-front-porch = <0x08>;
+qcom,mdss-dsi-h-front-porch = <0x14>;
+qcom,mdss-dsi-h-front-porch = <0x1c>;
+qcom,mdss-dsi-h-front-porch = <0x1e>;
+qcom,mdss-dsi-h-front-porch = <0x20>;
+qcom,mdss-dsi-h-front-porch = <0x64>;
+qcom,mdss-dsi-h-front-porch = <0x78>;
+qcom,mdss-dsi-h-front-porch = <0xc8>;
+qcom,mdss-dsi-h-front-porch = <0xfa>;
+qcom,mdss-dsi-h-left-border = <0x00>;
+qcom,mdss-dsi-h-pulse-width = <0x00>;
+qcom,mdss-dsi-h-pulse-width = <0x04>;
+qcom,mdss-dsi-h-pulse-width = <0x08>;
+qcom,mdss-dsi-h-pulse-width = <0x10>;
+qcom,mdss-dsi-h-pulse-width = <0x14>;
+qcom,mdss-dsi-h-pulse-width = <0x28>;
+qcom,mdss-dsi-h-pulse-width = <0x46>;
+qcom,mdss-dsi-h-pulse-width = <0x48>;
+qcom,mdss-dsi-h-right-border = <0x00>;
+qcom,mdss-dsi-h-sync-pulse = <0x00>;
+qcom,mdss-dsi-h-sync-skew = <0x00>;

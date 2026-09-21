@@ -1,0 +1,36 @@
+﻿=== rc now ===
+# Pico VR service. Stock definition from the 8.1 system image, plus a seclabel.
+# Android 10 init refuses to start a service with no SELinux domain -
+#   "init: service pvrservice does not have a SELinux domain defined"
+# Proper fix for a real build: ship a pvrservice domain in sepolicy rather than
+# the events. Without it pvrservice loads, then dies with
+service pvrservice /system/bin/pvrservice
+     seclabel u:r:shell:s0
+     setenv LD_PRELOAD /system/lib64/libshim_pvr.so
+on property:sys.pvr.vrservice.state=0
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1
+    start pvrservice
+on property:sys.pvr.vrservice.state=2
+    restart pvrservice
+shim: -rw-r--r-- 1 root root 7224 2026-08-13 11:58 /system/lib64/libshim_pvr.so
+
+=== restart with the shim ===
+pid after 6s : 3771
+pid after 21s: 3771   STABLE
+
+=== modules ===
+08-13 11:58:38.493  3771  3771 I PvrService: Load libpvrmodule_orientationtracker.so success
+08-13 11:58:38.496  3771  3771 I PvrService: Load libpvrmodule_platform.so success
+08-13 11:58:38.502  3771  3771 E PvrService: load external hmd module failed
+08-13 11:58:38.572  3771  3771 E PvrService: load controller module failed
+
+=== live pose ===
+08-13 11:58:51.049  3771  3811 E PvrService: PvrService getTrackingDataExt rotation(-0.033365, 0.000445, -0.007340, 0.999416)
+08-13 11:58:53.611  3771  3811 E PvrService: PvrService getTrackingDataExt rotation(-0.035018, -0.000104, -0.006017, 0.999366)
+08-13 11:58:56.126  3771  3811 E PvrService: PvrService getTrackingDataExt rotation(-0.035800, 0.000031, -0.005587, 0.999343)
+08-13 11:58:58.701  3771  3811 E PvrService: PvrService getTrackingDataExt rotation(-0.036205, -0.000234, -0.005187, 0.999332)
+
+=== any stack corruption? ===
+0
+DONE

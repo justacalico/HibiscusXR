@@ -1,0 +1,72 @@
+=== /system/bin and /system/etc/init: stock vs ours ===
+
+######## /system/bin   (ours 444, stock 358)
+  MISSING FROM OURS (56):
+    addTwoFloat
+    airclient_test
+    airservice
+    art
+    brctl
+    bt_logger
+    dhcpcd-6.8.2
+    dpmd
+    dun-server
+    ebtables
+    fancontrol
+    ffmpeg
+    fmconfig
+    fmfactorytest
+    fmfactorytestserver
+    host_manager_11ad
+    install-recovery.sh
+    lldservice
+    LogCatch
+    make_ext4fs
+    mkntfs
+    mmi
+    mmi_diag
+    mm-swvdec-test
+    mm-swvenc-test
+    mm-vidc-omx-test
+    modetest
+    mount.exfat
+    ntfs-3g
+    ntfsfix
+    patchoat
+    pktlogconf
+    ppd
+    pxrconfigservicetest
+    pxrnotification_test
+    qdc
+    qvrcameratest
+    qvrcameratest64
+    qvrcameratseq
+    qvrcameratseq64
+    qvrservicetest
+    qvrservicetest64
+    seempd
+    setup_fs
+    sigma_dut
+    smcinvoked
+    spectraltool
+    thermalserviced
+    virtual_input
+    w25q_write_bin
+    webview_zygote32
+    webview_zygote64
+    wfdservice
+    wigig_logcollector
+    wigig_remoteserver
+    wigig_wiburn
+
+######## /system/etc/init   (ours 94, stock 41)
+  MISSING FROM OURS (9):
+    airservice.rc
+    dpmd.rc
+    fanservice.rc
+    init.qti.fm.rc
+    thermalservice.rc
+    virtual_input.rc
+    webview_zygote32.rc
+    webview_zygote64.rc
+    wfdservice.rc

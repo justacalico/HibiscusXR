@@ -1,0 +1,7 @@
+﻿adb.exe : debuggerd: root is required
+At line:1 char:325
++ ... } } }; $adb='C:\adb\adb.exe'; & $adb shell debuggerd 889 2>&1 | Selec ...
++                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (debuggerd: root is required:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

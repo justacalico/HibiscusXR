@@ -1,0 +1,40 @@
+=== oem apps after reboot 08/13/2026 13:58:41 ===
+[14:01:09] boot_completed=1 uptime=142s
+[14:01:24] --- pico packages now registered ---
+[14:01:24]    package:com.pvr.configuration
+[14:01:24]    package:com.pvr.shortcut
+[14:01:24]    package:com.pvr.verify
+[14:01:24]    package:com.alvr.pico2
+[14:01:24]    package:com.pvr.adapter
+[14:01:24]    package:com.picovr.vrusercenter
+[14:01:24]    package:com.pvr.home
+[14:01:24]    package:com.picovr.provision
+[14:01:24]    package:com.pico.provider.settings
+[14:01:24]    package:com.pvr.vrdisplay
+[14:01:24]    package:com.pico.picotosvr
+[14:01:24]    package:com.picovr.initserver
+[14:01:24]    package:com.picovr.store
+[14:01:24]    package:com.pvr.vrshell
+[14:01:24]    package:com.pvr.launcher
+[14:01:24]    package:com.pvr.tobservice
+[14:01:24]    package:com.picovr.picovrlib.cvcontroller
+[14:01:24] --- did the new ones scan ---
+[14:01:24]    com.pvr.launcher         package:/system/priv-app/PVRLauncher/PVRLauncher.apk
+[14:01:25]    com.pvr.home             package:/system/priv-app/PVRHome/PVRHome.apk
+[14:01:25]    com.picovr.store         package:/system/priv-app/store2d/store2d.apk
+[14:01:25]    com.picovr.provision     package:/system/priv-app/provision2d/provision2d.apk
+[14:01:25]    com.pvr.tobservice       package:/system/priv-app/ToBToolService/ToBToolService.apk
+[14:01:25] --- launching PVRLauncher ---
+[14:01:35]    pid: 
+[14:01:35]        mResumedActivity: ActivityRecord{fff4873 u0 com.android.launcher3/.lineage.LineageLauncher t153}
+[14:01:35]    	at android.app.AppComponentFactory.instantiateService(AppComponentFactory.java:129)
+[14:01:35]    	at android.app.ActivityThread.handleCreateService(ActivityThread.java:3935)
+[14:01:35]    	at android.app.ActivityThread.access$1500(ActivityThread.java:219)
+[14:01:35]    	at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1875)
+[14:01:35]    	at android.os.Handler.dispatchMessage(Handler.java:107)
+[14:01:35]    	at android.os.Looper.loop(Looper.java:214)
+[14:01:35]    	at android.app.ActivityThread.main(ActivityThread.java:7356)
+[14:01:35]    	at java.lang.reflect.Method.invoke(Native Method)
+[14:01:35]    	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:491)
+[14:01:35]    	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:940)
+[14:01:35] === done ===

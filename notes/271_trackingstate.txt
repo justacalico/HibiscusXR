@@ -1,0 +1,73 @@
+=== the format string ===
+6628:trackingstate = 0x%x,0x%x
+
+=== related tracking strings nearby ===
+GetControllerTrackingMode: VR Service Client is NULL!
+GetTrackingMode: VR Service Client is NULL!
+Java_com_psmart_vrlib_PicovrSDK_nativeGetTrackingMode
+Pvr_GetControllerTrackingMode
+Pvr_GetTrackingMode
+Pvr_GetTrackingMode_
+Pvr_GetTrackingMode_interface
+Pvr_SetControllerTrackingMode
+Pvr_SetTrackingMode
+Pvr_SetTrackingMode_
+Pvr_SetTrackingMode_interface
+QVRServiceClient supportedTrackingModes = %d
+QVRServiceClient_GetTrackingMode res = %d
+QVRServiceClient_GetTrackingMode() qres = %d
+QVRServiceClient_SetTrackingMode
+SetControllerTrackingMode: VR Service Client is NULL!
+SetTrackingMode entry trackingMode = %d
+SetTrackingMode failed, ret = %d 
+SetTrackingMode: VR Service Client is NULL!
+UnityPlugin GetTrackingMode trackingMode = %d
+
+=== exported symbols about tracking ===
+000000000005b890 T GetPredictedMainSensorState
+000000000005c10c T GetPredictedSensorState
+00000000001025a0 T Java_com_psmart_vrlib_PicovrSDK_getDeviceTrackingStatus
+0000000000102898 T Java_com_psmart_vrlib_PicovrSDK_getMainSensorState
+0000000000102884 T Java_com_psmart_vrlib_PicovrSDK_getPsensorState
+00000000000ff164 T Java_com_psmart_vrlib_PicovrSDK_getUE3DofTrackingOriginPy
+000000000005ca80 T Java_com_psmart_vrlib_PicovrSDK_nativeGetTrackingMode
+00000000000f6880 T Java_com_psmart_vrlib_PvrClient_resetTrackingForHmd
+000000000006b8ac T PVR_GetCpuLevel
+0000000000062090 T PVR_GetCpuLevel_
+00000000001f0180 D PVR_GetCpuLevel_interface
+000000000006b8cc T PVR_GetGpuLevel
+00000000000620e8 T PVR_GetGpuLevel_
+00000000001f0178 D PVR_GetGpuLevel_interface
+000000000006b8ec T PVR_GetGpuUtilization
+0000000000062180 T PVR_GetGpuUtilization_
+00000000001f0170 D PVR_GetGpuUtilization_interface
+000000000006a7b8 T PVR_GetHmdAudioStatus
+000000000006229c T PVR_GetHmdAudioStatus_
+00000000001f0268 D PVR_GetHmdAudioStatus_interface
+000000000006b798 T PVR_GetHmdBatteryLevel
+0000000000062334 T PVR_GetHmdBatteryLevel_
+00000000001f01f8 D PVR_GetHmdBatteryLevel_interface
+000000000006b7b8 T PVR_GetHmdBatteryStatus
+00000000000623a4 T PVR_GetHmdBatteryStatus_
+00000000001f01f0 D PVR_GetHmdBatteryStatus_interface
+000000000006b7d8 T PVR_GetHmdBatteryTemperature
+0000000000062414 T PVR_GetHmdBatteryTemperature_
+00000000001f01e8 D PVR_GetHmdBatteryTemperature_interface
+000000000006a758 T Pvr_Get6DofSafePanelFlag
+
+=== who provides tracking data - shared memory? ===
+Reset SHARE_MEM_MODE Sensor
+_Z13getShareMemFdv
+_ZN24ShareMemoryTrackerClient16setShareMemoryFDEi
+_ZN24ShareMemoryTrackerClient17getTrackingResultElPN3PVR13_trackingDataE
+_ZN24ShareMemoryTrackerClient20getTrackingResultExtElPN3PVR16_trackingDataExtE
+_ZN24ShareMemoryTrackerClientC1Ev
+_ZN24ShareMemoryTrackerClientC2Ev
+_ZN24ShareMemoryTrackerClientD1Ev
+_ZN24ShareMemoryTrackerClientD2Ev
+getShareMemFd
+mmap failed, errno=%d, mShareMemoryFD = %d, fd = %d
+start SHARE_MEM_MODE Sensor
+start SHARE_MEM_MODE Sensor, get sharememory fd = %d
+stop SHARE_MEM_MODE Sensor, but do nothing.
+DONE

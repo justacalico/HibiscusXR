@@ -1,0 +1,1671 @@
+=== calibration file previews ===
+########## /home/justin/pn2/persist/Geomagnetic_Switch.txt (1 bytes) ##########
+00000000: 31                                       1
+
+
+########## /home/justin/pn2/persist/sensors/sensors_list.txt (152 bytes) ##########
+hall
+resampler
+proximity
+gyro
+accel
+sensor_temperature
+pedometer
+mag
+device_orient
+psmd
+sig_motion
+mag_cal
+gyro_cal
+tilt
+geomag_rv
+gravity
+game_rv
+rotv
+
+
+########## /home/justin/pn2/persist/sensors/sensors_settings (0 bytes) ##########
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_qvr_ak991x_0.json (3874 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["QRD"],
+    "soc_id": ["321"],
+    "platform_subtype_id": ["32"]
+  },
+  "ak0991x_0_platform":{
+    "owner": "sns_ak0991x",
+    ".config":{
+      "owner": "sns_ak0991x",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "12"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "119"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "3"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":
+
+########## /home/justin/pn2/persist/sensors/registry/config/8909w_bmi160_0.json (5732 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf"],
+    "soc_id": ["300","301"],
+    "platform_subtype_id": ["15"]
+  },
+  "bmi160_0_platform":{
+    "owner": "sns_bmi160",
+    ".config":{
+      "owner": "sns_bmi160",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "26"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "700"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "8000"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "23"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "rail_on
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_stk3x1x_0.json (2165 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf", "QRD"],
+    "soc_id": ["341","321"]
+  },
+  "stk3x1x_0_platform":{
+    "owner": "sns_stk3x1x",
+    ".config":{
+      "owner": "sns_stk3x1x",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "72"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "120"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+    
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_ak991x_0.json (3868 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "Surf", "QRD", "HDK"],
+    "soc_id": ["321", "341"]
+  },
+  "ak0991x_0_platform":{
+    "owner": "sns_ak0991x",
+    ".config":{
+      "owner": "sns_ak0991x",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "12"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "119"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "3"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "typ
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_bme680_0.json (3507 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["HDK"],
+    "soc_id": ["341"]
+  },
+  "bme680_0_platform":{
+    "owner": "sns_bme680",
+    ".config":{
+      "owner": "sns_bme680",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "119"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      },
+      "rigid_body_type":{ "type": "int", "ver": "0",
+      "data": "0"
+      }
+    },
+    ".pressure":{
+      "owner": "sns_bme680",
+      ".fac_cal":
+      {
+        "owner": "sns_bme680",
+        ".scale":{
+          "owner": "sns_bme680",
+          "x":{ "type": "flt", "ver": "0",
+      
+
+########## /home/justin/pn2/persist/sensors/registry/config/8909w_ltr308_0.json (2763 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf"],
+    "soc_id": ["300", "301"],
+    "platform_subtype_id": ["15"]
+  },
+  "ltr308_0_platform":{
+    "owner": "sns_ltr308",
+    ".config":{
+      "owner": "sns_ltr308",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "83"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "35"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "3"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_icm206xx_0.json (5979 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Dragon", "Surf", "HDK", "INVALID"],
+    "soc_id": ["291", "246", "305", "341"]
+  },
+  "icm206xx_0_platform":{
+    "owner": "sns_icm206xx",
+    ".config":{
+      "owner": "sns_icm206xx",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "0x68"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "118"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      }
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_basic_gestures.json (902 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Dragon", "Surf", "QRD", "HDK"],
+    "soc_id": ["291", "246", "305", "321", "336", "337", "341", "360", "371"]
+  },
+  "sns_basic_gestures": {
+    "owner": "sns_basic_gestures",
+    "sample_rate": { "type": "flt", "ver": "0",
+      "data": "30.0"
+    },
+    "push_threshold": { "type": "flt", "ver": "0",
+      "data": "14.7178"
+    },
+    "pull_threshold": { "type": "flt", "ver": "0",
+      "data": "14.7178"
+    },
+    "shake_threshold": { "type": "flt", "ver": "0",
+      "data": "14.7178"
+    },
+    "sleep": { "type": "flt", "ver": "0",
+      "data": "0.3"
+    },
+    "param1": { "type": "flt", "ver": "0",
+      "data": "0.1"
+    },
+    "param2": { "type": "flt", "ver": "0",
+      "data": "4.9059"
+    },
+    "param3": { "type": "flt", "ver": "0",
+      "data": "0.1"
+    },
+    "param4": { "type": "flt", "ver": "0",
+      "data": "0.2618"
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/tmd2725.json (984 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["QRD"],
+    "soc_id": ["321", "341"]
+  },
+  "tmd2725":{
+    "owner": "sns_tmd2725",
+    ".als":{
+      "owner": "sns_tmd2725",
+      ".config":{
+        "owner": "sns_tmd2725",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".prox":{
+      "owner": "sns_tmd2725",
+      ".config":{
+        "owner": "sns_tmd2725",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_rotv.json (528 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "Dragon", "Surf", "QRD", "HDK"],
+    "soc_id": ["291", "246", "300", "301", "305", "321", "336", "337", "341", "360", "371"]
+  },
+  "sns_rotv_platform": {
+    "owner": "sns_rotv",
+    ".config":{
+      "owner": "sns_rotv",
+      "min_report_rate": {
+         "type": "flt", "ver": "0", "data": "1.0"
+      },
+      "coordinate_sys": {
+        "type": "int", "ver": "0", "data": "0"
+      },
+      "sample_rate": {
+        "type": "flt", "ver": "0", "data": "5.0"
+      }
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_tilt_to_wake.json (1281 bytes) ##########
+{
+  "config": {
+    "hw_platform": [ "MTP", "Dragon", "Surf"
+    ],
+    "soc_id": ["291", "246", "305", "321", "336", "337", "360", "371"
+    ]
+  },
+  "sns_tilt_to_wake": {
+    "owner": "sns_tilt_to_wake",
+    "accel_sampling_rate":{"ver": "0","type": "flt",
+       "data": "25.0"
+    },
+    "filter_window_seconds":{"ver": "0","type": "flt",
+       "data": "0.16"
+    },
+    "accel_window_seconds":{"ver": "0","type": "flt",
+       "data": "1.1"
+    },
+    "accel_sub_window_seconds":{"ver": "0","type": "flt",
+       "data": "0.55"
+    },
+    "window_for_accel_stability_check_seconds":{"ver": "0","type": "flt",
+       "data": "0.16"
+    },
+    "min_delta_pitch_threshold_deg":{"ver": "0","type": "flt",
+       "data": "45.0"
+    },
+    "min_pitch_threshold_deg":{"ver": "0","type": "flt",
+       "data": "40.0"
+    },
+    "min_abs_delta_z_threshold_deg":{"ver": "0","type": "flt",
+       "data": "10.0"
+    },
+    "max_roll_threshold_deg":{"ver": "0","type": "flt",
+       "data": "25.0"
+    },
+    "max_accel_spread_threshold":{"ver": "0","type": "flt",
+       "data": "4.8"
+    },
+    "max_accel_norm_deviation_from_G_threshold":{"ver": "0","type": "flt",
+       "data": "2.7"
+    },
+    "max_p
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_qrd_power_0.json (14809 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["QRD"],
+    "soc_id": ["321"]
+  },
+  "power":{
+    "owner": "power_manager",
+    ".island":{
+      "owner": "power_manager",
+      "enable_island":{ "type": "int", "ver": "0",
+        "data": "1"
+      }
+    },
+    ".gpio":{
+      "owner": "power_manager",
+      ".gpio_0":{
+        "owner": "power_manager",
+        "gpio_num":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "active_fs":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "active_dir":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "active_pull":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "active_drive":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_fs":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_dir":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_pull":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_drive":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      },
+      ".gpio_1":{
+        "owner": "power_manager",
+        "gpio_num":{ "type": "int", "ver": "0",
+   
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_svr_bmg160_0.json (4644 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP"],
+    "soc_id": ["341"]
+  },
+  "bmg160_0_platform":{
+    "owner": "sns_bmg160",
+    ".config":{
+      "owner": "sns_bmg160",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "9600"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "118"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data"
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_4K_tmx4903.json (740 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf", "QRD"],
+    "soc_id": ["321"],
+    "platform_subtype_id": ["1"]
+  },
+  "tmx4903_platform":{
+    "owner": "sns_tmx4903",
+    ".als":{
+      "owner": "sns_tmx4903",
+      ".fac_cal":{
+        "owner": "sns_tmx4903",
+        "scale":{ "type": "flt", "ver": "0",
+          "data": "1369.0"
+        },
+        "bias":{ "type": "flt", "ver": "0",
+          "data": "5000.0"
+        }
+      }
+    },
+    ".prox":{
+      "owner": "sns_tmx4903",
+      ".fac_cal":{
+        "owner": "sns_tmx4903",
+        "near_threshold":{ "type": "flt", "ver": "0",
+          "data": "8528.0"
+        },
+        "far_threshold":{ "type": "flt", "ver": "0",
+          "data": "5000.0"
+        }
+      }
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_bmm150_0.json (3886 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP"],
+    "soc_id": ["341"]
+  },
+  "bmm150_0_platform":{
+    "owner": "sns_bmm150",
+    ".config":{
+      "owner": "sns_bmm150",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "10000"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "vdd_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vdd_3"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      },
+      "rigid_body_type":{ "type": "int", "ver": "0",
+      "data": "0"
+      }
+    },
+    ".orient":{
+      "owner": "sns_bmm150",
+      "x":{ "type": "str", "ver": "0",
+        "data": "+x"
+   
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_amd.json (463 bytes) ##########
+{
+  "config": {
+    "hw_platform": [ "MTP", "Dragon", "Surf", "QRD", "HDK"],
+    "soc_id": ["291", "246", "305", "321", "336", "337", "347", "341", "360", "371"]
+  },
+  "sns_amd": {
+    "owner": "sns_amd",
+    "param1": {"ver": "0","type": "flt","data": "0.06"
+    },
+    "param2": {"ver": "0","type": "flt","data": "0.5"
+    },
+    "sample_rate": {"ver": "0","type": "flt", "data": "10.0"
+    },
+    "enabled": {"ver": "0","type": "int", "data": "1"
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/lsm6ds3_0.json (1868 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "Dragon", "Surf"],
+    "soc_id": ["291", "246", "305"]
+  },
+  "lsm6ds3_0":{
+    "owner": "sns_lsm6ds3",
+    ".accel":{
+      "owner": "sns_lsm6ds3",
+      ".config":{
+        "owner": "sns_lsm6ds3",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "2"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".gyro":{
+      "owner": "sns_lsm6ds3",
+      ".config":{
+        "owner": "sns_lsm6ds3",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "3"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".md":{
+      "owner": "sns_lsm6ds3",
+      ".config":{
+        "owner": "sns_lsm6ds3",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "ty
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_smd.json (1026 bytes) ##########
+{
+  "config": {
+    "hw_platform": ["MTP", "Dragon", "Surf", "QRD", "HDK"],
+    "soc_id": ["291", "246", "300", "301", "305", "321", "336", "337" ,"341", "360", "371"]
+  },
+  "sns_smd": {
+    "owner": "sns_smd",
+    "sample_rate": {
+      "ver": "0", "type": "flt", "data": "10.0"
+    },
+    "accel_window_time": {
+      "ver": "0", "type": "int", "data": "5"
+    },
+    "detect_threshold": {
+      "ver": "0", "type": "flt", "data": "0.158113883"
+    },
+    "self_transition_prob_sm": {
+      "ver": "0", "type": "flt", "data": "0.9"
+    },
+    "variable_decision_latency": {
+      "ver": "0", "type": "int", "data": "1"
+    },
+    "max_latency": {
+      "ver": "0", "type": "int", "data": "10"
+    },
+    "step_count_thresh": {
+      "ver": "0", "type": "int", "data": "5"
+    },
+    "step_window_time": {
+      "ver": "0", "type": "int", "data": "3"
+    },
+    "eigen_thresh": {
+      "ver": "0", "type": "flt", "data": "6.0"
+    },
+    "accel_norm_std_thresh": {
+      "ver": "0", "type": "flt", "data": "2.0"
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm710_bu52053nvx_0.json (804 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf", "HDK"],
+    "soc_id": ["336", "337", "360"]
+  },
+  "bu52053nvx_0_platform":{
+    "owner": "sns_bu52053nvx",
+    ".config":{
+      "owner": "sns_bu52053nvx",
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "124"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      }
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/pah_8011_0_platform.ppg_enable_ex_1.json (1580 bytes) ##########
+{
+    "config":{
+        "hw_platform": ["MTP", "Surf"],
+        "soc_id": ["300", "301"]
+    },
+    "pah_8011_0_platform.ppg_enable_ex_1": {
+        "owner": "pah_8011",
+        "0": {
+            "type": "int",
+            "ver": "0",
+            "data": "1"
+        },
+        "1": {
+            "type": "int",
+            "ver": "0",
+            "data": "20"
+        },
+        "2": {
+            "type": "int",
+            "ver": "0",
+            "data": "25"
+        },
+        "3": {
+            "type": "int",
+            "ver": "0",
+            "data": "524551551"
+        },
+        "4": {
+            "type": "int",
+            "ver": "0",
+            "data": "68944255"
+        },
+        "5": {
+            "type": "int",
+            "ver": "0",
+            "data": "1746994205"
+        },
+        "6": {
+            "type": "int",
+            "ver": "0",
+            "data": "1747282211"
+        },
+        "7": {
+            "type": "int",
+            "ver": "0",
+            "data": "86442022"
+        },
+        "8": {
+            "type": "int",
+            "ver": "0",
+            "data": "-2143545070"
+        },
+        "9": {
+            "type": "int",
+            "ver": "0",
+  
+
+########## /home/justin/pn2/persist/sensors/registry/config/bmi160_0.json (1864 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["QRD", "MTP", "Dragon", "Surf"],
+    "soc_id": ["347","300","301"]
+  },
+  "bmi160_0":{
+    "owner": "sns_bmi160",
+    ".accel":{
+      "owner": "sns_bmi160",
+      ".config":{
+        "owner": "sns_bmi160",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "2"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".gyro":{
+      "owner": "sns_bmi160",
+      ".config":{
+        "owner": "sns_bmi160",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "4"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".md":{
+      "owner": "sns_bmi160",
+      ".config":{
+        "owner": "sns_bmi160",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type"
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm710_hdk_lsm6dso_0.json (5728 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["HDK"],
+    "soc_id": ["337"]
+  },
+  "lsm6dso_0_platform":{
+    "owner": "lsm6dso",
+    ".config":{
+      "owner": "lsm6dso",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "9600"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "117"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "1"
+
+########## /home/justin/pn2/persist/sensors/registry/config/8909w_pah_8011_0_touch.json (575 bytes) ##########
+{
+    "config":{
+        "hw_platform": ["MTP", "Dragon", "Surf"],
+        "soc_id": ["300", "301"]
+    },
+    "pah_8011_0.offbody_detect.config":{
+        "owner":"pah_8011",
+        "is_dri":{"type":"int","ver":"0",
+            "data":"1"
+        },
+        "hw_id":{"type":"int","ver":"0",
+            "data":"0"
+        },
+        "res_idx":{"type":"int","ver":"0",
+            "data":"0"
+        },
+        "sync_stream":{"type":"int","ver":"0",
+            "data":"0"
+        },
+        "rail_on_state":{"type":"int","ver":"0",
+            "data":"1"
+        }
+    }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_tmx4903.json (3822 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf", "QRD", "HDK"],
+    "soc_id": ["321", "341"]
+  },
+  "tmx4903_platform":{
+    "owner": "sns_tmx4903",
+    ".config":{
+      "owner": "sns_tmx4903",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "57"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "120"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "rail_on_state":{ "type": "
+
+########## /home/justin/pn2/persist/sensors/registry/config/8909w_pah_8011_0_ppg.json (556 bytes) ##########
+{
+    "config":{
+        "hw_platform": ["MTP", "Dragon", "Surf"],
+        "soc_id": ["300", "301"]
+    },
+    "pah_8011_0.ppg.config":{
+        "owner":"pah_8011",
+        "is_dri":{"type":"int","ver":"0",
+            "data":"1"
+        },
+        "hw_id":{"type":"int","ver":"0",
+            "data":"0"
+        },
+        "res_idx":{"type":"int","ver":"0",
+            "data":"0"
+        },
+        "sync_stream":{"type":"int","ver":"0",
+            "data":"0"
+	},
+        "rail_on_state":{"type":"int","ver":"0",
+            "data":"2"
+        }
+    }
+}
+
+########## /home/justin/pn2/persist/sensors/registry/config/8909w_ak991x_0.json (4673 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "Surf"],
+    "soc_id": ["300", "301"],
+    "platform_subtype_id": ["15"]
+  },
+  "ak0991x_0":{
+    "owner": "sns_ak0991x",
+    ".mag":{
+      "owner": "sns_ak0991x",
+      ".config":{
+        "owner": "sns_ak0991x",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      },
+      ".config_2":{
+        "owner": "sns_ak0991x",
+        "use_fifo":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "nsf":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sdr":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    }
+  },
+  "ak0991x_0_platform":{
+    "owner": "sns_ak0991x",
+    ".config":{
+      "owner": "sns_ak0991x",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+     
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_bmp285_0.json (2734 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "Surf", "QRD", "HDK"],
+    "soc_id": ["321", "341"]
+  },
+  "bmp285_0_platform":{
+    "owner": "sns_bmp285",
+    ".config":{
+      "owner": "sns_bmp285",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "118"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      },
+      "rigid_body_type":{ "type": "int", "ver": "0",
+      "data": "0"
+      }
+    },
+    ".temp":{
+      "owner": "sns_bmp285",
+      ".fac_cal":
+      {
+        "owner": "sns_bmp285",
+        ".scale":{
+          "owner": "sns_bmp285",
+          "x":{ "type
+
+########## /home/justin/pn2/persist/sensors/registry/config/config_list.txt (1991 bytes) ##########
+ak991x_dri_0.json,
+bmp285_0.json,
+lsm6ds3_0.json,
+lsm6dsm_0.json,
+lsm6dso_0.json,
+bme680_0.json,
+bma2x2_0.json,
+bmg160_0.json,
+tmd2725.json,
+bmm150_0.json,
+msm8996_ak9911x_0.json,
+msm8996_bmp285_0.json,
+msm8996_lsm6ds3_0.json,
+msm8996_lsm6dsm_0.json,
+msm8996_power_0.json,
+msm8996_tmx4903.json,
+sdm845_lsm6dso_0.json,
+sdm845_bme680_0.json,
+sdm845_ak991x_0.json,
+sdm845_bmp285_0.json,
+sdm845_lsm6dsm_0.json,
+sdm845_tmx4903.json,
+sdm845_bu52053nvx_0.json,
+sdm845_bma2x2_0.json,
+sdm845_bmg160_0.json,
+sdm845_qvr_ak991x_0.json,
+sdm845_tmd2725_0.json,
+sdm845_power_0.json,
+sdm845_qrd_power_0.json,
+sdm845_bmm150_0.json,
+sdm845_svr_bma2x2_0.json,
+sdm845_svr_bmg160_0.json,
+stk3x1x_0.json,
+sdm845_stk3x1x_0.json,
+cm3526_0.json,
+lsm6dso_0.json,
+sdm710_ak991x_0.json,
+sdm710_qrd_ak991x_0.json,
+sdm710_bmp285_0.json,
+sdm710_cm3526_0.json,
+sdm710_lsm6dso_0.json,
+sdm710_power_0.json,
+sdm710_qrd_lsm6dso_0.json,
+sdm710_shtw2_0.json,
+sdm710_tmx4903.json,
+sdm710_bu52053nvx_0.json,
+ak991x_dri_0.json,
+8909w_bmi160_0.json,
+8909w_ak991x_0.json,
+bmi160_0.json,
+shtw2_0.json,
+sns_amd.json,
+sns_basic_gestures.json,
+sns_bring_to_ear.json,
+sns_cm.json,
+sns_device_orient.json,
+sns_diag_filter.json,
+sns_distance_bound.js
+
+########## /home/justin/pn2/persist/sensors/registry/config/bmg160_0.json (988 bytes) ##########
+{
+  "config":
+  {
+    "hw_platform": ["MTP", "QRD"],
+    "soc_id": ["321", "341"]
+  },
+  "bmg160_0":{
+    "owner": "sns_bmg160",
+    ".gyro":{
+      "owner": "sns_bmg160",
+      ".config":{
+        "owner": "sns_bmg160",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "5"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    },
+    ".temp":{
+      "owner": "sns_bmg160",
+      ".config":{
+        "owner": "sns_bmg160",
+        "is_dri":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "hw_id":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "res_idx":{ "type": "int", "ver": "0",
+          "data": "2"
+        },
+        "sync_stream":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      }
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm845_power_0.json (14830 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Surf","HDK"],
+    "soc_id": ["321", "341"]
+  },
+  "power":{
+    "owner": "power_manager",
+    ".island":{
+      "owner": "power_manager",
+      "enable_island":{ "type": "int", "ver": "0",
+        "data": "1"
+      }
+    },
+    ".gpio":{
+      "owner": "power_manager",
+      ".gpio_0":{
+        "owner": "power_manager",
+        "gpio_num":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "active_fs":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "active_dir":{ "type": "int", "ver": "0",
+          "data": "1"
+        },
+        "active_pull":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "active_drive":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_fs":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_dir":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_pull":{ "type": "int", "ver": "0",
+          "data": "0"
+        },
+        "sleep_drive":{ "type": "int", "ver": "0",
+          "data": "0"
+        }
+      },
+      ".gpio_1":{
+        "owner": "power_manager",
+        "gpio_num":{ "type": "
+
+########## /home/justin/pn2/persist/sensors/registry/config/default_sensors.json (967 bytes) ##########
+{
+    "config":{
+        "hw_platform": ["MTP", "Dragon", "Surf", "QRD", "HDK"],
+        "soc_id": ["347"]
+    },
+
+    "default_sensors": {
+        "owner": "suid",
+        ".accel": {
+            "owner": "suid",
+            ".attr_0": {
+                "owner": "suid",
+                "id": { "type": "int", "ver": "0", "data": "19" },
+                "val": { "type": "int", "ver": "0", "data": "0" }
+            }
+        },
+
+        ".gyro": {
+            "owner": "suid",
+            ".attr_0": {
+                "owner": "suid",
+                "id": { "type": "int", "ver": "0", "data": "19" },
+                "val": { "type": "int", "ver": "0", "data": "0" }
+            }
+        },
+
+        ".mag": {
+            "owner": "suid",
+            ".attr_0": {
+                "owner": "suid",
+                "id": { "type": "int", "ver": "0", "data": "19" },
+                "val": { "type": "int", "ver": "0", "data": "0" }
+            }
+        }
+    }
+}
+
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sdm710_cm3526_0.json (2668 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["QRD", "MTP", "Dragon", "Surf", "HDK"],
+    "soc_id": ["336", "337", "347", "360"]
+  },
+  "cm3526_0_platform":{
+    "owner": "sns_cm3526",
+    ".config":{
+      "owner": "sns_cm3526",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "16"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "vdd_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vdd"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      },
+      "rigid_body_type":{ "type": "int", "ver": "0",
+      "data": "0"
+      }
+    },
+    ".uv":{
+      "owner": "sns_cm3526",
+      ".fac_cal
+
+########## /home/justin/pn2/persist/sensors/registry/config/msm8996_cm3526_0.json (2644 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Dragon", "Surf"],
+    "soc_id": ["291", "246", "305"]
+  },
+  "cm3526_0_platform":{
+    "owner": "sns_cm3526",
+    ".config":{
+      "owner": "sns_cm3526",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "3"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "16"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "400"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "vdd_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vdd"
+      },
+      "vddio_rail":{ "type": "str", "ver": "0",
+        "data": "/pmic/client/sensor_vddio"
+      },
+      "rigid_body_type":{ "type": "int", "ver": "0",
+      "data": "0"
+      }
+    },
+    ".uv":{
+      "owner": "sns_cm3526",
+      ".fac_cal":
+      {
+        "o
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_facing.json (600 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Dragon", "Surf", "QRD", "HDK"],
+    "soc_id": ["291", "246", "305", "321", "336", "337", "341", "360", "371"]
+  },
+  "sns_facing": {
+    "owner": "sns_facing",
+    "angle_threshold": { "type": "flt", "ver": "0",
+      "data": "0.3491"
+    },
+    "report_neutral": { "type": "int", "ver": "0",
+      "data": "1"
+    },
+    "sample_rate": { "type": "flt", "ver": "0",
+      "data": "30.0"
+    },
+    "min_sample_rate": { "type": "flt", "ver": "0",
+      "data": "30.0"
+    },
+   "max_sample_rate": { "type": "flt", "ver": "0",
+     "data": "100.0"
+   }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/msm8996_lsm6dsm_0.json (5759 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["MTP", "Dragon", "Surf"],
+    "soc_id": ["291", "246", "305"]
+  },
+  "lsm6dsm_0_platform":{
+    "owner": "lsm6dsm",
+    ".config":{
+      "owner": "lsm6dsm",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "3300"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "117"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "type": "int",
+
+########## /home/justin/pn2/persist/sensors/registry/config/sns_mag_cal.json (306 bytes) ##########
+{
+  "config": {
+    "hw_platform": ["MTP", "Dragon", "Surf", "HDK"],
+    "soc_id": ["291", "246", "300", "301", "305", "321", "336", "337", "341", "360", "371"]
+  },
+  "sns_mag_cal_config": {
+    "owner": "sns_mag_cal",
+    "anomaly_threshold": {"type": "flt","ver": "0",
+      "data": "200.0"
+    }
+  }
+}
+
+
+########## /home/justin/pn2/persist/sensors/registry/config/sxr1130_lsm6dso_0.json (5735 bytes) ##########
+{
+  "config":{
+    "hw_platform": ["QRD", "MTP"],
+    "soc_id": ["371"]
+  },
+  "lsm6dso_0_platform":{
+    "owner": "lsm6dso",
+    ".config":{
+      "owner": "lsm6dso",
+      "bus_type":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "bus_instance":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "slave_config":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "min_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "max_bus_speed_khz":{ "type": "int", "ver": "0",
+        "data": "3300"
+      },
+      "reg_addr_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "dri_irq_num":{ "type": "int", "ver": "0",
+        "data": "117"
+      },
+      "irq_pull_type":{ "type": "int", "ver": "0",
+        "data": "2"
+      },
+      "irq_is_chip_pin":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "irq_drive_strength":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "irq_trigger_type":{ "type": "int", "ver": "0",
+        "data": "0"
+      },
+      "num_rail":{ "type": "int", "ver": "0",
+        "data": "1"
+      },
+      "rail_on_state":{ "type": "int", "ver": "0",
+        "dat
+

@@ -1,0 +1,5 @@
+=== re-apply ART patch 08/13/2026 17:11:49 ===
+[17:11:50]    F:\PN2Lineage\notes\libart-patched.so: 1 file pushed, 0 skipped. 77.0 MB/s (7654408 bytes in 0.095s)
+[17:11:50]    6ff68732a6235c383e44b7aa7052fd61  /system/apex/com.android.runtime.release/lib64/libart.so
+[17:11:50]    6ff68732a6235c383e44b7aa7052fd61  /data/local/tmp/libart-patched.so
+[17:11:50] rebooting (wireless should come back by itself)

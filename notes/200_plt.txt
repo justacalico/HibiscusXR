@@ -1,0 +1,24 @@
+
+=== stub at 0xf6ec0 ===
+  000f6ec0  stp      x29, x30, [sp, #-0x20]!
+  000f6ec4  mov      x29, sp
+  000f6ec8  str      x0, [x29, #0x18]
+  000f6ecc  bl       #0xf6d60
+  000f6ed0  uxtb     w0, w0
+  000f6ed4  cbz      w0, #0xf6f00
+
+=== stub at 0xf7248 ===
+  000f7248  stp      x29, x30, [sp, #-0x20]!
+  000f724c  mov      x29, sp
+  000f7250  str      x0, [x29, #0x18]
+  000f7254  bl       #0xf6d60
+  000f7258  uxtb     w0, w0
+  000f725c  cbz      w0, #0xf7288
+
+=== stub at 0x6c818 ===
+  0006c818  stp      x29, x30, [sp, #-0x10]!
+  0006c81c  mov      x29, sp
+  0006c820  ldr      x4, [x0]
+  0006c824  ldr      x4, [x4, #0x388]
+  0006c828  blr      x4
+  0006c82c  ldp      x29, x30, [sp], #0x10

@@ -1,0 +1,55 @@
+=== what pvr_classes.jar provides (compile-time stubs) ===
+  com/picovr/vractivity/Eye.class
+  com/picovr/vractivity/HmdState.class
+  com/picovr/vractivity/RenderInterface.class
+  com/picovr/vractivity/VRActivity$1.class
+  com/picovr/vractivity/VRActivity$MyHandler.class
+  com/picovr/vractivity/VRActivity.class
+  com/psmart/aosoperation/AudioReceiver.class
+  com/psmart/aosoperation/BatteryReceiver.class
+  com/psmart/aosoperation/BrightNessReceiver$1.class
+  com/psmart/aosoperation/BrightNessReceiver.class
+  com/psmart/aosoperation/PSensorReceiver.class
+  com/psmart/aosoperation/SysActivity$1.class
+  com/psmart/aosoperation/SysActivity.class
+  com/psmart/link/VrLinkActivity.class
+  com/psmart/link/ble/BleConst.class
+  com/psmart/link/ble/BluetoothLeService$1.class
+  com/psmart/link/ble/BluetoothLeService$2$1.class
+  com/psmart/link/ble/BluetoothLeService$2$2.class
+  com/psmart/link/ble/BluetoothLeService$2$3.class
+  com/psmart/link/ble/BluetoothLeService$2.class
+  com/psmart/link/ble/BluetoothLeService$3.class
+  com/psmart/link/ble/BluetoothLeService$4.class
+  com/psmart/link/ble/BluetoothLeService$5.class
+  com/psmart/link/ble/BluetoothLeService$6.class
+  com/psmart/link/ble/BluetoothLeService$7.class
+  com/psmart/link/ble/BluetoothLeService$8.class
+  com/psmart/link/ble/BluetoothLeService$LocalBinder.class
+  com/psmart/link/ble/BluetoothLeService$a.class
+  com/psmart/link/ble/BluetoothLeService.class
+  com/psmart/link/ble/BluetoothUtils.class
+  com/psmart/link/ble/DeviceScan$1.class
+  com/psmart/link/ble/DeviceScan$2.class
+  com/psmart/link/ble/DeviceScan.class
+  com/psmart/link/ble/LarkAcionAnalyse.class
+  com/psmart/link/ble/LarkAction.class
+  com/psmart/link/ble/LarkDefine.class
+  com/psmart/link/ble/LarkStatus.class
+  com/psmart/link/ble/MySPUtils.class
+  com/psmart/link/ble/SPUtils$a.class
+  com/psmart/link/ble/SPUtils.class
+
+  -- does the jar carry the pvrservice parcelables? --
+  YES - LensParameters is in the jar
+
+=== using objdump ===
+
+----- PvrClientJava11getLensInfo  @ 0x00093799 -----
+
+----- PvrClientJava14getDisplayInfo  @ 0x000935f1 -----
+
+----- psmvr_UpdateLensAndDisplayInfoFromVRService  @ 0x00059935 -----
+
+=== any load at #16 / #0x10 in those regions is the smoking gun ===
+DONE

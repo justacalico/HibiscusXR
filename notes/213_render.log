@@ -1,0 +1,1828 @@
+--------- beginning of main
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 expire 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/cmd     ( 3959): open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+E/libprocessgroup( 3959): CgroupMap::LoadRcFile called for [3959] failed
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller memory is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller memory is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller memory is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller cpu is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): Controller cpu is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller schedtune is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller schedtune is not found
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: STunePreferIdle
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: STunePreferIdle
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller cpuset is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller blkio is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+--------- beginning of system
+I/ActivityTaskManager( 1662): START u0 {flg=0x10000000 cmp=com.pvr.vrshell/.MainActivity} from uid 0
+W/libprocessgroup( 3959): JoinCgroup: controller blkio is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller blkio is not found
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller blkio is not found
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: MemSoftLimit
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: MemSwappiness
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: MemSoftLimit
+W/libprocessgroup( 3959): SetAttribute: unknown attribute: MemSwappiness
+E/libprocessgroup( 3959): CgroupMap::FindController called for [3959] failed, RC file was not initialized properly
+W/libprocessgroup( 3959): JoinCgroup: controller memory is not found
+W/system_server( 1662): resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+E/system_server( 1662): Invalid ID 0x00000000.
+W/System  ( 1662): ClassLoader referenced unknown path: 
+D/Zygote  ( 1378): Forked child process 3962
+I/ActivityManager( 1662): Start proc 3962:com.pvr.vrshell/1000 for pre-top-activity {com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+E/libprocessgroup( 3962): CgroupMap::FindController called for [3962] failed, RC file was not initialized properly
+E/libprocessgroup( 3962): CgroupMap::FindController called for [3962] failed, RC file was not initialized properly
+E/libprocessgroup( 3962): Failed to make and chown /uid_1000: Read-only file system
+W/Zygote  ( 3962): createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+I/Zygote  ( 3962): seccomp disabled by setenforce 0
+E/libprocessgroup( 3962): CgroupMap::FindController called for [3962] failed, RC file was not initialized properly
+I/hwservicemanager(  561): getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+W/Gralloc3( 1662): mapper 3.x is not supported
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:707): avc: denied { getattr } for path="/system/priv-app/VRShell2/VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:708): avc: denied { getattr } for path="/system/priv-app/VRShell2" dev="sda7" ino=6251 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=dir permissive=1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:709): avc: denied { read } for name="VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:710): avc: denied { open } for path="/system/priv-app/VRShell2/VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+W/OomAdjuster( 1662): Fallback pre-set sched group to default: not expected top priority
+I/wpa_supplicant( 2397): wlan0: GAS-QUERY-DONE addr=bc:9a:8e:38:c2:24 dialog_token=48 freq=2462 status_code=0 result=TIMEOUT
+I/wpa_supplicant( 2397): wlan0: ANQP-QUERY-DONE addr=bc:9a:8e:38:c2:24 result=FAILURE
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/com.pvr.vrshel( 3962): JIT profile information will not be recorded: profile file does not exits.
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/com.pvr.vrshel( 3962): resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/GraphicsEnv( 3962): Failed to get gpu service
+D/ImageWallpaper( 1924): wallpaper visibility changes to: false
+I/ashmem  ( 3962): memfd: device VNDK version (27) is < Q so using ashmem.
+I/UnityNativeActivityPico( 3962): onCreate enter
+D/PvrClient( 3962): android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:711): avc: denied { read } for name="VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:712): avc: denied { open } for path="/system/priv-app/VRShell2/VRShell2.apk" dev="sda7" ino=6469 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:713): avc: denied { getattr } for path="/system/lib64/libPvr_UnitySDKExt11.so" dev="sda7" ino=6396 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+D/UnityNativeActivityPico( 3962): DISFT isJavaService =falseisPhoneHmdType = false
+I/VrApi   ( 3962): open replaceable Scuccessed libPvr_UnitySDKExt11.so
+I/VrApi   ( 3962): couldBeLoaded
+I/VrApi   ( 3962): 0x78dc8f2c18
+I/VrApi   ( 3962): open replaceable Scuccessed 2
+I/VrApi   ( 3962): current version >=2.7.4.4
+I/VrApi   ( 3962): APP version, 2, 8, 6, 16
+I/VrApi   ( 3962): lib version, 2, 8, 6, 15
+I/VrApi   ( 3962): open replaceable aborted
+I/VrApi   ( 3962): pvr_OnLoad()
+I/VrApi   ( 3962): Using caller's JNIEnv
+I/VrApi   ( 3962): Get SdcardPath = /storage/emulated/0, 0x787b3d0110
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/VrApi   ( 3962): BuildVersionSDK 29
+I/VrApi   ( 3962): pvr_Init
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/UnityNativeActivityPico( 3962): bypass_presentation = -1
+D/VRDataUtils( 3962): HMD not exist
+D/PvrClient( 3962): mirroring or not lg return
+W/ContextImpl( 3962): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+D/Zygote  ( 1378): Forked child process 3999
+E/libprocessgroup( 3999): CgroupMap::FindController called for [3999] failed, RC file was not initialized properly
+E/libprocessgroup( 3999): CgroupMap::FindController called for [3999] failed, RC file was not initialized properly
+E/libprocessgroup( 3999): Failed to make and chown /uid_1000: Read-only file system
+W/Zygote  ( 3999): createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+I/Zygote  ( 3999): seccomp disabled by setenforce 0
+I/ActivityManager( 1662): Start proc 3999:com.pvr.verify/1000 for service {com.pvr.verify/com.pvr.verify.VerifyService}
+I/com.pvr.verify( 3999): type=1400 audit(0.0:714): avc: denied { getattr } for path="/system/priv-app/PVRVerify" dev="sda7" ino=6243 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=dir permissive=1
+E/ConfigApi( 3962): Not Initialize Global Configs
+I/ConfigApi( 3962): Initialize Global Configs
+I/ConfigApi( 3962): file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+I/psmvrConfig( 3962): Load file /system/etc/pvr/psmvrapi_config.txt, 1
+I/com.pvr.vrshell( 3962): type=1400 audit(0.0:715): avc: denied { execute } for path="/system/lib64/libpxr_6dof_optimization.so" dev="sda7" ino=6402 scontext=u:r:system_app:s0 tcontext=u:object_r:unlabeled:s0 tclass=file permissive=1
+E/psmvrConfig( 3962): Undefined variable -- iEnableStageLevel
+E/psmvrConfig( 3962): Undefined variable -- fCylinderDistortionBoundThreshold
+E/psmvrConfig( 3962): Undefined variable -- fCylinderDistortionBoundSetValue
+I/ConfigApi( 3962): DIATW Update Config Parameters From VRService
+E/VrServiceApi( 3962): InitServiceClient: priority native or java service : order = 0
+I/VrServiceApi( 3962): load service priority default
+I/VrServiceApi( 3962): dlopen ok
+I/VrServiceApi( 3962): dlsym for getPVRModule ok
+V/PvrService( 1146): registerClient() client 0x7db043dd80, pid 3962
+E/Paul    ( 3962): IsInitialized
+E/HaveDir ( 3962): HaveDir
+E/Paul    ( 3962): open_calib_file_ok
+E/GyroMatrix( 3962): c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+E/SensorConstruct( 3962): SensorConstruct
+E/PvrServiceClient( 3962): Open library<lib6DofReset.so> failed:(null)
+E/PvrServiceClient( 3962): Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+E/PvrServiceClient( 3962): Get function<mGetResetPos> failed:undefined symbol: getResetPos
+E/PvrPlatform( 1146): Override displayinfo:w=3840 h=2160 fps=72.000008
+D/RefBase ( 1146): RefBase: Explicit destruction, weak count = 0 (in 0x7dadf09598)
+W/RefBase ( 1146): CallStack::getCurrentInternal not linked, returning null
+W/RefBase ( 1146): CallStack::logStackInternal not linked
+I/ConfigApi( 3962): UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+D/PvrPlatform( 1146): Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+I/PvrPlatform( 1146): Override configs by config file
+I/PvrPlatform( 1146): Override fov value:101.000000
+I/ConfigApi( 3962): psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+D/VRBoundary( 3962): mSTSettingExist = true
+D/VRBoundary( 3962): globalBoundaryStatus = -1
+D/VRBoundary( 3962): appBoundaryStatus = 1
+W/com.pvr.verify( 3999): JIT profile information will not be recorded: profile file does not exits.
+W/com.pvr.verify( 3999): resources.arsc in APK '/system/priv-app/PVRVerify/PVRVerify.apk' is compressed.
+D/VRBoundary( 3962): globalBoundaryStatusToC = 1
+D/VRBoundary( 3962): globalBoundaryStatusToB = -1
+I/UnityNativeActivityPico( 3962): Shell shell_mode = 1
+I/UnityNativeActivityPico( 3962): force_cancel_unity_pause = -1
+I/VerifyApplication( 3999): onCreate# 
+I/c       ( 3999): check# change host url
+I/initServerJar( 3999): ??DoGetUrlFromDBWithSuffix,uriStr=content://com.picovr.initserver.serverSetting/server_setting/store-AppStore3
+I/InitServer( 3407): Porvider????query,projection = null***selection = null**selectionArgs = null
+E/TrafficController( 1392): Failed to set the counterSet: Bad file descriptor, fd: -1
+I/ashmem  ( 3999): memfd: device VNDK version (27) is < Q so using ashmem.
+I/initServerJar( 3999): cursor::count=0
+I/initServerJar( 3999): content=
+I/initServerJar( 3999): urlViaSuffix=
+I/initServerJar( 3999): ????,????DoGetUrlFromDBWithSuffix,uriCommon=content://com.picovr.initserver.serverSetting/server_setting/AppStore3
+I/InitServer( 3407): Porvider????query,projection = null***selection = null**selectionArgs = null
+I/initServerJar( 3999): cursor::count=1
+I/initServerJar( 3999): content=https://us-appstore.picovr.com/api/
+I/initServerJar( 3999): urlViaSuffix=https://us-appstore.picovr.com/api/
+W/ContextImpl( 3999): Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1576 android.content.ContextWrapper.startForegroundService:674 com.pvr.verify.utils.CommonUtils.startService:6 com.pvr.verify.a.b.a:14 com.pvr.verify.VerifyService.onCreate:30 
+W/ActivityManager( 1662): Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+W/ContextImpl( 3999): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.pvr.verify.a.b.a:20 com.pvr.verify.VerifyService.onCreate:30 android.app.ActivityThread.handleCreateService:3953 
+W/ActivityManager( 1662): Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+I/b       ( 3999): check# bind: bind Verify Service
+I/VerifyService( 3999): onCreate# 
+I/VerifyService( 3999): onBind: ---
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/UnityNativeActivityPico( 3962): has android.permission.READ_EXTERNAL_STORAGE this
+I/UnityNativeActivityPico( 3962): create enter
+D/VRResUtils( 3962): sdPath /system/etc/pvr/res.json
+D/VRResUtils( 3962): size = 127365
+D/VRResUtils( 3962): locale = en
+D/UnityNativeActivityPico( 3962): false = SCRN_BRIGHTNESS
+I/UnityNativeActivityPico( 3962): EnableAppOverlayType = false
+D/PvrClient( 3962): android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+D/NetworkSecurityConfig( 3962): No Network Security Config specified, using platform default
+E/PvrClientJava( 3962): initNative end
+E/PvrClientJava( 3962): status = 0,argCnt = 0
+D/UnityNativeActivityPico( 3962): com.psmart.vrlib.PvrClient@6f68c19 PvrClient created
+I/LoadingUtils( 3962): 2D loading dir: system/media/LoadingRes
+I/UnityPlugin( 3962): PVR_SetCpuLevel  level 9999
+I/PvrPlatform( 1146): setCPULevel:9999 1
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 70 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 70 secend
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.041995, 0.011766, -0.003362, 0.999042)
+E/PvrService( 1146): PvrService getTrackingDataExt position(-0.001486, -0.007015, -0.086493)
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/inside_background_img.png
+I/LoadingUtils( 3962): calculateParams Text config 1080   720
+I/LoadingUtils( 3962): Text config 1080   720
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00001.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00004.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00002.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00010.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00022.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00007.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00012.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00000.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00008.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00020.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00011.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00013.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00009.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00023.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00014.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00003.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00021.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00019.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00006.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00018.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00016.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00017.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00015.png
+I/LoadingUtils( 3962): file path is /system/media/LoadingRes/img/loading_animation_00005.png
+I/UnityNativeActivityPico( 3962): presentationDisplays.length 0
+I/UnityNativeActivityPico( 3962): default
+I/PVRShell( 3962): ==========onCreate
+I/PVRShell( 3962): LanguageCountry = en-US
+I/PVRShell( 3962): isDebug = false
+I/PVRShell( 3962): default ime is com.android.inputmethod.latin/.LatinIME
+I/PVRShell( 3962): sogou ime is , default ime is com.android.inputmethod.latin/.LatinIME
+D/UnityNativeActivityPico( 3962): onStart
+I/UnityNativeActivityPico( 3962): registerDisplayListener
+I/PVRShell( 3962): ==========onStart
+I/PVRShell( 3962): sogou ime is 
+E/PvrManagerInternal( 3962): Could not instantiate PvrManagerService when construct PvrManagerInternal.
+E/PvrManagerInternal( 3962): addPvrCallBack PvrManagerService dont instantiate properly,please check it.
+I/UnityNativeActivityPico( 3962): onResume
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/VRBoundary( 3962): head6dofReset = falseservice6dofStopped = false
+D/VRDataUtils( 3962): finish the toast fore
+D/VRDataUtils( 3962): finish the toast fore
+W/ContextImpl( 3962): Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1576 android.content.ContextWrapper.startForegroundService:674 com.psmart.vrlib.VRDataUtils.finishToastActivity:86 com.unity3d.player.UnityPlayerNativeActivityPico.finishToastActivity:0 com.unity3d.player.UnityPlayerNativeActivityPico.onResume:108 
+D/VRDataUtils( 3962): java.lang.IllegalArgumentException: Service Intent must be explicit: Intent { act=com.lg.uplus.agent.service_action (has extras) }
+D/VRConfigUtils( 3962): restore level00
+I/UnityPlugin( 3962): PVR_SetGpuLevel_ level 0
+I/PvrPlatform( 1146): setGPULevel:0 1
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 5 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/PvrPlatform( 1146): svrSetPerformanceLevels GPU level[0] Freq[710000000] done
+I/UnityPlugin( 3962): PVR_SetCpuLevel  level 0
+I/PvrPlatform( 1146): setCPULevel:0 1
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/ResolverController( 1392): No valid NAT64 prefix (100, <unspecified>/0)
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 8 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/PvrPlatform( 1146): ALOOPER_POLL_TIMEOUT
+E/TrafficController( 1392): Failed to delete the counterSet: Bad file descriptor
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 71 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 71 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 8 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/PvrPlatform( 1146): svrSetPerformanceLevels CPU level[0] B[2803200] done
+I/UnityNativeActivityPico( 3962): onResume   animation is not null 
+I/UnityNativeActivityPico( 3962): Notify Unity resume
+I/UnityNativeActivityPico( 3962): onResume test
+I/LoadingUtils( 3962): start  setting vrmode 2d and ORIENTATION 0
+I/PVRShell( 3962): ==========onResume
+E/PVRShell( 3962): VirtualDisplay is null
+I/PVRShell( 3962): ==========onTopResumedActivityChanged, isTopResumedActivity = true
+D/UnityNativeActivityPico( 3962): connect ok
+I/PVRShell( 3962): android.net.wifi.STATE_CHANGE, state = true
+I/PVRShell( 3962): android.net.wifi.WIFI_STATE_CHANGED, state = 3
+I/PVRShell( 3962): android.intent.action.BATTERY_CHANGED, percent = 77, status = 2
+I/UnityNativeActivityPico( 3962): onAttachedToWindow!!!!!!!!!!!
+I/LoadingUtils( 3962): start  setting vrmode 2d and ORIENTATION 0
+E/PvrManagerInternal( 3962): PvrManagerService dont instantiate properly,please check it.
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 4 lines
+E/PvrManagerInternal( 3962): PvrManagerService dont instantiate properly,please check it.
+I/LoadingUtils( 3962):  set vrmode 2d and ORIENTATION 0 end
+I/LoadingUtils( 3962): width  3840  1968
+I/Adreno  ( 3962): QUALCOMM build                   : 2d5c972, I8302e904d2
+I/Adreno  ( 3962): Build Date                       : 03/29/19
+I/Adreno  ( 3962): OpenGL ES Shader Compiler Version: EV031.26.03.00
+I/Adreno  ( 3962): Local Branch                     : mybranche951d0e9-8bc7-f187-be97-5cb90179c3d8
+I/Adreno  ( 3962): Remote Branch                    : quic/gfx-adreno.lnx.1.0.r65-rel
+I/Adreno  ( 3962): Remote Branch                    : NONE
+I/Adreno  ( 3962): Reconstruct Branch               : NOTHING
+I/Adreno  ( 3962): Build Config                     : S L 4.0.10 AArch64
+I/FrameAnimation( 3962): surfacecreate success
+I/Adreno  ( 3962): PFP: 0x016ee183, ME: 0x00000000
+I/LoadingUtils( 3962): start  setting vrmode 2d and ORIENTATION 0
+E/PvrManagerInternal( 3962): PvrManagerService dont instantiate properly,please check it.
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 4 lines
+E/PvrManagerInternal( 3962): PvrManagerService dont instantiate properly,please check it.
+I/LoadingUtils( 3962):  set vrmode 2d and ORIENTATION 0 end
+I/LoadingUtils( 3962): width  3840  1968
+I/hwservicemanager(  561): getTransport: Cannot find entry android.hardware.graphics.mapper@3.0::IMapper/default in either framework or device manifest.
+W/Gralloc3( 3962): mapper 3.x is not supported
+I/PVRShell( 3962): onWindowFocusChanged, hasFocus = true
+I/ActivityTaskManager( 1662): Displayed com.pvr.vrshell/.MainActivity: +1s834ms
+I/PVRShell( 3962): onForegroundActivitiesChanged-->2228, 10156, false
+I/PVRShell( 3962): ----------switchApp----------
+E/PVRShell( 3962): VirtualDisplay is null
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/Unity   ( 3962): SystemInfo CPU = ARM64 FP ASIMD AES, Cores = 8, Memory = 5685mb
+I/Unity   ( 3962): SystemInfo ARM big.LITTLE configuration: 4 big (mask: 0xf0), 4 little (mask: 0xf)
+I/Unity   ( 3962): ApplicationInfo com.pvr.vrshell version 2.0.81 build <unknown>
+I/Unity   ( 3962): Built from '2018.4/china_unity/release' branch, Version '2018.4.21f1 (8586c82ced4c)', Build type 'Release', Scripting Backend 'il2cpp', CPU 'arm64-v8a'
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/libprocessgroup( 3962): set_timerslack_ns write failed: Operation not permitted
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 14 lines
+E/libprocessgroup( 3962): set_timerslack_ns write failed: Operation not permitted
+E/Unity   ( 3962): Unable to find AudioPlugin_AM3DSpatializer
+D/Unity   ( 3962):  GL_OES_EGL_image GL_OES_EGL_image_external GL_OES_EGL_sync GL_OES_vertex_half_float GL_OES_framebuffer_object GL_OES_rgb8_rgba8 GL_OES_compressed_ETC1_RGB8_texture GL_AMD_compressed_ATC_texture GL_KHR_texture_compression_astc_ldr GL_KHR_texture_compression_astc_hdr GL_OES_texture_compression_astc GL_OES_texture_npot GL_EXT_texture_filter_anisotropic GL_EXT_texture_format_BGRA8888 GL_EXT_read_format_bgra GL_OES_texture_3D GL_EXT_color_buffer_float GL_EXT_color_buffer_half_float GL_QCOM_alpha_test GL_OES_depth24 GL_OES_packed_depth_stencil GL_OES_depth_texture GL_OES_depth_texture_cube_map GL_EXT_sRGB GL_OES_texture_float GL_OES_texture_float_linear GL_OES_texture_half_float GL_OES_texture_half_float_linear GL_EXT_texture_type_2_10_10_10_REV GL_EXT_texture_sRGB_decode GL_EXT_texture_format_sRGB_override GL_OES_element_index_uint GL_EXT_copy_image GL_EXT_geometry_shader GL_EXT_tessellation_shader GL_OES_texture_stencil8 GL_EXT_shader_io_blocks GL_OES_shader_image_atomic GL_OES_sample_variables GL_EXT_texture_b
+D/Unity   ( 3962): order_clamp GL_EXT_EGL_image_external_wrap_modes GL_EXT_multisampled_render_to_texture GL_EXT_multisampled_render_to_texture2 GL_OES_shader_multisample_interpolation GL_EXT_texture_cube_map_array GL_EXT_draw_buffers_indexed GL_EXT_gpu_shader5 GL_EXT_robustness GL_EXT_texture_buffer GL_EXT_shader_framebuffer_fetch GL_ARM_shader_framebuffer_fetch_depth_stencil GL_OES_texture_storage_multisample_2d_array GL_OES_sample_shading GL_OES_get_program_binary GL_EXT_debug_label GL_KHR_blend_equation_advanced GL_KHR_blend_equation_advanced_coherent GL_QCOM_tiled_rendering GL_ANDROID_extension_pack_es31a GL_EXT_primitive_bounding_box GL_OES_standard_derivatives GL_OES_vertex_array_object GL_EXT_disjoint_timer_query GL_KHR_debug GL_EXT_YUV_target GL_EXT_sRGB_write_control GL_EXT_texture_norm16 GL_EXT_discard_framebuffer GL_OES_surfaceless_context GL_OVR_multiview GL_OVR_multiview2 GL_EXT_texture_sRGB_R8 GL_KHR_no_error GL_EXT_debug_marker GL_OES_EGL_image_external_essl3 GL_OVR_multiview_multisampled_render_to_texture GL_E
+D/Unity   ( 3962): XT_buffer_storage GL_EXT_external_buffer GL_EXT_blit_framebuffer_params GL_EXT_clip_cull_distance GL_EXT_protected_textures GL_EXT_shader_non_constant_global_initializers GL_QCOM_texture_foveated GL_QCOM_texture_foveated_subsampled_layout GL_QCOM_shader_framebuffer_fetch_noncoherent GL_QCOM_shader_framebuffer_fetch_rate GL_EXT_memory_object GL_EXT_memory_object_fd GL_EXT_EGL_image_array GL_NV_shader_noperspective_interpolation GL_KHR_robust_buffer_access_behavior GL_EXT_EGL_image_storage GL_EXT_blend_func_extended GL_EXT_clip_control GL_OES_texture_view GL_EXT_fragment_invocation_density
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/AudioFlinger( 1764): Client defaulted notificationFrames to 1024 for frameCount 2048
+I/FrameAnimation( 3962): mBitmap.recycle
+D/AF::TrackHandle( 1764): OpPlayAudio: track:57 usage:1 not muted
+W/AudioTrack( 3962): Use of stream types is deprecated for operations other than volume control
+W/AudioTrack( 3962): See the documentation of AudioTrack() for what to use instead with android.media.AudioAttributes to qualify your playback use case
+V/MediaRouter( 1662): Selecting route: RouteInfo{ name=Phone, description=null, status=null, category=RouteCategory{ name=System types=ROUTE_TYPE_LIVE_AUDIO ROUTE_TYPE_LIVE_VIDEO  groupable=false }, supportedTypes=ROUTE_TYPE_LIVE_AUDIO ROUTE_TYPE_LIVE_VIDEO , presentationDisplay=null }
+V/AvrcpMediaPlayerList( 1902): onPlaybackConfigChanged(): Configs list size=3
+W/AudioFlinger( 1764): moveEffectChain_l() effect chain for session 0 not on source thread 0x72938bcf80
+W/EffectHAL( 1770): Effect 0xf19dfda0 command SET_CONFIG returned status: Invalid argument
+D/audio_hw_primary( 1770): start_output_stream: enter: stream(0xf1e88800)usecase(0: deep-buffer-playback) devices(0x2)
+D/audio_hw_primary( 1770): select_devices for use case (deep-buffer-playback)
+D/audio_hw_primary( 1770): select_devices: out_snd_device(2: speaker) in_snd_device(0: )
+I/msm8974_platform( 1770): platform_check_and_set_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 0 device (speaker)
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+I/msm8974_platform( 1770): platform_check_and_set_codec_backend_cfg: new_snd_devices[0] is 2
+I/msm8974_platform( 1770): platform_check_codec_backend_cfg:becf: afe: bitwidth 16, samplerate 48000 channels 2, backend_idx 0 usecase = 0 device (speaker)
+D/msm8974_platform( 1770): platform_check_codec_backend_cfg:becf: afe: playback on codec device not supporting native playback set default Sample Rate(48k)
+I/msm8974_platform( 1770): platform_check_codec_backend_cfg:becf: afe: Codec selected backend: 0 updated bit width: 16 and sample rate: 48000
+D/audio_hw_primary( 1770): check_usecases_codec_backend:becf: force routing 0
+E/msm8974_platform( 1770): platform_check_backends_match: Invalid snd_device = 
+D/audio_hw_primary( 1770): check_usecases_codec_backend:becf: (62) check_usecases curr device: speaker, usecase device: backends match 0
+D/audio_hw_primary( 1770): check_usecases_codec_backend:becf: check_usecases num.of Usecases to switch 0
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(2)
+D/hardware_info( 1770): hw_info_append_hw_type : device_name = speaker
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+D/audio_hw_primary( 1770): enable_snd_device: snd_device(2: speaker)
+I/soundtrigger( 1770): audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 1, with Raise=0
+D/audio_route( 1770): Apply path: speaker
+V/qcbassboost( 1770): 
+V/qcbassboost( 1770): 	EffectCreate start session 41
+V/qcbassboost( 1770): 	GlobalSession_init start
+I/qcbassboost( 1770): 	EffectCreate: Allocating SessionNo 0 for SessionId 41
+V/qcbassboost( 1770): 
+V/qcbassboost( 1770): 	EffectCreate created ctxt 0xf19e3200 for session 41
+D/offload_effect_pbe( 1770): pbe_load_config pbe_app_type = 0x00011134
+D/offload_effect_pbe( 1770): pbe_load_config ret = 0, len = 176
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 0
+V/qcbassboost( 1770): 	BassBoost_init start
+V/qcbassboost( 1770): 	BassBoost_init start, ctxt 0xf19e3200
+V/qcbassboost( 1770): 	pbe_init start
+E/qcbassboost( 1770): 	ERROR: invalid sample rate
+D/offload_effect_pbe( 1770): pbe_load_config pbe_app_type = 0x00011134
+D/offload_effect_pbe( 1770): pbe_load_config ret = 0, len = 176
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 1
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+E/qcbassboost( 1770): 	[vendor/qcom/proprietary/mm-audio-noship/audio-effects/safx/android-adapter/qcbassboost/qcbassboost.c:541] Assertion fail: pConfig->inputCfg.format == AUDIO_FORMAT_PCM_16_BIT
+W/EffectHAL( 1770): Effect 0xf19dfde0 command SET_CONFIG returned status: Invalid argument
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 1
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcbassboost( 1770): 	BassBoost_init start
+V/qcbassboost( 1770): 	BassBoost_init start, ctxt 0xf19e3200
+V/qcbassboost( 1770): 	pbe_init start
+I/wpa_supplicant( 2397): wlan0: GAS-QUERY-DONE addr=bc:51:5f:30:5c:44 dialog_token=49 freq=2462 status_code=0 result=TIMEOUT
+D/pbecalconfig( 1770): pbe_load_acdb_params pbe_app_type = 0x00011134
+D/pbecalconfig( 1770): pbe_load_acdb_params ret = 0, len = 176
+I/wpa_supplicant( 2397): wlan0: ANQP-QUERY-DONE addr=bc:51:5f:30:5c:44 result=FAILURE
+I/sensors-hal( 1109): flush:190, android.sensor.accelerometer/34
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 9
+V/qcbassboost( 1770): 	EFFECT_CMD_SET_DEVICEi(2) enable BASS_PBE
+I/offload_effect_bb( 1770): bassboost_set_device: ctxt 0xf192c698, disabled based on device
+I/sensors-hal( 1109): flush:196, android.sensor.accelerometer/34 completed
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 8
+V/qcbassboost( 1770): 	BassBoost_getParameter(): ctxt 0xf19e3200, param 0, 
+V/qcvirt  ( 1770): 
+V/qcvirt  ( 1770): 	EffectCreate start session 41
+V/qcvirt  ( 1770): 	GlobalSession_init start
+I/qcvirt  ( 1770): 	EffectCreate: Allocating SessionNo 0 for SessionId 41
+V/qcvirt  ( 1770): 
+V/qcvirt  ( 1770): 	EffectCreate created ctxt 0xf19e3280 for session 41
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 0
+V/qcvirt  ( 1770): 	Virtualizer_init start ctxt 0xf19e3280
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 1
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+E/qcvirt  ( 1770): 	[vendor/qcom/proprietary/mm-audio-noship/audio-effects/safx/android-adapter/qcvirt/qcvirt.c:590] Assertion fail: pConfig->inputCfg.format == AUDIO_FORMAT_PCM_16_BIT
+W/EffectHAL( 1770): Effect 0xf19dfe70 command SET_CONFIG returned status: Invalid argument
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 1
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcvirt  ( 1770): 	Virtualizer_init start ctxt 0xf19e3280
+D/soundtrigger( 1770): audio_extn_sound_trigger_update_stream_status: uc_id 0 of type 0 for Event 3, with Raise=1
+D/sound_trigger_platform( 1770): platform_stdev_check_and_update_concurrency: concurrency active 0, tx 0, rx 1, concurrency session_allowed 1
+D/audio_hw_utils( 1770): audio_extn_utils_send_app_type_cfg: usecase->out_snd_device speaker
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+D/audio_hw_utils( 1770): audio_extn_btsco_get_sample_rate:Not a BT SCO device, need not update sampling rate
+I/audio_hw_utils( 1770): send_app_type_cfg_for_device PLAYBACK app_type 69936, acdb_dev_id 15, sample_rate 48000, snd_device_be_idx 2
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+D/ACDB-LOADER( 1770): ACDB -> send_audio_cal, acdb_id = 15, path = 0, app id = 0x11130, sample rate = 48000
+D/ACDB-LOADER( 1770): ACDB -> send_asm_topology
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TOPOLOGY_ID
+D/ACDB-LOADER( 1770): ACDB -> send_adm_topology
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TOPOLOGY_ID
+D/ACDB-LOADER( 1770): ACDB -> send_audtable
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_COMMON_TABLE
+D/ACDB-LOADER( 1770): ACDB -> AUDIO_SET_AUDPROC_CAL
+D/ACDB-LOADER( 1770): ACDB -> send_audvoltable
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_VOL_STEP_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_GAIN_DEP_STEP_TABLE, vol index 0
+D/ACDB-LOADER( 1770): ACDB -> AUDIO_SET_VOL_CAL cal type = 12
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> send_audstrmtable
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_STREAM_TABLE_V2
+D/ACDB-LOADER( 1770): ACDB -> audstrm_cal->cal_type.cal_data.cal_size = 456
+D/ACDB-LOADER( 1770): ACDB -> send_afe_topology
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AFE_TOPOLOGY_ID
+D/ACDB-LOADER( 1770): ACDB -> GET_AFE_TOPOLOGY_ID for adcd_id 15, Topology Id 1025e
+D/ACDB-LOADER( 1770): ACDB -> send_afe_cal
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AFE_COMMON_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AFE_COMMON_TABLE
+D/ACDB-LOADER( 1770): ACDB -> AUDIO_SET_AFE_CAL
+D/ACDB-LOADER( 1770): ACDB -> send_hw_delay : acdb_id = 15 path = 0
+D/ACDB-LOADER( 1770): ACDB -> ACDB_AVSYNC_INFO: ACDB_CMD_GET_DEVICE_PROPERTY
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 9
+D/audio_hw_primary( 1770): enable_audio_route: apply mixer and update path: deep-buffer-playback
+I/qcvirt  ( 1770): 	EFFECT_CMD_SET_DEVICE device(0x2) is invalid for VIRTUALIZER
+D/audio_route( 1770): Apply path: deep-buffer-playback
+I/offload_effect_virtualizer( 1770): virtualizer_set_device: ctxt 0xf389a620, disabled based on device
+D/audio_hw_primary( 1770): select_devices: done
+V/MediaRouter( 3962): Selecting route: RouteInfo{ name=Phone, description=null, status=null, category=RouteCategory{ name=System types=ROUTE_TYPE_LIVE_AUDIO ROUTE_TYPE_LIVE_VIDEO  groupable=false }, supportedTypes=ROUTE_TYPE_LIVE_AUDIO ROUTE_TYPE_LIVE_VIDEO , presentationDisplay=null }
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 8
+V/qcvirt  ( 1770): 	Virtualizer_getParameter, ctxt 0xf19e3280, param 0
+V/qcreverb( 1770): 
+V/qcreverb( 1770): 	EffectCreate start session 41
+V/qcreverb( 1770): 	EffectCreate - UUID matched Reverb type 3, UUID = b08a0e38
+V/qcreverb( 1770): 	EffectCreate - PRESET
+V/qcreverb( 1770): 	EffectCreate - INS
+V/qcreverb( 1770): 
+V/qcreverb( 1770): 	EffectCreate created ctxt 0xf19e3300 for session 41
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 0
+V/qcreverb( 1770): 	Reverb_init start, ctxt 0xf19e3300
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 1
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+E/qcreverb( 1770): 	[vendor/qcom/proprietary/mm-audio-noship/audio-effects/safx/android-adapter/qcreverb/qcreverb.c:478] Assertion fail: pConfig->inputCfg.format == AUDIO_FORMAT_PCM_16_BIT
+W/EffectHAL( 1770): Effect 0xf19dfec0 command SET_CONFIG returned status: Invalid argument
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 1
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcreverb( 1770): 	Reverb_init start, ctxt 0xf19e3300
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 5
+V/qcbassboost( 1770): 	BassBoost_setParameter(): ctxt 0xf19e3200, param 1, value: 0
+V/qcbassboost( 1770): 	BassBoost_setParameter() BASSBOOST_PARAM_STRENGTH value is 0
+D/qcbassboost( 1770): BassBoost_setParameter ignore set strength
+D/offload_effect_bass( 1770): bass_set_parameter ignore set strength, index 1
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 5
+V/qcreverb( 1770): Reverb_setParameter: ctxt 0xf19e3300, param: 0, value: 0
+V/qcreverb( 1770): 	Reverb_updateCfg, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 5
+V/qcvirt  ( 1770): Virtualizer_setParameter: ctxt 0xf19e3280, param: 1, value: 0
+V/qcvirt  ( 1770): 	Virtualizer_setParameter() VIRTUALIZER_PARAM_STRENGTH value is 0
+I/FrameAnimation( 3962): mBitmap.recycle
+D/msm8974_platform( 1770): platform_set_channel_map mixer_ctl_name:Playback Channel Map0
+D/msm8974_platform( 1770): platform_set_channel_map: set mapping(1 2 0 0 0 0 0 0) for channel:2
+D/audio_hw_primary( 1770): start_output_stream: exit
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+D/ACDB-LOADER( 1770): ACDB -> send_audvoltable
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_VOL_STEP_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_GAIN_DEP_STEP_TABLE, vol index 1
+D/ACDB-LOADER( 1770): ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/Unity   ( 3962): DISFT Unity Version:2018.4.21f1
+I/Unity   ( 3962): Pvr_UnitySDKManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): DISFT Customize NeckOffset:(0.0, 0.1, 0.1)
+I/Unity   ( 3962): Pvr_UnitySDKManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/FrameAnimation( 3962): mBitmap.recycle
+I/Unity   ( 3962): DISFT MSAA :X_2
+I/Unity   ( 3962): Pvr_UnitySDKManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): DISFT Content Proctect :False
+I/Unity   ( 3962): Pvr_UnitySDKManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+E/PvrPlatform( 1146): ALOOPER_POLL_TIMEOUT
+I/Unity   ( 3962): DISFT Customize FPS :72
+I/Unity   ( 3962): Pvr_UnitySDKManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/UnityPlugin( 3962): DISFT FFR = 0
+I/Unity   ( 3962): PvrLog SDK Version :  2.8.6.16  Unity Script Version :2.8.6.9
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConnectToAndriod()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+D/AudioFlinger( 1764): mixer(0x72051987c0) throttle end: throttle time(37)
+E/PvrPlatform( 1146): ALOOPER_POLL_TIMEOUT
+D/VrActivity( 3962): is pico ,return
+D/VrActivity( 3962): context = com.pvr.vrshell.MainActivity@c4ba5eb
+I/UnityClient( 3962): systemproc is 0
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation begin
+I/UnityNativeActivityPico( 3962): Unity presentationDisplays.length = 0
+I/UnityNativeActivityPico( 3962): DISFT MonoPresentation = Disable
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation failed
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation end
+I/Unity   ( 3962): ConnectToAndriod set monoPresentation success ?-------------True
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConnectToAndriod()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): ConnectToAndriod presentation existed ?-------------False
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConnectToAndriod()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): DISFT Customize RenderTexture:(2496.0, 2496.0), scaleFactor: 1
+I/Unity   ( 3962): Pvr_UnitySDKRender:GetEyeBufferResolution()
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/UnityPlugin( 3962): SinglePass::unity set single pass depth buffer (width X height) = (2496 X 2496)
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 0
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): eyeTextureIndex : 0
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 1
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): eyeTextureIndex : 1
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 2
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/FrameAnimation( 3962): mBitmap.recycle
+I/Unity   ( 3962): eyeTextureIndex : 2
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 3
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): eyeTextureIndex : 3
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 4
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): eyeTextureIndex : 4
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): MultiPass ConfigureEyeBuffer eyeTextureIndex 5
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): eyeTextureIndex : 5
+I/Unity   ( 3962): Pvr_UnitySDKRender:ConfigureEyeBuffer(Int32, Vector2)
+I/Unity   ( 3962): Pvr_UnitySDKRender:CreateEyeBuffer()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): DISFT IPD:0.063
+I/Unity   ( 3962): Pvr_UnitySDKAPI.System:UPvr_GetIPD()
+I/Unity   ( 3962): Pvr_UnitySDKRender:InitRenderAbility()
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog Init Render Ability Success!
+I/Unity   ( 3962): Pvr_UnitySDKRender:Init()
+I/Unity   ( 3962): Pvr_UnitySDKRender:.ctor()
+I/Unity   ( 3962): Pvr_UnitySDKRender:get_Instance()
+I/Unity   ( 3962): Pvr_UnitySDKEyeManager:OnEnable()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/Unity   ( 3962): PUI--------------ro.pvr.product.name = FalconCV2
+I/Unity   ( 3962): PUI_UnityAPI:GetDeviceMode()
+I/Unity   ( 3962): InputController:GetInstance()
+I/Unity   ( 3962): CursorManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): ????? ??:  Object reference not set to an instance of an object.
+I/Unity   ( 3962): InputController:GetInstance()
+I/Unity   ( 3962): CursorManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): ??????:en
+I/Unity   ( 3962): StatusBar:SetLaunguage()
+I/Unity   ( 3962): StatusBar:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/vrUserCenter.UserInfoProvider( 3387): UserInfoProvider????query
+I/PVRShell( 3962): getUserInfo success,userInfo =
+I/vrUserCenter.UserInfoProvider( 3387): UserInfoProvider????query
+E/PVRShell( 3962): avatarString is null
+I/Unity   ( 3962): VRShell------->User not login!
+I/Unity   ( 3962): UserInfoView:RefreshInfoView()
+I/Unity   ( 3962): StatusBar:GetUserInfo()
+I/Unity   ( 3962): StatusBar:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/vrUserCenter.UserInfoProvider( 3387): UserInfoProvider????query
+E/PVRShell( 3962): avatarString is null
+I/FrameAnimation( 3962): mBitmap.recycle
+I/Unity   ( 3962): VRShell------->User not login!
+I/Unity   ( 3962): UserInfoView:RefreshInfoView()
+I/Unity   ( 3962): StatusBar:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): DISFT EyeMask = Enable
+I/Unity   ( 3962): Pvr_UnityEyeMask:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+W/Unity   ( 3962): Stencil Mesh is not exist, disable EyeMask.
+W/Unity   ( 3962): Pvr_UnityEyeMask:CreateCommandBuffer()
+W/Unity   ( 3962): Pvr_UnityEyeMask:OnEnable()
+W/Unity   ( 3962):  
+W/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+W/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog Controller GameObject:ControllerManager
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog platform2
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog trackingmode4
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog systemProp4
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog enablehand6dofbyhead1
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog SetGameObjectToJar ControllerManager
+I/Unity   ( 3962): Pvr_ControllerLink:SetGameObjectToJar(String)
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+D/ControllerClient( 3962): unityObjectName = ControllerManager
+I/UnityClient( 3962): start CVservice
+I/Unity   ( 3962): PvrLog ServiceExisted ?True
+I/Unity   ( 3962): Pvr_ControllerLink:IsServiceExisted()
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PvrLog Bind Service
+I/Unity   ( 3962): Pvr_ControllerLink:BindService()
+I/Unity   ( 3962): Pvr_ControllerLink:StartHummingBirdService()
+I/Unity   ( 3962): Pvr_ControllerLink:.ctor(String)
+I/Unity   ( 3962): Pvr_ControllerManager:Awake()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Binder:1146_2( 1146): type=1400 audit(0.0:734): avc: denied { read } for name="sixdof" dev="sysfs" ino=71777 scontext=u:r:shell:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+I/Binder:1146_2( 1146): type=1400 audit(0.0:735): avc: denied { open } for path="/sys/devices/platform/soc/ac4a000.qcom,cci/ac4a000.qcom,cci:qcom,cam-sensor@0/sixdof" dev="sysfs" ino=71777 scontext=u:r:shell:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+I/Binder:1146_2( 1146): type=1400 audit(0.0:736): avc: denied { getattr } for path="/sys/devices/platform/soc/ac4a000.qcom,cci/ac4a000.qcom,cci:qcom,cam-sensor@0/sixdof" dev="sysfs" ino=71777 scontext=u:r:shell:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=1
+I/UnityClient( 3962): System proc = 4 configfile =  4
+I/UnityClient( 3962): bind CVservice
+W/ContextImpl( 3962): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.picovr.picovrlib.cvcontrollerclient.ControllerClient.bindControllerService:17 com.picovr.picovrlib.hummingbirdclient.UnityClient.bindService:65 com.unity3d.player.UnityPlayer.nativeRender:-2 
+W/ActivityManager( 1662): Unable to start service Intent { act=com.picovr.picovrlib.cvcontrollerlib.CVControllerAIDLService pkg=com.picovr.picovrlib.cvcontroller } U=0: not found
+D/ControllerClient( 3962): Bind CVControllerAIDLService.
+I/UnityPlugin( 3962): Pvr_InitSensor_ ENTER
+I/UnityPlugin( 3962): Pvr_InitSensor_ EXIT
+I/UnityPlugin( 3962): Pvr_StartSensor_ enter
+I/VrApi   ( 3962): this is a Main Sensor
+I/VrApi   ( 3962): PVR_SERVICE_QUATERNION_MODE Start GlobalTracking = 2
+I/VrApi   ( 3962): PVR_SERVICE_QUATERNION_MODE, ENABLE_BOUNDARY, change GlobalTracking to 2 from 2
+I/VrServiceApi( 3962): SetTrackingMode entry trackingMode = 2
+I/PvrServiceClient( 3962): Call setTrackingMode in PvrServiceClient,mode=2
+E/PvrService( 1146): VRModeStateClient::setTrackingMode pid=3962, trackingMode=2
+I/PvrService( 1146): mPrevTrackingMode 1, trackingMode 1
+D/PvrService( 1146): setParameter:name(ShowSafetyTip), value(false)
+D/PvrService( 1146): Do not show safety tip
+E/PvrService( 1146): VRModeStateClient::setClientSafetyTipStatus pid=3962, status=0
+I/VrApi   ( 3962): StartSensor ShowSafetyTip false
+E/PvrService( 1146): VRModeStateClient::startVRMode pid=3962
+D/PvrService( 1146): ================6dof camera status:1===============
+I/PvrService( 1146): Set m6DofCameraReady = true
+I/PvrService( 1146): mPrevTrackingMode 1, trackingMode 3
+I/PvrService( 1146): VRModeStateClient::onVRStateChanged trackingMode=3
+I/PvrService( 1146): Call setTrackingMode in ServiceCore, cur=1 new=3
+E/PvrService( 1146): setTrackingMode:Try to get tracking lock mutex
+E/PvrService( 1146): setTrackingMode:Get tracking lock mutex
+I/PvrService( 1146): Call setTrackingModeThread
+I/PvrService( 1146): Call setEyeTrackingMode in ServiceCore, cur=0 new=3
+E/PvrPlatform( 1146): Call setTrackingMode in platform, trackingMode=2
+E/PvrPlatform( 1146): qcom tracking mode
+E/PvrPlatform( 1146): start QVR_SERVICE_MODE Sensor
+I/svr     ( 1146): svrInitialize
+I/svr     ( 1146): svrApi Version : 2.1.0, Apr  9 2021 - 19:36:37
+I/svr     ( 1146): Calling QVRServiceClient_Create()...
+E/svr     ( 1146):     QVR Serivce reported VR not supported
+E/PvrPlatform( 1146): svrInitialize fail!!!
+E/PvrService( 1146): setTrackingModeThread:release tracking lock mutex
+D/PvrService( 1146): ---------------------No safety tip for pid:3962
+I/UnityPlugin( 3962): Pvr_StartSensor_ exit
+I/Unity   ( 3962): OnApplicationPause-------------------------false
+I/Unity   ( 3962): Pvr_UnitySDKManager:OnApplicationPause(Boolean)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/UnityPlugin( 3962): Pvr_StartSensor_ enter
+I/VrApi   ( 3962): this is a Main Sensor
+I/VrApi   ( 3962): PVR_SERVICE_QUATERNION_MODE Start GlobalTracking = 2
+I/VrApi   ( 3962): PVR_SERVICE_QUATERNION_MODE, ENABLE_BOUNDARY, change GlobalTracking to 2 from 2
+I/VrServiceApi( 3962): SetTrackingMode entry trackingMode = 2
+I/PvrServiceClient( 3962): Call setTrackingMode in PvrServiceClient,mode=2
+E/PvrService( 1146): VRModeStateClient::setTrackingMode pid=3962, trackingMode=2
+I/PvrService( 1146): mPrevTrackingMode 3, trackingMode 3
+D/PvrService( 1146): setParameter:name(ShowSafetyTip), value(false)
+D/PvrService( 1146): Do not show safety tip
+E/PvrService( 1146): VRModeStateClient::setClientSafetyTipStatus pid=3962, status=0
+I/VrApi   ( 3962): StartSensor ShowSafetyTip false
+E/PvrService( 1146): VRModeStateClient::startVRMode pid=3962
+I/PvrService( 1146): mPrevTrackingMode 3, trackingMode 3
+D/PvrService( 1146): ---------------------No safety tip for pid:3962
+I/UnityPlugin( 3962): Pvr_StartSensor_ exit
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation begin
+I/UnityNativeActivityPico( 3962): Unity presentationDisplays.length = 0
+I/UnityNativeActivityPico( 3962): DISFT MonoPresentation = Disable
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation failed
+I/UnityNativeActivityPico( 3962): Unity Pvr_setMonoPresentation end
+I/Unity   ( 3962): DISFT IPD:0.063
+I/Unity   ( 3962): Pvr_UnitySDKAPI.System:UPvr_GetIPD()
+I/Unity   ( 3962): <OnResume>d__124:MoveNext()
+I/Unity   ( 3962): UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/Unity   ( 3962): DISFT IPD:0.063
+I/Unity   ( 3962): Pvr_UnitySDKAPI.System:UPvr_GetIPD()
+I/Unity   ( 3962): <OnResume>d__124:MoveNext()
+I/Unity   ( 3962): UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): VRShell------->OnApplicationPause = False
+I/Unity   ( 3962): MainScreen:OnApplicationPause(Boolean)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): VRShell------->Coroutine SwitchApp
+I/Unity   ( 3962): <SwitchApp>d__23:MoveNext()
+I/Unity   ( 3962): UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+I/Unity   ( 3962): MainScreen:OnApplicationPause(Boolean)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/PVRShell( 3962): Provision component is com.picovr.provision/com.picovr.provision.UnityActivity
+I/FrameAnimation( 3962): mBitmap.recycle
+I/UnityPlugin( 3962): Pvr_SetTrackingOriginType UNITY level type 0 supportFloor 1
+I/UnityPlugin( 3962): Pvr_SetTrackingOriginType UNITY enter EYELEVEL
+I/UnityPlugin( 3962): Pvr_OptionalResetSensor_ enter
+I/VrApi   ( 3962): PVR_SERVICE_QUATERNION_MODE ResetSensor
+I/PvrServiceClient( 3962): Call resetTracking in PvrServiceClient,mode=3
+E/Paul    ( 1146): track_flag:0,3,1
+E/Paul    ( 1146): Orientation:4.778710,0.536686
+E/Paul    ( 1146): pose_offset_reset:0,0.000000,0.010210,0.000000,0.999948,0.000000,0.000000,0.000000
+E/Paul    ( 1146): Reset
+E/Paul    ( 1146): fix-no-smooth
+E/Paul    ( 1146): new-struct
+D/PvrService( 1146): newTracker resetTracking mode=[3] pose_offset [0.000000,0.010210,0.000000,0.999948,0.000000,0.000000,0.000000] flag=[1]
+I/PvrService( 1146): alg_reset successfully: 0
+E/PvrService( 1146): Call resetTracking in PvrServiceCore,mode=3, 0,1,0
+E/PvrService( 1146): resetTracking:Try to get tracking lock mutex
+E/PvrService( 1146): resetTracking:Get tracking lock mutex
+I/PvrService( 1146): Call resetTrackingThread in PvrServiceCore,mode=3, 0,1,0
+E/PvrService( 1146): Reset 3dof rotation [0 1 0]
+D/PvrOrientationTracker( 1146): Reset value = 0,1,0
+D/PvrOrientationTracker( 1146): SensorFusion::RecenterYaw()
+I/PvrService( 1146): Status callback:VR_CLIENT_STATUS_ORIENTATION_RESETTED
+I/PvrService( 1146): Status callback:VR_CLIENT_STATUS_ORIENTATION_RESETTED done
+E/PvrService( 1146): resetTrackingThread:release tracking lock mutex
+I/UnityPlugin( 3962): Pvr_OptionalResetSensor_ exit
+I/Unity   ( 3962): PvrLog OptionalResetUnitySDKSensor OK!11
+I/Unity   ( 3962): Pvr_UnitySDKSensor:OptionalResetUnitySDKSensor(Int32, Int32)
+I/Unity   ( 3962): LauncherSceneManager:LoadSeeThroughScene()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/vrUserCenter.UserInfoProvider( 3387): UserInfoProvider????query
+I/PVRShell( 3962): getUserInfo success,userInfo =
+I/vrUserCenter.UserInfoProvider( 3387): UserInfoProvider????query
+E/PVRShell( 3962): avatarString is null
+I/Unity   ( 3962): VRShell------->User not login!
+I/Unity   ( 3962): UserInfoView:RefreshInfoView()
+I/Unity   ( 3962): StatusBar:GetUserInfo()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+W/SensorService( 1662): sensor 00000022 already enabled in connection 0x78d8cf5b80 (ignoring)
+I/sensors-hal( 1109): flush:190, android.sensor.accelerometer/34
+D/PvrService( 1146): Notification Client[0] onClientStatusChange
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/PvrClientJava( 3962): status = 11,argCnt = 0
+D/PvrClient( 3962): args0 = 11
+D/PvrService( 1146): <null format suppressed by shim_pvr>
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/sensors-hal( 1109): flush:196, android.sensor.accelerometer/34 completed
+I/UnityPlugin( 3962): Pvr_SetTrackingOriginType UNITY level type 0 supportFloor 1
+I/UnityPlugin( 3962): Pvr_SetTrackingOriginType UNITY enter EYELEVEL
+D/PvrClient( 3962): notify the orientation reseted
+I/Unity   ( 3962): VRShell------->Start
+I/Unity   ( 3962): MainScreen:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): VRShell------->3840|2160|640
+I/Unity   ( 3962): <InitSurface>d__20:MoveNext()
+I/Unity   ( 3962): UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+I/Unity   ( 3962): MainScreen:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/PVRShell( 3962): Provision component is com.picovr.provision/com.picovr.provision.UnityActivity
+I/Unity   ( 3962): ??Navigation data ????
+I/Unity   ( 3962): StartUpApp:GetOutSideNav_Data()
+I/Unity   ( 3962): StartUpApp:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+D/PvrPlatform( 1146): Already keep stationary state for 72 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 72 secend
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/Unity   ( 3962): [{"packageName":"com.pvr.home","className":"com.pvr.home.RecActivity","actionName":"pvr.intent.action.HOME_REC","showName":"Recommend","iconUrl":"Image/ic_recommend"},{"packageName":"com.pvr.home","className":"com.pvr.home.AllAppActivity","actionName":"pvr.intent.action.HOME_APP","showName":"All_App","iconUrl":"Image/ic_allapp"},{"packageName":"com.picovr.store","className":"","actionName":"","showName":"Store","iconUrl":"Image/ic_store"},
+I/Unity   ( 3962): {"packageName":"com.pvr.filemanager","className":"","actionName":"","showName":"File_Management","iconUrl":"Image/ic_files"},{"packageName":"com.picovr.settings","className":"","actionName":"pui.settings.action.SETTINGS","showName":"Settings","iconUrl":"Image/ic_setting"}]
+I/Unity   ( 3962): StartUpApp:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): 6
+I/Unity   ( 3962): NavigationManager:InitDataList(List`1)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): xxxxxxxxxxxxx
+I/Unity   ( 3962): NavigationManager:InitDataList(List`1)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): PUI--------------ro.pvr.product.name = FalconCV2
+I/Unity   ( 3962): PUI_UnityAPI:GetDeviceMode()
+I/Unity   ( 3962): StatusBarView:SetUIPos()
+I/Unity   ( 3962): StatusBarView:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+W/System.err( 3962): android.content.pm.PackageManager$NameNotFoundException: com.pvr.seethrough.setting
+W/System.err( 3962): 	at android.app.ApplicationPackageManager.getPackageInfoAsUser(ApplicationPackageManager.java:193)
+W/System.err( 3962): 	at android.app.ApplicationPackageManager.getPackageInfo(ApplicationPackageManager.java:162)
+W/System.err( 3962): 	at com.pvr.vrshell.utils.Utils.isInstalled(Unknown Source:5)
+W/System.err( 3962): 	at com.pvr.vrshell.utils.Utils.isUsable(Unknown Source:10)
+W/System.err( 3962): 	at com.pvr.vrshell.utils.ShellUtils.isUsable(Unknown Source:11)
+W/System.err( 3962): 	at com.unity3d.player.UnityPlayer.nativeRender(Native Method)
+W/System.err( 3962): 	at com.unity3d.player.UnityPlayer.e(Unknown Source:0)
+W/System.err( 3962): 	at com.unity3d.player.UnityPlayer$f$2.queueIdle(Unknown Source:125)
+W/System.err( 3962): 	at android.os.MessageQueue.next(MessageQueue.java:405)
+W/System.err( 3962): 	at android.os.Looper.loop(Looper.java:174)
+W/System.err( 3962): 	at com.unity3d.player.UnityPlayer$f.run(Unknown Source:32)
+I/Unity   ( 3962): ime create
+I/Unity   ( 3962): SGIme:Create(ImeDelegateBase)
+I/Unity   ( 3962): ImeManager:Start()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+W/ContextImpl( 3962): Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.sohu.inputmethod.sogou.sgrenderproxy.RenderProxy.start:54 com.sohu.inputmethod.sogou.sgrenderproxy.RenderProxyUnity.<init>:23 com.unity3d.player.UnityPlayer.nativeRender:-2 
+W/ActivityManager( 1662): Unable to start service Intent { cmp=com.sohu.inputmethod.sogou.car/.RenderService } U=0: not found
+I/FrameAnimation( 3962): mBitmap.recycle
+I/Unity   ( 3962): ime hide
+I/Unity   ( 3962): SGIme:Hide()
+I/Unity   ( 3962): ImeManager:Hide()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/Unity   ( 3962): OnIMEHide
+I/Unity   ( 3962): ImeDelegateImpl_kbd:OnIMEHide()
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+E/UnityPlugin( 3962): Get sensor failed. Render thread not initialized.
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.042047, -0.000194, -0.003736, 0.999108)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000567, -0.007031, -0.086517)
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/ResolverController( 1392): No valid NAT64 prefix (100, <unspecified>/0)
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 73 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 73 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+I/FrameAnimation( 3962): mBitmap.recycle
+E/PvrPlatform( 1146): ALOOPER_POLL_TIMEOUT
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 9 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/wpa_supplicant( 2397): wlan0: GAS-QUERY-DONE addr=bc:51:5f:30:5c:4c dialog_token=50 freq=5805 status_code=0 result=TIMEOUT
+I/wpa_supplicant( 2397): wlan0: ANQP-QUERY-DONE addr=bc:51:5f:30:5c:4c result=FAILURE
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrService( 1146): threadLoop continue: 1
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 2 lines
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 74 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 74 secend
+I/FrameAnimation( 3962): mBitmap.recycle
+I/MSM-irqbalance( 1614): Discovered a new IRQ: 203
+I/MSM-irqbalance( 1614): Discovered a new IRQ: 204
+I/FrameAnimation( 3962): mBitmap.recycle
+I/FrameAnimation( 3962): mBitmap.recycle
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+E/InputDispatcher( 1662): Window handle nav_input_consumer has no registered input channel
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/FrameAnimation( 3962): mBitmap.recycle
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.041962, -0.000011, -0.003608, 0.999113)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000518, -0.007016, -0.086505)
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 75 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 75 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 2 lines
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 76 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 76 secend
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 8 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/System  ( 1662): A resource failed to call release. 
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 77 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 77 secend
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+W/ServiceManager( 3962): Service virtual_input didn't start. Returning NULL
+E/PvrVirtualInputClient( 3962): failed to get service
+I/PvrVirtualInputClient( 3962): pvrVirtualInputCreate 0x78de40a070
+W/PvrVirtualInputClient( 3962): ReConnectService
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+I/FrameAnimation( 3962): mBitmap.recycle
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.041389, 0.000298, -0.003467, 0.999138)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000447, -0.006916, -0.086427)
+I/UnityPlugin( 3962): FOVEA up.focused == false!
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 2 lines
+I/UnityPlugin( 3962): FOVEA up.focused == false!
+E/UnityPlugin( 3962): Get sensor failed. Render thread not initialized.
+I/UnityPlugin( 3962): FOVEA up.focused == false!
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 2 lines
+I/UnityPlugin( 3962): FOVEA up.focused == false!
+I/Unity   ( 3962): ?????:00
+I/Unity   ( 3962): SkyBoxManager:LoadSkyBox(String)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/FrameAnimation( 3962): mBitmap.recycle
+E/ResolverController( 1392): No valid NAT64 prefix (100, <unspecified>/0)
+W/Unity   ( 3962): The loaded level has a different lightmaps mode than the current one. Current: Directional. Loaded: Non-Directional. Will use: Directional.
+W/Unity   ( 3962):  
+W/Unity   ( 3962): (Filename:  Line: 258)
+W/Unity   ( 3962): 
+E/UnityPlugin( 3962): Get sensor failed. Render thread not initialized.
+I/Unity   ( 3962): InitRenderThreadRoutine after a wait
+I/Unity   ( 3962): <InitRenderThreadRoutine>d__111:MoveNext()
+I/Unity   ( 3962): UnityEngine.SetupCoroutine:InvokeMoveNext(IEnumerator, IntPtr)
+I/Unity   ( 3962):  
+I/Unity   ( 3962): (Filename: ./Runtime/Export/Debug.bindings.h Line: 45)
+I/Unity   ( 3962): 
+I/UnityPlugin( 3962): DIATW Unity Main Thread unityMainThreadTid: 4028
+I/UnityPlugin( 3962): DIATW Unity Main Thread SetThreadAffinity Default
+I/UnityPlugin( 3962): DIATW Unity Main Thread SetThreadPriority Default
+I/UnityPlugin( 3962): OnRenderEvent EVENT_INIT_RENDERTHREAD
+D/PvrService( 1146): setParameter:name(ShowSafetyTip), value(false)
+D/PvrService( 1146): Do not show safety tip
+E/PvrService( 1146): VRModeStateClient::setClientSafetyTipStatus pid=3962, status=0
+I/UnityPlugin( 3962): OnRenderEvent EVENT_INIT_RENDERTHREAD ShowSafetyTip false
+E/PvrService( 1146): VRModeStateClient::startVRMode pid=3962
+I/PvrService( 1146): mPrevTrackingMode 3, trackingMode 3
+D/PvrService( 1146): ---------------------No safety tip for pid:3962
+I/UnityPlugin( 3962): PVR_setPerformanceLevels 0 , 0
+I/UnityPlugin( 3962): PVR_SetCpuLevel  level 0
+I/PvrPlatform( 1146): setCPULevel:0 1
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/FrameAnimation( 3962): mBitmap.recycle
+I/FrameAnimation( 3962): mBitmap.recycle
+D/PvrPlatform( 1146): Already keep stationary state for 78 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 78 secend
+I/FrameAnimation( 3962): mBitmap.recycle
+I/chatty  ( 3962): uid=1000(system) com.pvr.vrshell identical 1 line
+I/FrameAnimation( 3962): mBitmap.recycle
+I/PvrPlatform( 1146): svrSetPerformanceLevels CPU level[0] B[2803200] done
+I/UnityPlugin( 3962): PVR_SetGpuLevel_ level 0
+I/PvrPlatform( 1146): setGPULevel:0 1
+I/FrameAnimation( 3962): mBitmap.recycle
+I/ServiceManager( 3962): Waiting for service 'virtual_input' on '/dev/binder'...
+I/FrameAnimation( 3962): mBitmap.recycle
+I/PvrPlatform( 1146): svrSetPerformanceLevels GPU level[0] Freq[710000000] done
+I/UnityPlugin( 3962): PVR_InitRenderThread()
+I/GlUtils ( 3962): GL_FindExtensions()--------------------------0
+I/GlUtils ( 3962): GL_FindExtensions()--------------------------1
+I/GlUtils ( 3962): GL_EXTENSIONS:
+I/GlUtils ( 3962): es3 = TRUE
+I/GlUtils ( 3962): GL_MAX_TEXTURE_SIZE = 16384
+I/GlUtils ( 3962): GL_MAX_VERTEX_UNIFORM_VECTORS = 256
+I/GlUtils ( 3962): GL_MAX_FRAGMENT_UNIFORM_VECTORS = 256
+I/UnityPlugin( 3962): FOVEA Checking for glTextureFoveationParametersEXT support...
+I/UnityPlugin( 3962): FOVEA glTextureFoveationParametersQCOM SUPPORTED
+I/UnityPlugin( 3962): Mode Parms CpuLevel 2 GpuLevel 2
+I/UnityPlugin( 3962): DIATW Unity Render Thread up.renderThreadTid: 4028
+I/UnityPlugin( 3962): DIATW Unity Render Thread SetThreadAffinity Default
+I/UnityPlugin( 3962): DIATW Unity Render Thread SetThreadPriority Default
+I/UnityPlugin( 3962): ENABLE_CHROMATIC    true
+I/UnityPlugin( 3962): ExternalSurface: create layer 0 oes texture id 115
+I/UnityPlugin( 3962): ExternalSurface: create layer 1 oes texture id 116
+I/UnityPlugin( 3962): ExternalSurface: create layer 2 oes texture id 117
+I/UnityPlugin( 3962): ExternalSurface: create layer 3 oes texture id 118
+I/UnityPlugin( 3962): ExternalSurface: create layer 4 oes texture id 119
+I/UnityPlugin( 3962): ExternalSurface: create layer 5 oes texture id 120
+I/UnityPlugin( 3962): ExternalSurface: create layer 6 oes texture id 121
+I/UnityPlugin( 3962): ExternalSurface: create layer 7 oes texture id 122
+I/UnityPlugin( 3962): ExternalSurface: create layer 8 oes texture id 123
+I/UnityPlugin( 3962): ExternalSurface: create layer 9 oes texture id 124
+I/UnityPlugin( 3962): ExternalSurface: create layer 10 oes texture id 125
+I/UnityPlugin( 3962): ExternalSurface: create layer 11 oes texture id 126
+I/UnityPlugin( 3962): ExternalSurface: create layer 12 oes texture id 127
+I/UnityPlugin( 3962): ExternalSurface: create layer 13 oes texture id 128
+I/UnityPlugin( 3962): ExternalSurface: create layer 14 oes texture id 129
+I/UnityPlugin( 3962): ExternalSurface: create layer 15 oes texture id 130
+I/UnityPlugin( 3962): ExternalSurface: updateTexImage=1880690016, getTimestamp=1880689656
+I/UnityPlugin( 3962): unityPredict = 2.000000
+I/UnityPlugin( 3962): PVR_Resume()
+I/VrApi   ( 3962): ---------- pvr_EnterVrMode ----------
+I/GlUtils ( 3962): GL_FindExtensions()--------------------------0
+I/GlUtils ( 3962): GL_FindExtensions()--------------------------1
+I/GlUtils ( 3962): GL_EXTENSIONS:
+I/GlUtils ( 3962): es3 = TRUE
+I/GlUtils ( 3962): GL_MAX_TEXTURE_SIZE = 16384
+I/GlUtils ( 3962): GL_MAX_VERTEX_UNIFORM_VECTORS = 256
+I/GlUtils ( 3962): GL_MAX_FRAGMENT_UNIFORM_VECTORS = 256
+I/VrApi   ( 3962): hmdInfo.lensSeparation = 0.062000
+I/VrApi   ( 3962): hmdInfo.widthMeters = 0.129600
+I/VrApi   ( 3962): hmdInfo.heightMeters = 0.072000
+I/VrApi   ( 3962): hmdInfo.widthPixels = 3840
+I/VrApi   ( 3962): hmdInfo.heightPixels = 2160
+I/VrApi   ( 3962): hmdInfo.eyeTextureResolution[0] = 1080
+I/VrApi   ( 3962): hmdInfo.eyeTextureResolution[1] = 1200
+I/VrApi   ( 3962): hmdInfo.eyeTextureFov[0] = 80.000000
+I/VrApi   ( 3962): hmdInfo.eyeTextureFov[1] = 80.000000
+E/CRASH   ( 3962): signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0000000000000008
+E/CRASH   ( 3962): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+E/CRASH   ( 3962): Build type 'Release', Scripting Backend 'il2cpp', CPU 'arm64-v8a'
+E/CRASH   ( 3962): Build fingerprint: 'unknown/unknown/PICOA7B10:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+E/CRASH   ( 3962): Revision: '0'
+E/CRASH   ( 3962): pid: 3962, tid: 4028, name: UnityMain  >>> com.pvr.vrshell <<<
+E/CRASH   ( 3962):     x0   0000000000000000  x1   00000078d97f1010  x2   0000000000000004  x3   0000000000000007
+E/CRASH   ( 3962):     x4   0000000000000000  x5   00000078d44d6e00  x6   00000078d44d6e00  x7   0000000000000000
+E/CRASH   ( 3962):     x8   0000000000000002  x9   0000000000000001  x10  0000000000000000  x11  33fcd7897a9fbe03
+E/CRASH   ( 3962):     x12  0000000000000070  x13  0000000005a4ab20  x14  0000000000000001  x15  0073000000000000
+E/CRASH   ( 3962):     x16  00000078de475bc8  x17  00000079675ef340  x18  0000000000000088  x19  000000787b3cf9b0
+E/CRASH   ( 3962):     x20  000000787b3bb000  x21  00000078749a7eb0  x22  000000787b3b9000  x23  000000787b3d077c
+E/CRASH   ( 3962):     x24  00000078410a0620  x25  0000000000000001  x26  000000787b3bb020  x27  00000078410a0748
+E/CRASH   ( 3962):     x28  0000000000000000  x29  00000078749a7a80  x30  000000787b22af58
+E/CRASH   ( 3962):     sp   00000078749a7a80  pc   000000787b22af58  pstate 0000000080000000
+E/CRASH   ( 3962): 
+E/CRASH   ( 3962): backtrace:
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26295} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26296} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26297} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26298} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26299} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26300} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26301} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26302} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26303} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26304} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26305} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26306} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26307} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+W/SurfaceFlinger( 1147): Failed dispatching VSync{displayId=0, count=26308} for Connection{0x7deb83e960, VSyncRequest::Periodic{period=1}}
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/InputDispatcher( 1662): channel '90122a0 com.pvr.vrshell/com.pvr.vrshell.MainActivity (server)' ~ Consumer closed input channel or an error occurred.  events=0x9
+E/InputDispatcher( 1662): channel '90122a0 com.pvr.vrshell/com.pvr.vrshell.MainActivity (server)' ~ Channel is unrecoverably broken and will be disposed!
+I/WindowManager( 1662): WIN DEATH: Window{90122a0 u0 com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+W/InputDispatcher( 1662): Attempted to unregister already unregistered input channel '90122a0 com.pvr.vrshell/com.pvr.vrshell.MainActivity (server)'
+I/sensors-hal( 1109): batch:161, android.sensor.accelerometer/34, period=2000000, max_latency=0
+I/sensors-hal( 1109): batch:170, android.sensor.accelerometer/34, period=2000000, max_latency=0 request completed
+V/AvrcpMediaPlayerList( 1902): onPlaybackConfigChanged(): Configs list size=2
+V/PvrService( 1146): removeNotificationClient() pid 3962
+E/PvrService( 1146): VRModeStateClient::onClientDied pid=3962
+I/PvrService( 1146): mPrevTrackingMode 3, trackingMode 1
+I/PvrService( 1146): VRModeStateClient::onVRStateChanged trackingMode=1
+I/PvrService( 1146): Call setTrackingMode in ServiceCore, cur=1 new=1
+E/PvrService( 1146): setTrackingMode:Try to get tracking lock mutex
+E/PvrService( 1146): setTrackingMode:Get tracking lock mutex
+I/PvrService( 1146): Call setTrackingModeThread
+I/PvrService( 1146): Call setEyeTrackingMode in ServiceCore, cur=0 new=1
+E/PvrService( 1146): setTrackingModeThread:release tracking lock mutex
+D/PvrService( 1146): removeNotificationClient done
+I/ActivityManager( 1662): Process com.pvr.vrshell (pid 3962) has died: fore TOP 
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+W/ActivityTaskManager( 1662): Force removing ActivityRecord{438d5c8 u0 com.pvr.vrshell/.MainActivity t20}: app died, no saved state
+I/Zygote  ( 1378): Process 3962 exited due to signal 11 (Segmentation fault)
+E/libprocessgroup( 1662): CgroupMap::FindController called for [1662] failed, RC file was not initialized properly
+E/libprocessgroup( 1662): CgroupMap::FindController called for [1662] failed, RC file was not initialized properly
+I/libprocessgroup( 1662): Successfully killed process cgroup uid 1000 pid 3962 in 0ms
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/ActivityManager( 1662): setHasOverlayUi called on unknown pid: 3962
+W/ActivityManager( 1662): Unable to start service Intent { act=com.android.launcher3.WINDOW_OVERLAY dat=app://com.android.launcher3:10156?v=9&cv=14 pkg=com.google.android.googlequicksearchbox } U=0: not found
+I/b       ( 3999): check# unBind: unBind Verify Service
+W/ActivityManager( 1662): Unbind failed: could not find connection for android.os.BinderProxy@9896a71
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/ImageWallpaper( 1924): wallpaper visibility changes to: true
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 2
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 2
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcbassboost( 1770): 	Effect_command: ctxt 0xf19e3200, cmd 2
+V/qcbassboost( 1770): 	BassBoost_setConfig: ctxt 0xf19e3200
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(1) new_snd_devices(0)
+D/ACDB-LOADER( 1770): ACDB -> send_audvoltable
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_VOL_STEP_TABLE_SIZE
+D/ACDB-LOADER( 1770): ACDB -> ACDB_CMD_GET_AUDPROC_GAIN_DEP_STEP_TABLE, vol index 5
+D/ACDB-LOADER( 1770): ACDB -> AUDIO_SET_VOL_CAL cal type = 40
+W/AudioFlinger( 1764): moveEffectChain_l() effect chain for session 0 not on source thread 0x72051987c0
+W/APM_AudioPolicyManager( 1764): unregisterEffect effect 19 enabled
+V/qcbassboost( 1770): 	EffectRelease: Releasing Effect 0xf19e3200 for SessionId 41
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 1
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+E/qcvirt  ( 1770): 	[vendor/qcom/proprietary/mm-audio-noship/audio-effects/safx/android-adapter/qcvirt/qcvirt.c:590] Assertion fail: pConfig->inputCfg.format == AUDIO_FORMAT_PCM_16_BIT
+W/EffectHAL( 1770): Effect 0xf19dfe70 command SET_CONFIG returned status: Invalid argument
+V/qcvirt  ( 1770): 	Effect_command, ctxt 0xf19e3280, cmd 1
+V/qcvirt  ( 1770): 	Virtualizer_setConfig, ctxt 0xf19e3280
+V/qcvirt  ( 1770): 	Virtualizer_init start ctxt 0xf19e3280
+V/qcvirt  ( 1770): 	EffectRelease: Releasing Effect 0xf19e3280 for SessionId 41
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 1
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+E/qcreverb( 1770): 	[vendor/qcom/proprietary/mm-audio-noship/audio-effects/safx/android-adapter/qcreverb/qcreverb.c:478] Assertion fail: pConfig->inputCfg.format == AUDIO_FORMAT_PCM_16_BIT
+W/EffectHAL( 1770): Effect 0xf19dfec0 command SET_CONFIG returned status: Invalid argument
+V/qcreverb( 1770): 	Effect_command, ctxt 0xf19e3300, cmd 1
+V/qcreverb( 1770): 	Reverb_setConfig, ctxt 0xf19e3300
+V/qcreverb( 1770): 	Reverb_init start, ctxt 0xf19e3300
+V/qcreverb( 1770): 	EffectRelease: Releasing Effect 0xf19e3300
+D/PvrPlatform( 1146): Already keep stationary state for 79 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 79 secend
+E/MSM-irqbalance( 1614): IRQ 76 not found in internal structure or should be ignored
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 4 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 9 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.041809, 0.000269, -0.003558, 0.999120)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000464, -0.006989, -0.086485)
+D/PvrService( 1146): PvrService::setShareMemoryData(370139):
+D/PvrService( 1146):  -0.041809,0.000269,-0.003558,0.999120,0.000464,-0.006989,-0.086485	[389185797611]	[389185117611]	[1249636]	[896354]
+D/PvrService( 1146): threadLoop continue: 1
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 4 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 80 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 80 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 81 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 81 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/audio_hw_primary( 1770): out_standby: enter: stream (0xf1e88800) usecase(0: deep-buffer-playback)
+D/audio_hw_primary( 1770): disable_audio_route: reset and update mixer path: deep-buffer-playback
+D/soundtrigger( 1770): audio_extn_sound_trigger_update_stream_status: uc_id 0 of type 0 for Event 2, with Raise=1
+D/sound_trigger_platform( 1770): platform_stdev_check_and_update_concurrency: concurrency active 0, tx 0, rx 0, concurrency session_allowed 1
+D/hardware_info( 1770): hw_info_append_hw_type : device_name = speaker
+D/audio_hw_primary( 1770): disable_snd_device: snd_device(2: speaker)
+D/msm8974_platform( 1770): platform_split_snd_device: snd_device(2) num devices(0) new_snd_devices(0)
+I/soundtrigger( 1770): audio_extn_sound_trigger_update_device_status: device 0x2 of type 0 for Event 0, with Raise=0
+D/audio_hw_primary( 1770): out_standby: exit
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 82 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 82 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.041990, 0.000232, -0.003750, 0.999113)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000498, -0.007021, -0.086510)
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 4 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 83 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 83 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 84 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 84 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_5 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/MSM-irqbalance( 1614): IRQ 76 not found in internal structure or should be ignored
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_4 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.042001, 0.000611, -0.004102, 0.999110)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000485, -0.007023, -0.086511)
+D/PvrPlatform( 1146): Already keep stationary state for 85 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 85 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+W/WindowManager( 1662): removeWindowToken: Attempted to remove non-existing token: android.os.Binder@2cd9d2c
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 4 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 2 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 1 line
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrService( 1146): threadLoop continue: 1
+D/PvrPlatform( 1146): Already keep stationary state for 86 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 86 secend
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_3 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_1 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/PvrPlatform( 1146): Already keep stationary state for 87 secend
+I/chatty  ( 1146): uid=0(root) /system/bin/pvrservice identical 1 line
+D/PvrPlatform( 1146): Already keep stationary state for 87 secend
+E/PvrService( 1146): PvrService getTrackingDataExt ret(0)
+E/PvrService( 1146): PvrService getTrackingDataExt rotation(-0.042103, 0.000538, -0.003950, 0.999105)
+E/PvrService( 1146): PvrService getTrackingDataExt position(0.000475, -0.007041, -0.086525)
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+I/chatty  ( 1662): uid=1000(system) HwBinder:1662_2 identical 3 lines
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable
+D/HalDevMgr( 1662): onDebugRingBufferDataAvailable

@@ -1,0 +1,206 @@
+############ all JDI panel names + key timing props ############
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd 72 new video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2b>;
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-v-back-porch = <0x14>;
+						qcom,mdss-dsi-v-front-porch = <0x1f2>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x48>;
+				qcom,mdss-dsi-panel-name = "jdi 4k 55uhd 70 new video mode dsi panel";
+				qcom,mdss-dsi-panel-type = "dsi_video_mode";
+				qcom,mdss-dsi-bpp = <0x18>;
+				qcom,mdss-dsi-border-color = <0x00>;
+				qcom,mdss-dsi-traffic-mode = "non_burst_sync_event";
+				qcom,mdss-dsi-lane-0-state;
+				qcom,mdss-dsi-lane-1-state;
+				qcom,mdss-dsi-lane-2-state;
+				qcom,mdss-dsi-lane-3-state;
+				qcom,mdss-dsi-t-clk-post = <0x0d>;
+				qcom,mdss-dsi-t-clk-pre = <0x2d>;
+						qcom,mdss-dsi-panel-width = <0x438>;
+						qcom,mdss-dsi-panel-height = <0xf00>;
+						qcom,mdss-dsi-h-front-porch = <0x14>;
+						qcom,mdss-dsi-h-back-porch = <0x14>;
+						qcom,mdss-dsi-h-pulse-width = <0x14>;
+						qcom,mdss-dsi-v-back-porch = <0x1d>;
+						qcom,mdss-dsi-v-front-porch = <0x4b>;
+						qcom,mdss-dsi-v-pulse-width = <0x0a>;
+						qcom,mdss-dsi-panel-framerate = <0x46>;
+
+############ Pico-specific device nodes (full) ############
+===== spidev@0 =====
+			spidev@0 {
+				compatible = "picovr,nordic";
+				status = "ok";
+				reg = <0x00>;
+				gpio = <0xffffffff 0x3a 0x00>;
+				rfic-io2-gpio = <0xffffffff 0x3b 0x00>;
+				rfic-io3-gpio = <0xffffffff 0x3d 0x00>;
+				picovr,129-gpio = <0xffffffff 0x81 0x00>;
+				spi-max-frequency = <0x5b8d80>;
+			};
+
+			spidev@0 {
+				compatible = "picovr,spi-w25q";
+				status = "ok";
+				reg = <0x00>;
+				pinctrl-names = "spi-w25q_active", "spi-w25q_suspend";
+				pinctrl-0 = <0xffffffff>;
+				pinctrl-1 = <0xffffffff>;
+				spi-max-frequency = <0x9c40>;
+				picovr,fpga_rset = <0xffffffff 0x54 0x00>;
+				picovr,power-en = <0xffffffff 0x51 0x00>;
+				picovr,switch-gpio = <0xffffffff 0x7a 0x00>;
+			};
+
+
+===== icm@68 =====
+			icm@68 {
+				compatible = "imu,icm206xx";
+				reg = <0x68>;
+				vdd_ana-supply = <0xffffffff>;
+				vdd_vio-supply = <0xffffffff>;
+				imu,drdy-int-pin = <0x00>;
+				qcom,icm-irq = <0xffffffff 0x76 0x00>;
+				interrupt-parent = <0xffffffff>;
+				interrupts = <0x76 0x00>;
+				interrupt-names = "icm_irq";
+				pinctrl-names = "icm_active", "icm_suspend";
+				pinctrl-0 = <0xffffffff>;
+				pinctrl-1 = <0xffffffff>;
+			};
+
+
+===== eepromi2c@57 =====
+			eepromi2c@57 {
+				compatible = "i2c,eeprom";
+				reg = <0x57>;
+				qcom,power-en = <0xffffffff 0x57 0x00>;
+				qcom,tof-en = <0xffffffff 0x19 0x00>;
+				qcom,sda-en = <0xffffffff 0x5d 0x00>;
+				qcom,scl-en = <0xffffffff 0x5e 0x00>;
+			};
+
+
+===== nq@28 =====
+			nq@28 {
+				compatible = "qcom,nq-nci";
+				reg = <0x28>;
+				qcom,nq-irq = <0xffffffff 0x3f 0x00>;
+				qcom,nq-ven = <0xffffffff 0x0c 0x00>;
+				qcom,nq-firm = <0xffffffff 0x3e 0x00>;
+				qcom,nq-clkreq = <0xffffffff 0x15 0x00>;
+				qcom,nq-esepwr = <0xffffffff 0x74 0x00>;
+				interrupt-parent = <0xffffffff>;
+				interrupts = <0x3f 0x00>;
+				interrupt-names = "nfc_irq";
+				pinctrl-names = "nfc_active", "nfc_suspend";
+				pinctrl-0 = <0xffffffff 0xffffffff 0xffffffff>;
+				pinctrl-1 = <0xffffffff 0xffffffff>;
+			};
+
+
+===== gpio_fan =====
+			gpio_fan {
+				compatible = "gpio-fan";
+				status = "ok";
+				gpios = <0xffffffff 0x1c 0x00>;
+				gpio-fan,speed-map = <0x00 0x00 0x1db0 0x01 0x251c 0x02 0x2c88 0x02>;
+				pinctrl-names = "default";
+				pinctrl-0 = <0xffffffff>;
+				pwms = <0x42 0x00 0x00>;
+				fan_pwm_irq = <0xffffffff 0x68 0x00>;
+			};
+
+				gpio_fan {
+					pwms = <0x00>;
+				};
+
+
+===== hw_version =====
+			hw_version {
+				status = "ok";
+				compatible = "hw_version";
+				input-name = "hw_version";
+				pinctrl-names = "tlmm_hardware_version_active", "tlmm_hardware_version_suspend";
+				pinctrl-0 = <0xffffffff 0xffffffff 0xffffffff>;
+				pinctrl-1 = <0xffffffff 0xffffffff 0xffffffff>;
+
+				hwversion_gpio105 {
+					status = "ok";
+					label = "hwversion_gpio105";
+					gpios = <0xffffffff 0x69 0x01>;
+					linux,input-type = <0x01>;
+				};
+
+				hwversion_gpio106 {
+					status = "ok";
+					label = "hwversion_gpio106";
+					gpios = <0xffffffff 0x6a 0x01>;
+					linux,input-type = <0x01>;
+				};
+
+				hwversion_gpio107 {
+					status = "ok";
+					label = "hwversion_gpio107";
+					gpios = <0xffffffff 0x6b 0x01>;
+					linux,input-type = <0x01>;
+				};
+			};
+
+
+===== gpio_keys =====
+			gpio_keys {
+				compatible = "gpio-keys";
+				label = "gpio-keys";
+				Vcc_hall-supply = <0xffffffff>;
+				pinctrl-names = "default", "tlmm_gpio_key_active", "tlmm_gpio_key_suspend";
+				pinctrl-0 = <0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff 0xffffffff>;
+				pinctrl-1 = <0xffffffff 0xffffffff>;
+
+				home {
+					label = "home";
+					gpios = <0xffffffff 0x05 0x01>;
+					linux,input-type = <0x01>;
+					linux,code = <0x66>;
+					gpio-key,wakeup;
+					debounce-interval = <0x0f>;
+					linux,can-disable;
+				};
+
+				vol_up {
+					label = "volume_up";
+					gpios = <0xffffffff 0x06 0x01>;
+					linux,input-type = <0x01>;
+					linux,code = <0x73>;
+					gpio-key,wakeup;
+					debounce-interval = <0x0f>;
+					linux,can-disable;
+				};
+
+				cam_snapshot {
+					label = "cam_snapshot";
+					gpios = <0xffffffff 0x07 0x01>;
+					linux,input-type = <0x01>;
+					linux,code = <0x2fe>;
+					gpio-key,wakeup;
+					debounce-interval = <0x0f>;
+					linux,can-disable;
+				};
+
+				cam_focus {
+					label = "cam_focus";
+

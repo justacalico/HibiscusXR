@@ -1,0 +1,75 @@
+﻿=== sensors 0x19..end (the Pico private ones live up here) ===
+0x00000018) Device Orientation  Non-wakeup | qualcomm        | ver: 1 | type: android.sensor.device_orientation(27) | perm: n/a | flags: 0x00000002
+0x00000019) BMG160 Gyroscope Wakeup   | BOSCH           | ver: 16843044 | type: android.sensor.gyroscope(4) | perm: n/a | flags: 0x00000981
+0x0000001a) BMG160 Gyroscope Non-wakeup | BOSCH           | ver: 16843044 | type: android.sensor.gyroscope(4) | perm: n/a | flags: 0x00000980
+0x0000001b) BMG160 Gyroscope-Uncalibrated Wakeup | BOSCH           | ver: 16843044 | type: android.sensor.gyroscope_uncalibrated(16) | perm: n/a | flags: 0x00000981
+0x0000001c) BMG160 Gyroscope-Uncalibrated Non-wakeup | BOSCH           | ver: 16843044 | type: android.sensor.gyroscope_uncalibrated(16) | perm: n/a | flags: 0x00000980
+0x0000001d) Rotation Vector  Wakeup   | qualcomm        | ver: 1 | type: android.sensor.rotation_vector(11) | perm: n/a | flags: 0x00000001
+0x0000001e) Rotation Vector  Non-wakeup | qualcomm        | ver: 1 | type: android.sensor.rotation_vector(11) | perm: n/a | flags: 0x00000000
+0x0000001f) bst_bma2x2 Accelerometer-Uncalibrated Wakeup | Bosch           | ver: 16843316 | type: android.sensor.accelerometer_uncalibrated(35) | perm: n/a | flags: 0x000009c1
+0x00000020) bst_bma2x2 Accelerometer-Uncalibrated Non-wakeup | Bosch           | ver: 16843316 | type: android.sensor.accelerometer_uncalibrated(35) | perm: n/a | flags: 0x000009c0
+0x00000021) bst_bma2x2 Accelerometer Wakeup | Bosch           | ver: 16843316 | type: android.sensor.accelerometer(1) | perm: n/a | flags: 0x000009c1
+0x00000022) bst_bma2x2 Accelerometer Non-wakeup | Bosch           | ver: 16843316 | type: android.sensor.accelerometer(1) | perm: n/a | flags: 0x000009c0
+0x00000023) stationary_detect_wakeup  | qualcomm        | ver: 1 | type: android.sensor.stationary_detect(29) | perm: n/a | flags: 0x00000005
+0x00000024) stationary_detect         | qualcomm        | ver: 1 | type: android.sensor.stationary_detect(29) | perm: n/a | flags: 0x00000004
+0x00000025) sns_geomag_rv  Wakeup     | qualcomm        | ver: 1 | type: android.sensor.geomagnetic_rotation_vector(20) | perm: n/a | flags: 0x00000001
+0x00000026) sns_geomag_rv  Non-wakeup | qualcomm        | ver: 1 | type: android.sensor.geomagnetic_rotation_vector(20) | perm: n/a | flags: 0x00000000
+0x00000027) STK3X1X Ambient Light Sensor | SENSORTEK       | ver: 1 | type: android.sensor.light(5) | perm: n/a | flags: 0x00000002
+0x00000028) ICM206XX 3-axis Accelerometer and Gyroscope sensor | NDI             | ver: 1 | type: android.sensor.pose_6dof(28) | perm: n/a | flags: 0x00000000
+0x5f636779) Corrected Gyroscope Sensor | AOSP            | ver: 1 | type: android.sensor.gyroscope(4) | perm: n/a | flags: 0x00000000
+0x5f676172) Game Rotation Vector Sensor | AOSP            | ver: 3 | type: android.sensor.game_rotation_vector(15) | perm: n/a | flags: 0x00000000
+0x5f676273) Gyroscope Bias (debug)    | AOSP            | ver: 1 | type: android.sensor.accelerometer(1) | perm: n/a | flags: 0x00000000
+0x5f67656f) GeoMag Rotation Vector Sensor | AOSP            | ver: 3 | type: android.sensor.geomagnetic_rotation_vector(20) | perm: n/a | flags: 0x00000000
+0x5f677276) Gravity Sensor            | AOSP            | ver: 3 | type: android.sensor.gravity(9) | perm: n/a | flags: 0x00000000
+0x5f6c696e) Linear Acceleration Sensor | AOSP            | ver: 3 | type: android.sensor.linear_acceleration(10) | perm: n/a | flags: 0x00000000
+0x5f726f76) Rotation Vector Sensor    | AOSP            | ver: 3 | type: android.sensor.rotation_vector(11) | perm: n/a | flags: 0x00000000
+0x5f797072) Orientation Sensor        | AOSP            | ver: 1 | type: android.sensor.orientation(3) | perm: n/a | flags: 0x00000000
+
+=== every distinct type number in the list ===
+type: android.sensor.accelerometer(1)
+type: android.sensor.accelerometer_uncalibrated(35)
+type: android.sensor.device_orientation(27)
+type: android.sensor.game_rotation_vector(15)
+type: android.sensor.geomagnetic_rotation_vector(20)
+type: android.sensor.gravity(9)
+type: android.sensor.gyroscope(4)
+type: android.sensor.gyroscope_uncalibrated(16)
+type: android.sensor.light(5)
+type: android.sensor.linear_acceleration(10)
+type: android.sensor.magnetic_field(2)
+type: android.sensor.magnetic_field_uncalibrated(14)
+type: android.sensor.motion_detect(30)
+type: android.sensor.orientation(3)
+type: android.sensor.pose_6dof(28)
+type: android.sensor.proximity(8)
+type: android.sensor.rotation_vector(11)
+type: android.sensor.significant_motion(17)
+type: android.sensor.stationary_detect(29)
+type: android.sensor.step_counter(19)
+type: android.sensor.step_detector(18)
+type: android.sensor.tilt_detector(22)
+type: qti.sensor.hall_effect(33171002)
+
+=== crash timestamps for the sensor abort ===
+11:08-08 13:06:34.389  4990  4990 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+49:08-08 13:06:37.730  5201  5201 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+87:08-08 13:06:42.436  5400  5400 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+125:08-08 13:06:47.437  5601  5601 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+163:08-08 13:06:52.453  5798  5798 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+201:08-08 13:06:57.405  6012  6012 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+239:08-08 13:07:02.478  6205  6205 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+277:08-08 13:07:07.379  6409  6409 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+315:08-08 13:07:12.376  6611  6611 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+353:08-08 13:07:17.436  6818  6818 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+391:08-08 13:07:22.436  7010  7010 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+429:08-08 13:07:27.427  7212  7212 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=126, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+467:08-08 13:07:32.553  7418  7418 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=127, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+505:08-08 13:07:37.367  7612  7612 F DEBUG   : Abort message: 'Check failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE ((int32_t)src.sensorType=127, (int32_t)SensorType::DEVICE_PRIVATE_BASE=65536) '
+
+=== is it still happening with nothing of ours running? ===
+our app pid: 
+system_server pid: 7713  uptime 676s
+
+=== which sensors are ACTIVE right now ===
+0x00000017) active-count = 1; sampling_period(ms) = {66.7}, selected = 66.67 ms; batching_period(ms) = {0.0}, selected = 0.00 ms
+DONE

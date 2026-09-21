@@ -1,0 +1,15 @@
+=== install seethroughsetting 08/13/2026 18:03:00 ===
+[18:03:00] --- free space on /system before ---
+[18:03:00]    Filesystem      Size  Used Avail Use% Mounted on
+[18:03:00]    /dev/block/sda7 3.6G  2.1G  1.5G  58% /system/lib/vndk-27/libminijail.so
+[18:03:00] pushing signed apk (194 MB)
+[18:03:04]    F:\PN2Lineage\seethrough\seethroughsetting-signed.apk: 1 file pushed, 0 skipped. 47.3 MB/s (203241464 bytes in 4.100s)
+[18:03:05] pushed 7 native libs
+[18:03:08]    --- installed ---
+[18:03:08]    total 198488
+[18:03:08]    drwxr-xr-x 3 root root      4096 2026-08-13 18:03 lib
+[18:03:08]    -rw-r--r-- 1 root root 203241464 2026-08-13 18:03 seethroughsetting.apk
+[18:03:08]    7
+[18:03:08]    Filesystem      Size  Used Avail Use% Mounted on
+[18:03:08]    /dev/block/sda7 3.6G  2.3G  1.3G  64% /system/lib/vndk-27/libminijail.so
+[18:03:08] rebooting so PackageManager scans it

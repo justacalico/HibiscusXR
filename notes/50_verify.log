@@ -1,0 +1,15 @@
+=== vintf overlay + gpu verify 08/13/2026 10:51:58 ===
+[10:51:58] rebooting
+[10:52:19] adb up
+[10:52:19] t+  0s up=  16s boot_completed=''
+[10:52:24] t+  5s up=  21s boot_completed=''
+[10:52:29] t+ 10s up=  26s boot_completed=''
+[10:52:34] t+ 15s up=  31s boot_completed='1'
+[10:52:34] boot_completed: YES
+[10:52:35] watchdog kills: 0
+[10:52:35] sound card    : 0 [sdm845tavilsndc]: sdm845-tavil-sn - sdm845-tavil-snd-card                       sdm845-tavil-snd-card
+[10:52:35] --- is the bind mount live, and is vendor still pristine? ---
+   0
+   22335
+   /dev/block/platform/soc/1d84000.ufshc/by-name/system /vendor/manifest.xml ext4 ro,seclabel,relatime,block_validity,discard,delalloc,barrier,user_xattr 0 0
+[10:52:35] === done ===

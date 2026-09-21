@@ -1,0 +1,148 @@
+﻿=== audioserver service state ===
+running
+
+running
+pid: 3362
+uptime: 170s
+
+=== audio-related processes ===
+  410 [uaudio_svc]
+  481 [sdm_dp_audio_no]
+ 1316 mediadrmserver
+ 1320 media.extractor
+ 1325 media.metrics
+ 1327 media.swcodec
+ 1333 media.codec
+ 3362 audioserver
+ 3364 mediaserver
+ 3367 android.hardware.audio@2.0-service
+
+=== audio HAL registered? ===
+DM,FC ? android.hardware.audio.effect@2.0::IEffectsFactory/default            N/A        N/A    
+DM,FC ? android.hardware.audio@2.0::IDevicesFactory/default                   N/A        N/A    
+FC    ? android.hardware.audio.effect@2.0::IEffectsFactory/default          N/A        N/A    3367
+FC    ? android.hardware.audio@2.0::IDevicesFactory/default                 N/A        N/A    3367
+X     ? com.qualcomm.qti.bluetooth_audio@1.0::IBluetoothAudio/default       N/A        N/A    
+FC    ? android.hardware.audio.effect@2.0::I*/* (/vendor/lib/hw/)            N/A        N/A    3367
+FC    ? android.hardware.audio.effect@2.0::I*/* (/vendor/lib64/hw/)          N/A        N/A    
+FC    ? android.hardware.audio@2.0::I*/* (/vendor/lib/hw/)                   N/A        N/A    3367
+FC    ? android.hardware.audio@2.0::I*/* (/vendor/lib64/hw/)                 N/A        N/A    
+X     ? com.qualcomm.qti.bluetooth_audio@1.0::I*/* (/vendor/lib/hw/)         N/A        N/A    
+X     ? com.qualcomm.qti.bluetooth_audio@1.0::I*/* (/vendor/lib64/hw/)       N/A        N/A    
+
+=== declared in vendor manifest? ===
+<manifest version="1.0" type="device">
+    <hal format="hidl">
+        <name>android.hardware.audio</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>IDevicesFactory</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+        <name>android.hardware.audio.effect</name>
+        <transport>hwbinder</transport>
+        <version>2.0</version>
+        <interface>
+            <name>IEffectsFactory</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl">
+
+=== audio HAL binaries in vendor ===
+-rwxr-xr-x 1 root   shell    20288 2008-12-31 11:00 android.hardware.audio@2.0-service
+
+=== audioserver crash / restart evidence ===
+08-08 12:59:01.570   929  2247 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 2247 (Binder:929_5), pid 929 (audioserver)
+08-08 12:59:01.590  2722  2722 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+08-08 12:59:01.590  2722  2722 F DEBUG   : LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+08-08 12:59:01.590  2722  2722 F DEBUG   : Build fingerprint: 'unknown/unknown/unknown:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+08-08 12:59:01.590  2722  2722 F DEBUG   : Revision: '0'
+08-08 12:59:01.590  2722  2722 F DEBUG   : ABI: 'arm64'
+08-08 12:59:01.591  2722  2722 F DEBUG   : Timestamp: 2021-08-08 12:59:01-0400
+08-08 12:59:01.591  2722  2722 F DEBUG   : pid: 929, tid: 2247, name: Binder:929_5  >>> /system/bin/audioserver <<<
+08-08 12:59:01.591  2722  2722 F DEBUG   : uid: 1041
+08-08 12:59:01.591  2722  2722 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0
+08-08 12:59:01.591  2722  2722 F DEBUG   : Cause: null pointer dereference
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x0  000000000000007b  x1  00000079674f78e4  x2  0000000000000097  x3  1c9a5b585c9e4000
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x4  0000000000000000  x5  78101f03181a2d02  x6  022d1a18031f1078  x7  77686c6174725e71
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x8  00000079675a4f70  x9  00000079674f7de9  x10 0101010101010101  x11 0000000000000006
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x12 0000000000000030  x13 0000000000000000  x14 0000000000000008  x15 0000a0544fbef951
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x16 00000079675a5b48  x17 0000007965d8b740  x18 00000078d696e000  x19 00000078d71dd020
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x20 0000000000000000  x21 0000007967b77028  x22 00000078d71dade0  x23 000003ea000008e3
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x24 00000078d71dade0  x25 00000078d71dd020  x26 0000000000000000  x27 00000078d71dd020
+08-08 12:59:01.591  2722  2722 F DEBUG   :     x28 0000000000000000  x29 00000078d71dac30
+08-08 12:59:01.591  2722  2722 F DEBUG   :     sp  00000078d71dab60  lr  000000796751b00c  pc  000000796751b018
+--
+08-08 12:59:46.823  2733  3013 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 3013 (TimeCheckThread), pid 2733 (audioserver)
+08-08 12:59:46.836  3152  3152 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+08-08 12:59:46.836  3152  3152 F DEBUG   : LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+08-08 12:59:46.836  3152  3152 F DEBUG   : Build fingerprint: 'unknown/unknown/unknown:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+08-08 12:59:46.836  3152  3152 F DEBUG   : Revision: '0'
+08-08 12:59:46.836  3152  3152 F DEBUG   : ABI: 'arm64'
+08-08 12:59:46.836  3152  3152 F DEBUG   : Timestamp: 2021-08-08 12:59:46-0400
+08-08 12:59:46.836  3152  3152 F DEBUG   : pid: 2733, tid: 3013, name: TimeCheckThread  >>> /system/bin/audioserver <<<
+08-08 12:59:46.836  3152  3152 F DEBUG   : uid: 1041
+08-08 12:59:46.836  3152  3152 F DEBUG   : signal 6 (SIGABRT), code -1 (SI_QUEUE), fault addr --------
+08-08 12:59:46.836  3152  3152 F DEBUG   : Abort message: 'TimeCheck timeout for IAudioFlinger command 22'
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x0  0000000000000000  x1  0000000000000bc5  x2  0000000000000006  x3  00000070acc07660
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x4  fefeff7036d8ff6a  x5  fefeff7036d8ff6a  x6  fefeff7036d8ff6a  x7  7f7f7f7f7fff7f7f
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x8  00000000000000f0  x9  8da90fa6de67e6f6  x10 0000000000000001  x11 0000000000000000
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x12 fffffff0ffffffdf  x13 ffffffffffffffff  x14 0000000000000004  x15 ffffffffffffffff
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x16 00000071375f68c0  x17 00000071375d43b0  x18 00000070abf1e000  x19 0000000000000aad
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x20 0000000000000bc5  x21 00000000ffffffff  x22 00000070acc08020  x23 0000000000000000
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x24 0000000000000000  x25 00000070acc07d50  x26 00000070acc08020  x27 00000070add05020
+08-08 12:59:46.836  3152  3152 F DEBUG   :     x28 0000000000000000  x29 00000070acc07700
+08-08 12:59:46.836  3152  3152 F DEBUG   :     sp  00000070acc07640  lr  0000007137587f48  pc  0000007137587f74
+---- init restarts ----
+08-08 12:59:01.570   929  2247 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x0 in tid 2247 (Binder:929_5), pid 929 (audioserver)
+08-08 12:59:01.591  2722  2722 F DEBUG   : pid: 929, tid: 2247, name: Binder:929_5  >>> /system/bin/audioserver <<<
+08-08 12:59:41.721  2734  2734 I audiohalservice: Registration complete for com.qualcomm.qti.bluetooth_audio@1.0::IBluetoothAudio/default.
+08-08 12:59:41.722  2733  3006 E /system/bin/audioserver: open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+08-08 12:59:42.073  2734  2734 I libc    : Requested dump for tid 2734 (audio@2.0-servi)
+08-08 12:59:42.741  2733  2733 I libc    : Requested dump for tid 2733 (audioserver)
+08-08 12:59:46.819  2733  2733 I TimeCheckThread: type=1400 audit(0.0:277): avc: denied { read } for name="event-log-tags" dev="tmpfs" ino=25876 scontext=u:r:audioserver:s0 tcontext=u:object_r:device:s0 tclass=file permissive=1
+08-08 12:59:46.819  2733  2733 I TimeCheckThread: type=1400 audit(0.0:278): avc: denied { open } for path="/dev/event-log-tags" dev="tmpfs" ino=25876 scontext=u:r:audioserver:s0 tcontext=u:object_r:device:s0 tclass=file permissive=1
+08-08 12:59:46.823  2733  3013 F libc    : Fatal signal 6 (SIGABRT), code -1 (SI_QUEUE) in tid 3013 (TimeCheckThread), pid 2733 (audioserver)
+08-08 12:59:46.836  3152  3152 F DEBUG   : pid: 2733, tid: 3013, name: TimeCheckThread  >>> /system/bin/audioserver <<<
+08-08 12:59:46.953  3161  3161 I ServiceManagement: Removing namespace from process name android.hardware.audio@2.0-service to audio@2.0-servi.
+08-08 12:59:46.954  3161  3161 I audiohalservice: Registration complete for android.hardware.audio@2.0::IDevicesFactory/default.
+08-08 12:59:47.026  3160  3160 I audioserver: ServiceManager: 0x72e7029f40
+08-08 12:59:47.027   563   563 I hwservicemanager: getTransport: Cannot find entry android.hardware.audio@5.0::IDevicesFactory/default in either framework or device manifest.
+08-08 12:59:47.027   563   563 I hwservicemanager: getTransport: Cannot find entry android.hardware.audio@4.0::IDevicesFactory/default in either framework or device manifest.
+08-08 13:00:13.235  3161  3161 I libc    : Requested dump for tid 3161 (audio@2.0-servi)
+08-08 13:00:14.179  3160  3160 I libc    : Requested dump for tid 3160 (audioserver)
+08-08 13:00:19.498  3367  3367 I ServiceManagement: Removing namespace from process name android.hardware.audio@2.0-service to audio@2.0-servi.
+08-08 13:00:19.506  3367  3367 I audiohalservice: Registration complete for android.hardware.audio@2.0::IDevicesFactory/default.
+08-08 13:00:19.531  3362  3362 I audioserver: ServiceManager: 0x73cac66f40
+08-08 13:00:19.533   563   563 I hwservicemanager: getTransport: Cannot find entry android.hardware.audio@5.0::IDevicesFactory/default in either framework or device manifest.
+08-08 13:00:19.534   563   563 I hwservicemanager: getTransport: Cannot find entry android.hardware.audio@4.0::IDevicesFactory/default in either framework or device manifest.
+
+=== tombstones ===
+total 640
+-rw-r----- 1 tombstoned system 217390 2021-08-08 12:59 tombstone_02
+-rw-r----- 1 tombstoned system 229760 2021-08-08 12:59 tombstone_01
+-rw-r----- 1 tombstoned system 181749 1971-07-17 10:47 tombstone_00
+drwxrwx--x 2 system     system   4096 1971-07-17 10:38 dsps
+drwxrwx--x 2 system     system   4096 1971-07-17 10:38 lpass
+
+=== any HAL still declared-but-missing (the same trap as boot) ===
+NOT REGISTERED: android.hardware.radio
+NOT REGISTERED: android.hardware.radio.deprecated
+NOT REGISTERED: vendor.qti.hardware.alarm
+NOT REGISTERED: vendor.qti.hardware.improvetouch.blobmanager
+NOT REGISTERED: vendor.qti.hardware.improvetouch.gesturemanager
+NOT REGISTERED: vendor.qti.hardware.improvetouch.touchcompanion
+NOT REGISTERED: vendor.qti.hardware.radio.am
+NOT REGISTERED: vendor.qti.hardware.radio.atcmdfwd
+NOT REGISTERED: vendor.qti.hardware.radio.config
+NOT REGISTERED: vendor.qti.hardware.radio.ims
+NOT REGISTERED: vendor.qti.hardware.radio.lpa
+NOT REGISTERED: vendor.qti.hardware.radio.qcrilhook
+NOT REGISTERED: vendor.qti.hardware.radio.qtiradio
+NOT REGISTERED: vendor.qti.hardware.radio.uim
+NOT REGISTERED: vendor.qti.hardware.wigig.netperftuner
+DONE

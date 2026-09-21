@@ -1,0 +1,33 @@
+=== VRShell without the controller service 08/14/2026 03:06:40 ===
+[03:07:25]    --- stop the crash loop ---
+[03:07:25]    Package com.picovr.picovrlib.cvcontroller new state: disabled
+[03:07:25]    --- restart pvrservice clean ---
+[03:07:25]      pvrservice pid 4745
+[03:07:25]    --- launch the shell ---
+[03:07:25]      vrshell pid 5005  threads=62
+[03:07:25]    --- did it get past registerClient? ---
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.widthPixels = 3840
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.heightPixels = 2160
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.eyeTextureResolution[0] = 1080
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.eyeTextureResolution[1] = 1200
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.eyeTextureFov[0] = 80.000000
+[03:07:25]    5005  5045 I VrApi   : hmdInfo.eyeTextureFov[1] = 80.000000
+[03:07:25]    5005  5045 E CRASH   : 	#02  pc 000000000005ff70  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so (pvr_EnterVrMode+1364)
+[03:07:25]    5005  5045 E CRASH   : 	#05  pc 000000000006a098  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so (PVR_InitRenderThread_+1056)
+[03:07:25]    5005  5045 E CRASH   : 	#06  pc 0000000000069bc0  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so (PVR_InitRenderThread+20)
+[03:07:25]    5005  5045 E MessageQueue: 	at libPvr_UnitySDK.pvr_EnterVrMode(pvr_EnterVrMode:1364)
+[03:07:25]    5005  5045 E MessageQueue: 	at libPvr_UnitySDK.PVR_InitRenderThread_(PVR_InitRenderThread_:1056)
+[03:07:25]    5005  5045 E MessageQueue: 	at libPvr_UnitySDK.PVR_InitRenderThread(PVR_InitRenderThread:20)
+[03:07:25]    --- is the main thread still stuck in binder? ---
+[03:07:25]    "com.pvr.vrshell" sysTid=5005
+[03:07:25]        #00 pc 00000000000cd9f8  /apex/com.android.runtime/lib64/bionic/libc.so (__epoll_pwait+8) (BuildId: bf14cf7a62d1f91755beddd4a937354d)
+[03:07:25]        #01 pc 0000000000017af8  /system/lib64/libutils.so (android::Looper::pollInner(int)+144) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+[03:07:25]        #02 pc 00000000000179c8  /system/lib64/libutils.so (android::Looper::pollOnce(int, int*, int*, void**)+56) (BuildId: 59cf3fe4181b87b327cc75164d8ebaa8)
+[03:07:25]    --- pvrservice zombies / health ---
+[03:07:25]    grep: Z: No such file or directory
+[03:07:25]    grep: ": No such file or directory
+[03:07:25]      zombies=
+[03:07:25]      malloc-contended threads=0
+[03:07:25]    --- compositor ---
+[03:07:25]    grep: Pose": No such file or directory
+[03:07:25]      BadPose=  kLost=0

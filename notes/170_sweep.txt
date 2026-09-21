@@ -1,0 +1,672 @@
+=== JNI entry points in the app's bundled SDK ===
+  Java_com_picovr_vractivity_VRActivity_getNativePtr
+  Java_com_picovr_vractivity_VRActivity_nativeDestroy
+  Java_com_picovr_vractivity_VRActivity_nativePause
+  Java_com_picovr_vractivity_VRActivity_nativeRenderEventPush
+  Java_com_picovr_vractivity_VRActivity_nativeResume
+  Java_com_picovr_vractivity_VRActivity_nativeSetMultisamples
+  Java_com_picovr_vractivity_VRActivity_nativeSetRenderPose
+  Java_com_picovr_vractivity_VRActivity_nativesurfaceChanged
+  Java_com_picovr_vractivity_VRActivity_nativesurfaceCreated
+  Java_com_picovr_vractivity_VRActivity_nativesurfaceDestroyed
+  Java_com_picovr_vractivity_VRActivity_stringFromJNI
+  Java_com_psmart_vrlib_PicovrSDK_ChangeScreenParameters
+  Java_com_psmart_vrlib_PicovrSDK_GetEyeBufferHeight
+  Java_com_psmart_vrlib_PicovrSDK_GetEyeBufferWidth
+  Java_com_psmart_vrlib_PicovrSDK_SetEyeBufferSize
+  Java_com_psmart_vrlib_PicovrSDK_calcArmModelParameters
+  Java_com_psmart_vrlib_PicovrSDK_cancelControllerVibrate
+  Java_com_psmart_vrlib_PicovrSDK_deInitConfigs
+  Java_com_psmart_vrlib_PicovrSDK_disableBoundarySystem
+  Java_com_psmart_vrlib_PicovrSDK_enable6DofModule
+  Java_com_psmart_vrlib_PicovrSDK_getBoundaryExtraType
+  Java_com_psmart_vrlib_PicovrSDK_getCpuLevel
+  Java_com_psmart_vrlib_PicovrSDK_getCurrentPlatformType
+  Java_com_psmart_vrlib_PicovrSDK_getDeviceTrackingStatus
+  Java_com_psmart_vrlib_PicovrSDK_getDialogState
+  Java_com_psmart_vrlib_PicovrSDK_getElbowPose
+  Java_com_psmart_vrlib_PicovrSDK_getFloatConfig
+  Java_com_psmart_vrlib_PicovrSDK_getGpuLevel
+  Java_com_psmart_vrlib_PicovrSDK_getHmdPose
+  Java_com_psmart_vrlib_PicovrSDK_getHmdScreenBrightness
+  Java_com_psmart_vrlib_PicovrSDK_getIntConfig
+  Java_com_psmart_vrlib_PicovrSDK_getMainSensorState
+  Java_com_psmart_vrlib_PicovrSDK_getPointerPose
+  Java_com_psmart_vrlib_PicovrSDK_getPredictedDisplayTime
+  Java_com_psmart_vrlib_PicovrSDK_getPredictedHeadPoseState
+  Java_com_psmart_vrlib_PicovrSDK_getPsensorState
+  Java_com_psmart_vrlib_PicovrSDK_getSDKVersion
+  Java_com_psmart_vrlib_PicovrSDK_getShoulderPose
+  Java_com_psmart_vrlib_PicovrSDK_getShowFlag
+  Java_com_psmart_vrlib_PicovrSDK_getUE3DofTrackingOriginPy
+  Java_com_psmart_vrlib_PicovrSDK_getWristPose
+  Java_com_psmart_vrlib_PicovrSDK_hasControllerVibrator
+  Java_com_psmart_vrlib_PicovrSDK_isHmdExist
+  Java_com_psmart_vrlib_PicovrSDK_isJavaService
+  Java_com_psmart_vrlib_PicovrSDK_isPhoneHmdType
+  Java_com_psmart_vrlib_PicovrSDK_nativeDisplayAdded
+  Java_com_psmart_vrlib_PicovrSDK_nativeDisplayRemoved
+  Java_com_psmart_vrlib_PicovrSDK_nativeGetTrackingMode
+  Java_com_psmart_vrlib_PicovrSDK_pauseUnity
+  Java_com_psmart_vrlib_PicovrSDK_resetSensor
+  Java_com_psmart_vrlib_PicovrSDK_resetSensorWithOption
+  Java_com_psmart_vrlib_PicovrSDK_setArmModelParameter
+  Java_com_psmart_vrlib_PicovrSDK_setConnectState
+  Java_com_psmart_vrlib_PicovrSDK_setControllerData
+  Java_com_psmart_vrlib_PicovrSDK_setControllerVibrateMode
+  Java_com_psmart_vrlib_PicovrSDK_setControllerVibrateTime
+  Java_com_psmart_vrlib_PicovrSDK_setCpuLevel
+  Java_com_psmart_vrlib_PicovrSDK_setGpuLevel
+  Java_com_psmart_vrlib_PicovrSDK_setHmdScreenBrightness
+  Java_com_psmart_vrlib_PicovrSDK_setParameter
+  Java_com_psmart_vrlib_PicovrSDK_setProjectionFov
+  Java_com_psmart_vrlib_PicovrSDK_setReinPosition
+  Java_com_psmart_vrlib_PicovrSDK_setShowFlag
+  Java_com_psmart_vrlib_PicovrSDK_setSingleBuffer
+  Java_com_psmart_vrlib_PicovrSDK_startSensor
+  Java_com_psmart_vrlib_PicovrSDK_stopSensor
+  Java_com_psmart_vrlib_PvrClient_clientStatusNotify
+  Java_com_psmart_vrlib_PvrClient_displayInterrupt
+  Java_com_psmart_vrlib_PvrClient_getHmdBatteryLevel
+  Java_com_psmart_vrlib_PvrClient_getHmdBatteryStatus
+  Java_com_psmart_vrlib_PvrClient_initNative
+  Java_com_psmart_vrlib_PvrClient_resetTrackingForHmd
+  Java_com_psmart_vrlib_PvrClient_updateDisplayInfo
+  Java_com_psmart_vrlib_VrLib_nativeVsync
+  Java_com_unity3d_player_UnityPlayerNativeActivityPico_nativeDisableDevice
+  Java_com_unity3d_player_UnityPlayerNativeActivityPico_nativeEnableDevice
+  Java_com_unity3d_player_UnityPlayerNativeActivityPico_nativeInitPortalSdk
+  Java_com_unity3d_player_UnityPlayerNativeActivityPico_nativeawStartHeadTracker
+  Java_com_unity3d_player_UnityPlayerNativeActivityPico_nativeawStopHeadTracker
+
+  (count: 79)
+
+=== linear x28 sweep: app libs ===
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libPvr_UnitySDK.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libil2cpp.so
+  x28 saves (stp/str): 3839
+  x28 writes total   : 3523
+  non-load writes    : 1337
+    .text 0x3690a4  add x28, x28, x19
+    .text 0x36bda0  sxtw x28, w9
+    .text 0x36bfb4  mov x28, xzr
+    .text 0x36c064  add x28, x28, #1
+    .text 0x36c068  cmp x28, w8, uxtw
+    .text 0x36c234  adrp x28, #0xf36000
+    .text 0x36c2f8  mov x28, x21
+    .text 0x36c604  adrp x28, #0xf36000
+    .text 0x36dbb0  adrp x28, #0xf36000
+    .text 0x36ea1c  add x28, x9, w8, uxtw #3
+    .text 0x371f04  bfi x28, x27, #1, #0x3f
+    .text 0x372890  bfi x28, x27, #1, #0x3f
+    .text 0x37b3ac  sub x28, x9, x8
+    .text 0x37b508  mov x28, xzr
+    .text 0x37b5c0  add x28, x28, #8
+    .text 0x37e228  mov x28, x0
+    .text 0x37e230  cbz x28, #0x37e360
+    .text 0x37e354  mov x28, x0
+    .text 0x37e35c  cbnz x28, #0x37e274
+    .text 0x37e558  mov x28, x0
+    .text 0x37e560  cbz x28, #0x37e690
+    .text 0x37e684  mov x28, x0
+    .text 0x37e68c  cbnz x28, #0x37e5a4
+    .text 0x37ea08  cmp x28, x26
+    .text 0x37ed74  cmp x28, x26
+    .text 0x392e98  adrp x28, #0xeb3000
+    .text 0x3930ec  mov x28, x24
+    .text 0x393130  adrp x28, #0xeb3000
+    .text 0x3938e8  madd x28, x9, x8, x10
+    .text 0x3965e0  mov x28, xzr
+    .text 0x396690  add x28, x28, #0x20
+    .text 0x396694  cmp x28, #0x40
+    .text 0x396d9c  mov x28, x0
+    .text 0x396eac  mov x28, xzr
+    .text 0x396fa8  add x28, x28, #1
+    .text 0x396fac  cmp x28, x8
+    .text 0x39b980  sub x28, x28, #1
+    .text 0x39b988  cbnz x28, #0x39b938
+    .text 0x3a2e04  madd x28, x27, x24, x25
+    .text 0x3a3d2c  mov x28, x10
+    .text 0x3a3d58  mov x28, x3
+    .text 0x3a3d90  add x28, x25, x24
+    .text 0x3a3e28  mov x28, x10
+    .text 0x3a3e64  mov x28, x10
+    .text 0x3a4068  lsl x28, x28, x29
+    .text 0x3ae5c8  mov x28, x27
+    .text 0x3ae610  cmp x28, w0, sxtw
+    .text 0x3ae660  cmp x28, w0, sxtw
+    .text 0x3ae6a8  cmp x28, w0, sxtw
+    .text 0x3ae76c  mov x28, x9
+    .text 0x3ae788  sxtw x28, w0
+    .text 0x3aea18  adrp x28, #0xb5a000
+    .text 0x3aea24  add x28, x28, #0x660
+    .text 0x3b5414  cmp x28, x27
+    .text 0x3b5420  add x28, x28, #1
+    .text 0x3b76b4  mov x28, xzr
+    .text 0x3b77a8  cmp x28, x25
+    .text 0x3b77cc  mov x28, x25
+    .text 0x3bbf44  mov x28, x20
+    .text 0x3bbfac  mov x28, x0
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libinput_virtual_display.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libmain.so
+  x28 saves (stp/str): 1
+  x28 writes total   : 1
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libnative.so
+  x28 saves (stp/str): 102
+  x28 writes total   : 82
+  non-load writes    : 41
+    .text 0x15bd4  adrp x28, #0x56000
+    .text 0x16698  mov x28, x0
+    .text 0x1d154  add x28, x8, x9
+    .text 0x1d160  mov x28, xzr
+    .text 0x1d2e8  cbz x28, #0x1d21c
+    .text 0x1d3e4  cbz x28, #0x1d5f4
+    .text 0x1d8bc  add x28, sp, #0x28
+    .text 0x1f2c8  add x28, x8, #0x18
+    .text 0x1fe64  add x28, x9, #0x2e0
+    .text 0x202fc  cmp x28, x0
+    .text 0x203cc  cmp x28, x8
+    .text 0x206f0  asr x28, x24, #2
+    .text 0x20a4c  asr x28, x25, #2
+    .text 0x23298  asr x28, x23, #3
+    .text 0x2340c  asr x28, x24, #3
+    .text 0x23500  asr x28, x23, #2
+    .text 0x235fc  asr x28, x24, #2
+    .text 0x24878  asr x28, x26, #3
+    .text 0x249cc  asr x28, x26, #3
+    .text 0x24b80  asr x28, x26, #3
+    .text 0x25878  asr x28, x23, #3
+    .text 0x263d4  asr x28, x23, #3
+    .text 0x268ec  asr x28, x24, #3
+    .text 0x26ab0  asr x28, x24, #3
+    .text 0x26ca4  asr x28, x24, #3
+    .text 0x2809c  asr x28, x24, #3
+    .text 0x29748  adrp x28, #0x55000
+    .text 0x29760  add x28, x28, #0xdf8
+    .text 0x2ea74  mov x28, x24
+    .text 0x2eac0  add x28, x8, #2
+    .text 0x2eb08  cmp x28, x8
+    .text 0x2ec20  mov x28, x24
+    .text 0x2ec6c  add x28, x8, #2
+    .text 0x2ecb4  cmp x28, x8
+    .text 0x31244  asr x28, x23, #3
+    .text 0x313d0  asr x28, x24, #2
+    .text 0x3402c  mov x28, x1
+    .text 0x3493c  add x28, x29, #0x90
+    .text 0x36b60  mov x28, x0
+    .text 0x36cd0  mov x28, x26
+    .text 0x36d34  add x28, x28, #8
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libtracking_module.so
+  x28 saves (stp/str): 2
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/vrshell_lib/libunity.so
+  x28 saves (stp/str): 11494
+  x28 writes total   : 7978
+  non-load writes    : 3776
+    .text 0x9dca4  adrp x28, #0xb3e000
+    .text 0x9e5f4  adrp x28, #0xb3e000
+    .text 0xa3280  adrp x28, #0xb5d000
+    .text 0xa3288  add x28, x28, #0x8ee
+    .text 0xa3aa8  adrp x28, #0xe8c000
+    .text 0xa3aac  add x28, x28, #0x140
+    .text 0xbb89c  mov x28, x20
+    .text 0xbbbdc  mov x28, x20
+    .text 0xbc78c  mov x28, x20
+    .text 0xbd108  adrp x28, #0xaf3000
+    .text 0xbd12c  add x28, x28, #0xf0
+    .text 0xbda30  sub x28, x8, #1
+    .text 0xbda54  sub x28, x28, #1
+    .text 0xbda5c  cbnz x28, #0xbda38
+    .text 0xbdedc  mov x28, x4
+    .text 0xbf920  adrp x28, #0xb8d000
+    .text 0xbf924  add x28, x28, #0xa4e
+    .text 0xbfd44  add x28, x19, #0x394
+    .text 0xbfdf0  add x28, x19, #0x398
+    .text 0xbfe9c  add x28, x19, #0x39c
+    .text 0xc42c0  add x28, x22, #0x10
+    .text 0xc451c  mov x28, #-0x40000000000
+    .text 0xc47d8  add x28, x26, x20
+    .text 0xc4ef4  mov x28, xzr
+    .text 0xc560c  add x28, x28, #1
+    .text 0xc5610  cmp x28, x24
+    .text 0xc6894  mov x28, xzr
+    .text 0xc68f4  mov x28, xzr
+    .text 0xc7114  orr x28, x10, x20
+    .text 0xc75fc  orr x28, x10, x20
+    .text 0xc764c  add x28, x28, #1
+    .text 0xc7650  cmp x28, x10
+    .text 0xc7660  mov x28, xzr
+    .text 0xc769c  mov x28, x0
+    .text 0xc7810  mov x28, x10
+    .text 0xc7844  mov x28, x9
+    .text 0xc7884  add x28, x28, x23
+    .text 0xc7890  cmp x28, x18
+    .text 0xc78fc  mov x28, x9
+    .text 0xc790c  mov x28, x9
+    .text 0xc79f4  cmp x28, x18
+    .text 0xc7f24  cmp x28, x18
+    .text 0xc8c50  and x28, x8, #0xfffffffffffffff0
+    .text 0xcb8ec  add x28, x19, #0x270
+    .text 0xcc36c  add x28, x19, #0x270
+    .text 0xccdc8  and x28, x8, #0xfffffffffffffff0
+    .text 0xd0040  mul x28, x27, x20
+    .text 0xd00a4  mul x28, x27, x20
+    .text 0xd0ce0  and x28, x8, #0xfffffffffffffff0
+    .text 0xd1834  add x28, x19, #0x270
+    .text 0xd2288  and x28, x8, #0xfffffffffffffff0
+    .text 0xd3ff4  and x28, x8, #0xfffffffffffffff0
+    .text 0xd4e18  and x28, x8, #0xfffffffffffffff0
+    .text 0xd5a7c  and x28, x8, #0xfffffffffffffff0
+    .text 0xd6784  and x28, x8, #0xfffffffffffffff0
+    .text 0xd7278  add x28, x19, #0x240
+    .text 0xd7c8c  and x28, x8, #0xfffffffffffffff0
+    .text 0xd8b04  and x28, x8, #0xfffffffffffffff0
+    .text 0xd95f8  add x28, x19, #0x240
+    .text 0xda00c  and x28, x8, #0xfffffffffffffff0
+
+=== linear x28 sweep: system Pico libs ===
+
+### /mnt/f/PN2Lineage/notes/lib64/libCVControllerClient.pxr.so
+  x28 saves (stp/str): 75
+  x28 writes total   : 74
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UESDKExt2.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDK.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt1.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt10.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt11.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt5.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt8.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libPvr_UnitySDKExt9.so
+  x28 saves (stp/str): 0
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libcompositor.pxr.so
+  x28 saves (stp/str): 1094
+  x28 writes total   : 712
+  non-load writes    : 323
+    .text 0x8085c  mrs x28, tpidr_el0
+    .text 0x80e0c  mrs x28, tpidr_el0
+    .text 0x82d28  adrp x28, #0x163000
+    .text 0x82d2c  add x28, x28, #0x389
+    .text 0x83738  add x28, x23, #0xb8
+    .text 0x83890  add x28, x28, #0x114
+    .text 0x838bc  adrp x28, #0x1c0000
+    .text 0x84978  mov x28, x0
+    .text 0x84a54  adrp x28, #0x1d0000
+    .text 0x84a58  add x28, x28, #0x218
+    .text 0x84c7c  mov x28, x0
+    .text 0x84cb4  mov x28, xzr
+    .text 0x84eb8  mov x28, x0
+    .text 0x873d4  adrp x28, #0x1c0000
+    .text 0x8ace0  mov x28, xzr
+    .text 0x8adb4  cmp x28, x27
+    .text 0x8adfc  cmp x28, x27
+    .text 0x8ae04  cbz x28, #0x8ae10
+    .text 0x8ae70  cmp x28, x27
+    .text 0x8b100  mov x28, x27
+    .text 0x8b114  cbz x28, #0x8b120
+    .text 0x8c34c  adrp x28, #0x1c1000
+    .text 0x8eee0  adrp x28, #0x168000
+    .text 0x8ef00  add x28, x28, #0x4dd
+    .text 0x91acc  mrs x28, tpidr_el0
+    .text 0x92a34  mov x28, #-0x3333333333333334
+    .text 0x92a44  movk x28, #0xcccd
+    .text 0x944b4  adrp x28, #0x1c0000
+    .text 0x97920  mov x28, xzr
+    .text 0x979ec  add x28, x28, #1
+    .text 0x979f0  cmp x28, w20, sxtw
+    .text 0x982b4  adrp x28, #0x1c1000
+    .text 0x98d04  mov x28, x8
+    .text 0x9b038  adrp x28, #0x1c1000
+    .text 0x9c230  add x28, x25, #0x30
+    .text 0x9d0e8  lsl x28, x25, #6
+    .text 0x9dc6c  mrs x28, tpidr_el0
+    .text 0x9e098  bfi x28, x10, #0x20, #0x20
+    .text 0x9e2e0  adrp x28, #0x1c1000
+    .text 0x9f76c  adrp x28, #0x1c0000
+    .text 0xa0b1c  add x28, x9, x8
+    .text 0xa0ecc  umaddl x28, w1, w9, x0
+    .text 0xa1414  adrp x28, #0x1c0000
+    .text 0xa1744  add x28, x22, x23
+    .text 0xa1758  adrp x28, #0x1c0000
+    .text 0xa1bc8  mov x28, x19
+    .text 0xa1cac  add x28, x9, #0xc
+    .text 0xa1d90  adrp x28, #0x1c0000
+    .text 0xa1e90  add x28, x22, x23
+    .text 0xa20fc  adrp x28, #0x1c0000
+    .text 0xa215c  adrp x28, #0x1c0000
+    .text 0xa21a8  adrp x28, #0x1c0000
+    .text 0xa2458  adrp x28, #0x1c1000
+    .text 0xa4ac8  orr x28, x8, #4
+    .text 0xa7188  madd x28, x24, x25, x23
+    .text 0xa771c  mov x28, x0
+    .text 0xab918  add x28, x19, x0
+    .text 0xabaa8  cmn x28, #0x10
+    .text 0xabab4  cmp x28, #0x17
+    .text 0xabac8  cbnz x28, #0xabeac
+
+### /mnt/f/PN2Lineage/notes/lib64/libconfigurationclient.pxr.so
+  x28 saves (stp/str): 71
+  x28 writes total   : 70
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libjni_trackingfocus.so
+  x28 saves (stp/str): 3
+  x28 writes total   : 3
+  non-load writes    : 2
+    .text 0x15dc  lsl x28, x3, #3
+    .text 0x1758  mul x28, x13, x2
+
+### /mnt/f/PN2Lineage/notes/lib64/libloader.pxr.so
+  x28 saves (stp/str): 641
+  x28 writes total   : 464
+  non-load writes    : 228
+    .text 0x17138  cmp x28, x27
+    .text 0x1714c  add x28, x28, #0x98
+    .text 0x1718c  mov x28, x0
+    .text 0x19ff8  mov x28, x0
+    .text 0x1d130  tst x28, #0xffff00000000
+    .text 0x1dfac  sub x28, x8, #0x28
+    .text 0x25e74  mov x28, xzr
+    .text 0x25e90  add x28, x28, #1
+    .text 0x25e94  cmp x28, x20
+    .text 0x26008  lsl x28, x8, #3
+    .text 0x2625c  cmp x28, x26
+    .text 0x26270  cmp x28, x26
+    .text 0x26294  add x28, x26, x20, lsl #3
+    .text 0x263a8  mov x28, x23
+    .text 0x2a7c0  add x28, x28, #0x18
+    .text 0x2ad9c  add x28, x26, #0x40
+    .text 0x2ae14  adrp x28, #0xf8000
+    .text 0x2b5d0  adrp x28, #0xf8000
+    .text 0x2bb0c  add x28, x8, #0x98
+    .text 0x2be7c  mov x28, x25
+    .text 0x2bea0  mov x28, x0
+    .text 0x2c4a4  adrp x28, #0xf8000
+    .text 0x2dd88  mrs x28, tpidr_el0
+    .text 0x2f640  orr x28, x9, #1
+    .text 0x319ec  mov x28, x2
+    .text 0x31f64  add x28, x25, #0x11
+    .text 0x339d8  mov x28, #0xca1b
+    .text 0x339e0  movk x28, #0x286b, lsl #16
+    .text 0x339e4  movk x28, #0xa1af, lsl #32
+    .text 0x339ec  movk x28, #0x86bc, lsl #48
+    .text 0x33b04  mov x28, #0xf286
+    .text 0x33b0c  movk x28, #0xca1a, lsl #16
+    .text 0x33b14  movk x28, #0x286b, lsl #32
+    .text 0x33b1c  movk x28, #0x1af, lsl #48
+    .text 0x33b2c  csel x28, x8, x9, lo
+    .text 0x33b30  cbz x28, #0x33bc0
+    .text 0x33b5c  add x28, x8, #0x98
+    .text 0x33b9c  mov x28, #0xca1b
+    .text 0x33ba0  movk x28, #0x286b, lsl #16
+    .text 0x33ba4  movk x28, #0xa1af, lsl #32
+    .text 0x33ba8  movk x28, #0x86bc, lsl #48
+    .text 0x41f84  mov x28, sp
+    .text 0x41fc0  mov x28, x23
+    .text 0x47b30  cmp x28, x1
+    .text 0x47b8c  lsr x28, x8, #1
+    .text 0x47b94  cmp x28, x1
+    .text 0x485ac  adrp x28, #0xf8000
+    .text 0x48674  cmp x28, x24
+    .text 0x48690  cmp x28, x8
+    .text 0x4869c  adrp x28, #0xf8000
+    .text 0x486fc  cmp x28, x24
+    .text 0x48704  adrp x28, #0xf8000
+    .text 0x48884  adrp x28, #0xf8000
+    .text 0x49340  madd x28, x10, x16, x12
+    .text 0x49354  mov x28, xzr
+    .text 0x4988c  madd x28, x11, x13, x14
+    .text 0x49960  add x28, x28, #0x38
+    .text 0x4c6bc  cmp x28, x1
+    .text 0x4c718  lsr x28, x8, #1
+    .text 0x4c720  cmp x28, x1
+
+### /mnt/f/PN2Lineage/notes/lib64/libplugin.pxr.so
+  x28 saves (stp/str): 558
+  x28 writes total   : 401
+  non-load writes    : 204
+    .text 0x4f7d8  mov x28, x0
+    .text 0x4f920  mov x28, xzr
+    .text 0x4f934  add x28, x28, #1
+    .text 0x4f938  cmp x28, x8
+    .text 0x4fcc0  cbnz x28, #0x4f930
+    .text 0x50308  orr x28, x8, #1
+    .text 0x50414  adrp x28, #0xf6000
+    .text 0x50b54  adrp x28, #0xd1000
+    .text 0x50b68  add x28, x28, #0xcba
+    .text 0x50c6c  mov x28, xzr
+    .text 0x50c8c  add x28, x28, #1
+    .text 0x50c94  cmp x28, x8
+    .text 0x5113c  cbnz x28, #0x50c88
+    .text 0x517d4  mov x28, x0
+    .text 0x51950  mov x28, xzr
+    .text 0x51964  add x28, x28, #1
+    .text 0x51968  cmp x28, x8
+    .text 0x51cf4  cbnz x28, #0x51960
+    .text 0x52754  mov x28, x19
+    .text 0x52774  mov x28, x8
+    .text 0x52780  mov x28, x8
+    .text 0x5279c  mov x28, x19
+    .text 0x527b0  mov x28, x8
+    .text 0x53364  mov x28, x24
+    .text 0x53374  mov x28, x8
+    .text 0x5338c  mov x28, x8
+    .text 0x533bc  mov x28, x24
+    .text 0x53430  add x28, x27, #0x2b0
+    .text 0x53474  mov x28, x8
+    .text 0x536a0  mov x28, x8
+    .text 0x536b8  mov x28, x8
+    .text 0x5391c  adrp x28, #0xf6000
+    .text 0x5704c  adrp x28, #0xf6000
+    .text 0x57538  adrp x28, #0xf6000
+    .text 0x57728  cbz x28, #0x5773c
+    .text 0x5773c  adrp x28, #0xf6000
+    .text 0x57808  sub x28, x8, x25
+    .text 0x5791c  cbz x28, #0x57d58
+    .text 0x579f4  cbz x28, #0x57a08
+    .text 0x57a08  adrp x28, #0xf6000
+    .text 0x57b4c  cbz x28, #0x57d58
+    .text 0x57c34  cbz x28, #0x57c48
+    .text 0x57c48  adrp x28, #0xf6000
+    .text 0x57d44  cbz x28, #0x57d58
+    .text 0x57d58  adrp x28, #0xf6000
+    .text 0x57ef4  cbz x28, #0x57f08
+    .text 0x57f08  adrp x28, #0xf6000
+    .text 0x57fec  adrp x28, #0xf6000
+    .text 0x5a108  adrp x28, #0xf6000
+    .text 0x5a46c  adrp x28, #0xf6000
+    .text 0x5ab38  adrp x28, #0xf6000
+    .text 0x5b5b4  add x28, x25, #0x680
+    .text 0x5b5f0  mov x28, x8
+    .text 0x5b610  mov x28, x8
+    .text 0x5b728  mrs x28, tpidr_el0
+    .text 0x5cab4  adrp x28, #0xf6000
+    .text 0x5f23c  mrs x28, tpidr_el0
+    .text 0x618e8  mov x28, x0
+    .text 0x64800  add x28, sp, #0x98
+    .text 0x66118  cbz x28, #0x66128
+
+### /mnt/f/PN2Lineage/notes/lib64/libpvrmodule_orientationtracker.so
+  x28 saves (stp/str): 9
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libpvrmodule_platform.so
+  x28 saves (stp/str): 135
+  x28 writes total   : 100
+  non-load writes    : 33
+    .text 0x12a14  add x28, x28, #0x68
+    .text 0x1328c  adrp x28, #0x26000
+    .text 0x132b4  add x28, x28, #0xdb9
+    .text 0x13db8  adrp x28, #0x31000
+    .text 0x15378  sxtw x28, w0
+    .text 0x155b4  cbz x28, #0x158a8
+    .text 0x15658  mul x28, x9, x10
+    .text 0x15668  cmp x28, x3
+    .text 0x156ac  lsr x28, x11, #5
+    .text 0x156e8  mov x28, #0x4ec5
+    .text 0x156ec  movk x28, #0xc4ec, lsl #16
+    .text 0x156f4  movk x28, #0xec4e, lsl #32
+    .text 0x156fc  movk x28, #0x4ec4, lsl #48
+    .text 0x184b4  add x28, sp, #5, lsl #12
+    .text 0x184b8  add x28, x28, #0x118
+    .text 0x19cb4  add x28, sp, #0x108
+    .text 0x1a098  add x28, x28, #0x68
+    .text 0x1a1a0  umulh x28, x27, x18
+    .text 0x1ab9c  sub x28, x29, #0x14
+    .text 0x1abc8  sub x28, x29, #0x40
+    .text 0x1ae58  fcvtzu x28, d6
+    .text 0x1b060  eor x28, x3, x24, lsr #5
+    .text 0x1c120  adrp x28, #0x32000
+    .text 0x1cf0c  adrp x28, #0x32000
+    .text 0x1cf4c  mov x28, #-1
+    .text 0x1d108  adrp x28, #0x32000
+    .text 0x1ef20  adrp x28, #0x2b000
+    .text 0x1ef44  add x28, x28, #0xc58
+    .text 0x1f0b4  adrp x28, #0x26000
+    .text 0x259b8  cmp x28, #1
+    .text 0x25a30  cmp x28, x25
+    .text 0x26578  add x28, sp, #1, lsl #12
+    .text 0x2657c  add x28, x28, #0x434
+
+### /mnt/f/PN2Lineage/notes/lib64/libpvrserviceclient.so
+  x28 saves (stp/str): 102
+  x28 writes total   : 94
+  non-load writes    : 12
+    .text 0x1857c  blr x28
+    .text 0x18870  blr x28
+    .text 0x19ec8  mov x28, x0
+    .text 0x1c028  mov x28, #0xf7cf
+    .text 0x1c02c  movk x28, #0xe353, lsl #16
+    .text 0x1c030  movk x28, #0x9ba5, lsl #32
+    .text 0x1c034  movk x28, #0x20c4, lsl #48
+    .text 0x1c5d0  adrp x28, #0x27000
+    .text 0x1c758  sub x28, x18, x21
+    .text 0x1c794  cmp x28, #0
+    .text 0x1c7a8  cmp x28, x26
+    .text 0x1c7dc  cmp x28, x16
+
+### /mnt/f/PN2Lineage/notes/lib64/libpxr_6dof_optimization.so
+  x28 saves (stp/str): 9
+  x28 writes total   : 2
+  non-load writes    : 1
+    .text 0x4abb0  adrp x28, #0x384000
+
+### /mnt/f/PN2Lineage/notes/lib64/libpxrserviceclient.so
+  x28 saves (stp/str): 1
+  x28 writes total   : 0
+  non-load writes    : 0
+
+### /mnt/f/PN2Lineage/notes/lib64/libruntime.pxr.so
+  x28 saves (stp/str): 804
+  x28 writes total   : 539
+  non-load writes    : 233
+    .text 0x258b0  adrp x28, #0xde000
+    .text 0x258cc  add x28, x28, #0xd4d
+    .text 0x268a4  mov x28, x23
+    .text 0x26c6c  add x28, x8, #0x828
+    .text 0x26e64  add x28, x8, #0x828
+    .text 0x26e90  add x28, sp, #0xe0
+    .text 0x28734  mov x28, x19
+    .text 0x28748  cbnz x28, #0x28738
+    .text 0x28750  mov x28, xzr
+    .text 0x28ff0  cbz x28, #0x28800
+    .text 0x2ab60  cmp x28, x23
+    .text 0x32628  mov x28, xzr
+    .text 0x32638  add x28, x28, #1
+    .text 0x3394c  madd x28, x8, x23, x9
+    .text 0x339ac  madd x28, x8, x23, x9
+    .text 0x33a0c  madd x28, x8, x23, x9
+    .text 0x33a70  madd x28, x8, x23, x9
+    .text 0x33ad4  madd x28, x8, x23, x9
+    .text 0x34bc4  madd x28, x14, x15, x9
+    .text 0x34bc8  cbz x28, #0x34ba8
+    .text 0x37228  add x28, sp, #0x10
+    .text 0x3bce4  add x28, sp, #0x10
+    .text 0x3bd6c  add x28, x19, #0x2d8
+    .text 0x3c8a0  mov x28, x8
+    .text 0x3c8bc  add x28, x28, x9
+    .text 0x3cf14  mov x28, #0x400000000000
+    .text 0x3cf30  movk x28, #0x408f, lsl #48
+    .text 0x3e574  add x28, x28, #0x10
+    .text 0x3f704  mov x28, xzr
+    .text 0x3ff68  umaddl x28, w23, w9, x21
+    .text 0x40d88  add x28, x19, #0x240
+    .text 0x428cc  mrs x28, tpidr_el0
+    .text 0x437f4  adrp x28, #0x139000
+    .text 0x44240  mov x28, xzr
+    .text 0x442a0  add x28, x28, #1
+    .text 0x442ac  cmp x28, x8
+    .text 0x442f8  mov x28, xzr
+    .text 0x4444c  add x28, x28, #1
+    .text 0x44454  cmp x28, x8
+    .text 0x449b8  adrp x28, #0xed000
+    .text 0x449d8  add x28, x28, #0x970
+    .text 0x4547c  add x28, x22, #0x38
+    .text 0x45d1c  mov x28, xzr
+    .text 0x45d40  add x28, x28, #0x60
+    .text 0x460d8  cmp x28, x27
+    .text 0x47ffc  adrp x28, #0x12b000
+    .text 0x4e678  adrp x28, #0xf0000
+    .text 0x4e698  add x28, x28, #0xcdf
+    .text 0x4fb80  mov x28, xzr
+    .text 0x4fbb8  add x28, x28, #0x18
+    .text 0x4fed4  cbnz x28, #0x4fee4
+    .text 0x4fedc  subs x28, x28, #0x18
+    .text 0x4ffdc  mov x28, xzr
+    .text 0x50020  add x28, x28, #0x18
+    .text 0x500b0  cbnz x28, #0x500c0
+    .text 0x500b8  subs x28, x28, #0x18
+    .text 0x544b0  add x28, x10, x27
+    .text 0x544b4  mvn x28, x28
+    .text 0x54508  sub x28, x19, #0x20
+    .text 0x56a24  cmp x28, #1
+
+DONE

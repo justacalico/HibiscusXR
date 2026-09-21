@@ -1,0 +1,45 @@
+=== daemons ===
+  bin/pvrservice
+  bin/qvrservice
+  bin/pvr_compute
+  bin/vr
+
+=== libs ===
+  lib: 41 libs
+  lib64: 30 libs
+
+=== framework jars ===
+  pxr_sdk_api.jar
+  vr.jar
+
+=== etc/pvr ===
+  67 files, 49M
+
+=== system apps (signed) + their app-private libs ===
+  priv-app/CVService  (+10 libs)
+  priv-app/InitServer  (+1 libs)
+  priv-app/PVRVerify  (+1 libs)
+  priv-app/PicoSettingsProvider
+  app/PicoToSvrService  (+3 libs)
+  app/PxrNotification
+  priv-app/ShortcutMenu
+  priv-app/VRShell2  (+7 libs)
+  priv-app/VRUserCenter2  (+1 libs)
+  priv-app/configserverservice
+  priv-app/pvr_adapter
+  priv-app/pvrdisplay
+
+=== oem-derived apps (signed) ===
+  priv-app/PVRHome
+  priv-app/PVRLauncher
+  priv-app/ToBToolService
+  priv-app/provision2d
+  priv-app/store2d
+
+=== /media/LoadingRes (VRShell boot animation) ===
+  27 files, 508K
+
+=== staging total ===
+212
+313M	/mnt/f/PN2Lineage/fullstage
+DONE

@@ -1,0 +1,45 @@
+=== source GSI ===
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 09:30 /mnt/f/PN2Lineage/gsi/gsi_raw.img
+
+=== copying (this is the slow part) ===
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 14:15 /mnt/f/PN2Lineage/out/system-pn2.img
+
+=== init scripts ===
+  ok      /etc/init/pn2-vintf.rc                     1098 bytes
+  ok      /etc/init/pn2-snd.rc                       1219 bytes
+  ok      /etc/init/pn2-settings.rc                  1323 bytes
+  ok      /etc/init/pn2-power.rc                     1325 bytes
+
+=== VINTF manifest override ===
+  ok      /etc/pn2/vendor_manifest.xml               22335 bytes
+
+=== patched libs ===
+  ok      /lib64/libsensorservice.so                 227192 bytes
+  ok      /lib64/libshim_pvr.so                      7224 bytes
+
+=== build.prop additions ===
+  original: 3999 bytes
+  ok      /build.prop                                4658 bytes
+  patched : 4658 bytes
+
+=== verify what landed ===
+  /etc/init/pn2-vintf.rc                     MISSING
+  /etc/init/pn2-snd.rc                       MISSING
+  /etc/init/pn2-settings.rc                  MISSING
+  /etc/init/pn2-power.rc                     MISSING
+  /etc/pn2/vendor_manifest.xml               MISSING
+  /lib64/libshim_pvr.so                      MISSING
+  /lib64/libsensorservice.so                 MISSING
+
+=== fsck ===
+e2fsck 1.47.2 (1-Jan-2025)
+Pass 1: Checking inodes, blocks, and sizes
+Pass 2: Checking directory structure
+Pass 3: Checking directory connectivity
+Pass 4: Checking reference counts
+Pass 5: Checking group summary information
+system: 6224/6240 files (0.4% non-contiguous), 466883/481504 blocks
+
+=== result ===
+-rwxrwxrwx 1 justin justin 2003943424 Aug 13 14:15 /mnt/f/PN2Lineage/out/system-pn2.img
+DONE

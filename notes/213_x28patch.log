@@ -1,0 +1,37 @@
+=== x28 trampoline test 08/13/2026 17:18:13 ===
+[17:18:14]    F:\PN2Lineage\notes\vrshell_lib\libPvr_UnitySDK.patched.so: 1 file pushed, 0 skipped. 1217.3 MB/s (2051960 bytes in 0.002s)
+[17:18:14]    ec0d26abfeba1a6313ce190bfcca7fb2  /system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so
+[17:18:14]    ec0d26abfeba1a6313ce190bfcca7fb2  /data/local/tmp/libPvr_patched.so
+[17:18:14] --- launching VRShell ---
+[17:18:33]    vrshell pid:   died
+[17:18:33] --- how far did it get ---
+[17:18:33]    E/psmvrConfig( 3962): Undefined variable -- fCylinderDistortionBoundThreshold
+[17:18:33]    E/psmvrConfig( 3962): Undefined variable -- fCylinderDistortionBoundSetValue
+[17:18:33]    I/ConfigApi( 3962): DIATW Update Config Parameters From VRService
+[17:18:33]    I/Unity   ( 3962): InitRenderThreadRoutine after a wait
+[17:18:33]    I/Unity   ( 3962): <InitRenderThreadRoutine>d__111:MoveNext()
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Main Thread unityMainThreadTid: 4028
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Main Thread SetThreadAffinity Default
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Main Thread SetThreadPriority Default
+[17:18:33]    I/UnityPlugin( 3962): PVR_InitRenderThread()
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Render Thread up.renderThreadTid: 4028
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Render Thread SetThreadAffinity Default
+[17:18:33]    I/UnityPlugin( 3962): DIATW Unity Render Thread SetThreadPriority Default
+[17:18:33]    I/VrApi   ( 3962): ---------- pvr_EnterVrMode ----------
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.lensSeparation = 0.062000
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.widthMeters = 0.129600
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.heightMeters = 0.072000
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.widthPixels = 3840
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.heightPixels = 2160
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.eyeTextureResolution[0] = 1080
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.eyeTextureResolution[1] = 1200
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.eyeTextureFov[0] = 80.000000
+[17:18:33]    I/VrApi   ( 3962): hmdInfo.eyeTextureFov[1] = 80.000000
+[17:18:33]    E/CRASH   ( 3962): signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0000000000000008
+[17:18:33]    E/CRASH   ( 3962): *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+[17:18:33]    E/CRASH   ( 3962): Build type 'Release', Scripting Backend 'il2cpp', CPU 'arm64-v8a'
+[17:18:33]    E/CRASH   ( 3962): Build fingerprint: 'unknown/unknown/PICOA7B10:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+[17:18:33]    E/CRASH   ( 3962): Revision: '0'
+[17:18:33]    E/CRASH   ( 3962): pid: 3962, tid: 4028, name: UnityMain  >>> com.pvr.vrshell <<<
+[17:18:33]    E/CRASH   ( 3962):     x0   0000000000000000  x1   00000078d97f1010  x2   0000000000000004  x3   0000000000000007
+[17:18:33]    E/CRASH   ( 3962):     x4   0000000000000000  x5   00000078d44d6e00  x6   00000078d44d6e00  x7   0000000000000000

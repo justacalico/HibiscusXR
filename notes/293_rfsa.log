@@ -1,0 +1,42 @@
+=== rfsa dsp skels 08/13/2026 19:39:04 ===
+[19:39:04] --- everything in stock's /system/lib/rfsa/adsp ---
+[19:39:05]    libVIOMapping_6dof_skel.so                 16,356,736
+[19:39:05]    libapps_mem_heap.so                            54,320
+[19:39:05]    libdspCV_skel.so                               33,332
+[19:39:05]    libdsp_streamer_qvrcam_receiver.so              7,568
+[19:39:05]    libeye_tracking_dsp_sample_skel.so             33,636
+[19:39:05]    libfastcvadsp.so                            1,277,032
+[19:39:05]    libfastcvdsp_skel.so                          545,040
+[19:39:06]    libqvr_cam_dsp_driver_skel.so                  92,344
+[19:39:06]    libqvr_dsp_driver_skel.so                      98,496
+[19:39:06]    libqvr_mapper_skel.so                          34,260
+[19:39:06]    libscveBlobDescriptor_skel.so                  95,748
+[19:39:06]    libscveT2T_skel.so                            334,300
+[19:39:06]    libsns_low_lat_stream_skel.so                  29,596
+[19:39:06]    libtobii_eyecore_skel.so                    1,198,400
+[19:39:07]    libtracker_6dof_skel.so                    21,272,022
+[19:39:07] pulled 15 skel libraries
+[19:39:21]    --- installed ---
+[19:39:21]    libVIOMapping_6dof_skel.so
+[19:39:21]    libapps_mem_heap.so
+[19:39:21]    libdspCV_skel.so
+[19:39:21]    libdsp_streamer_qvrcam_receiver.so
+[19:39:21]    libeye_tracking_dsp_sample_skel.so
+[19:39:21]    libfastcvadsp.so
+[19:39:21]    libfastcvdsp_skel.so
+[19:39:21]    libqvr_cam_dsp_driver_skel.so
+[19:39:21]    libqvr_dsp_driver_skel.so
+[19:39:21]    libqvr_mapper_skel.so
+[19:39:21]    libscveBlobDescriptor_skel.so
+[19:39:21]    libscveT2T_skel.so
+[19:39:21]    libsns_low_lat_stream_skel.so
+[19:39:21]    libtobii_eyecore_skel.so
+[19:39:21]    libtracker_6dof_skel.so
+[19:39:21]    --- restart qvrd ---
+[19:39:21]    grep: /proc//status: No such file or directory
+[19:39:21]    --- THE TEST ---
+[19:39:21]    Option specified: version = 0 tracking_mode = 3 unit_test_param =   duration = 30 
+[19:39:21]                      log types= Tracking Pose: disabled, Tracking Camera: enabled
+[19:39:21]    QVRServiceTest
+[19:39:21]    Api version : 5
+[19:39:21]    VR not supported

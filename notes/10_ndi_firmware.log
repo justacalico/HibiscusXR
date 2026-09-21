@@ -1,0 +1,53 @@
+=== free space before ===
+F:\             466G  431G   36G  93% /mnt/f
+
+--- EYE_pui4.1.3_firehose : /system/etc/ndi ---
+     11032  w25q_write_bin
+
+################ NONEYE_pui3.11.3_b255 ################
+source: update_PicoNeo2_pui3.11.3_20200509_b255-user-jdi4k72_new
+transfer list v4, 872920 total blocks, 897 new ranges, max block 962816
+wrote /mnt/f/PN2Lineage/images/_tmp_sys/system.img (3943694336 bytes)
+--- NONEYE_pui3.11.3_b255 : /system/etc/ndi ---
+     11032  w25q_write_bin
+
+free: 36G
+
+################ NONEYE_pui4.1.0_b336 ################
+source: update_PicoNeo2_pui4.1.0_20210121_b336-user-jdi4k72_new
+transfer list v4, 885902 total blocks, 910 new ranges, max block 962816
+wrote /mnt/f/PN2Lineage/images/_tmp_sys/system.img (3943694336 bytes)
+--- NONEYE_pui4.1.0_b336 : /system/etc/ndi ---
+     11032  w25q_write_bin
+
+free: 36G
+
+################ NONEYE_pui4.1.3_b346 ################
+source: update_PicoNeo2_pui4.1.3_20210409_b346-user-jdi4k72_new
+transfer list v4, 921347 total blocks, 946 new ranges, max block 962816
+wrote /mnt/f/PN2Lineage/images/_tmp_sys/system.img (3943694336 bytes)
+--- NONEYE_pui4.1.3_b346 : /system/etc/ndi ---
+     11032  w25q_write_bin
+
+free: 36G
+
+
+################ CHECKSUM COMPARISON ################
+
+--- all recovered files ---
+     11032  EYE_pui4.1.3_firehose/w25q_write_bin
+     11032  NONEYE_pui3.11.3_b255/w25q_write_bin
+     11032  NONEYE_pui4.1.0_b336/w25q_write_bin
+     11032  NONEYE_pui4.1.3_b346/w25q_write_bin
+
+--- bitstream identity ---
+=== free space after ===
+F:\             466G  431G   36G  93% /mnt/f
+
+################ STAGING TO J:\C Desktop ################
+total 12
+drwxrwxrwx 1 justin justin  4096 Aug 13 07:59 .
+drwxrwxrwx 1 justin justin  4096 Aug 13 07:59 ..
+-rwxrwxrwx 1 justin justin 11032 Aug 13 07:59 w25q_write_bin
+a869aaf7db56d58f909d209bd8c7532c  /mnt/j/C Desktop/PicoNeo2_NDI_FPGA_Recovery/w25q_write_bin
+DONE

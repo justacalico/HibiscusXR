@@ -1,0 +1,8 @@
+﻿[1/5] compiling native lib
+      libpn2vr.so = 39560 bytes
+[2/5] aapt2 link (manifest only, no resources)
+[3/5] injecting native lib into the apk
+[4/5] zipalign
+      generating debug keystore (kept out of the source tree)
+[5/5] signing
+DONE -> F:\PN2Lineage\vrdemo\out\pn2vr.apk (24983 bytes)

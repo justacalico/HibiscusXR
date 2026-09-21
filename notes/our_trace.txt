@@ -1,0 +1,484 @@
+﻿--------- beginning of main
+08-13 13:34:28.983  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:34:29.378  5317  5339 D PvrPlatform: Already keep stationary state for 7 secend
+08-13 13:34:29.379  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:29.379  5317  5339 D PvrPlatform: Already keep stationary state for 7 secend
+08-13 13:34:29.647  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:29.648  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:29.649  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:29.663  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 6 lines
+08-13 13:34:29.664  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:29.788  5317  5341 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:34:29.789  5317  5341 E PvrService: PvrService getTrackingDataExt rotation(0.004110, 0.991343, 0.076522, 0.106585)
+08-13 13:34:29.789  5317  5341 E PvrService: PvrService getTrackingDataExt position(-0.017675, -0.013024, 0.089172)
+08-13 13:34:30.385  5317  5339 D PvrPlatform: Already keep stationary state for 8 secend
+08-13 13:34:30.385  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:30.385  5317  5339 D PvrPlatform: Already keep stationary state for 8 secend
+08-13 13:34:30.768  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:30.772  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 3 lines
+08-13 13:34:30.773  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:31.386  5317  5339 D PvrPlatform: Already keep stationary state for 9 secend
+08-13 13:34:31.386  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:31.386  5317  5339 D PvrPlatform: Already keep stationary state for 9 secend
+08-13 13:34:32.320  7670  7671 E cmd     : open() failed for /dev/cgroup_info/cgroup.rc: No such file or directory
+08-13 13:34:32.320  7670  7671 E libprocessgroup: CgroupMap::LoadRcFile called for [7670] failed
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller cpuset is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller cpuset is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller cpuset is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller memory is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller memory is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller memory is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller schedtune is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller schedtune is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller cpu is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: Controller cpu is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.321  7670  7671 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:34:32.321  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller schedtune is not found
+08-13 13:34:32.322  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: STunePreferIdle
+08-13 13:34:32.322  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: STunePreferIdle
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller cpuset is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.322  7670  7671 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:34:32.322  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+--------- beginning of system
+08-13 13:34:32.322  1651  3678 I ActivityTaskManager: START u0 {flg=0x10000000 cmp=com.pvr.vrshell/.MainActivity} from uid 2000
+08-13 13:34:32.323  7670  7671 W libprocessgroup: JoinCgroup: controller blkio is not found
+08-13 13:34:32.323  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: MemSoftLimit
+08-13 13:34:32.323  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: MemSwappiness
+08-13 13:34:32.323  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: MemSoftLimit
+08-13 13:34:32.323  7670  7671 W libprocessgroup: SetAttribute: unknown attribute: MemSwappiness
+08-13 13:34:32.323  7670  7671 E libprocessgroup: CgroupMap::FindController called for [7670] failed, RC file was not initialized properly
+08-13 13:34:32.323  7670  7671 W libprocessgroup: JoinCgroup: controller memory is not found
+08-13 13:34:32.338  5317  5341 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:34:32.338  5317  5341 E PvrService: PvrService getTrackingDataExt rotation(0.004052, 0.991322, 0.076731, 0.106663)
+08-13 13:34:32.338  5317  5341 E PvrService: PvrService getTrackingDataExt position(-0.017699, -0.013062, 0.089195)
+08-13 13:34:32.340  5317  5341 D PvrService: PvrService::setShareMemoryData(1331291):
+08-13 13:34:32.340  5317  5341 D PvrService:  0.004052,0.991322,0.076731,0.106663,-0.017699,-0.013062,0.089195	[1966749389196]	[1966747996332]	[1703020]	[1531666]
+08-13 13:34:32.340  5317  5341 D PvrService: threadLoop continue: 1
+08-13 13:34:32.348  1651  1676 E system_server: Invalid ID 0x00000000.
+08-13 13:34:32.349  1651  1675 I ActivityManager: Killing 2785:com.android.printspooler/u0a146 (adj 945): empty for 1930s
+08-13 13:34:32.349  1651  1675 I ActivityManager: Killing 2908:com.android.dialer/u0a158 (adj 955): empty for 1930s
+08-13 13:34:32.349  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.349  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.349  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 10146 pid 2785 in 0ms
+08-13 13:34:32.349  1651  1675 I ActivityManager: Killing 3601:com.stevesoltys.seedvault/u0a124 (adj 955): empty for 1931s
+08-13 13:34:32.349  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.349  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.350  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 10158 pid 2908 in 0ms
+08-13 13:34:32.350  1651  1675 I ActivityManager: Killing 3578:com.android.localtransport/1000 (adj 965): empty for 1932s
+08-13 13:34:32.350  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.350  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.350  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 10124 pid 3601 in 0ms
+08-13 13:34:32.351  1651  1675 I ActivityManager: Killing 3487:org.lineageos.updater/u0a126 (adj 975): empty for 1932s
+08-13 13:34:32.351  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.351  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.352  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 3578 in 0ms
+08-13 13:34:32.352  1651  1675 I ActivityManager: Killing 2881:org.lineageos.lineageparts/1000 (adj 975): empty for 1932s
+08-13 13:34:32.352  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.352  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.353  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 10126 pid 3487 in 0ms
+08-13 13:34:32.353  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.353  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.353  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 2881 in 0ms
+08-13 13:34:32.378  1370  1370 D Zygote  : Forked child process 7673
+08-13 13:34:32.380  1651  1684 I ActivityManager: Start proc 7673:com.pvr.vrshell/1000 for pre-top-activity {com.pvr.vrshell/com.pvr.vrshell.MainActivity}
+08-13 13:34:32.381  7673  7673 E libprocessgroup: CgroupMap::FindController called for [7673] failed, RC file was not initialized properly
+08-13 13:34:32.381  7673  7673 E libprocessgroup: CgroupMap::FindController called for [7673] failed, RC file was not initialized properly
+08-13 13:34:32.381  7673  7673 E libprocessgroup: Failed to make and chown /uid_1000: Read-only file system
+08-13 13:34:32.381  7673  7673 W Zygote  : createProcessGroup failed, kernel missing CONFIG_CGROUP_CPUACCT?
+08-13 13:34:32.381  7673  7673 I Zygote  : seccomp disabled by setenforce 0
+08-13 13:34:32.381  7673  7673 E libprocessgroup: CgroupMap::FindController called for [7673] failed, RC file was not initialized properly
+08-13 13:34:32.387  5317  5339 D PvrPlatform: Already keep stationary state for 10 secend
+08-13 13:34:32.387  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:32.387  5317  5339 D PvrPlatform: Already keep stationary state for 10 secend
+08-13 13:34:32.389  1370  1370 I Zygote  : Process 2881 exited due to signal 9 (Killed)
+08-13 13:34:32.389  1370  1370 I Zygote  : Process 3601 exited due to signal 9 (Killed)
+08-13 13:34:32.398  1370  1370 I Zygote  : Process 3487 exited due to signal 9 (Killed)
+08-13 13:34:32.403  1370  1370 I Zygote  : Process 2785 exited due to signal 9 (Killed)
+08-13 13:34:32.404  1651  5894 W OomAdjuster: Fallback pre-set sched group to default: not expected top priority
+08-13 13:34:32.405  1370  1370 I Zygote  : Process 3578 exited due to signal 9 (Killed)
+08-13 13:34:32.414  7673  7673 D linker  : dlopen(name="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", flags=0x2, extinfo=[flags=0x40, reserved_addr=0x0, reserved_size=0x0, relro_fd=0, library_fd=0, library_fd_offset=0x0, library_namespace=(n/a)@0x0], caller="/apex/com.android.runtime/lib64/libart.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+08-13 13:34:32.414  7673  7673 D linker  : find_libraries(ns=runtime): task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, is_dt_needed=0
+08-13 13:34:32.414  7673  7673 D linker  : load_library(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+08-13 13:34:32.414  7673  7673 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Trying 1 linked namespaces
+08-13 13:34:32.414  7673  7673 D linker  : find_library_in_linked_namespace(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Ok to load
+08-13 13:34:32.415  7673  7673 D linker  : load_library(ns=(default), task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex, flags=0x2, realpath=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex)
+08-13 13:34:32.415  7673  7673 D linker  : find_library_internal(ns=runtime, task=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex): Found in linked namespace (default)
+08-13 13:34:32.415  7673  7673 D linker  : Crossing namespace boundary (si=/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex@0x78855e3d30, si_ns=(default)@0x78867fb5c0, needed_by=/apex/com.android.runtime/lib64/libart.so@0x78855d6620, ns=runtime@0x788552d010, needed_by_ns=runtime@0x788552d010) adding to local_group_roots: no
+08-13 13:34:32.415  7673  7673 D linker  : ... dlopen calling constructors: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0x9729b8924cb96a91
+08-13 13:34:32.415  7673  7673 D linker  : ... dlopen successful: realpath="/data/dalvik-cache/arm64/system@priv-app@VRShell2@VRShell2.apk@classes.dex", soname="system@priv-app@VRShell2@VRShell2.apk@classes.dex", handle=0x9729b8924cb96a91
+08-13 13:34:32.415  7673  7673 D linker  : dlerror set to "undefined symbol: oatdatabimgrelro"
+08-13 13:34:32.415  7673  7673 D linker  : dlerror set to "undefined symbol: oatbss"
+08-13 13:34:32.419  7673  7673 W com.pvr.vrshel: JIT profile information will not be recorded: profile file does not exits.
+08-13 13:34:32.419  7673  7673 W com.pvr.vrshel: resources.arsc in APK '/system/priv-app/VRShell2/VRShell2.apk' is compressed.
+08-13 13:34:32.429  1924  1924 D ImageWallpaper: wallpaper visibility changes to: false
+08-13 13:34:32.430  7673  7696 E GraphicsEnv: Failed to get gpu service
+08-13 13:34:32.437  7673  7673 I ashmem  : memfd: device VNDK version (27) is < Q so using ashmem.
+08-13 13:34:32.438  7673  7673 I UnityNativeActivityPico: onCreate enter
+08-13 13:34:32.439  7673  7673 D PvrClient: android.content.pm.PackageManager$NameNotFoundException: com.pvr.pvrservice
+08-13 13:34:32.455  1370  1370 I Zygote  : Process 2908 exited due to signal 9 (Killed)
+08-13 13:34:32.456  7673  7673 D UnityNativeActivityPico: DISFT isJavaService =falseisPhoneHmdType = false
+08-13 13:34:32.456  7673  7673 D linker  : dlopen(name="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", flags=0x2, extinfo=[flags=0x200, reserved_addr=0x77efd72ba0, reserved_size=0x77efe39e00, relro_fd=-2060106048, library_fd=120, library_fd_offset=0x1d, library_namespace=classloader-namespace@0x788552d650], caller="/apex/com.android.runtime/lib64/libnativeloader.so", caller_ns=runtime@0x788552d010, targetSdkVersion=29) ...
+08-13 13:34:32.456  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, is_dt_needed=0
+08-13 13:34:32.456  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so, flags=0x2, realpath=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so)
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libGLESv3.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libEGL.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: liblog.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libandroid.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libm.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libc.so
+08-13 13:34:32.457  7673  7673 D linker  : load_library(ns=classloader-namespace, task=/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so): Adding DT_NEEDED task: libdl.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libGLESv3.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libGLESv3.so): Already loaded (by soname): /system/lib64/libGLESv3.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libEGL.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libEGL.so): Already loaded (by soname): /system/lib64/libEGL.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libandroid.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libandroid.so): Already loaded (by soname): /system/lib64/libandroid.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:34:32.457  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:34:32.457  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:34:32.458  7673  7673 D linker  : ... dlopen calling constructors: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0xd6334b6c75909261
+08-13 13:34:32.459  7673  7673 D linker  : ... dlopen successful: realpath="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", soname="libPvr_UnitySDK.so", handle=0xd6334b6c75909261
+08-13 13:34:32.459  7673  7673 D linker  : dlopen(name="libPvr_UnitySDKExt11.so", flags=0x101, extinfo=(null), caller="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:34:32.459  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libPvr_UnitySDKExt11.so, is_dt_needed=0
+08-13 13:34:32.459  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so, flags=0x101, realpath=/system/lib64/libPvr_UnitySDKExt11.so)
+08-13 13:34:32.459  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libGLESv3.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libEGL.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: liblog.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libandroid.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libm.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libc.so
+08-13 13:34:32.460  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libPvr_UnitySDKExt11.so): Adding DT_NEEDED task: libdl.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libGLESv3.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libGLESv3.so): Already loaded (by soname): /system/lib64/libGLESv3.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libEGL.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libEGL.so): Already loaded (by soname): /system/lib64/libEGL.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libandroid.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libandroid.so): Already loaded (by soname): /system/lib64/libandroid.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:34:32.460  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:34:32.460  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:34:32.460  7673  7673 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libPvr_UnitySDKExt11.so", soname="libPvr_UnitySDK.so", handle=0xe3ada1fe445d658d
+08-13 13:34:32.461  7673  7673 D linker  : ... dlopen successful: realpath="/system/lib64/libPvr_UnitySDKExt11.so", soname="libPvr_UnitySDK.so", handle=0xe3ada1fe445d658d
+08-13 13:34:32.461  7673  7673 I VrApi   : open replaceable Scuccessed libPvr_UnitySDKExt11.so
+08-13 13:34:32.461  7673  7673 I VrApi   : couldBeLoaded
+08-13 13:34:32.461  7673  7673 I VrApi   : 0x7797c6ac18
+08-13 13:34:32.461  7673  7673 I VrApi   : open replaceable Scuccessed 2
+08-13 13:34:32.461  7673  7673 I VrApi   : current version >=2.7.4.4
+08-13 13:34:32.461  7673  7673 I VrApi   : APP version, 2, 8, 6, 16
+08-13 13:34:32.461  7673  7673 I VrApi   : lib version, 2, 8, 6, 15
+08-13 13:34:32.461  7673  7673 I VrApi   : open replaceable aborted
+08-13 13:34:32.461  7673  7673 D linker  : dlclose(handle=0xe3ada1fe445d658d, realpath="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ...
+08-13 13:34:32.461  7673  7673 D linker  : ... dlclose(realpath="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ... load group root is "/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0
+08-13 13:34:32.461  7673  7673 D linker  : ... dlclose(root="/system/lib64/libPvr_UnitySDKExt11.so"@0x78855e41d0) ... not unloading - the load group is flagged with NODELETE
+08-13 13:34:32.461  7673  7673 D linker  : dlclose(handle=0xe3ada1fe445d658d) ... done
+08-13 13:34:32.461  7673  7673 I VrApi   : pvr_OnLoad()
+08-13 13:34:32.461  7673  7673 I VrApi   : Using caller's JNIEnv
+08-13 13:34:32.462  7673  7673 I VrApi   : Get SdcardPath = /storage/emulated/0, 0x7798048110
+08-13 13:34:32.462  7673  7673 I VrApi   : BuildVersionSDK 29
+08-13 13:34:32.462  7673  7673 I VrApi   : pvr_Init
+08-13 13:34:32.463  7673  7673 I UnityNativeActivityPico: bypass_presentation = -1
+08-13 13:34:32.464  7673  7673 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.unity3d.player.UnityPlayerNativeActivityPico.PicoVRInit:115 com.unity3d.player.UnityPlayerNativeActivityPico.onCreate:14 com.pvr.vrshell.MainActivity.onCreate:0 
+08-13 13:34:32.465  7673  7702 D VRDataUtils: HMD not exist
+08-13 13:34:32.465  7673  7702 D PvrClient: mirroring or not lg return
+08-13 13:34:32.468  1381  1381 I Binder:1381_2: type=1400 audit(0.0:993): avc: denied { sys_admin } for capability=21 scontext=u:r:netd:s0 tcontext=u:r:netd:s0 tclass=capability permissive=1
+08-13 13:34:32.468  4992  4992 I c       : check# change host url
+08-13 13:34:32.468  4992  4992 I initServerJar: 调用DoGetUrlFromDBWithSuffix，uriStr=content://com.picovr.initserver.serverSetting/server_setting/store-AppStore3
+08-13 13:34:32.472  3310  3332 I InitServer: Porvider开始执行query,projection = null***selection = null**selectionArgs = null
+08-13 13:34:32.473  1381  1581 E TrafficController: Failed to set the counterSet: Bad file descriptor, fd: -1
+08-13 13:34:32.474  4992  4992 I initServerJar: cursor::count=0
+08-13 13:34:32.474  4992  4992 I initServerJar: content=
+08-13 13:34:32.474  4992  4992 I initServerJar: urlViaSuffix=
+08-13 13:34:32.474  4992  4992 I initServerJar: 结果为空，重新调用DoGetUrlFromDBWithSuffix，uriCommon=content://com.picovr.initserver.serverSetting/server_setting/AppStore3
+08-13 13:34:32.474  3310  3332 I InitServer: Porvider开始执行query,projection = null***selection = null**selectionArgs = null
+08-13 13:34:32.475  4992  4992 I initServerJar: cursor::count=0
+08-13 13:34:32.476  4992  4992 I initServerJar: content=
+08-13 13:34:32.476  4992  4992 I initServerJar: urlViaSuffix=
+08-13 13:34:32.476  4992  4992 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.startForegroundService:1576 android.content.ContextWrapper.startForegroundService:674 com.pvr.verify.utils.CommonUtils.startService:6 com.pvr.verify.a.b.a:14 com.pvr.verify.VerifyService.onCreate:30 
+08-13 13:34:32.476  1651  7236 W ActivityManager: Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+08-13 13:34:32.477  4992  4992 W ContextImpl: Calling a method in the system process without a qualified user: android.app.ContextImpl.bindService:1649 android.content.ContextWrapper.bindService:705 com.pvr.verify.a.b.a:20 com.pvr.verify.VerifyService.onCreate:30 android.app.ActivityThread.handleCreateService:3953 
+08-13 13:34:32.477  1651  7236 W ActivityManager: Unable to start service Intent { act=com.picovr.nest.sys.server pkg=com.picovr.nestserver } U=0: not found
+08-13 13:34:32.477  4992  4992 I b       : check# bind: bind Verify Service
+08-13 13:34:32.477  4992  4992 I VerifyService: onCreate# 
+08-13 13:34:32.477  4992  4992 I VerifyService: onBind: ---
+08-13 13:34:32.485  7673  7673 E ConfigApi: Not Initialize Global Configs
+08-13 13:34:32.485  7673  7673 I ConfigApi: Initialize Global Configs
+08-13 13:34:32.485  7673  7673 I ConfigApi: file is not exist: /sdcard/psmart/phoenix/psmvrapi_config.txt
+08-13 13:34:32.485  7673  7673 I psmvrConfig: Load file /system/etc/pvr/psmvrapi_config.txt, 1
+08-13 13:34:32.490  7673  7673 E psmvrConfig: Undefined variable -- iEnableStageLevel
+08-13 13:34:32.490  7673  7673 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundThreshold
+08-13 13:34:32.490  7673  7673 E psmvrConfig: Undefined variable -- fCylinderDistortionBoundSetValue
+08-13 13:34:32.490  7673  7673 I ConfigApi: DIATW Update Config Parameters From VRService
+08-13 13:34:32.490  7673  7673 E VrServiceApi: InitServiceClient: priority native or java service : order = 0
+08-13 13:34:32.490  7673  7673 I VrServiceApi: load service priority default
+08-13 13:34:32.490  7673  7673 D linker  : dlopen(name="libpvrserviceclient.so", flags=0x102, extinfo=(null), caller="/system/priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:34:32.490  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libpvrserviceclient.so, is_dt_needed=0
+08-13 13:34:32.490  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so, flags=0x102, realpath=/system/lib64/libpvrserviceclient.so)
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libutils.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: liblog.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libbinder.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libgui.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libcutils.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libsensor.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libc++.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libc.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libm.so
+08-13 13:34:32.491  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpvrserviceclient.so): Adding DT_NEEDED task: libdl.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libutils.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libutils.so): Already loaded (by soname): /system/lib64/libutils.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libbinder.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libbinder.so): Already loaded (by soname): /system/lib64/libbinder.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libgui.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libgui.so): Already loaded (by soname): /system/lib64/libgui.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libcutils.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libcutils.so): Already loaded (by soname): /system/lib64/libcutils.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libsensor.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libsensor.so): Already loaded (by soname): /system/lib64/libsensor.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libc++.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libc++.so): Already loaded (by soname): /system/lib64/libc++.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:34:32.491  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:34:32.491  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:34:32.492  7673  7673 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libpvrserviceclient.so", soname="libpvrserviceclient.so", handle=0x61178839332752a5
+08-13 13:34:32.492  7673  7673 D linker  : ... dlopen successful: realpath="/system/lib64/libpvrserviceclient.so", soname="libpvrserviceclient.so", handle=0x61178839332752a5
+08-13 13:34:32.492  7673  7673 I VrServiceApi: dlopen ok
+08-13 13:34:32.492  7673  7673 I VrServiceApi: dlsym for getPVRModule ok
+08-13 13:34:32.493  5317  5317 V PvrService: registerClient() client 0x7b31546300, pid 7673
+08-13 13:34:32.493  7673  7673 D linker  : dlopen(name="libpxr_6dof_optimization.so", flags=0x1, extinfo=(null), caller="/system/lib64/libpvrserviceclient.so", caller_ns=classloader-namespace@0x788552d650, targetSdkVersion=29) ...
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libpxr_6dof_optimization.so, is_dt_needed=0
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so, flags=0x1, realpath=/system/lib64/libpxr_6dof_optimization.so)
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libz.so
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libdl.so
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: liblog.so
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libm.so
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libstdc++.so
+08-13 13:34:32.494  7673  7673 D linker  : load_library(ns=classloader-namespace, task=libpxr_6dof_optimization.so): Adding DT_NEEDED task: libc.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libz.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libz.so): Already loaded (by soname): /system/lib64/libz.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libdl.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libdl.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libdl.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=liblog.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=liblog.so): Already loaded (by soname): /system/lib64/liblog.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libm.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libm.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libm.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libstdc++.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libstdc++.so): Already loaded (by soname): /system/lib64/libstdc++.so
+08-13 13:34:32.494  7673  7673 D linker  : find_libraries(ns=classloader-namespace): task=libc.so, is_dt_needed=1
+08-13 13:34:32.494  7673  7673 D linker  : find_library_internal(ns=classloader-namespace, task=libc.so): Already loaded (by soname): /apex/com.android.runtime/lib64/bionic/libc.so
+08-13 13:34:32.495  7673  7673 D linker  : ... dlopen calling constructors: realpath="/system/lib64/libpxr_6dof_optimization.so", soname="libpxr_6dof_optimization.so", handle=0xd4658f4988f672ed
+08-13 13:34:32.495  7673  7673 D linker  : ... dlopen successful: realpath="/system/lib64/libpxr_6dof_optimization.so", soname="libpxr_6dof_optimization.so", handle=0xd4658f4988f672ed
+08-13 13:34:32.495  7673  7673 E Paul    : IsInitialized
+08-13 13:34:32.495  7673  7673 E HaveDir : HaveDir
+08-13 13:34:32.495  7673  7673 E Paul    : open_calib_file_ok
+08-13 13:34:32.495  7673  7673 E GyroMatrix: c:1.000000,0.000000,0.000000,0.000000,1.000000,0.000000,0.000000,0.000000,1.000000
+08-13 13:34:32.495  7673  7673 E SensorConstruct: SensorConstruct
+08-13 13:34:32.495  7673  7673 E PvrServiceClient: Open library<lib6DofReset.so> failed:(null)
+08-13 13:34:32.496  7673  7673 D linker  : dlerror set to "undefined symbol: updateOffsets"
+08-13 13:34:32.488  7673  7673 I com.pvr.vrshell: type=1400 audit(0.0:994): avc: denied { read } for name="IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:34:32.496  7673  7673 E PvrServiceClient: Get function<mUpdateOffsets> failed:undefined symbol: updateOffsets
+08-13 13:34:32.496  7673  7673 D linker  : dlerror set to "dlclose failed: invalid handle: 0x0"
+08-13 13:34:32.496  7673  7673 D linker  : dlerror set to "undefined symbol: getResetPos"
+08-13 13:34:32.496  7673  7673 E PvrServiceClient: Get function<mGetResetPos> failed:undefined symbol: getResetPos
+08-13 13:34:32.496  7673  7673 D linker  : dlerror set to "dlclose failed: invalid handle: 0x0"
+08-13 13:34:32.488  7673  7673 I com.pvr.vrshell: type=1400 audit(0.0:995): avc: denied { open } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:34:32.488  7673  7673 I com.pvr.vrshell: type=1400 audit(0.0:996): avc: denied { getattr } for path="/persist/calibration/Bosh/IMUParams.txt" dev="sda2" ino=418 scontext=u:r:system_app:s0 tcontext=u:object_r:persist_file:s0 tclass=file permissive=1
+08-13 13:34:32.497  5317  5317 E PvrPlatform: Override displayinfo:w=3840 h=2160 fps=72.000008
+08-13 13:34:32.497  5317  5317 D RefBase : RefBase: Explicit destruction, weak count = 0 (in 0x7fc90a5908)
+08-13 13:34:32.497  5317  5317 W RefBase : CallStack::getCurrentInternal not linked, returning null
+08-13 13:34:32.497  5317  5317 W RefBase : CallStack::logStackInternal not linked
+08-13 13:34:32.497  7673  7673 I ConfigApi: UpdateDisplayInfo predict=(0.000000,0.000000,0.000000,0.000000),0.000000,hasPredictInfo = 0
+08-13 13:34:32.497  5317  5317 D PvrPlatform: Falcon CV2.Use parameters - lensParameters_falconCV2_eu_us_mode1
+08-13 13:34:32.497  5317  5317 I PvrPlatform: Override configs by config file
+08-13 13:34:32.497  7673  7673 I ConfigApi: psmvr_UpdateLensAndDisplayInfoFromVRService UpdateLensInfo
+--------- beginning of crash
+08-13 13:34:32.497  7673  7673 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10 in tid 7673 (com.pvr.vrshell), pid 7673 (com.pvr.vrshell)
+08-13 13:34:32.557  7710  7710 I crash_dump64: obtaining output fd from tombstoned, type: kDebuggerdTombstone
+08-13 13:34:32.558  1405  1405 I /system/bin/tombstoned: received crash request for pid 7673
+08-13 13:34:32.559  7710  7710 I crash_dump64: performing dump of process 7673 (target tid = 7673)
+08-13 13:34:32.570  7710  7710 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+08-13 13:34:32.570  7710  7710 F DEBUG   : LineageOS Version: '17.1-20210808-UNOFFICIAL-'
+08-13 13:34:32.570  7710  7710 F DEBUG   : Build fingerprint: 'unknown/unknown/unknown:10/QQ3A.200805.001/eng.crossg.20210808.163339:userdebug/test-keys'
+08-13 13:34:32.570  7710  7710 F DEBUG   : Revision: '0'
+08-13 13:34:32.570  7710  7710 F DEBUG   : ABI: 'arm64'
+08-13 13:34:32.571  7710  7710 F DEBUG   : Timestamp: 2026-08-13 13:34:32-0400
+08-13 13:34:32.571  7710  7710 F DEBUG   : pid: 7673, tid: 7673, name: com.pvr.vrshell  >>> com.pvr.vrshell <<<
+08-13 13:34:32.571  7710  7710 F DEBUG   : uid: 1000
+08-13 13:34:32.571  7710  7710 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x10
+08-13 13:34:32.571  7710  7710 F DEBUG   : Cause: null pointer dereference
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x0  0000000000000004  x1  0000000000000007  x2  0000000000000000  x3  c08f3f3333333333
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x4  0000007882e7a950  x5  0000007fd9773f78  x6  0000000000000000  x7  0000000000000000
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x8  ac7449f205dd72ee  x9  ac7449f205dd72ee  x10 00000078003a34ec  x11 000000000000002f
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x12 0000000000000000  x13 0000000000000006  x14 0000007fd9773e88  x15 0000000000000000
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x16 0000000000000001  x17 0000007881dd5004  x18 0000000000006574  x19 00000078852a1c00
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x20 0000000000000000  x21 00000078852a1c00  x22 0000007fd97741f0  x23 00000077f512d407
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x24 0000000000000004  x25 0000007885599020  x26 00000078852a1cb0  x27 0000000000000001
+08-13 13:34:32.571  7710  7710 F DEBUG   :     x28 0000000000000000  x29 0000007fd9773f80
+08-13 13:34:32.571  7710  7710 F DEBUG   :     sp  0000000000000000  lr  00000077fff5a364  pc  00000077fff5a370
+08-13 13:34:32.573  7710  7710 F DEBUG   : 
+08-13 13:34:32.573  7710  7710 F DEBUG   : backtrace:
+08-13 13:34:32.573  7710  7710 F DEBUG   :       #00 pc 000000000013f370  /apex/com.android.runtime/lib64/libart.so (art_quick_generic_jni_trampoline+176) (BuildId: 305e71e8e3ac3377f1ac1cc192146d00)
+08-13 13:34:32.608  7710  7710 I crash_dump64: type=1400 audit(0.0:997): avc: denied { open } for path="/dev/__properties__/u:object_r:device_config_runtime_native_prop:s0" dev="tmpfs" ino=101 scontext=u:r:crash_dump:s0 tcontext=u:object_r:device_config_runtime_native_prop:s0 tclass=file permissive=1
+08-13 13:34:32.608  7710  7710 I crash_dump64: type=1400 audit(0.0:998): avc: denied { getattr } for path="/dev/__properties__/u:object_r:device_config_runtime_native_prop:s0" dev="tmpfs" ino=101 scontext=u:r:crash_dump:s0 tcontext=u:object_r:device_config_runtime_native_prop:s0 tclass=file permissive=1
+08-13 13:34:32.648  7710  7710 I crash_dump64: type=1400 audit(0.0:999): avc: denied { open } for path="/dev/__properties__/u:object_r:sf_lcd_density_prop:s0" dev="tmpfs" ino=67 scontext=u:r:crash_dump:s0 tcontext=u:object_r:sf_lcd_density_prop:s0 tclass=file permissive=1
+08-13 13:34:32.648  7710  7710 I crash_dump64: type=1400 audit(0.0:1000): avc: denied { getattr } for path="/dev/__properties__/u:object_r:sf_lcd_density_prop:s0" dev="tmpfs" ino=67 scontext=u:r:crash_dump:s0 tcontext=u:object_r:sf_lcd_density_prop:s0 tclass=file permissive=1
+08-13 13:34:32.658  7710  7710 I crash_dump64: type=1400 audit(0.0:1001): avc: denied { read } for name="treble-overlay-webview.apk" dev="sda7" ino=5859 scontext=u:r:crash_dump:s0 tcontext=u:object_r:vendor_overlay_file:s0 tclass=file permissive=1
+08-13 13:34:32.685  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.686  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 3 lines
+08-13 13:34:32.686  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.696  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.697  1651  1828 I chatty  : uid=1000(system) HwBinder:1651_2 identical 3 lines
+08-13 13:34:32.698  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.698  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.699  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 2 lines
+08-13 13:34:32.700  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.700  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:32.756  1405  1405 E /system/bin/tombstoned: Tombstone written to: /data/tombstones/tombstone_03
+08-13 13:34:32.761  1651  7718 I DropBoxManagerService: add tag=system_app_native_crash isTagEnabled=true flags=0x2
+08-13 13:34:32.761  1651  7717 W ActivityTaskManager:   Force finishing activity com.pvr.vrshell/.MainActivity
+08-13 13:34:32.779  5317  5339 E PvrPlatform: ALOOPER_POLL_TIMEOUT
+08-13 13:34:32.780  1651  1688 I BootReceiver: Copying /data/tombstones/tombstone_03 to DropBox (SYSTEM_TOMBSTONE)
+08-13 13:34:32.785  1651  3678 I ActivityManager: Process com.pvr.vrshell (pid 7673) has died: fore TOP 
+08-13 13:34:32.785  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.785  1651  1685 E libprocessgroup: CgroupMap::FindController called for [1651] failed, RC file was not initialized properly
+08-13 13:34:32.785  1651  1685 I libprocessgroup: Successfully killed process cgroup uid 1000 pid 7673 in 0ms
+08-13 13:34:32.785  1651  1688 I DropBoxManagerService: add tag=SYSTEM_TOMBSTONE isTagEnabled=true flags=0x2
+08-13 13:34:32.785  5317  5317 V PvrService: removeNotificationClient() pid 7673
+08-13 13:34:32.785  5317  5317 E PvrService: VRModeStateClient::onClientDied pid=7673
+08-13 13:34:32.785  5317  5317 I PvrService: mPrevTrackingMode 1, trackingMode 1
+08-13 13:34:32.785  5317  5317 D PvrService: removeNotificationClient done
+08-13 13:34:32.786  1370  1370 I Zygote  : Process 7673 exited due to signal 11 (Segmentation fault)
+08-13 13:34:32.796  1651  1676 W WindowManager: Failed looking up window callers=com.android.server.wm.WindowManagerService.windowForClientLocked:5323 com.android.server.wm.WindowManagerService.removeWindow:1787 com.android.server.wm.Session.remove:176 
+08-13 13:34:32.801  2621  2621 D ConfigServerService:(BaseApplication.java:27): onTrimMemory level : 5
+08-13 13:34:32.802  4992  4992 I b       : check# unBind: unBind Verify Service
+08-13 13:34:32.803  1651  7236 W ActivityManager: Unbind failed: could not find connection for android.os.BinderProxy@79f8238
+08-13 13:34:32.821  1924  1924 D ImageWallpaper: wallpaper visibility changes to: true
+08-13 13:34:32.825  1381  1581 E TrafficController: Failed to delete the counterSet: Bad file descriptor
+08-13 13:34:33.262  1651  1675 W ActivityTaskManager: Activity top resumed state loss timeout for ActivityRecord{a9c62a7 u0 com.pvr.vrshell/.MainActivity t-1 f}
+08-13 13:34:33.388  5317  5339 D PvrPlatform: Already keep stationary state for 11 secend
+08-13 13:34:33.388  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:33.388  5317  5339 D PvrPlatform: Already keep stationary state for 11 secend
+08-13 13:34:33.802  2711  3477 W AudioFxService: self destructing, no sessions active and nothing to do.
+08-13 13:34:33.985  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:34:34.389  5317  5339 D PvrPlatform: Already keep stationary state for 12 secend
+08-13 13:34:34.390  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:34.390  5317  5339 D PvrPlatform: Already keep stationary state for 12 secend
+08-13 13:34:34.852  5317  5341 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:34:34.852  5317  5341 E PvrService: PvrService getTrackingDataExt rotation(0.003881, 0.991375, 0.076588, 0.106278)
+08-13 13:34:34.852  5317  5341 E PvrService: PvrService getTrackingDataExt position(-0.017655, -0.013040, 0.089188)
+08-13 13:34:35.390  5317  5339 D PvrPlatform: Already keep stationary state for 13 secend
+08-13 13:34:35.390  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:35.390  5317  5339 D PvrPlatform: Already keep stationary state for 13 secend
+08-13 13:34:35.737  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.746  1651  1828 I chatty  : uid=1000(system) HwBinder:1651_2 identical 5 lines
+08-13 13:34:35.746  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.747  1651  1830 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.747  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.747  1651  1828 I chatty  : uid=1000(system) HwBinder:1651_2 identical 1 line
+08-13 13:34:35.752  1651  1828 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.752  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.753  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.753  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:35.753  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:36.390  5317  5339 D PvrPlatform: Already keep stationary state for 14 secend
+08-13 13:34:36.391  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:36.391  5317  5339 D PvrPlatform: Already keep stationary state for 14 secend
+08-13 13:34:37.391  5317  5339 D PvrPlatform: Already keep stationary state for 15 secend
+08-13 13:34:37.391  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:37.391  5317  5339 D PvrPlatform: Already keep stationary state for 15 secend
+08-13 13:34:37.428  5317  5341 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:34:37.428  5317  5341 E PvrService: PvrService getTrackingDataExt rotation(0.004233, 0.991402, 0.076717, 0.105909)
+08-13 13:34:37.428  5317  5341 E PvrService: PvrService getTrackingDataExt position(-0.017546, -0.013059, 0.089222)
+08-13 13:34:38.392  5317  5339 D PvrPlatform: Already keep stationary state for 16 secend
+08-13 13:34:38.392  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:38.392  5317  5339 D PvrPlatform: Already keep stationary state for 16 secend
+08-13 13:34:38.681  5317  5341 D PvrService: threadLoop continue: 1
+08-13 13:34:38.775  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.776  1651  2144 I chatty  : uid=1000(system) HwBinder:1651_5 identical 1 line
+08-13 13:34:38.776  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.776  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.776  1651  2049 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.785  1651  2144 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.785  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.786  1651  1691 I chatty  : uid=1000(system) HwBinder:1651_1 identical 2 lines
+08-13 13:34:38.786  1651  1691 D HalDevMgr: onDebugRingBufferDataAvailable
+08-13 13:34:38.984  1597  1597 E MSM-irqbalance: IRQ 76 not found in internal structure or should be ignored
+08-13 13:34:39.398  5317  5339 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:34:39.399  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:39.399  5317  5339 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:34:39.978  5317  5341 E PvrService: PvrService getTrackingDataExt ret(0)
+08-13 13:34:39.978  5317  5341 E PvrService: PvrService getTrackingDataExt rotation(0.004714, 0.991444, 0.075884, 0.106101)
+08-13 13:34:39.978  5317  5341 E PvrService: PvrService getTrackingDataExt position(-0.017500, -0.012899, 0.089121)
+08-13 13:34:40.403  5317  5339 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:34:40.403  5317  5339 I chatty  : uid=0(root) /system/bin/pvrservice identical 1 line
+08-13 13:34:40.403  5317  5339 D PvrPlatform: Already keep stationary state for 0 secend
+08-13 13:34:41.404  5317  5339 D PvrPlatform: Already keep stationary state for 1 secend

@@ -1,0 +1,136 @@
+=== daemons -> bin ===
+  /bin/pvrservice                                   11088 bytes
+  /bin/qvrservice                                   16272 bytes
+  /bin/pvr_compute                                  11112 bytes
+  /bin/vr                                             152 bytes
+
+=== 64-bit libs ===
+  /lib64/libcompositor.pxr.so                     1828296 bytes
+  /lib64/libruntime.pxr.so                        1238808 bytes
+  /lib64/libloader.pxr.so                         1018088 bytes
+  /lib64/libplugin.pxr.so                         1009912 bytes
+  /lib64/libpvrservice.so                          138720 bytes
+  /lib64/libpvrserviceclient.so                    135824 bytes
+  /lib64/libpvrmodule_orientationtracker.so        173992 bytes
+  /lib64/libpvrmodule_platform.so                  202000 bytes
+  /lib64/libpxr_6dof_optimization.so              3620152 bytes
+  /lib64/libCVControllerClient.pxr.so              150592 bytes
+  /lib64/libconfigurationclient.pxr.so              64408 bytes
+  /lib64/libpxrnotification.pxr.so                  65208 bytes
+  /lib64/libpxrserviceclient.so                     15088 bytes
+  /lib64/libqvrcamera_client_system.so             144160 bytes
+
+=== 32-bit libs (qvrservice is 32-bit only) ===
+  /lib/libcompositor.pxr.so                       1467220 bytes
+  /lib/libruntime.pxr.so                           716872 bytes
+  /lib/libloader.pxr.so                            505568 bytes
+  /lib/libplugin.pxr.so                            718580 bytes
+  /lib/libpvrservice.so                            106528 bytes
+  /lib/libpvrserviceclient.so                      109712 bytes
+  /lib/libpvrmodule_orientationtracker.so           99860 bytes
+  /lib/libpvrmodule_platform.so                    160524 bytes
+  /lib/libpxr_6dof_optimization.so                2042104 bytes
+  /lib/libCVControllerClient.pxr.so                 98116 bytes
+  /lib/libconfigurationclient.pxr.so                53488 bytes
+  /lib/libpxrnotification.pxr.so                    58596 bytes
+  /lib/libpxrserviceclient.so                       20344 bytes
+  /lib/libqvrservice.so                            556684 bytes
+  /lib/libqvrcamera_client_system.so               121728 bytes
+  /lib/libqvr_eyetracking_plugin.so                 45716 bytes
+  /lib/libqvr_mapper_stub.so                        16076 bytes
+  /lib/libqvr_cdsp_driver_stub.so                   24364 bytes
+  /lib/libqvr_cam_cdsp_driver_stub.so               20248 bytes
+
+=== framework ===
+  /framework/pxr_sdk_api.jar                        39557 bytes
+  /framework/vr.jar                                   304 bytes
+
+=== init script ===
+  /etc/init/pvrservice.rc                             299 bytes
+
+=== /etc/pvr (recursive) ===
+  etc/pvr/boundary/dialog_logo.png                             1394 bytes
+  etc/pvr/boundary/goback.png                                 78718 bytes
+  etc/pvr/boundary/gobackde-DE_C.png                          40793 bytes
+  etc/pvr/boundary/gobacken-US.png                            78718 bytes
+  etc/pvr/boundary/gobacken-US_C.png                          31538 bytes
+  etc/pvr/boundary/gobackes-ES.png                            78718 bytes
+  etc/pvr/boundary/gobackes-ES_C.png                          34938 bytes
+  etc/pvr/boundary/gobackfr-FR_C.png                          35884 bytes
+  etc/pvr/boundary/gobackit-IT_C.png                          34607 bytes
+  etc/pvr/boundary/gobackja-JP.png                            78718 bytes
+  etc/pvr/boundary/gobackja-JP_C.png                          51510 bytes
+  etc/pvr/boundary/gobackko-KR_C.png                          35321 bytes
+  etc/pvr/boundary/gobackpt-BR_C.png                          34213 bytes
+  etc/pvr/boundary/gobackzh-CN.png                            78718 bytes
+  etc/pvr/boundary/gobackzh-CN_C.png                          51513 bytes
+  etc/pvr/boundary/gobackzh-TW_C.png                          46239 bytes
+  etc/pvr/boundary/goback_C.png                               33945 bytes
+  etc/pvr/boundary/grid_point_coord.txt                       38808 bytes
+  etc/pvr/boundary/lost.png                                   80799 bytes
+  etc/pvr/boundary/lostde-DE_C.png                            57397 bytes
+  etc/pvr/boundary/losten-US.png                              80799 bytes
+  etc/pvr/boundary/losten-US_C.png                            43583 bytes
+  etc/pvr/boundary/lostes-ES.png                              80799 bytes
+  etc/pvr/boundary/lostes-ES_C.png                            53314 bytes
+  etc/pvr/boundary/lostfr-FR_C.png                            52772 bytes
+  etc/pvr/boundary/lostit-IT_C.png                            47218 bytes
+  etc/pvr/boundary/lostja-JP.png                              80799 bytes
+  etc/pvr/boundary/lostja-JP_C.png                            86700 bytes
+  etc/pvr/boundary/lostko-KR_C.png                            52336 bytes
+  etc/pvr/boundary/lostpt-BR_C.png                            49087 bytes
+  etc/pvr/boundary/lostzh-CN.png                              80799 bytes
+  etc/pvr/boundary/lostzh-CN_C.png                            61505 bytes
+  etc/pvr/boundary/lostzh-TW_C.png                            76027 bytes
+  etc/pvr/boundary/lost_C.png                                 46988 bytes
+  etc/pvr/boundary/stdata0.txt                                 3517 bytes
+  etc/pvr/boundary/stsdata.txt                                  226 bytes
+  etc/pvr/boundary/toofar.png                                 86100 bytes
+  etc/pvr/boundary/toofarde-DE_C.png                          40793 bytes
+  etc/pvr/boundary/toofaren-US.png                            86100 bytes
+  etc/pvr/boundary/toofaren-US_C.png                          32569 bytes
+  etc/pvr/boundary/toofares-ES.png                            86100 bytes
+  etc/pvr/boundary/toofares-ES_C.png                          34938 bytes
+  etc/pvr/boundary/toofarfr-FR_C.png                          35884 bytes
+  etc/pvr/boundary/toofarit-IT_C.png                          33365 bytes
+  etc/pvr/boundary/toofarja-JP.png                            86100 bytes
+  etc/pvr/boundary/toofarja-JP_C.png                          51510 bytes
+  etc/pvr/boundary/toofarko-KR_C.png                          36638 bytes
+  etc/pvr/boundary/toofarpt-BR_C.png                          36814 bytes
+  etc/pvr/boundary/toofarzh-CN.png                            86100 bytes
+  etc/pvr/boundary/toofarzh-CN_C.png                          51513 bytes
+  etc/pvr/boundary/toofarzh-TW_C.png                          46239 bytes
+  etc/pvr/boundary/toofar_C.png                               33997 bytes
+  etc/pvr/boundary/Wireframe.png                             184030 bytes
+  etc/pvr/libsvrapi.so                                       711772 bytes
+  etc/pvr/libwvr_api.so                                     2717684 bytes
+  etc/pvr/psmvrapi_config.txt                                  3880 bytes
+  etc/pvr/psmvrapi_config1.txt                                 3880 bytes
+  etc/pvr/psmvrapi_config2.txt                                 3880 bytes
+  etc/pvr/pvrservice_platform.ini                              1547 bytes
+  etc/pvr/pvrservice_platform_G2U3_PU.ini                      1555 bytes
+  etc/pvr/pvrservice_platform_N2A2_Fabric.ini                  1555 bytes
+  etc/pvr/pvrservice_platform_N2A2_PU.ini                      1555 bytes
+  etc/pvr/pxr_canary_version.txt                                 54 bytes
+  etc/pvr/pxr_config.txt                                       2832 bytes
+  etc/pvr/res.json                                           127365 bytes
+  etc/pvr/slam/config_of_mono_reloc.txt                         635 bytes
+  etc/pvr/slam/ORBvoc.bin                                  44365017 bytes
+
+=== what pvrservice.rc actually says ===
+service pvrservice /system/bin/pvrservice
+     class core
+     user root
+     group root usb system wakelock
+
+on property:sys.pvr.vrservice.state=0
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1
+    start pvrservice
+on property:sys.pvr.vrservice.state=2
+    restart pvrservice
+
+=== totals ===
+65M	/mnt/f/PN2Lineage/pvr_stack
+107
+DONE

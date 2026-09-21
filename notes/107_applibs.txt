@@ -1,0 +1,14 @@
+=== priv-app ===
+  VRShell2               arm64   0 libs  0
+  VRUserCenter2          arm64   0 libs  0
+  CVService              arm     0 libs  0
+  PVRVerify              arm     0 libs  0
+  InitServer             arm64   0 libs  0
+
+=== app ===
+  PicoToSvrService       arm64   0 libs  0
+
+=== everything pulled ===
+
+total: 0 libs, 0
+DONE

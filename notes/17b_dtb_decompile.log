@@ -1,0 +1,94 @@
+OK   dtbo_00.dts  6527 lines
+OK   dtbo_01.dts  6383 lines
+OK   dtbo_02.dts  6134 lines
+OK   dtbo_03.dts  6134 lines
+OK   dtbo_04.dts  6134 lines
+OK   dtbo_05.dts  6527 lines
+OK   dtbo_06.dts  5965 lines
+OK   dtbo_07.dts  6186 lines
+OK   dtbo_08.dts  6186 lines
+OK   dtbo_09.dts  6186 lines
+OK   dtbo_10.dts  5927 lines
+OK   dtbo_11.dts  5965 lines
+OK   dtbo_12.dts  6134 lines
+OK   dtbo_13.dts  6579 lines
+OK   dtbo_14.dts  5927 lines
+OK   dtbo_15.dts  6527 lines
+OK   dtbo_16.dts  5965 lines
+OK   dtbo_17.dts  5927 lines
+OK   dtbo_18.dts  6527 lines
+OK   dtbo_19.dts  5671 lines
+OK   dtbo_20.dts  6383 lines
+OK   dtbo_21.dts  6579 lines
+OK   dtbo_22.dts  5965 lines
+OK   dtbo_23.dts  5927 lines
+OK   dtbo_24.dts  6134 lines
+OK   dtbo_25.dts  6527 lines
+OK   dtbo_26.dts  6186 lines
+OK   dtbo_27.dts  5927 lines
+OK   dtbo_28.dts  6579 lines
+OK   dtbo_29.dts  6579 lines
+OK   dtbo_30.dts  5965 lines
+OK   dtbo_31.dts  5609 lines
+OK   dtbo_32.dts  6186 lines
+OK   dtbo_33.dts  6579 lines
+OK   dtbo_34.dts  6579 lines
+OK   dtbo_35.dts  5965 lines
+OK   dtbo_36.dts  6186 lines
+OK   dtbo_37.dts  5927 lines
+OK   dtbo_38.dts  6134 lines
+OK   dtbo_39.dts  6527 lines
+OK   kernel_fdt_ae0897.dts  21695 lines
+OK   kernel_fdt_b49b8b.dts  21521 lines
+OK   kernel_fdt_bb1fd4.dts  21697 lines
+OK   kernel_fdt_c1b316.dts  21521 lines
+OK   kernel_fdt_c8375f.dts  21697 lines
+OK   kernel_fdt_cecaa1.dts  21695 lines
+
+=== model / compatible of each ===
+dtbo_00.dts                  model="Qualcomm Technologies, Inc. SDM845 v2 MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_01.dts                  model="Qualcomm Technologies, Inc. SDA845 V2 SVR" compat="qcom,sda845-svr", "qcom,sda845", "qcom,svr"
+dtbo_02.dts                  model="Qualcomm Technologies, Inc. SDM845 v1 CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_03.dts                  model="Qualcomm Technologies, Inc. SDM845 v2 CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_04.dts                  model="Qualcomm Technologies, Inc. sda845 v2 CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_05.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+dtbo_06.dts                  model="Qualcomm Technologies, Inc. sda845 4K Display Panel QRD" compat="qcom,sda845-qrd", "qcom,sda845", "qcom,qrd"
+dtbo_07.dts                  model="Qualcomm Technologies, Inc. sdm845 v2 4K Display Panel CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_08.dts                  model="Qualcomm Technologies, Inc. sdm845 v2.1 4K Display Panel CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_09.dts                  model="Qualcomm Technologies, Inc. sda845 4K Display Panel CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_10.dts                  model="Qualcomm Technologies, Inc. SDA845 v2 QRD" compat="qcom,sda845-qrd", "qcom,sda845", "qcom,qrd"
+dtbo_11.dts                  model="Qualcomm Technologies, Inc. sdm845 4K Display Panel QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_12.dts                  model="Qualcomm Technologies, Inc. SDM845 v2.1 CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_13.dts                  model="Qualcomm Technologies, Inc. sdm845 4K Display Panel MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_14.dts                  model="Qualcomm Technologies, Inc. SDM845 v2 QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_15.dts                  model="Qualcomm Technologies, Inc. SDM845 v1 MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_16.dts                  model="Qualcomm Technologies, Inc. sdm845 v2 4K Display Panel QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_17.dts                  model="Qualcomm Technologies, Inc. SDM845 v2.1 QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_18.dts                  model="Qualcomm Technologies, Inc. SDM845 v2.1 MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_19.dts                  model="Qualcomm Technologies, Inc. SDA845 v2 HDK" compat="qcom,sda845-hdk", "qcom,sda845", "qcom,hdk"
+dtbo_20.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 SVR" compat="qcom,sda845-svr", "qcom,sda845", "qcom,svr"
+dtbo_21.dts                  model="Qualcomm Technologies, Inc. sdm845 v2.1 4K Display Panel MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_22.dts                  model="Qualcomm Technologies, Inc. sda845 v2 4K Display Panel QRD" compat="qcom,sda845-qrd", "qcom,sda845", "qcom,qrd"
+dtbo_23.dts                  model="Qualcomm Technologies, Inc. SDA845 v2.1 QRD" compat="qcom,sda845-qrd", "qcom,sda845", "qcom,qrd"
+dtbo_24.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_25.dts                  model="Qualcomm Technologies, Inc. sda845 v1 MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+dtbo_26.dts                  model="Qualcomm Technologies, Inc. sdm845 4K Display Panel CDP" compat="qcom,sdm845-cdp", "qcom,sdm845", "qcom,cdp"
+dtbo_27.dts                  model="Qualcomm Technologies, Inc. sda845 v1 QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_28.dts                  model="Qualcomm Technologies, Inc. sda845 4K Display Panel MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+dtbo_29.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 4K Display Panel MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+dtbo_30.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 4K Display Panel QRD" compat="qcom,sda845-qrd", "qcom,sda845", "qcom,qrd"
+dtbo_31.dts                  model="Qualcomm Technologies, Inc. SDM845 V2 QVR" compat="qcom,sdm845-qvr", "qcom,sdm845", "qcom,qvr"
+dtbo_32.dts                  model="Qualcomm Technologies, Inc. sda845 v2.1 4K Display Panel CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_33.dts                  model="Qualcomm Technologies, Inc. sdm845 v2 4K Display Panel MTP" compat="qcom,sdm845-mtp", "qcom,sdm845", "qcom,mtp"
+dtbo_34.dts                  model="Qualcomm Technologies, Inc. sda845 v2 4K Display Panel MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+dtbo_35.dts                  model="Qualcomm Technologies, Inc. sdm845 v2.1 4K Display Panel QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_36.dts                  model="Qualcomm Technologies, Inc. sda845 v2 4K Display Panel CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_37.dts                  model="Qualcomm Technologies, Inc. SDM845 v1 QRD" compat="qcom,sdm845-qrd", "qcom,sdm845", "qcom,qrd"
+dtbo_38.dts                  model="Qualcomm Technologies, Inc. sda845 v1 CDP" compat="qcom,sda845-cdp", "qcom,sda845", "qcom,cdp"
+dtbo_39.dts                  model="Qualcomm Technologies, Inc. sda845 v2 MTP" compat="qcom,sda845-mtp", "qcom,sda845", "qcom,mtp"
+kernel_fdt_ae0897.dts        model="Qualcomm Technologies, Inc. SDM845 v2.1 SoC" compat="qcom,sdm845"
+kernel_fdt_b49b8b.dts        model="Qualcomm Technologies, Inc. SDM845 v1 SoC" compat="qcom,sdm845"
+kernel_fdt_bb1fd4.dts        model="Qualcomm Technologies, Inc. SDM845 v2 SoC" compat="qcom,sdm845"
+kernel_fdt_c1b316.dts        model="Qualcomm Technologies, Inc. SDA845 v1 SoC" compat="qcom,sda845"
+kernel_fdt_c8375f.dts        model="Qualcomm Technologies, Inc. SDA845 v2 SoC" compat="qcom,sda845"
+kernel_fdt_cecaa1.dts        model="Qualcomm Technologies, Inc. SDA845 v2.1 SoC" compat="qcom,sda845"

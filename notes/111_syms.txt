@@ -1,0 +1,36 @@
+=== in what we already extracted ===
+
+=== does OUR copy of libpxr_6dof_optimization.so have them at all? ===
+--- /mnt/f/PN2Lineage/pvr_stack/lib64/libpxr_6dof_optimization.so ---
+    total dynamic symbols: 2799
+000000000021ce54 T _ZN2cv3ogl6Arrays15resetColorArrayEv
+000000000021d0b0 T _ZN2cv3ogl6Arrays16resetNormalArrayEv
+000000000021cc74 T _ZN2cv3ogl6Arrays16resetVertexArrayEv
+000000000021d328 T _ZN2cv3ogl6Arrays18resetTexCoordArrayEv
+0000000000080760 T _ZN2cv5instr10resetTraceEv
+000000000005cda8 T _ZN3PVR14HbSensorFusion5ResetEii
+00000000000588dc T _ZN3PVR17SensorCalibration13GetGyroOffsetEf
+0000000000059328 T _ZN3PVR17SensorCalibration15StoreAutoOffsetEv
+0000000000058be4 T _ZN3PVR17SensorCalibration23ReadGyroOffsetParameterEv
+0000000000058810 T _ZN3PVR17SensorCalibration24WriteGyroOffsetParameterEv
+--- /mnt/f/PN2Lineage/pvr_stack/lib/libpxr_6dof_optimization.so ---
+    total dynamic symbols: 2990
+001400bd T _ZN2cv3ogl6Arrays15resetColorArrayEv
+00140261 T _ZN2cv3ogl6Arrays16resetNormalArrayEv
+0013ff81 T _ZN2cv3ogl6Arrays16resetVertexArrayEv
+00140405 T _ZN2cv3ogl6Arrays18resetTexCoordArrayEv
+0004e39d T _ZN2cv5instr10resetTraceEv
+00041b01 T _ZN3PVR14HbSensorFusion5ResetEii
+0003c5fd T _ZN3PVR17SensorCalibration13GetGyroOffsetEf
+0003d285 T _ZN3PVR17SensorCalibration15StoreAutoOffsetEv
+0003ce31 T _ZN3PVR17SensorCalibration23ReadGyroOffsetParameterEv
+0003c565 T _ZN3PVR17SensorCalibration24WriteGyroOffsetParameterEv
+
+=== brute force: which /lib64 or /lib file in the image contains the strings ===
+  lib64/lib6DofReset.so contains 'updateOffsets'
+  lib64/libpvrmodule_platform.so contains 'updateOffsets'
+  lib64/libpvrserviceclient.so contains 'updateOffsets'
+  lib/lib6DofReset.so contains 'updateOffsets'
+  lib/libpvrmodule_platform.so contains 'updateOffsets'
+  lib/libpvrserviceclient.so contains 'updateOffsets'
+DONE

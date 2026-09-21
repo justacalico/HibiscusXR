@@ -36,7 +36,8 @@ Everything you need is in the docs:
 - First boot setup
 - Restoring the stock software
 
-Read them in this repository under [`websites/docs/`](websites/docs/).
+Read them on the [project site](https://hibiscusxr-37c6a7.gitlab.io/docs/)
+or in this repository under [`websites/docs/`](websites/docs/).
 
 ## Links
 

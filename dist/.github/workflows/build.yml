@@ -1,0 +1,149 @@
+name: build
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: 'Release channel'
+        required: true
+        type: choice
+        options:
+          - release
+          - beta
+          - alpha
+        default: alpha
+
+env:
+  PN2_ROOT: /home/runner/pn2
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    permissions:
+      contents: write
+    concurrency:
+      group: pn2-build
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: free disk space
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /opt/ghc /opt/az \
+            /usr/local/share/boost /opt/microsoft /usr/share/swift* \
+            "$ANDROID_HOME/system-images" "$ANDROID_HOME/emulator" \
+            "$ANDROID_HOME/sources" || true
+          sudo docker image prune -af >/dev/null 2>&1 || true
+          df -h /
+
+      - name: host tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends xz-utils e2fsprogs unzip
+          sudo apt-get install -y --no-install-recommends simg2img || \
+            sudo apt-get install -y --no-install-recommends android-sdk-libsparse-utils
+          sudo apt-get install -y --no-install-recommends ninja-build cmake python3-pip \
+            python3-mako flex bison zip pkg-config glslang-tools
+          sudo pip3 install meson
+          python3 -c "import mako" || sudo pip3 install mako
+          for t in simg2img img2simg debugfs e2fsck mke2fs resize2fs dumpe2fs meson ninja cmake javac zip glslangValidator; do
+            command -v "$t" || { echo "missing $t"; exit 1; }
+          done
+
+      - name: android-29 platform
+        run: |
+          SDKM=$(ls "$ANDROID_HOME"/cmdline-tools/*/bin/sdkmanager 2>/dev/null | tail -1)
+          if [ ! -d "$ANDROID_HOME/platforms/android-29" ]; then
+            yes | sudo "$SDKM" "platforms;android-29"
+          fi
+          # pn2xr runtime-apk pins build-tools 35.0.0 + android-35
+          [ -d "$ANDROID_HOME/platforms/android-35" ] || \
+            yes | sudo "$SDKM" "platforms;android-35"
+          [ -d "$ANDROID_HOME/build-tools/35.0.0" ] || \
+            yes | sudo "$SDKM" "build-tools;35.0.0"
+          # flutter 3.44 apps compile against android-36
+          [ -d "$ANDROID_HOME/platforms/android-36" ] || \
+            yes | sudo "$SDKM" "platforms;android-36"
+          ls "$ANDROID_HOME/platforms"
+          ls "$ANDROID_HOME/ndk"
+          ls "$ANDROID_HOME/build-tools" | tail -3
+
+      - name: flutter toolchain
+        run: |
+          . manifest.env
+          curl -fsSL -o /tmp/flutter.tar.xz \
+            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+          tar -xJf /tmp/flutter.tar.xz -C "$HOME"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+          git config --global --add safe.directory "$HOME/flutter"
+          "$HOME/flutter/bin/flutter" config --no-analytics --android-sdk "$ANDROID_HOME"
+          "$HOME/flutter/bin/flutter" --version
+          # earlier sudo steps leave $HOME/.config root-owned, and AGP mints
+          # its debug keystore under .config/.android - own it and pre-make
+          # the keystore so the release build never needs to
+          sudo chown -R "$(id -u):$(id -g)" "$HOME/.config" 2>/dev/null || true
+          mkdir -p "$HOME/.config/.android"
+          [ -f "$HOME/.config/.android/debug.keystore" ] || \
+            keytool -genkeypair -v -keystore "$HOME/.config/.android/debug.keystore" \
+              -storepass android -alias androiddebugkey -keypass android \
+              -keyalg RSA -keysize 2048 -validity 10950 \
+              -dname "CN=Android Debug,O=Android,C=US" >/dev/null
+
+      - name: clone source repos
+        run: |
+          set -e
+          . manifest.env
+          mkdir -p "$PN2_ROOT"/{notes,out}
+          for pair in "tools:$TOOLS_REF" "overlay:$OVERLAY_REF" "shim:$SHIM_REF" "vrhome:$VRHOME_REF" "pn2xr:$PN2XR_REF" "applications/library:$LIBRARY_REF" "applications/quick-panel:$QUICKPANEL_REF" "applications/settings:$SETTINGS_REF"; do
+            r=${pair%%:*}; ref=${pair##*:}
+            git clone --depth 1 -b "$ref" "https://gitlab.com/neosalsa/$r.git" "$PN2_ROOT/$(basename "$r")"
+          done
+
+      - name: input packages
+        env:
+          GL_DT_USER: ${{ secrets.GL_DT_USER }}
+          GL_DT_TOKEN: ${{ secrets.GL_DT_TOKEN }}
+          GL_PROJECT_ID: "86500595"
+        run: bash scripts/fetch-inputs.sh
+
+      - name: build images
+        run: bash scripts/build-image.sh
+
+      - name: build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
+          path: /home/runner/pn2/notes/
+          retention-days: 7
+
+      - name: package outputs
+        run: bash scripts/package-outputs.sh dist-out
+
+      - name: github release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CHANNEL="${{ github.event.inputs.channel }}"
+          case "$CHANNEL" in
+            alpha) PREFIX="alpha-"; PRE="--prerelease" ;;
+            beta)  PREFIX="beta-";  PRE="--prerelease" ;;
+            *)     PREFIX="";       PRE="" ;;
+          esac
+          TAG="${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}"
+          {
+            echo "LineageOS 17.1 system images for the Pico Neo 2 (A7B10)."
+            echo
+            echo "- \`system-pn2.img.xz\` - clean: GSI + our fixes, no proprietary blobs"
+            echo "- \`system-pn2-full.img.xz\` - full Pico stack, ready to flash"
+            echo "- \`build-logs.tar.xz\` - every build step's notes/ log"
+            echo
+            echo "xz'd sparse images - \`unxz <img.xz>\`, then \`fastboot -S 128M flash system <img>\`."
+            echo "Channel: ${CHANNEL}"
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          } > dist-out/NOTES.md
+          gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
+            --title "PN2 images $TAG" --notes-file dist-out/NOTES.md \
+            $PRE dist-out/*

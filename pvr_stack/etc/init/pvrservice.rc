@@ -1,0 +1,11 @@
+service pvrservice /system/bin/pvrservice
+     class core
+     user root
+     group root usb system wakelock
+
+on property:sys.pvr.vrservice.state=0
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1
+    start pvrservice
+on property:sys.pvr.vrservice.state=2
+    restart pvrservice

@@ -1,0 +1,8 @@
+service virtual_input /system/bin/virtual_input
+  disabled
+  user system
+  group system input uhid
+  writepid /dev/cpuset/system/tasks
+
+on property:sys.boot_completed=1
+  start virtual_input

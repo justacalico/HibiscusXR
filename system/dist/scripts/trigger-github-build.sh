@@ -4,7 +4,7 @@
 # the job trace as if it were a native runner.
 set -euo pipefail
 
-REPO="justacalico/pn2-dist"
+REPO="justacalico/HibiscusXR"
 WORKFLOW="build.yml"
 
 REF="${1:-main}"

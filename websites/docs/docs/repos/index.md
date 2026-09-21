@@ -1,12 +1,13 @@
 # Repository map
 
-One repo per component under [gitlab.com/neosalsa](https://gitlab.com/neosalsa).
-All repos carry AGPL v3 for our own work; dump repos additionally state that
+One tree per component inside the
+[HibiscusXR monorepo](https://gitlab.com/neosalsa/HibiscusXR).
+All of it carries AGPL v3 for our own work; dump trees additionally state that
 the dumped binaries belong to Pico/its vendors and are never distributed.
 
 ## Working repos (source & documentation)
 
-| repo | what it is |
+| tree | what it is |
 |---|---|
 | [tools](tools.md) | every script for the port, sorted by job |
 | [android](android.md) | LineageOS device tree `device/pico/A7B10` |
@@ -28,7 +29,7 @@ the dumped binaries belong to Pico/its vendors and are never distributed.
 
 ## Firmware dumps (binaries gitignored, never distributed)
 
-| repo | contents |
+| tree | contents |
 |---|---|
 | [images](dumps/images.md) | stock PUI 4.1.3 OTA + rebuilt images + LUN0 snapshot |
 | [backup_nonEye](dumps/backup_nonEye.md) | full partition backup of the non-Eye unit |

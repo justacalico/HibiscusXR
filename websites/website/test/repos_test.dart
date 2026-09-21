@@ -6,11 +6,14 @@ import 'package:pn2_website/l10n/app_localizations.dart';
 import 'package:pn2_website/src/repos.dart';
 
 void main() {
-  test('every repo name is unique and under the group', () {
+  test('every repo name is unique and inside the monorepo', () {
     final names = repositories.map((r) => r.name).toList();
     expect(names.toSet().length, names.length);
     for (final entry in repositories) {
-      expect(entry.url, 'https://gitlab.com/neosalsa/${entry.name}');
+      expect(
+          entry.url,
+          'https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/'
+          '${entry.name}');
       expect(entry.label, entry.name.split('/').last);
     }
   });

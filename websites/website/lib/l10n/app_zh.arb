@@ -64,7 +64,7 @@
 
   "homeOpenTitle": "彻底开源。",
   "homeOpenBody": "我们写的所有东西都是 AGPL-3.0。Pico 的二进制归 Pico 所有——从你自己的设备提取,写进清单,绝不二次分发。",
-  "homeOpenSource": "浏览仓库组",
+  "homeOpenSource": "浏览仓库",
 
   "homeDownloadTitle": "自己动手刷。",
   "homeDownloadBody": "完整的系统镜像——GSI、我们的修复和整套 Pico 栈——就在 out 仓库里。一条 fastboot 命令就能刷上头显。",
@@ -90,14 +90,14 @@
   "statusBlockerCta": "看内部原理文档",
 
   "reposTitle": "仓库",
-  "reposSubtitle": "neosalsa 组下,一个仓库一个部件。",
+  "reposSubtitle": "都在 HibiscusXR 单仓库里,一个部件一个目录。",
   "reposSoftwareTitle": "软件",
   "reposSoftwareBody": "给人用、给人读的东西。",
   "reposSourceTitle": "移植源码",
   "reposSourceBody": "设备树、修复、工具链和研究笔记——全是我们自己的工作。",
   "reposDumpsTitle": "转储与暂存",
   "reposDumpsBody": "从硬件里拉出的二进制和流水线中间产物,仅供研究。Pico 专有文件归 Pico 所有,绝不二次分发。",
-  "reposCount": "{count} 个仓库",
+  "reposCount": "{count} 个目录",
 
   "repoVrhome": "开源 VR 桌面:2D 应用悬浮成窗,Pico VR 应用全屏运行。",
   "repoLibrary": "vrhome 里的 Flutter 应用网格——搜索、置顶、分组、启动。",
@@ -216,11 +216,11 @@
   "aboutWhatBody": "Neosalsa 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。",
   "aboutHowTitle": "怎么做到的",
   "aboutHowBody": "GSI 加 overlay 再加你自己的 Pico 栈。vendor 分区一概不动,所以每个兼容性问题——vold 死锁、声卡缺失、ABI 断裂——都在 system 侧用 init 规则和 shim 库解决。",
-  "aboutGroupTitle": "这个组",
-  "aboutGroupBody": "neosalsa 下面 46 个仓库,一个部件一个:设备树、shim、研究笔记、转储仓库、VR 桌面,还有本站。",
+  "aboutGroupTitle": "单仓库",
+  "aboutGroupBody": "所有东西都在 GitLab 上一个仓库里,一个部件一个目录:设备树、shim、研究笔记、转储、VR 桌面,还有本站。",
   "aboutLicenseTitle": "许可证",
   "aboutLicenseBody": "所有原创内容都是 AGPL-3.0。转储仓库里的 Pico 和 vendor 专有二进制归各自所有者所有,绝不二次分发。本站内嵌的 Inter 字体遵循 SIL OFL 1.1。",
-  "aboutRepoCta": "GitLab 组",
+  "aboutRepoCta": "GitLab 仓库",
   "aboutDocsCta": "项目文档",
   "aboutNotesCta": "研究笔记",
 

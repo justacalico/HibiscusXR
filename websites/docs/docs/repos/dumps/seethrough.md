@@ -1,6 +1,6 @@
 # seethrough
 
-[gitlab.com/neosalsa/seethrough](https://gitlab.com/neosalsa/seethrough)
+[HibiscusXR/applications/seethrough](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/applications/seethrough)
 
 ## What this is
 

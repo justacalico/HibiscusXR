@@ -1,6 +1,6 @@
 # rfsa
 
-[gitlab.com/neosalsa/rfsa](https://gitlab.com/neosalsa/rfsa)
+[HibiscusXR/vendor/rfsa](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/vendor/rfsa)
 
 ## What this is
 

@@ -15,4 +15,5 @@ Pico Neo 2 - `A7B10` / `PICOA7B10`.
 
 Every value in the device tree was read out of the stock firmware, not copied
 from a similar sdm845 device. See the
-[android repo](https://gitlab.com/neosalsa/android) for the full tree.
+[system/android](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/android)
+for the full tree.

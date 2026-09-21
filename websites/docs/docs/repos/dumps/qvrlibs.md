@@ -1,6 +1,6 @@
 # qvrlibs
 
-[gitlab.com/neosalsa/qvrlibs](https://gitlab.com/neosalsa/qvrlibs)
+[HibiscusXR/vendor/qvrlibs](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/vendor/qvrlibs)
 
 ## What this is
 

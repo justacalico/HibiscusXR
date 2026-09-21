@@ -1,6 +1,6 @@
 # gsi
 
-[gitlab.com/neosalsa/gsi](https://gitlab.com/neosalsa/gsi)
+[HibiscusXR/system/gsi](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/gsi)
 
 ## What this is
 

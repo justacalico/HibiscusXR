@@ -177,7 +177,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '我们写的所有东西都是 AGPL-3.0。Pico 的二进制归 Pico 所有——从你自己的设备提取,写进清单,绝不二次分发。';
 
   @override
-  String get homeOpenSource => '浏览仓库组';
+  String get homeOpenSource => '浏览仓库';
 
   @override
   String get homeDownloadTitle => '自己动手刷。';
@@ -248,7 +248,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reposTitle => '仓库';
 
   @override
-  String get reposSubtitle => 'neosalsa 组下,一个仓库一个部件。';
+  String get reposSubtitle => '都在 HibiscusXR 单仓库里,一个部件一个目录。';
 
   @override
   String get reposSoftwareTitle => '软件';
@@ -271,7 +271,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String reposCount(int count) {
-    return '$count 个仓库';
+    return '$count 个目录';
   }
 
   @override
@@ -622,11 +622,11 @@ class AppLocalizationsZh extends AppLocalizations {
       'GSI 加 overlay 再加你自己的 Pico 栈。vendor 分区一概不动,所以每个兼容性问题——vold 死锁、声卡缺失、ABI 断裂——都在 system 侧用 init 规则和 shim 库解决。';
 
   @override
-  String get aboutGroupTitle => '这个组';
+  String get aboutGroupTitle => '单仓库';
 
   @override
   String get aboutGroupBody =>
-      'neosalsa 下面 46 个仓库,一个部件一个:设备树、shim、研究笔记、转储仓库、VR 桌面,还有本站。';
+      '所有东西都在 GitLab 上一个仓库里,一个部件一个目录:设备树、shim、研究笔记、转储、VR 桌面,还有本站。';
 
   @override
   String get aboutLicenseTitle => '许可证';
@@ -636,7 +636,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '所有原创内容都是 AGPL-3.0。转储仓库里的 Pico 和 vendor 专有二进制归各自所有者所有,绝不二次分发。本站内嵌的 Inter 字体遵循 SIL OFL 1.1。';
 
   @override
-  String get aboutRepoCta => 'GitLab 组';
+  String get aboutRepoCta => 'GitLab 仓库';
 
   @override
   String get aboutDocsCta => '项目文档';

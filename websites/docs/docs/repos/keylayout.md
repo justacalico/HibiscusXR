@@ -1,6 +1,6 @@
 # keylayout
 
-[gitlab.com/neosalsa/keylayout](https://gitlab.com/neosalsa/keylayout)
+[HibiscusXR/system/keylayout](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/keylayout)
 
 Input keylayout files for the headset's physical buttons.
 

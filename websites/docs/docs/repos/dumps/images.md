@@ -1,6 +1,6 @@
 # images
 
-[gitlab.com/neosalsa/images](https://gitlab.com/neosalsa/images)
+[HibiscusXR/dumps/images](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/dumps/images)
 
 ## What this is
 

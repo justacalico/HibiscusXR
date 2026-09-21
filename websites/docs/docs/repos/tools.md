@@ -1,6 +1,6 @@
 # tools
 
-[gitlab.com/neosalsa/tools](https://gitlab.com/neosalsa/tools)
+[HibiscusXR/system/tools](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/tools)
 
 Every script used in the port, sorted by job. The numbered scripts are roughly
 chronological - they are research notes in executable form, so read the

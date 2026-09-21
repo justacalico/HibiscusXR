@@ -26,11 +26,11 @@ void main() {
         'assets': {
           'links': [
             {'name': 'system-pn2-full.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86495557/packages/generic/release-assets/v2026.09.15-r6/system-pn2-full.img.xz'},
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-pn2-full.img.xz'},
             {'name': 'system-pn2.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86495557/packages/generic/release-assets/v2026.09.15-r6/system-pn2.img.xz'},
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-pn2.img.xz'},
             {'name': 'SHA256SUMS.txt',
-             'url': 'https://gitlab.com/api/v4/projects/86495557/packages/generic/release-assets/v2026.09.15-r6/SHA256SUMS.txt'},
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/SHA256SUMS.txt'},
           ],
         },
       },
@@ -41,7 +41,7 @@ void main() {
         'assets': {
           'links': [
             {'name': 'system-pn2-full.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86495557/packages/generic/release-assets/alpha-v2026.09.15-r7/system-pn2-full.img.xz'},
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/alpha-v2026.09.15-r7/system-pn2-full.img.xz'},
           ],
         },
       },

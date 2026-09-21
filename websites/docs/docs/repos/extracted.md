@@ -1,6 +1,6 @@
 # extracted
 
-[gitlab.com/neosalsa/extracted](https://gitlab.com/neosalsa/extracted)
+[HibiscusXR/dumps/extracted](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/dumps/extracted)
 
 Artifacts decompiled and pulled out of the stock firmware for study.
 

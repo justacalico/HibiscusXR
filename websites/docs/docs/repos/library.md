@@ -1,6 +1,6 @@
 # library
 
-[gitlab.com/neosalsa/library](https://gitlab.com/neosalsa/library)
+[HibiscusXR/applications/library](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/applications/library)
 
 Flutter app library (`gitlab.neosalsa.library`) - the Quest-style dark grid
 of launchable apps meant to run as `vrhome`'s app window, also usable as a

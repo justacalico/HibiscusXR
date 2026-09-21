@@ -1,6 +1,6 @@
 # qvr
 
-[gitlab.com/neosalsa/qvr](https://gitlab.com/neosalsa/qvr)
+[HibiscusXR/vendor/qvr](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/vendor/qvr)
 
 ## What this is
 

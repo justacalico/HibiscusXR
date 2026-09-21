@@ -1,6 +1,6 @@
 # overlay_pvr
 
-[gitlab.com/neosalsa/overlay_pvr](https://gitlab.com/neosalsa/overlay_pvr)
+[HibiscusXR/system/overlay_pvr](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/overlay_pvr)
 
 ## What this is
 

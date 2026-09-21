@@ -1,6 +1,6 @@
 # lens
 
-[gitlab.com/neosalsa/lens](https://gitlab.com/neosalsa/lens)
+[HibiscusXR/system/lens](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/lens)
 
 Lens and tracking configuration pulled from `/vendor/etc/qvr` on stock.
 

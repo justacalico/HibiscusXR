@@ -1,6 +1,6 @@
 # deadunit
 
-[gitlab.com/neosalsa/deadunit](https://gitlab.com/neosalsa/deadunit)
+[HibiscusXR/dumps/deadunit](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/dumps/deadunit)
 
 ## What this is
 

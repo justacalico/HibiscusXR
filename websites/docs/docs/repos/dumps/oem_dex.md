@@ -1,6 +1,6 @@
 # oem_dex
 
-[gitlab.com/neosalsa/oem_dex](https://gitlab.com/neosalsa/oem_dex)
+[HibiscusXR/oem/oem_dex](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/oem/oem_dex)
 
 ## What this is
 

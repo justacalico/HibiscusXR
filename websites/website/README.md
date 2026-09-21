@@ -5,7 +5,7 @@ VR headset. Covers the whole neosalsa group: the port, the software, the
 repository map and the research notes. Built with Flutter web, deployed
 to GitLab Pages.
 
-Live at https://website-be06f5.gitlab.io/
+Live at https://hibiscusxr-37c6a7.gitlab.io/
 
 ## Build and test
 

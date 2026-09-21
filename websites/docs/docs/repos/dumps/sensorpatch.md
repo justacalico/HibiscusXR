@@ -1,6 +1,6 @@
 # sensorpatch
 
-[gitlab.com/neosalsa/sensorpatch](https://gitlab.com/neosalsa/sensorpatch)
+[HibiscusXR/system/sensorpatch](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/sensorpatch)
 
 ## What this is
 

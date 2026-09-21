@@ -1,6 +1,6 @@
 # docs
 
-[gitlab.com/neosalsa/docs](https://gitlab.com/neosalsa/docs)
+[HibiscusXR/websites/docs](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/websites/docs)
 
 This site. MkDocs + Material, built by GitLab CI on the `linux-truenas`
 runner and published to GitLab Pages.

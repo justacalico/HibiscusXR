@@ -1,6 +1,6 @@
 # fullstage
 
-[gitlab.com/neosalsa/fullstage](https://gitlab.com/neosalsa/fullstage)
+[HibiscusXR/system/fullstage](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/fullstage)
 
 The staging tree that becomes `system-pn2-full.img`: the PVR apps already
 deodexed and carrying their private `lib/arm64` dirs, the service binaries,

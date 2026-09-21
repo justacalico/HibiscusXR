@@ -1,6 +1,6 @@
 # pvr_apps_dexed
 
-[gitlab.com/neosalsa/pvr_apps_dexed](https://gitlab.com/neosalsa/pvr_apps_dexed)
+[HibiscusXR/pvr/pvr_apps_dexed](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/pvr/pvr_apps_dexed)
 
 ## What this is
 

@@ -1,6 +1,6 @@
 # oem_injected
 
-[gitlab.com/neosalsa/oem_injected](https://gitlab.com/neosalsa/oem_injected)
+[HibiscusXR/oem/oem_injected](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/oem/oem_injected)
 
 ## What this is
 

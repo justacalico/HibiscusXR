@@ -1,6 +1,6 @@
 # build
 
-[gitlab.com/neosalsa/build](https://gitlab.com/neosalsa/build)
+[HibiscusXR/system/build](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/build)
 
 ## What this is
 

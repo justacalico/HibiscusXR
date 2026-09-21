@@ -1,6 +1,6 @@
 # shim
 
-[gitlab.com/neosalsa/shim](https://gitlab.com/neosalsa/shim)
+[HibiscusXR/system/shim](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/system/shim)
 
 Source for the ABI shim libraries - the bridge between Pico's Android 8.1
 binaries and the Android 10 framework.

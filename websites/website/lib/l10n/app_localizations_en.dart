@@ -178,7 +178,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everything we wrote is AGPL-3.0. Pico\'s binaries stay Pico\'s - pulled from your own device, mapped in a manifest, never redistributed.';
 
   @override
-  String get homeOpenSource => 'Browse the group';
+  String get homeOpenSource => 'Browse the repo';
 
   @override
   String get homeDownloadTitle => 'Flash it yourself.';
@@ -258,7 +258,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reposSubtitle =>
-      'One repo per component under the neosalsa group.';
+      'One tree per component in the HibiscusXR monorepo.';
 
   @override
   String get reposSoftwareTitle => 'Software';
@@ -282,7 +282,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reposCount(int count) {
-    return '$count repos';
+    return '$count trees';
   }
 
   @override
@@ -669,11 +669,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.';
 
   @override
-  String get aboutGroupTitle => 'The group';
+  String get aboutGroupTitle => 'The monorepo';
 
   @override
   String get aboutGroupBody =>
-      'Forty-six repositories under neosalsa, one per component: the device tree, the shims, the research notes, the dump repos, the VR home and this site.';
+      'Everything lives in one repo on GitLab, one directory per component: the device tree, the shims, the research notes, the dumps, the VR home and this site.';
 
   @override
   String get aboutLicenseTitle => 'License';
@@ -683,7 +683,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.';
 
   @override
-  String get aboutRepoCta => 'GitLab group';
+  String get aboutRepoCta => 'GitLab repo';
 
   @override
   String get aboutDocsCta => 'Project docs';

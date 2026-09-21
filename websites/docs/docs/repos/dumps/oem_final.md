@@ -1,6 +1,6 @@
 # oem_final
 
-[gitlab.com/neosalsa/oem_final](https://gitlab.com/neosalsa/oem_final)
+[HibiscusXR/oem/oem_final](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/oem/oem_final)
 
 ## What this is
 

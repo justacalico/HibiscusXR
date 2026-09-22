@@ -133,6 +133,7 @@ put "$INIT/pn2-adbwifi.rc"    /etc/init/pn2-adbwifi.rc    644
 put "$INIT/pn2-settings.rc"   /etc/init/pn2-settings.rc   644
 put "$INIT/pn2-home.rc"       /etc/init/pn2-home.rc       644
 put "$INIT/pn2-openxr.rc"     /etc/init/pn2-openxr.rc     644
+put "$INIT/pn2-vulkan.rc"     /etc/init/pn2-vulkan.rc     644
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="
@@ -204,9 +205,9 @@ done
 echo
 echo "=== OpenXR stack: Turnip Vulkan + Monado runtime ==="
 # This replaces the stock VR path for raw OpenXR apps. Verified live:
-#   - hwvulkan picks /vendor/lib64/hw/vulkan.sdm845.so first, so Turnip in
-#     /system/lib64/hw only wins once vendor's Adreno module is moved aside.
-#     That rename is a live vendor patch, not part of this image.
+#   - hwvulkan picks /vendor/lib64/hw/vulkan.sdm845.so first; pn2-vulkan.rc
+#     bind-mounts this Turnip over the vendor path at post-fs so the Adreno
+#     module never loads. Works with an untouched stock vendor.img.
 #   - the Khronos loader searches /product/etc, /odm/etc, /oem/etc,
 #     /vendor/etc, /system/etc for openxr/1/active_runtime.json, first hit
 #     wins. /product lives inside this image, so our manifest shadows the

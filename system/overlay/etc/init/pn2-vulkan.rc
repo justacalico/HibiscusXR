@@ -1,0 +1,11 @@
+# Make Turnip the Vulkan driver without touching /vendor.
+#
+# hwvulkan resolves /vendor/lib64/hw/vulkan.sdm845.so before /system/lib64/hw,
+# and the stock Adreno module there lacks
+# VK_ANDROID_external_memory_android_hardware_buffer, which Monado's
+# compositor requires. Shadowing the file means the Turnip build staged at
+# /system/lib64/hw answers every vulkan.sdm845.so lookup, whatever vendor.img
+# ships. Same trick as pn2-vintf.rc's manifest shadow.
+
+on post-fs
+    mount none /system/lib64/hw/vulkan.sdm845.so /vendor/lib64/hw/vulkan.sdm845.so bind

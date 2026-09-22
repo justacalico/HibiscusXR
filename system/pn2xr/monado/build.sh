@@ -70,6 +70,11 @@ cp "$ROOT"/driver/pn2/*.c "$ROOT"/driver/pn2/*.h src/xrt/drivers/pn2/
 # the controller sharemem decoder is shared with the vrhome dash - one
 # implementation, copied in at build time so there is no duplicated layout
 CTRL_STATE_SRC="${PN2_VRHOME:-$ROOT/../../vrhome}/src/input"
+# monorepo checkout: applications/vrhome sits three levels above monado/
+if [ ! -f "$CTRL_STATE_SRC/ctrl_state.c" ]; then
+    ALT="$ROOT/../../../applications/vrhome/src/input"
+    [ -f "$ALT/ctrl_state.c" ] && CTRL_STATE_SRC="$ALT"
+fi
 for f in ctrl_state.c ctrl_state.h; do
     if [ ! -f "$CTRL_STATE_SRC/$f" ]; then
         echo "missing shared decoder $CTRL_STATE_SRC/$f (set PN2_VRHOME)" >&2

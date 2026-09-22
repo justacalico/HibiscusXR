@@ -87,6 +87,10 @@ build.local.sh
 
 # === Build output & dependency dirs ========================================
 build/
+# ...but system/build and system/tools/build are tracked source dirs,
+# not build output - re-include them
+!system/build/
+!system/tools/build/
 out/
 output/
 bin/

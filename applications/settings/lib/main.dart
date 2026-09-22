@@ -34,13 +34,20 @@ Future<void> main() async {
   // Fire and forget: the page renders with defaults and fills in as
   // the platform snapshot arrives.
   controller.start();
-  runApp(SettingsApp(controller: controller));
+  runApp(
+    SettingsApp(controller: controller, uiOnlyMode: !Platform.isAndroid),
+  );
 }
 
 class SettingsApp extends StatelessWidget {
-  const SettingsApp({super.key, required this.controller});
+  const SettingsApp({
+    super.key,
+    required this.controller,
+    this.uiOnlyMode = false,
+  });
 
   final SettingsController controller;
+  final bool uiOnlyMode;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +57,7 @@ class SettingsApp extends StatelessWidget {
       supportedLocales: AppLocalizations.supportedLocales,
       theme: PanelTheme.data(),
       debugShowCheckedModeBanner: false,
-      home: SettingsPage(controller: controller),
+      home: SettingsPage(controller: controller, uiOnlyMode: uiOnlyMode),
     );
   }
 }

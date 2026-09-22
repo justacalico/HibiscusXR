@@ -10,6 +10,7 @@ import 'package:pn2_settings/src/settings_store.dart';
 Future<(SettingsController, FakeSettingsSource)> pumpApp(
   WidgetTester tester, {
   SettingsSnapshot initial = const SettingsSnapshot(),
+  bool uiOnlyMode = false,
 }) async {
   tester.view.physicalSize = const Size(1280, 800);
   tester.view.devicePixelRatio = 1.0;
@@ -24,12 +25,31 @@ Future<(SettingsController, FakeSettingsSource)> pumpApp(
   addTearDown(c.dispose);
   addTearDown(source.dispose);
   await c.start();
-  await tester.pumpWidget(SettingsApp(controller: c));
+  await tester.pumpWidget(
+    SettingsApp(controller: c, uiOnlyMode: uiOnlyMode),
+  );
   await tester.pump();
   return (c, source);
 }
 
 void main() {
+  testWidgets('ui-only mode pops a notice that dismisses',
+      (tester) async {
+    await pumpApp(tester, uiOnlyMode: true);
+    await tester.pump();
+    expect(find.text('UI-only mode'), findsOneWidget);
+    await tester.tap(find.text('OK'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('UI-only mode'), findsNothing);
+  });
+
+  testWidgets('ui-only notice stays off by default', (tester) async {
+    await pumpApp(tester);
+    await tester.pump();
+    expect(find.text('UI-only mode'), findsNothing);
+  });
+
   testWidgets('sidebar lists sections and selects', (tester) async {
     final (c, _) = await pumpApp(tester);
     expect(find.text('Wi-Fi'), findsWidgets);

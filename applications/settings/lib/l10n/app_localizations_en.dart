@@ -271,4 +271,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get controllerCharging => 'Charging';
+
+  @override
+  String get uiOnlyModeTitle => 'UI-only mode';
+
+  @override
+  String get uiOnlyModeBody =>
+      'This build runs without a system backend, so the page is a preview. Changes made here won\'t reach the device.';
 }

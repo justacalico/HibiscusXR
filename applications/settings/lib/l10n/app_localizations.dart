@@ -609,6 +609,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Charging'**
   String get controllerCharging;
+
+  /// No description provided for @uiOnlyModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'UI-only mode'**
+  String get uiOnlyModeTitle;
+
+  /// No description provided for @uiOnlyModeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This build runs without a system backend, so the page is a preview. Changes made here won\'t reach the device.'**
+  String get uiOnlyModeBody;
 }
 
 class _AppLocalizationsDelegate

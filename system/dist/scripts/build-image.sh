@@ -43,6 +43,10 @@ step "clean image: overlay into GSI (143)"
 bash "$T/143_build_image2.sh" || true
 ran 143_build.txt "BUILD OK"
 
+step "strip stock apps (410)"
+bash "$T/410_strip_stock_apps.sh" || true
+ran 410_strip.txt "STRIP OK"
+
 step "LoadingRes stub image"
 "$SELF/scripts/make-loadingres-img.sh"
 

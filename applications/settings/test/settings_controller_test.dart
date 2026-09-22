@@ -93,7 +93,7 @@ void main() {
     addTearDown(c.dispose);
     await c.start();
 
-    await c.runAction(ItemId.devOptions);
-    expect(source.actionsPerformed, [ItemId.devOptions]);
+    await c.runAction(ItemId.wifiSettings);
+    expect(source.actionsPerformed, [ItemId.wifiSettings]);
   });
 }

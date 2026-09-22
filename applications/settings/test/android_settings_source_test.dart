@@ -49,7 +49,7 @@ void main() {
     final src = AndroidSettingsSource();
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
-    await src.performAction(ItemId.devOptions);
+    await src.performAction(ItemId.wifiSettings);
     expect(calls.map((c) => c.method), [
       'setSlider',
       'requestToggle',
@@ -57,7 +57,7 @@ void main() {
     ]);
     expect(calls[0].arguments, {'id': 'volume', 'value': 0.3});
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});
-    expect(calls[2].arguments, {'id': 'devOptions'});
+    expect(calls[2].arguments, {'id': 'wifiSettings'});
   });
 
   test('events stream subscribes the event channel', () async {

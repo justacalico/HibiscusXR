@@ -109,6 +109,23 @@ void main() {
     expect(source.togglesRequested, [(ItemId.wifiToggle, true)]);
   });
 
+  testWidgets('developer toggles render as inert stubs',
+      (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Developer'));
+    await tester.pump();
+    expect(find.text('USB debugging'), findsOneWidget);
+    expect(find.text('Stay awake'), findsOneWidget);
+    expect(find.text('Show touches'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate((w) => w is Opacity && w.opacity < 1),
+      findsNWidgets(3),
+    );
+    await tester.tap(find.byType(Switch).first);
+    await tester.pump();
+    expect(source.togglesRequested, isEmpty);
+  });
+
   testWidgets('slider row forwards drag', (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Display'));

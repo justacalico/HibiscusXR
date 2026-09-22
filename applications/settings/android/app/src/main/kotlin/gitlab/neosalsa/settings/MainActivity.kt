@@ -174,6 +174,19 @@ class MainActivity : FlutterActivity() {
             "bluetoothToggle" to bluetoothOn(),
             "micMute" to !audio().isMicrophoneMute,
             "nightMode" to nightModeOn(),
+            "adbToggle" to
+                (Settings.Global.getInt(
+                    contentResolver, Settings.Global.ADB_ENABLED, 0,
+                ) == 1),
+            "stayAwake" to
+                (Settings.Global.getInt(
+                    contentResolver,
+                    Settings.Global.STAY_ON_WHILE_PLUGGED_IN, 0,
+                ) != 0),
+            "showTouches" to
+                (Settings.System.getInt(
+                    contentResolver, Settings.System.SHOW_TOUCHES, 0,
+                ) == 1),
             "controllerPair" to (controllers?.pairingActive ?: false),
         ),
         "sliders" to mapOf(
@@ -310,7 +323,28 @@ class MainActivity : FlutterActivity() {
                         }
                 } catch (_: SecurityException) {}
             }
+            "adbToggle" ->
+                putGlobalInt(Settings.Global.ADB_ENABLED, if (on) 1 else 0)
+            "stayAwake" ->
+                putGlobalInt(
+                    Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
+                    if (on) 3 else 0,
+                )
+            "showTouches" -> {
+                if (Settings.System.canWrite(this)) {
+                    Settings.System.putInt(
+                        contentResolver, Settings.System.SHOW_TOUCHES,
+                        if (on) 1 else 0,
+                    )
+                }
+            }
         }
+    }
+
+    private fun putGlobalInt(key: String, v: Int) {
+        try {
+            Settings.Global.putInt(contentResolver, key, v)
+        } catch (_: SecurityException) {}
     }
 
     private fun performAction(id: String) {
@@ -325,9 +359,6 @@ class MainActivity : FlutterActivity() {
                 startActivity(Intent(Settings.ACTION_DATE_SETTINGS))
             "keyboardPicker" ->
                 startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
-            "devOptions" -> startActivity(
-                Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
-            )
             "controllerPair" -> {
                 val c = controllers
                 if (c == null) {

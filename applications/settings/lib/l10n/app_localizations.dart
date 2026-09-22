@@ -352,17 +352,41 @@ abstract class AppLocalizations {
   /// **'Choose the active input method'**
   String get itemKeyboardPickerDesc;
 
-  /// No description provided for @itemDevOptions.
+  /// No description provided for @itemAdbToggle.
   ///
   /// In en, this message translates to:
-  /// **'Developer options'**
-  String get itemDevOptions;
+  /// **'USB debugging'**
+  String get itemAdbToggle;
 
-  /// No description provided for @itemDevOptionsDesc.
+  /// No description provided for @itemAdbToggleDesc.
   ///
   /// In en, this message translates to:
-  /// **'Open the system developer settings'**
-  String get itemDevOptionsDesc;
+  /// **'Allow a computer to debug this headset over USB'**
+  String get itemAdbToggleDesc;
+
+  /// No description provided for @itemStayAwake.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay awake'**
+  String get itemStayAwake;
+
+  /// No description provided for @itemStayAwakeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Never sleep while charging'**
+  String get itemStayAwakeDesc;
+
+  /// No description provided for @itemShowTouches.
+  ///
+  /// In en, this message translates to:
+  /// **'Show touches'**
+  String get itemShowTouches;
+
+  /// No description provided for @itemShowTouchesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash a dot where the screen is touched'**
+  String get itemShowTouchesDesc;
 
   /// No description provided for @itemModelName.
   ///

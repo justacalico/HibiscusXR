@@ -30,7 +30,11 @@ const kSections = <SectionDef>[
   SectionDef(SectionId.language, [ItemId.languagePicker]),
   SectionDef(SectionId.time, [ItemId.timeZone]),
   SectionDef(SectionId.keyboard, [ItemId.keyboardPicker]),
-  SectionDef(SectionId.developer, [ItemId.devOptions]),
+  SectionDef(SectionId.developer, [
+    ItemId.adbToggle,
+    ItemId.stayAwake,
+    ItemId.showTouches,
+  ]),
   SectionDef(SectionId.about, [
     ItemId.aboutBrand,
     ItemId.modelName,
@@ -55,19 +59,25 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.languagePicker: ItemKind.action,
   ItemId.timeZone: ItemKind.action,
   ItemId.keyboardPicker: ItemKind.action,
-  ItemId.devOptions: ItemKind.action,
+  ItemId.adbToggle: ItemKind.toggle,
+  ItemId.stayAwake: ItemKind.toggle,
+  ItemId.showTouches: ItemKind.toggle,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
   ItemId.aboutBrand: ItemKind.brand,
 };
 
-/// Rows whose platform side does not exist yet. They render greyed out
-/// and inert until the OS layer catches up - same convention as the
+/// Rows whose platform side is not trusted yet. They render greyed out
+/// and inert until they are proven on hardware - same convention as the
 /// quick panel's unimplemented tiles. nightMode calls UiModeManager
 /// without MODIFY_DAY_NIGHT_MODE declared, so the SecurityException it
-/// always gets is swallowed.
+/// always gets is swallowed; the developer toggles are wired but parked
+/// until the secure-settings writes are verified on device.
 const kUnimplemented = <ItemId>{
   ItemId.nightMode,
+  ItemId.adbToggle,
+  ItemId.stayAwake,
+  ItemId.showTouches,
 };
 
 SectionDef sectionDef(SectionId id) => kSections.firstWhere((s) => s.id == id);

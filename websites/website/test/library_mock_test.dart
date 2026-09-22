@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pn2_website/l10n/app_localizations_en.dart';
-import 'package:pn2_website/l10n/app_localizations_zh.dart';
-import 'package:pn2_website/src/library_mock.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations_en.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations_zh.dart';
+import 'package:hibiscusxr_website/src/library_mock.dart';
 
 void main() {
   test('grid shows nine unique tiles, only the first pinned', () {

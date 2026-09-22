@@ -2,7 +2,7 @@ import 'dart:math' show pi;
 
 import 'package:flutter/material.dart';
 
-import 'package:pn2_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../library_mock.dart';
 import '../theme.dart';

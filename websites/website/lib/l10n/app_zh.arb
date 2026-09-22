@@ -1,6 +1,6 @@
 {
   "@@locale": "zh",
-  "appTitle": "Neosalsa",
+  "appTitle": "HibiscusXR",
 
   "navStatus": "现状",
   "navRepos": "仓库",
@@ -213,7 +213,7 @@
   "aboutTitle": "关于",
   "aboutSubtitle": "一次移植,一台头显,每一步都公开。",
   "aboutWhatTitle": "这是什么",
-  "aboutWhatBody": "Neosalsa 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。",
+  "aboutWhatBody": "Hibiscus 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。",
   "aboutHowTitle": "怎么做到的",
   "aboutHowBody": "GSI 加 overlay 再加你自己的 Pico 栈。vendor 分区一概不动,所以每个兼容性问题——vold 死锁、声卡缺失、ABI 断裂——都在 system 侧用 init 规则和 shim 库解决。",
   "aboutGroupTitle": "单仓库",
@@ -226,11 +226,11 @@
 
   "footerSite": "站点",
   "footerProject": "项目",
-  "footerCopyright": "Copyright {year} neosalsa",
+  "footerCopyright": "Copyright {year} HibiscusXR",
   "footerLicense": "以 AGPL-3.0 许可发布",
   "footerBuiltWith": "用 Flutter 构建",
 
   "notFoundTitle": "页面不存在",
   "notFoundBody": "你要找的页面不存在。",
-  "notFoundCta": "回到 Neosalsa"
+  "notFoundCta": "回到 HibiscusXR"
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:pn2_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../links.dart';
 import '../routes.dart';

@@ -1,4 +1,4 @@
-import 'package:pn2_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import 'links.dart';
 

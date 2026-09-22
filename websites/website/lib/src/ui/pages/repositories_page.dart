@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:pn2_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../repos.dart';
 import '../../theme.dart';

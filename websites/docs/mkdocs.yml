@@ -1,10 +1,12 @@
-site_name: PN2Lineage
-site_description: LineageOS 17.1 on the Pico Neo 2
+site_name: HibiscusXR
+site_description: Hibiscus - LineageOS 17.1 on the Pico Neo 2
 repo_url: https://gitlab.com/neosalsa/HibiscusXR
 edit_uri: '-/edit/main/websites/docs/docs/'
 
 theme:
   name: material
+  logo: assets/hibiscusxr-icon.svg
+  favicon: assets/hibiscusxr-icon.svg
   palette:
     primary: blue grey
   features:

@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pn2_website/src/links.dart';
-import 'package:pn2_website/src/routes.dart';
+import 'package:hibiscusxr_website/src/links.dart';
+import 'package:hibiscusxr_website/src/routes.dart';
 
 void main() {
   test('site routes are all root-anchored and unique', () {

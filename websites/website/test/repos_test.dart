@@ -2,8 +2,8 @@ import 'dart:ui' show Locale;
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pn2_website/l10n/app_localizations.dart';
-import 'package:pn2_website/src/repos.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/src/repos.dart';
 
 void main() {
   test('every repo name is unique and inside the monorepo', () {

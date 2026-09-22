@@ -1,6 +1,6 @@
 {
   "@@locale": "en",
-  "appTitle": "Neosalsa",
+  "appTitle": "HibiscusXR",
   "@appTitle": {
     "description": "Project name"
   },
@@ -226,7 +226,7 @@
   "aboutTitle": "About",
   "aboutSubtitle": "One port, one headset, every step in the open.",
   "aboutWhatTitle": "What it is",
-  "aboutWhatBody": "Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
+  "aboutWhatBody": "Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
   "aboutHowTitle": "How it works",
   "aboutHowBody": "GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.",
   "aboutGroupTitle": "The monorepo",
@@ -239,7 +239,7 @@
 
   "footerSite": "Site",
   "footerProject": "Project",
-  "footerCopyright": "Copyright {year} neosalsa",
+  "footerCopyright": "Copyright {year} HibiscusXR",
   "@footerCopyright": {
     "placeholders": {
       "year": {"type": "int"}
@@ -250,5 +250,5 @@
 
   "notFoundTitle": "Page not found",
   "notFoundBody": "The page you are looking for does not exist.",
-  "notFoundCta": "Back to Neosalsa"
+  "notFoundCta": "Back to HibiscusXR"
 }

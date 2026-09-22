@@ -11,13 +11,51 @@ import 'theme.dart';
 
 /// Quest-style two-pane settings surface: a sidebar of sections on the
 /// left, the selected section's rows on the right.
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key, required this.controller});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({
+    super.key,
+    required this.controller,
+    this.uiOnlyMode = false,
+  });
 
   final SettingsController controller;
+  final bool uiOnlyMode;
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.uiOnlyMode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog<void>(
+          context: context,
+          builder: (context) {
+            final l10n = AppLocalizations.of(context);
+            return AlertDialog(
+              title: Text(l10n.uiOnlyModeTitle),
+              content: Text(l10n.uiOnlyModeBody),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(
+                    MaterialLocalizations.of(context).okButtonLabel,
+                  ),
+                ),
+              ],
+            );
+          },
+        );
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = widget.controller;
     final l10n = AppLocalizations.of(context);
     return Scaffold(
       body: AnimatedBuilder(

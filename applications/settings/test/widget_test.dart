@@ -136,6 +136,17 @@ void main() {
     expect(source.slidersSet.first.$1, ItemId.brightness);
   });
 
+  testWidgets('slider row shows current percent and 100%', (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(sliders: {ItemId.brightness: 0.4}),
+    );
+    await tester.tap(find.text('Display'));
+    await tester.pump();
+    expect(find.text('40%'), findsOneWidget);
+    expect(find.text('100%'), findsOneWidget);
+  });
+
   testWidgets('info rows show platform text and empty fallback',
       (tester) async {
     await pumpApp(

@@ -119,13 +119,34 @@ class _Control extends StatelessWidget {
           activeThumbColor: PanelTheme.accent,
         );
       case ItemKind.slider:
+        const pctStyle = TextStyle(
+          fontSize: 13,
+          color: PanelTheme.textSecondary,
+        );
         return SizedBox(
-          width: 260,
-          child: Slider(
-            value: store.sliderValue(id),
-            onChanged: enabled ? (v) => controller.setSlider(id, v) : null,
-            activeColor: PanelTheme.accent,
-            inactiveColor: PanelTheme.surfaceHigh,
+          width: 300,
+          child: Row(
+            children: [
+              SizedBox(
+                width: 38,
+                child: Text(
+                  l10n.sliderPercent(
+                    (store.sliderValue(id) * 100).round(),
+                  ),
+                  style: pctStyle,
+                ),
+              ),
+              Expanded(
+                child: Slider(
+                  value: store.sliderValue(id),
+                  onChanged:
+                      enabled ? (v) => controller.setSlider(id, v) : null,
+                  activeColor: PanelTheme.accent,
+                  inactiveColor: PanelTheme.surfaceHigh,
+                ),
+              ),
+              Text(l10n.sliderPercent(100), style: pctStyle),
+            ],
           ),
         );
       case ItemKind.action:

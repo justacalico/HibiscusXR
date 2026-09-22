@@ -478,6 +478,12 @@ abstract class AppLocalizations {
   /// **'Charging'**
   String get controllerCharging;
 
+  /// No description provided for @sliderPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String sliderPercent(int percent);
+
   /// No description provided for @uiOnlyModeTitle.
   ///
   /// In en, this message translates to:

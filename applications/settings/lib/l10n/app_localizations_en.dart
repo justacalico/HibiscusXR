@@ -205,6 +205,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get controllerCharging => 'Charging';
 
   @override
+  String sliderPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
   String get uiOnlyModeTitle => 'UI-only mode';
 
   @override

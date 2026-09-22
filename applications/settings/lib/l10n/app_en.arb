@@ -72,6 +72,13 @@
   },
   "controllerCharging": "Charging",
 
+  "sliderPercent": "{percent}%",
+  "@sliderPercent": {
+    "placeholders": {
+      "percent": {"type": "int"}
+    }
+  },
+
   "uiOnlyModeTitle": "UI-only mode",
   "uiOnlyModeBody": "This build runs without a system backend, so the page is a preview. Changes made here won't reach the device."
 }

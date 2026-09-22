@@ -20,13 +20,6 @@ import io.flutter.plugin.common.MethodChannel
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
 private const val TAG = "SettingsMain"
 
-// Project-owned keys. qvrd / the shell read these through the same seam
-// the quick panel broadcasts on.
-private const val KEY_TRACKING_ENABLED = "pn2_tracking_enabled"
-private const val KEY_TRACKING_FREQ = "pn2_tracking_frequency"
-private const val KEY_SEETHROUGH = "pn2_seethrough"
-private const val KEY_BOUNDARY = "pn2_boundary"
-
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
     private var controllers: ControllerClient? = null
@@ -139,13 +132,6 @@ class MainActivity : FlutterActivity() {
                         )
                         result.success(null)
                     }
-                    "selectChoice" -> {
-                        selectChoice(
-                            call.argument<String>("id") ?: "",
-                            call.argument<String>("value") ?: "",
-                        )
-                        result.success(null)
-                    }
                     "performAction" -> {
                         performAction(call.argument<String>("id") ?: "")
                         result.success(null)
@@ -187,9 +173,6 @@ class MainActivity : FlutterActivity() {
             "wifiToggle" to wifiOn(),
             "bluetoothToggle" to bluetoothOn(),
             "micMute" to !audio().isMicrophoneMute,
-            "trackingToggle" to globalOn(KEY_TRACKING_ENABLED, true),
-            "boundary" to globalOn(KEY_BOUNDARY, true),
-            "seethrough" to globalOn(KEY_SEETHROUGH, false),
             "nightMode" to nightModeOn(),
             "controllerPair" to (controllers?.pairingActive ?: false),
         ),
@@ -197,15 +180,10 @@ class MainActivity : FlutterActivity() {
             "volume" to volume(),
             "brightness" to brightness(),
         ),
-        "choices" to mapOf(
-            "trackingFrequency" to
-                globalStr(KEY_TRACKING_FREQ, "auto"),
-        ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
             "modelName" to Build.MODEL,
             "androidVersion" to Build.VERSION.RELEASE,
-            "buildNumber" to Build.DISPLAY,
         ),
     )
 
@@ -273,14 +251,6 @@ class MainActivity : FlutterActivity() {
         getSystemService(UiModeManager::class.java)?.nightMode ==
             UiModeManager.MODE_NIGHT_YES
 
-    private fun globalOn(key: String, def: Boolean): Boolean =
-        Settings.Global.getInt(
-            contentResolver, key, if (def) 1 else 0,
-        ) == 1
-
-    private fun globalStr(key: String, def: String): String =
-        Settings.Global.getString(contentResolver, key) ?: def
-
     private fun setSlider(id: String, v: Double) {
         when (id) {
             "volume" -> {
@@ -340,23 +310,6 @@ class MainActivity : FlutterActivity() {
                         }
                 } catch (_: SecurityException) {}
             }
-            "trackingToggle" -> putGlobal(KEY_TRACKING_ENABLED, on)
-            "boundary" -> {
-                putGlobal(KEY_BOUNDARY, on)
-                seam("boundary", on)
-            }
-            "seethrough" -> {
-                putGlobal(KEY_SEETHROUGH, on)
-                seam("seethrough", on)
-            }
-        }
-    }
-
-    private fun selectChoice(id: String, value: String) {
-        if (id == "trackingFrequency") {
-            Settings.Global.putString(
-                contentResolver, KEY_TRACKING_FREQ, value,
-            )
         }
     }
 
@@ -375,14 +328,6 @@ class MainActivity : FlutterActivity() {
             "devOptions" -> startActivity(
                 Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
             )
-            "resetView" -> sendBroadcast(
-                Intent("gitlab.neosalsa.settings.RECENTER")
-                    .setPackage(packageName),
-            )
-            "updateCheck" -> sendBroadcast(
-                Intent("gitlab.neosalsa.settings.CHECK_UPDATE")
-                    .setPackage(packageName),
-            )
             "controllerPair" -> {
                 val c = controllers
                 if (c == null) {
@@ -400,21 +345,4 @@ class MainActivity : FlutterActivity() {
             "controllerUnbind" -> controllers?.unbindAll()
         }
     }
-
-    private fun putGlobal(key: String, on: Boolean) {
-        try {
-            Settings.Global.putInt(
-                contentResolver, key, if (on) 1 else 0,
-            )
-        } catch (_: SecurityException) {}
-    }
-
-    // Panel-owned toggles the OS layer reacts to; same seam the quick
-    // panel uses.
-    private fun seam(id: String, on: Boolean) = sendBroadcast(
-        Intent("gitlab.neosalsa.settings.TOGGLE")
-            .setPackage(packageName)
-            .putExtra("id", id)
-            .putExtra("on", on),
-    )
 }

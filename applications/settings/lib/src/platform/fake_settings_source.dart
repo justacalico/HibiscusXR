@@ -14,7 +14,6 @@ class FakeSettingsSource implements SettingsSource {
 
   final togglesRequested = <(ItemId, bool)>[];
   final slidersSet = <(ItemId, double)>[];
-  final choicesSelected = <(ItemId, String)>[];
   final actionsPerformed = <ItemId>[];
 
   /// Test hook: pretend the OS changed something.
@@ -22,7 +21,6 @@ class FakeSettingsSource implements SettingsSource {
     _snapshot = SettingsSnapshot(
       toggles: {..._snapshot.toggles, ...event.toggles},
       sliders: {..._snapshot.sliders, ...event.sliders},
-      choices: {..._snapshot.choices, ...event.choices},
       texts: {..._snapshot.texts, ...event.texts},
       controllers: {..._snapshot.controllers, ...event.controllers},
     );
@@ -43,11 +41,6 @@ class FakeSettingsSource implements SettingsSource {
   @override
   Future<void> requestToggle(ItemId id, bool on) async {
     togglesRequested.add((id, on));
-  }
-
-  @override
-  Future<void> selectChoice(ItemId id, String value) async {
-    choicesSelected.add((id, value));
   }
 
   @override

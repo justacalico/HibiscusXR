@@ -53,8 +53,8 @@ void main() {
   testWidgets('sidebar lists sections and selects', (tester) async {
     final (c, _) = await pumpApp(tester);
     expect(find.text('Wi-Fi'), findsWidgets);
-    expect(find.text('Headset Tracking'), findsOneWidget);
-    expect(find.text('Software Update'), findsOneWidget);
+    expect(find.text('Display'), findsOneWidget);
+    expect(find.text('Developer'), findsOneWidget);
     await tester.tap(find.text('About'));
     await tester.pump();
     expect(c.store.section, SectionId.about);
@@ -80,28 +80,25 @@ void main() {
   testWidgets('unimplemented rows grey out and ignore input',
       (tester) async {
     final (_, source) = await pumpApp(tester);
-    await tester.tap(find.text('Headset Tracking'));
+    await tester.tap(find.text('Display'));
     await tester.pump();
-    // every row in the section is a stub: all render dimmed and none of
-    // the controls forward anything to the platform
-    expect(find.byType(Opacity), findsWidgets);
-    await tester.tap(find.byType(Switch).first);
+    // night mode is the only stub row: it renders dimmed and its
+    // switch forwards nothing to the platform
+    expect(
+      find.byWidgetPredicate((w) => w is Opacity && w.opacity < 1),
+      findsOneWidget,
+    );
+    await tester.tap(find.byType(Switch));
     await tester.pump();
     expect(source.togglesRequested, isEmpty);
-    await tester.tap(find.text('Auto'));
-    await tester.pump();
-    expect(find.text('60 Hz'), findsNothing);
-    await tester.tap(find.byIcon(Icons.chevron_right).last);
-    await tester.pump();
-    expect(source.actionsPerformed, isEmpty);
   });
 
   testWidgets('implemented controls stay enabled', (tester) async {
     final (_, source) = await pumpApp(tester);
-    await tester.tap(find.text('Camera'));
+    await tester.tap(find.text('Display'));
     await tester.pump();
-    // seethrough is a stub: its switch takes no taps
-    await tester.tap(find.byType(Switch).first);
+    // night mode is a stub: its switch takes no taps
+    await tester.tap(find.byType(Switch));
     await tester.pump();
     expect(source.togglesRequested, isEmpty);
     // wifi is real: its switch forwards as before
@@ -130,7 +127,6 @@ void main() {
         texts: {
           ItemId.modelName: 'A7B10',
           ItemId.androidVersion: '10',
-          ItemId.buildNumber: 'pn2-full-42',
         },
       ),
     );

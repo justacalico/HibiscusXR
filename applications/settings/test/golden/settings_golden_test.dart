@@ -49,22 +49,6 @@ void main() {
     );
   });
 
-  testWidgets('headset tracking section golden', (tester) async {
-    await pump(
-      tester,
-      const SettingsSnapshot(
-        toggles: {ItemId.trackingToggle: true, ItemId.boundary: true},
-        choices: {ItemId.trackingFrequency: 'auto'},
-      ),
-      persistence: MemoryPersistence({'section': 'headsetTracking'}),
-    );
-
-    await expectLater(
-      find.byType(MaterialApp),
-      matchesGoldenFile('goldens/settings_tracking.png'),
-    );
-  });
-
   testWidgets('about section golden', (tester) async {
     await pump(
       tester,

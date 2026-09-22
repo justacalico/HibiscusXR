@@ -22,8 +22,8 @@ class SettingsController {
   StreamSubscription<SettingsSnapshot>? _events;
   bool _started = false;
 
-  /// Restore persisted choices, pull the platform snapshot and start
-  /// listening for OS changes. Safe to call once.
+  /// Restore the persisted section, pull the platform snapshot and
+  /// start listening for OS changes. Safe to call once.
   Future<void> start() async {
     if (_started) return;
     _started = true;
@@ -42,12 +42,6 @@ class SettingsController {
   Future<void> setSlider(ItemId id, double v) async {
     store.setSlider(id, v);
     await source.setSlider(id, v);
-  }
-
-  Future<void> selectChoice(ItemId id, String value) async {
-    store.setChoice(id, value);
-    await persistence.save(store.snapshot());
-    await source.selectChoice(id, value);
   }
 
   Future<void> runAction(ItemId id) => source.performAction(id);

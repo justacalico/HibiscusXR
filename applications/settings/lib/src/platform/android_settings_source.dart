@@ -37,10 +37,6 @@ class AndroidSettingsSource implements SettingsSource {
       _channel.invokeMethod('requestToggle', {'id': id.name, 'on': on});
 
   @override
-  Future<void> selectChoice(ItemId id, String value) => _channel
-      .invokeMethod('selectChoice', {'id': id.name, 'value': value});
-
-  @override
   Future<void> performAction(ItemId id) =>
       _channel.invokeMethod('performAction', {'id': id.name});
 }

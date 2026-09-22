@@ -33,13 +33,6 @@ void main() {
     expect(ticks, 2);
   });
 
-  test('choice falls back to the first catalog option', () {
-    final store = SettingsStore();
-    expect(store.choiceOf(ItemId.trackingFrequency), 'auto');
-    store.setChoice(ItemId.trackingFrequency, '60hz');
-    expect(store.choiceOf(ItemId.trackingFrequency), '60hz');
-  });
-
   test('applySnapshot merges only carried keys', () {
     final store = SettingsStore()
       ..applySnapshot(const SettingsSnapshot(
@@ -113,25 +106,19 @@ void main() {
     expect(ticks, 1);
   });
 
-  test('snapshot/restore roundtrips section and choices', () {
+  test('snapshot/restore roundtrips the section', () {
     final store = SettingsStore()
-      ..selectSection(SectionId.headsetTracking)
-      ..setChoice(ItemId.trackingFrequency, '50hz')
-      ..setToggle(ItemId.boundary, true);
+      ..selectSection(SectionId.sound)
+      ..setToggle(ItemId.micMute, true);
     final back = SettingsStore()..restore(store.snapshot());
-    expect(back.section, SectionId.headsetTracking);
-    expect(back.choiceOf(ItemId.trackingFrequency), '50hz');
+    expect(back.section, SectionId.sound);
     // toggles are not persisted - the platform reports them on load
-    expect(back.isOn(ItemId.boundary), isFalse);
+    expect(back.isOn(ItemId.micMute), isFalse);
   });
 
   test('restore ignores garbage', () {
     final store = SettingsStore();
-    store.restore({
-      'section': 42,
-      'choices': {'trackingFrequency': 9, 'bogus': 'x'},
-    });
+    store.restore({'section': 42, 'bogus': 'x'});
     expect(store.section, SectionId.wifi);
-    expect(store.choiceOf(ItemId.trackingFrequency), 'auto');
   });
 }

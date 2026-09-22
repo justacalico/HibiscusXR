@@ -35,6 +35,9 @@ void main() {
   test('implementedOf marks only the stub rows', () {
     const stubs = {
       ItemId.nightMode,
+      ItemId.adbToggle,
+      ItemId.stayAwake,
+      ItemId.showTouches,
     };
     for (final id in ItemId.values) {
       expect(implementedOf(id), !stubs.contains(id), reason: '$id');

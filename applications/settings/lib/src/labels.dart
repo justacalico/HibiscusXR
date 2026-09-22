@@ -25,8 +25,6 @@ String sectionTitle(AppLocalizations l10n, SectionId id) {
       return l10n.sectionKeyboard;
     case SectionId.headsetTracking:
       return l10n.sectionHeadsetTracking;
-    case SectionId.backup:
-      return l10n.sectionBackup;
     case SectionId.developer:
       return l10n.sectionDeveloper;
     case SectionId.softwareUpdate:
@@ -82,8 +80,6 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemBoundary;
     case ItemId.resetView:
       return l10n.itemResetView;
-    case ItemId.backupNow:
-      return l10n.itemBackupNow;
     case ItemId.devOptions:
       return l10n.itemDevOptions;
     case ItemId.updateCheck:
@@ -145,8 +141,6 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemBoundaryDesc;
     case ItemId.resetView:
       return l10n.itemResetViewDesc;
-    case ItemId.backupNow:
-      return l10n.itemBackupNowDesc;
     case ItemId.devOptions:
       return l10n.itemDevOptionsDesc;
     case ItemId.updateCheck:

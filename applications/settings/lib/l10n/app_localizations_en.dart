@@ -42,9 +42,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionHeadsetTracking => 'Headset Tracking';
 
   @override
-  String get sectionBackup => 'Backup';
-
-  @override
   String get sectionDeveloper => 'Developer';
 
   @override
@@ -184,12 +181,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemResetViewDesc => 'Recenter the headset orientation';
-
-  @override
-  String get itemBackupNow => 'Back up now';
-
-  @override
-  String get itemBackupNowDesc => 'Back up app data and settings';
 
   @override
   String get itemDevOptions => 'Developer options';

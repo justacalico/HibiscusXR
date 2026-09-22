@@ -37,7 +37,6 @@ const kSections = <SectionDef>[
     ItemId.boundary,
     ItemId.resetView,
   ]),
-  SectionDef(SectionId.backup, [ItemId.backupNow]),
   SectionDef(SectionId.developer, [ItemId.devOptions]),
   SectionDef(SectionId.softwareUpdate, [
     ItemId.buildNumber,
@@ -73,7 +72,6 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.trackingFrequency: ItemKind.choice,
   ItemId.boundary: ItemKind.toggle,
   ItemId.resetView: ItemKind.action,
-  ItemId.backupNow: ItemKind.action,
   ItemId.devOptions: ItemKind.action,
   ItemId.updateCheck: ItemKind.action,
   ItemId.buildNumber: ItemKind.info,

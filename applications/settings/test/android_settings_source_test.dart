@@ -52,7 +52,7 @@ void main() {
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
     await src.selectChoice(ItemId.trackingFrequency, '50hz');
-    await src.performAction(ItemId.aboutOpen);
+    await src.performAction(ItemId.devOptions);
     expect(calls.map((c) => c.method), [
       'setSlider',
       'requestToggle',
@@ -63,7 +63,7 @@ void main() {
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});
     expect(calls[2].arguments,
         {'id': 'trackingFrequency', 'value': '50hz'});
-    expect(calls[3].arguments, {'id': 'aboutOpen'});
+    expect(calls[3].arguments, {'id': 'devOptions'});
   });
 
   test('events stream subscribes the event channel', () async {

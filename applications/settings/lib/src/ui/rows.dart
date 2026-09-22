@@ -7,6 +7,7 @@ import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
 import 'battery_icon.dart';
+import 'brand_card.dart';
 import 'scan_card.dart';
 import 'theme.dart';
 
@@ -23,6 +24,12 @@ class SettingsRow extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final store = controller.store;
     final enabled = implementedOf(id);
+    if (kindOf(id) == ItemKind.brand) {
+      return BrandCard(
+        name: itemTitle(l10n, id),
+        caption: itemDescription(l10n, id),
+      );
+    }
     if (kindOf(id) == ItemKind.scanCard) {
       final scanning = store.isOn(id);
       return ScanCard(
@@ -148,6 +155,7 @@ class _Control extends StatelessWidget {
           child: const Icon(Icons.chevron_right, size: 26),
         );
       case ItemKind.scanCard:
+      case ItemKind.brand:
         // handled in SettingsRow.build, before the row layout
         return const SizedBox.shrink();
       case ItemKind.controller:

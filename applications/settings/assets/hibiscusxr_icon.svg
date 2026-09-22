@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="t d">
+  <title id="t">HibiscusXR</title>
+  <desc id="d">A five-petal hibiscus flower with a glowing stamen and a tilted tracking orbit, representing an open source XR project.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a1236"/>
+      <stop offset="1" stop-color="#0f0819"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="52%" r="55%">
+      <stop offset="0" stop-color="#ff4f8b" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ff4f8b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="petal" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="172">
+      <stop offset="0" stop-color="#7a0838"/>
+      <stop offset="0.22" stop-color="#c8175a"/>
+      <stop offset="0.62" stop-color="#ff4f8b"/>
+      <stop offset="1" stop-color="#ffa27f"/>
+    </radialGradient>
+    <radialGradient id="tip" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ffd98a" stop-opacity="0.55"/>
+      <stop offset="0.5" stop-color="#ffd98a" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#ffd98a" stop-opacity="0"/>
+    </radialGradient>
+    <path id="p" d="M0 0 C-52 -22 -98 -92 -72 -142 C-56 -172 -20 -180 0 -168 C20 -180 56 -172 72 -142 C98 -92 52 -22 0 0 Z"/>
+  </defs>
+
+  <!-- tile -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+
+  <g transform="translate(256 264)">
+    <!-- orbit, back half -->
+    <g transform="rotate(-25)">
+      <ellipse rx="192" ry="64" fill="none" stroke="#5ee7ff" stroke-width="7" stroke-opacity="0.35"/>
+    </g>
+
+    <!-- petals -->
+    <g stroke="#ffc4d6" stroke-opacity="0.35" stroke-width="2" fill="url(#petal)">
+      <use href="#p" transform="rotate(0)"/>
+      <use href="#p" transform="rotate(72)"/>
+      <use href="#p" transform="rotate(144)"/>
+      <use href="#p" transform="rotate(216)"/>
+      <use href="#p" transform="rotate(288)"/>
+    </g>
+
+    <!-- veins -->
+    <g stroke="#7a0838" stroke-opacity="0.35" stroke-width="3" stroke-linecap="round" fill="none">
+      <g id="v">
+        <path d="M0 -30 L0 -120"/>
+        <path d="M-8 -34 L-34 -110"/>
+        <path d="M8 -34 L34 -110"/>
+      </g>
+      <use href="#v" transform="rotate(72)"/>
+      <use href="#v" transform="rotate(144)"/>
+      <use href="#v" transform="rotate(216)"/>
+      <use href="#v" transform="rotate(288)"/>
+    </g>
+
+    <!-- throat -->
+    <circle r="26" fill="#5a062c" fill-opacity="0.8"/>
+
+    <!-- orbit, front half -->
+    <g transform="rotate(-25)">
+      <path d="M-192 0 A192 64 0 0 0 192 0" fill="none" stroke="#5ee7ff" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="192" cy="0" r="13" fill="#5ee7ff"/>
+      <circle cx="192" cy="0" r="24" fill="#5ee7ff" fill-opacity="0.25"/>
+    </g>
+
+    <!-- stamen / pointer ray -->
+    <path d="M0 0 C18 -48 58 -92 104 -116" fill="none" stroke="#e9bd6c" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="104" cy="-116" r="30" fill="url(#tip)"/>
+    <g fill="#efc978">
+      <circle cx="104" cy="-116" r="9"/>
+      <circle cx="86" cy="-132" r="5"/>
+      <circle cx="122" cy="-132" r="5"/>
+      <circle cx="124" cy="-102" r="5"/>
+      <circle cx="84" cy="-104" r="5"/>
+    </g>
+  </g>
+</svg>

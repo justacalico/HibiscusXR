@@ -65,6 +65,24 @@ void main() {
     );
   });
 
+  testWidgets('about section golden', (tester) async {
+    await pump(
+      tester,
+      const SettingsSnapshot(
+        texts: {
+          ItemId.modelName: 'A7B10',
+          ItemId.androidVersion: '10',
+        },
+      ),
+      persistence: MemoryPersistence({'section': 'about'}),
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/settings_about.png'),
+    );
+  });
+
   testWidgets('controllers section golden', (tester) async {
     await pump(
       tester,

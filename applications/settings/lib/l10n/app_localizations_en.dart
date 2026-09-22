@@ -222,10 +222,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemAndroidVersionDesc => 'The Android release this system runs';
 
   @override
-  String get itemAboutOpen => 'More';
+  String get itemAboutBrand => 'HibiscusXR';
 
   @override
-  String get itemAboutOpenDesc => 'Open the full system information page';
+  String get itemAboutBrandDesc => 'The system software on this headset';
 
   @override
   String get itemTipsBody => 'Getting around';

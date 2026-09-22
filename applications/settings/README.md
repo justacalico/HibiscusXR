@@ -15,8 +15,8 @@ sections on the left, the selected section's rows on the right.
 - Language and Region, Time, Keyboard: jump to the matching system page
 - Headset Tracking: tracking toggle, tracking frequency dropdown,
   boundary toggle, reset view
-- Backup, Developer, Software Update, About (model / Android version /
-  build), Tips and Support
+- Backup, Developer, Software Update, About (brand mark / model /
+  Android version / build), Tips and Support
 
 Rows the platform cannot service directly open the matching system
 page instead.

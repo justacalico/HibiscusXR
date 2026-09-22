@@ -38,6 +38,7 @@ void main() {
     await tester.tap(find.text('About'));
     await tester.pump();
     expect(c.store.section, SectionId.about);
+    expect(find.text('HibiscusXR'), findsOneWidget);
     expect(find.text('Model'), findsOneWidget);
     expect(find.text('Android version'), findsOneWidget);
   });

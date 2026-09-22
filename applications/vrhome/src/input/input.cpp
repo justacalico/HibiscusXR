@@ -51,14 +51,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                                  (uint64_t)ts.tv_nsec / 1000000;
             } else if (e->dockZone == DZONE_HANDLE) {
                 // ring drag: the held handle under the dock tracks the
-                // gaze and every panel follows, so the windows stay in
+                // aim and every panel follows, so the windows stay in
                 // formation. No dockPress: releasing only ends the drag
                 e->moveHeld = true;
-                e->moveGrabYaw = e->gazeYaw;
-                e->moveGrabPitch = e->gazePitch;
+                e->moveGrabYaw = e->aimYaw;
+                e->moveGrabPitch = e->aimPitch;
                 e->dockGrabYaw = e->dockYaw;
                 grabRing(e->panels);
-                LOGI("ring drag grab @ yaw %.2f", e->gazeYaw);
+                LOGI("ring drag grab @ yaw %.2f", e->aimYaw);
             }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 const Panel& p = e->panels[e->hover];
@@ -177,14 +177,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
     }
 }
 
-// streams MOVEs to the display a confirm-press started on; the gaze point is
-// clamped inside the window so the drag survives the gaze leaving the edges
-void dragTick(HudEngine* e, const Mat4& head) {
+// streams MOVEs to the display a confirm-press started on; the aim point is
+// clamped inside the window so the drag survives the ray leaving the edges
+void dragTick(HudEngine* e, const float o[3], const float d[3]) {
     if (!e->confirmHeld || e->dragDisp < 0 || !e->bridge) return;
     for (auto& p : e->panels) {
         if (p.displayId != e->dragDisp) continue;
         float rx, ry;
-        if (dragPoint(p, head, e->ringPos, e->eyePos, &rx, &ry)) {
+        if (dragPointRay(p, e->ringPos, o, d, &rx, &ry)) {
             const float px = dragBoost(e->grabX, rx, kVdW);
             const float py = dragBoost(e->grabY, ry, kVdH);
             if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)
@@ -201,11 +201,11 @@ void dragTick(HudEngine* e, const Mat4& head) {
 }
 
 // held on a drag handle: every panel keeps its slot offset and swings around
-// the viewer with the gaze, up and down as well as side to side
+// the viewer with the aim, up and down as well as side to side
 void moveTick(HudEngine* e) {
     if (!e->moveHeld) return;
-    const float dYaw = wrapPi(e->gazeYaw - e->moveGrabYaw);
-    dragRing(e->panels, dYaw, e->gazePitch - e->moveGrabPitch);
+    const float dYaw = wrapPi(e->aimYaw - e->moveGrabYaw);
+    dragRing(e->panels, dYaw, e->aimPitch - e->moveGrabPitch);
     // the dock rides the same ring and follows a handle drag
     e->dockYaw = wrapPi(e->dockGrabYaw + dYaw);
 }

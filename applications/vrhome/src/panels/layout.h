@@ -90,15 +90,22 @@ struct Pick {
     float t = 1e9f;              // ray distance, for pick arbitration
 };
 
-// gaze ray (head's -z, starting at the live eye position o) vs all panels:
-// the window rects plus the top bar above them; minimized panels are
-// skipped. nearest wins
+// arbitrary ray (origin o, direction d) vs all panels: the window rects
+// plus the top bar above them; minimized panels are skipped. nearest wins
+Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
+                  const float o[3], const float d[3]);
+
+// gaze ray (head's -z, starting at the live eye position o) vs all panels
 Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
                const float origin[3], const float o[3]);
 
-// gaze point on one panel in display px, clamped inside the window so a held
-// drag keeps streaming events after the cursor leaves the edges; false when
-// the ray can never reach the panel's plane
+// point where an arbitrary ray meets one panel, in display px, clamped
+// inside the window so a held drag keeps streaming events after the cursor
+// leaves the edges; false when the ray can never reach the panel's plane
+bool dragPointRay(const Panel& p, const float origin[3], const float o[3],
+                  const float d[3], float* px, float* py);
+
+// gaze point on one panel in display px
 bool dragPoint(const Panel& p, const Mat4& head, const float origin[3],
                const float o[3], float* px, float* py);
 

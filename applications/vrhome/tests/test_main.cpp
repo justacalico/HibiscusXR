@@ -11,6 +11,7 @@ void testKeys();
 void testWarp();
 void testDock();
 void testNotif();
+void testInput();
 
 int main() {
     testMat4();
@@ -22,6 +23,7 @@ int main() {
     testWarp();
     testDock();
     testNotif();
+    testInput();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

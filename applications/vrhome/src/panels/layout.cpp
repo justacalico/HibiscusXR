@@ -199,10 +199,8 @@ bool rayPanel(const Panel& p, const float origin[3], const float o[3],
                    u, v, t);
 }
 
-Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
-               const float origin[3], const float o[3]) {
-    float d[3];
-    gazeDir(head, d);
+Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
+                  const float o[3], const float d[3]) {
     Pick pick;
     float bestT = 1e9f;
     for (int i = 0; i < (int)panels.size(); ++i) {
@@ -229,17 +227,30 @@ Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
     return pick;
 }
 
-bool dragPoint(const Panel& p, const Mat4& head, const float origin[3],
-               const float o[3], float* px, float* py) {
-    float d[3], u, v;
+Pick pickPanel(const std::vector<Panel>& panels, const Mat4& head,
+               const float origin[3], const float o[3]) {
+    float d[3];
     gazeDir(head, d);
+    return pickPanelRay(panels, origin, o, d);
+}
+
+bool dragPointRay(const Panel& p, const float origin[3], const float o[3],
+                  const float d[3], float* px, float* py) {
+    float u, v;
     if (!rayPanel(p, origin, o, d, &u, &v, nullptr)) return false;
-    // a held drag follows the gaze even past the window's edge
+    // a held drag follows the aim even past the window's edge
     u = u < -1.0f ? -1.0f : u > 1.0f ? 1.0f : u;
     v = v < -1.0f ? -1.0f : v > 1.0f ? 1.0f : v;
     *px = (u * 0.5f + 0.5f) * kVdW;
     *py = (0.5f - v * 0.5f) * kVdH;
     return true;
+}
+
+bool dragPoint(const Panel& p, const Mat4& head, const float origin[3],
+               const float o[3], float* px, float* py) {
+    float d[3];
+    gazeDir(head, d);
+    return dragPointRay(p, origin, o, d, px, py);
 }
 
 float dragBoost(float anchor, float p, float max) {

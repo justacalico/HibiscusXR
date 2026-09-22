@@ -86,14 +86,12 @@ bool rayNotif(float yaw, float pitch, float lift, const float origin[3],
                    notifStackHH(count), u, v, t);
 }
 
-NotifPick pickNotif(const std::vector<NotifItem>& items,
-                    float yaw, float pitch, float lift,
-                    const Mat4& head, const float origin[3],
-                    const float o[3]) {
+NotifPick pickNotifRay(const std::vector<NotifItem>& items,
+                       float yaw, float pitch, float lift,
+                       const float origin[3], const float o[3],
+                       const float d[3]) {
     NotifPick pk;
     if (items.empty()) return pk;
-    float d[3];
-    gazeDir(head, d);
     float u, v, t;
     if (!rayNotif(yaw, pitch, lift, origin, o, d, (int)items.size(),
                   &u, &v, &t))
@@ -103,4 +101,13 @@ NotifPick pickNotif(const std::vector<NotifItem>& items,
     pk.t = t;
     pk.idx = notifAt(u, v, (int)items.size(), &pk.zone);
     return pk;
+}
+
+NotifPick pickNotif(const std::vector<NotifItem>& items,
+                    float yaw, float pitch, float lift,
+                    const Mat4& head, const float origin[3],
+                    const float o[3]) {
+    float d[3];
+    gazeDir(head, d);
+    return pickNotifRay(items, yaw, pitch, lift, origin, o, d);
 }

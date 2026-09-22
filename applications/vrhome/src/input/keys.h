@@ -6,6 +6,7 @@
 constexpr int kKeyEnter      = 66;   // AKEYCODE_ENTER
 constexpr int kKeyDpadCenter = 23;   // AKEYCODE_DPAD_CENTER
 constexpr int kKeyButtonA    = 96;   // AKEYCODE_BUTTON_A
+constexpr int kKeyBack       = 4;    // AKEYCODE_BACK
 // kPicoConfirm (1001) lives in common/config.h
 
 bool isConfirm(int code);

@@ -1,10 +1,13 @@
 #pragma once
 
 #include "../engine.h"
+#include "../math/mat4.h"
 #include "../panels/panel.h"
 #include "../dock/item.h"
 #include "../notif/item.h"
 #include "../common/config.h"
+#include "../input/ctrl_state.h"
+#include "../input/input_state.h"
 
 #include <android/native_window.h>
 
@@ -111,6 +114,28 @@ struct HudEngine : Engine {
     bool toastOnly = false;
     bool toastWas = false;
     float toastYaw = 0.0f;
+
+    // controllers: the shared-memory map plus the arbitration state it
+    // feeds. ctrlPos/ctrlDir are each live controller's world aim ray;
+    // aimO/aimD is whichever pointer owns the dash this frame - the active
+    // controller, or the gaze ray while hmdInput() is true
+    ctrl_share ctrlMem;
+    bool ctrlOpen = false;
+    bool ctrlLogged = false;
+    long long ctrlRetryMs = 0;
+    InputState input;
+    ctrl_state ctrl[2];
+    float ctrlPos[2][3] = {{0}};
+    float ctrlDir[2][3] = {{0}};
+    Mat4 ctrlMat[2];             // per-controller model rotation
+    float aimO[3] = {0, 0, 0};
+    float aimD[3] = {0, 0, -1};
+    float aimYaw = 0.0f, aimPitch = 0.0f;
+    float aimHitT = -1.0f;       // ray distance to the picked surface
+    std::deque<InputEvent> ctrlEv;
+    GLuint ctrlVbo[2] = {0, 0};  // loaded meshes, one per hand
+    int ctrlVerts[2] = {0, 0};
+    GLuint ctrlBeamVbo = 0;      // rewritten every frame the beam shows
 
     bool confirmHeld = false;
     bool moveHeld = false;       // confirm held on a drag handle

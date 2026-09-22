@@ -33,6 +33,13 @@ Mat4 rotZ(float deg) {
     return m;
 }
 
+Mat4 rotY(float deg) {
+    const float r = deg * (float)M_PI / 180.0f;
+    Mat4 m = identity();
+    m.m[0] = cosf(r); m.m[2] = -sinf(r); m.m[8] = sinf(r); m.m[10] = cosf(r);
+    return m;
+}
+
 Mat4 rotX(float deg) {
     const float r = deg * (float)M_PI / 180.0f;
     Mat4 m = identity();

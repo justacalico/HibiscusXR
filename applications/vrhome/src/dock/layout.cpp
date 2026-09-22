@@ -203,13 +203,11 @@ bool rayDock(float yaw, float pitch, const float origin[3],
                    u, v, t);
 }
 
-DockPick pickDock(const std::vector<DockItem>& items, float halfW,
-                  float yaw, float pitch, const Mat4& head,
-                  const float origin[3], const float o[3]) {
+DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
+                     float yaw, float pitch, const float origin[3],
+                     const float o[3], const float d[3]) {
     DockPick pk;
     if (items.empty() || halfW <= 0.0f) return pk;
-    float d[3];
-    gazeDir(head, d);
     float u, v, t;
     if (!rayDock(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
     // the move handle hangs under the strip: it lives outside the bar box
@@ -225,6 +223,14 @@ DockPick pickDock(const std::vector<DockItem>& items, float halfW,
     pk.u = u; pk.v = v; pk.t = t;
     pk.idx = dockItemAt(items, halfW, u, v, &pk.zone);
     return pk;
+}
+
+DockPick pickDock(const std::vector<DockItem>& items, float halfW,
+                  float yaw, float pitch, const Mat4& head,
+                  const float origin[3], const float o[3]) {
+    float d[3];
+    gazeDir(head, d);
+    return pickDockRay(items, halfW, yaw, pitch, origin, o, d);
 }
 
 bool dockPinnable(const DockItem& it) {

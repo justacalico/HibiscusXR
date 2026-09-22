@@ -45,15 +45,21 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/render/scene.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
-            src/render/shape.cpp \
+            src/render/shape.cpp src/render/ctrl_render.cpp \
+            src/render/mesh.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
             src/bridge/bridge.cpp \
-            src/input/input.cpp src/input/keys.cpp
+            src/input/input.cpp src/input/keys.cpp \
+            src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp
+
+# pure C, shared verbatim with the pn2 monado driver
+HUD_CSRCS := src/input/ctrl_state.c
 
 ENV_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(SHARED_SRCS) $(ENV_SRCS))
-HUD_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(SHARED_SRCS) $(HUD_SRCS))
+HUD_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(SHARED_SRCS) $(HUD_SRCS)) \
+            $(patsubst src/%.c,$(OUT)/obj/%.o,$(HUD_CSRCS))
 JAVA_SRCS   := $(shell find java -name '*.java')
 # compile-time stubs for @hide framework classes (InputChannel,
 # InputEventReceiver); never passed to d8 - the real classes resolve at
@@ -74,7 +80,8 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
-             src/notif/layout.cpp
+             src/notif/layout.cpp src/input/input_state.cpp \
+             src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -96,7 +103,25 @@ $(GLUE_O): $(GLUE)/android_native_app_glue.c | toolcheck
 
 $(OUT)/obj/%.o: src/%.cpp | toolcheck
 	@mkdir -p $(dir $@)
-	$(CLANGXX) -c -fPIC -O2 -std=c++17 -I $(GLUE) -MMD -MP -o $@ $<
+	$(CLANGXX) -c -fPIC -O2 -std=c++17 -I $(GLUE) -I $(OUT)/gen -MMD -MP -o $@ $<
+
+# pure-C sources shared with the monado driver; -x c++ keeps the dialect
+# identical to the host build, where g++ also compiles .c as C++
+$(OUT)/obj/%.o: src/%.c | toolcheck
+	@mkdir -p $(dir $@)
+	$(CLANGXX) -c -fPIC -O2 -std=c++17 -x c++ -I $(GLUE) -MMD -MP -o $@ $<
+
+# embedded controller meshes: the OBJ text lands as byte arrays under
+# out/gen for ctrl_render.cpp to parse at first draw
+$(OUT)/gen/ctrl_l.inc: models/ctrl_l.obj tools/obj2c.py | toolcheck
+	@mkdir -p $(OUT)/gen
+	python3 tools/obj2c.py $< kObjL $@
+
+$(OUT)/gen/ctrl_r.inc: models/ctrl_r.obj tools/obj2c.py | toolcheck
+	@mkdir -p $(OUT)/gen
+	python3 tools/obj2c.py $< kObjR $@
+
+$(OUT)/obj/render/ctrl_render.o: $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 
 -include $(ENV_OBJS:.o=.d) $(HUD_OBJS:.o=.d)
 

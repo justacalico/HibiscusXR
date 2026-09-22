@@ -33,11 +33,16 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <!-- controller pose/key channel: CVService's /sdcard/CtrlShareMem is
+         group-readable by sdcard_rw, which this grant adds the app to -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:label="PN2 HUD"
         android:hasCode="true"
-        android:debuggable="false">
+        android:debuggable="false"
+        android:requestLegacyExternalStorage="true">
 
         <service
             android:name=".HudService"

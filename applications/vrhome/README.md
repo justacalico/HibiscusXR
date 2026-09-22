@@ -51,11 +51,11 @@ Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `N
 | Look at a window | Focus it; the gaze cursor tracks the panel |
 | Confirm button (or ENTER / DPAD_CENTER) | Tap at the gaze point |
 | Hold confirm and move your gaze | Drag or scroll the window content |
-| Confirm on a pill button | – minimizes the window, × closes it |
+| Confirm on a pill button | – minimizes the window onto the shelf above the dock, × closes it |
 | BACK | Close the newest window (dismiss the menu when it is over an app) |
 | Headset home key | Summon or dismiss the menu over whatever is running; hold to recenter |
 
-At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically. Minimized apps keep running in the background; tapping their icon in the library brings the same window back.
+At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically. Minimized apps keep running in the background and park as icons on a shelf floating just above the dock; tapping a shelf icon (or the app's icon in the library) brings the same window back.
 
 > [!NOTE]
 > The physical home key is remapped to the custom `DEFINE_HOME` keycode (1003) in `gpio-keys.kl` - stock `KEYCODE_HOME` is swallowed by system_server before any app can see it. The HUD watches for 1003 through a hidden-API input monitor.

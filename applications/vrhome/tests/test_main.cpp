@@ -10,6 +10,7 @@ void testSceneGeo();
 void testKeys();
 void testWarp();
 void testDock();
+void testShelf();
 void testNotif();
 void testInput();
 
@@ -22,6 +23,7 @@ int main() {
     testKeys();
     testWarp();
     testDock();
+    testShelf();
     testNotif();
     testInput();
     printf("%d checks, %d failures\n", gChecks, gFails);

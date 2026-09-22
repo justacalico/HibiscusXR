@@ -35,6 +35,17 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->dockPinDone = false;
             e->notifPress = -1;
             e->notifPressZone = NZONE_NONE;
+            e->shelfPress = -1;
+            e->shelfPressDisp = -1;
+            if (e->shelfHover >= 0 &&
+                    e->shelfHover < (int)e->shelf.size()) {
+                const ShelfItem& si = e->shelf[e->shelfHover];
+                if (si.panelIdx >= 0 &&
+                        si.panelIdx < (int)e->panels.size()) {
+                    e->shelfPress = e->shelfHover;
+                    e->shelfPressDisp = e->panels[si.panelIdx].displayId;
+                }
+            }
             if (e->notifHover >= 0 &&
                     e->notifHover < (int)e->notifs.size()) {
                 e->notifPress = e->notifHover;
@@ -98,6 +109,20 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->notifPress = -1;
                 e->notifPressZone = NZONE_NONE;
                 e->notifPressKey.clear();
+            } else if (e->shelfPress >= 0) {
+                // release back on the same parked icon restores the
+                // window; the displayId guard catches the panel list
+                // shifting under a held press
+                const bool same = e->shelfHover == e->shelfPress &&
+                    e->shelfPress < (int)e->shelf.size() &&
+                    e->shelf[e->shelfPress].panelIdx >= 0 &&
+                    e->shelf[e->shelfPress].panelIdx <
+                        (int)e->panels.size() &&
+                    e->panels[e->shelf[e->shelfPress].panelIdx].displayId ==
+                        e->shelfPressDisp;
+                if (same) shelfActivate(e, e->shelfPress);
+                e->shelfPress = -1;
+                e->shelfPressDisp = -1;
             } else if (e->dockPress >= 0) {
                 // release over the same dock item (and zone) fires its
                 // action; a completed pin-hold suppresses the tap

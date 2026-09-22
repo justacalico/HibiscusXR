@@ -89,6 +89,16 @@ struct HudEngine : Engine {
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
 
+    // minimized-window shelf: hidden panels parked on a pill above the
+    // dock bar, rebuilt each frame by syncDock. hover/press mirror the
+    // dock's gesture state; shelfPressDisp guards against the panel list
+    // shifting under a held press
+    std::vector<ShelfItem> shelf;
+    float shelfHW = 0.0f;
+    int shelfHover = -1;
+    int shelfPress = -1;
+    int shelfPressDisp = -1;
+
     // status cluster on the strip's left end: dockSys carries the layout
     // positions, the rest is the last bridge pull + the formatted clock
     DockStatus dockSys;

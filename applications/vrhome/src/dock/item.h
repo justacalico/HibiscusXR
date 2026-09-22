@@ -57,6 +57,21 @@ struct DockPick {
     int zone = DZONE_NONE;
 };
 
+// one parked window on the minimized shelf above the dock bar: panelIdx
+// links back into the panel list, x is the icon's pill-local centre
+struct ShelfItem {
+    int panelIdx = -1;
+    std::string pkg;
+    std::string label;      // resolved app label, shown while hovered
+    float x = 0;            // pill-local centre x, set by shelfLayout
+};
+
+struct ShelfPick {
+    int idx = -1;           // shelf slot under the ray, -1 on the pill body
+    bool hit = false;       // the ray hit the pill at all (blocks panels)
+    float t = 1e9f;         // ray distance, for pick arbitration
+};
+
 // status cluster pinned to the strip's left end: clock, battery and wifi
 // grouped in one pill, the notification bell alone in a second, then a
 // separator before the app icons. clockW goes in measured; the rest come

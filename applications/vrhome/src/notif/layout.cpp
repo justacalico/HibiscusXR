@@ -35,7 +35,11 @@ float notifStackHH(int count) {
 }
 
 float notifLift(int count) {
-    return kDockBarH * 0.5f + kNotifGap + notifStackHH(count);
+    return notifLiftAbove(count, kDockBarH * 0.5f);
+}
+
+float notifLiftAbove(int count, float clear) {
+    return clear + kNotifGap + notifStackHH(count);
 }
 
 void notifCenter(float yaw, float pitch, float lift, const float origin[3],

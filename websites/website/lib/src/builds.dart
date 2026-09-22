@@ -29,13 +29,22 @@ class BuildRelease {
 
   /// The main full-stack image asset, if present.
   BuildAsset? get fullImage =>
-      assets.firstWhere((a) => a.name == 'system-pn2-full.img.xz',
-          orElse: () => const BuildAsset('', ''));
+      _named(const ['system-hibiscus-full.img.xz', 'system-pn2-full.img.xz']);
 
   /// The clean GSI-only image asset, if present.
   BuildAsset? get cleanImage =>
-      assets.firstWhere((a) => a.name == 'system-pn2.img.xz',
-          orElse: () => const BuildAsset('', ''));
+      _named(const ['system-hibiscus.img.xz', 'system-pn2.img.xz']);
+
+  /// First asset matching one of [names], in preference order. The second
+  /// entry is the pre-rename spelling older releases still carry.
+  BuildAsset _named(List<String> names) {
+    for (final n in names) {
+      for (final a in assets) {
+        if (a.name == n) return a;
+      }
+    }
+    return const BuildAsset('', '');
+  }
 }
 
 /// Determines the channel from a tag name.

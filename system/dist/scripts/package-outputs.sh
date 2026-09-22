@@ -7,18 +7,21 @@ D="${1:-dist-out}"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "$D"
 
-for n in system-pn2 system-pn2-full; do
-  img2simg "$R/out/$n.img" "$D/$n.img"
+# tools still write out/system-pn2*.img; the published names are
+# system-hibiscus*.img.xz
+for pair in "system-pn2:system-hibiscus" "system-pn2-full:system-hibiscus-full"; do
+  src=${pair%%:*}; pub=${pair##*:}
+  img2simg "$R/out/$src.img" "$D/$pub.img"
   # GitHub release assets cap at 2G - the full sparse image is ~2.5G, so both
   # ship xz'd (the usual GSI convention: unxz, then fastboot flash)
-  xz -1 -T0 "$D/$n.img"
-  echo "$n.img.xz: $(stat -c%s "$R/out/$n.img") raw -> $(stat -c%s "$D/$n.img.xz") sparse+xz"
+  xz -1 -T0 "$D/$pub.img"
+  echo "$pub.img.xz: $(stat -c%s "$R/out/$src.img") raw -> $(stat -c%s "$D/$pub.img.xz") sparse+xz"
 done
 
 tar -cJf "$D/build-logs.tar.xz" --exclude='*.so' -C "$R" notes
 
 {
-  echo "PN2Lineage image build"
+  echo "Hibiscus image build"
   echo "date:    $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "commit:  ${GITHUB_SHA:-local}"
   echo "run:     ${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY:-}/${GITHUB_RUN_ID:-}"

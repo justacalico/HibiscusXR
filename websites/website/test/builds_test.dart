@@ -21,14 +21,14 @@ void main() {
     final json = [
       {
         'tag_name': 'v2026.09.15-r6',
-        'name': 'PN2 images v2026.09.15-r6',
+        'name': 'Hibiscus images v2026.09.15-r6',
         'created_at': '2026-09-15T16:00:00.000Z',
         'assets': {
           'links': [
-            {'name': 'system-pn2-full.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-pn2-full.img.xz'},
-            {'name': 'system-pn2.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-pn2.img.xz'},
+            {'name': 'system-hibiscus-full.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus-full.img.xz'},
+            {'name': 'system-hibiscus.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus.img.xz'},
             {'name': 'SHA256SUMS.txt',
              'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/SHA256SUMS.txt'},
           ],
@@ -36,18 +36,22 @@ void main() {
       },
       {
         'tag_name': 'alpha-v2026.09.15-r7',
-        'name': 'PN2 images alpha-v2026.09.15-r7',
+        'name': 'Hibiscus images alpha-v2026.09.15-r7',
         'created_at': '2026-09-15T17:00:00.000Z',
         'assets': {
           'links': [
             {'name': 'system-pn2-full.img.xz',
              'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/alpha-v2026.09.15-r7/system-pn2-full.img.xz'},
+            {'name': 'system-hibiscus-full.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/alpha-v2026.09.15-r7/system-hibiscus-full.img.xz'},
+            {'name': 'system-pn2.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/alpha-v2026.09.15-r7/system-pn2.img.xz'},
           ],
         },
       },
       {
         'tag_name': 'beta-v2026.09.15-r5',
-        'name': 'PN2 images beta-v2026.09.15-r5',
+        'name': 'Hibiscus images beta-v2026.09.15-r5',
         'created_at': '2026-09-15T15:00:00.000Z',
         'assets': {
           'links': [],
@@ -61,7 +65,7 @@ void main() {
 
       expect(releases[0].tag, 'v2026.09.15-r6');
       expect(releases[0].channel, BuildChannel.release);
-      expect(releases[0].name, 'PN2 images v2026.09.15-r6');
+      expect(releases[0].name, 'Hibiscus images v2026.09.15-r6');
       expect(releases[0].createdAt, DateTime.parse('2026-09-15T16:00:00.000Z'));
 
       expect(releases[1].tag, 'alpha-v2026.09.15-r7');
@@ -74,7 +78,7 @@ void main() {
     test('parses asset links', () {
       final releases = parseReleases(json);
       expect(releases[0].assets.length, 3);
-      expect(releases[0].assets[0].name, 'system-pn2-full.img.xz');
+      expect(releases[0].assets[0].name, 'system-hibiscus-full.img.xz');
       expect(releases[0].assets[0].isImage, isTrue);
       expect(releases[0].assets[2].name, 'SHA256SUMS.txt');
       expect(releases[0].assets[2].isImage, isFalse);
@@ -82,8 +86,14 @@ void main() {
 
     test('fullImage and cleanImage find the right assets', () {
       final releases = parseReleases(json);
-      expect(releases[0].fullImage!.name, 'system-pn2-full.img.xz');
-      expect(releases[0].cleanImage!.name, 'system-pn2.img.xz');
+      expect(releases[0].fullImage!.name, 'system-hibiscus-full.img.xz');
+      expect(releases[0].cleanImage!.name, 'system-hibiscus.img.xz');
+    });
+
+    test('new name wins over pre-rename system-pn2 assets', () {
+      final releases = parseReleases(json);
+      expect(releases[1].fullImage!.name, 'system-hibiscus-full.img.xz');
+      expect(releases[1].cleanImage!.name, 'system-pn2.img.xz');
     });
 
     test('empty assets list is fine', () {

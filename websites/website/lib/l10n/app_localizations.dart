@@ -989,7 +989,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadImageBody.
   ///
   /// In en, this message translates to:
-  /// **'system-pn2-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.'**
+  /// **'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.'**
   String get downloadImageBody;
 
   /// No description provided for @downloadImageCta.
@@ -1019,7 +1019,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadStep3.
   ///
   /// In en, this message translates to:
-  /// **'fastboot -S 128M flash system system-pn2-full.img'**
+  /// **'fastboot -S 128M flash system system-hibiscus-full.img'**
   String get downloadStep3;
 
   /// No description provided for @downloadStep4.

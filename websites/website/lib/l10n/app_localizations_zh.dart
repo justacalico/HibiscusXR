@@ -469,7 +469,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadImageBody =>
-      'system-pn2-full.img——3.6 GB,ext4,fsck 检查干净。LineageOS GSI 加我们的修复加整套 Pico 栈,刷上即用。';
+      'system-hibiscus-full.img——3.6 GB,ext4,fsck 检查干净。LineageOS GSI 加我们的修复加整套 Pico 栈,刷上即用。';
 
   @override
   String get downloadImageCta => '打开 out 仓库';
@@ -485,7 +485,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadStep3 =>
-      'fastboot -S 128M flash system system-pn2-full.img';
+      'fastboot -S 128M flash system system-hibiscus-full.img';
 
   @override
   String get downloadStep4 => 'fastboot reboot';

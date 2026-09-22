@@ -1,6 +1,6 @@
 # dist
 
-Build pipeline for the PN2Lineage system images.
+Build pipeline for the Hibiscus system images.
 
 GitLab is the source of truth. Pushes mirror the monorepo to
 [justacalico/HibiscusXR](https://github.com/justacalico/HibiscusXR), and a
@@ -20,7 +20,7 @@ through the package registry, so they never expire.
 3. `scripts/build-image.sh` runs the real `tools/build` chain on the runner:
    GSI xz -> simg2img -> build.prop -> overlay -> staged Pico stack ->
    fixes -> verify.
-4. Outputs land as xz'd sparse `system-pn2.img.xz` / `system-pn2-full.img.xz`
+4. Outputs land as xz'd sparse `system-hibiscus.img.xz` / `system-hibiscus-full.img.xz`
    on a GitHub release, then on a same-named GitLab release via the
    `github-release-sync` job. Release assets are package-registry backed, so
    they never expire and download without a login.
@@ -47,7 +47,7 @@ separate package so unchanged pieces are not re-uploaded.
 The release images are xz'd Android sparse images - decompress, then flash:
 
 ```
-unxz system-pn2-full.img.xz
+unxz system-hibiscus-full.img.xz
 fastboot oem pico unlock
-fastboot -S 128M flash system system-pn2-full.img
+fastboot -S 128M flash system system-hibiscus-full.img
 ```

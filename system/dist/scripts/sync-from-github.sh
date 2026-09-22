@@ -33,7 +33,7 @@ if [ -n "$PKG_ID" ] && [ "$PKG_ID" != "null" ]; then
 fi
 
 glab release create "$RELEASE_TAG" \
-  --name "PN2 system images $RELEASE_TAG" \
+  --name "Hibiscus system images $RELEASE_TAG" \
   --notes "Mirrored from the GitHub release." \
   --ref "$CI_COMMIT_SHA" \
   --use-package-registry \

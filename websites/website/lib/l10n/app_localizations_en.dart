@@ -512,7 +512,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadImageBody =>
-      'system-pn2-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.';
+      'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.';
 
   @override
   String get downloadImageCta => 'Open the out repo';
@@ -528,7 +528,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadStep3 =>
-      'fastboot -S 128M flash system system-pn2-full.img';
+      'fastboot -S 128M flash system system-hibiscus-full.img';
 
   @override
   String get downloadStep4 => 'fastboot reboot';

@@ -90,9 +90,9 @@ class ScanCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    for (final slot in slots) ...[
-                      _SlotChip(slot: slot),
-                      const SizedBox(width: 10),
+                    for (var i = 0; i < slots.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 10),
+                      Flexible(child: _SlotChip(slot: slots[i])),
                     ],
                   ],
                 ),
@@ -121,20 +121,26 @@ class _SlotChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            slot.name,
-            style: const TextStyle(
-              fontSize: 13,
-              color: PanelTheme.textSecondary,
+          Flexible(
+            child: Text(
+              slot.name,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                color: PanelTheme.textSecondary,
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Text(
-            slot.state,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: PanelTheme.textPrimary,
+          Flexible(
+            child: Text(
+              slot.state,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: PanelTheme.textPrimary,
+              ),
             ),
           ),
         ],

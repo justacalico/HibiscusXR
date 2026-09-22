@@ -209,6 +209,27 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
+  testWidgets('scan card chips fit a narrow window', (tester) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerLeft:
+              ControllerInfo(link: ControllerLink.disconnected),
+          ItemId.controllerRight:
+              ControllerInfo(link: ControllerLink.disconnected),
+        },
+      ),
+    );
+    tester.view.physicalSize = const Size(640, 800);
+    await tester.pump();
+    await tester.tap(find.text('Controllers'));
+    await tester.pump();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Left controller'), findsWidgets);
+    expect(find.text('Right controller'), findsWidgets);
+  });
+
   testWidgets('controller events refresh the row', (tester) async {
     final (_, source) = await pumpApp(
       tester,

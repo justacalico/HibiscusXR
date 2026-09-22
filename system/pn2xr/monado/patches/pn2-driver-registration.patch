@@ -22,13 +22,14 @@ diff --git i/src/xrt/drivers/CMakeLists.txt w/src/xrt/drivers/CMakeLists.txt
 index 5ec9910..bd2fa48 100644
 --- i/src/xrt/drivers/CMakeLists.txt
 +++ w/src/xrt/drivers/CMakeLists.txt
-@@ -526,6 +526,24 @@ if(XRT_BUILD_DRIVER_ANDROID)
+@@ -526,6 +526,25 @@ if(XRT_BUILD_DRIVER_ANDROID)
  	list(APPEND ENABLED_DRIVERS android)
  endif()
  
 +if(XRT_BUILD_DRIVER_PN2)
 +	add_library(
 +		drv_pn2 STATIC pn2/pn2_hmd.c pn2/pn2_hmd.h pn2/pn2_qvr.c pn2/pn2_qvr.h
++		pn2/pn2_ctrl.c pn2/pn2_ctrl.h pn2/ctrl_state.c pn2/ctrl_state.h
 +		pn2/pn2_prober.c pn2/pn2_interface.h
 +	)
 +	target_link_libraries(

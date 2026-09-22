@@ -56,8 +56,6 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerLeft;
     case ItemId.controllerRight:
       return l10n.itemControllerRight;
-    case ItemId.controllerMain:
-      return l10n.itemControllerMain;
     case ItemId.controllerUnbind:
       return l10n.itemControllerUnbind;
     case ItemId.brightness:
@@ -121,8 +119,6 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerLeftDesc;
     case ItemId.controllerRight:
       return l10n.itemControllerRightDesc;
-    case ItemId.controllerMain:
-      return l10n.itemControllerMainDesc;
     case ItemId.controllerUnbind:
       return l10n.itemControllerUnbindDesc;
     case ItemId.brightness:
@@ -175,10 +171,6 @@ String choiceLabel(AppLocalizations l10n, String value) {
       return l10n.value60hz;
     case '50hz':
       return l10n.value50hz;
-    case 'left':
-      return l10n.valueLeft;
-    case 'right':
-      return l10n.valueRight;
     default:
       return l10n.valueAuto;
   }

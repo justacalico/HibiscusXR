@@ -37,8 +37,6 @@ void main() {
     expect(choiceLabel(l10n, 'auto'), 'Auto');
     expect(choiceLabel(l10n, '60hz'), '60 Hz');
     expect(choiceLabel(l10n, '50hz'), '50 Hz');
-    expect(choiceLabel(l10n, 'left'), 'Left');
-    expect(choiceLabel(l10n, 'right'), 'Right');
     expect(choiceLabel(l10n, 'anything'), 'Auto');
   });
 

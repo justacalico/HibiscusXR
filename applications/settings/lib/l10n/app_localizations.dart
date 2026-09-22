@@ -286,18 +286,6 @@ abstract class AppLocalizations {
   /// **'Link state and battery level'**
   String get itemControllerRightDesc;
 
-  /// No description provided for @itemControllerMain.
-  ///
-  /// In en, this message translates to:
-  /// **'Main hand'**
-  String get itemControllerMain;
-
-  /// No description provided for @itemControllerMainDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'The controller used for pointing and system gestures'**
-  String get itemControllerMainDesc;
-
   /// No description provided for @itemControllerUnbind.
   ///
   /// In en, this message translates to:
@@ -579,18 +567,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get valueUnknown;
-
-  /// No description provided for @valueLeft.
-  ///
-  /// In en, this message translates to:
-  /// **'Left'**
-  String get valueLeft;
-
-  /// No description provided for @valueRight.
-  ///
-  /// In en, this message translates to:
-  /// **'Right'**
-  String get valueRight;
 
   /// No description provided for @controllerConnected.
   ///

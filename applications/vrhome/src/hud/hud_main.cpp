@@ -20,10 +20,12 @@
 #include "../common/log.h"
 #include "../common/props.h"
 #include "../input/input.h"
+#include "../input/ctrl.h"
 #include "../math/head.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 #include "../render/chrome.h"
+#include "../render/ctrl_render.h"
 #include "../render/egl.h"
 #include "../render/frame.h"
 #include "../render/warp.h"
@@ -222,6 +224,7 @@ static void hudScene(Engine* e, const Mat4& vp) {
     drawDock(h, vp);
     drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
                    notifLift((int)h->notifs.size()));
+    drawControllers(h, vp);
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
     // ignores vp entirely, so it stays put while the world shifts around it
@@ -288,6 +291,13 @@ static void hudFrame(HudEngine* e) {
         sensRoll, worldX,
         propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
 
+    {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        ctrlTick(e, head, sensRoll, worldX, propF("debug.vrhome.roll", kRoll),
+                 (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
+    }
+
     debugLaunchHook(e);
     debugTapHook(e);
     debugSummonHook(e);
@@ -338,14 +348,14 @@ static void hudFrame(HudEngine* e) {
     const float nLift = e->toastOnly ? 0.0f
                                      : notifLift((int)e->notifs.size());
 
-    // gaze pick: the card stack floats in front of the dock plane so it
+    // aim pick: the card stack floats in front of the dock plane so it
     // wins by distance; the dock wins ties against a panel edge so its
     // icons stay tappable even when one peeks out from behind a window
-    const Pick pk = pickPanel(e->panels, head, e->ringPos, e->eyePos);
-    const DockPick dp = pickDock(e->dock, e->dockHW, e->dockYaw, e->dockPitch,
-                                 head, e->ringPos, e->eyePos);
-    const NotifPick np = pickNotif(e->notifs, nYaw, nPitch, nLift,
-                                   head, e->ringPos, e->eyePos);
+    const Pick pk = pickPanelRay(e->panels, e->ringPos, e->aimO, e->aimD);
+    const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
+                                  e->dockPitch, e->ringPos, e->aimO, e->aimD);
+    const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
+                                      e->ringPos, e->aimO, e->aimD);
     if (np.stack && (!dp.bar || np.t <= dp.t) &&
             (pk.idx < 0 || np.t <= pk.t)) {
         e->notifHover = np.idx;
@@ -354,6 +364,7 @@ static void hudFrame(HudEngine* e) {
         e->dockZone = DZONE_NONE;
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
+        e->aimHitT = np.t;
     } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
@@ -363,6 +374,7 @@ static void hudFrame(HudEngine* e) {
         e->dockV = dp.v;
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
+        e->aimHitT = dp.t;
     } else {
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
@@ -370,6 +382,7 @@ static void hudFrame(HudEngine* e) {
         e->dockZone = DZONE_NONE;
         e->hover = pk.idx;
         e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
+        e->aimHitT = pk.idx >= 0 ? pk.t : -1.0f;
         if (pk.idx >= 0) {
             e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
             e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
@@ -381,7 +394,10 @@ static void hudFrame(HudEngine* e) {
     if (e->toastOnly && !e->toastWas) e->toastYaw = e->gazeYaw;
     e->toastWas = e->toastOnly;
 
-    dragTick(e, head);
+    // controller button edges land on this frame's fresh hover state
+    ctrlFlush(e);
+
+    dragTick(e, e->aimO, e->aimD);
     moveTick(e);
     dockTick(e);
     updatePanels(e);

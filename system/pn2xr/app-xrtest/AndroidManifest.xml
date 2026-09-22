@@ -5,13 +5,18 @@
     android:versionName="1.0">
 
     <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="29" />
+    <!-- the runtime reads the controller sharemem channel in-process;
+         sdcard_rw group membership comes with the storage grant -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-feature android:name="android.hardware.vr.headtracking" android:required="false" />
 
     <application
         android:label="xrtest"
         android:hasCode="true"
-        android:extractNativeLibs="true">
+        android:extractNativeLibs="true"
+        android:requestLegacyExternalStorage="true">
 
         <activity
             android:name="android.app.NativeActivity"

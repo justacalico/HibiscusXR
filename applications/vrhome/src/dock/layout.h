@@ -49,8 +49,13 @@ bool rayDock(float yaw, float pitch, const float origin[3],
              const float o[3], const float d[3], float halfW,
              float* u, float* v, float* t);
 
-// the dock item under the gaze ray; pk.bar is set even when the ray lands
-// on the strip between icons, so the bar body still blocks clicks
+// the dock item under an arbitrary ray; pk.bar is set even when the ray
+// lands on the strip between icons, so the bar body still blocks clicks
+DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
+                     float yaw, float pitch, const float origin[3],
+                     const float o[3], const float d[3]);
+
+// the dock item under the gaze ray
 DockPick pickDock(const std::vector<DockItem>& items, float halfW,
                   float yaw, float pitch, const Mat4& head,
                   const float origin[3], const float o[3]);

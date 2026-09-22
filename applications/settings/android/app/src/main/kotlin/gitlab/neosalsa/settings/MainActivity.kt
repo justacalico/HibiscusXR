@@ -200,14 +200,6 @@ class MainActivity : FlutterActivity() {
         "choices" to mapOf(
             "trackingFrequency" to
                 globalStr(KEY_TRACKING_FREQ, "auto"),
-            "controllerMain" to
-                if (controllers?.mainController ==
-                    ControllerClient.CONTROLLER_LEFT
-                ) {
-                    "left"
-                } else {
-                    "right"
-                },
         ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
@@ -239,14 +231,6 @@ class MainActivity : FlutterActivity() {
                 "controllerRight" to slot(ControllerClient.CONTROLLER_RIGHT),
             ),
             "toggles" to mapOf("controllerPair" to (c?.pairingActive ?: false)),
-            "choices" to mapOf(
-                "controllerMain" to
-                    if (c?.mainController == ControllerClient.CONTROLLER_LEFT) {
-                        "left"
-                    } else {
-                        "right"
-                    },
-            ),
         )
     }
 
@@ -372,15 +356,6 @@ class MainActivity : FlutterActivity() {
         if (id == "trackingFrequency") {
             Settings.Global.putString(
                 contentResolver, KEY_TRACKING_FREQ, value,
-            )
-        }
-        if (id == "controllerMain") {
-            controllers?.setMain(
-                if (value == "left") {
-                    ControllerClient.CONTROLLER_LEFT
-                } else {
-                    ControllerClient.CONTROLLER_RIGHT
-                },
             )
         }
     }

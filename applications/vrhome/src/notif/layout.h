@@ -44,8 +44,14 @@ bool rayNotif(float yaw, float pitch, float lift, const float origin[3],
               const float o[3], const float d[3], int count,
               float* u, float* v, float* t);
 
-// the card under the gaze ray; stack is set even between cards so the
+// the card under an arbitrary ray; stack is set even between cards so the
 // region blocks clicks like the dock bar does
+NotifPick pickNotifRay(const std::vector<NotifItem>& items,
+                       float yaw, float pitch, float lift,
+                       const float origin[3], const float o[3],
+                       const float d[3]);
+
+// the card under the gaze ray
 NotifPick pickNotif(const std::vector<NotifItem>& items,
                     float yaw, float pitch, float lift,
                     const Mat4& head, const float origin[3],

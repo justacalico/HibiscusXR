@@ -9,6 +9,7 @@ Mat4 identity();
 Mat4 multiply(const Mat4& a, const Mat4& b);
 Mat4 perspective(float fovYDeg, float aspect, float zn, float zf);
 Mat4 rotZ(float deg);
+Mat4 rotY(float deg);
 Mat4 rotX(float deg);
 
 // Quaternion (x,y,z,w) -> rotation matrix, column-major. inv=true transposes

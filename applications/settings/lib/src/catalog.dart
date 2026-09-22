@@ -23,7 +23,6 @@ const kSections = <SectionDef>[
     ItemId.controllerPair,
     ItemId.controllerLeft,
     ItemId.controllerRight,
-    ItemId.controllerMain,
     ItemId.controllerUnbind,
   ]),
   SectionDef(SectionId.display, [ItemId.brightness, ItemId.nightMode]),
@@ -61,7 +60,6 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.controllerPair: ItemKind.scanCard,
   ItemId.controllerLeft: ItemKind.controller,
   ItemId.controllerRight: ItemKind.controller,
-  ItemId.controllerMain: ItemKind.choice,
   ItemId.controllerUnbind: ItemKind.action,
   ItemId.brightness: ItemKind.slider,
   ItemId.nightMode: ItemKind.toggle,
@@ -89,7 +87,6 @@ const kItemKinds = <ItemId, ItemKind>{
 /// when the platform reports nothing.
 const kChoiceOptions = <ItemId, List<String>>{
   ItemId.trackingFrequency: ['auto', '60hz', '50hz'],
-  ItemId.controllerMain: ['right', 'left'],
 };
 
 /// Rows whose platform side does not exist yet. They render greyed out

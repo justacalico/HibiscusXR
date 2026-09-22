@@ -58,7 +58,6 @@ class ControllerClient(private val context: Context) {
     val macs = arrayOf("", "")
     val serials = arrayOf("", "")
     var pairState = 0
-    var mainController = -1
     var scanning = false
         private set
     // SPI worker is only safe to query once the service reports it
@@ -365,23 +364,11 @@ class ControllerClient(private val context: Context) {
         poll()
     }
 
-    fun setMain(index: Int) {
-        if (!threadReady) return
-        try {
-            service?.setMainControllerSerialNum(index)
-            Log.i(TAG, "setMainControllerSerialNum($index) sent")
-        } catch (e: RemoteException) {
-            Log.w(TAG, "setMainControllerSerialNum failed", e)
-        }
-        poll()
-    }
-
     fun poll() {
         val svc = service ?: return
         if (!threadReady) return
         try {
             pairState = svc.stationPairState
-            mainController = svc.mainControllerSerialNum
             for (i in 0..1) {
                 states[i] = svc.getCV2ControllerConnectionState(i)
                 val keys = svc.getControllerKeyEvent(i)
@@ -400,7 +387,7 @@ class ControllerClient(private val context: Context) {
             }
             Log.i(
                 TAG,
-                "poll pair=$pairState scan=$scanning main=$mainController " +
+                "poll pair=$pairState scan=$scanning " +
                     "L{st=${states[0]} bat=${batteries[0]} " +
                     "chg=${charging[0]} mac=${macs[0]} sn=${serials[0]}} " +
                     "R{st=${states[1]} bat=${batteries[1]} " +

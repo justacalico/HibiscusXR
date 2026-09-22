@@ -64,7 +64,7 @@ constexpr float kCornerR = 0.028f;
 constexpr float kHandleW = 0.085f;    // visible line half-width
 constexpr float kHandleT = 0.0085f;   // visible line half-thickness
 constexpr float kHandleGap = 0.026f;  // gap between bar bottom and line top
-constexpr float kHandlePad = 0.018f;  // extra hit slack around the line
+constexpr float kHandlePad = 0.014f;  // extra hit slack around the line
 
 // the dock: a persistent strip hanging under the panel ring - pinned apps
 // left, running tasks right, quick-panel button on the end. It rides the

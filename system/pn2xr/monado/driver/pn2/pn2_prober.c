@@ -8,6 +8,7 @@
 
 #include "pn2_interface.h"
 #include "pn2_hmd.h"
+#include "pn2_ctrl.h"
 
 #include "util/u_misc.h"
 
@@ -73,8 +74,19 @@ pn2_prober_autoprobe(struct xrt_auto_prober *xap,
 	if (d == NULL) {
 		return 0;
 	}
-	out_xdevs[0] = d;
-	return 1;
+	int n = 0;
+	out_xdevs[n++] = d;
+	// controllers ride the same sharemem channel; each returns NULL only
+	// on alloc failure, the mmap retried inside update_inputs
+	struct xrt_device *l = pn2_ctrl_create(0);
+	struct xrt_device *r = pn2_ctrl_create(1);
+	if (l != NULL) {
+		out_xdevs[n++] = l;
+	}
+	if (r != NULL) {
+		out_xdevs[n++] = r;
+	}
+	return n;
 }
 
 struct xrt_auto_prober *

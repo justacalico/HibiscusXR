@@ -58,6 +58,15 @@ XRP(xrWaitSwapchainImage);
 XRP(xrReleaseSwapchainImage);
 XRP(xrEnumerateInstanceExtensionProperties);
 XRP(xrGetOpenGLESGraphicsRequirementsKHR);
+XRP(xrCreateActionSet);
+XRP(xrCreateAction);
+XRP(xrStringToPath);
+XRP(xrSuggestInteractionProfileBindings);
+XRP(xrAttachSessionActionSets);
+XRP(xrCreateActionSpace);
+XRP(xrSyncActions);
+XRP(xrGetActionStateBoolean);
+XRP(xrLocateSpace);
 #undef XRP
 
 static bool load_pfn(XrInstance inst, PFN_xrVoidFunction *out, const char *name) {
@@ -272,6 +281,15 @@ void android_main(struct android_app *app) {
     load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrWaitSwapchainImage, "xrWaitSwapchainImage");
     load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrReleaseSwapchainImage, "xrReleaseSwapchainImage");
     load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrGetOpenGLESGraphicsRequirementsKHR, "xrGetOpenGLESGraphicsRequirementsKHR");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrCreateActionSet, "xrCreateActionSet");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrCreateAction, "xrCreateAction");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrStringToPath, "xrStringToPath");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrSuggestInteractionProfileBindings, "xrSuggestInteractionProfileBindings");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrAttachSessionActionSets, "xrAttachSessionActionSets");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrCreateActionSpace, "xrCreateActionSpace");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrSyncActions, "xrSyncActions");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrGetActionStateBoolean, "xrGetActionStateBoolean");
+    load_pfn(inst, (PFN_xrVoidFunction *)&pfn_xrLocateSpace, "xrLocateSpace");
 
     XrSystemGetInfo sgi = {XR_TYPE_SYSTEM_GET_INFO};
     sgi.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -356,6 +374,80 @@ void android_main(struct android_app *app) {
                                    (XrSwapchainImageBaseHeader *)imgs[eye]);
     }
 
+    // actions: simple_controller select + aim per hand, which is enough to
+    // exercise the pn2 controller devices end to end
+    XrPath hand[2];
+    pfn_xrStringToPath(inst, "/user/hand/left", &hand[0]);
+    pfn_xrStringToPath(inst, "/user/hand/right", &hand[1]);
+
+    XrActionSet aset = XR_NULL_HANDLE;
+    XrActionSetCreateInfo asci = {XR_TYPE_ACTION_SET_CREATE_INFO};
+    strcpy(asci.actionSetName, "test");
+    strcpy(asci.localizedActionSetName, "test");
+    r = pfn_xrCreateActionSet(inst, &asci, &aset);
+    LOGI("actionset -> %d", r);
+
+    XrAction sel[2] = {XR_NULL_HANDLE, XR_NULL_HANDLE};
+    XrAction aim[2] = {XR_NULL_HANDLE, XR_NULL_HANDLE};
+    XrSpace aim_space[2] = {XR_NULL_HANDLE, XR_NULL_HANDLE};
+    const char *sel_names[] = {"select_l", "select_r"};
+    const char *aim_names[] = {"aim_l", "aim_r"};
+    for (int h = 0; h < 2; h++) {
+        XrActionCreateInfo aci = {XR_TYPE_ACTION_CREATE_INFO};
+        strcpy(aci.actionName, sel_names[h]);
+        strcpy(aci.localizedActionName, sel_names[h]);
+        aci.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+        aci.countSubactionPaths = 1;
+        aci.subactionPaths = &hand[h];
+        pfn_xrCreateAction(aset, &aci, &sel[h]);
+
+        memset(&aci, 0, sizeof(aci));
+        aci.type = XR_TYPE_ACTION_CREATE_INFO;
+        strcpy(aci.actionName, aim_names[h]);
+        strcpy(aci.localizedActionName, aim_names[h]);
+        aci.actionType = XR_ACTION_TYPE_POSE_INPUT;
+        aci.countSubactionPaths = 1;
+        aci.subactionPaths = &hand[h];
+        pfn_xrCreateAction(aset, &aci, &aim[h]);
+    }
+
+    XrPath profile;
+    pfn_xrStringToPath(inst, "/interaction_profiles/khr/simple_controller", &profile);
+    XrActionSuggestedBinding binds[4];
+    for (int h = 0; h < 2; h++) {
+        XrPath sp_sel, sp_aim;
+        char buf[64];
+        snprintf(buf, sizeof(buf), "/user/hand/%s/input/select/click", h ? "right" : "left");
+        pfn_xrStringToPath(inst, buf, &sp_sel);
+        snprintf(buf, sizeof(buf), "/user/hand/%s/input/aim/pose", h ? "right" : "left");
+        pfn_xrStringToPath(inst, buf, &sp_aim);
+        binds[h * 2 + 0].action = sel[h];
+        binds[h * 2 + 0].binding = sp_sel;
+        binds[h * 2 + 1].action = aim[h];
+        binds[h * 2 + 1].binding = sp_aim;
+    }
+    XrInteractionProfileSuggestedBinding sug = {
+        XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+    sug.interactionProfile = profile;
+    sug.countSuggestedBindings = 4;
+    sug.suggestedBindings = binds;
+    r = pfn_xrSuggestInteractionProfileBindings(inst, &sug);
+    LOGI("suggest simple_controller -> %d", r);
+
+    XrSessionActionSetsAttachInfo att = {XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+    att.countActionSets = 1;
+    att.actionSets = &aset;
+    r = pfn_xrAttachSessionActionSets(sess, &att);
+    LOGI("attach -> %d", r);
+
+    for (int h = 0; h < 2; h++) {
+        XrActionSpaceCreateInfo aspci = {XR_TYPE_ACTION_SPACE_CREATE_INFO};
+        aspci.action = aim[h];
+        aspci.subactionPath = hand[h];
+        aspci.poseInActionSpace.orientation.w = 1.0f;
+        pfn_xrCreateActionSpace(sess, &aspci, &aim_space[h]);
+    }
+
     GLuint prog = glCreateProgram();
     glAttachShader(prog, compile(GL_VERTEX_SHADER, VS));
     glAttachShader(prog, compile(GL_FRAGMENT_SHADER, FS));
@@ -424,6 +516,14 @@ void android_main(struct android_app *app) {
         uint32_t found = 0;
         r = pfn_xrLocateViews(sess, &vli, &vstate, 2, &found, views);
 
+        // sync the action set: this is what runs update_inputs on the
+        // controller devices, so select state and aim poses stay fresh
+        XrActiveActionSet active = {aset, XR_NULL_PATH};
+        XrActionsSyncInfo sync = {XR_TYPE_ACTIONS_SYNC_INFO};
+        sync.countActiveActionSets = 1;
+        sync.activeActionSets = &active;
+        pfn_xrSyncActions(sess, &sync);
+
         frames++;
         if (frames % 36 == 0 && XR_SUCCEEDED(r)) {
             struct timespec mts;
@@ -435,6 +535,21 @@ void android_main(struct android_app *app) {
                  p->orientation.x, p->orientation.y, p->orientation.z, p->orientation.w,
                  p->position.x, p->position.y, p->position.z,
                  (unsigned long long)vstate.viewStateFlags);
+        }
+        if (frames % 36 == 0) {
+            for (int h = 0; h < 2; h++) {
+                XrActionStateGetInfo gi = {XR_TYPE_ACTION_STATE_GET_INFO};
+                gi.action = sel[h];
+                gi.subactionPath = hand[h];
+                XrActionStateBoolean bs = {XR_TYPE_ACTION_STATE_BOOLEAN};
+                pfn_xrGetActionStateBoolean(sess, &gi, &bs);
+                XrSpaceLocation loc = {XR_TYPE_SPACE_LOCATION};
+                pfn_xrLocateSpace(aim_space[h], space, fstate.predictedDisplayTime, &loc);
+                LOGI("ctrl%d sel=%d act=%d aimf=%llx p=(%.3f %.3f %.3f)", h,
+                     bs.currentState, bs.isActive,
+                     (unsigned long long)loc.locationFlags,
+                     loc.pose.position.x, loc.pose.position.y, loc.pose.position.z);
+            }
         }
 
         XrCompositionLayerProjectionView pviews[2];

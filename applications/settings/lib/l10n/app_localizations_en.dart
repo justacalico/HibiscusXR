@@ -139,10 +139,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemKeyboardPickerDesc => 'Choose the active input method';
 
   @override
-  String get itemDevOptions => 'Developer options';
+  String get itemAdbToggle => 'USB debugging';
 
   @override
-  String get itemDevOptionsDesc => 'Open the system developer settings';
+  String get itemAdbToggleDesc =>
+      'Allow a computer to debug this headset over USB';
+
+  @override
+  String get itemStayAwake => 'Stay awake';
+
+  @override
+  String get itemStayAwakeDesc => 'Never sleep while charging';
+
+  @override
+  String get itemShowTouches => 'Show touches';
+
+  @override
+  String get itemShowTouchesDesc => 'Flash a dot where the screen is touched';
 
   @override
   String get itemModelName => 'Model';

@@ -62,8 +62,12 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemTimeZone;
     case ItemId.keyboardPicker:
       return l10n.itemKeyboardPicker;
-    case ItemId.devOptions:
-      return l10n.itemDevOptions;
+    case ItemId.adbToggle:
+      return l10n.itemAdbToggle;
+    case ItemId.stayAwake:
+      return l10n.itemStayAwake;
+    case ItemId.showTouches:
+      return l10n.itemShowTouches;
     case ItemId.modelName:
       return l10n.itemModelName;
     case ItemId.androidVersion:
@@ -107,8 +111,12 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemTimeZoneDesc;
     case ItemId.keyboardPicker:
       return l10n.itemKeyboardPickerDesc;
-    case ItemId.devOptions:
-      return l10n.itemDevOptionsDesc;
+    case ItemId.adbToggle:
+      return l10n.itemAdbToggleDesc;
+    case ItemId.stayAwake:
+      return l10n.itemStayAwakeDesc;
+    case ItemId.showTouches:
+      return l10n.itemShowTouchesDesc;
     case ItemId.modelName:
       return l10n.itemModelNameDesc;
     case ItemId.androidVersion:

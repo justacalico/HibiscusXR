@@ -30,7 +30,11 @@ const kSections = <SectionDef>[
   SectionDef(SectionId.language, [ItemId.languagePicker]),
   SectionDef(SectionId.time, [ItemId.timeZone]),
   SectionDef(SectionId.keyboard, [ItemId.keyboardPicker]),
-  SectionDef(SectionId.developer, [ItemId.devOptions]),
+  SectionDef(SectionId.developer, [
+    ItemId.adbToggle,
+    ItemId.stayAwake,
+    ItemId.showTouches,
+  ]),
   SectionDef(SectionId.about, [
     ItemId.aboutBrand,
     ItemId.modelName,
@@ -55,7 +59,9 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.languagePicker: ItemKind.action,
   ItemId.timeZone: ItemKind.action,
   ItemId.keyboardPicker: ItemKind.action,
-  ItemId.devOptions: ItemKind.action,
+  ItemId.adbToggle: ItemKind.toggle,
+  ItemId.stayAwake: ItemKind.toggle,
+  ItemId.showTouches: ItemKind.toggle,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
   ItemId.aboutBrand: ItemKind.brand,

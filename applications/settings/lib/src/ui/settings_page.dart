@@ -63,7 +63,11 @@ class _SettingsPageState extends State<SettingsPage> {
         builder: (context, _) => Row(
           children: [
             _Sidebar(controller: controller),
-            const VerticalDivider(width: 1, thickness: 1),
+            const VerticalDivider(
+              width: 1,
+              thickness: 1,
+              color: PanelTheme.panel,
+            ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

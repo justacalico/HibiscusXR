@@ -94,8 +94,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemModelName;
     case ItemId.androidVersion:
       return l10n.itemAndroidVersion;
-    case ItemId.aboutOpen:
-      return l10n.itemAboutOpen;
+    case ItemId.aboutBrand:
+      return l10n.itemAboutBrand;
     case ItemId.tipsBody:
       return l10n.itemTipsBody;
   }
@@ -157,8 +157,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemModelNameDesc;
     case ItemId.androidVersion:
       return l10n.itemAndroidVersionDesc;
-    case ItemId.aboutOpen:
-      return l10n.itemAboutOpenDesc;
+    case ItemId.aboutBrand:
+      return l10n.itemAboutBrandDesc;
     case ItemId.tipsBody:
       return l10n.itemTipsBodyDesc;
   }

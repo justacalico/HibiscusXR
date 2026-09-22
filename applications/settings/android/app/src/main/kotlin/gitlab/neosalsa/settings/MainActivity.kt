@@ -377,8 +377,6 @@ class MainActivity : FlutterActivity() {
             "devOptions" -> startActivity(
                 Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
             )
-            "aboutOpen" ->
-                startActivity(Intent(Settings.ACTION_DEVICE_INFO_SETTINGS))
             "resetView" -> sendBroadcast(
                 Intent("gitlab.neosalsa.settings.RECENTER")
                     .setPackage(packageName),

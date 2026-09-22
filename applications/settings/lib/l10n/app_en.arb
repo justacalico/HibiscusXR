@@ -71,8 +71,8 @@
   "itemModelNameDesc": "The hardware model of this headset",
   "itemAndroidVersion": "Android version",
   "itemAndroidVersionDesc": "The Android release this system runs",
-  "itemAboutOpen": "More",
-  "itemAboutOpenDesc": "Open the full system information page",
+  "itemAboutBrand": "HibiscusXR",
+  "itemAboutBrandDesc": "The system software on this headset",
   "itemTipsBody": "Getting around",
   "itemTipsBodyDesc": "Use the dock to switch apps, the quick panel for radios and volume, and this page for everything else.",
 

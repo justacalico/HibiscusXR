@@ -514,17 +514,17 @@ abstract class AppLocalizations {
   /// **'The Android release this system runs'**
   String get itemAndroidVersionDesc;
 
-  /// No description provided for @itemAboutOpen.
+  /// No description provided for @itemAboutBrand.
   ///
   /// In en, this message translates to:
-  /// **'More'**
-  String get itemAboutOpen;
+  /// **'HibiscusXR'**
+  String get itemAboutBrand;
 
-  /// No description provided for @itemAboutOpenDesc.
+  /// No description provided for @itemAboutBrandDesc.
   ///
   /// In en, this message translates to:
-  /// **'Open the full system information page'**
-  String get itemAboutOpenDesc;
+  /// **'The system software on this headset'**
+  String get itemAboutBrandDesc;
 
   /// No description provided for @itemTipsBody.
   ///

@@ -44,9 +44,9 @@ const kSections = <SectionDef>[
     ItemId.updateCheck,
   ]),
   SectionDef(SectionId.about, [
+    ItemId.aboutBrand,
     ItemId.modelName,
     ItemId.androidVersion,
-    ItemId.aboutOpen,
   ]),
   SectionDef(SectionId.tips, [ItemId.tipsBody]),
 ];
@@ -79,7 +79,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.buildNumber: ItemKind.info,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
-  ItemId.aboutOpen: ItemKind.action,
+  ItemId.aboutBrand: ItemKind.brand,
   ItemId.tipsBody: ItemKind.info,
 };
 

@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'Neosalsa';
+  String get appTitle => 'HibiscusXR';
 
   @override
   String get navStatus => '现状';
@@ -612,7 +612,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutWhatBody =>
-      'Neosalsa 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。';
+      'Hibiscus 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。';
 
   @override
   String get aboutHowTitle => '怎么做到的';
@@ -652,7 +652,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String footerCopyright(int year) {
-    return 'Copyright $year neosalsa';
+    return 'Copyright $year HibiscusXR';
   }
 
   @override
@@ -668,5 +668,5 @@ class AppLocalizationsZh extends AppLocalizations {
   String get notFoundBody => '你要找的页面不存在。';
 
   @override
-  String get notFoundCta => '回到 Neosalsa';
+  String get notFoundCta => '回到 HibiscusXR';
 }

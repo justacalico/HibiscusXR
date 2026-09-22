@@ -1,6 +1,6 @@
 # docs
 
-MkDocs documentation site for the PN2Lineage project.
+MkDocs documentation site for the HibiscusXR project.
 
 ```bash
 pip install mkdocs-material

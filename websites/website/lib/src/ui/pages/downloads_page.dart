@@ -3,7 +3,7 @@ import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:pn2_website/l10n/app_localizations.dart';
+import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../links.dart';
 import '../../theme.dart';

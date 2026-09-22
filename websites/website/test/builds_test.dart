@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:pn2_website/src/builds.dart';
+import 'package:hibiscusxr_website/src/builds.dart';
 
 void main() {
   group('channelOfTag', () {

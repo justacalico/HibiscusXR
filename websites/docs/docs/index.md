@@ -1,4 +1,4 @@
-# PN2Lineage
+# Hibiscus
 
 LineageOS 17.1 (Android 10) running on the Pico Neo 2 VR headset
 (codename `A7B10`, Snapdragon 845, stock PUI 4.1.3 / Android 8.1 vendor).
@@ -15,7 +15,7 @@ from hardware you own.
 ## What this is
 
 Stock PUI 4.1.3 is Android 8.1 with Pico's proprietary VR stack on top.
-PN2Lineage replaces the system partition with a LineageOS 17.1 GSI plus a
+Hibiscus replaces the system partition with a LineageOS 17.1 GSI plus a
 small overlay of our own fixes, then layers Pico's VR stack back on - the
 proprietary parts come from **your own device**, never from this repo.
 

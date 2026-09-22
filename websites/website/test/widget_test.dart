@@ -3,9 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:pn2_website/main.dart';
-import 'package:pn2_website/src/settings.dart';
-import 'package:pn2_website/src/ui/hero_shot.dart';
+import 'package:hibiscusxr_website/main.dart';
+import 'package:hibiscusxr_website/src/settings.dart';
+import 'package:hibiscusxr_website/src/ui/hero_shot.dart';
 
 Future<Widget> _app() async {
   SharedPreferences.setMockInitialValues({});
@@ -25,7 +25,7 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    expect(find.text('Neosalsa'), findsWidgets);
+    expect(find.text('HibiscusXR'), findsWidgets);
     expect(find.text('Status'), findsWidgets);
     expect(find.text('Repos'), findsWidgets);
     expect(find.text('See the status'), findsOneWidget);
@@ -131,7 +131,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Page not found'), findsOneWidget);
-    expect(find.text('Back to Neosalsa'), findsOneWidget);
+    expect(find.text('Back to HibiscusXR'), findsOneWidget);
   });
 
   testWidgets('zh locale renders translated chrome', (tester) async {
@@ -143,7 +143,7 @@ void main() {
     await tester.pumpWidget(SiteApp(settings: AppSettings(prefs)..load()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Neosalsa'), findsWidgets);
+    expect(find.text('HibiscusXR'), findsWidgets);
     expect(find.text('现状'), findsWidgets);
     expect(find.text('查看现状'), findsOneWidget);
   });

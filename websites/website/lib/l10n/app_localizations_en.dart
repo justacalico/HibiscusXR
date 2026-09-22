@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Neosalsa';
+  String get appTitle => 'HibiscusXR';
 
   @override
   String get navStatus => 'Status';
@@ -659,7 +659,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutWhatBody =>
-      'Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.';
+      'Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.';
 
   @override
   String get aboutHowTitle => 'How it works';
@@ -699,7 +699,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String footerCopyright(int year) {
-    return 'Copyright $year neosalsa';
+    return 'Copyright $year HibiscusXR';
   }
 
   @override
@@ -715,5 +715,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notFoundBody => 'The page you are looking for does not exist.';
 
   @override
-  String get notFoundCta => 'Back to Neosalsa';
+  String get notFoundCta => 'Back to HibiscusXR';
 }

@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// Project name
   ///
   /// In en, this message translates to:
-  /// **'Neosalsa'**
+  /// **'HibiscusXR'**
   String get appTitle;
 
   /// No description provided for @navStatus.
@@ -1259,7 +1259,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutWhatBody.
   ///
   /// In en, this message translates to:
-  /// **'Neosalsa runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
+  /// **'Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
   String get aboutWhatBody;
 
   /// No description provided for @aboutHowTitle.
@@ -1331,7 +1331,7 @@ abstract class AppLocalizations {
   /// No description provided for @footerCopyright.
   ///
   /// In en, this message translates to:
-  /// **'Copyright {year} neosalsa'**
+  /// **'Copyright {year} HibiscusXR'**
   String footerCopyright(int year);
 
   /// No description provided for @footerLicense.
@@ -1361,7 +1361,7 @@ abstract class AppLocalizations {
   /// No description provided for @notFoundCta.
   ///
   /// In en, this message translates to:
-  /// **'Back to Neosalsa'**
+  /// **'Back to HibiscusXR'**
   String get notFoundCta;
 }
 

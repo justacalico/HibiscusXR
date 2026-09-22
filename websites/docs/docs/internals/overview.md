@@ -1,6 +1,6 @@
 # Architecture
 
-PN2Lineage is a **GSI + overlay + user-restored-proprietary** port.
+Hibiscus is a **GSI + overlay + user-restored-proprietary** port.
 
 ```
 LineageOS 17.1 GSI (treble_arm64_avS, A-only, arm64)

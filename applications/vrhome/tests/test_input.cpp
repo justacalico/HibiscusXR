@@ -114,6 +114,16 @@ void testInput() {
     inputTick(s, CTRL_RIGHT, 101, live, 2000, ev, 16);
     CHECK(!s.rightConnected && s.active == -1 && hmdInput(s));
 
+    // the sharemem channel itself dying drops everything at once: no new
+    // frames arrive to age out, so waiting on freshness would leave the
+    // dead controller owning the pointer and freeze the gaze pick
+    inputTick(s, CTRL_RIGHT, 300, live, 3000, ev, 16);
+    inputTick(s, CTRL_RIGHT, 301, live, 3010, ev, 16);
+    CHECK(s.rightConnected && s.active == CTRL_RIGHT && !hmdInput(s));
+    ctrlDropAll(s);
+    CHECK(!s.leftConnected && !s.rightConnected);
+    CHECK(s.active == -1 && hmdInput(s));
+
     // --- aim ------------------------------------------------------------
     const float qi[4] = {0.0f, 0.0f, 0.0f, 1.0f};
     const float eye[3] = {0.0f, 0.0f, 0.0f};

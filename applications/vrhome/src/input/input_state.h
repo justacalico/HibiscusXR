@@ -37,6 +37,14 @@ inline bool ctrlConnected(const InputState& s, int which) {
     return which == CTRL_LEFT ? s.leftConnected : s.rightConnected;
 }
 
+// the sharemem channel itself is gone (file deleted or never existed): no
+// new frames arrive so the freshness window can never age anything out -
+// drop every controller at once so the hmd pointer resumes immediately
+inline void ctrlDropAll(InputState& s) {
+    s.leftConnected = s.rightConnected = false;
+    s.active = -1;
+}
+
 // button bits packed out of a key block; order matches ctrl_btn_index
 enum CtrlBtn {
     BTN_TRIGGER = 0, BTN_A, BTN_B, BTN_APP, BTN_HOME, BTN_ROCKER,

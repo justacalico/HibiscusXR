@@ -25,16 +25,13 @@ Future<(SettingsController, FakeSettingsSource)> pumpApp(
   addTearDown(c.dispose);
   addTearDown(source.dispose);
   await c.start();
-  await tester.pumpWidget(
-    SettingsApp(controller: c, uiOnlyMode: uiOnlyMode),
-  );
+  await tester.pumpWidget(SettingsApp(controller: c, uiOnlyMode: uiOnlyMode));
   await tester.pump();
   return (c, source);
 }
 
 void main() {
-  testWidgets('ui-only mode pops a notice that dismisses',
-      (tester) async {
+  testWidgets('ui-only mode pops a notice that dismisses', (tester) async {
     await pumpApp(tester, uiOnlyMode: true);
     await tester.pump();
     expect(find.text('UI-only mode'), findsOneWidget);
@@ -77,8 +74,7 @@ void main() {
     expect(source.actionsPerformed, contains(ItemId.wifiSettings));
   });
 
-  testWidgets('unimplemented rows grey out and ignore input',
-      (tester) async {
+  testWidgets('unimplemented rows grey out and ignore input', (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Display'));
     await tester.pump();
@@ -109,8 +105,7 @@ void main() {
     expect(source.togglesRequested, [(ItemId.wifiToggle, true)]);
   });
 
-  testWidgets('developer toggles render as inert stubs',
-      (tester) async {
+  testWidgets('developer toggles render as inert stubs', (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Developer'));
     await tester.pump();
@@ -147,15 +142,44 @@ void main() {
     expect(find.text('100%'), findsOneWidget);
   });
 
-  testWidgets('info rows show platform text and empty fallback',
-      (tester) async {
+  testWidgets('narrow window stacks rows without overflow', (tester) async {
+    tester.view.physicalSize = const Size(480, 800);
+    tester.view.devicePixelRatio = 1.0;
+    final source = FakeSettingsSource(
+      initial: const SettingsSnapshot(
+        toggles: {ItemId.bluetoothToggle: true},
+        sliders: {ItemId.volume: 0.5},
+      ),
+    );
+    final c = SettingsController(
+      source: source,
+      persistence: MemoryPersistence(),
+      store: SettingsStore(),
+    );
+    addTearDown(c.dispose);
+    addTearDown(source.dispose);
+    await c.start();
+    await tester.pumpWidget(SettingsApp(controller: c));
+    await tester.pump();
+
+    // Icon rail keeps section navigation working.
+    await tester.tap(find.byIcon(Icons.volume_up_outlined));
+    await tester.pump();
+    expect(find.byType(Slider), findsOneWidget);
+    expect(find.text('50%'), findsOneWidget);
+
+    await tester.tap(find.byIcon(Icons.bluetooth));
+    await tester.pump();
+    expect(find.byType(Switch), findsWidgets);
+  });
+
+  testWidgets('info rows show platform text and empty fallback', (
+    tester,
+  ) async {
     await pumpApp(
       tester,
       initial: const SettingsSnapshot(
-        texts: {
-          ItemId.modelName: 'A7B10',
-          ItemId.androidVersion: '10',
-        },
+        texts: {ItemId.modelName: 'A7B10', ItemId.androidVersion: '10'},
       ),
     );
     await tester.tap(find.text('About'));
@@ -194,8 +218,7 @@ void main() {
     expect(find.text('Disconnected'), findsNWidgets(2));
   });
 
-  testWidgets('scan card and unpair forward to the source',
-      (tester) async {
+  testWidgets('scan card and unpair forward to the source', (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Controllers'));
     await tester.pump();
@@ -203,8 +226,10 @@ void main() {
     await tester.pump();
     await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pump();
-    expect(source.actionsPerformed,
-        [ItemId.controllerPair, ItemId.controllerUnbind]);
+    expect(source.actionsPerformed, [
+      ItemId.controllerPair,
+      ItemId.controllerUnbind,
+    ]);
   });
 
   testWidgets('scanning state shows on the card', (tester) async {
@@ -213,8 +238,7 @@ void main() {
       initial: const SettingsSnapshot(
         toggles: {ItemId.controllerPair: true},
         controllers: {
-          ItemId.controllerLeft:
-              ControllerInfo(link: ControllerLink.pairing),
+          ItemId.controllerLeft: ControllerInfo(link: ControllerLink.pairing),
         },
       ),
     );
@@ -238,10 +262,12 @@ void main() {
       tester,
       initial: const SettingsSnapshot(
         controllers: {
-          ItemId.controllerLeft:
-              ControllerInfo(link: ControllerLink.disconnected),
-          ItemId.controllerRight:
-              ControllerInfo(link: ControllerLink.disconnected),
+          ItemId.controllerLeft: ControllerInfo(
+            link: ControllerLink.disconnected,
+          ),
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.disconnected,
+          ),
         },
       ),
     );
@@ -259,8 +285,9 @@ void main() {
       tester,
       initial: const SettingsSnapshot(
         controllers: {
-          ItemId.controllerRight:
-              ControllerInfo(link: ControllerLink.disconnected),
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.disconnected,
+          ),
         },
       ),
     );
@@ -268,15 +295,17 @@ void main() {
     await tester.pump();
     expect(find.text('Disconnected'), findsNWidgets(2));
 
-    source.emit(const SettingsSnapshot(
-      controllers: {
-        ItemId.controllerRight: ControllerInfo(
-          link: ControllerLink.connected,
-          battery: 5,
-          charging: true,
-        ),
-      },
-    ));
+    source.emit(
+      const SettingsSnapshot(
+        controllers: {
+          ItemId.controllerRight: ControllerInfo(
+            link: ControllerLink.connected,
+            battery: 5,
+            charging: true,
+          ),
+        },
+      ),
+    );
     await tester.pump();
     await tester.pump();
     expect(find.text('Connected'), findsNWidgets(2));
@@ -284,9 +313,7 @@ void main() {
 
   testWidgets('live events update the ui', (tester) async {
     final (_, source) = await pumpApp(tester);
-    source.emit(const SettingsSnapshot(
-      texts: {ItemId.wifiSsid: 'fresh-net'},
-    ));
+    source.emit(const SettingsSnapshot(texts: {ItemId.wifiSsid: 'fresh-net'}));
     await tester.pump();
     await tester.pump();
     expect(find.text('fresh-net'), findsOneWidget);

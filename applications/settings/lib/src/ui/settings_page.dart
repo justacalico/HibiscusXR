@@ -41,9 +41,7 @@ class _SettingsPageState extends State<SettingsPage> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: Text(
-                    MaterialLocalizations.of(context).okButtonLabel,
-                  ),
+                  child: Text(MaterialLocalizations.of(context).okButtonLabel),
                 ),
               ],
             );
@@ -58,44 +56,50 @@ class _SettingsPageState extends State<SettingsPage> {
     final controller = widget.controller;
     final l10n = AppLocalizations.of(context);
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: controller.store,
-        builder: (context, _) => Row(
-          children: [
-            _Sidebar(controller: controller),
-            const VerticalDivider(
-              width: 1,
-              thickness: 1,
-              color: PanelTheme.panel,
-            ),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(28, 26, 28, 8),
-                    child: Text(
-                      sectionTitle(l10n, controller.store.section),
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: PanelTheme.textSecondary,
+      body: LayoutBuilder(
+        builder: (context, constraints) => AnimatedBuilder(
+          animation: controller.store,
+          builder: (context, _) => Row(
+            children: [
+              _Sidebar(
+                controller: controller,
+                compact: constraints.maxWidth < 640,
+              ),
+              const VerticalDivider(
+                width: 1,
+                thickness: 1,
+                color: PanelTheme.panel,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(28, 26, 28, 8),
+                      child: Text(
+                        sectionTitle(l10n, controller.store.section),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: PanelTheme.textSecondary,
+                        ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        for (final id
-                            in sectionDef(controller.store.section).items)
-                          SettingsRow(id: id, controller: controller),
-                      ],
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          for (final id in sectionDef(
+                            controller.store.section,
+                          ).items)
+                            SettingsRow(id: id, controller: controller),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -103,29 +107,36 @@ class _SettingsPageState extends State<SettingsPage> {
 }
 
 class _Sidebar extends StatelessWidget {
-  const _Sidebar({required this.controller});
+  const _Sidebar({required this.controller, this.compact = false});
 
   final SettingsController controller;
+
+  /// Narrow windows drop the sidebar to an icon rail so the content
+  /// pane keeps enough room for rows and their controls.
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return SizedBox(
-      width: 300,
+      width: compact ? 76 : 300,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 24, 20, 14),
-            child: Text(
-              l10n.appTitle,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: PanelTheme.textPrimary,
+          if (!compact)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 14),
+              child: Text(
+                l10n.appTitle,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: PanelTheme.textPrimary,
+                ),
               ),
-            ),
-          ),
+            )
+          else
+            const SizedBox(height: 14),
           Expanded(
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -135,6 +146,7 @@ class _Sidebar extends StatelessWidget {
                     section: s.id,
                     selected: controller.store.section == s.id,
                     controller: controller,
+                    compact: compact,
                   ),
               ],
             ),
@@ -150,55 +162,60 @@ class _SidebarTile extends StatelessWidget {
     required this.section,
     required this.selected,
     required this.controller,
+    this.compact = false,
   });
 
   final SectionId section;
   final bool selected;
   final SettingsController controller;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final title = sectionTitle(l10n, section);
+    final tile = InkWell(
+      borderRadius: BorderRadius.circular(12),
+      onTap: () => controller.selectSection(section),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        child: Row(
+          mainAxisAlignment: compact
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.start,
+          children: [
+            Icon(
+              iconFor(section),
+              size: 20,
+              color: selected
+                  ? PanelTheme.textPrimary
+                  : PanelTheme.textSecondary,
+            ),
+            if (!compact) ...[
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                    color: selected
+                        ? PanelTheme.textPrimary
+                        : PanelTheme.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
     return Padding(
       padding: const EdgeInsets.only(bottom: 2),
       child: Material(
         color: selected ? PanelTheme.surface : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(12),
-          onTap: () => controller.selectSection(section),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 13,
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  iconFor(section),
-                  size: 20,
-                  color: selected
-                      ? PanelTheme.textPrimary
-                      : PanelTheme.textSecondary,
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Text(
-                    sectionTitle(l10n, section),
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight:
-                          selected ? FontWeight.w600 : FontWeight.w400,
-                      color: selected
-                          ? PanelTheme.textPrimary
-                          : PanelTheme.textSecondary,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: compact ? Tooltip(message: title, child: tile) : tile,
       ),
     );
   }

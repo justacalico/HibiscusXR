@@ -32,7 +32,6 @@ enum ItemId {
   controllerPair,
   controllerLeft,
   controllerRight,
-  controllerMain,
   controllerUnbind,
   brightness,
   nightMode,

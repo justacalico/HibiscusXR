@@ -106,13 +106,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemControllerRightDesc => 'Link state and battery level';
 
   @override
-  String get itemControllerMain => 'Main hand';
-
-  @override
-  String get itemControllerMainDesc =>
-      'The controller used for pointing and system gestures';
-
-  @override
   String get itemControllerUnbind => 'Unpair all';
 
   @override
@@ -255,12 +248,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get valueUnknown => 'Unknown';
-
-  @override
-  String get valueLeft => 'Left';
-
-  @override
-  String get valueRight => 'Right';
 
   @override
   String get controllerConnected => 'Connected';

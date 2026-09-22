@@ -79,7 +79,6 @@ void main() {
             battery: -1,
           ),
         },
-        choices: {ItemId.controllerMain: 'right'},
       ),
       persistence: MemoryPersistence({'section': 'controllers'}),
     );

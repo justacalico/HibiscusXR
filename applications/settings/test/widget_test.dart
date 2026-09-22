@@ -171,6 +171,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.bluetooth));
     await tester.pump();
     expect(find.byType(Switch), findsWidgets);
+
+    // Scan card chips stack and show full names instead of "Left c…".
+    await tester.tap(find.byIcon(Icons.sports_esports_outlined));
+    await tester.pump();
+    expect(find.text('Left controller'), findsNWidgets(2));
+    expect(find.text('Right controller'), findsNWidgets(2));
   });
 
   testWidgets('info rows show platform text and empty fallback', (

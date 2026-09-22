@@ -88,13 +88,30 @@ class ScanCard extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 14),
-                Row(
-                  children: [
-                    for (var i = 0; i < slots.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 10),
-                      Flexible(child: _SlotChip(slot: slots[i])),
-                    ],
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Two chips side by side need ~320px; narrower
+                    // cards stack them full-width so nothing truncates.
+                    if (constraints.maxWidth < 320) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (var i = 0; i < slots.length; i++) ...[
+                            if (i > 0) const SizedBox(height: 8),
+                            _SlotChip(slot: slots[i]),
+                          ],
+                        ],
+                      );
+                    }
+                    return Row(
+                      children: [
+                        for (var i = 0; i < slots.length; i++) ...[
+                          if (i > 0) const SizedBox(width: 10),
+                          Flexible(child: _SlotChip(slot: slots[i])),
+                        ],
+                      ],
+                    );
+                  },
                 ),
               ],
             ),
@@ -119,7 +136,7 @@ class _SlotChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
             child: Text(
@@ -132,15 +149,13 @@ class _SlotChip extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Flexible(
-            child: Text(
-              slot.state,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: PanelTheme.textPrimary,
-              ),
+          Text(
+            slot.state,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: PanelTheme.textPrimary,
             ),
           ),
         ],

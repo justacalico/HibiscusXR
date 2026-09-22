@@ -372,8 +372,6 @@ class MainActivity : FlutterActivity() {
                 startActivity(Intent(Settings.ACTION_DATE_SETTINGS))
             "keyboardPicker" ->
                 startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
-            "backupNow" ->
-                startActivity(Intent(Settings.ACTION_PRIVACY_SETTINGS))
             "devOptions" -> startActivity(
                 Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS),
             )

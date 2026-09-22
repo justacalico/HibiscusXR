@@ -160,12 +160,6 @@ abstract class AppLocalizations {
   /// **'Headset Tracking'**
   String get sectionHeadsetTracking;
 
-  /// No description provided for @sectionBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Backup'**
-  String get sectionBackup;
-
   /// No description provided for @sectionDeveloper.
   ///
   /// In en, this message translates to:
@@ -441,18 +435,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Recenter the headset orientation'**
   String get itemResetViewDesc;
-
-  /// No description provided for @itemBackupNow.
-  ///
-  /// In en, this message translates to:
-  /// **'Back up now'**
-  String get itemBackupNow;
-
-  /// No description provided for @itemBackupNowDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Back up app data and settings'**
-  String get itemBackupNowDesc;
 
   /// No description provided for @itemDevOptions.
   ///

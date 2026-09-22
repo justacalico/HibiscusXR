@@ -26,8 +26,6 @@ IconData iconFor(SectionId id) {
       return Icons.keyboard_outlined;
     case SectionId.headsetTracking:
       return Icons.sensors;
-    case SectionId.backup:
-      return Icons.cloud_upload_outlined;
     case SectionId.developer:
       return Icons.developer_mode;
     case SectionId.softwareUpdate:

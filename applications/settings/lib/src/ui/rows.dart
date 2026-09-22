@@ -79,9 +79,12 @@ class SettingsRow extends StatelessWidget {
             controller: controller,
             enabled: enabled,
           );
-          // Wide rows keep title/description next to the control;
-          // narrow panes stack them so nothing has to overflow.
-          if (constraints.maxWidth >= 470) {
+          // Sliders need ~350px for the control itself; the rest can
+          // share a row with wrapped text until the pane is tiny.
+          final stack =
+              constraints.maxWidth <
+              (kindOf(id) == ItemKind.slider ? 430 : 240);
+          if (!stack) {
             return Row(
               children: [
                 Expanded(child: text),

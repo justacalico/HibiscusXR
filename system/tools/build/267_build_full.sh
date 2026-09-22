@@ -204,10 +204,16 @@ done
 echo
 echo "=== OpenXR stack: Turnip Vulkan + Monado runtime ==="
 # This replaces the stock VR path for raw OpenXR apps. Verified live:
-#   - hwvulkan modules are resolved from /system/lib64/hw as well as /vendor,
-#     so Turnip ships in the system image and vendor.img stays untouched.
-#   - the Khronos loader falls back to /system/etc/openxr/1/active_runtime.json
-#     when no broker app or vendor manifest exists.
+#   - hwvulkan picks /vendor/lib64/hw/vulkan.sdm845.so first, so Turnip in
+#     /system/lib64/hw only wins once vendor's Adreno module is moved aside.
+#     That rename is a live vendor patch, not part of this image.
+#   - the Khronos loader searches /product/etc, /odm/etc, /oem/etc,
+#     /vendor/etc, /system/etc for openxr/1/active_runtime.json, first hit
+#     wins. /product lives inside this image, so our manifest shadows the
+#     stock one in /vendor/etc without touching vendor.img.
+#   - apps can only dlopen() absolute paths under /data, so pn2-openxr.rc
+#     stages the runtime into /data/local/tmp/xr at boot and the manifest
+#     points there. /system paths are unreachable from an app namespace.
 #   - pvrservice is the broken compositor behind the black-display bug; its rc
 #     is removed so nothing starts it. qvrd stays - it owns the tracking cams.
 XR=${PN2_ROOT}/pn2xr
@@ -228,6 +234,9 @@ put "$XR_SO" /app/MonadoOpenXR/lib/arm64/libopenxr_monado.so 644
 mkd /etc/openxr
 mkd /etc/openxr/1
 put "$XR/android/active_runtime.json" /etc/openxr/1/active_runtime.json 644
+mkd /product/etc/openxr
+mkd /product/etc/openxr/1
+put "$XR/android/active_runtime.json" /product/etc/openxr/1/active_runtime.json 644
 debugfs -w -R "rm /etc/init/pvrservice.rc" "$IMG" >/dev/null 2>&1
 echo "  removed /etc/init/pvrservice.rc"
 

@@ -42,5 +42,3 @@ or in this repository under [`websites/docs/`](websites/docs/).
 ## Links
 
 - Project site: https://hibiscusxr-37c6a7.gitlab.io/
-- Development happens on GitLab under the [neosalsa
-  group](https://gitlab.com/neosalsa).

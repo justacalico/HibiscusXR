@@ -56,4 +56,7 @@ libcompositor.pxr.so
 # libdrm is its dependency, not public on the GSI list.
 libqvrservice_client.so
 libdrm.so
+# OpenXR runtime. The loader resolves the manifest's library_path by soname,
+# which only reaches /system/lib64 for libs listed here.
+libopenxr_monado.so
 

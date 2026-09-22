@@ -3,7 +3,6 @@
 enum ItemKind {
   toggle,
   slider,
-  choice,
   action,
   info,
   controller,
@@ -18,15 +17,11 @@ enum SectionId {
   controllers,
   display,
   sound,
-  camera,
   language,
   time,
   keyboard,
-  headsetTracking,
   developer,
-  softwareUpdate,
   about,
-  tips,
 }
 
 /// Every row id. Serialized over the platform channel by name, so the
@@ -45,21 +40,13 @@ enum ItemId {
   nightMode,
   volume,
   micMute,
-  seethrough,
   languagePicker,
   timeZone,
   keyboardPicker,
-  trackingToggle,
-  trackingFrequency,
-  boundary,
-  resetView,
   devOptions,
-  updateCheck,
-  buildNumber,
   modelName,
   androidVersion,
   aboutBrand,
-  tipsBody,
 }
 
 /// Link state of one hand controller. `raw` is the value the service
@@ -124,21 +111,18 @@ class SettingsSnapshot {
   const SettingsSnapshot({
     this.toggles = const {},
     this.sliders = const {},
-    this.choices = const {},
     this.texts = const {},
     this.controllers = const {},
   });
 
   final Map<ItemId, bool> toggles;
   final Map<ItemId, double> sliders;
-  final Map<ItemId, String> choices;
   final Map<ItemId, String> texts;
   final Map<ItemId, ControllerInfo> controllers;
 
   Map<String, dynamic> toJson() => {
     'toggles': {for (final e in toggles.entries) e.key.name: e.value},
     'sliders': {for (final e in sliders.entries) e.key.name: e.value},
-    'choices': {for (final e in choices.entries) e.key.name: e.value},
     'texts': {for (final e in texts.entries) e.key.name: e.value},
     'controllers': {
       for (final e in controllers.entries) e.key.name: e.value.toJson(),
@@ -149,7 +133,6 @@ class SettingsSnapshot {
       SettingsSnapshot(
         toggles: _boolMap(json['toggles']),
         sliders: _doubleMap(json['sliders']),
-        choices: _stringMap(json['choices']),
         texts: _stringMap(json['texts']),
         controllers: _controllerMap(json['controllers']),
       );

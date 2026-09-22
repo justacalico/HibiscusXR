@@ -130,12 +130,6 @@ abstract class AppLocalizations {
   /// **'Sound'**
   String get sectionSound;
 
-  /// No description provided for @sectionCamera.
-  ///
-  /// In en, this message translates to:
-  /// **'Camera'**
-  String get sectionCamera;
-
   /// No description provided for @sectionLanguage.
   ///
   /// In en, this message translates to:
@@ -154,35 +148,17 @@ abstract class AppLocalizations {
   /// **'Keyboard'**
   String get sectionKeyboard;
 
-  /// No description provided for @sectionHeadsetTracking.
-  ///
-  /// In en, this message translates to:
-  /// **'Headset Tracking'**
-  String get sectionHeadsetTracking;
-
   /// No description provided for @sectionDeveloper.
   ///
   /// In en, this message translates to:
   /// **'Developer'**
   String get sectionDeveloper;
 
-  /// No description provided for @sectionSoftwareUpdate.
-  ///
-  /// In en, this message translates to:
-  /// **'Software Update'**
-  String get sectionSoftwareUpdate;
-
   /// No description provided for @sectionAbout.
   ///
   /// In en, this message translates to:
   /// **'About'**
   String get sectionAbout;
-
-  /// No description provided for @sectionTips.
-  ///
-  /// In en, this message translates to:
-  /// **'Tips and Support'**
-  String get sectionTips;
 
   /// No description provided for @itemWifiToggle.
   ///
@@ -340,18 +316,6 @@ abstract class AppLocalizations {
   /// **'Allow apps to use the microphone'**
   String get itemMicMuteDesc;
 
-  /// No description provided for @itemSeethrough.
-  ///
-  /// In en, this message translates to:
-  /// **'Seethrough'**
-  String get itemSeethrough;
-
-  /// No description provided for @itemSeethroughDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Show the real world through the cameras'**
-  String get itemSeethroughDesc;
-
   /// No description provided for @itemLanguagePicker.
   ///
   /// In en, this message translates to:
@@ -388,54 +352,6 @@ abstract class AppLocalizations {
   /// **'Choose the active input method'**
   String get itemKeyboardPickerDesc;
 
-  /// No description provided for @itemTrackingToggle.
-  ///
-  /// In en, this message translates to:
-  /// **'Headset Tracking'**
-  String get itemTrackingToggle;
-
-  /// No description provided for @itemTrackingToggleDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Document your actual movement and position in a play area'**
-  String get itemTrackingToggleDesc;
-
-  /// No description provided for @itemTrackingFrequency.
-  ///
-  /// In en, this message translates to:
-  /// **'Tracking Frequency'**
-  String get itemTrackingFrequency;
-
-  /// No description provided for @itemTrackingFrequencyDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Troubleshoot tracking problems by selecting the power frequency of outlets in your region'**
-  String get itemTrackingFrequencyDesc;
-
-  /// No description provided for @itemBoundary.
-  ///
-  /// In en, this message translates to:
-  /// **'Boundary'**
-  String get itemBoundary;
-
-  /// No description provided for @itemBoundaryDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Show the play-area boundary while you move'**
-  String get itemBoundaryDesc;
-
-  /// No description provided for @itemResetView.
-  ///
-  /// In en, this message translates to:
-  /// **'Reset view'**
-  String get itemResetView;
-
-  /// No description provided for @itemResetViewDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Recenter the headset orientation'**
-  String get itemResetViewDesc;
-
   /// No description provided for @itemDevOptions.
   ///
   /// In en, this message translates to:
@@ -447,30 +363,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open the system developer settings'**
   String get itemDevOptionsDesc;
-
-  /// No description provided for @itemUpdateCheck.
-  ///
-  /// In en, this message translates to:
-  /// **'Check for updates'**
-  String get itemUpdateCheck;
-
-  /// No description provided for @itemUpdateCheckDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Look for a newer system image'**
-  String get itemUpdateCheckDesc;
-
-  /// No description provided for @itemBuildNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Build'**
-  String get itemBuildNumber;
-
-  /// No description provided for @itemBuildNumberDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'The build this system image was made from'**
-  String get itemBuildNumberDesc;
 
   /// No description provided for @itemModelName.
   ///
@@ -507,36 +399,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The system software on this headset'**
   String get itemAboutBrandDesc;
-
-  /// No description provided for @itemTipsBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Getting around'**
-  String get itemTipsBody;
-
-  /// No description provided for @itemTipsBodyDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Use the dock to switch apps, the quick panel for radios and volume, and this page for everything else.'**
-  String get itemTipsBodyDesc;
-
-  /// No description provided for @valueAuto.
-  ///
-  /// In en, this message translates to:
-  /// **'Auto'**
-  String get valueAuto;
-
-  /// No description provided for @value60hz.
-  ///
-  /// In en, this message translates to:
-  /// **'60 Hz'**
-  String get value60hz;
-
-  /// No description provided for @value50hz.
-  ///
-  /// In en, this message translates to:
-  /// **'50 Hz'**
-  String get value50hz;
 
   /// No description provided for @valueNotConnected.
   ///

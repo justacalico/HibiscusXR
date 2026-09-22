@@ -22,7 +22,6 @@ void main() {
           return {
             'toggles': {'wifiToggle': true, 'micMute': true},
             'sliders': {'volume': 0.4, 'brightness': 0.65},
-            'choices': {'trackingFrequency': '60hz'},
             'texts': {'wifiSsid': 'neosalsa-5g', 'modelName': 'A7B10'},
           };
       }
@@ -42,7 +41,6 @@ void main() {
     expect(snap.toggles[ItemId.wifiToggle], isTrue);
     expect(snap.sliders[ItemId.volume], 0.4);
     expect(snap.sliders[ItemId.brightness], 0.65);
-    expect(snap.choices[ItemId.trackingFrequency], '60hz');
     expect(snap.texts[ItemId.wifiSsid], 'neosalsa-5g');
     expect(snap.texts[ItemId.modelName], 'A7B10');
   });
@@ -51,19 +49,15 @@ void main() {
     final src = AndroidSettingsSource();
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
-    await src.selectChoice(ItemId.trackingFrequency, '50hz');
     await src.performAction(ItemId.devOptions);
     expect(calls.map((c) => c.method), [
       'setSlider',
       'requestToggle',
-      'selectChoice',
       'performAction',
     ]);
     expect(calls[0].arguments, {'id': 'volume', 'value': 0.3});
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});
-    expect(calls[2].arguments,
-        {'id': 'trackingFrequency', 'value': '50hz'});
-    expect(calls[3].arguments, {'id': 'devOptions'});
+    expect(calls[2].arguments, {'id': 'devOptions'});
   });
 
   test('events stream subscribes the event channel', () async {

@@ -16,9 +16,6 @@ abstract class SettingsSource {
   /// directly open the matching system panel instead.
   Future<void> requestToggle(ItemId id, bool on);
 
-  /// Record a dropdown choice (tracking frequency, ...).
-  Future<void> selectChoice(ItemId id, String value);
-
   /// Fire a one-shot row: open a system page, recenter, reboot...
   Future<void> performAction(ItemId id);
 }

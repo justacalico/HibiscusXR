@@ -3,17 +3,15 @@ import 'package:pn2_settings/src/models.dart';
 
 void main() {
   group('SettingsSnapshot', () {
-    test('roundtrips all four maps', () {
+    test('roundtrips the map fields', () {
       const snap = SettingsSnapshot(
         toggles: {ItemId.wifiToggle: true, ItemId.micMute: false},
         sliders: {ItemId.volume: 0.7, ItemId.brightness: 0.2},
-        choices: {ItemId.trackingFrequency: '60hz'},
         texts: {ItemId.wifiSsid: 'neosalsa-5g', ItemId.modelName: 'A7B10'},
       );
       final back = SettingsSnapshot.fromJson(snap.toJson());
       expect(back.toggles, snap.toggles);
       expect(back.sliders, snap.sliders);
-      expect(back.choices, snap.choices);
       expect(back.texts, snap.texts);
     });
 
@@ -28,7 +26,6 @@ void main() {
       final snap = SettingsSnapshot.fromJson({
         'toggles': {'wifiToggle': 'yes', 'bogus': true},
         'sliders': {'volume': 'loud', 'bogus': 1},
-        'choices': {'trackingFrequency': 5, 'bogus': 'x'},
         'texts': {'wifiSsid': 9, 'bogus': 'x'},
         'controllers': {
           'controllerLeft': 'yes',
@@ -37,7 +34,6 @@ void main() {
       });
       expect(snap.toggles, isEmpty);
       expect(snap.sliders, isEmpty);
-      expect(snap.choices, isEmpty);
       expect(snap.texts, isEmpty);
       expect(snap.controllers, isEmpty);
     });
@@ -46,7 +42,6 @@ void main() {
       final snap = SettingsSnapshot.fromJson(const {});
       expect(snap.toggles, isEmpty);
       expect(snap.sliders, isEmpty);
-      expect(snap.choices, isEmpty);
       expect(snap.texts, isEmpty);
       expect(snap.controllers, isEmpty);
     });

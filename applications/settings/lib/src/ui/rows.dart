@@ -128,22 +128,6 @@ class _Control extends StatelessWidget {
             inactiveColor: PanelTheme.surfaceHigh,
           ),
         );
-      case ItemKind.choice:
-        return DropdownButton<String>(
-          value: store.choiceOf(id),
-          dropdownColor: PanelTheme.surface,
-          underline: const SizedBox.shrink(),
-          style: const TextStyle(color: PanelTheme.textPrimary, fontSize: 15),
-          items: [
-            for (final v in optionsOf(id))
-              DropdownMenuItem(value: v, child: Text(choiceLabel(l10n, v))),
-          ],
-          onChanged: enabled
-              ? (v) {
-                  if (v != null) controller.selectChoice(id, v);
-                }
-              : null,
-        );
       case ItemKind.action:
         return TextButton(
           onPressed: enabled ? () => controller.runAction(id) : null,

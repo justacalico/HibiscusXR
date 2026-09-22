@@ -21,14 +21,6 @@ void main() {
     expect(placed.toSet(), hasLength(placed.length));
   });
 
-  test('choice rows declare options', () {
-    for (final e in kItemKinds.entries) {
-      if (e.value == ItemKind.choice) {
-        expect(optionsOf(e.key), isNotEmpty, reason: '${e.key} has none');
-      }
-    }
-  });
-
   test('sectionDef returns the matching def', () {
     for (final s in kSections) {
       expect(sectionDef(s.id), same(s));
@@ -37,17 +29,11 @@ void main() {
 
   test('kindOf falls back to info for unknown ids', () {
     expect(kindOf(ItemId.wifiToggle), ItemKind.toggle);
-    expect(kindOf(ItemId.tipsBody), ItemKind.info);
+    expect(kindOf(ItemId.modelName), ItemKind.info);
   });
 
   test('implementedOf marks only the stub rows', () {
     const stubs = {
-      ItemId.seethrough,
-      ItemId.trackingToggle,
-      ItemId.trackingFrequency,
-      ItemId.boundary,
-      ItemId.resetView,
-      ItemId.updateCheck,
       ItemId.nightMode,
     };
     for (final id in ItemId.values) {

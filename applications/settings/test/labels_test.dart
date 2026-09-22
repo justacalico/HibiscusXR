@@ -31,15 +31,6 @@ void main() {
     }
   });
 
-  testWidgets('choice labels cover all option values', (tester) async {
-    final l10n = await l10nOf(tester);
-    await tester.pump();
-    expect(choiceLabel(l10n, 'auto'), 'Auto');
-    expect(choiceLabel(l10n, '60hz'), '60 Hz');
-    expect(choiceLabel(l10n, '50hz'), '50 Hz');
-    expect(choiceLabel(l10n, 'anything'), 'Auto');
-  });
-
   testWidgets('controller link labels cover every state', (tester) async {
     final l10n = await l10nOf(tester);
     await tester.pump();

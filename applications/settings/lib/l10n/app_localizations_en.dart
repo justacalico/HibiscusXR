@@ -27,9 +27,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionSound => 'Sound';
 
   @override
-  String get sectionCamera => 'Camera';
-
-  @override
   String get sectionLanguage => 'Language and Region';
 
   @override
@@ -39,19 +36,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionKeyboard => 'Keyboard';
 
   @override
-  String get sectionHeadsetTracking => 'Headset Tracking';
-
-  @override
   String get sectionDeveloper => 'Developer';
 
   @override
-  String get sectionSoftwareUpdate => 'Software Update';
-
-  @override
   String get sectionAbout => 'About';
-
-  @override
-  String get sectionTips => 'Tips and Support';
 
   @override
   String get itemWifiToggle => 'Wi-Fi';
@@ -133,12 +121,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemMicMuteDesc => 'Allow apps to use the microphone';
 
   @override
-  String get itemSeethrough => 'Seethrough';
-
-  @override
-  String get itemSeethroughDesc => 'Show the real world through the cameras';
-
-  @override
   String get itemLanguagePicker => 'Language';
 
   @override
@@ -157,48 +139,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemKeyboardPickerDesc => 'Choose the active input method';
 
   @override
-  String get itemTrackingToggle => 'Headset Tracking';
-
-  @override
-  String get itemTrackingToggleDesc =>
-      'Document your actual movement and position in a play area';
-
-  @override
-  String get itemTrackingFrequency => 'Tracking Frequency';
-
-  @override
-  String get itemTrackingFrequencyDesc =>
-      'Troubleshoot tracking problems by selecting the power frequency of outlets in your region';
-
-  @override
-  String get itemBoundary => 'Boundary';
-
-  @override
-  String get itemBoundaryDesc => 'Show the play-area boundary while you move';
-
-  @override
-  String get itemResetView => 'Reset view';
-
-  @override
-  String get itemResetViewDesc => 'Recenter the headset orientation';
-
-  @override
   String get itemDevOptions => 'Developer options';
 
   @override
   String get itemDevOptionsDesc => 'Open the system developer settings';
-
-  @override
-  String get itemUpdateCheck => 'Check for updates';
-
-  @override
-  String get itemUpdateCheckDesc => 'Look for a newer system image';
-
-  @override
-  String get itemBuildNumber => 'Build';
-
-  @override
-  String get itemBuildNumberDesc => 'The build this system image was made from';
 
   @override
   String get itemModelName => 'Model';
@@ -217,22 +161,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemAboutBrandDesc => 'The system software on this headset';
-
-  @override
-  String get itemTipsBody => 'Getting around';
-
-  @override
-  String get itemTipsBodyDesc =>
-      'Use the dock to switch apps, the quick panel for radios and volume, and this page for everything else.';
-
-  @override
-  String get valueAuto => 'Auto';
-
-  @override
-  String get value60hz => '60 Hz';
-
-  @override
-  String get value50hz => '50 Hz';
 
   @override
   String get valueNotConnected => 'Not connected';

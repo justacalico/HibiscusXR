@@ -55,40 +55,52 @@ class SettingsRow extends StatelessWidget {
         onTap: enabled ? () => controller.runAction(id) : null,
       );
     }
+    final text = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          itemTitle(l10n, id),
+          style: const TextStyle(fontSize: 17, color: PanelTheme.textPrimary),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          itemDescription(l10n, id),
+          style: const TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
+        ),
+      ],
+    );
     final row = Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 18),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  itemTitle(l10n, id),
-                  style: const TextStyle(
-                    fontSize: 17,
-                    color: PanelTheme.textPrimary,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  itemDescription(l10n, id),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: PanelTheme.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 24),
-          _Control(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final control = _Control(
             id: id,
             store: store,
             controller: controller,
             enabled: enabled,
-          ),
-        ],
+          );
+          // Wide rows keep title/description next to the control;
+          // narrow panes stack them so nothing has to overflow.
+          if (constraints.maxWidth >= 470) {
+            return Row(
+              children: [
+                Expanded(child: text),
+                const SizedBox(width: 24),
+                control,
+              ],
+            );
+          }
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              text,
+              const SizedBox(height: 12),
+              kindOf(id) == ItemKind.slider
+                  ? SizedBox(width: constraints.maxWidth, child: control)
+                  : Align(alignment: Alignment.centerRight, child: control),
+            ],
+          );
+        },
       ),
     );
     return enabled ? row : Opacity(opacity: 0.45, child: row);
@@ -123,24 +135,23 @@ class _Control extends StatelessWidget {
           fontSize: 13,
           color: PanelTheme.textSecondary,
         );
-        return SizedBox(
-          width: 300,
+        return ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 320),
           child: Row(
             children: [
               SizedBox(
                 width: 38,
                 child: Text(
-                  l10n.sliderPercent(
-                    (store.sliderValue(id) * 100).round(),
-                  ),
+                  l10n.sliderPercent((store.sliderValue(id) * 100).round()),
                   style: pctStyle,
                 ),
               ),
               Expanded(
                 child: Slider(
                   value: store.sliderValue(id),
-                  onChanged:
-                      enabled ? (v) => controller.setSlider(id, v) : null,
+                  onChanged: enabled
+                      ? (v) => controller.setSlider(id, v)
+                      : null,
                   activeColor: PanelTheme.accent,
                   inactiveColor: PanelTheme.surfaceHigh,
                 ),

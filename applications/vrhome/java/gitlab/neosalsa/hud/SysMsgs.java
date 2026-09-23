@@ -142,8 +142,8 @@ public class SysMsgs {
             ctx.getSharedPreferences("sysmsgs", 0).edit()
                     .putLong("lastMs", lastMs).apply();
         } catch (Throwable t) {
-            // READ_LOGS missing on a debug-signed build: stop polling
-            // rather than spamming the log every two seconds
+            // PACKAGE_USAGE_STATS missing on a debug-signed build: stop
+            // polling rather than spamming the log every two seconds
             dead = true;
             Log.e(TAG, "dropbox scan stopped", t);
         }

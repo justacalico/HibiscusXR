@@ -1,0 +1,193 @@
+diff --git i/src/xrt/auxiliary/util/u_pacing_app.c w/src/xrt/auxiliary/util/u_pacing_app.c
+index d5697ff4..0230ddd4 100644
+--- i/src/xrt/auxiliary/util/u_pacing_app.c
++++ w/src/xrt/auxiliary/util/u_pacing_app.c
+@@ -26,9 +26,16 @@ DEBUG_GET_ONCE_FLOAT_OPTION(min_app_time_ms, "U_PACING_APP_MIN_TIME_MS", 1.0f)
+ DEBUG_GET_ONCE_FLOAT_OPTION(min_margin_ms, "U_PACING_APP_MIN_MARGIN_MS", 2.0f)
+ DEBUG_GET_ONCE_BOOL_OPTION(use_min_frame_period, "U_PACING_APP_USE_MIN_FRAME_PERIOD", false)
+ DEBUG_GET_ONCE_BOOL_OPTION(immediate_wait_frame_return, "U_PACING_APP_IMMEDIATE_WAIT_FRAME_RETURN", false)
++#ifdef __ANDROID__
++// An app that can't hold the refresh rate produces frames faster
++// unthrottled than locked to an integer fraction of the refresh rate.
++#define UPA_IMMEDIATE_RETURN_BELOW_REFRESH_DEFAULT true
++#else
++#define UPA_IMMEDIATE_RETURN_BELOW_REFRESH_DEFAULT false
++#endif
+ DEBUG_GET_ONCE_BOOL_OPTION(immediate_wait_frame_return_below_refresh,
+                            "U_PACING_APP_IMMEDIATE_WAIT_FRAME_RETURN_BELOW_REFRESH",
+-                           false)
++                           UPA_IMMEDIATE_RETURN_BELOW_REFRESH_DEFAULT)
+ DEBUG_GET_ONCE_BOOL_OPTION(align_predicted_display_time_to_app_period,
+                            "U_PACING_APP_ALIGN_PREDICTED_DISPLAY_TIME_TO_APP_PERIOD",
+                            false)
+diff --git i/src/xrt/compositor/main/comp_compositor.c w/src/xrt/compositor/main/comp_compositor.c
+index a8fbd01d..5e88f8c8 100644
+--- i/src/xrt/compositor/main/comp_compositor.c
++++ w/src/xrt/compositor/main/comp_compositor.c
+@@ -1136,6 +1136,20 @@ comp_main_create_system_compositor(struct xrt_device *xdev,
+ 
+ 	c->frame_interval_ns = c->settings.nominal_frame_interval_ns;
+ 
++#ifdef XRT_OS_ANDROID
++	// The driver only guesses a nominal rate while the whole fake pacing
++	// grid is anchored on this interval: SurfaceFlinger's reported mode
++	// rate is the only truthful value to pace against.
++	{
++		float refresh_hz = android_custom_surface_get_display_refresh_rate(
++		    android_globals_get_vm(), android_globals_get_context());
++		if (refresh_hz > 1.0f) {
++			c->frame_interval_ns = time_s_to_ns(1.0f / refresh_hz);
++			c->settings.nominal_frame_interval_ns = c->frame_interval_ns;
++		}
++	}
++#endif
++
+ 	c->last_frame_time_ns = os_monotonic_get_ns();
+ 
+ 	double scale = c->settings.viewport_scale;
+diff --git i/src/xrt/compositor/main/comp_renderer.c w/src/xrt/compositor/main/comp_renderer.c
+index 9250e05f..f1dbdbf8 100644
+--- i/src/xrt/compositor/main/comp_renderer.c
++++ w/src/xrt/compositor/main/comp_renderer.c
+@@ -694,6 +694,14 @@ renderer_wait_for_last_fence(struct comp_renderer *r)
+ static inline bool
+ requires_present_acquire_wait(struct comp_renderer *r)
+ {
++	/*!
++	 * Targets without a present_complete semaphore (fake display timing)
++	 * acquire synchronously and hand over an image that is already usable.
++	 */
++	if (r->c->target->semaphores.present_complete == VK_NULL_HANDLE) {
++		return false;
++	}
++
+ 	/*!
+ 	 * With shared presentable images there is only one image
+ 	 * shared between the presentation layer and the compositor,
+@@ -803,6 +811,10 @@ renderer_acquire_swapchain_image(struct comp_renderer *r)
+ 	while ((ret == VK_ERROR_OUT_OF_DATE_KHR) || (ret == VK_SUBOPTIMAL_KHR)) {
+ 		COMP_DEBUG(r->c, "Received %s.", vk_result_string(ret));
+ 
++		// Acquires also run while the previous frame is still in flight:
++		// drain it before the recreate destroys the target resources.
++		renderer_wait_queue_idle(r);
++
+ 		if (!renderer_ensure_images_and_renderings(r, true)) {
+ 			// Failed on force recreate.
+ 			COMP_ERROR(r->c,
+@@ -1230,6 +1242,17 @@ comp_renderer_draw(struct comp_renderer *r)
+ 		    rect);                     //
+ 	}
+ 
++	/*
++	 * Wait for a free target image before draining the queue. On targets
++	 * without present-wait support this blocks until scanout releases an
++	 * image at the next display flip, so doing it while the submitted
++	 * work is still in flight lets the GPU drain overlap the wait instead
++	 * of serialising behind it.
++	 */
++	if (present_success) {
++		renderer_wait_for_present(r, desired_present_time_ns);
++	}
++
+ 	/*
+ 	 * This fixes a lot of validation issues as it makes sure that the
+ 	 * command buffer has completed and all resources referred by it can
+@@ -1269,10 +1292,6 @@ comp_renderer_draw(struct comp_renderer *r)
+ 		render_gfx_fini(&render_g);
+ 	}
+ 
+-	if (present_success) {
+-		renderer_wait_for_present(r, desired_present_time_ns);
+-	}
+-
+ 	comp_target_update_timings(ct);
+ 
+ 	return xret;
+diff --git i/src/xrt/compositor/main/comp_settings.c w/src/xrt/compositor/main/comp_settings.c
+index 22e25808..c62ebc89 100644
+--- i/src/xrt/compositor/main/comp_settings.c
++++ w/src/xrt/compositor/main/comp_settings.c
+@@ -31,7 +31,13 @@ DEBUG_GET_ONCE_NUM_OPTION(force_gpu_index, "XRT_COMPOSITOR_FORCE_GPU_INDEX", -1)
+ DEBUG_GET_ONCE_NUM_OPTION(force_client_gpu_index, "XRT_COMPOSITOR_FORCE_CLIENT_GPU_INDEX", -1)
+ DEBUG_GET_ONCE_NUM_OPTION(desired_mode, "XRT_COMPOSITOR_DESIRED_MODE", -1)
+ DEBUG_GET_ONCE_OPTION(present_mode, "XRT_COMPOSITOR_PRESENT_MODE", "fifo")
++#ifdef XRT_OS_ANDROID
++// 140% asks a mobile GPU to render nearly double the panel's pixel count
++// per eye: default to native resolution there.
++DEBUG_GET_ONCE_NUM_OPTION(scale_percentage, "XRT_COMPOSITOR_SCALE_PERCENTAGE", 100)
++#else
+ DEBUG_GET_ONCE_NUM_OPTION(scale_percentage, "XRT_COMPOSITOR_SCALE_PERCENTAGE", 140)
++#endif
+ DEBUG_GET_ONCE_BOOL_OPTION(xcb_fullscreen, "XRT_COMPOSITOR_XCB_FULLSCREEN", false)
+ DEBUG_GET_ONCE_NUM_OPTION(xcb_display, "XRT_COMPOSITOR_XCB_DISPLAY", -1)
+ DEBUG_GET_ONCE_NUM_OPTION(default_framerate, "XRT_COMPOSITOR_DEFAULT_FRAMERATE", 60)
+diff --git i/src/xrt/compositor/main/comp_target_swapchain.c w/src/xrt/compositor/main/comp_target_swapchain.c
+index 22fd27cd..0bbde20f 100644
+--- i/src/xrt/compositor/main/comp_target_swapchain.c
++++ w/src/xrt/compositor/main/comp_target_swapchain.c
+@@ -669,13 +669,16 @@ target_init_semaphores(struct comp_target_swapchain *cts)
+ 	    .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
+ 	};
+ 
+-	ret = vk->vkCreateSemaphore(vk->device, &info, NULL, &cts->base.semaphores.present_complete);
+-	if (ret != VK_SUCCESS) {
+-		COMP_ERROR(cts->base.c, "vkCreateSemaphore: %s", vk_result_string(ret));
+-	}
++	// Fake-timing targets acquire synchronously and never signal this.
++	if (cts->timing_usage != COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING) {
++		ret = vk->vkCreateSemaphore(vk->device, &info, NULL, &cts->base.semaphores.present_complete);
++		if (ret != VK_SUCCESS) {
++			COMP_ERROR(cts->base.c, "vkCreateSemaphore: %s", vk_result_string(ret));
++		}
+ 
+-	VK_NAME_SEMAPHORE(vk, cts->base.semaphores.present_complete,
+-	                  "comp_target_swapchain semaphore present complete");
++		VK_NAME_SEMAPHORE(vk, cts->base.semaphores.present_complete,
++		                  "comp_target_swapchain semaphore present complete");
++	}
+ 
+ 	cts->base.semaphores.render_complete_is_timeline = false;
+ 	ret = vk->vkCreateSemaphore(vk->device, &info, NULL, &cts->base.semaphores.render_complete);
+@@ -818,7 +821,17 @@ comp_target_swapchain_create_images(struct comp_target *ct,
+ 		extent.height = w2;
+ 	}
+ 
+-	const uint32_t preferred_at_least_image_count = debug_get_num_option_preferred_at_least_image_count();
++	uint32_t preferred_at_least_image_count = debug_get_num_option_preferred_at_least_image_count();
++
++	/*
++	 * Fake-timing targets get display feedback only through acquire
++	 * blocking: a third image keeps one free while scanout and the present
++	 * queue hold one each, so the frame loop doesn't stall waiting for a
++	 * vsync release.
++	 */
++	if (cts->timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING && preferred_at_least_image_count < 3) {
++		preferred_at_least_image_count = 3;
++	}
+ 
+ 	// Get the image count.
+ 	uint32_t image_count = select_image_count(cts, surface_caps, preferred_at_least_image_count);
+@@ -963,11 +976,21 @@ comp_target_swapchain_acquire_next_image(struct comp_target *ct, uint32_t *out_i
+ 	}
+ #endif
+ 
++	/*
++	 * Fake-timing targets re-acquire the next image while the previous
++	 * frame is still in flight. Signalling present_complete a second time
++	 * here would violate binary semaphore rules, so acquire without one:
++	 * the call blocks until the image is usable, making it unnecessary.
++	 */
++	VkSemaphore acquire_sem = cts->timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING
++	                              ? VK_NULL_HANDLE
++	                              : cts->base.semaphores.present_complete;
++
+ 	VkResult ret = vk->vkAcquireNextImageKHR(  //
+ 	    vk->device,                            // device
+ 	    cts->swapchain.handle,                 // swapchain
+ 	    UINT64_MAX,                            // timeout
+-	    cts->base.semaphores.present_complete, // semaphore
++	    acquire_sem,                           // semaphore
+ 	    VK_NULL_HANDLE,                        // fence
+ 	    out_index);                            // pImageIndex
+ 	VK_CHK_AND_RET(ret, "vkAcquireNextImageKHR");

@@ -60,8 +60,8 @@ constexpr float kBarBtnW = kBarBtnPad + 4.0f * kBarBtnR + kBarBtnGap;
 constexpr float kCornerR = 0.028f;
 
 // drag handle: a short white line centred under the dock strip. Holding
-// confirm on it drags the whole ring - every window keeps its slot offset
-// and follows the gaze yaw together
+// confirm on it drags the whole dash - every window keeps its slot offset
+// and the strip stays glued under them
 constexpr float kHandleW = 0.085f;    // visible line half-width
 constexpr float kHandleT = 0.0085f;   // visible line half-thickness
 constexpr float kHandleGap = 0.026f;  // gap between bar bottom and line top

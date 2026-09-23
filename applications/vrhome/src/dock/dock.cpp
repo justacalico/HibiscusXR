@@ -664,7 +664,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     }
 
     // move handle: a short white line centred under the strip; holding it
-    // drags the whole ring, so brighten it while gazed
+    // drags the whole dash, so brighten it while gazed
     {
         const bool hhov = e->dockZone == DZONE_HANDLE;
         const float hd = dockHandleDrop();

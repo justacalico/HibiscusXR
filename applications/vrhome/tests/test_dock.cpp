@@ -182,6 +182,20 @@ void testDock() {
         CHECK(dockPitchFor(0.8f) > dockPitchFor(0.0f));
     }
 
+    // handle drag: the strip gains exactly the elevation the ring took
+    // since the grab, so the two stay glued even when the ring clamps
+    // at the pole - a raw aim delta would keep climbing past the stopped
+    // windows and tear the dock off them
+    {
+        CHECK_F(dockDragPitch(-0.55f, 0.0f, 0.30f), -0.25f, 1e-6f);
+        CHECK_F(dockDragPitch(-0.55f, 0.0f, -0.30f), -0.85f, 1e-6f);
+        // ring grabbed at 1.2 and clamped at the pole: only the applied
+        // 0.3 reaches the dock, not whatever the aim asked for
+        CHECK_F(dockDragPitch(-0.55f, 1.2f, kPitchMax), -0.25f, 1e-6f);
+        // no gain since the grab: the strip holds its pitch
+        CHECK_F(dockDragPitch(-0.40f, 0.7f, 0.7f), -0.40f, 1e-6f);
+    }
+
     // pin toggle: append missing, drop present
     {
         auto pins = pinToggle({}, "com.a.pin");

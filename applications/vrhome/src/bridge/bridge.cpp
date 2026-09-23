@@ -12,8 +12,16 @@
 #include <deque>
 #include <mutex>
 
+// one queued launch: the package plus whether it came through the
+// open-package broadcast - the library's own contract, so those swap the
+// launcher window for the app it picked
+struct LaunchReq {
+    std::string pkg;
+    bool fromLib;
+};
+
 // launch requests arrive from Java (open-package broadcast, test hook)
-static std::deque<std::string> gLaunchQ;
+static std::deque<LaunchReq> gLaunchQ;
 static std::mutex gLaunchMu;
 
 static volatile bool gWantRecenter = false;
@@ -21,13 +29,13 @@ static volatile bool gWantRecenter = false;
 extern "C" JNIEXPORT void JNICALL
 Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
     const char* p = env->GetStringUTFChars(pkg, nullptr);
-    queueLaunch(p);
+    queueLaunch(p, true);
     env->ReleaseStringUTFChars(pkg, p);
 }
 
-void queueLaunch(const char* pkg) {
+void queueLaunch(const char* pkg, bool fromLib) {
     std::lock_guard<std::mutex> l(gLaunchMu);
-    gLaunchQ.push_back(pkg);
+    gLaunchQ.push_back({pkg, fromLib});
 }
 
 void wantRecenter() { gWantRecenter = true; }
@@ -54,6 +62,7 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
     e->mInjectTouch  = env->GetMethodID(bc, "injectTouch", "(IFFI)V");
     e->mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
+    e->mRemoveDisp   = env->GetMethodID(bc, "removeTasksOnDisplay", "(I)V");
     e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
     e->mAppLabel     = env->GetMethodID(bc, "appLabel",
                         "(Ljava/lang/String;)Ljava/lang/String;");
@@ -109,18 +118,36 @@ void pumpBridge(HudEngine* e) {
 
     // app launches requested by the library panel / test hook
     for (;;) {
-        std::string pkg;
+        LaunchReq req;
         {
             std::lock_guard<std::mutex> l(gLaunchMu);
             if (gLaunchQ.empty()) break;
-            pkg = gLaunchQ.front(); gLaunchQ.pop_front();
+            req = gLaunchQ.front(); gLaunchQ.pop_front();
         }
+        const std::string& pkg = req.pkg;
         jstring jpkg = env->NewStringUTF(pkg.c_str());
         // the library is the one window that must never duplicate: a second
         // launch request just keeps the existing panel
         if (pkg == kLibraryPkg && libraryIndex(e->panels) >= 0) {
             env->DeleteLocalRef(jpkg);
             continue;
+        }
+        // a launch the library asked for swaps it out: the launcher window
+        // closes and the new app lands on the freed slot, whatever kind of
+        // launch it turns out to be
+        float repYaw = 0.0f;
+        bool haveRep = false;
+        if (req.fromLib) {
+            const int li = libraryIndex(e->panels);
+            if (li >= 0) {
+                repYaw = e->panels[li].yaw;
+                haveRep = true;
+                env->CallVoidMethod(e->bridge, e->mRemoveDisp,
+                                    e->panels[li].displayId);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+                e->libDismissed = true;
+                closePanel(e, li);
+            }
         }
         // Pico VR apps take over the headset; no panel is spent on them
         if (e->mIsVr && env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)) {
@@ -148,8 +175,9 @@ void pumpBridge(HudEngine* e) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
-                            ringPitch(e->panels));
+        int idx = openPanel(e,
+                haveRep ? repYaw : freeSlotYaw(e->panels, e->gazeYaw),
+                ringPitch(e->panels));
         if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
         e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,

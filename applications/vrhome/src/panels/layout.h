@@ -41,10 +41,15 @@ int libraryIndex(const std::vector<Panel>& panels);
 // the whole ring to the given elevation
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);
 
+// the strip n button discs reserve on the bar's right end: edge pad, the
+// discs themselves and the gaps between them
+float barBtnsW(int n);
+
 // widest the label may get before it must shrink to stay inside the top
 // bar: the bar spans the window's full width, so the text region is what
-// the left pad and the button strip leave over
-float barTextLimit(float winHW, bool btns);
+// the left pad and the button strip leave over. btns is the disc count -
+// the library shows close only, regular windows minimize + close
+float barTextLimit(float winHW, int btns);
 
 // x of the minimize/close button centres inside the bar, in world units
 // measured from the bar centre toward its right edge

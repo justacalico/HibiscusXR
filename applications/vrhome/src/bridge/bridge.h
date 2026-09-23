@@ -8,8 +8,11 @@ struct HudEngine;
 // the java object HudService constructed (it owns the covered-listener wiring)
 void initBridge(HudEngine* e, JNIEnv* env, jobject br);
 
-// queue an app launch from any thread (open-package broadcast + test hook)
-void queueLaunch(const char* pkg);
+// queue an app launch from any thread (open-package broadcast + test
+// hook). fromLib marks a request that came through the library's launch
+// contract, so it swaps the launcher window out for the new app instead
+// of opening beside it
+void queueLaunch(const char* pkg, bool fromLib = false);
 
 // drain everything the bridge has queued; run on the render thread
 void pumpBridge(HudEngine* e);

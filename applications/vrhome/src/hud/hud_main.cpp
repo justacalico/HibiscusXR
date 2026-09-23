@@ -168,14 +168,21 @@ static void debugNotifCloseHook(HudEngine* e) {
     }
 }
 
-// the library panel is permanent: it opens dead ahead once tracking is
-// live, and since the app is its own process now a dead one respawns the
-// same way instead of leaving the shell without a launcher. recenterAngles
-// covers the desk-flat case too, so a boot with the headset lying on its
-// back still puts the launcher in front of the head's heading
+// the library panel opens dead ahead once tracking is live, and since the
+// app is its own process a dead one respawns the same way instead of
+// leaving the shell without a launcher. A user-closed launcher is not a
+// dead one: it stays gone until something launches it again - the dock
+// pin is how the user brings it back. recenterAngles covers the desk-flat
+// case too, so a boot with the headset lying on its back still puts the
+// launcher in front of the head's heading
 static void spawnLauncher(HudEngine* e, const Mat4& head) {
     if (!e->bridge || !e->haveQuat) return;
-    if (libraryIndex(e->panels) >= 0) { e->launcherSpawned = true; return; }
+    if (libraryIndex(e->panels) >= 0) {
+        e->launcherSpawned = true;
+        e->libDismissed = false;
+        return;
+    }
+    if (e->libDismissed) return;
     if (!e->launcherSpawned)
         // the dash's first appearance anchors the ring at the head's spot
         // too, so a fresh boot doesn't park the panels around the tracking

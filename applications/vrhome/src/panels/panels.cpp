@@ -66,9 +66,9 @@ bool evictOldestApp(HudEngine* e) {
     const int i = evictIndex(e->panels);
     if (i < 0) return false;
     Panel& p = e->panels[i];
-    if (e->bridge && p.taskId >= 0) {
+    if (e->bridge && p.displayId >= 0) {
         JNIEnv* env = threadEnv(e->vm);
-        env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
+        env->CallVoidMethod(e->bridge, e->mRemoveDisp, p.displayId);
         if (env->ExceptionCheck()) env->ExceptionClear();
     }
     closePanel(e, i);

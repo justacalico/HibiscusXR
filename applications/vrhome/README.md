@@ -55,7 +55,9 @@ Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `N
 | BACK | Close the newest window (dismiss the menu when it is over an app) |
 | Headset home key | Summon or dismiss the menu over whatever is running; hold to recenter |
 
-At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never closed automatically. Minimized apps keep running in the background and park as icons on a shelf floating just above the dock; tapping a shelf icon (or the app's icon in the library) brings the same window back.
+At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never evicted automatically. Minimized apps keep running in the background and park as icons on a shelf floating just above the dock; tapping a shelf icon (or the app's icon in the library) brings the same window back.
+
+The library's bar carries the × disc only: it can be closed but never minimized, and picking an app from it swaps the grid window out for the app it launched. Its dock pin brings it back.
 
 > [!NOTE]
 > The physical home key is remapped to the custom `DEFINE_HOME` keycode (1003) in `gpio-keys.kl` - stock `KEYCODE_HOME` is swallowed by system_server before any app can see it. The HUD watches for 1003 through a hidden-API input monitor.

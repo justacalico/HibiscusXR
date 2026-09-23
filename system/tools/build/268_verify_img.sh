@@ -53,6 +53,37 @@ od -An -tx1 -j $((0x13f36c)) -N4 "$T/art" | sed 's/^/  bytes at 0x13f36c: /'
 echo "  (expect bf 03 00 91 = mov sp, x29; the original was 9f 03 00 91)"
 
 echo
+echo "=== OpenXR chain ==="
+# the whole path wivrn/hello_xr takes: manifest -> staged runtime -> turnip.
+# presence-only checks for the apk (re-signed); content checks for the rest
+XR=${PN2_ROOT}/pn2xr
+check /etc/openxr/1/active_runtime.json            "$XR/android/active_runtime.json"
+check /product/etc/openxr/1/active_runtime.json    "$XR/android/active_runtime.json"
+check /etc/init/pn2-openxr.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-openxr.rc
+check /etc/init/pn2-vulkan.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-vulkan.rc
+check /etc/permissions/pn2-xr-features.xml         ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
+check /lib64/hw/vulkan.sdm845.so                   "$XR/turnip/out/libvulkan_freedreno.so"
+check /lib64/libc++_shared.so                      "$XR/turnip/out/libc++_shared.so"
+# turnip loads inside the sphal namespace (anything under /vendor/lib64);
+# without libc++_shared in its default link the driver dies at dlopen
+debugfs -R "dump /etc/ld.config.27.txt $T/ldcfg" "$IMG" >/dev/null 2>&1
+grep -q 'link.default.shared_libs.*libc++_shared' "$T/ldcfg" \
+  && printf '  MATCH  %s\n' "/etc/ld.config.27.txt (libc++_shared in sphal link)" \
+  || printf '  DIFFER %s\n' "/etc/ld.config.27.txt (libc++_shared missing from sphal link)"
+check /app/MonadoOpenXR/lib/arm64/libopenxr_monado.so \
+    "$XR/monado/build-android/src/xrt/targets/openxr/libopenxr_monado.so"
+debugfs -R "dump /app/MonadoOpenXR/MonadoOpenXR.apk $T/mx.apk" "$IMG" >/dev/null 2>&1
+"$BT/apksigner" verify --print-certs "$T/mx.apk" 2>/dev/null | grep -q "CN=PN2" \
+  && printf '  MATCH  %s\n' "/app/MonadoOpenXR/MonadoOpenXR.apk (CN=PN2)" \
+  || printf '  DIFFER %s\n' "/app/MonadoOpenXR/MonadoOpenXR.apk (missing or not PN2-signed)"
+# pvrservice is the black-display compositor - it must stay out of the image
+if debugfs -R "stat /etc/init/pvrservice.rc" "$IMG" 2>&1 | grep -q ext2_lookup; then
+  printf '  MATCH  %s\n' "/etc/init/pvrservice.rc absent"
+else
+  printf '  DIFFER %s\n' "/etc/init/pvrservice.rc still present"
+fi
+
+echo
 echo "=== init scripts present ==="
 debugfs -R "ls -l /etc/init" "$IMG" 2>/dev/null | grep -E 'pn2-' | awk '{printf "  %-28s %s bytes\n", $NF, $6}'
 

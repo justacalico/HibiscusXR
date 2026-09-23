@@ -1,14 +1,11 @@
 # First boot
 
-The stock Pico launcher loops trying to start **Provision** (the setup
-wizard), which crashes in its language picker
-(`IndexOutOfBounds` in `Language1Adapter`). Disable it once and the launcher
-skips setup and hands straight off to VRShell:
-
-```bash
-adb shell su -c 'pm disable com.picovr.provision'
-adb shell su -c 'settings put global hide_error_dialogs 1'
-```
+Nothing to do - the image finishes setup on its own. The first-boot init
+pass marks the device provisioned, disables the stock Pico homes and the
+**Provision** setup wizard (which crashes in its language picker), and
+hides app crash dialogs. OpenXR apps like WiVRn find the runtime with no
+extra steps: `pn2-openxr.rc` stages it under `/data/local/tmp/xr` on every
+boot, so a wiped `/data` recovers by itself.
 
 ## Optional: wireless adb
 

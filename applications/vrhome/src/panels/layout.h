@@ -37,6 +37,15 @@ int evictIndex(const std::vector<Panel>& panels);
 // index of the library panel, or -1 - there is at most one
 int libraryIndex(const std::vector<Panel>& panels);
 
+// clear the middle slot for the launcher and return its yaw: a window
+// sitting there shifts onto the left slot, and a window that was on the
+// left minimizes to the shelf first so the two never stack. A minimized
+// panel still owns its slot (same model as freeSlotYaw), so it shuffles
+// like any other - its restore lands where it was moved, not under the
+// launcher. The parked window's stored yaw slides to the far slot when
+// it's free, so a shelf tap restores it beside the shifted window
+float libraryMiddleYaw(std::vector<Panel>& panels, float centre);
+
 // snap every panel to its nearest ring slot around a new centre yaw and pull
 // the whole ring to the given elevation
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);

@@ -177,9 +177,12 @@ void pumpBridge(HudEngine* e) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        int idx = openPanel(e,
-                haveRep ? repYaw : freeSlotYaw(e->panels, e->gazeYaw),
-                ringPitch(e->panels));
+        // the launcher always takes the middle slot: the window there
+        // shifts left, parking the old left window on the shelf if needed
+        const float yaw = pkg == kLibraryPkg
+                ? libraryMiddleYaw(e->panels, e->gazeYaw)
+                : (haveRep ? repYaw : freeSlotYaw(e->panels, e->gazeYaw));
+        int idx = openPanel(e, yaw, ringPitch(e->panels));
         if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
         e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
@@ -220,8 +223,8 @@ void pumpBridge(HudEngine* e) {
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
         const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
         LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
-        const bool dupLib = pc != nullptr && strcmp(pc, kLibraryPkg) == 0
-                            && libraryIndex(e->panels) >= 0;
+        const bool isLib = pc != nullptr && strcmp(pc, kLibraryPkg) == 0;
+        const bool dupLib = isLib && libraryIndex(e->panels) >= 0;
         if (pc) env->ReleaseStringUTFChars(jpkg, pc);
         if (dupLib) {
             // a stray library task would double the launcher: kill it and
@@ -232,7 +235,8 @@ void pumpBridge(HudEngine* e) {
             continue;
         }
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->gazeYaw),
+        int idx = openPanel(e, isLib ? libraryMiddleYaw(e->panels, e->gazeYaw)
+                                     : freeSlotYaw(e->panels, e->gazeYaw),
                             ringPitch(e->panels));
         if (idx >= 0) {
             e->panels[idx].taskId = taskId;

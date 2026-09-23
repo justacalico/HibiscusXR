@@ -198,7 +198,9 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
         e->dockYaw = gy;
         e->dockPitch = dockPitchFor(gp);
     }
-    const float yaw = freeSlotYaw(e->panels, gy);
+    // the launcher always lands on the middle slot: the window there
+    // shifts left, parking the old left window on the shelf if it has to
+    const float yaw = libraryMiddleYaw(e->panels, gy);
     const float pitch = e->panels.empty() ? gp : ringPitch(e->panels);
     int idx = openPanel(e, yaw, pitch);
     // the library stays even under slot pressure: an app window goes first

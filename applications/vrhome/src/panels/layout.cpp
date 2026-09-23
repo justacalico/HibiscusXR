@@ -82,6 +82,39 @@ int libraryIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
+float libraryMiddleYaw(std::vector<Panel>& panels, float centre) {
+    const float leftYaw = centre + kSlotYaw[1];
+    int mid = -1, left = -1;
+    for (int i = 0; i < (int)panels.size(); ++i) {
+        if (panels[i].pkg == kLibraryPkg) continue;
+        if (mid < 0 &&
+                fabsf(wrapPi(panels[i].yaw - centre)) < kPanelMinGap)
+            mid = i;
+        else if (left < 0 &&
+                fabsf(wrapPi(panels[i].yaw - leftYaw)) < kPanelMinGap)
+            left = i;
+    }
+    if (mid < 0) return centre;
+    if (left >= 0) {
+        Panel& lp = panels[left];
+        lp.minimized = true;
+        // a parked window's stored yaw is where a shelf tap puts it back:
+        // the middle window is taking this slot, so hand the record the
+        // far slot when it's free rather than leave a stacked restore
+        const float rightYaw = centre + kSlotYaw[2];
+        bool free = true;
+        for (int i = 0; i < (int)panels.size(); ++i)
+            if (i != left && i != mid &&
+                    fabsf(wrapPi(panels[i].yaw - rightYaw)) < kPanelMinGap) {
+                free = false;
+                break;
+            }
+        if (free) lp.yaw = rightYaw;
+    }
+    panels[mid].yaw = leftYaw;
+    return centre;
+}
+
 float barBtnsW(int n) {
     return n <= 0 ? 0.0f
          : kBarBtnPad + n * 2.0f * kBarBtnR + (n - 1) * kBarBtnGap;

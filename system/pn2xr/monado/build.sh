@@ -64,6 +64,7 @@ git checkout -q "$MONADO_COMMIT"
 echo "applying pn2 patch + driver"
 git checkout -q . # drop local edits so the patch applies cleanly
 git apply "$ROOT/patches/pn2-driver-registration.patch"
+git apply "$ROOT/patches/pn2-compositor-pacing.patch"
 mkdir -p src/xrt/drivers/pn2
 cp "$ROOT"/driver/pn2/*.c "$ROOT"/driver/pn2/*.h src/xrt/drivers/pn2/
 

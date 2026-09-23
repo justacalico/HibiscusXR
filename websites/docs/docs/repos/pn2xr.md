@@ -13,7 +13,11 @@ staging dir that `pn2-openxr.rc` repopulates on every boot (app namespaces
 can only `dlopen` under `/data`, and the Java helpers need a `base.apk`
 next to `lib/arm64/`). The same staging dir also carries
 `libqvrservice_client.so` + `libdrm.so`, the driver's last-resort path to
-the qvrd 6DoF pose service.
+the qvrd 6DoF pose service. One namespace wrinkle: Turnip is an NDK build
+and needs `libc++_shared.so`, but every load under `/vendor/lib64` runs in
+the sphal namespace whose search paths stop at `/odm` + `/vendor` - so
+`267_build_full.sh` adds the soname to `sphal.link.default.shared_libs`
+in `/etc/ld.config.27.txt`, letting sphal resolve it from `/system/lib64`.
 
 - `monado/` - pinned Monado + `driver/pn2/` (prober, HMD, interface) applied
   via `patches/pn2-driver-registration.patch`, `build.sh` produces

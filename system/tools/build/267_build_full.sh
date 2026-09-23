@@ -242,6 +242,23 @@ put "$XR/android/active_runtime.json" /product/etc/openxr/1/active_runtime.json 
 # two required) - without these the device reads as a plain handset
 mkd /etc/permissions
 put ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml /etc/permissions/pn2-xr-features.xml 644
+# Turnip is an NDK build and DT_NEEDEDs libc++_shared.so. Every load under
+# /vendor/lib64 lands in the sphal namespace, whose search paths only cover
+# /odm and /vendor - so the bind-mounted driver could not resolve it even
+# though the lib sits in /system/lib64. The default link is the allowlist
+# for reaching across; adding the soname there lets sphal resolve it from
+# the default namespace. Verified on device: WiVRn creates a session and
+# presents frames once this line is in.
+LD27=$(mktemp)
+debugfs -R "dump /etc/ld.config.27.txt $LD27" "$IMG" >/dev/null 2>&1
+if [ -s "$LD27" ]; then
+  grep -q 'shared_libs.*libc++_shared' "$LD27" || \
+    sed -i '/^namespace\.sphal\.link\.default\.shared_libs/a namespace.sphal.link.default.shared_libs += libc++_shared.so' "$LD27"
+  put "$LD27" /etc/ld.config.27.txt 644
+else
+  echo "  FAIL  could not read /etc/ld.config.27.txt from image"; fail=$((fail+1))
+fi
+rm -f "$LD27"
 debugfs -w -R "rm /etc/init/pvrservice.rc" "$IMG" >/dev/null 2>&1
 echo "  removed /etc/init/pvrservice.rc"
 

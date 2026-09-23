@@ -64,6 +64,12 @@ check /etc/init/pn2-vulkan.rc                      ${PN2_ROOT}/overlay/etc/init/
 check /etc/permissions/pn2-xr-features.xml         ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
 check /lib64/hw/vulkan.sdm845.so                   "$XR/turnip/out/libvulkan_freedreno.so"
 check /lib64/libc++_shared.so                      "$XR/turnip/out/libc++_shared.so"
+# turnip loads inside the sphal namespace (anything under /vendor/lib64);
+# without libc++_shared in its default link the driver dies at dlopen
+debugfs -R "dump /etc/ld.config.27.txt $T/ldcfg" "$IMG" >/dev/null 2>&1
+grep -q 'link.default.shared_libs.*libc++_shared' "$T/ldcfg" \
+  && printf '  MATCH  %s\n' "/etc/ld.config.27.txt (libc++_shared in sphal link)" \
+  || printf '  DIFFER %s\n' "/etc/ld.config.27.txt (libc++_shared missing from sphal link)"
 check /app/MonadoOpenXR/lib/arm64/libopenxr_monado.so \
     "$XR/monado/build-android/src/xrt/targets/openxr/libopenxr_monado.so"
 debugfs -R "dump /app/MonadoOpenXR/MonadoOpenXR.apk $T/mx.apk" "$IMG" >/dev/null 2>&1

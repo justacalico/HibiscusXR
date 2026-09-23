@@ -238,6 +238,10 @@ put "$XR/android/active_runtime.json" /etc/openxr/1/active_runtime.json 644
 mkd /product/etc/openxr
 mkd /product/etc/openxr/1
 put "$XR/android/active_runtime.json" /product/etc/openxr/1/active_runtime.json 644
+# PM feature flags XR apps query at install/run time (WiVRn marks the first
+# two required) - without these the device reads as a plain handset
+mkd /etc/permissions
+put ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml /etc/permissions/pn2-xr-features.xml 644
 debugfs -w -R "rm /etc/init/pvrservice.rc" "$IMG" >/dev/null 2>&1
 echo "  removed /etc/init/pvrservice.rc"
 

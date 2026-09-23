@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<permissions>
+    <!-- what the OpenXR stack actually provides on this build: a system
+         runtime (Monado, in-process) plus tracked head pose. XR apps query
+         these with PackageManager.hasSystemFeature - WiVRn's manifest marks
+         the first two required, so without them it reads as a non-XR device -->
+    <feature name="android.software.xr.api.openxr" version="65536" />
+    <feature name="android.hardware.vr.headtracking" version="1" />
+    <feature name="android.hardware.xr.input.controller" version="0" />
+</permissions>

@@ -42,7 +42,8 @@ int libraryIndex(const std::vector<Panel>& panels);
 // left minimizes to the shelf first so the two never stack. A minimized
 // panel still owns its slot (same model as freeSlotYaw), so it shuffles
 // like any other - its restore lands where it was moved, not under the
-// launcher
+// launcher. The parked window's stored yaw slides to the far slot when
+// it's free, so a shelf tap restores it beside the shifted window
 float libraryMiddleYaw(std::vector<Panel>& panels, float centre);
 
 // snap every panel to its nearest ring slot around a new centre yaw and pull

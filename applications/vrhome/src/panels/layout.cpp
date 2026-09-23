@@ -95,9 +95,22 @@ float libraryMiddleYaw(std::vector<Panel>& panels, float centre) {
             left = i;
     }
     if (mid < 0) return centre;
-    // the parked window keeps its task and display; it rejoins the ring
-    // from the shelf on tap
-    if (left >= 0) panels[left].minimized = true;
+    if (left >= 0) {
+        Panel& lp = panels[left];
+        lp.minimized = true;
+        // a parked window's stored yaw is where a shelf tap puts it back:
+        // the middle window is taking this slot, so hand the record the
+        // far slot when it's free rather than leave a stacked restore
+        const float rightYaw = centre + kSlotYaw[2];
+        bool free = true;
+        for (int i = 0; i < (int)panels.size(); ++i)
+            if (i != left && i != mid &&
+                    fabsf(wrapPi(panels[i].yaw - rightYaw)) < kPanelMinGap) {
+                free = false;
+                break;
+            }
+        if (free) lp.yaw = rightYaw;
+    }
     panels[mid].yaw = leftYaw;
     return centre;
 }

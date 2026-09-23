@@ -184,7 +184,8 @@ void testLayout() {
     CHECK(!ps[0].minimized);
 
     // with the left slot taken its window parks on the shelf so the middle
-    // one can take its place; the right slot is untouched
+    // one can take its place; the parked record keeps the left yaw because
+    // the far slot is occupied, and the right window is untouched
     ps.clear();
     ps.push_back(mkPanel(kSlotYaw[1], "com.x.left"));
     ps.push_back(mkPanel(0.0f, "com.x.mid"));
@@ -196,6 +197,17 @@ void testLayout() {
     CHECK_F(ps[1].yaw, kSlotYaw[1], 1e-6f);
     CHECK_F(ps[2].yaw, kSlotYaw[2], 1e-6f);
     CHECK(!ps[2].minimized);
+
+    // far slot free: the parked window's stored yaw slides over so a shelf
+    // tap restores it beside the shifted window instead of on top of it
+    ps.clear();
+    ps.push_back(mkPanel(0.0f, "com.x.mid"));
+    ps.push_back(mkPanel(kSlotYaw[1], "com.x.left"));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK(!ps[0].minimized);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(ps[1].minimized);
+    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
 
     // a free middle needs no shuffle: a lone left window stays put
     ps.clear();

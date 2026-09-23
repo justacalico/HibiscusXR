@@ -174,12 +174,16 @@ void syncDock(HudEngine* e) {
     e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
     e->dock = buildDock(e->dockPins, e->panels, e->dockXr);
     e->dockHW = dockLayout(e->dock, e->dockSys);
+    e->shelf = buildShelf(e->panels);
+    e->shelfHW = shelfLayout(e->shelf);
     if (!e->bridge) return;
     for (auto& it : e->dock) {
         const DockIcon& ic = iconFor(e, it.pkg);
         it.label = ic.label;
         if (ic.vr) it.vr = true;
     }
+    for (auto& it : e->shelf)
+        it.label = iconFor(e, it.pkg).label;
 }
 
 // ------------------------------------------------------------- actions
@@ -238,6 +242,20 @@ void dockClose(HudEngine* e, int idx) {
     if (env->ExceptionCheck()) env->ExceptionClear();
 }
 
+void shelfActivate(HudEngine* e, int idx) {
+    if (idx < 0 || idx >= (int)e->shelf.size()) return;
+    const int pi = e->shelf[idx].panelIdx;
+    if (pi < 0 || pi >= (int)e->panels.size()) return;
+    Panel& p = e->panels[pi];
+    if (!p.minimized || p.pkg != e->shelf[idx].pkg) return;
+    p.minimized = false;
+    if (e->bridge && p.taskId >= 0) {
+        JNIEnv* env = threadEnv(e->vm);
+        env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
+        if (env->ExceptionCheck()) env->ExceptionClear();
+    }
+}
+
 void dockPushPins(HudEngine* e) {
     if (!e->bridge || !e->mSetPins) return;
     JNIEnv* env = threadEnv(e->vm);
@@ -277,9 +295,9 @@ void dockTick(HudEngine* e) {
 
 // fallback tile for an app with no icon: a coloured rounded square carrying
 // the label's first letter
-static void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
-                           const float r[3], const float up[3], float s,
-                           const char* label) {
+void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
+                    const float r[3], const float up[3], float s,
+                    const char* label) {
     static const float pal[][3] = {
         {0.30f, 0.36f, 0.52f}, {0.36f, 0.30f, 0.50f}, {0.22f, 0.42f, 0.48f},
         {0.40f, 0.30f, 0.34f}, {0.26f, 0.44f, 0.36f}, {0.44f, 0.38f, 0.26f},
@@ -314,6 +332,55 @@ static void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
         drawTextPanel(e, ch, o, r, up, ts, 0.0f);
         glUseProgram(e->shapeProg);
     }
+}
+
+// textured app icon on a plane's frame: a rounded-crop quad fed through the
+// icon shader; bitmaps upload top-row-first, so v=0 is the image's top
+void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
+                 const float r[3], const float up[3], float s,
+                 unsigned tex, float alpha) {
+    glUseProgram(e->iconProg);
+    const GLint uMVP = glGetUniformLocation(e->iconProg, "uMVP");
+    const GLint uTex = glGetUniformLocation(e->iconProg, "uTex");
+    const GLint uHalf = glGetUniformLocation(e->iconProg, "uHalf");
+    const GLint uRad = glGetUniformLocation(e->iconProg, "uRadius");
+    const GLint uAl = glGetUniformLocation(e->iconProg, "uAlpha");
+    const GLint aPos = glGetAttribLocation(e->iconProg, "aPos");
+    const GLint aUV = glGetAttribLocation(e->iconProg, "aUV");
+    const float q[4][5] = {
+        {ic[0]-r[0]*s-up[0]*s, ic[1]-r[1]*s-up[1]*s,
+         ic[2]-r[2]*s-up[2]*s, 0.0f, 1.0f},
+        {ic[0]+r[0]*s-up[0]*s, ic[1]+r[1]*s-up[1]*s,
+         ic[2]+r[2]*s-up[2]*s, 1.0f, 1.0f},
+        {ic[0]+r[0]*s+up[0]*s, ic[1]+r[1]*s+up[1]*s,
+         ic[2]+r[2]*s+up[2]*s, 1.0f, 0.0f},
+        {ic[0]-r[0]*s+up[0]*s, ic[1]-r[1]*s+up[1]*s,
+         ic[2]-r[2]*s+up[2]*s, 0.0f, 0.0f},
+    };
+    const int tris[6] = {0,1,2, 0,2,3};
+    float verts[30];
+    for (int t = 0; t < 6; ++t)
+        memcpy(verts + t*5, q[tris[t]], 20);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
+    glUniform2f(uHalf, s, s);
+    glUniform1f(uRad, s * kIconRad);
+    glUniform1f(uAl, alpha);
+    glUniform1i(uTex, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts,
+                 GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20,
+                          (void*)0);
+    glVertexAttribPointer(aUV, 2, GL_FLOAT, GL_FALSE, 20,
+                          (void*)12);
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+    glUseProgram(e->shapeProg);
 }
 
 void drawDock(HudEngine* e, const Mat4& vp) {
@@ -498,49 +565,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
 
         const float alpha = it.minimized ? 0.45f : 1.0f;
         if (icon && icon->tex) {
-            glUseProgram(e->iconProg);
-            const GLint uMVP = glGetUniformLocation(e->iconProg, "uMVP");
-            const GLint uTex = glGetUniformLocation(e->iconProg, "uTex");
-            const GLint uHalf = glGetUniformLocation(e->iconProg, "uHalf");
-            const GLint uRad = glGetUniformLocation(e->iconProg, "uRadius");
-            const GLint uAl = glGetUniformLocation(e->iconProg, "uAlpha");
-            const GLint aPos = glGetAttribLocation(e->iconProg, "aPos");
-            const GLint aUV = glGetAttribLocation(e->iconProg, "aUV");
-            // bitmaps upload top-row-first, so v=0 is the image's top
-            const float q[4][5] = {
-                {ic[0]-r[0]*s-up[0]*s, ic[1]-r[1]*s-up[1]*s,
-                 ic[2]-r[2]*s-up[2]*s, 0.0f, 1.0f},
-                {ic[0]+r[0]*s-up[0]*s, ic[1]+r[1]*s-up[1]*s,
-                 ic[2]+r[2]*s-up[2]*s, 1.0f, 1.0f},
-                {ic[0]+r[0]*s+up[0]*s, ic[1]+r[1]*s+up[1]*s,
-                 ic[2]+r[2]*s+up[2]*s, 1.0f, 0.0f},
-                {ic[0]-r[0]*s+up[0]*s, ic[1]-r[1]*s+up[1]*s,
-                 ic[2]-r[2]*s+up[2]*s, 0.0f, 0.0f},
-            };
-            const int tris[6] = {0,1,2, 0,2,3};
-            float verts[30];
-            for (int t = 0; t < 6; ++t)
-                memcpy(verts + t*5, q[tris[t]], 20);
-            glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
-            glUniform2f(uHalf, s, s);
-            glUniform1f(uRad, s * kIconRad);
-            glUniform1f(uAl, alpha);
-            glUniform1i(uTex, 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, icon->tex);
-            glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts,
-                         GL_STREAM_DRAW);
-            glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20,
-                                  (void*)0);
-            glVertexAttribPointer(aUV, 2, GL_FLOAT, GL_FALSE, 20,
-                                  (void*)12);
-            glEnableVertexAttribArray(aPos);
-            glEnableVertexAttribArray(aUV);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDisableVertexAttribArray(aPos);
-            glDisableVertexAttribArray(aUV);
-            glUseProgram(e->shapeProg);
+            drawIconTex(e, vp, ic, r, up, s, icon->tex, alpha);
         } else {
             glUseProgram(e->shapeProg);
             drawLetterTile(e, vp, ic, r, up, s,
@@ -639,6 +664,82 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
         shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
                   kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+    }
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
+}
+
+void drawShelf(HudEngine* e, const Mat4& vp) {
+    if (e->shelf.empty() || e->shelfHW <= 0.0f) return;
+    float c[3], r[3], up[3];
+    shelfCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
+    const float hw = e->shelfHW;
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
+    glUseProgram(e->shapeProg);
+    // shadow + pill: the strip's recipe shrunk to a one-row tray
+    const float shc[3] = {c[0] - up[0] * 0.016f, c[1] - up[1] * 0.016f,
+                          c[2] - up[2] * 0.016f};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
+    shapeQuad(e, vp, shc, r, up, -0.024f, 0.0f, hw + 0.04f,
+              kShelfHH + 0.04f, hw, kShelfHH, kShelfHH, -1.0f, 0.04f,
+              shCol);
+    const float pillCol[4] = {0.07f, 0.08f, 0.11f, 0.78f};
+    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, kShelfHH, hw, kShelfHH,
+              kShelfHH, 0.0f, 0.003f, pillCol);
+
+    for (int i = 0; i < (int)e->shelf.size(); ++i) {
+        const ShelfItem& it = e->shelf[i];
+        const bool hov = e->shelfHover == i;
+        const float s = kShelfIconHW * (hov ? 1.14f : 1.0f);
+        const float ic[3] = {c[0] + r[0]*it.x, c[1] + r[1]*it.x,
+                             c[2] + r[2]*it.x};
+        const DockIcon* icon = nullptr;
+        auto f = e->dockIcons.find(it.pkg);
+        if (f != e->dockIcons.end()) icon = &f->second;
+
+        if (hov) {
+            const float hl[4] = {1.0f, 1.0f, 1.0f, 0.10f};
+            shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.014f,
+                      s + 0.014f, s + 0.014f, s + 0.014f,
+                      (s + 0.014f) * kIconRad, 0.0f, 0.002f, hl);
+        }
+        if (icon && icon->tex) {
+            drawIconTex(e, vp, ic, r, up, s, icon->tex, 1.0f);
+        } else {
+            drawLetterTile(e, vp, ic, r, up, s,
+                           it.label.empty() ? it.pkg.c_str()
+                                            : it.label.c_str());
+            glUseProgram(e->shapeProg);
+        }
+
+        // label above the pill while the icon is hovered
+        if (hov && !it.label.empty() && e->font.ok) {
+            const float ts = 0.0016f;
+            const float tw = measureText(e, it.label.c_str(), ts) * 0.5f;
+            float o[3] = {c[0] + r[0]*(it.x - tw) +
+                          up[0]*(kShelfHH + 0.04f),
+                          c[1] + r[1]*(it.x - tw) +
+                          up[1]*(kShelfHH + 0.04f),
+                          c[2] + r[2]*(it.x - tw) +
+                          up[2]*(kShelfHH + 0.04f)};
+            o[0] -= c[0] * 0.010f;
+            o[1] -= c[1] * 0.010f;
+            o[2] -= c[2] * 0.010f;
+            glUseProgram(e->textProg);
+            glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
+                               1, GL_FALSE, vp.m);
+            glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
+                        1.0f, 1.0f, 1.0f);
+            glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, e->font.tex);
+            drawTextPanel(e, it.label.c_str(), o, r, up, ts, 0.0f);
+            glUseProgram(e->shapeProg);
+        }
     }
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);

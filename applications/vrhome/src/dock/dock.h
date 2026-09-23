@@ -29,11 +29,27 @@ void dockActivate(HudEngine* e, int idx);
 // the close badge on a live immersive item: kill its task
 void dockClose(HudEngine* e, int idx);
 
+// release on a shelf icon: the parked window comes back and takes focus
+void shelfActivate(HudEngine* e, int idx);
+
 // toggle pkg in the pin list and persist it through the bridge
 void dockTogglePin(HudEngine* e, const char* pkg);
 
 // push the current pin list to the java side for persistence
 void dockPushPins(HudEngine* e);
+
+// shared app-icon rendering: the textured icon, or a coloured letter tile
+// for a package with no bitmap. The strip, the shelf and the notification
+// cards all draw through these
+void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
+                 const float r[3], const float up[3], float s,
+                 unsigned tex, float alpha);
+void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
+                    const float r[3], const float up[3], float s,
+                    const char* label);
+
+// the minimized-window shelf, drawn between the strip and the card stack
+void drawShelf(HudEngine* e, const Mat4& vp);
 
 // the strip itself, drawn after the panels so it layers on the dash front
 void drawDock(HudEngine* e, const Mat4& vp);

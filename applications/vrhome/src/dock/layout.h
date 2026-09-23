@@ -66,3 +66,37 @@ bool dockPinnable(const DockItem& it);
 // add pkg to the end of the pin list or remove it; returns the new list
 std::vector<std::string> pinToggle(const std::vector<std::string>& pins,
                                    const std::string& pkg);
+
+// hidden panels parked on the shelf above the dock bar, in panel order
+std::vector<ShelfItem> buildShelf(const std::vector<Panel>& panels);
+
+// centre the icon row on a pill and return the pill's half-width
+float shelfLayout(std::vector<ShelfItem>& items);
+
+// the pill's centre and its top edge as lifts above the dock bar's centre
+float shelfLift();
+float shelfTop();
+
+// shelf quad on the dock's anchor plane, raised shelfLift along its up
+void shelfCenter(float yaw, float pitch, const float origin[3],
+                 float c[3], float r[3], float up[3]);
+
+// which icon a pill-local point hits; -1 on the body or in the gaps
+int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
+                float u, float v);
+
+// gaze ray vs the shelf plane; u,v in pill coords, may fall outside -1..1
+bool rayShelf(float yaw, float pitch, const float origin[3],
+              const float o[3], const float d[3], float halfW,
+              float* u, float* v, float* t);
+
+// the shelf icon under an arbitrary ray; hit is set even on the pill body
+// between icons, so the shelf blocks clicks like the dock bar does
+ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
+                       float yaw, float pitch, const float origin[3],
+                       const float o[3], const float d[3]);
+
+// the shelf icon under the gaze ray
+ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
+                    float yaw, float pitch, const Mat4& head,
+                    const float origin[3], const float o[3]);

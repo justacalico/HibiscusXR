@@ -222,8 +222,11 @@ static void hudScene(Engine* e, const Mat4& vp) {
     }
     drawPanels(h, vp);
     drawDock(h, vp);
+    drawShelf(h, vp);
     drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
-                   notifLift((int)h->notifs.size()));
+                   notifLiftAbove((int)h->notifs.size(),
+                                  h->shelf.empty() ? kDockBarH * 0.5f
+                                                   : shelfTop()));
     drawControllers(h, vp);
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
@@ -345,8 +348,10 @@ static void hudFrame(HudEngine* e) {
     // the toast pops so the cards stay world-locked for its seconds
     const float nYaw = e->toastOnly ? e->toastYaw : e->dockYaw;
     const float nPitch = e->toastOnly ? kNotifToastPitch : e->dockPitch;
+    const float nClear = e->shelf.empty() ? kDockBarH * 0.5f : shelfTop();
     const float nLift = e->toastOnly ? 0.0f
-                                     : notifLift((int)e->notifs.size());
+                                     : notifLiftAbove((int)e->notifs.size(),
+                                                      nClear);
 
     // aim pick: the card stack floats in front of the dock plane so it
     // wins by distance; the dock wins ties against a panel edge so its
@@ -354,20 +359,34 @@ static void hudFrame(HudEngine* e) {
     const Pick pk = pickPanelRay(e->panels, e->ringPos, e->aimO, e->aimD);
     const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
                                   e->dockPitch, e->ringPos, e->aimO, e->aimD);
+    const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
+                                      e->dockPitch, e->ringPos,
+                                      e->aimO, e->aimD);
     const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
                                       e->ringPos, e->aimO, e->aimD);
     if (np.stack && (!dp.bar || np.t <= dp.t) &&
             (pk.idx < 0 || np.t <= pk.t)) {
         e->notifHover = np.idx;
         e->notifZone = np.zone;
+        e->shelfHover = -1;
         e->dockHover = -1;
         e->dockZone = DZONE_NONE;
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
         e->aimHitT = np.t;
+    } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t)) {
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
+        e->shelfHover = sp.idx;
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+        e->aimHitT = sp.t;
     } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
+        e->shelfHover = -1;
         e->dockHover = dp.idx;
         e->dockZone = dp.zone;
         e->dockU = dp.u;
@@ -378,6 +397,7 @@ static void hudFrame(HudEngine* e) {
     } else {
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
+        e->shelfHover = -1;
         e->dockHover = -1;
         e->dockZone = DZONE_NONE;
         e->hover = pk.idx;

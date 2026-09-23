@@ -98,9 +98,20 @@ constexpr float kDockPitchScale = 0.35f, kDockPitchDrop = 0.55f;
 constexpr float kDockPitchMin = -0.95f, kDockPitchMax = -0.20f;
 constexpr float kDockPitchRest = -0.55f;   // before the first anchor
 
-// notification cards: a stack floating just above the dock bar while the
-// dash is up; over a covered app the toast window draws it alone for
-// kNotifToastMs. The stack rides the same anchor cylinder as the strip
+// minimized-window shelf: hidden panels park as a row of small icons on a
+// pill floating just above the dock bar, so a minimized app stays visible
+// instead of vanishing. It rides the dock's anchor plane, lifted along its
+// up; the notification stack clears it via shelfTop()
+constexpr float kShelfIconHW = 0.042f;  // icon half-width
+constexpr float kShelfGap = 0.020f;     // between icons
+constexpr float kShelfPad = 0.014f;     // pill inset around the icon row
+constexpr float kShelfHH = kShelfIconHW + kShelfPad;  // pill half-height
+constexpr float kShelfGapY = 0.016f;    // between bar top and pill bottom
+
+// notification cards: a stack floating above the dock bar (and the
+// minimized shelf when one is up) while the dash is up; over a covered app
+// the toast window draws it alone for kNotifToastMs. The stack rides the
+// same anchor cylinder as the strip
 constexpr float kNotifCardW = 0.56f;    // card width
 constexpr float kNotifCardH = 0.115f;   // card height
 constexpr float kNotifGap = 0.014f;     // between stacked cards, and the

@@ -248,3 +248,86 @@ std::vector<std::string> pinToggle(const std::vector<std::string>& pins,
     if (!dropped) out.push_back(pkg);
     return out;
 }
+
+// ------------------------------------------------------------- shelf
+
+std::vector<ShelfItem> buildShelf(const std::vector<Panel>& panels) {
+    std::vector<ShelfItem> out;
+    for (int i = 0; i < (int)panels.size(); ++i) {
+        if (!panels[i].minimized) continue;
+        ShelfItem it;
+        it.panelIdx = i;
+        it.pkg = panels[i].pkg;
+        out.push_back(it);
+    }
+    return out;
+}
+
+float shelfLayout(std::vector<ShelfItem>& items) {
+    if (items.empty()) return 0.0f;
+    const float inner = items.size() * kShelfIconHW * 2.0f +
+                        (items.size() - 1) * kShelfGap;
+    const float halfW = inner * 0.5f + kShelfPad;
+    float x = -halfW + kShelfPad + kShelfIconHW;
+    for (auto& it : items) {
+        it.x = x;
+        x += kShelfIconHW * 2.0f + kShelfGap;
+    }
+    return halfW;
+}
+
+float shelfLift() {
+    return kDockBarH * 0.5f + kShelfGapY + kShelfHH;
+}
+
+float shelfTop() {
+    return shelfLift() + kShelfHH;
+}
+
+void shelfCenter(float yaw, float pitch, const float origin[3],
+                 float c[3], float r[3], float up[3]) {
+    dockCenter(yaw, pitch, origin, c, r, up);
+    for (int i = 0; i < 3; ++i) c[i] += up[i] * shelfLift();
+}
+
+int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
+                float u, float v) {
+    if (halfW <= 0.0f || fabsf(u) > 1.0f || fabsf(v) > 1.0f) return -1;
+    const float x = u * halfW;
+    // slack stays under half the icon gap so a point between two icons
+    // still lands on the pill body instead of stealing a neighbour's hit
+    const float slack = kShelfIconHW + 0.008f;
+    for (int i = 0; i < (int)items.size(); ++i)
+        if (fabsf(x - items[i].x) <= slack) return i;
+    return -1;
+}
+
+bool rayShelf(float yaw, float pitch, const float origin[3],
+              const float o[3], const float d[3], float halfW,
+              float* u, float* v, float* t) {
+    float c[3], r[3], up[3];
+    shelfCenter(yaw, pitch, origin, c, r, up);
+    return rayQuad(c, r, up, origin, o, d, halfW, kShelfHH, u, v, t);
+}
+
+ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
+                       float yaw, float pitch, const float origin[3],
+                       const float o[3], const float d[3]) {
+    ShelfPick pk;
+    if (items.empty() || halfW <= 0.0f) return pk;
+    float u, v, t;
+    if (!rayShelf(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
+    if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
+    pk.hit = true;
+    pk.t = t;
+    pk.idx = shelfItemAt(items, halfW, u, v);
+    return pk;
+}
+
+ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
+                    float yaw, float pitch, const Mat4& head,
+                    const float origin[3], const float o[3]) {
+    float d[3];
+    gazeDir(head, d);
+    return pickShelfRay(items, halfW, yaw, pitch, origin, o, d);
+}

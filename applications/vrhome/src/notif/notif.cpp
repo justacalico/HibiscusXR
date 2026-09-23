@@ -134,78 +134,13 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         auto f = e->dockIcons.find(it.pkg);
         if (f != e->dockIcons.end()) icon = &f->second;
         if (icon && icon->tex) {
-            glUseProgram(e->iconProg);
-            const GLint uMVP = glGetUniformLocation(e->iconProg, "uMVP");
-            const GLint uTex = glGetUniformLocation(e->iconProg, "uTex");
-            const GLint uHalf = glGetUniformLocation(e->iconProg, "uHalf");
-            const GLint uRad = glGetUniformLocation(e->iconProg, "uRadius");
-            const GLint uAl = glGetUniformLocation(e->iconProg, "uAlpha");
-            const GLint aPos = glGetAttribLocation(e->iconProg, "aPos");
-            const GLint aUV = glGetAttribLocation(e->iconProg, "aUV");
-            const float s = kNotifIconHW;
-            const float q[4][5] = {
-                {ic[0]-r[0]*s-up[0]*s, ic[1]-r[1]*s-up[1]*s,
-                 ic[2]-r[2]*s-up[2]*s, 0.0f, 1.0f},
-                {ic[0]+r[0]*s-up[0]*s, ic[1]+r[1]*s-up[1]*s,
-                 ic[2]+r[2]*s-up[2]*s, 1.0f, 1.0f},
-                {ic[0]+r[0]*s+up[0]*s, ic[1]+r[1]*s+up[1]*s,
-                 ic[2]+r[2]*s+up[2]*s, 1.0f, 0.0f},
-                {ic[0]-r[0]*s+up[0]*s, ic[1]-r[1]*s+up[1]*s,
-                 ic[2]-r[2]*s+up[2]*s, 0.0f, 0.0f},
-            };
-            const int tris[6] = {0,1,2, 0,2,3};
-            float verts[30];
-            for (int t = 0; t < 6; ++t)
-                memcpy(verts + t*5, q[tris[t]], 20);
-            glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
-            glUniform2f(uHalf, s, s);
-            glUniform1f(uRad, s * kIconRad);
-            glUniform1f(uAl, 1.0f);
-            glUniform1i(uTex, 0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, icon->tex);
-            glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
-            glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts,
-                         GL_STREAM_DRAW);
-            glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20,
-                                  (void*)0);
-            glVertexAttribPointer(aUV, 2, GL_FLOAT, GL_FALSE, 20,
-                                  (void*)12);
-            glEnableVertexAttribArray(aPos);
-            glEnableVertexAttribArray(aUV);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
-            glDisableVertexAttribArray(aPos);
-            glDisableVertexAttribArray(aUV);
-            glUseProgram(e->shapeProg);
+            drawIconTex(e, vp, ic, r, up, kNotifIconHW, icon->tex, 1.0f);
         } else {
             // no icon: a letter tile derived from the app label
             const char* lb = icon && !icon->label.empty()
                              ? icon->label.c_str() : it.pkg.c_str();
-            const float pc[4] = {0.24f, 0.30f, 0.44f, 1.0f};
-            shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, kNotifIconHW,
-                      kNotifIconHW, kNotifIconHW, kNotifIconHW,
-                      kNotifIconHW * kIconRad, 0.0f, 0.002f, pc);
-            if (*lb && e->font.ok) {
-                char ch[2] = {*lb, 0};
-                const float ts = kNotifIconHW * 0.04f;
-                const float tw = measureText(e, ch, ts) * 0.5f;
-                float gt, gb, yo = 0.0f;
-                if (textBounds(e->font.set, ch, ts, &gt, &gb))
-                    yo = -(gt + gb) * 0.5f;
-                float o[3] = {ic[0] - r[0]*tw + up[0]*yo - ic[0]*0.010f,
-                              ic[1] - r[1]*tw + up[1]*yo - ic[1]*0.010f,
-                              ic[2] - r[2]*tw + up[2]*yo - ic[2]*0.010f};
-                glUseProgram(e->textProg);
-                glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
-                                   1, GL_FALSE, vp.m);
-                glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                            1.0f, 1.0f, 1.0f);
-                glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, e->font.tex);
-                drawTextPanel(e, ch, o, r, up, ts, 0.0f);
-                glUseProgram(e->shapeProg);
-            }
+            drawLetterTile(e, vp, ic, r, up, kNotifIconHW, lb);
+            glUseProgram(e->shapeProg);
         }
 
         // title + body in the text column; title falls back to the app

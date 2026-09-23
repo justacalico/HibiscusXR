@@ -25,6 +25,10 @@ float notifStackHH(int count);
 // lift above the dock bar's centre so the stack clears the strip
 float notifLift(int count);
 
+// same, clearing `clear` metres of chrome under the stack - the shelf's
+// top edge while minimized windows are parked above the bar
+float notifLiftAbove(int count, float clear);
+
 // stack quad on the dock's anchor cylinder, raised `lift` along its up
 void notifCenter(float yaw, float pitch, float lift, const float origin[3],
                  float c[3], float r[3], float up[3]);

@@ -27,5 +27,5 @@
 - **CVService controllers.** Starts 32-bit correctly, but crashes in
   `WriteParameter` from a wifi-state broadcast. Currently disabled.
 - **Provision (setup wizard)** crashes in its language picker
-  (`IndexOutOfBounds` in `Language1Adapter`) - disable it per
-  [first boot](../guide/first-boot.md).
+  (`IndexOutOfBounds` in `Language1Adapter`) - disabled automatically on
+  first boot, no manual step needed.

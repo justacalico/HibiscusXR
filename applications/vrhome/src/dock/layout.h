@@ -19,6 +19,11 @@ void dockCenter(float yaw, float pitch, const float origin[3],
 // level and clamped so the strip stays below the windows, never overhead
 float dockPitchFor(float headPitch);
 
+// dock elevation while a handle drag holds: the strip is tied to the window
+// ring, so it picks up exactly the pitch the ring gained since the grab -
+// pole clamp included - and the dash moves as one piece
+float dockDragPitch(float grabPitch, float ringGrabPitch, float ringPitch);
+
 // ordered items for the strip: pins first (marked running when a live task
 // owns the pkg), then unpinned 2D panels, then unpinned XR tasks, then the
 // quick button. `sep` marks the group boundaries that draw separator gaps

@@ -17,6 +17,10 @@ float dockPitchFor(float headPitch) {
          : p > kDockPitchMax ? kDockPitchMax : p;
 }
 
+float dockDragPitch(float grabPitch, float ringGrabPitch, float ringPitch) {
+    return grabPitch + (ringPitch - ringGrabPitch);
+}
+
 static int findPanel(const std::vector<Panel>& panels,
                      const std::string& pkg) {
     for (int i = 0; i < (int)panels.size(); ++i)

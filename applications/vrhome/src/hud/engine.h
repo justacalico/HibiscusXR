@@ -84,6 +84,8 @@ struct HudEngine : Engine {
     std::map<std::string, DockIcon> dockIcons;
     float dockYaw = 0.0f, dockPitch = kDockPitchRest;
     float dockGrabYaw = 0.0f;      // dockYaw snapshot when a ring drag grabs
+    float dockGrabPitch = 0.0f;    // dockPitch snapshot on the same grab
+    float ringGrabPitch = 0.0f;    // the ring's elevation at the grab
     bool dockAnchored = false;
     int dockHover = -1;            // item under the gaze ray
     int dockZone = DZONE_NONE;

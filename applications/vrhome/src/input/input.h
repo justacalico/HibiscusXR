@@ -12,5 +12,5 @@ void hudKey(HudEngine* e, int code, int action, int repeat);
 void dragTick(HudEngine* e, const float o[3], const float d[3]);
 
 // per-frame while a drag handle is held: swing the whole panel ring with the
-// gaze so every window moves together
+// gaze so every window moves together, the dock tied under them
 void moveTick(HudEngine* e);

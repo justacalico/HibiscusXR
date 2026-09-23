@@ -2,6 +2,7 @@
 
 #include "keys.h"
 #include "../dock/dock.h"
+#include "../dock/layout.h"
 #include "../notif/notif.h"
 #include "../hud/engine.h"
 #include "../common/jni.h"
@@ -68,6 +69,8 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->moveGrabYaw = e->aimYaw;
                 e->moveGrabPitch = e->aimPitch;
                 e->dockGrabYaw = e->dockYaw;
+                e->dockGrabPitch = e->dockPitch;
+                e->ringGrabPitch = ringPitch(e->panels);
                 grabRing(e->panels);
                 LOGI("ring drag grab @ yaw %.2f", e->aimYaw);
             }
@@ -230,11 +233,16 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
 }
 
 // held on a drag handle: every panel keeps its slot offset and swings around
-// the viewer with the aim, up and down as well as side to side
+// the viewer with the aim, up and down as well as side to side, and the dock
+// rides along - the whole dash moves as one piece
 void moveTick(HudEngine* e) {
     if (!e->moveHeld) return;
     const float dYaw = wrapPi(e->aimYaw - e->moveGrabYaw);
     dragRing(e->panels, dYaw, e->aimPitch - e->moveGrabPitch);
-    // the dock rides the same ring and follows a handle drag
+    // the dock is tied to the ring: yaw takes the aim delta, pitch takes the
+    // elevation the ring actually gained so a pole clamp can't tear the
+    // strip off the windows
     e->dockYaw = wrapPi(e->dockGrabYaw + dYaw);
+    e->dockPitch = dockDragPitch(e->dockGrabPitch, e->ringGrabPitch,
+                                 ringPitch(e->panels));
 }

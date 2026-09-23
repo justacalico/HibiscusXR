@@ -9,6 +9,7 @@
 // owns the sensor queue; all GL and bridge calls happen on it.
 
 #include "engine.h"
+#include "status.h"
 
 #include "../bridge/bridge.h"
 #include "../common/config.h"
@@ -227,6 +228,13 @@ static void hudScene(Engine* e, const Mat4& vp) {
         drawHoldRing(h);
         return;
     }
+    if (h->debugOnly) {
+        // the window is up over a covered app only for the status line:
+        // the text itself draws after the scene, so the scene carries
+        // just the hold ring for summon-key feedback
+        drawHoldRing(h);
+        return;
+    }
     drawPanels(h, vp);
     drawDock(h, vp);
     drawShelf(h, vp);
@@ -440,7 +448,8 @@ static void hudFrame(HudEngine* e) {
     updateHud(e, extra);
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const float fov = propF("debug.vrhome.fov", kFovY);
-    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), true, true,
+    drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), true,
+             statusLineVisible(propI("debug.vrhome.hud", -1), e->debugHud),
              hudScene);
     warpPresent(e);
     updateFps(e);

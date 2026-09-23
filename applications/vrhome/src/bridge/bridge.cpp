@@ -87,6 +87,8 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mDismissNotif = env->GetMethodID(bc, "dismissNotif",
                         "(Ljava/lang/String;)V");
     e->mToastOnly    = env->GetMethodID(bc, "toastOnly", "()Z");
+    e->mDebugHud     = env->GetMethodID(bc, "debugHud", "()Z");
+    e->mDebugOnly    = env->GetMethodID(bc, "debugOnly", "()Z");
     e->mSysStatus    = env->GetMethodID(bc, "sysStatus", "()[I");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
@@ -195,6 +197,12 @@ void pumpBridge(HudEngine* e) {
     }
     if (e->mToastOnly)
         e->toastOnly = env->CallBooleanMethod(e->bridge, e->mToastOnly)
+                       == JNI_TRUE;
+    if (e->mDebugHud)
+        e->debugHud = env->CallBooleanMethod(e->bridge, e->mDebugHud)
+                      == JNI_TRUE;
+    if (e->mDebugOnly)
+        e->debugOnly = env->CallBooleanMethod(e->bridge, e->mDebugOnly)
                        == JNI_TRUE;
 
     if (!e->pendingCls) return;

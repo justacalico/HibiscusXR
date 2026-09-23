@@ -22,6 +22,9 @@ private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
 // Settings.System.SHOW_TOUCHES is @hide too; on Android 10 the key still
 // sits in the system table, so the raw name is the way in.
 private const val SHOW_TOUCHES = "show_touches"
+// Hibiscus-owned global key: the HUD service watches it and keeps the
+// debug status line up over any app while set
+private const val DEBUG_HUD = "hibiscus_debug_hud"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
@@ -191,6 +194,10 @@ class MainActivity : FlutterActivity() {
                 (Settings.System.getInt(
                     contentResolver, SHOW_TOUCHES, 0,
                 ) == 1),
+            "debugHud" to
+                (Settings.Global.getInt(
+                    contentResolver, DEBUG_HUD, 0,
+                ) == 1),
             "controllerPair" to (controllers?.pairingActive ?: false),
         ),
         "sliders" to mapOf(
@@ -352,6 +359,8 @@ class MainActivity : FlutterActivity() {
                     )
                 }
             }
+            "debugHud" ->
+                putGlobalInt(DEBUG_HUD, if (on) 1 else 0)
         }
     }
 

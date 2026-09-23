@@ -388,6 +388,18 @@ abstract class AppLocalizations {
   /// **'Flash a dot where the screen is touched'**
   String get itemShowTouchesDesc;
 
+  /// No description provided for @itemDebugHud.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug HUD'**
+  String get itemDebugHud;
+
+  /// No description provided for @itemDebugHudDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep the debug status line visible over any app'**
+  String get itemDebugHudDesc;
+
   /// No description provided for @itemModelName.
   ///
   /// In en, this message translates to:

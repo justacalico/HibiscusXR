@@ -13,6 +13,7 @@ void testDock();
 void testShelf();
 void testNotif();
 void testInput();
+void testStatus();
 
 int main() {
     testMat4();
@@ -26,6 +27,7 @@ int main() {
     testShelf();
     testNotif();
     testInput();
+    testStatus();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

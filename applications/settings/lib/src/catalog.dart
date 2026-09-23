@@ -34,6 +34,7 @@ const kSections = <SectionDef>[
     ItemId.adbToggle,
     ItemId.stayAwake,
     ItemId.showTouches,
+    ItemId.debugHud,
   ]),
   SectionDef(SectionId.about, [
     ItemId.aboutBrand,
@@ -63,6 +64,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.adbToggle: ItemKind.toggle,
   ItemId.stayAwake: ItemKind.toggle,
   ItemId.showTouches: ItemKind.toggle,
+  ItemId.debugHud: ItemKind.toggle,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
   ItemId.hibiscusVersion: ItemKind.info,

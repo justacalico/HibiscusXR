@@ -37,6 +37,7 @@ struct HudEngine : Engine {
               mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr,
               mNotifVer = nullptr, mNotifs = nullptr,
               mDismissNotif = nullptr, mToastOnly = nullptr,
+              mDebugHud = nullptr, mDebugOnly = nullptr,
               mSysStatus = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
@@ -129,6 +130,12 @@ struct HudEngine : Engine {
     bool toastOnly = false;
     bool toastWas = false;
     float toastYaw = 0.0f;
+
+    // developer-settings debug line: debugHud is the toggle itself;
+    // debugOnly means the window is up over a covered app solely for that
+    // line, so the scene draws nothing but the hold ring
+    bool debugHud = false;
+    bool debugOnly = false;
 
     // controllers: the shared-memory map plus the arbitration state it
     // feeds. ctrlPos/ctrlDir are each live controller's world aim ray;

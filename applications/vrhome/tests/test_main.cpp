@@ -12,6 +12,7 @@ void testWarp();
 void testDock();
 void testShelf();
 void testNotif();
+void testSysMsg();
 void testInput();
 void testStatus();
 
@@ -26,6 +27,7 @@ int main() {
     testDock();
     testShelf();
     testNotif();
+    testSysMsg();
     testInput();
     testStatus();
     printf("%d checks, %d failures\n", gChecks, gFails);

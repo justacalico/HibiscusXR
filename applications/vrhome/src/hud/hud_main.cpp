@@ -32,6 +32,8 @@
 #include "../render/warp.h"
 #include "../sensor/sensor.h"
 #include "../sensor/qvr.h"
+#include "../sysmsg/layout.h"
+#include "../sysmsg/sysmsg.h"
 
 #include <android/looper.h>
 #include <android/native_window.h>
@@ -169,6 +171,18 @@ static void debugNotifCloseHook(HudEngine* e) {
     }
 }
 
+// test hook: setprop debug.vrhome.sysmsg <n> clicks button n on the front
+// system-message card (0 = Close, 1 = Restart). Fires once per new value
+static void debugSysMsgHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (__system_property_get("debug.vrhome.sysmsg", tb) > 0 &&
+            strcmp(tb, last) != 0) {
+        strncpy(last, tb, sizeof(last) - 1);
+        sysMsgBtnClick(e, atoi(tb));
+    }
+}
+
 // the library panel opens dead ahead once tracking is live, and since the
 // app is its own process a dead one respawns the same way instead of
 // leaving the shell without a launcher. A user-closed launcher is not a
@@ -221,6 +235,16 @@ static void spawnLauncher(HudEngine* e, const Mat4& head) {
 // whatever surface sits underneath (env scenery or a running app)
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
+    if (h->sysMsgOnly) {
+        // a crash/ANR card over a covered app is modal: the dialog draws
+        // alone (plus the toast stack when one's up) - no dash chrome
+        if (h->toastOnly)
+            drawNotifStack(h, vp, h->toastYaw, kNotifToastPitch, 0.0f);
+        drawSysMsg(h, vp, h->sysMsgYaw, kSysMsgPitch, 0.0f);
+        drawCursor(h, vp);
+        drawHoldRing(h);
+        return;
+    }
     if (h->toastOnly) {
         // heads-up over a covered app: only the card stack and the cursor
         // draw - the window never takes focus and no menu chrome shows,
@@ -244,6 +268,8 @@ static void hudScene(Engine* e, const Mat4& vp) {
                    notifLiftAbove((int)h->notifs.size(),
                                   h->shelf.empty() ? kDockBarH * 0.5f
                                                    : shelfTop()));
+    // the system message is modal: it draws over the whole dash
+    drawSysMsg(h, vp, h->dockYaw, h->dockPitch, kSysMsgLift);
     drawControllers(h, vp);
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
@@ -326,6 +352,7 @@ static void hudFrame(HudEngine* e) {
     debugDockCloseHook(e);
     debugDockPinHook(e);
     debugNotifCloseHook(e);
+    debugSysMsgHook(e);
     spawnLauncher(e, head);
 
     // hold-to-recenter fill: the java side owns the threshold and fires the
@@ -356,6 +383,7 @@ static void hudFrame(HudEngine* e) {
     // sync first: the pick needs this frame's item list and strip width
     syncDock(e);
     syncNotifs(e);
+    syncSysMsgs(e);
     // cards age out of the dash on postMs + kNotifShowMs; the record
     // itself stays live for the shade
     e->notifs = visibleNotifs(e->notifsAll, epochNowMs());
@@ -370,9 +398,18 @@ static void hudFrame(HudEngine* e) {
                                      : notifLiftAbove((int)e->notifs.size(),
                                                       nClear);
 
+    // the system message mirrors the stack's anchor rule: its own yaw
+    // over a covered app, the dash's centre in home space
+    const float mYaw = e->sysMsgOnly ? e->sysMsgYaw : e->dockYaw;
+    const float mPitch = e->sysMsgOnly ? kSysMsgPitch : e->dockPitch;
+    const float mLift = e->sysMsgOnly ? 0.0f : kSysMsgLift;
+
     // aim pick: the card stack floats in front of the dock plane so it
     // wins by distance; the dock wins ties against a panel edge so its
-    // icons stay tappable even when one peeks out from behind a window
+    // icons stay tappable even when one peeks out from behind a window.
+    // A system message beats everything - it's modal
+    const SysMsgPick mp = pickSysMsgRay(e->sysMsgs, mYaw, mPitch, mLift,
+                                        e->ringPos, e->aimO, e->aimD);
     const Pick pk = pickPanelRay(e->panels, e->ringPos, e->aimO, e->aimD);
     const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
                                   e->dockPitch, e->ringPos, e->aimO, e->aimD);
@@ -381,8 +418,23 @@ static void hudFrame(HudEngine* e) {
                                       e->aimO, e->aimD);
     const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
                                       e->ringPos, e->aimO, e->aimD);
-    if (np.stack && (!dp.bar || np.t <= dp.t) &&
+    if (mp.hit) {
+        e->sysMsgHover = 0;
+        e->sysMsgZone = mp.zone;
+        e->sysMsgBtn = mp.btn;
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
+        e->shelfHover = -1;
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+        e->aimHitT = mp.t;
+    } else if (np.stack && (!dp.bar || np.t <= dp.t) &&
             (pk.idx < 0 || np.t <= pk.t)) {
+        e->sysMsgHover = -1;
+        e->sysMsgZone = MZONE_NONE;
+        e->sysMsgBtn = -1;
         e->notifHover = np.idx;
         e->notifZone = np.zone;
         e->shelfHover = -1;
@@ -392,6 +444,9 @@ static void hudFrame(HudEngine* e) {
         e->hoverZone = ZONE_NONE;
         e->aimHitT = np.t;
     } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t)) {
+        e->sysMsgHover = -1;
+        e->sysMsgZone = MZONE_NONE;
+        e->sysMsgBtn = -1;
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
         e->shelfHover = sp.idx;
@@ -401,6 +456,9 @@ static void hudFrame(HudEngine* e) {
         e->hoverZone = ZONE_NONE;
         e->aimHitT = sp.t;
     } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
+        e->sysMsgHover = -1;
+        e->sysMsgZone = MZONE_NONE;
+        e->sysMsgBtn = -1;
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
         e->shelfHover = -1;
@@ -412,6 +470,9 @@ static void hudFrame(HudEngine* e) {
         e->hoverZone = ZONE_NONE;
         e->aimHitT = dp.t;
     } else {
+        e->sysMsgHover = -1;
+        e->sysMsgZone = MZONE_NONE;
+        e->sysMsgBtn = -1;
         e->notifHover = -1;
         e->notifZone = NZONE_NONE;
         e->shelfHover = -1;
@@ -430,6 +491,8 @@ static void hudFrame(HudEngine* e) {
     e->gazePitch = gazePitch(head);
     if (e->toastOnly && !e->toastWas) e->toastYaw = e->gazeYaw;
     e->toastWas = e->toastOnly;
+    if (e->sysMsgOnly && !e->sysMsgWas) e->sysMsgYaw = e->gazeYaw;
+    e->sysMsgWas = e->sysMsgOnly;
 
     // controller button edges land on this frame's fresh hover state
     ctrlFlush(e);

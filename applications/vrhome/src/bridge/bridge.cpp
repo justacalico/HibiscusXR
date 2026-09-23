@@ -90,6 +90,12 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mDebugHud     = env->GetMethodID(bc, "debugHud", "()Z");
     e->mDebugOnly    = env->GetMethodID(bc, "debugOnly", "()Z");
     e->mSysStatus    = env->GetMethodID(bc, "sysStatus", "()[I");
+    e->mSysMsgVer    = env->GetMethodID(bc, "sysMsgVersion", "()I");
+    e->mSysMsgs      = env->GetMethodID(bc, "sysMsgs",
+                        "()[Lgitlab/neosalsa/hud/SysMsgs$Msg;");
+    e->mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
+    e->mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
+    e->mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
@@ -111,6 +117,17 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
                         "Ljava/lang/String;");
     e->fNotifMs    = env->GetFieldID(e->notifCls, "postMs", "J");
     e->fNotifClear = env->GetFieldID(e->notifCls, "clearable", "Z");
+    e->sysMsgCls = (jclass)env->NewGlobalRef(loadAppClass(env,
+        e->ctx, "gitlab.neosalsa.hud.SysMsgs$Msg"));
+    e->fMsgId    = env->GetFieldID(e->sysMsgCls, "id", "J");
+    e->fMsgPkg   = env->GetFieldID(e->sysMsgCls, "pkg",
+                        "Ljava/lang/String;");
+    e->fMsgTitle = env->GetFieldID(e->sysMsgCls, "title",
+                        "Ljava/lang/String;");
+    e->fMsgText  = env->GetFieldID(e->sysMsgCls, "text",
+                        "Ljava/lang/String;");
+    e->fMsgBtns  = env->GetFieldID(e->sysMsgCls, "buttons",
+                        "[Ljava/lang/String;");
     LOGI("bridge ready");
 }
 
@@ -207,6 +224,9 @@ void pumpBridge(HudEngine* e) {
     if (e->mDebugOnly)
         e->debugOnly = env->CallBooleanMethod(e->bridge, e->mDebugOnly)
                        == JNI_TRUE;
+    if (e->mSysMsgOnly)
+        e->sysMsgOnly = env->CallBooleanMethod(e->bridge, e->mSysMsgOnly)
+                        == JNI_TRUE;
 
     if (!e->pendingCls) return;
 

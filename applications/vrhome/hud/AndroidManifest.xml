@@ -29,6 +29,8 @@
     <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
     <!-- lets the service enable its own accessibility key filter -->
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- dropbox crash/ANR entries behind the system-message cards -->
+    <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />

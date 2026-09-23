@@ -39,6 +39,9 @@ step "shims from source"
 step "adb props into gsi_raw"
 "$SELF/scripts/patch-gsi-props.sh"
 
+step "version stamp into gsi_raw"
+"$SELF/scripts/write-version.sh"
+
 step "clean image: overlay into GSI (143)"
 bash "$T/143_build_image2.sh" || true
 ran 143_build.txt "BUILD OK"

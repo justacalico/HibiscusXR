@@ -22,6 +22,7 @@ tar -cJf "$D/build-logs.tar.xz" --exclude='*.so' -C "$R" notes
 
 {
   echo "Hibiscus image build"
+  echo "version: ${HIBISCUS_VERSION:-dev}"
   echo "date:    $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "commit:  ${GITHUB_SHA:-local}"
   echo "run:     ${GITHUB_SERVER_URL:-}/${GITHUB_REPOSITORY:-}/${GITHUB_RUN_ID:-}"

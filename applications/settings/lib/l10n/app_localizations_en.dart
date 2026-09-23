@@ -170,6 +170,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemAndroidVersionDesc => 'The Android release this system runs';
 
   @override
+  String get itemHibiscusVersion => 'Hibiscus version';
+
+  @override
+  String get itemHibiscusVersionDesc =>
+      'The Hibiscus build installed on this headset';
+
+  @override
   String get itemAboutBrand => 'HibiscusXR';
 
   @override

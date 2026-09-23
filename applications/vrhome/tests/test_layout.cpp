@@ -172,6 +172,78 @@ void testLayout() {
     ps.push_back(mkPanel(kSlotYaw[2], kLibraryPkg));
     CHECK(libraryIndex(ps) == 1);
 
+    // the launcher claims the middle slot: an empty ring hands back the
+    // centre yaw untouched
+    ps.clear();
+    CHECK_F(libraryMiddleYaw(ps, 0.0f), 0.0f, 1e-6f);
+
+    // a window on the middle slot shifts onto the left one, unharmed
+    ps.push_back(mkPanel(0.0f, "com.x.mid"));
+    CHECK_F(libraryMiddleYaw(ps, 0.0f), 0.0f, 1e-6f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(!ps[0].minimized);
+
+    // with the left slot taken its window parks on the shelf so the middle
+    // one can take its place; the right slot is untouched
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[1], "com.x.left"));
+    ps.push_back(mkPanel(0.0f, "com.x.mid"));
+    ps.push_back(mkPanel(kSlotYaw[2], "com.x.right"));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK(ps[0].minimized);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(!ps[1].minimized);
+    CHECK_F(ps[1].yaw, kSlotYaw[1], 1e-6f);
+    CHECK_F(ps[2].yaw, kSlotYaw[2], 1e-6f);
+    CHECK(!ps[2].minimized);
+
+    // a free middle needs no shuffle: a lone left window stays put
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(!ps[0].minimized);
+
+    // middle taken with the left slot free: the window slides over with
+    // nothing to minimize
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[2]));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(!ps[0].minimized);
+    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
+
+    // the slots follow whatever centre the caller's gaze gave, not yaw 0
+    ps.clear();
+    ps.push_back(mkPanel(1.2f));
+    CHECK_F(libraryMiddleYaw(ps, 1.2f), 1.2f, 1e-6f);
+    CHECK_F(ps[0].yaw, 1.2f + kSlotYaw[1], 1e-6f);
+
+    // a minimized window still owns its slot: parked on the middle it
+    // shifts left too, so a later restore doesn't land under the launcher
+    ps.clear();
+    Panel mp = mkPanel(0.0f);
+    mp.minimized = true;
+    ps.push_back(mp);
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(ps[0].minimized);
+
+    // a window sitting between slots still counts as blocking the middle:
+    // the gap check is about yaw clearance, not exact slot membership
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[1] * 0.5f));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+
+    // the library panel itself never counts as the occupant to shove
+    ps.clear();
+    ps.push_back(mkPanel(0.0f, kLibraryPkg));
+    libraryMiddleYaw(ps, 0.0f);
+    CHECK_F(ps[0].yaw, 0.0f, 1e-6f);
+    CHECK(!ps[0].minimized);
+
     // recenter snaps each panel to its nearest slot around the new centre
     ps.clear();
     ps.push_back(mkPanel(1.02f));   // near the centre slot -> stays

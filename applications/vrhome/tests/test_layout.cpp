@@ -280,11 +280,15 @@ void testLayout() {
     // top bar sizing: the text region is the window's width minus the left
     // pad and whatever the button strip reserves on the right
     const float winHW = kPanelW / 2;
-    CHECK_F(barTextLimit(winHW, false), 2.0f * (winHW - kBarPadX), 1e-6f);
-    CHECK_F(barTextLimit(winHW, true),
+    CHECK_F(barBtnsW(0), 0.0f, 1e-6f);
+    CHECK_F(barBtnsW(2), kBarBtnW, 1e-6f);
+    CHECK_F(barBtnsW(1), kBarBtnPad + 2.0f * kBarBtnR, 1e-6f);
+    CHECK_F(barTextLimit(winHW, 0), 2.0f * (winHW - kBarPadX), 1e-6f);
+    CHECK_F(barTextLimit(winHW, 2),
             2.0f * (winHW - kBarPadX - kBarBtnW), 1e-6f);
-    CHECK(barTextLimit(winHW, true) < kPanelW);
-    CHECK(barTextLimit(winHW, true) < barTextLimit(winHW, false));
+    CHECK(barTextLimit(winHW, 2) < kPanelW);
+    CHECK(barTextLimit(winHW, 2) < barTextLimit(winHW, 1));
+    CHECK(barTextLimit(winHW, 1) < barTextLimit(winHW, 0));
 
     // button layout: close hugs the right edge, minimize sits to its left
     CHECK_F(barCloseX(winHW), winHW - kBarBtnPad - kBarBtnR, 1e-6f);
@@ -371,10 +375,17 @@ void testLayout() {
     dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
-    // the library bar has no buttons: its whole band picks as label
+    // the library bar shows the close disc only: a hit on it picks
+    // ZONE_CLOSE, the empty minimize slot and the rest read as label
     ps.clear();
     ps.push_back(mkPanel(0.0f, kLibraryPkg));
     aim.m[2] = -barCloseX(winHW); aim.m[6] = -barY;
+    pk = pickPanel(ps, aim, o0, o0);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_CLOSE);
+    aim.m[2] = -barMinX(winHW);
+    pk = pickPanel(ps, aim, o0, o0);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
+    aim.m[2] = -0.0f;
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
 

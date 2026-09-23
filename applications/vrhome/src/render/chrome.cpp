@@ -42,8 +42,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
         const bool hov = (e->hover == i);
-        // the library panel is the shell's own launcher: no window buttons
-        const bool btns = p.pkg != kLibraryPkg;
+        // the library is the shell's own launcher: it closes like any
+        // window but never minimizes, so its strip is the close disc alone
+        const int nbtns = p.pkg == kLibraryPkg ? 1 : 2;
 
         // the label is measured first so it can shrink to fit the bar's
         // text region left of the button strip
@@ -51,8 +52,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (!p.label.empty() && e->font.ok) {
             bold = 0.8f * s;
             w = measureText(e, p.label.c_str(), s) + bold;
-            if (w > barTextLimit(hw, btns)) {
-                s *= barTextLimit(hw, btns) / w;
+            if (w > barTextLimit(hw, nbtns)) {
+                s *= barTextLimit(hw, nbtns) / w;
                 bold = 0.8f * s;
                 w = measureText(e, p.label.c_str(), s) + bold;
             }
@@ -73,11 +74,12 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                   barHW, kBarH * 0.5f, kCornerR, 0.0f, 0.002f, barCol, 0.0f);
 
         // minimize + close discs on the bar's right end; glyphs are small
-        // capsules, the close pair rotated into an x
-        if (btns) {
+        // capsules, the close pair rotated into an x. The library draws
+        // the close disc only, so its loop starts on the second slot
+        {
             const float icon[4] = {1.0f, 1.0f, 1.0f, 0.92f};
             const float il = kBarBtnR * 0.55f, it = 0.0028f;
-            for (int b = 0; b < 2; ++b) {
+            for (int b = 2 - nbtns; b < 2; ++b) {
                 const int zone = b == 0 ? ZONE_MIN : ZONE_CLOSE;
                 const float bx = b == 0 ? barMinX(barHW) : barCloseX(barHW);
                 const bool bhov = hov && e->hoverZone == zone;

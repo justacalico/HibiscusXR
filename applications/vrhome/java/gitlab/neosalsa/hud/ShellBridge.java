@@ -550,6 +550,24 @@ public class ShellBridge {
         }
     }
 
+    // render thread: kill every task living on a panel's display. A panel's
+    // cached taskId lies once adoption's relaunch path swaps the real task
+    // underneath it - and launchPackageOn panels never learn one at all -
+    // so the display binding is what a close can trust
+    public void removeTasksOnDisplay(int displayId) {
+        try {
+            for (Object t : tasks()) {
+                if (fDisplayId.getInt(t) != displayId) continue;
+                int taskId = fTaskId.getInt(t);
+                mRemoveTask.invoke(atm, taskId);
+                Log.i(TAG, "removed task " + taskId + " on display "
+                        + displayId);
+            }
+        } catch (Throwable t) {
+            Log.e(TAG, "removeTasksOnDisplay " + displayId, t);
+        }
+    }
+
     // ---------------------------------------------------------- input
 
     // a drag is one gesture: MOVEs and the final UP keep the DOWN's downTime

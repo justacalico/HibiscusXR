@@ -160,11 +160,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         continue;
                     if (e->pressZone == ZONE_CLOSE) {
                         LOGI("bar close disp %d", p.displayId);
-                        if (e->bridge && p.taskId >= 0) {
-                            env->CallVoidMethod(e->bridge, e->mRemoveTask,
-                                                p.taskId);
+                        if (e->bridge && p.displayId >= 0) {
+                            env->CallVoidMethod(e->bridge, e->mRemoveDisp,
+                                                p.displayId);
                             if (env->ExceptionCheck()) env->ExceptionClear();
                         }
+                        // closing the launcher is a real close, not a
+                        // crash - keep spawnLauncher from reviving it
+                        if (p.pkg == kLibraryPkg) e->libDismissed = true;
                         closePanel(e, i);
                     } else if (e->pressZone == ZONE_MIN) {
                         LOGI("bar minimize disp %d", p.displayId);
@@ -192,10 +195,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         if (e->bridge && !e->panels.empty()) {
             JNIEnv* env = threadEnv(e->vm);
             Panel& p = e->panels.back();
-            if (p.taskId >= 0) {
-                env->CallVoidMethod(e->bridge, e->mRemoveTask, p.taskId);
+            if (p.displayId >= 0) {
+                env->CallVoidMethod(e->bridge, e->mRemoveDisp, p.displayId);
                 if (env->ExceptionCheck()) env->ExceptionClear();
             }
+            if (p.pkg == kLibraryPkg) e->libDismissed = true;
             closePanel(e, (int)e->panels.size() - 1);
         }
         return;

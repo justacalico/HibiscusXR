@@ -82,8 +82,13 @@ int libraryIndex(const std::vector<Panel>& panels) {
     return -1;
 }
 
-float barTextLimit(float winHW, bool btns) {
-    return 2.0f * (winHW - kBarPadX - (btns ? kBarBtnW : 0.0f));
+float barBtnsW(int n) {
+    return n <= 0 ? 0.0f
+         : kBarBtnPad + n * 2.0f * kBarBtnR + (n - 1) * kBarBtnGap;
+}
+
+float barTextLimit(float winHW, int btns) {
+    return 2.0f * (winHW - kBarPadX - barBtnsW(btns));
 }
 
 float barCloseX(float winHW) {
@@ -214,7 +219,11 @@ Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
         // runs first so a ray landing on that shared edge picks chrome,
         // never a tap on the app surface under it
         if (onBar(u, v)) {
-            zone = p.pkg == kLibraryPkg ? ZONE_LABEL : barButtonAt(u, v);
+            const int z = barButtonAt(u, v);
+            // the library closes but never minimizes: where the min disc
+            // would sit reads as plain bar on its strip
+            zone = (p.pkg == kLibraryPkg && z == ZONE_MIN)
+                   ? ZONE_LABEL : z;
         } else if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
             zone = ZONE_WINDOW;
         }

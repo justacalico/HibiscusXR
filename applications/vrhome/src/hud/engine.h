@@ -30,7 +30,8 @@ struct HudEngine : Engine {
               mAdopt = nullptr, mReleasePanel = nullptr,
               mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
               mInjectTouch = nullptr,
-              mRemoveTask = nullptr, mFocusTask = nullptr, mAppLabel = nullptr,
+              mRemoveTask = nullptr, mRemoveDisp = nullptr,
+              mFocusTask = nullptr, mAppLabel = nullptr,
               mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr,
               mTakePins = nullptr, mSetPins = nullptr, mAppIcon = nullptr,
               mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr,
@@ -65,6 +66,10 @@ struct HudEngine : Engine {
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
     bool launcherSpawned = false;
+    // the library was closed on purpose (bar x, BACK, or swapped for an
+    // app it launched): a user-closed launcher stays closed - only a dead
+    // one respawns. Cleared when a library panel exists again
+    bool libDismissed = false;
 
     // dock: rebuilt each frame by syncDock from the pin list, the live
     // panels and the immersive tasks the java poller sees. dockYaw anchors

@@ -50,7 +50,8 @@ constexpr float kBarH = 0.085f;
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
 constexpr float kBarPadX = 0.070f;    // label padding inside the bar's left end
 // minimize + close circles on the bar's right end; the library panel is the
-// shell's own launcher and gets none
+// shell's own launcher and gets the close disc only - it leaves the ring
+// instead of parking on the shelf
 constexpr float kBarBtnR = 0.028f;    // button disc radius
 constexpr float kBarBtnGap = 0.014f;  // between the two discs
 constexpr float kBarBtnPad = 0.014f;  // close disc's margin to the bar edge

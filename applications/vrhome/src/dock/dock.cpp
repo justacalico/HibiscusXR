@@ -236,9 +236,18 @@ void dockActivate(HudEngine* e, int idx) {
 void dockClose(HudEngine* e, int idx) {
     if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockItem& it = e->dock[idx];
-    if (it.taskId < 0) return;
     JNIEnv* env = threadEnv(e->vm);
-    env->CallVoidMethod(e->bridge, e->mRemoveTask, it.taskId);
+    // a panel's task closes through its display - the cached taskId can be
+    // stale - while an immersive task only has its id to go on
+    if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size()) {
+        env->CallVoidMethod(e->bridge, e->mRemoveDisp,
+                            e->panels[it.panelIdx].displayId);
+        if (it.pkg == kLibraryPkg) e->libDismissed = true;
+    } else if (it.taskId >= 0) {
+        env->CallVoidMethod(e->bridge, e->mRemoveTask, it.taskId);
+    } else {
+        return;
+    }
     if (env->ExceptionCheck()) env->ExceptionClear();
 }
 

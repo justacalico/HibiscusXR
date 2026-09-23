@@ -9,6 +9,11 @@ on post-fs-data
     mkdir /data/local/tmp/xr 0775 root root
     mkdir /data/local/tmp/xr/lib 0775 root root
     mkdir /data/local/tmp/xr/lib/arm64 0775 root root
+    # mkdir skips existing dirs - force the modes so a leftover from manual
+    # staging can never leave the tree untraversable for apps
+    chmod 0775 /data/local/tmp/xr
+    chmod 0775 /data/local/tmp/xr/lib
+    chmod 0775 /data/local/tmp/xr/lib/arm64
     copy /system/app/MonadoOpenXR/MonadoOpenXR.apk /data/local/tmp/xr/base.apk
     copy /system/app/MonadoOpenXR/lib/arm64/libopenxr_monado.so /data/local/tmp/xr/lib/arm64/libopenxr_monado.so
     # the pn2 driver falls back to these staged paths when the namespace

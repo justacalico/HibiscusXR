@@ -82,6 +82,9 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // the toast just turns it into the full dash
     private volatile boolean toastOn;
     private long toastEnd;
+    // a live crash/ANR card keeps the window up like a toast, but it is
+    // modal: it stays until the user dismisses it, not for a few seconds
+    private volatile boolean sysMsgOn;
     private final Runnable toastOff = new Runnable() {
         @Override public void run() {
             final long left = toastEnd - SystemClock.uptimeMillis();
@@ -117,6 +120,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         NotifService.onPosted(new Runnable() {
             @Override public void run() { onNotifPosted(); }
         });
+        SysMsgs.onChanged(new Runnable() {
+            @Override public void run() { onSysMsgChanged(); }
+        });
+        SysMsgs.start(this);
         instance = this;
         loadDebugHud();
         getContentResolver().registerContentObserver(
@@ -192,7 +199,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // nothing underneath loses focus when the menu pops
     private void updateWindow() {
         final boolean shown = !covered || summoned || holdPreview || toastOn
-                || debugHud;
+                || sysMsgOn || debugHud;
         final int vis = shown ? View.VISIBLE : View.GONE;
         if (view.getVisibility() != vis) {
             Log.i(TAG, "window " + (shown ? "shown" : "hidden")
@@ -201,6 +208,9 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         }
         if (bridge != null) {
             bridge.setToastOnly(covered && toastOn && !summoned);
+            // a system message over a covered app draws alone - the dash
+            // chrome stays down unless the user summons it
+            bridge.setSysMsgOnly(covered && sysMsgOn && !summoned);
             bridge.setDebugHud(debugHud);
             // window is up over a covered app only for the status line:
             // the render loop draws nothing else
@@ -239,6 +249,20 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         });
     }
 
+    // SysMsgs fires this on the main looper from its poll and on the render
+    // thread from a card click: either way the window bookkeeping stays on
+    // the view's own thread
+    static void onSysMsgChanged() {
+        final HudService s = instance;
+        if (s == null) return;
+        s.view.post(new Runnable() {
+            @Override public void run() {
+                s.sysMsgOn = SysMsgs.hasMsgs();
+                s.updateWindow();
+            }
+        });
+    }
+
     // the dock/launch path asks to drop the menu (immersive app going
     // foreground): called on the render thread, bounce to the looper
     @Override public void onDismissMenu() {
@@ -264,10 +288,11 @@ public class HudService extends Service implements SurfaceHolder.Callback,
 
     // true while the menu is shown: at home (env front) or summoned over a
     // covered app. Menu keys get consumed by the filter and forwarded here
-    // instead of reaching whatever window is focused
+    // instead of reaching whatever window is focused. A system-message card
+    // over a covered app owns keys too - its buttons are gaze + confirm
     static boolean menuKeysOwned() {
         HudService s = instance;
-        return s != null && (!s.covered || s.summoned);
+        return s != null && (!s.covered || s.summoned || s.sysMsgOn);
     }
 
     static void forwardKey(final int code, final int action,

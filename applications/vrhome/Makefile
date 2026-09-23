@@ -50,6 +50,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
+            src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
             src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp \
             src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp
@@ -80,7 +81,8 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
-             src/notif/layout.cpp src/input/input_state.cpp \
+             src/notif/layout.cpp src/sysmsg/layout.cpp \
+             src/input/input_state.cpp \
              src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests

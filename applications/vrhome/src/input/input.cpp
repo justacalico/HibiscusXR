@@ -4,6 +4,7 @@
 #include "../dock/dock.h"
 #include "../dock/layout.h"
 #include "../notif/notif.h"
+#include "../sysmsg/sysmsg.h"
 #include "../hud/engine.h"
 #include "../common/jni.h"
 #include "../common/log.h"
@@ -38,6 +39,16 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->notifPressZone = NZONE_NONE;
             e->shelfPress = -1;
             e->shelfPressDisp = -1;
+            e->sysMsgPress = -1;
+            e->sysMsgPressZone = MZONE_NONE;
+            e->sysMsgPressBtn = -1;
+            e->sysMsgPressId = 0;
+            if (e->sysMsgHover >= 0 && !e->sysMsgs.empty()) {
+                e->sysMsgPress = e->sysMsgHover;
+                e->sysMsgPressZone = e->sysMsgZone;
+                e->sysMsgPressBtn = e->sysMsgBtn;
+                e->sysMsgPressId = e->sysMsgs.front().id;
+            }
             if (e->shelfHover >= 0 &&
                     e->shelfHover < (int)e->shelf.size()) {
                 const ShelfItem& si = e->shelf[e->shelfHover];
@@ -99,7 +110,23 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->confirmHeld = false;
             e->moveHeld = false;
             JNIEnv* env = threadEnv(e->vm);
-            if (e->notifPress >= 0) {
+            if (e->sysMsgPress >= 0) {
+                // a button press fires only when the release lands back on
+                // the same pill and the card underneath hasn't swapped -
+                // the id guard catches a dismissal mid-press
+                const bool same = e->sysMsgHover == e->sysMsgPress &&
+                    e->sysMsgZone == e->sysMsgPressZone &&
+                    e->sysMsgBtn == e->sysMsgPressBtn &&
+                    !e->sysMsgs.empty() &&
+                    e->sysMsgs.front().id == e->sysMsgPressId;
+                if (same && e->sysMsgPressZone == MZONE_BTN &&
+                        e->sysMsgPressBtn >= 0)
+                    sysMsgBtnClick(e, e->sysMsgPressBtn);
+                e->sysMsgPress = -1;
+                e->sysMsgPressZone = MZONE_NONE;
+                e->sysMsgPressBtn = -1;
+                e->sysMsgPressId = 0;
+            } else if (e->notifPress >= 0) {
                 // a card press fires only when the release lands back on
                 // the same card: the badge dismisses, the body does
                 // nothing - a stray release shouldn't swallow the post
@@ -192,6 +219,12 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         return;
     }
     if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
+        // a live system message is modal: BACK drops the front card, not
+        // the window behind it
+        if (!e->sysMsgs.empty()) {
+            sysMsgDismiss(e);
+            return;
+        }
         // close the newest panel; over a covered app the service consumes
         // BACK itself to dismiss the menu, so this only ever runs in home
         // space

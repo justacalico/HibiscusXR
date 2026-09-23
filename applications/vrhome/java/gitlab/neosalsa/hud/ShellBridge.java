@@ -325,6 +325,29 @@ public class ShellBridge {
     // listener; a non-clearable post is refused by the system itself
     public void dismissNotif(String key) { NotifService.cancel(key); }
 
+    // ---------------------------------------------------------- sys msgs
+
+    // set by the window logic: a system-message card is up over a covered
+    // app, so the render loop draws only the dialog - no panels, no dock
+    private volatile boolean sysMsgOnly;
+
+    public void setSysMsgOnly(boolean v) { sysMsgOnly = v; }
+
+    // render thread: dialog-only render mode
+    public boolean sysMsgOnly() { return sysMsgOnly; }
+
+    // render thread: bumped on every dropbox entry and card dismissal
+    public int sysMsgVersion() { return SysMsgs.version(); }
+
+    // render thread: the live system-message cards, oldest first
+    public SysMsgs.Msg[] sysMsgs() { return SysMsgs.snapshot(); }
+
+    // render thread: a card button - 0 closes, 1 restarts the app
+    public void sysMsgClick(long id, int btn) { SysMsgs.click(id, btn); }
+
+    // render thread: drop the card without acting on it
+    public void sysMsgDismiss(long id) { SysMsgs.dismiss(id); }
+
     // isVrApp does binder calls; the poll hits every display-0 task each
     // 400ms, so cache the answer per package
     private boolean vrApp(String pkg) {

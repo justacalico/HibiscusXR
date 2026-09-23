@@ -5,6 +5,7 @@
 #include "../panels/panel.h"
 #include "../dock/item.h"
 #include "../notif/item.h"
+#include "../sysmsg/item.h"
 #include "../common/config.h"
 #include "../input/ctrl_state.h"
 #include "../input/input_state.h"
@@ -38,7 +39,10 @@ struct HudEngine : Engine {
               mNotifVer = nullptr, mNotifs = nullptr,
               mDismissNotif = nullptr, mToastOnly = nullptr,
               mDebugHud = nullptr, mDebugOnly = nullptr,
-              mSysStatus = nullptr;
+              mSysStatus = nullptr,
+              mSysMsgVer = nullptr, mSysMsgs = nullptr,
+              mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
+              mSysMsgOnly = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -46,6 +50,9 @@ struct HudEngine : Engine {
     jfieldID fNotifKey = nullptr, fNotifPkg = nullptr,
              fNotifTitle = nullptr, fNotifText = nullptr,
              fNotifMs = nullptr, fNotifClear = nullptr;
+    jclass sysMsgCls = nullptr;
+    jfieldID fMsgId = nullptr, fMsgPkg = nullptr, fMsgTitle = nullptr,
+             fMsgText = nullptr, fMsgBtns = nullptr;
     bool bridgeDead = false;
 
     std::vector<Panel> panels;
@@ -132,6 +139,23 @@ struct HudEngine : Engine {
     bool toastOnly = false;
     bool toastWas = false;
     float toastYaw = 0.0f;
+
+    // system-message cards: crash/ANR entries from the dropbox watcher,
+    // rebuilt when its version bumps; only the front card draws and picks.
+    // sysMsgOnly means the window is up over a covered app just for the
+    // dialog - anchored on sysMsgYaw, the gaze yaw when it popped
+    std::vector<SysMsgItem> sysMsgs;
+    int sysMsgVer = -1;
+    int sysMsgHover = -1;      // 0 while the ray is on the front card
+    int sysMsgZone = MZONE_NONE;
+    int sysMsgBtn = -1;
+    int sysMsgPress = -1;
+    int sysMsgPressZone = MZONE_NONE;
+    int sysMsgPressBtn = -1;
+    long long sysMsgPressId = 0;   // guards against a rebuild mid-press
+    bool sysMsgOnly = false;
+    bool sysMsgWas = false;
+    float sysMsgYaw = 0.0f;
 
     // developer-settings debug line: debugHud is the toggle itself;
     // debugOnly means the window is up over a covered app solely for that

@@ -128,6 +128,23 @@ constexpr long long kNotifShowMs = 5000; // dash card lifetime from postMs;
 // yaw at the moment the toast pops so it never hides behind the user
 constexpr float kNotifToastPitch = 0.14f;
 
+// system-message cards: crash/ANR dropbox entries surfaced as a modal VR
+// dialog - the image's hide_error_dialogs keeps the mono dialog off the
+// panel, this card replaces it. In the dash the card rides the dock's
+// anchor lifted to eye level; over a covered app it anchors on the gaze
+// yaw when it popped, straight ahead at card pitch
+constexpr float kSysMsgW = 0.62f;      // card width
+constexpr float kSysMsgH = 0.30f;      // card height
+constexpr float kSysMsgPad = 0.026f;   // inner side padding
+constexpr float kSysMsgIconHW = 0.034f;// app icon half-width
+constexpr float kSysMsgBtnHH = 0.024f; // button pill half-height
+constexpr float kSysMsgBtnGap = 0.012f;// between the pills
+constexpr float kSysMsgBtnSlack = 0.010f; // extra hit room around a pill
+constexpr float kSysMsgLift = 0.85f;   // above the dock bar in dash mode
+constexpr float kSysMsgPitch = 0.05f;  // over an app: just above eye level
+constexpr int   kSysMsgMaxLines = 2;   // body lines drawn per card
+constexpr int   kSysMsgMaxBtn = 4;
+
 // package the dock's quick-panel button launches
 constexpr const char* kQuickPanelPkg = "gitlab.neosalsa.quicksettings";
 

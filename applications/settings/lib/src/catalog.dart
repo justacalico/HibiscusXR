@@ -39,6 +39,7 @@ const kSections = <SectionDef>[
     ItemId.aboutBrand,
     ItemId.modelName,
     ItemId.androidVersion,
+    ItemId.hibiscusVersion,
   ]),
 ];
 
@@ -64,6 +65,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.showTouches: ItemKind.toggle,
   ItemId.modelName: ItemKind.info,
   ItemId.androidVersion: ItemKind.info,
+  ItemId.hibiscusVersion: ItemKind.info,
   ItemId.aboutBrand: ItemKind.brand,
 };
 

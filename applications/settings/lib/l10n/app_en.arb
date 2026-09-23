@@ -54,6 +54,8 @@
   "itemModelNameDesc": "The hardware model of this headset",
   "itemAndroidVersion": "Android version",
   "itemAndroidVersionDesc": "The Android release this system runs",
+  "itemHibiscusVersion": "Hibiscus version",
+  "itemHibiscusVersionDesc": "The Hibiscus build installed on this headset",
   "itemAboutBrand": "HibiscusXR",
   "itemAboutBrandDesc": "The system software on this headset",
 

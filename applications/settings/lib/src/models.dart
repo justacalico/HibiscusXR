@@ -48,6 +48,7 @@ enum ItemId {
   showTouches,
   modelName,
   androidVersion,
+  hibiscusVersion,
   aboutBrand,
 }
 

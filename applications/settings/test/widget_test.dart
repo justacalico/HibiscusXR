@@ -185,13 +185,19 @@ void main() {
     await pumpApp(
       tester,
       initial: const SettingsSnapshot(
-        texts: {ItemId.modelName: 'A7B10', ItemId.androidVersion: '10'},
+        texts: {
+          ItemId.modelName: 'A7B10',
+          ItemId.androidVersion: '10',
+          ItemId.hibiscusVersion: 'v2026.09.22-r7',
+        },
       ),
     );
     await tester.tap(find.text('About'));
     await tester.pump();
     expect(find.text('A7B10'), findsOneWidget);
     expect(find.text('10'), findsOneWidget);
+    expect(find.text('Hibiscus version'), findsOneWidget);
+    expect(find.text('v2026.09.22-r7'), findsOneWidget);
 
     await tester.tap(find.text('Wi-Fi'));
     await tester.pump();

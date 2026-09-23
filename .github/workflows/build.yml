@@ -119,6 +119,20 @@ jobs:
           GL_PROJECT_ID: "86500595"
         run: bash system/dist/scripts/fetch-inputs.sh
 
+      - name: build version
+        run: |
+          # One version string feeds both the image stamp
+          # (write-version.sh -> ro.hibiscus.version, /etc/hibiscus-release)
+          # and the release tag below, so they can never drift apart.
+          CHANNEL="${{ github.event.inputs.channel }}"
+          case "$CHANNEL" in
+            alpha|beta) PREFIX="$CHANNEL-" ;;
+            *)          PREFIX="" ;;
+          esac
+          echo "HIBISCUS_VERSION=${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}" \
+            >> "$GITHUB_ENV"
+          tail -1 "$GITHUB_ENV"
+
       - name: build images
         run: bash system/dist/scripts/build-image.sh
 
@@ -139,11 +153,10 @@ jobs:
         run: |
           CHANNEL="${{ github.event.inputs.channel }}"
           case "$CHANNEL" in
-            alpha) PREFIX="alpha-"; PRE="--prerelease" ;;
-            beta)  PREFIX="beta-";  PRE="--prerelease" ;;
-            *)     PREFIX="";       PRE="" ;;
+            alpha|beta) PRE="--prerelease" ;;
+            *)          PRE="" ;;
           esac
-          TAG="${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}"
+          TAG="${HIBISCUS_VERSION:?}"
           {
             echo "LineageOS 17.1 system images for the Pico Neo 2 (A7B10)."
             echo

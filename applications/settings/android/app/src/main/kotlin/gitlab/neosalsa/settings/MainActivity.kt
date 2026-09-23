@@ -15,6 +15,7 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+import java.io.File
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
@@ -200,6 +201,7 @@ class MainActivity : FlutterActivity() {
             "wifiSsid" to (wifiSsid() ?: ""),
             "modelName" to Build.MODEL,
             "androidVersion" to Build.VERSION.RELEASE,
+            "hibiscusVersion" to hibiscusVersion(),
         ),
     )
 
@@ -226,6 +228,15 @@ class MainActivity : FlutterActivity() {
             ),
             "toggles" to mapOf("controllerPair" to (c?.pairingActive ?: false)),
         )
+    }
+
+    // Stamped into the image by system/dist/scripts/write-version.sh.
+    // A plain file, not a prop: apps cannot read custom ro.* props on
+    // Android 10 without a declared property context.
+    private fun hibiscusVersion(): String = try {
+        File("/system/etc/hibiscus-release").readText().trim()
+    } catch (_: Exception) {
+        ""
     }
 
     private fun wifiManager() =

@@ -412,6 +412,18 @@ abstract class AppLocalizations {
   /// **'The Android release this system runs'**
   String get itemAndroidVersionDesc;
 
+  /// No description provided for @itemHibiscusVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Hibiscus version'**
+  String get itemHibiscusVersion;
+
+  /// No description provided for @itemHibiscusVersionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The Hibiscus build installed on this headset'**
+  String get itemHibiscusVersionDesc;
+
   /// No description provided for @itemAboutBrand.
   ///
   /// In en, this message translates to:

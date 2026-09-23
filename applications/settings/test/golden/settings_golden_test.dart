@@ -56,6 +56,7 @@ void main() {
         texts: {
           ItemId.modelName: 'A7B10',
           ItemId.androidVersion: '10',
+          ItemId.hibiscusVersion: 'alpha-v2026.09.22-r7',
         },
       ),
       persistence: MemoryPersistence({'section': 'about'}),

@@ -18,6 +18,9 @@ import io.flutter.plugin.common.MethodChannel
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
+// Settings.System.SHOW_TOUCHES is @hide too; on Android 10 the key still
+// sits in the system table, so the raw name is the way in.
+private const val SHOW_TOUCHES = "show_touches"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
@@ -185,7 +188,7 @@ class MainActivity : FlutterActivity() {
                 ) != 0),
             "showTouches" to
                 (Settings.System.getInt(
-                    contentResolver, Settings.System.SHOW_TOUCHES, 0,
+                    contentResolver, SHOW_TOUCHES, 0,
                 ) == 1),
             "controllerPair" to (controllers?.pairingActive ?: false),
         ),
@@ -333,7 +336,7 @@ class MainActivity : FlutterActivity() {
             "showTouches" -> {
                 if (Settings.System.canWrite(this)) {
                     Settings.System.putInt(
-                        contentResolver, Settings.System.SHOW_TOUCHES,
+                        contentResolver, SHOW_TOUCHES,
                         if (on) 1 else 0,
                     )
                 }

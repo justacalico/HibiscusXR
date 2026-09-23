@@ -46,6 +46,7 @@ enum ItemId {
   adbToggle,
   stayAwake,
   showTouches,
+  debugHud,
   modelName,
   androidVersion,
   hibiscusVersion,

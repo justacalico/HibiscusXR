@@ -158,6 +158,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemShowTouchesDesc => 'Flash a dot where the screen is touched';
 
   @override
+  String get itemDebugHud => 'Debug HUD';
+
+  @override
+  String get itemDebugHudDesc =>
+      'Keep the debug status line visible over any app';
+
+  @override
   String get itemModelName => 'Model';
 
   @override

@@ -6,8 +6,11 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
@@ -47,6 +50,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private static final int K_SUMMON = 1003;      // DEFINE_HOME
     private static final long LONG_MS = 600;
     private static final long TOAST_MS = 5000;
+    // global key the settings app's developer toggle writes: while set the
+    // window stays up over anything - covered apps included - so the
+    // status line is always visible
+    private static final String DEBUG_HUD = "hibiscus_debug_hud";
 
     static { System.loadLibrary("vrhud"); }
 
@@ -84,6 +91,16 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         }
     };
 
+    // developer-settings debug line: kept in sync with the global key so
+    // the render loop can draw it over covered apps
+    private volatile boolean debugHud;
+    private final ContentObserver debugObs =
+            new ContentObserver(new Handler(Looper.getMainLooper())) {
+        @Override public void onChange(boolean self) {
+            loadDebugHud();
+        }
+    };
+
     // --------------------------------------------------------- lifecycle
 
     @Override public void onCreate() {
@@ -101,12 +118,16 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             @Override public void run() { onNotifPosted(); }
         });
         instance = this;
+        loadDebugHud();
+        getContentResolver().registerContentObserver(
+                Settings.Global.getUriFor(DEBUG_HUD), false, debugObs);
         foreground();
         Log.i(TAG, "hud up");
     }
 
     @Override public void onDestroy() {
         instance = null;
+        getContentResolver().unregisterContentObserver(debugObs);
         nativeShutdown();
         super.onDestroy();
     }
@@ -158,20 +179,33 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         view.setVisibility(View.GONE);
     }
 
-    // shown = home space (env is the top task) or summoned over an app.
-    // Going GONE tears the surface down, which parks the render loop. The
-    // window is always NOT_FOCUSABLE/NOT_TOUCHABLE: the key filter owns all
-    // HUD input, so nothing underneath loses focus when the menu pops
+    private void loadDebugHud() {
+        debugHud = Settings.Global.getInt(getContentResolver(),
+                DEBUG_HUD, 0) == 1;
+        updateWindow();
+    }
+
+    // shown = home space (env is the top task) or summoned over an app,
+    // or pinned up for the debug status line. Going GONE tears the
+    // surface down, which parks the render loop. The window is always
+    // NOT_FOCUSABLE/NOT_TOUCHABLE: the key filter owns all HUD input, so
+    // nothing underneath loses focus when the menu pops
     private void updateWindow() {
-        final boolean shown = !covered || summoned || holdPreview || toastOn;
+        final boolean shown = !covered || summoned || holdPreview || toastOn
+                || debugHud;
         final int vis = shown ? View.VISIBLE : View.GONE;
         if (view.getVisibility() != vis) {
             Log.i(TAG, "window " + (shown ? "shown" : "hidden")
                     + " covered=" + covered + " summoned=" + summoned);
             view.setVisibility(vis);
         }
-        if (bridge != null)
+        if (bridge != null) {
             bridge.setToastOnly(covered && toastOn && !summoned);
+            bridge.setDebugHud(debugHud);
+            // window is up over a covered app only for the status line:
+            // the render loop draws nothing else
+            bridge.setDebugOnly(covered && !summoned && debugHud);
+        }
     }
 
     // --------------------------------------------------------- callbacks

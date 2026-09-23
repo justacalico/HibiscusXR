@@ -121,6 +121,21 @@ void main() {
     expect(source.togglesRequested, isEmpty);
   });
 
+  testWidgets('debug hud toggle forwards to the source', (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Developer'));
+    await tester.pump();
+    expect(find.text('Debug HUD'), findsOneWidget);
+    // the row is implemented, so it stays full opacity unlike the stubs
+    expect(
+      find.byWidgetPredicate((w) => w is Opacity && w.opacity < 1),
+      findsNWidgets(3),
+    );
+    await tester.tap(find.byType(Switch).last);
+    await tester.pump();
+    expect(source.togglesRequested, [(ItemId.debugHud, true)]);
+  });
+
   testWidgets('slider row forwards drag', (tester) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Display'));

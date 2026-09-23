@@ -27,7 +27,7 @@ void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         const Mat4 vp = multiply(proj, eyeMatrix(head, kIPD, i));
         scene(e, vp);
-        if (status && propI("debug.vrhome.hud", 1)) drawHud(e, proj);
+        if (status) drawHud(e, proj);
         if (++errTick >= 144) {
             errTick = 0;
             GLenum ge = glGetError();

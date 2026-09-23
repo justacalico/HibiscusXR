@@ -50,6 +50,8 @@
   "itemStayAwakeDesc": "Never sleep while charging",
   "itemShowTouches": "Show touches",
   "itemShowTouchesDesc": "Flash a dot where the screen is touched",
+  "itemDebugHud": "Debug HUD",
+  "itemDebugHudDesc": "Keep the debug status line visible over any app",
   "itemModelName": "Model",
   "itemModelNameDesc": "The hardware model of this headset",
   "itemAndroidVersion": "Android version",

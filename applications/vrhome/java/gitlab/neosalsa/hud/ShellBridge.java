@@ -299,6 +299,22 @@ public class ShellBridge {
     // render thread: card-stack-only render mode
     public boolean toastOnly() { return toastOnly; }
 
+    // developer-settings debug line: debugHud mirrors the toggle itself;
+    // debugOnly means the window is up over a covered app just for that
+    // line, so the render loop skips the whole scene
+    private volatile boolean debugHud;
+    private volatile boolean debugOnly;
+
+    public void setDebugHud(boolean v) { debugHud = v; }
+
+    public void setDebugOnly(boolean v) { debugOnly = v; }
+
+    // render thread: the settings toggle is on
+    public boolean debugHud() { return debugHud; }
+
+    // render thread: status-line-only render mode
+    public boolean debugOnly() { return debugOnly; }
+
     // render thread: bumped on every post/removal by the listener
     public int notifVersion() { return NotifService.version(); }
 

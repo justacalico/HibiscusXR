@@ -68,6 +68,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemStayAwake;
     case ItemId.showTouches:
       return l10n.itemShowTouches;
+    case ItemId.debugHud:
+      return l10n.itemDebugHud;
     case ItemId.modelName:
       return l10n.itemModelName;
     case ItemId.androidVersion:
@@ -119,6 +121,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemStayAwakeDesc;
     case ItemId.showTouches:
       return l10n.itemShowTouchesDesc;
+    case ItemId.debugHud:
+      return l10n.itemDebugHudDesc;
     case ItemId.modelName:
       return l10n.itemModelNameDesc;
     case ItemId.androidVersion:

@@ -11,6 +11,13 @@ on post-fs-data
     mkdir /data/local/tmp/xr/lib/arm64 0775 root root
     copy /system/app/MonadoOpenXR/MonadoOpenXR.apk /data/local/tmp/xr/base.apk
     copy /system/app/MonadoOpenXR/lib/arm64/libopenxr_monado.so /data/local/tmp/xr/lib/arm64/libopenxr_monado.so
+    # the pn2 driver falls back to these staged paths when the namespace
+    # lookup fails: libdrm only ever shipped in /vendor, which an app
+    # namespace cannot reach at all
+    copy /system/lib64/libqvrservice_client.so /data/local/tmp/xr/lib/arm64/libqvrservice_client.so
+    copy /vendor/lib64/libdrm.so /data/local/tmp/xr/lib/arm64/libdrm.so
     chmod 0644 /data/local/tmp/xr/base.apk
     chmod 0644 /data/local/tmp/xr/lib/arm64/libopenxr_monado.so
+    chmod 0644 /data/local/tmp/xr/lib/arm64/libqvrservice_client.so
+    chmod 0644 /data/local/tmp/xr/lib/arm64/libdrm.so
     restorecon_recursive /data/local/tmp/xr

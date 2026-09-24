@@ -33,11 +33,10 @@ com.android.stk com.android.simappdialog \
 com.android.cellbroadcastreceiver com.android.carrierconfig \
 com.android.carrierdefaultapp com.android.ons com.android.service.ims \
 com.android.service.ims.presence com.android.calllogbackup \
-com.android.emergency com.android.providers.telephony \
-com.android.providers.blockednumber \
+com.android.emergency com.android.providers.blockednumber \
 me.phh.treble.overlay.telephony.lte \
-com.android.contacts com.android.providers.contacts \
-com.android.providers.calendar com.android.email com.android.exchange \
+com.android.contacts com.android.providers.calendar \
+com.android.email com.android.exchange \
 org.lineageos.etar \
 com.android.camera2 com.android.gallery3d com.android.deskclock \
 com.android.calculator2 com.android.dreams.basic \
@@ -78,11 +77,18 @@ PHH_TOKENS="telephony nokia xiaomi aod gestures devinputjack navbar \
 nightmode falselocks tethering webview cafims mtkims slsiims sprdims"
 
 # Must still be in the image when the pass ends - if one of these is
-# gone the match rules went too wide.
+# gone the match rules went too wide. The contacts and telephony
+# providers stay even though nothing dials or texts: com.android.bluetooth
+# starts a PBAP service that queries com.android.contacts and
+# RuntimeExceptions ("Failed to find provider com.android.contacts") when
+# it is gone, crash-looping the whole bluetooth process. MAP does the
+# same against sms/mms the moment a paired device asks for message
+# access.
 KEEP="com.android.settings com.android.systemui \
 com.android.packageinstaller com.android.permissioncontroller \
 com.android.documentsui com.android.providers.downloads \
 com.android.providers.media com.android.webview com.android.bluetooth \
+com.android.providers.contacts com.android.providers.telephony \
 com.android.inputmethod.latin com.android.captiveportallogin \
 com.android.storagemanager com.android.networkstack"
 

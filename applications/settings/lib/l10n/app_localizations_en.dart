@@ -103,6 +103,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemBrightnessDesc => 'Adjust the screen brightness';
 
   @override
+  String get itemIpd => 'Eye spacing (IPD)';
+
+  @override
+  String get itemIpdDesc =>
+      'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views';
+
+  @override
   String get itemNightMode => 'Night mode';
 
   @override
@@ -221,6 +228,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String sliderPercent(int percent) {
     return '$percent%';
+  }
+
+  @override
+  String ipdMm(String mm) {
+    return '$mm mm';
   }
 
   @override

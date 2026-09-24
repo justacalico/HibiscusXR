@@ -280,6 +280,18 @@ abstract class AppLocalizations {
   /// **'Adjust the screen brightness'**
   String get itemBrightnessDesc;
 
+  /// No description provided for @itemIpd.
+  ///
+  /// In en, this message translates to:
+  /// **'Eye spacing (IPD)'**
+  String get itemIpd;
+
+  /// No description provided for @itemIpdDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views'**
+  String get itemIpdDesc;
+
   /// No description provided for @itemNightMode.
   ///
   /// In en, this message translates to:
@@ -507,6 +519,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{percent}%'**
   String sliderPercent(int percent);
+
+  /// No description provided for @ipdMm.
+  ///
+  /// In en, this message translates to:
+  /// **'{mm} mm'**
+  String ipdMm(String mm);
 
   /// No description provided for @uiOnlyModeTitle.
   ///

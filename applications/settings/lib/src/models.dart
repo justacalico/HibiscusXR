@@ -37,6 +37,7 @@ enum ItemId {
   controllerRight,
   controllerUnbind,
   brightness,
+  ipd,
   nightMode,
   volume,
   micMute,

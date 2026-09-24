@@ -32,6 +32,8 @@
   "itemControllerUnbindDesc": "Forget both paired controllers",
   "itemBrightness": "Brightness",
   "itemBrightnessDesc": "Adjust the screen brightness",
+  "itemIpd": "Eye spacing (IPD)",
+  "itemIpdDesc": "Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views",
   "itemNightMode": "Night mode",
   "itemNightModeDesc": "Warm the display colors after dark",
   "itemVolume": "Volume",
@@ -80,6 +82,12 @@
   "@sliderPercent": {
     "placeholders": {
       "percent": {"type": "int"}
+    }
+  },
+  "ipdMm": "{mm} mm",
+  "@ipdMm": {
+    "placeholders": {
+      "mm": {"type": "String"}
     }
   },
 

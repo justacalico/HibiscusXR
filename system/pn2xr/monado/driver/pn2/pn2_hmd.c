@@ -35,6 +35,7 @@
 
 #include <android/sensor.h>
 #include <android/looper.h>
+#include <android/log.h>
 
 #include <jni.h>
 #include <math.h>
@@ -134,6 +135,11 @@ struct pn2_device
 	uint64_t qvr_dead_ns;      //!< when the pose stream went dead (0 = alive)
 	uint64_t qvr_retry_at;     //!< next allowed client reconnect attempt
 
+	bool posedump;             //!< debug.pn2.posedump: log raw vs served pose
+	uint64_t posedump_poll;    //!< next prop re-read (monotonic ns)
+	uint64_t posedump_next;    //!< next raw-pose dump print (rate limit)
+	uint64_t servedump_next;   //!< next served-pose dump print
+
 	float ipd_m;             //!< eye separation in metres (persist.pn2.ipd)
 	bool ipd_pinned;         //!< PN2_IPD env set: fixed at create, no poll
 	uint64_t next_ipd_poll;  //!< next property re-read (monotonic ns)
@@ -155,6 +161,7 @@ pn2_device(struct xrt_device *xdev)
 }
 
 #define PN2_TRACE(d, ...) U_LOG_XDEV_IFL_T(&d->base, d->log_level, __VA_ARGS__)
+#define PN2_DUMP(...) __android_log_print(ANDROID_LOG_INFO, "pn2pose", __VA_ARGS__)
 #define PN2_DEBUG(d, ...) U_LOG_XDEV_IFL_D(&d->base, d->log_level, __VA_ARGS__)
 #define PN2_INFO(d, ...) U_LOG_XDEV_IFL_I(&d->base, d->log_level, __VA_ARGS__)
 #define PN2_ERROR(d, ...) U_LOG_XDEV_IFL_E(&d->base, d->log_level, __VA_ARGS__)
@@ -311,7 +318,41 @@ pn2_push_qvr(struct pn2_device *d)
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
 	          pose.orientation.z, pose.orientation.w, pose.tracking_state);
+	uint64_t now = os_monotonic_get_ns();
+	if (d->posedump && now >= d->posedump_next) {
+		d->posedump_next = now + 250000000ull;
+		PN2_DUMP(
+		    "qvr  q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f) st=%u q=%.2f\n"
+		    "     rel q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f) w=(%.3f %.3f %.3f) ts=%lld\n"
+		    "     imu q=(%.4f %.4f %.4f %.4f) a=(%.3f %.3f %.3f) g=(%.3f %.3f %.3f)",
+		    pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w,
+		    pose.position.x, pose.position.y, pose.position.z, pose.tracking_state,
+		    pose.pose_quality, rel.pose.orientation.x, rel.pose.orientation.y,
+		    rel.pose.orientation.z, rel.pose.orientation.w, rel.pose.position.x,
+		    rel.pose.position.y, rel.pose.position.z, w.x, w.y, w.z,
+		    (long long)pose.timestamp_ns,
+		    d->fusion.rot.x, d->fusion.rot.y, d->fusion.rot.z, d->fusion.rot.w,
+		    d->accel.x, d->accel.y, d->accel.z,
+		    d->fusion.last.gyro.x, d->fusion.last.gyro.y, d->fusion.last.gyro.z);
+	}
 	return true;
+}
+
+// debug.pn2.posedump / PN2_POSEDUMP: dump the raw qvrd pose (what the dash
+// reads) next to the relation the runtime serves. Polled once a second so
+// it can be toggled on a running app.
+static bool
+pn2_posedump_on(struct pn2_device *d, uint64_t now)
+{
+	if (now < d->posedump_poll) {
+		return d->posedump;
+	}
+	d->posedump_poll = now + 1000000000ull;
+	char v[92] = {0};
+	d->posedump = (__system_property_get("debug.pn2.posedump", v) > 0 && atoi(v) != 0) ||
+	              getenv("PN2_POSEDUMP") != NULL ||
+	              access("/data/local/tmp/xr/posedump", F_OK) == 0;
+	return d->posedump;
 }
 
 // polls qvr while alive; a dead stream drops the client after 3s, an
@@ -474,6 +515,7 @@ pn2_run_thread(void *ptr)
 			pn2_handle_event(d, &events[i]);
 		}
 		os_mutex_lock(&d->lock);
+		pn2_posedump_on(d, os_monotonic_get_ns());
 		pn2_pump_qvr(d);
 		if (!d->ipd_pinned) {
 			uint64_t now = os_monotonic_get_ns();
@@ -567,6 +609,7 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 {
 	struct pn2_device *d = pn2_device(xdev);
 	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
+	const char *src = "hist";
 
 	os_mutex_lock(&d->lock);
 	bool got = false;
@@ -590,6 +633,7 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 		struct xrt_space_relation latest;
 		if (m_relation_history_get_latest(d->rh, &latest_ts, &latest) &&
 		    (int64_t)os_monotonic_get_ns() - latest_ts > 500000000ll) {
+			src = "coast";
 			if (!d->coasting) {
 				d->coasting = true;
 				d->coast_imu_base = fusion_view;
@@ -623,6 +667,21 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 		rel.relation_flags = (enum xrt_space_relation_flags)(
 		    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
 		    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
+		src = "imu";
+	}
+	uint64_t now = os_monotonic_get_ns();
+	if (d->posedump && now >= d->servedump_next) {
+		d->servedump_next = now + 250000000ull;
+		int64_t latest_ts = 0;
+		struct xrt_space_relation latest;
+		bool has_latest = m_relation_history_get_latest(d->rh, &latest_ts, &latest);
+		PN2_DUMP(
+		    "serve %s at=%lld age=%lldms flags=%x q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f)",
+		         src, (long long)at_timestamp_ns,
+		         has_latest ? (long long)(now - latest_ts) / 1000000 : -1ll,
+		         rel.relation_flags, rel.pose.orientation.x, rel.pose.orientation.y,
+		         rel.pose.orientation.z, rel.pose.orientation.w, rel.pose.position.x,
+		         rel.pose.position.y, rel.pose.position.z);
 	}
 	os_mutex_unlock(&d->lock);
 

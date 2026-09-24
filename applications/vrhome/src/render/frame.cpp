@@ -14,6 +14,9 @@
 void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
               bool status, void (*scene)(Engine*, const Mat4&)) {
     static int errTick = 0;
+    // software IPD: the user setting arrives on persist.pn2.ipd (metres),
+    // debug.vrhome.ipd pins it for tuning
+    const float ipd = propF("debug.vrhome.ipd", propF("persist.pn2.ipd", kIPD));
     for (int i = 0; i < 2; ++i) {
         Eye& y = e->eye[i];
         glBindFramebuffer(GL_FRAMEBUFFER, y.fbo);
@@ -25,7 +28,7 @@ void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
         else
             glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        const Mat4 vp = multiply(proj, eyeMatrix(head, kIPD, i));
+        const Mat4 vp = multiply(proj, eyeMatrix(head, ipd, i));
         scene(e, vp);
         if (status) drawHud(e, proj);
         if (++errTick >= 144) {

@@ -3,6 +3,7 @@
 # need is the display-side distortion polynomial and per-eye projection.
 echo "=== current tuning props ==="
 for p in roll k1 k2 ipd fov sensor; do echo "debug.pn2vr.$p = $(getprop debug.pn2vr.$p)"; done
+echo "persist.pn2.ipd = $(getprop persist.pn2.ipd)   # user setting, metres"
 echo
 
 echo "=== /vendor/etc/pvr ==="

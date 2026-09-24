@@ -291,13 +291,20 @@ pn2_push_qvr(struct pn2_device *d)
 	math_quat_rotate(&PN2_QVR_WORLD_TO_VIEW, &pose.orientation, &tmp);
 	math_quat_rotate(&tmp, &PN2_DEV_TO_VIEW, &rel.pose.orientation);
 	math_quat_rotate_vec3(&PN2_QVR_WORLD_TO_VIEW, &pose.position, &rel.pose.position);
-	// The service's velocity fields are noise on this build (dumped lv
-	// swings ±2 m/s with the head bolted to a desk), so every display-time
-	// prediction got a random positional kick. Leave them invalid and let
-	// the history estimate motion by finite-differencing the poses.
+	// Attach the live gyro rate for prediction instead of a finite
+	// difference between SLAM samples: at the camera rate the difference is
+	// tens of ms stale, so display-time extrapolation overshoots and snaps
+	// back on fast head motion. last.gyro is already remapped to head axes;
+	// the local-frame rebase cancels out, so world-frame velocity is (W*q)*g.
+	// The service's own velocity fields are noise on this build (dumped lv
+	// swings ±2 m/s with the head bolted to a desk) and stay unused.
+	struct xrt_vec3 w;
+	math_quat_rotate_vec3(&tmp, &d->fusion.last.gyro, &w);
+	rel.angular_velocity = w;
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
-	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
+	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT |
+	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
 	if (m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns)) {
 		d->qvr_last_ts = pose.timestamp_ns;
 	}
@@ -335,12 +342,18 @@ pn2_pump_qvr(struct pn2_device *d)
 		d->qvr_last_ts = 0;
 		d->qvr_dead_ns = 0;
 		d->qvr_retry_at = now;
+		// IMU-fused pushes resume while the client is down: the fusion
+		// world frame disagrees with the QVR one, and interpolating across
+		// the boundary snaps the view. Clear the history so only one frame
+		// family lives in it at a time.
+		m_relation_history_clear(d->rh);
 	}
 	if (d->qvr_retry_at != 0 && now >= d->qvr_retry_at) {
 		d->qvr = pn2_qvr_create();
 		if (d->qvr != NULL) {
 			PN2_INFO(d, "qvr client reconnected");
 			d->qvr_retry_at = 0;
+			m_relation_history_clear(d->rh);
 		} else {
 			d->qvr_retry_at = now + 5000000000ull;
 		}

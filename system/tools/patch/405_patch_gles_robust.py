@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 # Patch the stock Adreno blob so eglCreateContext accepts
-# EGL_CONTEXT_OPENGL_ROBUST_ACCESS (0x30B2, EGL 1.5 core).
+# EGL_CONTEXT_OPENGL_ROBUST_ACCESS (0x31B2, EGL 1.5 core).
 #
 # The V@378 driver validates context attribs in a key dispatcher inside
 # libGLESv2_adreno.so. It knows the EXT variant (0x30BF) and the KHR flags
-# attrib, but 0x30B2 falls through to the unknown-key path and the whole
+# attrib, but 0x31B2 falls through to the unknown-key path and the whole
 # eglCreateContext fails with EGL_BAD_ATTRIBUTE. The driver advertises EGL 1.5,
 # so callers that follow the spec send the core token and die here - wgpu's GL
 # backend does exactly this, which is what killed alvr_initialize_opengl
 # (enumerate_adapters() -> empty -> remove(0) panic).
 #
-# The patch rewrites the head of the unknown-key path: if the key is 0x30B2 it
+# The patch rewrites the head of the unknown-key path: if the key is 0x31B2 it
 # branches into the existing 0x30BF handler (identical semantics - sets the
 # robustness bit the driver already understands). Anything else returns
 # failure as before, minus the "invalid attrib" debug log it used to emit.
@@ -18,7 +18,7 @@
 # compares targeting the block head itself, so mid-block rewrites are safe.
 #
 #   before (0x15fcf8):  orr w0,wzr,#1 / bl logchk / cbz / adrp...
-#   after:              mov w14,#0x30b2 ; cmp w21,w14 ; b.eq 0x15fb4c
+#   after:              mov w14,#0x31b2 ; cmp w21,w14 ; b.eq 0x15fb4c
 #                       mov w0,wzr      ; b  0x15ff3c ; nop pad
 #
 # Usage: 405_patch_gles_robust.py <in.so> <out.so>
@@ -50,7 +50,7 @@ ORIG_BLOCK = bytes.fromhex(
 ORIG_HANDLER = bytes.fromhex("895e40b9")   # ldr w9, [x20, #0x5c]
 ORIG_EPILOGUE = bytes.fromhex("fd7b42a9")  # ldp x29, x30, [sp, #0x20]
 ORIG_KEEP_BR = bytes.fromhex("83000014")   # b 0x15ff34
-PATCHED_HEAD = bytes.fromhex("4e168652")   # mov w14, #0x30b2
+PATCHED_HEAD = bytes.fromhex("4e368652")   # mov w14, #0x31b2
 
 
 def w32(v):
@@ -117,7 +117,7 @@ def main():
         return w32(0x14000000 | (imm & 0x3FFFFFF))
 
     body = b"".join([
-        w32(0x5286164E),            # mov w14, #0x30b2
+        w32(0x5286364E),            # mov w14, #0x31b2
         w32(0x6B0E02BF),            # cmp w21, w14
         b_eq(HANDLER, SITE + 8),    # b.eq -> robust handler
         w32(0x2A1F03E0),            # mov w0, wzr

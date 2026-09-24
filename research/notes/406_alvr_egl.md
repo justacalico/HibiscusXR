@@ -19,22 +19,23 @@ the window but not natively") are both benign on Android.
 
 wgpu-hal 24 `Inner::create`, on any EGL >= 1.5 display without ANGLE
 extensions, unconditionally appends `EGL_CONTEXT_OPENGL_ROBUST_ACCESS`
-(0x30B2, the core EGL 1.5 token) to the context attributes. A context-create
-probe on-device:
+(0x31B2, the core EGL 1.5 token) to the context attributes. Confirmed by
+instrumenting khronos-egl 6.0.0 (ALVR's exact version) on-device:
 
 ```
-EGL 1.5, CLIENT_APIS: OpenGL_ES
-ES3 plain                     -> SUCCESS
-ES3 + 0x30B2 (core robust)    -> 0x3004 EGL_BAD_ATTRIBUTE
-ES3 + 0x30BF (EXT robust)     -> SUCCESS
-ES3 + 0x30FC (KHR flags)      -> 0x3004 EGL_BAD_ATTRIBUTE
+KHEGL create_context dpy=0x1 attrs=[0x3098,3, 0x31B2,1, 0x3038]
+KHEGL -> ctx=0x0  (eglGetError == EGL_SUCCESS - driver fails silently)
 ```
 
 The V@378 driver advertises EGL 1.5 + EGL_EXT_create_context_robustness but
-its attrib parser only accepts the EXT token; the core token and the KHR
-flags attrib both fall through to the unknown-key path. Same bug class as
-gfx-rs/wgpu#7952 (fixed upstream in wgpu 25 by retrying Core->Ext->none;
-ALVR v20.14.1 ships wgpu 24 and cannot be patched here).
+its attrib parser only accepts the EXT token (0x30BF); the core token falls
+through to the unknown-key path. Same bug class as gfx-rs/wgpu#7952 (fixed
+upstream in wgpu 25 by retrying Core->Ext->none; ALVR v20.14.1 ships wgpu 24
+and cannot be patched here).
+
+Note: this affects every app that creates an EGL context with the core
+robust-access token, not just ALVR - wgpu 24 clients, anything using
+EGL_CONTEXT_OPENGL_ROBUST_ACCESS per spec.
 
 ## Where the check lives
 
@@ -50,14 +51,14 @@ EGL_BAD_ATTRIBUTE.
 Rewrites the head of the unknown-key path at 0x15fcf8:
 
 ```
-mov w14, #0x30b2
+mov w14, #0x31b2
 cmp w21, w14
 b.eq 0x15fb4c        ; existing 0x30BF handler - sets the robustness bit
 mov w0, wzr
 b   0x15ff3c         ; epilogue, ret 0 (unchanged failure, minus the log)
 ```
 
-0x30B2 now gets identical handling to 0x30BF. Everything else still fails
+0x31B2 now gets identical handling to 0x30BF. Everything else still fails
 the same way; only the "invalid attrib" debug message is lost. Xref audit:
 the only branches into the rewritten region are the three dispatch compares
 landing on the block head itself - nothing jumps into the middle of it.
@@ -82,7 +83,16 @@ Caveats:
 
 ## Verified
 
-Patched blob bind-mounted on-device, probe replays the whole wgpu sequence:
-choose_config -> bind ES -> eglCreateContext(3, 0x30B2) -> surfaceless
-make_current -> glGetString -> "OpenGL ES 3.2 V@378.0". enumerate_adapters
-would now return 1, ALVR's remove(0) survives.
+Patched blob bind-mounted over the vendor lib on-device (visible inside the
+app mount namespace - the early-init mount in the image lands before zygote
+forks, so every app inherits it):
+
+- eglCreateContext(ES3 + 0x31B2) -> SUCCESS (was NO_CONTEXT before)
+- Real wgpu 24.0.1 repro binary (Backends::GL, same InstanceDescriptor as
+  ALVR) -> `enumerate_adapters` returns 1 adapter, Vendor Qualcomm /
+  Adreno 630 / "OpenGL ES 3.2 V@378.0" parsed fine
+- alvr.client.stable v20.14.1 launches, passes GraphicsContext::new_gl
+  (previously panicked on remove(0)), reaches the network-announce stage
+  and waits for a streamer - the GL path is clear end to end
+- Applies system-wide: the parser is shared by every process using the
+  Adreno EGL stack, so all apps get the fix, not just ALVR

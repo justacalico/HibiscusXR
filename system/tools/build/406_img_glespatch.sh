@@ -3,7 +3,7 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Patch the Adreno context-attrib parser and shadow the blob into
 # system-pn2-full.img.
 #
-# The V@378 driver rejects EGL_CONTEXT_OPENGL_ROBUST_ACCESS (0x30B2, the EGL
+# The V@378 driver rejects EGL_CONTEXT_OPENGL_ROBUST_ACCESS (0x31B2, the EGL
 # 1.5 core token) in eglCreateContext with EGL_BAD_ATTRIBUTE while happily
 # accepting the EXT variant (0x30BF). The driver reports EGL 1.5, so spec-
 # conforming callers send the core token - wgpu's GL backend does, its
@@ -12,7 +12,7 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # alvr_initialize_opengl on adapters.remove(0) - the "removal index (is 0)
 # should be < len (is 0)" abort seen on-device.
 #
-# 405_patch_gles_robust.py makes the unknown-key path accept 0x30B2 and route
+# 405_patch_gles_robust.py makes the unknown-key path accept 0x31B2 and route
 # it to the driver's own 0x30BF handler. The blob lives in
 # /system/etc/pn2/ and pn2-egl.rc bind-mounts it over the vendor file at
 # early-init, so the vendor partition stays byte-identical.

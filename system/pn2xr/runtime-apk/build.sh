@@ -66,7 +66,9 @@ zip -q -r "../runtime-unsigned.apk" classes.dex lib
 cd ../..
 
 echo "[4/4] sign"
-KS="$HOME/.android/debug.keystore"
+# Platform signing when PN2_KS points at the release keystore; the debug
+# key stays the default so unsigned-pipeline builds keep working.
+KS="${PN2_KS:-$HOME/.android/debug.keystore}"
 if [ ! -f "$KS" ]; then
     mkdir -p "$HOME/.android"
     keytool -genkeypair -v -keystore "$KS" -alias androiddebugkey \
@@ -74,8 +76,12 @@ if [ ! -f "$KS" ]; then
         -storepass android -keypass android \
         -dname "CN=Android Debug,O=Android,C=US" >/dev/null
 fi
-"$BT/apksigner" sign --ks "$KS" \
-    --ks-pass pass:android --out out/openxr-runtime.apk out/runtime-unsigned.apk
+KS_ALIAS="${PN2_KEY_ALIAS:-androiddebugkey}"
+KS_PASS="${PN2_KS_PASS:-android}"
+KEY_PASS="${PN2_KEY_PASS:-$KS_PASS}"
+"$BT/apksigner" sign --ks "$KS" --ks-key-alias "$KS_ALIAS" \
+    --ks-pass "pass:$KS_PASS" --key-pass "pass:$KEY_PASS" \
+    --out out/openxr-runtime.apk out/runtime-unsigned.apk
 
 echo "built out/openxr-runtime.apk"
 

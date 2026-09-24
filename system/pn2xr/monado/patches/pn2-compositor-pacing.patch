@@ -191,3 +191,36 @@ index 22fd27cd..0bbde20f 100644
  	    VK_NULL_HANDLE,                        // fence
  	    out_index);                            // pImageIndex
  	VK_CHK_AND_RET(ret, "vkAcquireNextImageKHR");
+diff --git i/src/xrt/auxiliary/util/u_pacing_compositor_fake.c w/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
+index f7589a3e..58496435 100644
+--- i/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
++++ w/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
+@@ -23,6 +23,10 @@
+ #include <assert.h>
+ #include <math.h>
+ 
++#ifdef XRT_OS_ANDROID
++#include <sys/system_properties.h>
++#endif
++
+ DEBUG_GET_ONCE_LOG_OPTION(log_level_fake, "U_PACING_COMPOSITOR_FAKE_LOG", U_LOGGING_INFO)
+ 
+ #define UPC_LOG_T(...) U_LOG_IFL_T(debug_get_log_option_log_level_fake(), __VA_ARGS__)
+@@ -479,6 +483,17 @@ u_pc_fake_create(int64_t estimated_frame_period_ns, int64_t now_ns, struct u_pac
+ 	// An arbitrary guess, that happens to be based on Index.
+ 	float present_to_display_offset_ms = debug_get_float_option_present_to_display_offset_ms();
+ 
++#ifdef XRT_OS_ANDROID
++	// Queued present plus no vblank feedback: the earliest photons are the
++	// flip after the present reaches the front of the queue, so a frame
++	// period is a better guess than 4ms. Only when the option is left
++	// unset - Android's debug options read debug.xrt.* properties, not
++	// env vars.
++	if (__system_property_find("debug.xrt.U_PACING_COMP_PRESENT_TO_DISPLAY_OFFSET_MS") == NULL) {
++		present_to_display_offset_ms = time_ns_to_ms_f(estimated_frame_period_ns);
++	}
++#endif
++
+ 	// Present to display offset, aka vblank to pixel turning into photons.
+ 	ft->present_to_display_offset_ms = (struct u_var_draggable_f32){
+ 	    .val = present_to_display_offset_ms,

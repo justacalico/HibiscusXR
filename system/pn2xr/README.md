@@ -37,3 +37,6 @@ app-xrtest/build.sh  # test APK bundling the runtime
 - User IPD comes from `persist.pn2.ipd` (metres), mirrored from the
   `hibiscus_ipd` global setting by pn2-ipdd. It moves only the eye poses;
   the fixed lens geometry is untouched. Polled live, ~0.5s cadence.
+- `PN2_POSEDUMP` / `debug.pn2.posedump` / `touch /data/local/tmp/xr/posedump`
+  print the raw qvrd pose (the one the dash reads) and the relation the
+  runtime serves, ~4Hz on logcat tag `pn2pose`.

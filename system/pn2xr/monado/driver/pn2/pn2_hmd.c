@@ -293,21 +293,11 @@ pn2_push_qvr(struct pn2_device *d)
 	math_quat_rotate_vec3(&PN2_QVR_WORLD_TO_VIEW, &pose.position, &rel.pose.position);
 	// The service's velocity fields are noise on this build (dumped lv
 	// swings ±2 m/s with the head bolted to a desk), so every display-time
-	// prediction got a random positional kick. Leave linear velocity
-	// invalid and let the history finite-difference it, but hand over the
-	// gyro rate: between SLAM poses the average is tens of ms stale, so on
-	// a head swing the extrapolation trails the real turn and snaps back
-	// like a spring. The gyro is orders of magnitude fresher - dev frame
-	// rotated into the pose's world frame (orientation minus its
-	// DEV_TO_VIEW tail).
-	struct xrt_quat inv_dev, dev_to_world;
-	math_quat_invert(&PN2_DEV_TO_VIEW, &inv_dev);
-	math_quat_rotate(&rel.pose.orientation, &inv_dev, &dev_to_world);
-	math_quat_rotate_vec3(&dev_to_world, &d->fusion.last.gyro, &rel.angular_velocity);
+	// prediction got a random positional kick. Leave them invalid and let
+	// the history estimate motion by finite-differencing the poses.
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
-	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT |
-	    XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
+	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
 	if (m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns)) {
 		d->qvr_last_ts = pose.timestamp_ns;
 	}

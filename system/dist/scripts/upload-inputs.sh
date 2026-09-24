@@ -81,7 +81,7 @@ cp "$SRC/overlay/lib64/libsensorservice.so" "$B/overlay/lib64/"
 cp "$SRC/notes/libart-patched.so" "$B/notes/"
 cp "$SRC/notes/vrshell_lib/libPvr_UnitySDK.patched2.so" "$B/notes/vrshell_lib/"
 cp "$SRC/build/keys/platform.pk8" "$SRC/build/keys/platform.x509.pem" "$B/build/keys/"
-for l in libgui libui libutils libcamera_client libtinyxml2; do
+for l in libgui libui libutils libcamera_client libtinyxml2 libGLESv2_adreno; do
   cp "$SRC/notes/qlibs/$l.so" "$B/linklibs/"
 done
 find "$B" -name .git -prune -exec rm -rf {} + 2>/dev/null || true

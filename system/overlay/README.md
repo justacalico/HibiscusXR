@@ -13,6 +13,7 @@ Pico 8.1 vendor. VNDK 27, non-A/B, kernel 4.9.65.
 | Path | Purpose |
 |---|---|
 | `etc/init/pn2-vintf.rc` | bind-mounts the patched VINTF manifest at `early-init` |
+| `etc/init/pn2-egl.rc` | bind-mounts the robust-context patched `libGLESv2_adreno.so` at `early-init` (full image only, see `tools/build/406_img_glespatch.sh`) |
 | `etc/pn2/vendor_manifest.xml` | stock manifest minus the `android.hardware.boot` block |
 | `etc/init/pn2-snd.rc` | loads the audio kernel modules once the runtime APEX is up |
 | `etc/init/pn2-settings.rc` | pins rotation on every boot (survives factory reset) |

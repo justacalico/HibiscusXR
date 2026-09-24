@@ -88,6 +88,10 @@ step "fan daemon (373)"
 bash "$T/373_img_fan.sh" || true
 ran 373_img_fan.txt "FAN DAEMON ADDED OK"
 
+step "GLES robust-context patch (406)"
+bash "$T/406_img_glespatch.sh" || true
+ran 406_glespatch.txt "GLES ROBUST PATCH OK"
+
 step "verify (268)"
 bash "$T/268_verify_img.sh" || true
 tail -30 "$N/268_verify.txt"

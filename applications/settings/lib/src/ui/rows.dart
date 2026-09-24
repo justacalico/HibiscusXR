@@ -143,9 +143,9 @@ class _Control extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width: 38,
+                width: 46,
                 child: Text(
-                  l10n.sliderPercent((store.sliderValue(id) * 100).round()),
+                  sliderValueLabel(l10n, id, store.sliderValue(id)),
                   style: pctStyle,
                 ),
               ),
@@ -159,7 +159,7 @@ class _Control extends StatelessWidget {
                   inactiveColor: PanelTheme.surfaceHigh,
                 ),
               ),
-              Text(l10n.sliderPercent(100), style: pctStyle),
+              Text(sliderMaxLabel(l10n, id), style: pctStyle),
             ],
           ),
         );

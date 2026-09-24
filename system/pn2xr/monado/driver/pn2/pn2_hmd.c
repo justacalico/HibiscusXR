@@ -54,6 +54,16 @@ DEBUG_GET_ONCE_NUM_OPTION(pn2_axismap, "PN2_AXISMAP", 0)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_ipd, "PN2_IPD", 0.0635f)
 DEBUG_GET_ONCE_BOOL_OPTION(pn2_no_qvr, "PN2_NO_QVR", false)
 
+extern int __system_property_get(const char *, char *);
+
+// User IPD channel: the settings app writes hibiscus_ipd (mm) into
+// Settings.Global and pn2-ipdd mirrors it here in metres. Polled live so a
+// slider drag takes effect without restarting the app. Setting PN2_IPD pins
+// the value at create time and disables the poll.
+#define PN2_IPD_PROP "persist.pn2.ipd"
+#define PN2_IPD_MIN_M 0.040f
+#define PN2_IPD_MAX_M 0.090f
+
 // Stock Pico lens field, same constants verified on-device in vrhome:
 // the texture offset scales by K0 + K2 r^2 + K4 r^4 + K6 r^6 where r is the
 // tan-angle radius of the panel pixel from the lens centre.
@@ -92,6 +102,10 @@ struct pn2_device
 	uint64_t qvr_last_ts;      //!< last pose timestamp pushed to history
 	uint64_t qvr_dead_ns;      //!< when the pose stream went dead (0 = alive)
 	uint64_t qvr_retry_at;     //!< next allowed client reconnect attempt
+
+	float ipd_m;             //!< eye separation in metres (persist.pn2.ipd)
+	bool ipd_pinned;         //!< PN2_IPD env set: fixed at create, no poll
+	uint64_t next_ipd_poll;  //!< next property re-read (monotonic ns)
 
 	// coast state while the tracker is degraded: the last real pose is the
 	// anchor, the IMU fusion delta keeps the head turning until tracking
@@ -161,12 +175,38 @@ pn2_axis_map_index(void)
 	{
 		char prop[92];
 		prop[0] = 0;
-		extern int __system_property_get(const char *, char *);
 		if (__system_property_get("debug.pn2.axismap", prop) > 0) {
 			return atoi(prop);
 		}
 	}
 	return (int)debug_get_num_option_pn2_axismap();
+}
+
+static float
+pn2_prop_float(const char *key, float dflt)
+{
+	char buf[92];
+	if (__system_property_get(key, buf) > 0) {
+		return (float)atof(buf);
+	}
+	return dflt;
+}
+
+// The prop is user input crossing a trust boundary: clamp to the band the
+// lenses can actually serve before it reaches the view poses.
+static float
+pn2_ipd_setting(float dflt)
+{
+	float v = pn2_prop_float(PN2_IPD_PROP, -1.0f);
+	return (v >= PN2_IPD_MIN_M && v <= PN2_IPD_MAX_M) ? v : dflt;
+}
+
+// Software IPD: the lenses are physically fixed, so only the stereo eye
+// separation moves - the lens centres and distortion model stay put.
+static void
+pn2_apply_ipd(struct pn2_device *d, float ipd)
+{
+	d->ipd_m = ipd;
 }
 
 static void
@@ -389,6 +429,17 @@ pn2_run_thread(void *ptr)
 		}
 		os_mutex_lock(&d->lock);
 		pn2_pump_qvr(d);
+		if (!d->ipd_pinned) {
+			uint64_t now = os_monotonic_get_ns();
+			if (now >= d->next_ipd_poll) {
+				d->next_ipd_poll = now + 500000000ull;
+				float ipd = pn2_ipd_setting(d->ipd_m);
+				if (ipd != d->ipd_m) {
+					pn2_apply_ipd(d, ipd);
+					PN2_INFO(d, "ipd %.1fmm", ipd * 1000.0f);
+				}
+			}
+		}
 		os_mutex_unlock(&d->lock);
 
 		if (activity == NULL || is_finishing == NULL) {
@@ -557,6 +608,24 @@ pn2_compute_distortion(struct xrt_device *xdev, uint32_t view, float u, float v,
 }
 
 static xrt_result_t
+pn2_get_view_poses(struct xrt_device *xdev,
+                   const struct xrt_vec3 *default_eye_relation,
+                   int64_t at_timestamp_ns,
+                   enum xrt_view_type view_type,
+                   uint32_t view_count,
+                   struct xrt_space_relation *out_head_relation,
+                   struct xrt_fov *out_fovs,
+                   struct xrt_pose *out_poses)
+{
+	struct pn2_device *d = pn2_device(xdev);
+	// The compositor's default_eye_relation is a hardcoded 63mm guess; the
+	// user-facing IPD lives on the device and overrides it every frame.
+	struct xrt_vec3 eye = {d->ipd_m, 0.0f, 0.0f};
+	return u_device_get_view_poses(xdev, &eye, at_timestamp_ns, view_type, view_count, out_head_relation,
+	                               out_fovs, out_poses);
+}
+
+static xrt_result_t
 pn2_ref_space_usage(struct xrt_device *xdev,
                     enum xrt_reference_space_type type,
                     enum xrt_input_name name,
@@ -590,7 +659,7 @@ pn2_hmd_create(void)
 	d->base.supported.position_tracking = !debug_get_bool_option_pn2_no_qvr();
 	PN2_INFO(d, "qvrservice 6DoF: %s", d->qvr != NULL ? "connected" : "unavailable");
 	u_device_populate_function_pointers(&d->base, pn2_get_tracked_pose, pn2_destroy);
-	d->base.get_view_poses = u_device_get_view_poses;
+	d->base.get_view_poses = pn2_get_view_poses;
 	d->base.get_visibility_mask = u_device_get_visibility_mask;
 	d->base.compute_distortion = pn2_compute_distortion;
 	d->base.ref_space_usage = pn2_ref_space_usage;
@@ -647,6 +716,13 @@ pn2_hmd_create(void)
 		pn2_destroy(&d->base);
 		return NULL;
 	}
+	// lens_horizontal_separation_meters is the physical lens pitch - it
+	// sizes the fov and the distortion field, which never move. The user's
+	// IPD only feeds the eye poses in get_view_poses.
+	d->ipd_pinned = getenv("PN2_IPD") != NULL;
+	pn2_apply_ipd(d, d->ipd_pinned ? info.lens_horizontal_separation_meters
+	                             : pn2_ipd_setting(info.lens_horizontal_separation_meters));
+	PN2_INFO(d, "ipd %.1fmm%s", d->ipd_m * 1000.0f, d->ipd_pinned ? " (pinned)" : "");
 	d->base.hmd->screens[0].nominal_frame_interval_ns = time_s_to_ns(1.0f / 72.0f);
 
 	u_distortion_mesh_fill_in_compute(&d->base);

@@ -42,7 +42,8 @@
 //
 //   setprop debug.pn2vr.k1     0.22    barrel term
 //   setprop debug.pn2vr.k2     0.24    barrel term
-//   setprop debug.pn2vr.ipd    0.063   metres between eye centres
+//   setprop debug.pn2vr.ipd    0.063   metres between eye centres; overrides
+//                                      persist.pn2.ipd (the user setting)
 //   setprop debug.pn2vr.fov    90      vertical degrees
 //   setprop debug.pn2vr.roll     90    in-plane image roll, degrees
 //   setprop debug.pn2vr.worldx   90    Y-up scene -> Android's Z-up ENU world
@@ -82,7 +83,7 @@ static int propI(const char* key, int dflt) {
 static void refreshTunables() {
     kDistK1 = propF("debug.pn2vr.k1",   0.22f);
     kDistK2 = propF("debug.pn2vr.k2",   0.24f);
-    kIPD    = propF("debug.pn2vr.ipd",  0.063f);
+    kIPD    = propF("debug.pn2vr.ipd",  propF("persist.pn2.ipd", 0.063f));
     kFovY   = propF("debug.pn2vr.fov",  90.0f);
     kRoll     = propF("debug.pn2vr.roll",     0.0f);
     kSensRoll = propF("debug.pn2vr.sensroll", 0.0f);

@@ -1,5 +1,6 @@
 import '../l10n/app_localizations.dart';
 import 'models.dart';
+import 'units.dart';
 
 /// id -> localized string resolution. Kept out of the widgets so the
 /// mapping is one table and unit tests can hit every id.
@@ -50,6 +51,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerUnbind;
     case ItemId.brightness:
       return l10n.itemBrightness;
+    case ItemId.ipd:
+      return l10n.itemIpd;
     case ItemId.nightMode:
       return l10n.itemNightMode;
     case ItemId.volume:
@@ -103,6 +106,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerUnbindDesc;
     case ItemId.brightness:
       return l10n.itemBrightnessDesc;
+    case ItemId.ipd:
+      return l10n.itemIpdDesc;
     case ItemId.nightMode:
       return l10n.itemNightModeDesc;
     case ItemId.volume:
@@ -151,3 +156,17 @@ String controllerLinkLabel(AppLocalizations l10n, ControllerLink link) {
 /// Status line under the scan card title.
 String scanStatusLabel(AppLocalizations l10n, bool scanning) =>
     scanning ? l10n.controllerScanning : l10n.controllerScanIdle;
+
+/// Text beside a slider showing its current value. Most sliders are a
+/// plain percentage; the IPD row reports millimetres.
+String sliderValueLabel(AppLocalizations l10n, ItemId id, double v) =>
+    switch (id) {
+      ItemId.ipd => l10n.ipdMm(ipdFromSlider(v).toStringAsFixed(1)),
+      _ => l10n.sliderPercent((v * 100).round()),
+    };
+
+/// Text at a slider's right end marking the top of the range.
+String sliderMaxLabel(AppLocalizations l10n, ItemId id) => switch (id) {
+  ItemId.ipd => l10n.ipdMm(kIpdMaxMm.toStringAsFixed(0)),
+  _ => l10n.sliderPercent(100),
+};

@@ -31,4 +31,9 @@ app-xrtest/build.sh  # test APK bundling the runtime
 - `PN2_AXISMAP` / `debug.pn2.axismap` select the sensor->head axis map while
   the mapping is being verified on-device.
 - `PN2_K1` / `PN2_K2` / `PN2_IPD` tune the provisional distortion model; the
-  stock lens polynomial from `lens/` is the reference.
+  stock lens polynomial from `lens/` is the reference. PN2_IPD is the
+  physical lens pitch - it also pins the eye separation and disables the
+  runtime poll.
+- User IPD comes from `persist.pn2.ipd` (metres), mirrored from the
+  `hibiscus_ipd` global setting by pn2-ipdd. It moves only the eye poses;
+  the fixed lens geometry is untouched. Polled live, ~0.5s cadence.

@@ -43,9 +43,10 @@ put() {   # put <local> <img-path> <mode>
 
 echo
 echo "=== init scripts ==="
-for f in pn2-vintf.rc pn2-snd.rc pn2-settings.rc pn2-power.rc; do
+for f in pn2-vintf.rc pn2-snd.rc pn2-settings.rc pn2-power.rc pn2-ipd.rc; do
   put "$OV/etc/init/$f" "/etc/init/$f" 644
 done
+put "$OV/bin/pn2-ipdd" "/bin/pn2-ipdd" 755
 
 echo
 echo "=== VINTF manifest override ==="

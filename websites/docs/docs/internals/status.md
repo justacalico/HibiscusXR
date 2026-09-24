@@ -15,6 +15,9 @@
 - **VR renders on the display.** VRShell presents frames to the panel with
   live head rotation tracking
 - Optional wireless adb: `setprop persist.pn2.adbwifi 1` (off by default)
+- Adjustable software IPD: Settings > Display > Eye spacing, or
+  `setprop persist.pn2.ipd 0.065` (metres). Applies live to the OpenXR
+  runtime and the shell; the lenses stay fixed
 
 ## Does not work yet
 

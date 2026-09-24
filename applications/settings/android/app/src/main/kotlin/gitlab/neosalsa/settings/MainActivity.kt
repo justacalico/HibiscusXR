@@ -7,7 +7,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.database.ContentObserver
 import android.media.AudioManager
+import android.os.Handler
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
@@ -25,11 +27,17 @@ private const val SHOW_TOUCHES = "show_touches"
 // Hibiscus-owned global key: the HUD service watches it and keeps the
 // debug status line up over any app while set
 private const val DEBUG_HUD = "hibiscus_debug_hud"
+// Hibiscus-owned global key for the user's interpupillary distance, in
+// millimetres. pn2-ipdd mirrors it onto persist.pn2.ipd (metres) where
+// the renderers pick it up. Absent means the panel default below.
+private const val IPD = "hibiscus_ipd"
+private const val IPD_DEFAULT_MM = 63.5
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
     private var controllers: ControllerClient? = null
+    private var ipdObserver: ContentObserver? = null
 
     // adb-triggerable scan toggle, same path as tapping the card.
     // "device" extra drives a raw startPairingMode probe instead.
@@ -150,6 +158,22 @@ class MainActivity : FlutterActivity() {
             .setStreamHandler(object : EventChannel.StreamHandler {
                 override fun onListen(arguments: Any?, sink: EventChannel.EventSink) {
                     eventSink = sink
+                    // IPD changes made outside this app (adb settings put,
+                    // another shell surface) push the slider back in sync.
+                    ipdObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                eventSink?.success(
+                                    mapOf("sliders" to mapOf("ipd" to ipdMm())),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(IPD),
+                                false,
+                                it,
+                            )
+                        }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -163,6 +187,10 @@ class MainActivity : FlutterActivity() {
 
                 override fun onCancel(arguments: Any?) {
                     eventSink = null
+                    ipdObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    ipdObserver = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -203,6 +231,7 @@ class MainActivity : FlutterActivity() {
         "sliders" to mapOf(
             "volume" to volume(),
             "brightness" to brightness(),
+            "ipd" to ipdMm(),
         ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
@@ -281,6 +310,12 @@ class MainActivity : FlutterActivity() {
         return (v / 255.0).coerceIn(0.0, 1.0)
     }
 
+    // Slider values cross the channel in real units: ipd arrives and is
+    // reported in millimetres.
+    private fun ipdMm(): Double =
+        Settings.Global.getString(contentResolver, IPD)
+            ?.toDoubleOrNull() ?: IPD_DEFAULT_MM
+
     private fun nightModeOn(): Boolean =
         getSystemService(UiModeManager::class.java)?.nightMode ==
             UiModeManager.MODE_NIGHT_YES
@@ -309,6 +344,8 @@ class MainActivity : FlutterActivity() {
                     window.attributes = attrs
                 }
             }
+            "ipd" ->
+                putGlobalString(IPD, "%.1f".format(v.coerceIn(56.0, 74.0)))
         }
     }
 
@@ -367,6 +404,12 @@ class MainActivity : FlutterActivity() {
     private fun putGlobalInt(key: String, v: Int) {
         try {
             Settings.Global.putInt(contentResolver, key, v)
+        } catch (_: SecurityException) {}
+    }
+
+    private fun putGlobalString(key: String, v: String) {
+        try {
+            Settings.Global.putString(contentResolver, key, v)
         } catch (_: SecurityException) {}
     }
 

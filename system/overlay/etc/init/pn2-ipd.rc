@@ -1,0 +1,22 @@
+# User IPD bridge.
+#
+# The Neo 2 has fixed lenses - IPD is adjusted in software, by moving the
+# stereo eye separation in the renderers. The settings app stores the user's
+# value in the hibiscus_ipd Settings.Global key (millimetres); this daemon
+# mirrors it onto persist.pn2.ipd (metres) where the monado pn2 driver,
+# vrhome and vrdemo all read it live.
+#
+# Started at boot_completed like the other settings-backed services: the
+# settings table lives in /data and does not exist at post-fs.
+#
+# Manual override for tuning:
+#     adb shell su -c 'setprop persist.pn2.ipd 0.065'   # metres
+
+service pn2_ipdd /system/bin/pn2-ipdd
+    user root
+    group root
+    seclabel u:r:shell:s0
+    disabled
+
+on property:sys.boot_completed=1
+    start pn2_ipdd

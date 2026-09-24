@@ -15,8 +15,9 @@
  *  - qvrservice_head_tracking_data_t layout below was verified against
  *    live poses; quality/state fields sit at fixed offsets.
  *  - Pose timestamps come from the QVR clock domain, which runs a few
- *    seconds ahead of CLOCK_MONOTONIC. We learn the offset once and
- *    convert.
+ *    seconds ahead of CLOCK_MONOTONIC. The offset can't be read
+ *    directly: each fresh pose bounds it from below by that pose's read
+ *    latency, so we fit it from the youngest samples seen.
  * @ingroup drv_pn2
  */
 
@@ -36,6 +37,11 @@
 #define PN2_QVR_TRACKING_MODE_POSITIONAL 2
 
 #define PN2_QVR_TRACKING_STATE_TRACKING 3
+
+// Fresh qvr-minus-monotonic bounds kept for the clock fit. At the pose
+// rate this is about a second: long enough for a young sample to show
+// up, short enough to follow suspend-time clock drift.
+#define PN2_QVR_CLOCK_WINDOW 64
 
 /*!
  * qvrservice_head_tracking_data_t as the service writes it into the
@@ -79,8 +85,10 @@ struct pn2_qvr
 	pn2_qvr_dtor_t dtor;
 	pn2_qvr_m0_t stop_vr_mode;
 	pn2_qvr_head_t get_head_data;
-	int64_t clock_offset; //!< qvr_ts - monotonic_ts, learned from first pose
-	bool clock_offset_set;
+	int64_t clock_offset; //!< qvr_ts - monotonic_ts, fit from freshest poses
+	int64_t off_window[PN2_QVR_CLOCK_WINDOW]; //!< recent qvr - monotonic bounds
+	uint32_t off_window_next;
+	uint32_t off_window_len;
 	uint64_t last_raw_ts; //!< raw QVR timestamp of the newest read
 	int stall;            //!< consecutive reads with last_raw_ts repeated
 };
@@ -186,9 +194,11 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 		return false;
 	}
 	struct pn2_qvr_head_data *d = NULL;
-	if (q->get_head_data(q->impl, &d) < 0 || d == NULL || d->tracking_state == 0) {
+	if (q->get_head_data(q->impl, &d) < 0 || d == NULL || d->tracking_state == 0 ||
+	    d->timestamp_ns == 0) {
 		// state 0 means this client never got VR mode (or the tracker is
-		// dead): refuse the pose so the caller falls back to live IMU data
+		// dead), ts 0 is warm-up (tracker alive, no pose written yet):
+		// refuse the pose so the caller falls back to live IMU data
 		// instead of a frozen identity quaternion
 		return false;
 	}
@@ -197,23 +207,28 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 	// pose readable (state and all), so repeats are the only liveness check.
 	// resync only on a fresh sample - syncing to a frozen one would pin the
 	// converted timestamp at "now" forever and hide the stall
-	// ts==0 is warm-up (tracker alive, no pose written yet), not a stall
-	q->stall = (d->timestamp_ns != 0 && d->timestamp_ns == q->last_raw_ts)
-	               ? q->stall + 1 : 0;
+	q->stall = d->timestamp_ns == q->last_raw_ts ? q->stall + 1 : 0;
 	q->last_raw_ts = d->timestamp_ns;
 
 	uint64_t now = os_monotonic_get_ns();
-	int64_t sample_off = (int64_t)d->timestamp_ns - (int64_t)now;
-	if (!q->clock_offset_set) {
-		q->clock_offset = sample_off;
-		q->clock_offset_set = true;
-	} else if (q->stall == 0 &&
-	           (sample_off - q->clock_offset > 50000000 ||
-	            sample_off - q->clock_offset < -50000000)) {
-		// suspend cycles shift the service clock against monotonic; a stale
-		// offset lands every converted timestamp in the past/future and
-		// breaks prediction, so resync when drift exceeds 50ms
-		q->clock_offset = sample_off;
+	if (q->stall == 0) {
+		// Every fresh pose bounds the offset from below by its own read
+		// latency; the window max is the tightest bound, so converted
+		// timestamps land near true capture time. Anchoring on one read
+		// stamps every pose that read's age too new, which the pose
+		// history serves back as tracking lag on every query.
+		q->off_window[q->off_window_next] = (int64_t)d->timestamp_ns - (int64_t)now;
+		q->off_window_next = (q->off_window_next + 1) % PN2_QVR_CLOCK_WINDOW;
+		if (q->off_window_len < PN2_QVR_CLOCK_WINDOW) {
+			q->off_window_len++;
+		}
+		int64_t best = q->off_window[0];
+		for (uint32_t i = 1; i < q->off_window_len; i++) {
+			if (q->off_window[i] > best) {
+				best = q->off_window[i];
+			}
+		}
+		q->clock_offset = best;
 	}
 
 	out->orientation.x = d->quat[0];
@@ -229,7 +244,9 @@ pn2_qvr_get_pose(struct pn2_qvr *q, struct pn2_qvr_pose *out)
 	out->linear_velocity.x = d->linear_velocity[0];
 	out->linear_velocity.y = d->linear_velocity[1];
 	out->linear_velocity.z = d->linear_velocity[2];
-	out->timestamp_ns = (uint64_t)((int64_t)d->timestamp_ns - q->clock_offset);
+	out->timestamp_ns = (int64_t)d->timestamp_ns > q->clock_offset
+	                        ? (uint64_t)((int64_t)d->timestamp_ns - q->clock_offset)
+	                        : 0;
 	out->tracking_state = d->tracking_state;
 	out->warning_flags = d->warning_flags;
 	out->pose_quality = d->pose_quality;

@@ -1,0 +1,6 @@
+# Shadow libGLESv2_adreno.so with the robust-context patched copy WITHOUT
+# touching /vendor. Same trick as pn2-vintf.rc: the partition stays
+# byte-identical, only the mounted view changes. Must land before any
+# process initialises EGL.
+on early-init
+    mount none /system/etc/pn2/libGLESv2_adreno.so /vendor/lib64/egl/libGLESv2_adreno.so bind

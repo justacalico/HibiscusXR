@@ -18,6 +18,9 @@
 - Adjustable software IPD: Settings > Display > Eye spacing, or
   `setprop persist.pn2.ipd 0.065` (metres). Applies live to the OpenXR
   runtime and the shell; the lenses stay fixed
+- Head-tracking mode: Settings > Display > Device mode. 3DoF (default)
+  keeps `pn2_qvrd` stopped so the tracking cameras never open; 6DoF
+  starts it (`persist.pn2.dof=6dof`)
 
 ## Does not work yet
 

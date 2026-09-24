@@ -32,7 +32,9 @@ check /apex/com.android.runtime.release/lib64/libart.so ${PN2_ROOT}/notes/libart
 check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so
 check /etc/init/pn2-qvrd.rc                  ${PN2_ROOT}/overlay/etc/init/pn2-qvrd.rc
 check /etc/init/pn2-ipd.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-ipd.rc
+check /etc/init/pn2-dof.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-dof.rc
 check /bin/pn2-ipdd                          ${PN2_ROOT}/overlay/bin/pn2-ipdd
+check /bin/pn2-dofd                          ${PN2_ROOT}/overlay/bin/pn2-dofd
 # apks get re-signed with the platform key in 267, so the image copy never
 # md5-matches the staged source - verify the signature instead
 debugfs -R "dump /priv-app/seethroughsetting/seethroughsetting.apk $T/st.apk" "$IMG" >/dev/null 2>&1

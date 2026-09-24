@@ -28,6 +28,7 @@ const kSections = <SectionDef>[
   SectionDef(SectionId.display, [
     ItemId.brightness,
     ItemId.ipd,
+    ItemId.deviceMode,
     ItemId.nightMode,
   ]),
   SectionDef(SectionId.sound, [ItemId.volume, ItemId.micMute]),
@@ -60,6 +61,8 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.controllerUnbind: ItemKind.action,
   ItemId.brightness: ItemKind.slider,
   ItemId.ipd: ItemKind.slider,
+  // two modes, one bool on the wire: off is 3DoF, on is 6DoF
+  ItemId.deviceMode: ItemKind.choice,
   ItemId.nightMode: ItemKind.toggle,
   ItemId.volume: ItemKind.slider,
   ItemId.micMute: ItemKind.toggle,

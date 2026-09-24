@@ -96,4 +96,27 @@ void main() {
     await c.runAction(ItemId.wifiSettings);
     expect(source.actionsPerformed, [ItemId.wifiSettings]);
   });
+
+  test('setItemState forwards once per real change', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(source, MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+
+    await c.setItemState(ItemId.deviceMode, true);
+    expect(c.store.isOn(ItemId.deviceMode), isTrue);
+    expect(source.togglesRequested, [(ItemId.deviceMode, true)]);
+
+    // re-picking the active mode reaches neither the store nor the wire
+    await c.setItemState(ItemId.deviceMode, true);
+    expect(source.togglesRequested, hasLength(1));
+
+    await c.setItemState(ItemId.deviceMode, false);
+    expect(c.store.isOn(ItemId.deviceMode), isFalse);
+    expect(source.togglesRequested, [
+      (ItemId.deviceMode, true),
+      (ItemId.deviceMode, false),
+    ]);
+  });
 }

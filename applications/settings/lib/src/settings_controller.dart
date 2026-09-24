@@ -39,6 +39,15 @@ class SettingsController {
     await source.requestToggle(id, store.isOn(id));
   }
 
+  /// Set a two-state row explicitly. Choice rows pick a value instead of
+  /// flipping, so re-picking the active one is a no-op. Rides the same
+  /// channel as [toggleItem].
+  Future<void> setItemState(ItemId id, bool on) async {
+    if (store.isOn(id) == on) return;
+    store.setToggle(id, on);
+    await source.requestToggle(id, on);
+  }
+
   Future<void> setSlider(ItemId id, double v) async {
     store.setSlider(id, v);
     await source.setSlider(id, v);

@@ -92,8 +92,13 @@ static void qvrClose(QvrClient* c) {
 
 // GetHeadTrackingData dereferences the dead service's binder state and
 // segfaults: it must never run while qvrd is down. An unset property means
-// a differently-named service on another setup - don't gate those.
+// a differently-named service on another setup - don't gate those. The
+// device-mode prop gates on top: in 3DoF the service never runs, and the
+// client must not even try (connect churn against a missing socket).
 static bool qvrServiceUp() {
+    char dof[PROP_VALUE_MAX] = {0};
+    __system_property_get("persist.pn2.dof", dof);
+    if (!qvrDofAllowed(dof)) return false;
     char v[PROP_VALUE_MAX] = {0};
     __system_property_get("init.svc.pn2_qvrd", v);
     return v[0] == '\0' || strcmp(v, "running") == 0;

@@ -68,6 +68,21 @@ void main() {
     );
   });
 
+  testWidgets('display section golden', (tester) async {
+    await pump(
+      tester,
+      const SettingsSnapshot(
+        sliders: {ItemId.brightness: 0.4, ItemId.ipd: 0.4},
+      ),
+      persistence: MemoryPersistence({'section': 'display'}),
+    );
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/settings_display.png'),
+    );
+  });
+
   testWidgets('controllers section golden', (tester) async {
     await pump(
       tester,

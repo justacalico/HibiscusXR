@@ -292,6 +292,18 @@ abstract class AppLocalizations {
   /// **'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views'**
   String get itemIpdDesc;
 
+  /// No description provided for @itemDeviceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Device mode'**
+  String get itemDeviceMode;
+
+  /// No description provided for @itemDeviceModeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'3DoF tracks head rotation only. 6DoF also tracks position through the tracking cameras'**
+  String get itemDeviceModeDesc;
+
   /// No description provided for @itemNightMode.
   ///
   /// In en, this message translates to:
@@ -471,6 +483,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get valueUnknown;
+
+  /// No description provided for @value3dof.
+  ///
+  /// In en, this message translates to:
+  /// **'3DoF'**
+  String get value3dof;
+
+  /// No description provided for @value6dof.
+  ///
+  /// In en, this message translates to:
+  /// **'6DoF'**
+  String get value6dof;
 
   /// No description provided for @controllerConnected.
   ///

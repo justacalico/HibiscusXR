@@ -110,6 +110,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views';
 
   @override
+  String get itemDeviceMode => 'Device mode';
+
+  @override
+  String get itemDeviceModeDesc =>
+      '3DoF tracks head rotation only. 6DoF also tracks position through the tracking cameras';
+
+  @override
   String get itemNightMode => 'Night mode';
 
   @override
@@ -201,6 +208,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get valueUnknown => 'Unknown';
+
+  @override
+  String get value3dof => '3DoF';
+
+  @override
+  String get value6dof => '6DoF';
 
   @override
   String get controllerConnected => 'Connected';

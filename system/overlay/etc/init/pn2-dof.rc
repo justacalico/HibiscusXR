@@ -1,0 +1,16 @@
+# Device-mode bridge (3DoF / 6DoF).
+#
+# The settings app stores the head-tracking mode in the hibiscus_dof
+# Settings.Global key; this daemon mirrors it onto persist.pn2.dof, the
+# property the pn2_qvrd triggers in pn2-qvrd.rc watch. Started at
+# boot_completed like the other settings-backed services: the settings
+# table lives in /data and does not exist at post-fs.
+
+service pn2_dofd /system/bin/pn2-dofd
+    user root
+    group root
+    seclabel u:r:shell:s0
+    disabled
+
+on property:sys.boot_completed=1
+    start pn2_dofd

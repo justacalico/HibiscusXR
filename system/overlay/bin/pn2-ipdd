@@ -1,0 +1,40 @@
+#!/system/bin/sh
+# Bridge the user IPD setting to the persist.pn2.ipd system property.
+#
+# The settings app writes hibiscus_ipd (millimetres) into Settings.Global.
+# Apps cannot setprop, and the native renderers (pn2 monado driver, vrhome,
+# vrdemo) cannot reach the settings provider - so a root daemon is the narrow
+# piece that crosses. The settings table is polled rather than pushed: a
+# ContentObserver inside this process is not an option, and `settings get`
+# would spawn a JVM per poll.
+#
+# Missing or unparsable means "back to the panel default" - an empty persist
+# prop reads as unset on the consumer side and everyone falls back to 63.5mm.
+
+DB=/data/system/users/0/settings_global.xml
+PROP=persist.pn2.ipd
+
+cur="__boot__"
+while true; do
+    mm=$(grep 'name="hibiscus_ipd"' "$DB" 2>/dev/null \
+         | sed -n 's/.*value="\([0-9.]*\)".*/\1/p' | head -1)
+    case "$mm" in
+        ''|*[!0-9.]*)
+            want="" ;;
+        *)
+            # metres on the prop, like every other ipd knob in the tree;
+            # clamp to the plausible band so a corrupt value cannot throw
+            # the eye poses somewhere off-panel
+            want=$(awk -v m="$mm" 'BEGIN {
+                v = m / 1000
+                if (v < 0.040) v = 0.040
+                if (v > 0.090) v = 0.090
+                printf "%.4f", v
+            }') ;;
+    esac
+    if [ "$want" != "$cur" ]; then
+        setprop "$PROP" "$want"
+        cur="$want"
+    fi
+    sleep 0.5
+done

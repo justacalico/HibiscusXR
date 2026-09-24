@@ -72,6 +72,36 @@ extern int __system_property_get(const char *, char *);
 #define PN2_LENS_K4 -0.020400088f
 #define PN2_LENS_K6 0.216338258f
 
+// ASensorEvent timestamps sit in their own domain, so they can't go into
+// the pose history raw. The offset can't be read directly either: each
+// delivered event bounds sensor-minus-monotonic from below by its own
+// pipeline latency, and the window max is the tightest bound.
+#define PN2_CLOCK_WINDOW 64
+
+struct pn2_clock_fit
+{
+	int64_t window[PN2_CLOCK_WINDOW];
+	uint32_t next;
+	uint32_t len;
+};
+
+static uint64_t
+pn2_clock_to_mono(struct pn2_clock_fit *f, uint64_t ts, uint64_t now)
+{
+	f->window[f->next] = (int64_t)ts - (int64_t)now;
+	f->next = (f->next + 1) % PN2_CLOCK_WINDOW;
+	if (f->len < PN2_CLOCK_WINDOW) {
+		f->len++;
+	}
+	int64_t best = f->window[0];
+	for (uint32_t i = 1; i < f->len; i++) {
+		if (f->window[i] > best) {
+			best = f->window[i];
+		}
+	}
+	return (uint64_t)((int64_t)ts - best);
+}
+
 /*!
  * @implements xrt_device
  */
@@ -85,6 +115,7 @@ struct pn2_device
 		struct os_mutex lock;
 		struct m_imu_3dof fusion;
 		struct m_relation_history *rh;
+		struct pn2_clock_fit sensor_fit;
 		struct xrt_vec3 accel;
 		bool has_accel;
 	};
@@ -254,7 +285,6 @@ pn2_push_qvr(struct pn2_device *d)
 	if (pose.timestamp_ns <= d->qvr_last_ts || pose.tracking_state != 3) {
 		return true;
 	}
-	d->qvr_last_ts = pose.timestamp_ns;
 
 	struct xrt_space_relation rel = XRT_SPACE_RELATION_ZERO;
 	struct xrt_quat tmp;
@@ -268,7 +298,9 @@ pn2_push_qvr(struct pn2_device *d)
 	rel.relation_flags = (enum xrt_space_relation_flags)(
 	    XRT_SPACE_RELATION_ORIENTATION_VALID_BIT | XRT_SPACE_RELATION_ORIENTATION_TRACKED_BIT |
 	    XRT_SPACE_RELATION_POSITION_VALID_BIT | XRT_SPACE_RELATION_POSITION_TRACKED_BIT);
-	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns);
+	if (m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns)) {
+		d->qvr_last_ts = pose.timestamp_ns;
+	}
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
 	          pose.orientation.z, pose.orientation.w, pose.tracking_state);
@@ -343,7 +375,8 @@ pn2_handle_event(struct pn2_device *d, const ASensorEvent *event)
 		// the history would flicker position validity. The fusion keeps
 		// running for the no-history fallback in get_tracked_pose.
 		if (d->qvr == NULL) {
-			pn2_push_fused(d, (uint64_t)event->timestamp);
+			pn2_push_fused(d, pn2_clock_to_mono(&d->sensor_fit, (uint64_t)event->timestamp,
+			                                    os_monotonic_get_ns()));
 		}
 		PN2_TRACE(d, "gyro %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f", gyro.x, gyro.y, gyro.z, d->fusion.rot.x,
 		          d->fusion.rot.y, d->fusion.rot.z, d->fusion.rot.w);

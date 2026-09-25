@@ -223,6 +223,13 @@ void testHead() {
     CHECK(qvrClassify(2) == QVR_DEGRADED);
     CHECK(qvrClassify(65537) == QVR_DEGRADED);
 
+    // device-mode gate: only an explicit "6dof" opens the client; "3dof"
+    // and junk are closed, unset stays permissive for ports with no bridge
+    CHECK(qvrDofAllowed("6dof"));
+    CHECK(!qvrDofAllowed("3dof"));
+    CHECK(!qvrDofAllowed("banana"));
+    CHECK(qvrDofAllowed(""));
+
     // stall tick: identical nonzero timestamps count up, fresh or zero
     // warm-up samples reset
     int st = 0;

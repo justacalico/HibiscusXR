@@ -345,4 +345,28 @@ void main() {
     await tester.pump();
     expect(find.text('fresh-net'), findsOneWidget);
   });
+
+  testWidgets('device mode row picks 3DoF or 6DoF', (tester) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Display'));
+    await tester.pump();
+
+    // default is 3DoF: the left segment is selected and the platform
+    // never heard anything yet
+    expect(find.text('Device mode'), findsOneWidget);
+    await tester.tap(find.text('3DoF'));
+    await tester.pump();
+    expect(source.togglesRequested, isEmpty);
+
+    await tester.tap(find.text('6DoF'));
+    await tester.pump();
+    expect(source.togglesRequested, [(ItemId.deviceMode, true)]);
+
+    // a platform-side change (adb settings put) moves the selection back
+    source.emit(
+      const SettingsSnapshot(toggles: {ItemId.deviceMode: false}),
+    );
+    await tester.pump();
+    await tester.pump();
+  });
 }

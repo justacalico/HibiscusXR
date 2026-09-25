@@ -8,6 +8,7 @@ enum ItemKind {
   controller,
   scanCard,
   brand,
+  choice,
 }
 
 /// Sidebar sections, top to bottom in display order.
@@ -38,6 +39,7 @@ enum ItemId {
   controllerUnbind,
   brightness,
   ipd,
+  deviceMode,
   nightMode,
   volume,
   micMute,

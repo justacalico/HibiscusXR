@@ -42,6 +42,10 @@ int qvrClassify(uint32_t state) {
     return state == QVR_DEAD ? QVR_DEAD : QVR_DEGRADED;
 }
 
+bool qvrDofAllowed(const char* dofProp) {
+    return dofProp[0] == '\0' || strcmp(dofProp, "6dof") == 0;
+}
+
 int qvrStallTick(int streak, uint64_t prevTs, uint64_t ts) {
     return ts != 0 && ts == prevTs ? streak + 1 : 0;
 }

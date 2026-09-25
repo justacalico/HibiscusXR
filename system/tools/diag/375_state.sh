@@ -12,6 +12,10 @@ echo "=== adb-over-wifi persistence ==="
 echo "  persist.adb.tcp.port = [$(getprop persist.adb.tcp.port)]"
 echo "  persist.pn2.adbwifi  = [$(getprop persist.pn2.adbwifi)]"
 echo
+echo "=== device mode ==="
+echo "  persist.pn2.dof      = [$(getprop persist.pn2.dof)]"
+echo "  init.svc.pn2_qvrd    = [$(getprop init.svc.pn2_qvrd)]"
+echo
 echo "=== controller service ==="
 pm list packages -e 2>/dev/null | grep -c cvcontroller
 echo

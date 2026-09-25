@@ -42,6 +42,15 @@ struct pn2_qvr *
 pn2_qvr_create(void);
 
 /*!
+ * True when the device mode allows 6DoF, judged by persist.pn2.dof (the
+ * settings-app switch, mirrored by pn2-dofd). Only "6dof" enables the
+ * client; an unset prop keeps the pre-setting behaviour on ports that
+ * run no bridge.
+ */
+bool
+pn2_qvr_enabled(void);
+
+/*!
  * True while qvrd is running, judged by init's service property.
  * GetHeadTrackingData dereferences the dead service's binder state and
  * segfaults, so it must never be called while this is false. An unset

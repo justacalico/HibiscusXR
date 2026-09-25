@@ -134,6 +134,8 @@ struct pn2_device
 	uint64_t qvr_last_ts;      //!< last pose timestamp pushed to history
 	uint64_t qvr_dead_ns;      //!< when the pose stream went dead (0 = alive)
 	uint64_t qvr_retry_at;     //!< next allowed client reconnect attempt
+	bool dof6;                 //!< persist.pn2.dof == 6dof, polled
+	uint64_t next_dof_poll;    //!< next mode prop re-read (monotonic ns)
 
 	bool posedump;             //!< debug.pn2.posedump: log raw vs served pose
 	uint64_t posedump_poll;    //!< next prop re-read (monotonic ns)
@@ -355,6 +357,18 @@ pn2_posedump_on(struct pn2_device *d, uint64_t now)
 	return d->posedump;
 }
 
+// Cached device-mode read, same 500ms poll shape as the ipd prop: a mode
+// flip lands on a running app without a restart.
+static bool
+pn2_dof6(struct pn2_device *d, uint64_t now)
+{
+	if (now >= d->next_dof_poll) {
+		d->next_dof_poll = now + 500000000ull;
+		d->dof6 = pn2_qvr_enabled();
+	}
+	return d->dof6;
+}
+
 // polls qvr while alive; a dead stream drops the client after 3s, an
 // up-but-empty one (tracker warm-up, state 0) after 15s - the fresh client
 // re-requests positional mode, which is also how a wedged tracker gets
@@ -363,6 +377,22 @@ static void
 pn2_pump_qvr(struct pn2_device *d)
 {
 	uint64_t now = os_monotonic_get_ns();
+	if (!pn2_dof6(d, now)) {
+		// 3DoF mode: init keeps qvrd stopped, and here the client is
+		// dropped outright so no stale 6DoF pose survives the switch and
+		// nothing retries against a dead socket. retry_at stays fresh so
+		// a flip back to 6dof reconnects on the next pass.
+		if (d->qvr != NULL) {
+			PN2_INFO(d, "device mode 3dof, dropping qvr client");
+			pn2_qvr_destroy(d->qvr);
+			d->qvr = NULL;
+			d->qvr_last_ts = 0;
+			d->qvr_dead_ns = 0;
+			m_relation_history_clear(d->rh);
+		}
+		d->qvr_retry_at = now;
+		return;
+	}
 	if (d->qvr != NULL) {
 		if (pn2_push_qvr(d)) {
 			d->qvr_dead_ns = 0;
@@ -751,7 +781,8 @@ pn2_hmd_create(void)
 	d->base.supported.ref_space_usage = true;
 	d->base.supported.orientation_tracking = true;
 
-	if (debug_get_bool_option_pn2_no_qvr()) {
+	d->dof6 = pn2_qvr_enabled();
+	if (debug_get_bool_option_pn2_no_qvr() || !d->dof6) {
 		d->qvr = NULL;
 	} else {
 		d->qvr = pn2_qvr_create();
@@ -761,8 +792,13 @@ pn2_hmd_create(void)
 	if (d->qvr == NULL && !debug_get_bool_option_pn2_no_qvr()) {
 		d->qvr_retry_at = os_monotonic_get_ns() + 2000000000ull;
 	}
-	d->base.supported.position_tracking = !debug_get_bool_option_pn2_no_qvr();
-	PN2_INFO(d, "qvrservice 6DoF: %s", d->qvr != NULL ? "connected" : "unavailable");
+	// create-time snapshot of the mode: a live flip updates the poses but
+	// not this flag until the next instance
+	d->base.supported.position_tracking =
+	    !debug_get_bool_option_pn2_no_qvr() && d->dof6;
+	PN2_INFO(d, "qvrservice 6DoF: %s",
+	         !d->dof6 ? "disabled (3dof mode)"
+	                  : (d->qvr != NULL ? "connected" : "unavailable"));
 	u_device_populate_function_pointers(&d->base, pn2_get_tracked_pose, pn2_destroy);
 	d->base.get_view_poses = pn2_get_view_poses;
 	d->base.get_visibility_mask = u_device_get_visibility_mask;

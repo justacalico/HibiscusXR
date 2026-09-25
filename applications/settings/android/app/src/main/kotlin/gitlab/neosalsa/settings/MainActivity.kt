@@ -32,12 +32,19 @@ private const val DEBUG_HUD = "hibiscus_debug_hud"
 // the renderers pick it up. Absent means the panel default below.
 private const val IPD = "hibiscus_ipd"
 private const val IPD_DEFAULT_MM = 63.5
+// Hibiscus-owned global key for the head-tracking mode: "3dof" or
+// "6dof". pn2-dofd mirrors it onto persist.pn2.dof, which is the init
+// property trigger that starts pn2_qvrd at all. Absent or unrecognized
+// means 3dof - the tracking cameras stay off.
+private const val DEVICE_MODE = "hibiscus_dof"
+private const val DOF_6 = "6dof"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
     private var controllers: ControllerClient? = null
     private var ipdObserver: ContentObserver? = null
+    private var dofObserver: ContentObserver? = null
 
     // adb-triggerable scan toggle, same path as tapping the card.
     // "device" extra drives a raw startPairingMode probe instead.
@@ -174,6 +181,23 @@ class MainActivity : FlutterActivity() {
                                 it,
                             )
                         }
+                    dofObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                eventSink?.success(
+                                    mapOf(
+                                        "toggles" to
+                                            mapOf("deviceMode" to dof6()),
+                                    ),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(DEVICE_MODE),
+                                false,
+                                it,
+                            )
+                        }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -191,6 +215,10 @@ class MainActivity : FlutterActivity() {
                         contentResolver.unregisterContentObserver(it)
                     }
                     ipdObserver = null
+                    dofObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    dofObserver = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -226,6 +254,7 @@ class MainActivity : FlutterActivity() {
                 (Settings.Global.getInt(
                     contentResolver, DEBUG_HUD, 0,
                 ) == 1),
+            "deviceMode" to dof6(),
             "controllerPair" to (controllers?.pairingActive ?: false),
         ),
         "sliders" to mapOf(
@@ -316,6 +345,11 @@ class MainActivity : FlutterActivity() {
         Settings.Global.getString(contentResolver, IPD)
             ?.toDoubleOrNull() ?: IPD_DEFAULT_MM
 
+    // the key holds a mode string; only an exact "6dof" means positional
+    // tracking, everything else (missing included) is 3DoF
+    private fun dof6(): Boolean =
+        Settings.Global.getString(contentResolver, DEVICE_MODE) == DOF_6
+
     private fun nightModeOn(): Boolean =
         getSystemService(UiModeManager::class.java)?.nightMode ==
             UiModeManager.MODE_NIGHT_YES
@@ -398,6 +432,8 @@ class MainActivity : FlutterActivity() {
             }
             "debugHud" ->
                 putGlobalInt(DEBUG_HUD, if (on) 1 else 0)
+            "deviceMode" ->
+                putGlobalString(DEVICE_MODE, if (on) DOF_6 else "3dof")
         }
     }
 

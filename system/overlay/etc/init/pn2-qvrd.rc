@@ -19,6 +19,18 @@
 # (tracking cameras, ov6211_stereo eye camera, 800 Hz sensor) and only exits on
 # SIGTERM.
 
+# The service only runs in 6DoF device mode. persist.pn2.dof is the
+# user-facing switch (Settings > Display > Device mode), mirrored from the
+# settings table by pn2-dofd. In 3DoF the cameras never open and the SLAM
+# tracker stays dead; clients see init.svc.pn2_qvrd=stopped and fall back
+# to IMU-only poses.
+#
+# The persist prop restores at post-fs-data, earlier than the service's
+# old class-main slot and possibly before the camera HAL is up - so the
+# start trigger also waits on boot_completed. Both sides of the && are
+# already true when the user flips the mode on a booted device, so the
+# same trigger covers the runtime switch.
+
 service pn2_qvrd /system/bin/qvrservice
     class main
     user system
@@ -28,3 +40,10 @@ service pn2_qvrd /system/bin/qvrservice
     socket qvrservice_hvx_camera stream 0660 system system
     capabilities SYS_NICE
     seclabel u:r:shell:s0
+    disabled
+
+on property:persist.pn2.dof=6dof && property:sys.boot_completed=1
+    start pn2_qvrd
+
+on property:persist.pn2.dof=3dof
+    stop pn2_qvrd

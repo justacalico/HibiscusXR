@@ -53,6 +53,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemBrightness;
     case ItemId.ipd:
       return l10n.itemIpd;
+    case ItemId.deviceMode:
+      return l10n.itemDeviceMode;
     case ItemId.nightMode:
       return l10n.itemNightMode;
     case ItemId.volume:
@@ -108,6 +110,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemBrightnessDesc;
     case ItemId.ipd:
       return l10n.itemIpdDesc;
+    case ItemId.deviceMode:
+      return l10n.itemDeviceModeDesc;
     case ItemId.nightMode:
       return l10n.itemNightModeDesc;
     case ItemId.volume:

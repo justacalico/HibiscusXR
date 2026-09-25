@@ -133,6 +133,19 @@ class _Control extends StatelessWidget {
           onChanged: enabled ? (_) => controller.toggleItem(id) : null,
           activeThumbColor: PanelTheme.accent,
         );
+      case ItemKind.choice:
+        // two-state rows ride the toggle channel: false is the left
+        // segment, true the right
+        return SegmentedButton<bool>(
+          segments: [
+            ButtonSegment(value: false, label: Text(l10n.value3dof)),
+            ButtonSegment(value: true, label: Text(l10n.value6dof)),
+          ],
+          selected: {store.isOn(id)},
+          onSelectionChanged: enabled
+              ? (sel) => controller.setItemState(id, sel.first)
+              : null,
+        );
       case ItemKind.slider:
         const pctStyle = TextStyle(
           fontSize: 13,

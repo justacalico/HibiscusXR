@@ -96,5 +96,9 @@
   },
 
   "uiOnlyModeTitle": "UI-only mode",
-  "uiOnlyModeBody": "This build runs without a system backend, so the page is a preview. Changes made here won't reach the device."
+  "uiOnlyModeBody": "This build runs without a system backend, so the page is a preview. Changes made here won't reach the device.",
+
+  "rebootRequiredTitle": "Reboot required",
+  "rebootRequiredBody": "To change this setting you have to reboot the headset.",
+  "rebootConfirm": "Reboot"
 }

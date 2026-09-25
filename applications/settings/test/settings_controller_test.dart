@@ -119,4 +119,22 @@ void main() {
       (ItemId.deviceMode, false),
     ]);
   });
+
+  test('setItemStateAndReboot writes then restarts', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(source, MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+
+    await c.setItemStateAndReboot(ItemId.deviceMode, true);
+    expect(c.store.isOn(ItemId.deviceMode), isTrue);
+    expect(source.togglesRequested, [(ItemId.deviceMode, true)]);
+    expect(source.rebootsRequested, 1);
+
+    // re-picking the active mode never reaches the wire nor reboots
+    await c.setItemStateAndReboot(ItemId.deviceMode, true);
+    expect(source.togglesRequested, hasLength(1));
+    expect(source.rebootsRequested, 1);
+  });
 }

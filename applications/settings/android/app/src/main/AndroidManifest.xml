@@ -13,6 +13,8 @@
     <!-- system-wide brightness + project keys when privileged -->
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- reboot after reboot-gated settings changes -->
+    <uses-permission android:name="android.permission.REBOOT" />
     <application
         android:label="@string/app_name"
         android:name="${applicationName}"

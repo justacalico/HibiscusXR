@@ -39,6 +39,9 @@ class AndroidSettingsSource implements SettingsSource {
   Future<void> performAction(ItemId id) =>
       _channel.invokeMethod('performAction', {'id': id.name});
 
+  @override
+  Future<void> reboot() => _channel.invokeMethod('reboot');
+
   /// Reverse of [setSlider]: the platform reports unit sliders in real
   /// units, the store only holds normalized positions.
   static SettingsSnapshot _fromWire(Map<String, dynamic> raw) {

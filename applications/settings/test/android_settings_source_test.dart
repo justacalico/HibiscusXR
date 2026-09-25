@@ -52,10 +52,12 @@ void main() {
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
     await src.performAction(ItemId.wifiSettings);
+    await src.reboot();
     expect(calls.map((c) => c.method), [
       'setSlider',
       'requestToggle',
       'performAction',
+      'reboot',
     ]);
     expect(calls[0].arguments, {'id': 'volume', 'value': 0.3});
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});

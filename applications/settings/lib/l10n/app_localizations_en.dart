@@ -254,4 +254,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get uiOnlyModeBody =>
       'This build runs without a system backend, so the page is a preview. Changes made here won\'t reach the device.';
+
+  @override
+  String get rebootRequiredTitle => 'Reboot required';
+
+  @override
+  String get rebootRequiredBody =>
+      'To change this setting you have to reboot the headset.';
+
+  @override
+  String get rebootConfirm => 'Reboot';
 }

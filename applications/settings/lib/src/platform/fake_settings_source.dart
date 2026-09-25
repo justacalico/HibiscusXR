@@ -15,6 +15,7 @@ class FakeSettingsSource implements SettingsSource {
   final togglesRequested = <(ItemId, bool)>[];
   final slidersSet = <(ItemId, double)>[];
   final actionsPerformed = <ItemId>[];
+  var rebootsRequested = 0;
 
   /// Test hook: pretend the OS changed something.
   void emit(SettingsSnapshot event) {
@@ -46,6 +47,11 @@ class FakeSettingsSource implements SettingsSource {
   @override
   Future<void> performAction(ItemId id) async {
     actionsPerformed.add(id);
+  }
+
+  @override
+  Future<void> reboot() async {
+    rebootsRequested++;
   }
 
   Future<void> dispose() => _events.close();

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 
 /// Dark theme tuned to read like a Quest-style quick settings panel:
-/// deep blue-grey surfaces, soft pill controls, one cool accent.
+/// deep blue-grey surfaces, soft pill controls, one cool accent. These
+/// are the OS palette values, mirrored in the HUD chrome at
+/// applications/vrhome/src/common/palette.h.
 class PanelTheme {
   static const background = Color(0xFF141A21);
   static const panel = Color(0xFF1B232D);
   static const surface = Color(0xFF232D38);
   static const surfaceHigh = Color(0xFF2E3A47);
   static const accent = Color(0xFF4E9CFF);
+  static const danger = Color(0xFFFF5E5E);
+  static const warn = Color(0xFFF5C542);
+  static const good = Color(0xFF3DD68C);
   static const textPrimary = Color(0xFFF2F5F8);
   static const textSecondary = Color(0xFF9AA7B4);
 
@@ -23,6 +28,7 @@ class PanelTheme {
       colorScheme: const ColorScheme.dark(
         surface: panel,
         primary: accent,
+        error: danger,
         onSurface: textPrimary,
       ),
       textTheme: base.textTheme.apply(

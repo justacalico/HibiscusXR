@@ -6,6 +6,7 @@
 #include "../common/config.h"
 #include "../common/jni.h"
 #include "../common/log.h"
+#include "../common/palette.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
 
@@ -334,7 +335,7 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
         glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                            1, GL_FALSE, vp.m);
         glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                    1.0f, 1.0f, 1.0f);
+                    kPalText[0], kPalText[1], kPalText[2]);
         glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, e->font.tex);
@@ -411,11 +412,12 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
               hw, hh, hh, -1.0f, 0.05f, shCol);
     // the bar itself
-    const float barCol[4] = {0.07f, 0.08f, 0.11f, 0.82f};
+    const float barCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2], 0.82f};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, hh, 0.0f,
               0.003f, barCol);
     // group separators
-    const float sepCol[4] = {1.0f, 1.0f, 1.0f, 0.22f};
+    const float sepCol[4] = {kPalSurfaceHigh[0], kPalSurfaceHigh[1],
+                             kPalSurfaceHigh[2], 0.22f};
     for (auto& it : e->dock) {
         if (!it.sep) continue;
         const float sx = it.x - kDockIconHW - (kDockGap + kDockSepW) * 0.5f;
@@ -430,7 +432,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // splits them off the app icons. Positions came out of dockLayout,
     // state out of the last bridge pull
     const DockStatus& st = e->dockSys;
-    const float pillCol[4] = {0.17f, 0.19f, 0.26f, 0.90f};
+    const float pillCol[4] = {kPalSurface[0], kPalSurface[1],
+                              kPalSurface[2], 0.90f};
     {
         const float ax = (st.pillAL + st.pillAR) * 0.5f;
         const float aw = (st.pillAR - st.pillAL) * 0.5f;
@@ -465,7 +468,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                            1, GL_FALSE, vp.m);
         glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                    1.0f, 1.0f, 1.0f);
+                    kPalText[0], kPalText[1], kPalText[2]);
         glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, e->font.tex);
@@ -477,7 +480,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // wy drops the apex just enough that the fan's bounding box centres on
     // the slot like the battery and clock do
     {
-        const float wcol[4] = {1.0f, 1.0f, 1.0f,
+        const float wcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                e->sysWifi ? 0.92f : 0.25f};
         const float wy = -0.019f;
         const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
@@ -493,12 +496,12 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     }
 
     // battery: outline body, level fill inside, tip nub on the right;
-    // amber while charging, red under a fifth, white otherwise
+    // the fill runs the quick-panel's tint bands
     {
         const float bw = 0.044f, bh = 0.024f, bt = 0.0030f;
         const float bc[3] = {c[0] + r[0]*st.battX, c[1] + r[1]*st.battX,
                              c[2] + r[2]*st.battX};
-        const float ocol[4] = {1.0f, 1.0f, 1.0f, 0.80f};
+        const float ocol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.80f};
         shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, bw * 0.5f + 0.006f,
                   bh * 0.5f + 0.006f, bw * 0.5f, bh * 0.5f, bh * 0.30f,
                   bt, 0.002f, ocol);
@@ -509,10 +512,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float fx = -(bw * 0.5f) + bt * 2.0f + fw * 0.5f;
         const float fc[3] = {bc[0] + r[0] * fx, bc[1] + r[1] * fx,
                              bc[2] + r[2] * fx};
-        const float fcol[4] = {
-            e->sysChg ? 1.0f : lvl < 0.20f ? 0.95f : 1.0f,
-            e->sysChg ? 0.62f : lvl < 0.20f ? 0.30f : 1.0f,
-            e->sysChg ? 0.15f : lvl < 0.20f ? 0.25f : 1.0f, 0.85f};
+        const float* fill = batteryTint(e->sysBatt, e->sysChg != 0);
+        const float fcol[4] = {fill[0], fill[1], fill[2], 0.85f};
         if (fw > 0.001f)
             shapeQuad(e, vp, fc, r, up, 0.008f, 0.0f, fw * 0.5f, fhh,
                       fw * 0.5f, fhh, fhh * 0.3f, 0.0f, 0.0015f, fcol);
@@ -527,7 +528,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // shade is empty, a red shoulder dot while notifications wait
     {
         const bool any = !e->notifsAll.empty();
-        const float bcol[4] = {1.0f, 1.0f, 1.0f, any ? 0.90f : 0.30f};
+        const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               any ? 0.90f : 0.30f};
         const float bx = st.bellX;
         const float bc[3] = {c[0] + r[0]*bx + up[0]*0.002f,
                              c[1] + r[1]*bx + up[1]*0.002f,
@@ -548,7 +550,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             const float dc[3] = {c[0] + r[0]*(bx + 0.014f) + up[0]*0.018f,
                                  c[1] + r[1]*(bx + 0.014f) + up[1]*0.018f,
                                  c[2] + r[2]*(bx + 0.014f) + up[2]*0.018f};
-            const float dcol[4] = {0.95f, 0.25f, 0.20f, 0.95f};
+            const float dcol[4] = {kPalDanger[0], kPalDanger[1],
+                                   kPalDanger[2], 0.95f};
             shapeQuad(e, vp, dc, r, up, 0.009f, 0.0f, 0.007f, 0.007f,
                       0.006f, 0.006f, 0.006f, 0.0f, 0.0015f, dcol);
         }
@@ -566,7 +569,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         if (f != e->dockIcons.end()) icon = &f->second;
 
         if (hov) {
-            const float hl[4] = {1.0f, 1.0f, 1.0f, 0.10f};
+            const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 0.10f};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.018f,
                       s + 0.018f, s + 0.018f, s + 0.018f,
                       (s + 0.018f) * kIconRad, 0.0f, 0.002f, hl);
@@ -590,7 +594,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
 
         // immersive marker: an amber ring around live/pinned XR items
         if (it.vr) {
-            const float vc[4] = {1.0f, 0.62f, 0.15f, hov ? 0.95f : 0.65f};
+            const float vc[4] = {kPalWarn[0], kPalWarn[1], kPalWarn[2],
+                                 hov ? 0.95f : 0.65f};
             shapeQuad(e, vp, ic, r, up, 0.009f, 0.0f, s + 0.006f,
                       s + 0.006f, s + 0.006f, s + 0.006f, s + 0.006f,
                       0.0018f, 0.0015f, vc);
@@ -601,9 +606,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             const float dc[3] = {ic[0] - up[0] * (kDockIconHW + 0.026f),
                                  ic[1] - up[1] * (kDockIconHW + 0.026f),
                                  ic[2] - up[2] * (kDockIconHW + 0.026f)};
-            const float dcol[4] = {it.vr ? 1.0f : 1.0f,
-                                   it.vr ? 0.62f : 1.0f,
-                                   it.vr ? 0.15f : 1.0f,
+            const float* dc2 = it.vr ? kPalWarn : kPalText;
+            const float dcol[4] = {dc2[0], dc2[1], dc2[2],
                                    it.minimized ? 0.4f : 0.85f};
             shapeQuad(e, vp, dc, r, up, 0.008f, 0.0f, 0.007f, 0.007f,
                       0.007f, 0.007f, 0.007f, 0.0f, 0.0015f, dcol);
@@ -617,13 +621,13 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                                  c[1] + r[1]*(it.x + bo) + up[1]*(kDockIconY + bo),
                                  c[2] + r[2]*(it.x + bo) + up[2]*(kDockIconY + bo)};
             const bool bhov = hov && e->dockZone == DZONE_CLOSE;
-            const float bcol[4] = {bhov ? 0.75f : 0.10f,
-                                   bhov ? 0.22f : 0.10f,
-                                   bhov ? 0.20f : 0.12f, 0.92f};
+            const float* bg2 = bhov ? kPalDanger : kPalSurfaceHigh;
+            const float bcol[4] = {bg2[0], bg2[1], bg2[2], 0.92f};
             shapeQuad(e, vp, bc, r, up, 0.011f, 0.0f, kDockBadgeR,
                       kDockBadgeR, kDockBadgeR, kDockBadgeR, kDockBadgeR,
                       0.0f, 0.0015f, bcol);
-            const float xcol[4] = {1.0f, 1.0f, 1.0f, 0.95f};
+            const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                   0.95f};
             const float il = kDockBadgeR * 0.52f, it2 = 0.0024f;
             shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, it2,
                       il, it2, it2, 0.0f, 0.001f, xcol);
@@ -631,9 +635,9 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                       il, it2, it2, 0.0f, 0.001f, xcol);
         }
 
-        // pin-hold fill: a white ring tightening around the icon
+        // pin-hold fill: an accent ring tightening around the icon
         if (e->dockPress == i && e->dockPinP > 0.0f && dockPinnable(it)) {
-            const float pr[4] = {1.0f, 1.0f, 1.0f,
+            const float pr[4] = {kPalAccent[0], kPalAccent[1], kPalAccent[2],
                                  0.25f + 0.75f * e->dockPinP};
             shapeQuad(e, vp, ic, r, up, 0.013f, 0.0f, s + 0.014f,
                       s + 0.014f, s + 0.014f, s + 0.014f, s + 0.014f,
@@ -654,7 +658,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);
             glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                        1.0f, 1.0f, 1.0f);
+                        kPalText[0], kPalText[1], kPalText[2]);
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
@@ -663,14 +667,15 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         }
     }
 
-    // move handle: a short white line centred under the strip; holding it
+    // move handle: a short line centred under the strip; holding it
     // drags the whole dash, so brighten it while gazed
     {
         const bool hhov = e->dockZone == DZONE_HANDLE;
         const float hd = dockHandleDrop();
         const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
                              c[2] - up[2] * hd};
-        const float hcol[4] = {1.0f, 1.0f, 1.0f, hhov ? 0.95f : 0.55f};
+        const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               hhov ? 0.95f : 0.55f};
         shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
                   kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
     }
@@ -696,7 +701,8 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.024f, 0.0f, hw + 0.04f,
               kShelfHH + 0.04f, hw, kShelfHH, kShelfHH, -1.0f, 0.04f,
               shCol);
-    const float pillCol[4] = {0.07f, 0.08f, 0.11f, 0.78f};
+    const float pillCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
+                              0.78f};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, kShelfHH, hw, kShelfHH,
               kShelfHH, 0.0f, 0.003f, pillCol);
 
@@ -711,7 +717,8 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
         if (f != e->dockIcons.end()) icon = &f->second;
 
         if (hov) {
-            const float hl[4] = {1.0f, 1.0f, 1.0f, 0.10f};
+            const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 0.10f};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.014f,
                       s + 0.014f, s + 0.014f, s + 0.014f,
                       (s + 0.014f) * kIconRad, 0.0f, 0.002f, hl);
@@ -742,7 +749,7 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);
             glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                        1.0f, 1.0f, 1.0f);
+                        kPalText[0], kPalText[1], kPalText[2]);
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);

@@ -172,7 +172,7 @@ class _TileFace extends StatelessWidget {
         child: Text(
           app.label.isEmpty ? '?' : app.label.characters.first.toUpperCase(),
           style: const TextStyle(
-            color: Colors.white70,
+            color: LibraryTheme.textPrimary,
             fontSize: 46,
             fontWeight: FontWeight.w600,
           ),
@@ -209,7 +209,10 @@ class _TileFace extends StatelessWidget {
             _Badge(
               child: Text(
                 systemLabel,
-                style: const TextStyle(fontSize: 11, color: Colors.white),
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: LibraryTheme.textPrimary,
+                ),
               ),
             ),
         ],
@@ -224,7 +227,11 @@ class _TileFace extends StatelessWidget {
       child: const SizedBox(
         width: 30,
         height: 30,
-        child: Icon(Icons.more_vert, size: 18, color: Colors.white70),
+        child: Icon(
+          Icons.more_vert,
+          size: 18,
+          color: LibraryTheme.textSecondary,
+        ),
       ),
     );
   }

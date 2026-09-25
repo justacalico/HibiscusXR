@@ -3,6 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
+import 'theme.dart';
+
 /// The decoded art for one tile: icon bytes plus a tint averaged from its
 /// opaque pixels, used to color the tile backdrop.
 class TileArt {
@@ -48,7 +50,7 @@ Future<Color?> dominantIconColor(Uint8List png) async {
 /// that stays in the dark-theme family.
 List<Color> tileGradient(Color? tint) {
   if (tint == null) {
-    return const [Color(0xFF28313D), Color(0xFF1E2630)];
+    return const [LibraryTheme.surfaceHigh, LibraryTheme.surface];
   }
   final hsl = HSLColor.fromColor(tint);
   final top = hsl

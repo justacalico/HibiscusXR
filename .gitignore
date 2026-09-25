@@ -93,6 +93,7 @@ build/
 !system/tools/build/
 out/
 output/
+app-xrtest/prebuilt/
 bin/
 obj/
 dist-deps/

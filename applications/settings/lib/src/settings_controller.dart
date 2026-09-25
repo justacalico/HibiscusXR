@@ -48,6 +48,17 @@ class SettingsController {
     await source.requestToggle(id, on);
   }
 
+  /// Apply a two-state pick that needs a reboot to count. The caller
+  /// reaches this only after the confirm dialog is accepted, so the
+  /// write and the restart go down back to back; the store still moves
+  /// first so the row shows the pick before the device goes down.
+  Future<void> setItemStateAndReboot(ItemId id, bool on) async {
+    if (store.isOn(id) == on) return;
+    store.setToggle(id, on);
+    await source.requestToggle(id, on);
+    await source.reboot();
+  }
+
   Future<void> setSlider(ItemId id, double v) async {
     store.setSlider(id, v);
     await source.setSlider(id, v);

@@ -12,6 +12,7 @@ import android.media.AudioManager
 import android.os.Handler
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -156,6 +157,10 @@ class MainActivity : FlutterActivity() {
                     }
                     "performAction" -> {
                         performAction(call.argument<String>("id") ?: "")
+                        result.success(null)
+                    }
+                    "reboot" -> {
+                        reboot()
                         result.success(null)
                     }
                     else -> result.notImplemented()
@@ -435,6 +440,15 @@ class MainActivity : FlutterActivity() {
             "deviceMode" ->
                 putGlobalString(DEVICE_MODE, if (on) DOF_6 else "3dof")
         }
+    }
+
+    // REBOOT is a privileged permission; if the grant is missing the
+    // change the user confirmed just stays staged for the next manual
+    // restart, same convention as the settings writes above.
+    private fun reboot() {
+        try {
+            getSystemService(PowerManager::class.java)?.reboot(null)
+        } catch (_: SecurityException) {}
     }
 
     private fun putGlobalInt(key: String, v: Int) {

@@ -8,6 +8,7 @@ import '../settings_controller.dart';
 import '../settings_store.dart';
 import 'battery_icon.dart';
 import 'brand_card.dart';
+import 'reboot_dialog.dart';
 import 'scan_card.dart';
 import 'theme.dart';
 
@@ -123,6 +124,17 @@ class _Control extends StatelessWidget {
   final SettingsController controller;
   final bool enabled;
 
+  // Reboot-gated rows confirm first; everything else applies at once.
+  Future<void> _pick(BuildContext context, bool on) async {
+    if (requiresRebootOf(id)) {
+      if (await showRebootConfirm(context)) {
+        await controller.setItemStateAndReboot(id, on);
+      }
+    } else {
+      await controller.setItemState(id, on);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -130,7 +142,7 @@ class _Control extends StatelessWidget {
       case ItemKind.toggle:
         return Switch(
           value: store.isOn(id),
-          onChanged: enabled ? (_) => controller.toggleItem(id) : null,
+          onChanged: enabled ? (_) => _pick(context, !store.isOn(id)) : null,
           activeThumbColor: PanelTheme.accent,
         );
       case ItemKind.choice:
@@ -143,7 +155,7 @@ class _Control extends StatelessWidget {
           ],
           selected: {store.isOn(id)},
           onSelectionChanged: enabled
-              ? (sel) => controller.setItemState(id, sel.first)
+              ? (sel) => _pick(context, sel.first)
               : null,
         );
       case ItemKind.slider:

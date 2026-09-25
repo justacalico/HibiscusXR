@@ -18,4 +18,9 @@ abstract class SettingsSource {
 
   /// Fire a one-shot row: open a system page, recenter, reboot...
   Future<void> performAction(ItemId id);
+
+  /// Restart the device. Reboot-gated rows land here once their
+  /// confirm dialog is accepted; platforms without the permission
+  /// leave this as a no-op.
+  Future<void> reboot();
 }

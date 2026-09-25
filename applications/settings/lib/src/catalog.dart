@@ -92,8 +92,17 @@ const kUnimplemented = <ItemId>{
   ItemId.showTouches,
 };
 
+/// Rows whose change only counts after a reboot. Picking a new value
+/// pops the reboot-confirm dialog instead of applying right away; the
+/// write still goes down the toggle channel once the user confirms.
+const kRequiresReboot = <ItemId>{
+  ItemId.deviceMode,
+};
+
 SectionDef sectionDef(SectionId id) => kSections.firstWhere((s) => s.id == id);
 
 ItemKind kindOf(ItemId id) => kItemKinds[id] ?? ItemKind.info;
 
 bool implementedOf(ItemId id) => !kUnimplemented.contains(id);
+
+bool requiresRebootOf(ItemId id) => kRequiresReboot.contains(id);

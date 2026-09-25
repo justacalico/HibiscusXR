@@ -561,6 +561,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This build runs without a system backend, so the page is a preview. Changes made here won\'t reach the device.'**
   String get uiOnlyModeBody;
+
+  /// No description provided for @rebootRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reboot required'**
+  String get rebootRequiredTitle;
+
+  /// No description provided for @rebootRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To change this setting you have to reboot the headset.'**
+  String get rebootRequiredBody;
+
+  /// No description provided for @rebootConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Reboot'**
+  String get rebootConfirm;
 }
 
 class _AppLocalizationsDelegate

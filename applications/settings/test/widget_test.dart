@@ -346,7 +346,9 @@ void main() {
     expect(find.text('fresh-net'), findsOneWidget);
   });
 
-  testWidgets('device mode row picks 3DoF or 6DoF', (tester) async {
+  testWidgets('device mode pick asks to reboot, cancel keeps it', (
+    tester,
+  ) async {
     final (_, source) = await pumpApp(tester);
     await tester.tap(find.text('Display'));
     await tester.pump();
@@ -357,10 +359,36 @@ void main() {
     await tester.tap(find.text('3DoF'));
     await tester.pump();
     expect(source.togglesRequested, isEmpty);
+    expect(find.text('Reboot required'), findsNothing);
+
+    // picking the other mode asks before anything is written
+    await tester.tap(find.text('6DoF'));
+    await tester.pump();
+    expect(find.text('Reboot required'), findsOneWidget);
+    expect(find.text('Cancel'), findsOneWidget);
+    expect(find.text('Reboot'), findsOneWidget);
+
+    await tester.tap(find.text('Cancel'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('Reboot required'), findsNothing);
+    expect(source.togglesRequested, isEmpty);
+    expect(source.rebootsRequested, 0);
+  });
+
+  testWidgets('device mode pick applies and reboots on confirm', (
+    tester,
+  ) async {
+    final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Display'));
+    await tester.pump();
 
     await tester.tap(find.text('6DoF'));
     await tester.pump();
+    await tester.tap(find.text('Reboot'));
+    await tester.pump();
     expect(source.togglesRequested, [(ItemId.deviceMode, true)]);
+    expect(source.rebootsRequested, 1);
 
     // a platform-side change (adb settings put) moves the selection back
     source.emit(

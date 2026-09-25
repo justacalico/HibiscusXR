@@ -45,4 +45,19 @@ void main() {
     // every stub is a real catalog row, not a stray id
     expect(kUnimplemented, stubs);
   });
+
+  test('requiresRebootOf marks only device mode', () {
+    for (final id in ItemId.values) {
+      expect(
+        requiresRebootOf(id),
+        id == ItemId.deviceMode,
+        reason: '$id',
+      );
+    }
+    // reboot-gated rows are still real implemented rows
+    expect(kRequiresReboot, {ItemId.deviceMode});
+    for (final id in kRequiresReboot) {
+      expect(implementedOf(id), isTrue, reason: '$id');
+    }
+  });
 }

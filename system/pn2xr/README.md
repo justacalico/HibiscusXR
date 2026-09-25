@@ -13,9 +13,18 @@ Replaces the Pico PVR application stack with upstream components:
   accelerometer through `m_imu_3dof` at the sensor's native rate; the device's
   virtual rotation-vector sensors return identity on this build and QVR
   standalone fusion never produces a pose, so neither is used.
-- **xrtest** (`app-xrtest/`) — self-contained OpenXR test APK: NativeActivity +
-  GLES2 renderer + the bundled runtime + the `MonadoView` Java helpers the
-  runtime loads from its own APK. Used to verify the whole path on the panel.
+- **Runtime APK** (`runtime-apk/`) — the system OpenXR runtime, installed into
+  the image as `/system/app/MonadoOpenXR` plus an
+  `etc/openxr/1/active_runtime.json` pointing at a world-readable copy under
+  `/data/local/tmp/xr/`. Apps that bundle the stock Khronos
+  `libopenxr_loader.so` find it automatically - no custom code needed,
+  same shape as Quest.
+- **xrtest** (`app-xrtest/`) — OpenXR test APK: NativeActivity + GLES2
+  renderer + the stock loader, exercising the system runtime (bundled
+  libopenxr_monado.so kept only as a fallback). Draws a world-locked debug
+  panel with live tracking state (head pose, view flags, per-controller
+  poses/buttons/stick, fps) plus marker cubes and aim rays, so the whole
+  path can be verified on the panel without adb.
 
 ## Build
 
@@ -31,12 +40,4 @@ app-xrtest/build.sh  # test APK bundling the runtime
 - `PN2_AXISMAP` / `debug.pn2.axismap` select the sensor->head axis map while
   the mapping is being verified on-device.
 - `PN2_K1` / `PN2_K2` / `PN2_IPD` tune the provisional distortion model; the
-  stock lens polynomial from `lens/` is the reference. PN2_IPD is the
-  physical lens pitch - it also pins the eye separation and disables the
-  runtime poll.
-- User IPD comes from `persist.pn2.ipd` (metres), mirrored from the
-  `hibiscus_ipd` global setting by pn2-ipdd. It moves only the eye poses;
-  the fixed lens geometry is untouched. Polled live, ~0.5s cadence.
-- `PN2_POSEDUMP` / `debug.pn2.posedump` / `touch /data/local/tmp/xr/posedump`
-  print the raw qvrd pose (the one the dash reads) and the relation the
-  runtime serves, ~4Hz on logcat tag `pn2pose`.
+  stock lens polynomial from `lens/` is the reference.

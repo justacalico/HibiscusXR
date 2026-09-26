@@ -1,5 +1,7 @@
 #include "head.h"
 
+#include "../common/config.h"
+
 #include <cmath>
 #include <cstdio>
 #include <cstring>
@@ -123,6 +125,61 @@ void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll) {
     *yaw   = atan2f(2*(w*y + x*z), 1 - 2*(y*y + x*x)) * 180.0f / (float)M_PI;
     *pitch = asinf(fmaxf(-1.0f, fminf(1.0f, 2*(w*x - y*z)))) * 180.0f / (float)M_PI;
     *roll  = atan2f(2*(w*z + x*y), 1 - 2*(z*z + x*x)) * 180.0f / (float)M_PI;
+}
+
+float quatAngle(const float a[4], const float b[4]) {
+    float d = fabsf(a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3]);
+    return 2.0f * acosf(d > 1.0f ? 1.0f : d);
+}
+
+void poseFiltReset(PoseFilt* f) {
+    f->init = false;
+}
+
+// 0 under the noise floor -> 1 at a real turn
+static float bandT(float d, float lo, float hi) {
+    const float t = (d - lo) / (hi - lo);
+    return t < 0.0f ? 0.0f : t > 1.0f ? 1.0f : t;
+}
+
+// per-tick step for a convergence rate: 1-exp(-rate*dt), framerate-proof
+static float tickAlpha(float t, float dtSec) {
+    const float rate = kFiltStillHz + (kFiltMoveHz - kFiltStillHz) * t;
+    return 1.0f - expf(-rate * dtSec);
+}
+
+void poseFiltTick(PoseFilt* f, const float quat[4], const float pos[3],
+                  float dtSec) {
+    // a gap this long means the stream restarted: ease-in from a stale pose
+    // would swing the world, so snap like the first sample
+    if (!f->init || dtSec <= 0.0f || dtSec > 0.25f) {
+        memcpy(f->quat, quat, 4 * sizeof(float));
+        if (pos) memcpy(f->pos, pos, 3 * sizeof(float));
+        else memset(f->pos, 0, 3 * sizeof(float));
+        f->init = true;
+        return;
+    }
+    const float a = tickAlpha(bandT(quatAngle(f->quat, quat),
+                                    kFiltStillRad, kFiltMoveRad), dtSec);
+    // shortest-arc lerp: the angles here are small so nlerp + normalize is
+    // the slerp to float precision
+    const float s = f->quat[0]*quat[0] + f->quat[1]*quat[1] +
+                    f->quat[2]*quat[2] + f->quat[3]*quat[3] < 0.0f
+                  ? -1.0f : 1.0f;
+    float n = 0.0f;
+    for (int i = 0; i < 4; ++i) {
+        f->quat[i] += (s * quat[i] - f->quat[i]) * a;
+        n += f->quat[i] * f->quat[i];
+    }
+    n = sqrtf(n);
+    if (n > 0.0f) for (int i = 0; i < 4; ++i) f->quat[i] /= n;
+    if (pos) {
+        const float dx = pos[0] - f->pos[0], dy = pos[1] - f->pos[1],
+                    dz = pos[2] - f->pos[2];
+        const float pa = tickAlpha(bandT(sqrtf(dx*dx + dy*dy + dz*dz),
+                                         kFiltStillM, kFiltMoveM), dtSec);
+        for (int i = 0; i < 3; ++i) f->pos[i] += (pos[i] - f->pos[i]) * pa;
+    }
 }
 
 static const char* arrowFor(float v, const char* pos, const char* neg) {

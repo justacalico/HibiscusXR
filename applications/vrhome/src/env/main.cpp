@@ -50,6 +50,7 @@ static void drawFrame(Engine* e) {
 
     qvrPoll(e);
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
+    smoothPose(e, useSensor);
     const float fakePos[3] = {propF("debug.vrhome.fpx", 0.0f),
                               propF("debug.vrhome.fpy", 0.0f),
                               propF("debug.vrhome.fpz", 0.0f)};

@@ -24,6 +24,21 @@ constexpr float kRoll = 90.0f, kSensRoll = 0.0f, kWorldX = 90.0f;
 // is already gravity-aligned, so worldX stays 0
 constexpr float kQvrSensRoll = -90.0f, kQvrWorldX = 0.0f;
 
+// pose filter (math/head.cpp poseFiltTick): the rotation vector jitters a
+// fraction of a degree per sample even with the head bolted still, and fed
+// raw into the view matrix that noise renders as the whole world shaking.
+// The filter low-passes the pose with a convergence rate that ramps on how
+// far the raw pose has pulled ahead: under the noise floor only the still
+// rate applies so jitter can't drag the view, past a real turn the move
+// rate takes over so tracking stays 1:1. Tunable off via
+// debug.vrhome.posefilt.
+constexpr float kFiltStillHz = 1.5f;    // converge rate while still, 1/s
+constexpr float kFiltMoveHz = 45.0f;    // rate once the head is turning, 1/s
+constexpr float kFiltStillRad = 0.01f;  // ~0.6 deg lead: sensor noise floor
+constexpr float kFiltMoveRad = 0.10f;   // ~6 deg lead: a real turn, max rate
+constexpr float kFiltStillM = 0.004f;   // same band for position, metres
+constexpr float kFiltMoveM = 0.10f;
+
 constexpr int kSensorIdent = 3;
 constexpr int kInputIdent  = 4;
 

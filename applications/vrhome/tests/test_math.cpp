@@ -331,3 +331,78 @@ void testHead() {
     CHECK_F(pitch, 0.0f, 1e-4f);
     CHECK_F(roll, 0.0f, 1e-4f);
 }
+
+void testPoseFilt() {
+    const float qi[4] = {0, 0, 0, 1};
+    const float dt = 1.0f / 72.0f;
+
+    // quatAngle: identity vs a 90 deg yaw reads pi/2, and a quat against
+    // its own negation is the same rotation so the angle is 0
+    CHECK_F(quatAngle(qi, (const float[]){0, 0.7071f, 0, 0.7071f}),
+            (float)M_PI / 2, 1e-4f);
+    CHECK_F(quatAngle(qi, (const float[]){0, 0, 0, -1}), 0.0f, 1e-4f);
+
+    // first tick snaps straight onto the sample - no ease-in from zero
+    PoseFilt f;
+    const float p0[3] = {0.1f, 1.6f, -0.2f};
+    poseFiltTick(&f, qi, p0, dt);
+    for (int i = 0; i < 4; ++i) CHECK_F(f.quat[i], qi[i], 1e-6f);
+    for (int i = 0; i < 3; ++i) CHECK_F(f.pos[i], p0[i], 1e-6f);
+
+    // the bug this fixes: a still head's raw samples jitter a fraction of
+    // a degree either way per frame. Alternating +-0.3 deg yaws at frame
+    // rate must converge near the mean and stay, not track the noise
+    const float jit = 0.3f * (float)M_PI / 180.0f;
+    for (int i = 0; i < 300; ++i) {
+        const float a = (i & 1) ? jit : -jit;
+        const float q[4] = {0, sinf(a * 0.5f), 0, cosf(a * 0.5f)};
+        poseFiltTick(&f, q, p0, dt);
+    }
+    CHECK(quatAngle(f.quat, qi) < jit * 0.1f);
+
+    // a real turn opens the gain: a 20 deg yaw step is tracked within a
+    // few frames, not the seconds the still rate alone would need
+    const float big = 20.0f * (float)M_PI / 180.0f;
+    const float qb[4] = {0, sinf(big * 0.5f), 0, cosf(big * 0.5f)};
+    for (int i = 0; i < 12; ++i) poseFiltTick(&f, qb, p0, dt);
+    CHECK(quatAngle(f.quat, qb) < 0.05f);
+    // and once it has arrived the world holds still again
+    for (int i = 0; i < 72; ++i) poseFiltTick(&f, qb, p0, dt);
+    CHECK(quatAngle(f.quat, qb) < 0.01f);
+
+    // the filtered quat stays unit length through all that easing
+    {
+        float n = 0.0f;
+        for (int i = 0; i < 4; ++i) n += f.quat[i] * f.quat[i];
+        CHECK_F(sqrtf(n), 1.0f, 1e-5f);
+    }
+
+    // position gets the same treatment: mm-scale noise settles on the
+    // mean, a 30 cm move tracks through instead of lagging behind
+    poseFiltReset(&f);
+    poseFiltTick(&f, qi, p0, dt);
+    const float pn[3] = {p0[0] + 0.002f, p0[1], p0[2] - 0.002f};
+    for (int i = 0; i < 300; ++i)
+        poseFiltTick(&f, qi, (i & 1) ? pn : p0, dt);
+    CHECK_F(f.pos[0], p0[0] + 0.001f, 0.0008f);
+    const float moved[3] = {p0[0] + 0.3f, p0[1], p0[2]};
+    for (int i = 0; i < 12; ++i) poseFiltTick(&f, qi, moved, dt);
+    CHECK_F(f.pos[0], moved[0], 0.02f);
+
+    // a stale stream snaps instead of easing in from the old pose: after
+    // a 500 ms gap the new sample wins outright
+    poseFiltReset(&f);
+    poseFiltTick(&f, qi, p0, dt);
+    poseFiltTick(&f, qb, p0, 0.5f);
+    CHECK_F(quatAngle(f.quat, qb), 0.0f, 1e-3f);
+
+    // dt<=0 snaps the same way
+    poseFiltTick(&f, qi, p0, 0.0f);
+    CHECK_F(quatAngle(f.quat, qi), 0.0f, 1e-4f);
+
+    // pos==NULL is 3DoF: the stored position is left alone
+    poseFiltReset(&f);
+    poseFiltTick(&f, qi, p0, dt);
+    poseFiltTick(&f, qi, nullptr, dt);
+    CHECK_F(f.pos[0], p0[0], 1e-6f);
+}

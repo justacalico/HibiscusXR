@@ -2,9 +2,11 @@
 PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Strip the stock GSI packages a WiFi-only headset will never use:
 # telephony, contacts/mail, 2D media apps, printing/backup leftovers,
-# NFC, Lineage extras, the launcher and the theme/navbar/cutout
-# overlays, CTS shims. Deletion is real - dirs leave the image and the
-# blocks come back, not a pm disable.
+# NFC, Lineage extras, the launcher and its provisioning fallback,
+# SystemUI (nav bar, recents, shade - the last way to reach a 2D app on
+# the physical display) and the theme/navbar/cutout overlays, CTS shims.
+# Deletion is real - dirs leave the image and the blocks come back, not
+# a pm disable.
 #
 # Runs on the CLEAN image right after 143. system-pn2-full.img is a
 # byte copy of it made in 145, so one pass strips both outputs.
@@ -58,7 +60,8 @@ com.android.nfc com.android.se com.android.apps.tag \
 org.lineageos.updater org.lineageos.setupwizard \
 org.lineageos.profiles org.lineageos.customization \
 org.lineageos.audiofx \
-com.android.launcher3 \
+com.android.launcher3 com.android.fallbackhome \
+com.android.systemui \
 com.android.internal.display.cutout.emulation.corner \
 com.android.internal.display.cutout.emulation.double \
 com.android.internal.display.cutout.emulation.tall \
@@ -84,7 +87,7 @@ nightmode falselocks tethering webview cafims mtkims slsiims sprdims"
 # it is gone, crash-looping the whole bluetooth process. MAP does the
 # same against sms/mms the moment a paired device asks for message
 # access.
-KEEP="com.android.settings com.android.systemui \
+KEEP="com.android.settings \
 com.android.packageinstaller com.android.permissioncontroller \
 com.android.documentsui com.android.providers.downloads \
 com.android.providers.media com.android.webview com.android.bluetooth \

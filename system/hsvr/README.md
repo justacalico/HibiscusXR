@@ -1,4 +1,4 @@
-# pn2xr
+# hsvr
 
 Raw OpenXR stack for the Pico Neo 2 (A7B10, sdm845) on LineageOS 17.1.
 
@@ -8,8 +8,10 @@ Replaces the Pico PVR application stack with upstream components:
   the Adreno 630 over the stock kgsl kernel driver. The vendor `vulkan.sdm845`
   blob only exposes Vulkan 1.0.3; Turnip provides 1.3+ plus the external-memory
   and AHB extensions the Monado compositor needs.
-- **Monado + pn2 driver** (`monado/`) — in-process `libopenxr_monado.so` with a
-  custom `pn2` xrt driver. Tracking fuses the raw BMG160 gyroscope + BMA2x2
+- **Monado + hsvr driver kit** (`monado/`, `kit/`) — in-process
+  `libopenxr_monado.so`. One monado-side prober asks the kit registry
+  which headset is present; device drivers live in `drivers/<name>/`
+  and plug in with zero edits here. Tracking fuses the raw BMG160 gyroscope + BMA2x2
   accelerometer through `m_imu_3dof` at the sensor's native rate; the device's
   virtual rotation-vector sensors return identity on this build and QVR
   standalone fusion never produces a pose, so neither is used.

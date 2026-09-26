@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: BSL-1.0
 /*!
  * @file
- * @brief  Pico Neo 2 driver interface.
- * @ingroup drv_pn2
+ * @brief  hsvr prober interface.
+ * @ingroup drv_hsvr
  */
 
 #pragma once
@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 struct xrt_auto_prober *
-pn2_create_auto_prober(void);
+hsvr_create_auto_prober(void);
 
 #ifdef __cplusplus
 }

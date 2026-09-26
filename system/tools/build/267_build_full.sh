@@ -228,7 +228,7 @@ echo "=== OpenXR stack: Turnip Vulkan + Monado runtime ==="
 #     points there. /system paths are unreachable from an app namespace.
 #   - pvrservice is the broken compositor behind the black-display bug; its rc
 #     is removed so nothing starts it. qvrd stays - it owns the tracking cams.
-XR=${PN2_ROOT}/pn2xr
+XR=${PN2_ROOT}/hsvr
 XR_SO="$XR/monado/build-android/src/xrt/targets/openxr/libopenxr_monado.so"
 # Always run the builds - they are incremental, and skipping on a stale out/
 # dir once shipped an unpatched Turnip in the image.

@@ -11,7 +11,7 @@ through the package registry, so they never expire.
 
 ## What a build does
 
-1. The workflow links `system/{tools,overlay,shim,pn2xr}` and
+1. The workflow links `system/{tools,overlay,shim,hsvr}` and
    `applications/{vrhome,library,quick-panel,settings}` into `$PN2_ROOT` -
    the sources are the monorepo checkout itself, nothing gets cloned.
 2. `scripts/fetch-inputs.sh` downloads the pinned input packages from the

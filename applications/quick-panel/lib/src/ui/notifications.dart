@@ -31,7 +31,7 @@ class NotificationSection extends StatelessWidget {
           children: [
             Text(
               l10n.notifTitle,
-              style: const TextStyle(
+              style: TextStyle(
                 color: PanelTheme.textSecondary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -57,7 +57,7 @@ class NotificationSection extends StatelessWidget {
             child: Center(
               child: Text(
                 l10n.notifEmpty,
-                style: const TextStyle(
+                style: TextStyle(
                   color: PanelTheme.textSecondary,
                   fontSize: 14,
                 ),
@@ -108,7 +108,7 @@ class NotificationRow extends StatelessWidget {
             backgroundColor: PanelTheme.surfaceHigh,
             child: Text(
               item.app.isEmpty ? '?' : item.app.characters.first,
-              style: const TextStyle(
+              style: TextStyle(
                 color: PanelTheme.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -123,7 +123,7 @@ class NotificationRow extends StatelessWidget {
               children: [
                 Text(
                   item.app,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: PanelTheme.textSecondary,
                     fontSize: 11,
                   ),
@@ -133,7 +133,7 @@ class NotificationRow extends StatelessWidget {
                 if (item.title.isNotEmpty)
                   Text(
                     item.title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: PanelTheme.textPrimary,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -144,7 +144,7 @@ class NotificationRow extends StatelessWidget {
                 if (item.text.isNotEmpty)
                   Text(
                     item.text,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: PanelTheme.textSecondary,
                       fontSize: 12,
                     ),

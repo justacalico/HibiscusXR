@@ -39,6 +39,11 @@ private const val IPD_DEFAULT_MM = 63.5
 // means 3dof - the tracking cameras stay off.
 private const val DEVICE_MODE = "hibiscus_dof"
 private const val DOF_6 = "6dof"
+// Hibiscus-owned global key for the OS theme: "dark", "light" or "oled".
+// pn2-themed mirrors it onto persist.hibiscus.theme, which the native
+// chrome (vrhome env + HUD) polls every frame. Absent means dark.
+private const val THEME = "hibiscus_theme"
+private const val THEME_DEFAULT = "dark"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
@@ -46,6 +51,7 @@ class MainActivity : FlutterActivity() {
     private var controllers: ControllerClient? = null
     private var ipdObserver: ContentObserver? = null
     private var dofObserver: ContentObserver? = null
+    private var themeObserver: ContentObserver? = null
 
     // adb-triggerable scan toggle, same path as tapping the card.
     // "device" extra drives a raw startPairingMode probe instead.
@@ -155,6 +161,13 @@ class MainActivity : FlutterActivity() {
                         )
                         result.success(null)
                     }
+                    "setText" -> {
+                        setText(
+                            call.argument<String>("id") ?: "",
+                            call.argument<String>("value") ?: "",
+                        )
+                        result.success(null)
+                    }
                     "performAction" -> {
                         performAction(call.argument<String>("id") ?: "")
                         result.success(null)
@@ -203,6 +216,25 @@ class MainActivity : FlutterActivity() {
                                 it,
                             )
                         }
+                    // Theme changes made outside this app (adb settings
+                    // put, another shell surface) reselect the row.
+                    themeObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                eventSink?.success(
+                                    mapOf(
+                                        "texts" to
+                                            mapOf("themeMode" to theme()),
+                                    ),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(THEME),
+                                false,
+                                it,
+                            )
+                        }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -224,6 +256,10 @@ class MainActivity : FlutterActivity() {
                         contentResolver.unregisterContentObserver(it)
                     }
                     dofObserver = null
+                    themeObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    themeObserver = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -269,6 +305,7 @@ class MainActivity : FlutterActivity() {
         ),
         "texts" to mapOf(
             "wifiSsid" to (wifiSsid() ?: ""),
+            "themeMode" to theme(),
             "modelName" to Build.MODEL,
             "androidVersion" to Build.VERSION.RELEASE,
             "hibiscusVersion" to hibiscusVersion(),
@@ -358,6 +395,15 @@ class MainActivity : FlutterActivity() {
     private fun nightModeOn(): Boolean =
         getSystemService(UiModeManager::class.java)?.nightMode ==
             UiModeManager.MODE_NIGHT_YES
+
+    private fun theme(): String =
+        Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
+
+    private fun setText(id: String, v: String) {
+        when (id) {
+            "themeMode" -> putGlobalString(THEME, v)
+        }
+    }
 
     private fun setSlider(id: String, v: Double) {
         when (id) {

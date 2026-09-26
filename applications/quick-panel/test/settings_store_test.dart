@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_quicksettings/src/models.dart';
 import 'package:pn2_quicksettings/src/settings_store.dart';
+import 'package:pn2_quicksettings/src/theme_choice.dart';
 
 void main() {
   test('toggles default to off and flip', () {
@@ -39,6 +40,19 @@ void main() {
     expect(s.isOn(ToggleId.wifi), isTrue);
     expect(s.volume, 0.7);
     expect(s.brightness, 0.5);
+  });
+
+  test('theme parses from the snapshot, dark by default', () {
+    final s = SettingsStore();
+    expect(s.theme, ThemeChoice.dark);
+    s.applySnapshot(const SettingsSnapshot(theme: 'oled'));
+    expect(s.theme, ThemeChoice.oled);
+    s.applySnapshot(const SettingsSnapshot(theme: 'bogus'));
+    expect(s.theme, ThemeChoice.dark);
+    // absent leaves the last value alone
+    s.applySnapshot(const SettingsSnapshot(theme: 'light'));
+    s.applySnapshot(const SettingsSnapshot());
+    expect(s.theme, ThemeChoice.light);
   });
 
   test('battery level clamps to 0..100', () {

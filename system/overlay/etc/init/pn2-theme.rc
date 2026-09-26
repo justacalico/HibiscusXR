@@ -1,0 +1,19 @@
+# Theme bridge (dark / light / oled).
+#
+# The settings app stores the pick in the hibiscus_theme Settings.Global
+# key; this daemon mirrors it onto persist.hibiscus.theme, which the
+# vrhome env and HUD poll once a frame. Started at boot_completed like
+# the other settings-backed services: the settings table lives in /data
+# and does not exist at post-fs.
+#
+# Manual override for tuning:
+#     adb shell su -c 'setprop persist.hibiscus.theme oled'
+
+service pn2_themed /system/bin/pn2-themed
+    user root
+    group root
+    seclabel u:r:shell:s0
+    disabled
+
+on property:sys.boot_completed=1
+    start pn2_themed

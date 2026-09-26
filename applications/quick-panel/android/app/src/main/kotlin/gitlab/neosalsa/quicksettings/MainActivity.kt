@@ -10,11 +10,13 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.media.AudioManager
 import android.net.wifi.WifiManager
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -23,9 +25,14 @@ import io.flutter.plugin.common.MethodChannel
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
+// Hibiscus-owned global key for the OS theme ("dark", "light", "oled"),
+// written by the settings app. Absent means dark.
+private const val THEME = "hibiscus_theme"
+private const val THEME_DEFAULT = "dark"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
+    private var themeObserver: ContentObserver? = null
 
     // Panel-only toggles our OS layer owns; broadcast so whoever holds
     // the real switch (qvrd, thermalserviced, ...) can react.
@@ -170,6 +177,22 @@ class MainActivity : FlutterActivity() {
                             eventSink?.success(mapOf("notifications" to list))
                         }
                     }
+                    // Repaint at once when the settings app flips the
+                    // theme while this panel is open.
+                    themeObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                eventSink?.success(
+                                    mapOf("theme" to theme()),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(THEME),
+                                false,
+                                it,
+                            )
+                        }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -188,6 +211,10 @@ class MainActivity : FlutterActivity() {
                 override fun onCancel(arguments: Any?) {
                     eventSink = null
                     NotifService.sink = null
+                    themeObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    themeObserver = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -212,6 +239,7 @@ class MainActivity : FlutterActivity() {
             "microphone" to !audio().isMicrophoneMute,
         ),
         "notifications" to NotifService.lastList,
+        "theme" to theme(),
     )
 
     private fun wifiManager() =
@@ -239,6 +267,9 @@ class MainActivity : FlutterActivity() {
     private fun airplaneOn(): Boolean = Settings.Global.getInt(
         contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0,
     ) == 1
+
+    private fun theme(): String =
+        Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
 
     private fun volume(): Double {
         val am = audio()

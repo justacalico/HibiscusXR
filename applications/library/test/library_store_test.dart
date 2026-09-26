@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_library/src/library_store.dart';
 import 'package:pn2_library/src/models.dart';
 import 'package:pn2_library/src/persistence.dart';
+import 'package:pn2_library/src/theme_choice.dart';
 
 AppEntry app(
   String pkg, {
@@ -23,6 +24,23 @@ LibraryStore store({int idSeq = 0}) {
 }
 
 void main() {
+  group('theme', () {
+    test('parses the wire name, dedupes, dark by default', () {
+      final s = store();
+      var ticks = 0;
+      s.addListener(() => ticks++);
+
+      expect(s.theme, ThemeChoice.dark);
+      s.setTheme('light');
+      expect(s.theme, ThemeChoice.light);
+      expect(ticks, 1);
+      s.setTheme('light');
+      expect(ticks, 1);
+      s.setTheme('bogus');
+      expect(s.theme, ThemeChoice.dark);
+    });
+  });
+
   group('setApps', () {
     test('sorts by name by default', () {
       final s = store()

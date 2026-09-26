@@ -11,6 +11,7 @@ void main() {
       bluetoothDevice: 'ctl',
       volume: 0.3,
       brightness: 0.7,
+      theme: 'light',
     );
     final back = SettingsSnapshot.fromJson(snap.toJson());
     expect(back.toggles, snap.toggles);
@@ -19,6 +20,8 @@ void main() {
     expect(back.bluetoothDevice, 'ctl');
     expect(back.volume, 0.3);
     expect(back.brightness, 0.7);
+    expect(back.theme, 'light');
+    expect(SettingsSnapshot.fromJson(const {}).theme, isNull);
   });
 
   test('fromJson drops unknown toggle names and bad shapes', () {

@@ -27,13 +27,23 @@ class QuickSettingsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: PanelTheme.data(),
-      debugShowCheckedModeBanner: false,
-      home: QuickSettingsPage(controller: controller),
+    // The OS theme lands in the store from the platform snapshot;
+    // rebuild on any store change and swap the palette up front so every
+    // PanelTheme getter resolves against it.
+    return AnimatedBuilder(
+      animation: controller.store,
+      builder: (context, _) {
+        PanelTheme.palette = paletteFor(controller.store.theme);
+        return MaterialApp(
+          onGenerateTitle: (context) =>
+              AppLocalizations.of(context).appTitle,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: PanelTheme.data(),
+          debugShowCheckedModeBanner: false,
+          home: QuickSettingsPage(controller: controller),
+        );
+      },
     );
   }
 }

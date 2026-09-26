@@ -1,5 +1,6 @@
 import '../l10n/app_localizations.dart';
 import 'models.dart';
+import 'theme_choice.dart';
 import 'units.dart';
 
 /// id -> localized string resolution. Kept out of the widgets so the
@@ -51,6 +52,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerUnbind;
     case ItemId.brightness:
       return l10n.itemBrightness;
+    case ItemId.themeMode:
+      return l10n.itemTheme;
     case ItemId.ipd:
       return l10n.itemIpd;
     case ItemId.deviceMode:
@@ -108,6 +111,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemControllerUnbindDesc;
     case ItemId.brightness:
       return l10n.itemBrightnessDesc;
+    case ItemId.themeMode:
+      return l10n.itemThemeDesc;
     case ItemId.ipd:
       return l10n.itemIpdDesc;
     case ItemId.deviceMode:
@@ -156,6 +161,14 @@ String controllerLinkLabel(AppLocalizations l10n, ControllerLink link) {
       return l10n.valueUnknown;
   }
 }
+
+/// Label for one segment of the theme picker.
+String themeChoiceLabel(AppLocalizations l10n, ThemeChoice choice) =>
+    switch (choice) {
+      ThemeChoice.dark => l10n.themeDark,
+      ThemeChoice.light => l10n.themeLight,
+      ThemeChoice.oled => l10n.themeOled,
+    };
 
 /// Status line under the scan card title.
 String scanStatusLabel(AppLocalizations l10n, bool scanning) =>

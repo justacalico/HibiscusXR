@@ -86,7 +86,7 @@ class _AppTileState extends State<AppTile> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 color: LibraryTheme.textPrimary,
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -171,7 +171,7 @@ class _TileFace extends StatelessWidget {
       return Center(
         child: Text(
           app.label.isEmpty ? '?' : app.label.characters.first.toUpperCase(),
-          style: const TextStyle(
+          style: TextStyle(
             color: LibraryTheme.textPrimary,
             fontSize: 46,
             fontWeight: FontWeight.w600,
@@ -209,7 +209,7 @@ class _TileFace extends StatelessWidget {
             _Badge(
               child: Text(
                 systemLabel,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 11,
                   color: LibraryTheme.textPrimary,
                 ),
@@ -224,7 +224,7 @@ class _TileFace extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTapDown: (d) => onMenu(d.globalPosition),
-      child: const SizedBox(
+      child: SizedBox(
         width: 30,
         height: 30,
         child: Icon(

@@ -15,6 +15,9 @@
 void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
               bool status, void (*scene)(Engine*, const Mat4&)) {
     static int errTick = 0;
+    // pick up a theme change on this frame: pn2-themed mirrors the
+    // hibiscus_theme setting onto persist.hibiscus.theme
+    syncPalette();
     // software IPD: the user setting arrives on persist.pn2.ipd (metres),
     // debug.vrhome.ipd pins it for tuning
     const float ipd = propF("debug.vrhome.ipd", propF("persist.pn2.ipd", kIPD));

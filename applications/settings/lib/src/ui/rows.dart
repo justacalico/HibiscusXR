@@ -6,6 +6,7 @@ import '../labels.dart';
 import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
+import '../theme_choice.dart';
 import 'battery_icon.dart';
 import 'brand_card.dart';
 import 'reboot_dialog.dart';
@@ -61,12 +62,12 @@ class SettingsRow extends StatelessWidget {
       children: [
         Text(
           itemTitle(l10n, id),
-          style: const TextStyle(fontSize: 17, color: PanelTheme.textPrimary),
+          style: TextStyle(fontSize: 17, color: PanelTheme.textPrimary),
         ),
         const SizedBox(height: 3),
         Text(
           itemDescription(l10n, id),
-          style: const TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
+          style: TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
         ),
       ],
     );
@@ -158,8 +159,21 @@ class _Control extends StatelessWidget {
               ? (sel) => _pick(context, sel.first)
               : null,
         );
+      case ItemKind.theme:
+        // the theme picker rides the text channel: the segment's enum
+        // name is the hibiscus_theme value
+        return SegmentedButton<ThemeChoice>(
+          segments: [
+            for (final t in kThemeChoices)
+              ButtonSegment(value: t, label: Text(themeChoiceLabel(l10n, t))),
+          ],
+          selected: {themeChoiceFromName(store.textOf(id))},
+          onSelectionChanged: enabled
+              ? (sel) => controller.setText(id, sel.first.name)
+              : null,
+        );
       case ItemKind.slider:
-        const pctStyle = TextStyle(
+        final pctStyle = TextStyle(
           fontSize: 13,
           color: PanelTheme.textSecondary,
         );
@@ -209,7 +223,7 @@ class _Control extends StatelessWidget {
           children: [
             Text(
               controllerLinkLabel(l10n, info.link),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 color: PanelTheme.textSecondary,
               ),
@@ -225,7 +239,7 @@ class _Control extends StatelessWidget {
             : l10n.valueUnknown;
         return Text(
           text == null || text.isEmpty ? empty : text,
-          style: const TextStyle(fontSize: 15, color: PanelTheme.textSecondary),
+          style: TextStyle(fontSize: 15, color: PanelTheme.textSecondary),
         );
     }
   }

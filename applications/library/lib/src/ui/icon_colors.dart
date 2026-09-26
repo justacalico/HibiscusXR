@@ -50,7 +50,7 @@ Future<Color?> dominantIconColor(Uint8List png) async {
 /// that stays in the dark-theme family.
 List<Color> tileGradient(Color? tint) {
   if (tint == null) {
-    return const [LibraryTheme.surfaceHigh, LibraryTheme.surface];
+    return [LibraryTheme.surfaceHigh, LibraryTheme.surface];
   }
   final hsl = HSLColor.fromColor(tint);
   final top = hsl

@@ -3,6 +3,7 @@ import 'package:pn2_library/src/library_controller.dart';
 import 'package:pn2_library/src/models.dart';
 import 'package:pn2_library/src/persistence.dart';
 import 'package:pn2_library/src/platform/fake_app_source.dart';
+import 'package:pn2_library/src/theme_choice.dart';
 
 void main() {
   test('init loads apps and reaches ready', () async {
@@ -13,6 +14,18 @@ void main() {
     expect(c.state, LoadState.ready);
     expect(c.store.visible, isNotEmpty);
     expect(src.listCalls, 1);
+  });
+
+  test('init loads the theme and pushes land in the store', () async {
+    final src = FakeAppSource()..themeValue = 'oled';
+    final c = LibraryController(source: src, persistence: MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.init();
+    expect(c.store.theme, ThemeChoice.oled);
+
+    src.emitTheme('light');
+    await Future<void>.delayed(Duration.zero);
+    expect(c.store.theme, ThemeChoice.light);
   });
 
   test('init failure lands in failed state and retry recovers', () async {

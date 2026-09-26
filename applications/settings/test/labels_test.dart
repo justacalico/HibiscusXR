@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/l10n/app_localizations.dart';
 import 'package:pn2_settings/src/labels.dart';
 import 'package:pn2_settings/src/models.dart';
+import 'package:pn2_settings/src/theme_choice.dart';
 
 Future<AppLocalizations> l10nOf(WidgetTester tester) async {
   late AppLocalizations found;
@@ -44,6 +45,14 @@ void main() {
       controllerLinkLabel(l10n, ControllerLink.unknown),
       isNotEmpty,
     );
+  });
+
+  testWidgets('theme choice labels cover every option', (tester) async {
+    final l10n = await l10nOf(tester);
+    await tester.pump();
+    expect(themeChoiceLabel(l10n, ThemeChoice.dark), 'Dark');
+    expect(themeChoiceLabel(l10n, ThemeChoice.light), 'Light');
+    expect(themeChoiceLabel(l10n, ThemeChoice.oled), 'OLED');
   });
 
   testWidgets('scan status label flips with the flag', (tester) async {

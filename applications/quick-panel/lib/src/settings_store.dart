@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'models.dart';
+import 'theme_choice.dart';
 
 /// All panel state: toggles, sliders, battery, radios and the clock.
 /// Pure Dart - every value the UI shows is computed here so tests can
@@ -20,6 +21,7 @@ class SettingsStore extends ChangeNotifier {
   int _batteryLevel = 0;
   String? _wifiSsid;
   String? _bluetoothDevice;
+  ThemeChoice _theme = ThemeChoice.dark;
   List<NotificationItem> _notifications = const [];
   DateTime? _now;
 
@@ -28,6 +30,10 @@ class SettingsStore extends ChangeNotifier {
   int get batteryLevel => _batteryLevel;
   String? get wifiSsid => _wifiSsid;
   String? get bluetoothDevice => _bluetoothDevice;
+
+  /// The OS theme as last reported, dark until the platform snapshot
+  /// lands.
+  ThemeChoice get theme => _theme;
   List<NotificationItem> get notifications => _notifications;
   DateTime get now => _now ?? _clock();
 
@@ -76,6 +82,7 @@ class SettingsStore extends ChangeNotifier {
     if (snap.brightness != null) {
       _brightness = snap.brightness!.clamp(0.0, 1.0);
     }
+    if (snap.theme != null) _theme = themeChoiceFromName(snap.theme);
     if (snap.notifications != null) _notifications = snap.notifications!;
     notifyListeners();
   }

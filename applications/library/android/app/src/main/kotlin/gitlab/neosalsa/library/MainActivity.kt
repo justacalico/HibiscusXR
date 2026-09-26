@@ -4,17 +4,26 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.database.ContentObserver
 import android.os.Build
+import android.os.Handler
+import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
+
+// Hibiscus-owned global key for the OS theme ("dark", "light", "oled"),
+// written by the settings app. Absent means dark.
+private const val THEME = "hibiscus_theme"
+private const val THEME_DEFAULT = "dark"
 
 class MainActivity : FlutterActivity() {
 
     private var catalog: AppCatalog? = null
     private var changeSink: EventChannel.EventSink? = null
     private var packageReceiver: BroadcastReceiver? = null
+    private var themeObserver: ContentObserver? = null
     private var pendingInstall: MethodChannel.Result? = null
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -34,6 +43,7 @@ class MainActivity : FlutterActivity() {
                         result.success(c.iconPng(pkg))
                     }
                 }
+                "getTheme" -> result.success(theme())
                 "launch" -> withPackage(call, result) { c.launch(it) }
                 "uninstall" -> withPackage(call, result) { c.uninstall(it) }
                 "openAppInfo" -> withPackage(call, result) { c.openAppInfo(it) }
@@ -47,11 +57,31 @@ class MainActivity : FlutterActivity() {
                 override fun onListen(arguments: Any?, events: EventChannel.EventSink) {
                     changeSink = events
                     registerPackageReceiver()
+                    // Repaint at once when the settings app flips the
+                    // theme while the grid is open.
+                    themeObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                changeSink?.success(
+                                    mapOf("theme" to theme()),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(THEME),
+                                false,
+                                it,
+                            )
+                        }
                 }
 
                 override fun onCancel(arguments: Any?) {
                     changeSink = null
                     unregisterPackageReceiver()
+                    themeObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    themeObserver = null
                 }
             }
         )
@@ -133,6 +163,9 @@ class MainActivity : FlutterActivity() {
         }
         packageReceiver = r
     }
+
+    private fun theme(): String =
+        Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
 
     private fun unregisterPackageReceiver() {
         val r = packageReceiver ?: return

@@ -136,6 +136,7 @@ put "$INIT/pn2-openxr.rc"     /etc/init/pn2-openxr.rc     644
 put "$INIT/pn2-vulkan.rc"     /etc/init/pn2-vulkan.rc     644
 put "$INIT/pn2-ipd.rc"        /etc/init/pn2-ipd.rc        644
 put "$INIT/pn2-dof.rc"        /etc/init/pn2-dof.rc        644
+put "$INIT/pn2-theme.rc"      /etc/init/pn2-theme.rc      644
 
 echo
 echo "=== settings bridge daemons ==="
@@ -143,6 +144,7 @@ echo "=== settings bridge daemons ==="
 # renderer can read live without a settings-provider round trip
 put ${PN2_ROOT}/overlay/bin/pn2-ipdd /bin/pn2-ipdd 755
 put ${PN2_ROOT}/overlay/bin/pn2-dofd /bin/pn2-dofd 755
+put ${PN2_ROOT}/overlay/bin/pn2-themed /bin/pn2-themed 755
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="

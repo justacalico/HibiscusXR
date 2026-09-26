@@ -45,3 +45,41 @@ void testPalette() {
     CHECK(batteryTint(90, true) == kPalWarn);
     CHECK(batteryTint(5, true) == kPalWarn);
 }
+
+void testPaletteThemes() {
+    // name -> table: the prop values pn2-themed writes, dark for
+    // anything unrecognized
+    CHECK(&paletteForName("dark") == &kPalDark);
+    CHECK(&paletteForName("light") == &kPalLight);
+    CHECK(&paletteForName("oled") == &kPalOled);
+    CHECK(&paletteForName("") == &kPalDark);
+    CHECK(&paletteForName("sepia") == &kPalDark);
+    CHECK(&paletteForName(nullptr) == &kPalDark);
+
+    // setPaletteForName repoints every live slot
+    setPaletteForName("oled");
+    hexEq(kPalBackground, 0x00, 0x00, 0x00);
+    CHECK(kPalPanel == kPalOled.panel);
+    CHECK(kPalAccent == kPalOled.accent);
+    CHECK(kPalText == kPalOled.text);
+
+    setPaletteForName("light");
+    CHECK(kPalPanel == kPalLight.panel);
+    hexEq(kPalBackground, 0xDD, 0xE3, 0xEA);
+    hexEq(kPalSurface,    0xFF, 0xFF, 0xFF);
+    hexEq(kPalAccent,     0x1C, 0x6D, 0xD9);
+    hexEq(kPalText,       0x14, 0x1A, 0x21);
+    hexEq(kPalTextDim,    0x4E, 0x5A, 0x66);
+
+    // light inverts the ramp: cards sit lighter than the void behind them
+    for (int ch = 0; ch < 3; ++ch) {
+        CHECK(kPalSurface[ch] > kPalBackground[ch]);
+        CHECK(kPalTextDim[ch] > kPalText[ch]);
+    }
+
+    // back to the default so later suites see the dark table
+    setPaletteForName("dark");
+    CHECK(kPalBackground == kPalDark.background);
+    CHECK(kPalPanel == kPalDark.panel);
+    CHECK(batteryTint(100, false) == kPalDark.good);
+}

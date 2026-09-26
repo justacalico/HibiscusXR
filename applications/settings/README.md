@@ -9,7 +9,10 @@ sections on the left, the selected section's rows on the right.
 
 - Wi-Fi, Bluetooth: live radio toggles, SSID display, links into the
   system pages
-- Display: brightness slider, night mode
+- Display: brightness slider, OS theme picker (dark / light / OLED -
+  writes `hibiscus_theme`, which pn2-themed mirrors onto
+  `persist.hibiscus.theme` so the HUD chrome and the other panel apps
+  follow), night mode
 - Sound: volume slider, microphone switch
 - Camera: seethrough toggle (project seam broadcast)
 - Language and Region, Time, Keyboard: jump to the matching system page

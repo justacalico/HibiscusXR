@@ -27,6 +27,7 @@ const kSections = <SectionDef>[
   ]),
   SectionDef(SectionId.display, [
     ItemId.brightness,
+    ItemId.themeMode,
     ItemId.ipd,
     ItemId.deviceMode,
     ItemId.nightMode,
@@ -60,6 +61,8 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.controllerRight: ItemKind.controller,
   ItemId.controllerUnbind: ItemKind.action,
   ItemId.brightness: ItemKind.slider,
+  // three options, one string on the wire: the hibiscus_theme global key
+  ItemId.themeMode: ItemKind.theme,
   ItemId.ipd: ItemKind.slider,
   // two modes, one bool on the wire: off is 3DoF, on is 6DoF
   ItemId.deviceMode: ItemKind.choice,

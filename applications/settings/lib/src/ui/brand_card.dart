@@ -29,7 +29,7 @@ class BrandCard extends StatelessWidget {
               const SizedBox(height: 14),
               Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w600,
                   color: PanelTheme.textPrimary,
@@ -38,7 +38,7 @@ class BrandCard extends StatelessWidget {
               const SizedBox(height: 3),
               Text(
                 caption,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   color: PanelTheme.textSecondary,
                 ),

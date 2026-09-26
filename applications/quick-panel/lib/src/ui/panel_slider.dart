@@ -64,7 +64,7 @@ class PanelSlider extends StatelessWidget {
                     child: Container(
                       width: knob,
                       height: knob,
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: PanelTheme.panel,
                         shape: BoxShape.circle,
                       ),

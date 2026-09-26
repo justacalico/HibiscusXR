@@ -64,6 +64,13 @@ void main() {
     expect(calls[2].arguments, {'id': 'wifiSettings'});
   });
 
+  test('setText forwards id and value', () async {
+    final src = AndroidSettingsSource();
+    await src.setText(ItemId.themeMode, 'oled');
+    expect(calls.last.method, 'setText');
+    expect(calls.last.arguments, {'id': 'themeMode', 'value': 'oled'});
+  });
+
   test('ipd slider forwards millimetres, not the normalized position', () async {
     final src = AndroidSettingsSource();
     await src.setSlider(ItemId.ipd, 0.5);

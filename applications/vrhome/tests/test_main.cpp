@@ -15,6 +15,7 @@ void testNotif();
 void testSysMsg();
 void testInput();
 void testStatus();
+void testPalette();
 
 int main() {
     testMat4();
@@ -30,6 +31,7 @@ int main() {
     testSysMsg();
     testInput();
     testStatus();
+    testPalette();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

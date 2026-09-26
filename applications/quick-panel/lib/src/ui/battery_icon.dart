@@ -13,13 +13,13 @@ class BatteryIcon extends StatelessWidget {
   static Color colorFor(BatteryTint tint) {
     switch (tint) {
       case BatteryTint.good:
-        return const Color(0xFF3DD68C);
+        return PanelTheme.good;
       case BatteryTint.normal:
         return PanelTheme.textPrimary;
       case BatteryTint.warn:
-        return const Color(0xFFF5C542);
+        return PanelTheme.warn;
       case BatteryTint.critical:
-        return const Color(0xFFFF5E5E);
+        return PanelTheme.danger;
     }
   }
 

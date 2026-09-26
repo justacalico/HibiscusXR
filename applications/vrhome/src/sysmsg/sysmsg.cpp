@@ -6,6 +6,7 @@
 #include "../common/config.h"
 #include "../common/jni.h"
 #include "../common/log.h"
+#include "../common/palette.h"
 #include "../dock/dock.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
@@ -124,14 +125,16 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
     const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f};
     shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.03f, hh + 0.03f,
               hw, hh, 0.026f, -1.0f, 0.03f, shCol);
-    const float body[4] = {0.08f, 0.09f, 0.13f, 0.94f};
+    const float body[4] = {kPalSurface[0], kPalSurface[1], kPalSurface[2],
+                           0.94f};
     shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
               0.024f, 0.0f, 0.0025f, body);
     // red accent down the card's left edge: this is an alert, not a post
     const float ax = -hw + 0.006f;
     const float ac[3] = {cc[0] + r[0] * ax, cc[1] + r[1] * ax,
                          cc[2] + r[2] * ax};
-    const float acol[4] = {0.74f, 0.20f, 0.17f, 0.92f};
+    const float acol[4] = {kPalDanger[0], kPalDanger[1], kPalDanger[2],
+                           0.92f};
     shapeQuad(e, vp, ac, r, up, 0.008f, 0.0f, 0.003f, hh - 0.020f,
               0.003f, hh - 0.020f, 0.003f, 0.0f, 0.0015f, acol);
 
@@ -167,7 +170,7 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
     to[0] -= cc[0] * 0.010f; to[1] -= cc[1] * 0.010f;
     to[2] -= cc[2] * 0.010f;
     msgText(e, vp, it.title.c_str(), to, r, up, 0.0019f, textMax,
-            1.0f, 1.0f, 1.0f);
+            kPalText[0], kPalText[1], kPalText[2]);
 
     // body text: up to kSysMsgMaxLines lines split on newlines, starting
     // under the icon row
@@ -185,7 +188,7 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         bo[0] -= cc[0] * 0.010f; bo[1] -= cc[1] * 0.010f;
         bo[2] -= cc[2] * 0.010f;
         msgText(e, vp, line.c_str(), bo, r, up, 0.0015f, bodyMax,
-                0.75f, 0.78f, 0.85f);
+                kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
         if (nl == std::string::npos) break;
         pos = nl + 1;
         ly -= 0.034f;
@@ -202,9 +205,8 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                              cc[2] + r[2]*bx + up[2]*by};
         const bool bhov = e->sysMsgHover >= 0 &&
                 e->sysMsgZone == MZONE_BTN && e->sysMsgBtn == i;
-        const float bcol[4] = {bhov ? 0.30f : 0.17f,
-                               bhov ? 0.34f : 0.19f,
-                               bhov ? 0.44f : 0.26f, 0.96f};
+        const float* bp = bhov ? kPalAccent : kPalSurfaceHigh;
+        const float bcol[4] = {bp[0], bp[1], bp[2], 0.96f};
         shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, bhw, kSysMsgBtnHH,
                   bhw, kSysMsgBtnHH, kSysMsgBtnHH, 0.0f, 0.002f, bcol);
         if (!it.buttons[i].empty() && e->font.ok) {
@@ -224,7 +226,7 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);
             glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                        1.0f, 1.0f, 1.0f);
+                        kPalText[0], kPalText[1], kPalText[2]);
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);

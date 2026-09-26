@@ -2,6 +2,7 @@
 
 #include "mesh.h"
 #include "shape.h"
+#include "../common/palette.h"
 #include "../common/props.h"
 #include "../hud/engine.h"
 #include "../input/input_state.h"
@@ -95,7 +96,8 @@ void drawControllers(HudEngine* e, const Mat4& viewProj) {
                                side[2]*side[2]);
         if (sm > 1e-6f) {
             const float hw = 0.0018f / sm;
-            const float col[3] = {0.35f, 0.65f, 1.0f};
+            const float col[3] = {kPalAccent[0], kPalAccent[1],
+                                  kPalAccent[2]};
             float quad[36];
             const float* ends[2] = {o, tip};
             for (int c = 0; c < 2; ++c)

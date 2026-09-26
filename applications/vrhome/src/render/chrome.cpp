@@ -2,6 +2,7 @@
 
 #include "../hud/engine.h"
 #include "../common/config.h"
+#include "../common/palette.h"
 #include "../dock/layout.h"
 #include "../panels/layout.h"
 #include "shape.h"
@@ -65,8 +66,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // the silhouette - one shape. Label left, buttons on the right end
         const float barOff = hh + kBarH * 0.5f;
         const float barHW = hw;
-        const float barCol[4] = {hov ? 0.16f : 0.085f, hov ? 0.18f : 0.095f,
-                                 hov ? 0.24f : 0.13f, hov ? 0.95f : 0.88f};
+        const float* bcp = hov ? kPalSurfaceHigh : kPalPanel;
+        const float barCol[4] = {bcp[0], bcp[1], bcp[2],
+                                 hov ? 0.95f : 0.88f};
         const float barC[3] = {c[0] + up[0] * barOff, c[1] + up[1] * barOff,
                                c[2] + up[2] * barOff};
         glUseProgram(e->shapeProg);
@@ -77,7 +79,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // capsules, the close pair rotated into an x. The library draws
         // the close disc only, so its loop starts on the second slot
         {
-            const float icon[4] = {1.0f, 1.0f, 1.0f, 0.92f};
+            const float icon[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                   0.92f};
             const float il = kBarBtnR * 0.55f, it = 0.0028f;
             for (int b = 2 - nbtns; b < 2; ++b) {
                 const int zone = b == 0 ? ZONE_MIN : ZONE_CLOSE;
@@ -86,9 +89,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                 const float bc[3] = {c[0] + r[0]*bx + up[0]*barOff,
                                      c[1] + r[1]*bx + up[1]*barOff,
                                      c[2] + r[2]*bx + up[2]*barOff};
-                const float bg[4] = {bhov && zone == ZONE_CLOSE ? 0.72f : 1.0f,
-                                     bhov && zone == ZONE_CLOSE ? 0.25f : 1.0f,
-                                     bhov && zone == ZONE_CLOSE ? 0.25f : 1.0f,
+                const float* bgp = bhov && zone == ZONE_CLOSE
+                                   ? kPalDanger : kPalText;
+                const float bg[4] = {bgp[0], bgp[1], bgp[2],
                                      bhov ? 0.32f : 0.13f};
                 shapeQuad(e, viewProj, bc, r, up, 0.006f, 0.0f,
                           kBarBtnR, kBarBtnR, kBarBtnR, kBarBtnR,
@@ -146,7 +149,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // hairline border around the whole silhouette - window plus bound
         // bar reads as one rounded shape, brightened while gazed at
         glUseProgram(e->shapeProg);
-        const float bdCol[4] = {1.0f, 1.0f, 1.0f, hov ? 0.55f : 0.14f};
+        const float bdCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                hov ? 0.55f : 0.14f};
         const float bdUp = kBarH * 0.5f;
         const float bdH = hh + bdUp + 0.006f;
         const float bdC[3] = {c[0] + up[0] * bdUp, c[1] + up[1] * bdUp,
@@ -173,7 +177,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, viewProj.m);
             glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                        1.0f, 1.0f, 1.0f);
+                        kPalText[0], kPalText[1], kPalText[2]);
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
@@ -215,7 +219,8 @@ void drawHoldRing(HudEngine* e) {
     const Mat4 mvp = identity();
     glUniformMatrix4fv(uMVP, 1, GL_FALSE, mvp.m);
     glUniform1f(uProg, e->holdP);
-    const float col[4] = {1.0f, 1.0f, 1.0f, 0.95f};
+    const float col[4] = {kPalAccent[0], kPalAccent[1], kPalAccent[2],
+                          0.95f};
     glUniform4fv(uCol, 1, col);
     glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
@@ -258,8 +263,8 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glUseProgram(e->shapeProg);
-    const float ringCol[4] = {1.0f, 1.0f, 1.0f, 0.85f};
-    const float dotCol[4]  = {1.0f, 1.0f, 1.0f, 0.90f};
+    const float ringCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.85f};
+    const float dotCol[4]  = {kPalText[0], kPalText[1], kPalText[2], 0.90f};
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.014f, 0.014f, 0.014f,
               0.014f, 0.014f, 0.0016f, 0.001f, ringCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.005f, 0.005f, 0.005f,

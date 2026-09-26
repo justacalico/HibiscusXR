@@ -5,6 +5,7 @@
 #include "../common/log.h"
 #include "../common/props.h"
 #include "../common/config.h"
+#include "../common/palette.h"
 #include "../math/head.h"
 #include "../text/draw.h"
 
@@ -26,7 +27,8 @@ void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
         else if (translucent)
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         else
-            glClearColor(0.08f, 0.09f, 0.12f, 1.0f);
+            glClearColor(kPalBackground[0], kPalBackground[1],
+                         kPalBackground[2], 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         const Mat4 vp = multiply(proj, eyeMatrix(head, ipd, i));
         scene(e, vp);

@@ -6,6 +6,7 @@
 #include "../common/config.h"
 #include "../common/jni.h"
 #include "../common/log.h"
+#include "../common/palette.h"
 #include "../dock/dock.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
@@ -116,11 +117,13 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.03f, hh + 0.03f,
                   hw, hh, 0.024f, -1.0f, 0.03f, shCol);
         // card body; a hovered card brightens a touch
-        const float body[4] = {0.09f, 0.10f, 0.14f, hov ? 0.95f : 0.88f};
+        const float body[4] = {kPalSurface[0], kPalSurface[1],
+                               kPalSurface[2], hov ? 0.95f : 0.88f};
         shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
                   0.022f, 0.0f, 0.0025f, body);
         if (hov) {
-            const float hl[4] = {1.0f, 1.0f, 1.0f, 0.08f};
+            const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 0.10f};
             shapeQuad(e, vp, cc, r, up, 0.006f, 0.0f, hw, hh, hw, hh,
                       0.022f, 0.0f, 0.002f, hl);
         }
@@ -156,14 +159,14 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         to[0] -= cc[0] * 0.010f; to[1] -= cc[1] * 0.010f;
         to[2] -= cc[2] * 0.010f;
         cardText(e, vp, title, to, r, up, 0.0018f, textMax,
-                 1.0f, 1.0f, 1.0f);
+                 kPalText[0], kPalText[1], kPalText[2]);
         float bo[3] = {cc[0] + r[0]*tx - up[0]*0.026f,
                        cc[1] + r[1]*tx - up[1]*0.026f,
                        cc[2] + r[2]*tx - up[2]*0.026f};
         bo[0] -= cc[0] * 0.010f; bo[1] -= cc[1] * 0.010f;
         bo[2] -= cc[2] * 0.010f;
         cardText(e, vp, it.text.c_str(), bo, r, up, 0.0014f, textMax,
-                 0.75f, 0.78f, 0.85f);
+                 kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
 
         // dismiss badge on a clearable card, top-right
         if (it.clearable) {
@@ -173,13 +176,13 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                                  cc[1] + r[1]*bx + up[1]*by,
                                  cc[2] + r[2]*bx + up[2]*by};
             const bool bhov = hov && e->notifZone == NZONE_CLOSE;
-            const float bcol[4] = {bhov ? 0.75f : 0.10f,
-                                   bhov ? 0.22f : 0.10f,
-                                   bhov ? 0.20f : 0.12f, 0.92f};
+            const float* bgp = bhov ? kPalDanger : kPalSurfaceHigh;
+            const float bcol[4] = {bgp[0], bgp[1], bgp[2], 0.92f};
             shapeQuad(e, vp, bc, r, up, 0.011f, 0.0f, kNotifBadgeR,
                       kNotifBadgeR, kNotifBadgeR, kNotifBadgeR,
                       kNotifBadgeR, 0.0f, 0.0015f, bcol);
-            const float xcol[4] = {1.0f, 1.0f, 1.0f, 0.95f};
+            const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                   0.95f};
             const float il = kNotifBadgeR * 0.52f, itw = 0.0020f;
             shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, itw,
                       il, itw, itw, 0.0f, 0.001f, xcol);

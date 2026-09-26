@@ -28,8 +28,6 @@ class BatteryIcon extends StatelessWidget {
   Widget build(BuildContext context) => Icon(
     _icon,
     size: 22,
-    color: level == 1 && !charging
-        ? Colors.orangeAccent
-        : PanelTheme.textSecondary,
+    color: level == 1 && !charging ? PanelTheme.warn : PanelTheme.textSecondary,
   );
 }

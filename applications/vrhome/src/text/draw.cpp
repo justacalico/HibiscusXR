@@ -2,6 +2,7 @@
 
 #include "font.h"
 #include "../engine.h"
+#include "../common/palette.h"
 
 #include <vector>
 
@@ -57,7 +58,7 @@ void drawHud(Engine* e, const Mat4& proj) {
     glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"), 1, GL_FALSE,
                      proj.m);
     glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
-                0.55f, 0.60f, 0.68f);
+                kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
     glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, e->font.tex);

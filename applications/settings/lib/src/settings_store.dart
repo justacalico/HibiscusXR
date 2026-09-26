@@ -41,6 +41,14 @@ class SettingsStore extends ChangeNotifier {
 
   String? textOf(ItemId id) => _texts[id];
 
+  /// Local write for a string-backed row (the theme picker). The
+  /// platform confirms through the next snapshot.
+  void setText(ItemId id, String v) {
+    if (_texts[id] == v) return;
+    _texts[id] = v;
+    notifyListeners();
+  }
+
   /// Last reported state of a controller row, or a placeholder when the
   /// service has not answered yet.
   ControllerInfo controllerOf(ItemId id) =>

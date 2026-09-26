@@ -16,6 +16,10 @@ abstract class SettingsSource {
   /// directly open the matching system panel instead.
   Future<void> requestToggle(ItemId id, bool on);
 
+  /// Write a string-backed row (the theme choice). The platform reports
+  /// it back through the snapshot texts.
+  Future<void> setText(ItemId id, String value);
+
   /// Fire a one-shot row: open a system page, recenter, reboot...
   Future<void> performAction(ItemId id);
 

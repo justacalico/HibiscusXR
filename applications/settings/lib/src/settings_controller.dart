@@ -64,6 +64,14 @@ class SettingsController {
     await source.setSlider(id, v);
   }
 
+  /// Pick a string-backed row (the theme picker): optimistic update,
+  /// then tell the platform.
+  Future<void> setText(ItemId id, String v) async {
+    if (store.textOf(id) == v) return;
+    store.setText(id, v);
+    await source.setText(id, v);
+  }
+
   Future<void> runAction(ItemId id) => source.performAction(id);
 
   Future<void> selectSection(SectionId id) async {

@@ -24,6 +24,13 @@ abstract class AppSource {
   /// False when picking/installing could not start.
   Future<bool> pickAndInstallApk();
 
+  /// The current OS theme name ("dark", "light" or "oled") from the
+  /// hibiscus_theme key.
+  Future<String> theme();
+
   /// Fires whenever the installed catalog changes (add/remove/replace).
   Stream<void> get changes;
+
+  /// Pushes the OS theme name whenever the setting changes.
+  Stream<String> get themes;
 }

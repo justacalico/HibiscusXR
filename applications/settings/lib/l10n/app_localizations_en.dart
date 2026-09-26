@@ -103,6 +103,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemBrightnessDesc => 'Adjust the screen brightness';
 
   @override
+  String get itemTheme => 'Theme';
+
+  @override
+  String get itemThemeDesc => 'Colors for the panels and the headset HUD';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeOled => 'OLED';
+
+  @override
   String get itemIpd => 'Eye spacing (IPD)';
 
   @override

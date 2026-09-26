@@ -65,7 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 controller: controller,
                 compact: constraints.maxWidth < 640,
               ),
-              const VerticalDivider(
+              VerticalDivider(
                 width: 1,
                 thickness: 1,
                 color: PanelTheme.panel,
@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       padding: const EdgeInsets.fromLTRB(28, 26, 28, 8),
                       child: Text(
                         sectionTitle(l10n, controller.store.section),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
                           color: PanelTheme.textSecondary,
@@ -128,7 +128,7 @@ class _Sidebar extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 14),
               child: Text(
                 l10n.appTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
                   color: PanelTheme.textPrimary,

@@ -7,9 +7,11 @@ the actual fix set - everything here is our own work.
 
 ```
 bin/pn2-dofd                  device-mode bridge (hibiscus_dof -> persist.pn2.dof)
+bin/pn2-themed                theme bridge (hibiscus_theme -> persist.hibiscus.theme)
 bin/pn2-fand                  our fan daemon
 etc/init/pn2-adbwifi.rc       wireless adb toggle (persist.pn2.adbwifi)
 etc/init/pn2-dof.rc           pn2_dofd - settings -> persist.pn2.dof bridge
+etc/init/pn2-theme.rc         pn2_themed - settings -> persist.hibiscus.theme bridge
 etc/init/pn2-airservice.rc    airservice + virtual_input init entries
 etc/init/pn2-fanservice.rc    thermal/fan service
 etc/init/pn2-power.rc         the permanent wakelock (stock parity)

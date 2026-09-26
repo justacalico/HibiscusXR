@@ -46,7 +46,7 @@ class PanelStatusBar extends StatelessWidget {
           ),
           Text(
             DateFormat('E, MMM d, y').format(now),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
               color: PanelTheme.textPrimary,

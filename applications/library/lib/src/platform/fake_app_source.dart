@@ -24,14 +24,30 @@ class FakeAppSource implements AppSource {
   var failNextList = false;
 
   final _changes = StreamController<void>.broadcast();
+  final _themes = StreamController<String>.broadcast();
+
+  /// The value [theme] reports; tests set it before init.
+  var themeValue = 'dark';
+
+  @override
+  Future<String> theme() async => themeValue;
 
   @override
   Stream<void> get changes => _changes.stream;
 
+  @override
+  Stream<String> get themes => _themes.stream;
+
   /// Pushes a package-change event, like a real install/uninstall would.
   void emitChange() => _changes.add(null);
 
-  void dispose() => _changes.close();
+  /// Pushes a theme-change event, like the settings app flipping it would.
+  void emitTheme(String name) => _themes.add(name);
+
+  void dispose() {
+    _changes.close();
+    _themes.close();
+  }
 
   @override
   Future<List<AppEntry>> listApps() async {

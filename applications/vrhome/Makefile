@@ -36,6 +36,7 @@ HOST_CXXFLAGS := -std=c++17 -O0 -g -Wall -Wextra -Isrc
 
 # render/platform code shared by both .so's
 SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
+               src/common/palette.cpp \
                src/math/mat4.cpp src/math/head.cpp \
                src/text/utf8.cpp src/text/glyphs.cpp \
                src/text/font.cpp src/text/draw.cpp \
@@ -78,7 +79,8 @@ ENV_UNALIGNED  := $(OUT)/unaligned.apk
 HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 
 # pure modules only - no Android/GL includes, so they build on the host
-HOST_SRCS := src/math/mat4.cpp src/math/head.cpp src/panels/layout.cpp \
+HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
+             src/panels/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \

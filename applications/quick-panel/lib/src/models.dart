@@ -80,6 +80,7 @@ class SettingsSnapshot {
     this.volume,
     this.brightness,
     this.notifications,
+    this.theme,
   });
 
   final Map<ToggleId, bool> toggles;
@@ -88,6 +89,10 @@ class SettingsSnapshot {
   final String? bluetoothDevice;
   final double? volume;
   final double? brightness;
+
+  /// The OS theme name from the hibiscus_theme key ("dark", "light" or
+  /// "oled"). Null means "no information", not "dark".
+  final String? theme;
 
   /// The full active-notification list when present. Unlike the scalar
   /// fields this replaces wholesale rather than merging per entry.
@@ -100,6 +105,7 @@ class SettingsSnapshot {
     if (bluetoothDevice != null) 'bluetoothDevice': bluetoothDevice,
     if (volume != null) 'volume': volume,
     if (brightness != null) 'brightness': brightness,
+    if (theme != null) 'theme': theme,
     if (notifications != null)
       'notifications': [for (final n in notifications!) n.toJson()],
   };
@@ -119,6 +125,7 @@ class SettingsSnapshot {
       bluetoothDevice: _str(json['bluetoothDevice']),
       volume: _num(json['volume'])?.toDouble(),
       brightness: _num(json['brightness'])?.toDouble(),
+      theme: _str(json['theme']),
       notifications: json['notifications'] is List
           ? (json['notifications'] as List)
                 .map(NotificationItem.fromJson)

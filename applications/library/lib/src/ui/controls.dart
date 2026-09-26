@@ -28,17 +28,17 @@ class LibrarySearchField extends StatelessWidget {
           controller: controller,
           onChanged: store.setQuery,
           textInputAction: TextInputAction.search,
-          style: const TextStyle(color: LibraryTheme.textPrimary),
+          style: TextStyle(color: LibraryTheme.textPrimary),
           decoration: InputDecoration(
             hintText: l10n.searchHint,
-            prefixIcon: const Icon(
+            prefixIcon: Icon(
               Icons.search,
               color: LibraryTheme.textSecondary,
             ),
             suffixIcon: store.query.isEmpty
                 ? null
                 : IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.close,
                       size: 18,
                       color: LibraryTheme.textSecondary,
@@ -121,7 +121,7 @@ class CollectionDropdown extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
+                Icon(
                   Icons.apps,
                   size: 16,
                   color: LibraryTheme.textSecondary,
@@ -129,7 +129,7 @@ class CollectionDropdown extends StatelessWidget {
                 const SizedBox(width: 8),
                 Text(activeLabel, style: _pillText),
                 const SizedBox(width: 6),
-                const Icon(
+                Icon(
                   Icons.keyboard_arrow_down,
                   size: 18,
                   color: LibraryTheme.textSecondary,
@@ -143,7 +143,7 @@ class CollectionDropdown extends StatelessWidget {
           PopupMenuButton<_GroupOp>(
             tooltip: '',
             position: PopupMenuPosition.under,
-            icon: const Icon(
+            icon: Icon(
               Icons.more_horiz,
               size: 20,
               color: LibraryTheme.textSecondary,
@@ -163,7 +163,7 @@ class CollectionDropdown extends StatelessWidget {
                 value: _GroupOp.rename,
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.edit_outlined,
                       size: 18,
                       color: LibraryTheme.textSecondary,
@@ -177,7 +177,7 @@ class CollectionDropdown extends StatelessWidget {
                 value: _GroupOp.delete,
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.delete_outline,
                       size: 18,
                       color: LibraryTheme.danger,
@@ -185,7 +185,7 @@ class CollectionDropdown extends StatelessWidget {
                     const SizedBox(width: 12),
                     Text(
                       l10n.deleteGroup,
-                      style: const TextStyle(color: LibraryTheme.danger),
+                      style: TextStyle(color: LibraryTheme.danger),
                     ),
                   ],
                 ),
@@ -214,7 +214,7 @@ class CollectionDropdown extends StatelessWidget {
           item,
           l10n.collectionCount(g.name, g.members.length),
           selected: store.filter == FilterGroup(g.id),
-          leading: const Icon(
+          leading: Icon(
             Icons.folder_outlined,
             size: 18,
             color: LibraryTheme.textSecondary,
@@ -224,7 +224,7 @@ class CollectionDropdown extends StatelessWidget {
         return _menuItem(
           item,
           l10n.newGroup,
-          leading: const Icon(Icons.add, size: 18, color: LibraryTheme.accent),
+          leading: Icon(Icons.add, size: 18, color: LibraryTheme.accent),
         );
     }
   }
@@ -242,7 +242,7 @@ class CollectionDropdown extends StatelessWidget {
           if (leading != null) ...[leading, const SizedBox(width: 10)],
           Expanded(child: Text(label)),
           if (selected)
-            const Icon(Icons.check, size: 18, color: LibraryTheme.accent),
+            Icon(Icons.check, size: 18, color: LibraryTheme.accent),
         ],
       ),
     );
@@ -297,7 +297,7 @@ class SortDropdown extends StatelessWidget {
                 children: [
                   Expanded(child: Text(_label(l10n, s))),
                   if (store.sort == s)
-                    const Icon(
+                    Icon(
                       Icons.check,
                       size: 18,
                       color: LibraryTheme.accent,
@@ -309,11 +309,11 @@ class SortDropdown extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.sort, size: 16, color: LibraryTheme.textSecondary),
+            Icon(Icons.sort, size: 16, color: LibraryTheme.textSecondary),
             const SizedBox(width: 8),
             Text(_label(l10n, store.sort), style: _pillText),
             const SizedBox(width: 6),
-            const Icon(
+            Icon(
               Icons.keyboard_arrow_down,
               size: 18,
               color: LibraryTheme.textSecondary,
@@ -325,7 +325,7 @@ class SortDropdown extends StatelessWidget {
   }
 }
 
-const _pillText = TextStyle(color: LibraryTheme.textPrimary, fontSize: 14);
+final _pillText = TextStyle(color: LibraryTheme.textPrimary, fontSize: 14);
 
 class _Pill extends StatelessWidget {
   const _Pill({required this.child});

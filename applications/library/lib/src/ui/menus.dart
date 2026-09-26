@@ -115,7 +115,7 @@ Future<GroupPick?> pickGroup(BuildContext context, List<AppGroup> groups) {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   l10n.noGroupsYet,
-                  style: const TextStyle(color: LibraryTheme.textSecondary),
+                  style: TextStyle(color: LibraryTheme.textSecondary),
                 ),
               )
             : ListView(
@@ -230,13 +230,13 @@ Future<void> showAppDetails(
           width: 92,
           child: Text(
             label,
-            style: const TextStyle(color: LibraryTheme.textSecondary),
+            style: TextStyle(color: LibraryTheme.textSecondary),
           ),
         ),
         Expanded(
           child: SelectableText(
             value,
-            style: const TextStyle(color: LibraryTheme.textPrimary),
+            style: TextStyle(color: LibraryTheme.textPrimary),
           ),
         ),
       ],

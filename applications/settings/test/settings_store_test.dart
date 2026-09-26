@@ -106,6 +106,19 @@ void main() {
     expect(ticks, 1);
   });
 
+  test('setText stores and notifies only on change', () {
+    final store = SettingsStore();
+    var ticks = 0;
+    store.addListener(() => ticks++);
+
+    expect(store.textOf(ItemId.themeMode), isNull);
+    store.setText(ItemId.themeMode, 'light');
+    expect(store.textOf(ItemId.themeMode), 'light');
+    expect(ticks, 1);
+    store.setText(ItemId.themeMode, 'light');
+    expect(ticks, 1);
+  });
+
   test('snapshot/restore roundtrips the section', () {
     final store = SettingsStore()
       ..selectSection(SectionId.sound)

@@ -5,7 +5,7 @@ import 'src/library_controller.dart';
 import 'src/platform/android_app_source.dart';
 import 'src/platform/prefs_persistence.dart';
 import 'src/ui/library_page.dart';
-import 'src/ui/theme.dart';
+import 'src/ui/theme.dart' show LibraryTheme, paletteFor;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,13 +27,23 @@ class LibraryApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: LibraryTheme.data(),
-      debugShowCheckedModeBanner: false,
-      home: LibraryPage(controller: controller),
+    // The OS theme lands in the store from the platform; rebuild on any
+    // store change and swap the palette up front so every LibraryTheme
+    // getter resolves against it.
+    return AnimatedBuilder(
+      animation: controller.store,
+      builder: (context, _) {
+        LibraryTheme.palette = paletteFor(controller.store.theme);
+        return MaterialApp(
+          onGenerateTitle: (context) =>
+              AppLocalizations.of(context).appTitle,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: LibraryTheme.data(),
+          debugShowCheckedModeBanner: false,
+          home: LibraryPage(controller: controller),
+        );
+      },
     );
   }
 }

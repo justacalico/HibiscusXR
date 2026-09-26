@@ -6,6 +6,8 @@ import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
 import 'package:pn2_settings/src/settings_controller.dart';
 import 'package:pn2_settings/src/settings_store.dart';
+import 'package:pn2_settings/src/theme_choice.dart';
+import 'package:pn2_settings/src/ui/theme.dart';
 
 Future<(SettingsController, FakeSettingsSource)> pumpApp(
   WidgetTester tester, {
@@ -192,6 +194,44 @@ void main() {
     await tester.pump();
     expect(find.text('Left controller'), findsNWidgets(2));
     expect(find.text('Right controller'), findsNWidgets(2));
+  });
+
+  testWidgets('theme picker forwards the choice and repaints', (
+    tester,
+  ) async {
+    addTearDown(() => PanelTheme.palette = kDarkPalette);
+    final (c, source) = await pumpApp(tester);
+    await tester.tap(find.text('Display'));
+    await tester.pump();
+
+    // dark is the default selection before the platform answers
+    final picker = find.byType(SegmentedButton<ThemeChoice>);
+    expect(
+      tester.widget<SegmentedButton<ThemeChoice>>(picker).selected,
+      {ThemeChoice.dark},
+    );
+
+    await tester.tap(find.text('OLED'));
+    await tester.pump();
+    expect(source.textsSet, [(ItemId.themeMode, 'oled')]);
+    expect(
+      tester.widget<SegmentedButton<ThemeChoice>>(picker).selected,
+      {ThemeChoice.oled},
+    );
+    // the whole app repainted onto the oled ramp
+    expect(PanelTheme.background, const Color(0xFF000000));
+
+    // a platform echo from another surface reselects the row
+    source.emit(
+      const SettingsSnapshot(texts: {ItemId.themeMode: 'light'}),
+    );
+    await tester.pump();
+    expect(c.store.textOf(ItemId.themeMode), 'light');
+    expect(
+      tester.widget<SegmentedButton<ThemeChoice>>(picker).selected,
+      {ThemeChoice.light},
+    );
+    expect(PanelTheme.background, kLightPalette.background);
   });
 
   testWidgets('info rows show platform text and empty fallback', (

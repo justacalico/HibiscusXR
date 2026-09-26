@@ -14,7 +14,11 @@ class AndroidAppSource implements AppSource {
   final MethodChannel _apps;
   final EventChannel _changes;
 
-  Stream<void>? _stream;
+  // One platform subscription; package broadcasts and theme pushes both
+  // land on it as maps, and each getter filters its own key out.
+  Stream<dynamic>? _events;
+  Stream<dynamic> get _eventFeed =>
+      _events ??= _changes.receiveBroadcastStream();
 
   @override
   Future<List<AppEntry>> listApps() async {
@@ -58,6 +62,16 @@ class AndroidAppSource implements AppSource {
       await _apps.invokeMethod<bool>(method, {'package': packageName}) ?? false;
 
   @override
-  Stream<void> get changes =>
-      _stream ??= _changes.receiveBroadcastStream().map((_) {});
+  Future<String> theme() async =>
+      await _apps.invokeMethod<String>('getTheme') ?? 'dark';
+
+  @override
+  Stream<void> get changes => _eventFeed
+      .where((e) => e is Map && e.containsKey('package'))
+      .map((_) {});
+
+  @override
+  Stream<String> get themes => _eventFeed
+      .where((e) => e is Map && e['theme'] is String)
+      .map((e) => (e as Map)['theme'] as String);
 }

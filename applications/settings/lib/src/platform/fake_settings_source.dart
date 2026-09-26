@@ -14,6 +14,7 @@ class FakeSettingsSource implements SettingsSource {
 
   final togglesRequested = <(ItemId, bool)>[];
   final slidersSet = <(ItemId, double)>[];
+  final textsSet = <(ItemId, String)>[];
   final actionsPerformed = <ItemId>[];
   var rebootsRequested = 0;
 
@@ -42,6 +43,11 @@ class FakeSettingsSource implements SettingsSource {
   @override
   Future<void> requestToggle(ItemId id, bool on) async {
     togglesRequested.add((id, on));
+  }
+
+  @override
+  Future<void> setText(ItemId id, String value) async {
+    textsSet.add((id, value));
   }
 
   @override

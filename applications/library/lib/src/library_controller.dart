@@ -30,6 +30,7 @@ class LibraryController extends ChangeNotifier {
   LoadState _state = LoadState.loading;
   Object? _error;
   StreamSubscription<void>? _sub;
+  StreamSubscription<String>? _themeSub;
   bool _restored = false;
   int _generation = 0;
 
@@ -54,9 +55,11 @@ class LibraryController extends ChangeNotifier {
         store.addListener(_persist);
       }
       store.setApps(await _source.listApps());
+      store.setTheme(await _source.theme());
       icons.invalidate();
       _generation++;
       _sub ??= _source.changes.listen((_) => refresh());
+      _themeSub ??= _source.themes.listen(store.setTheme);
       _state = LoadState.ready;
     } catch (e) {
       _error = e;
@@ -93,6 +96,7 @@ class LibraryController extends ChangeNotifier {
   @override
   void dispose() {
     _sub?.cancel();
+    _themeSub?.cancel();
     store.removeListener(_persist);
     super.dispose();
   }

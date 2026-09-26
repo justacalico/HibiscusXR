@@ -94,7 +94,7 @@ class _LibraryPageState extends State<LibraryPage> {
       case LoadState.loading:
         return _Centered(
           children: [
-            const SizedBox(
+            SizedBox(
               width: 28,
               height: 28,
               child: CircularProgressIndicator(
@@ -109,7 +109,7 @@ class _LibraryPageState extends State<LibraryPage> {
       case LoadState.failed:
         return _Centered(
           children: [
-            const Icon(
+            Icon(
               Icons.cloud_off,
               size: 42,
               color: LibraryTheme.textSecondary,
@@ -125,7 +125,7 @@ class _LibraryPageState extends State<LibraryPage> {
         if (apps.isEmpty) {
           return _Centered(
             children: [
-              const Icon(
+              Icon(
                 Icons.apps_outage,
                 size: 42,
                 color: LibraryTheme.textSecondary,
@@ -155,7 +155,7 @@ class _LibraryPageState extends State<LibraryPage> {
     return l10n.emptyLibrary;
   }
 
-  static const _muted = TextStyle(
+  static final _muted = TextStyle(
     color: LibraryTheme.textSecondary,
     fontSize: 14,
   );

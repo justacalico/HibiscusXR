@@ -73,6 +73,22 @@ void main() {
     expect(source.slidersSet, [(ItemId.brightness, 0.8)]);
   });
 
+  test('setText is optimistic then forwards, and dedupes', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(source, MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+
+    await c.setText(ItemId.themeMode, 'oled');
+    expect(c.store.textOf(ItemId.themeMode), 'oled');
+    expect(source.textsSet, [(ItemId.themeMode, 'oled')]);
+
+    // re-picking the active value reaches neither the store nor the wire
+    await c.setText(ItemId.themeMode, 'oled');
+    expect(source.textsSet, hasLength(1));
+  });
+
   test('selectSection persists', () async {
     final source = FakeSettingsSource();
     addTearDown(source.dispose);

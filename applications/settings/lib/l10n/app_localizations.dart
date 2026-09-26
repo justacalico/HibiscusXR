@@ -280,6 +280,36 @@ abstract class AppLocalizations {
   /// **'Adjust the screen brightness'**
   String get itemBrightnessDesc;
 
+  /// No description provided for @itemTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get itemTheme;
+
+  /// No description provided for @itemThemeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Colors for the panels and the headset HUD'**
+  String get itemThemeDesc;
+
+  /// No description provided for @themeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// No description provided for @themeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// No description provided for @themeOled.
+  ///
+  /// In en, this message translates to:
+  /// **'OLED'**
+  String get themeOled;
+
   /// No description provided for @itemIpd.
   ///
   /// In en, this message translates to:

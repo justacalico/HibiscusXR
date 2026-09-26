@@ -8,6 +8,7 @@ import 'src/platform/android_settings_source.dart';
 import 'src/platform/fake_settings_source.dart';
 import 'src/platform/prefs_persistence.dart';
 import 'src/settings_controller.dart';
+import 'src/theme_choice.dart';
 import 'src/ui/settings_page.dart';
 import 'src/ui/theme.dart';
 
@@ -51,13 +52,28 @@ class SettingsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: PanelTheme.data(),
-      debugShowCheckedModeBanner: false,
-      home: SettingsPage(controller: controller, uiOnlyMode: uiOnlyMode),
+    // The theme picker lands in the store as a plain text row; rebuild
+    // the whole app on any store change and swap the palette up front
+    // so every PanelTheme getter resolves against it.
+    return AnimatedBuilder(
+      animation: controller.store,
+      builder: (context, _) {
+        PanelTheme.palette = paletteFor(
+          themeChoiceFromName(controller.store.textOf(ItemId.themeMode)),
+        );
+        return MaterialApp(
+          onGenerateTitle: (context) =>
+              AppLocalizations.of(context).appTitle,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          theme: PanelTheme.data(),
+          debugShowCheckedModeBanner: false,
+          home: SettingsPage(
+            controller: controller,
+            uiOnlyMode: uiOnlyMode,
+          ),
+        );
+      },
     );
   }
 }

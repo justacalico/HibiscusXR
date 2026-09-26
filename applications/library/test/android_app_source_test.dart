@@ -37,6 +37,8 @@ void main() {
           ];
         case 'getIcon':
           return Uint8List.fromList(const [1, 2, 3]);
+        case 'getTheme':
+          return 'oled';
         case 'launch':
         case 'uninstall':
         case 'openAppInfo':
@@ -88,6 +90,25 @@ void main() {
   test('getIcon returns bytes', () async {
     final src = AndroidAppSource();
     expect(await src.icon('com.a'), [1, 2, 3]);
+  });
+
+  test('getTheme returns the platform value', () async {
+    final src = AndroidAppSource();
+    expect(await src.theme(), 'oled');
+    expect(calls.last.method, 'getTheme');
+  });
+
+  test('themes stream shares the event channel subscription', () async {
+    var listened = false;
+    messenger.setMockMethodCallHandler(changesChannel, (call) async {
+      if (call.method == 'listen') listened = true;
+      return null;
+    });
+    final src = AndroidAppSource();
+    final sub = src.themes.listen((_) {});
+    addTearDown(sub.cancel);
+    await Future<void>.delayed(Duration.zero);
+    expect(listened, isTrue);
   });
 
   test('changes stream subscribes the event channel', () async {

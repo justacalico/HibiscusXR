@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'models.dart';
 import 'persistence.dart';
 import 'text_norm.dart';
+import 'theme_choice.dart';
 
 /// How the grid arranges apps. [custom] is the user-arranged order: the
 /// manual order list for flat views, member order inside a group.
@@ -60,6 +61,7 @@ class LibraryStore extends ChangeNotifier {
   String _query = '';
   LibrarySort _sort = LibrarySort.nameAsc;
   LibraryFilter _filter = const FilterAll();
+  ThemeChoice _theme = ThemeChoice.dark;
 
   List<AppEntry> get apps => _apps;
   List<AppGroup> get groups => List.unmodifiable(_groups);
@@ -67,6 +69,16 @@ class LibraryStore extends ChangeNotifier {
   String get query => _query;
   LibrarySort get sort => _sort;
   LibraryFilter get filter => _filter;
+
+  /// The OS theme as last reported, dark until the platform answer lands.
+  ThemeChoice get theme => _theme;
+
+  void setTheme(String name) {
+    final t = themeChoiceFromName(name);
+    if (_theme == t) return;
+    _theme = t;
+    notifyListeners();
+  }
 
   bool isPinned(String packageName) => _pinned.contains(packageName);
 

@@ -50,11 +50,11 @@ class ScanCard extends StatelessWidget {
                       width: 26,
                       height: 26,
                       child: scanning
-                          ? const CircularProgressIndicator(
+                          ? CircularProgressIndicator(
                               strokeWidth: 2.4,
                               color: PanelTheme.accent,
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.bluetooth_searching,
                               size: 24,
                               color: PanelTheme.accent,
@@ -67,7 +67,7 @@ class ScanCard extends StatelessWidget {
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 17,
                               color: PanelTheme.textPrimary,
                             ),
@@ -142,7 +142,7 @@ class _SlotChip extends StatelessWidget {
             child: Text(
               slot.name,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 color: PanelTheme.textSecondary,
               ),
@@ -152,7 +152,7 @@ class _SlotChip extends StatelessWidget {
           Text(
             slot.state,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
               color: PanelTheme.textPrimary,

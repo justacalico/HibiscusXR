@@ -101,7 +101,7 @@ class _SettingTileState extends State<SettingTile> {
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: PanelTheme.textPrimary,
@@ -111,7 +111,7 @@ class _SettingTileState extends State<SettingTile> {
           subtitleText(subtitle, l10n),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
+          style: TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
         ),
       ],
     );
@@ -129,7 +129,7 @@ class _SettingTileState extends State<SettingTile> {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
+          style: TextStyle(fontSize: 12, color: PanelTheme.textSecondary),
         ),
       ],
     );

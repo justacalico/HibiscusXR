@@ -1,0 +1,29 @@
+#!/system/bin/sh
+# Bridge the theme setting to the persist.hibiscus.theme system property.
+#
+# The settings app writes hibiscus_theme ("dark", "light" or "oled") into
+# Settings.Global. Apps cannot setprop, and the native chrome (vrhome env
+# + HUD) cannot reach the settings provider - so a root daemon is the
+# narrow piece that crosses, same shape as pn2-ipdd. The settings table
+# is polled rather than pushed: `settings get` would spawn a JVM per poll.
+#
+# Missing or unrecognized means dark: the prop feeds the surfaces the
+# user looks at every frame, so an unexpected value must fail safe.
+
+DB=/data/system/users/0/settings_global.xml
+PROP=persist.hibiscus.theme
+
+cur="__boot__"
+while true; do
+    t=$(grep 'name="hibiscus_theme"' "$DB" 2>/dev/null \
+        | sed -n 's/.*value="\([^"]*\)".*/\1/p' | head -1)
+    case "$t" in
+        dark|light|oled) want=$t ;;
+        *)               want=dark ;;
+    esac
+    if [ "$want" != "$cur" ]; then
+        setprop "$PROP" "$want"
+        cur="$want"
+    fi
+    sleep 0.5
+done

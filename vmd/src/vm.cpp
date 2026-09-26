@@ -92,7 +92,8 @@ qmp_open(const std::string &path)
 	}
 	char buf[4096];
 	read(fd, buf, sizeof(buf)); // greeting
-	write(fd, "{\"execute\":\"qmp_capabilities\"}\n", 29);
+	const char *caps = "{\"execute\":\"qmp_capabilities\"}\n";
+	write(fd, caps, strlen(caps));
 	read(fd, buf, sizeof(buf)); // ack
 	return fd;
 }
@@ -124,6 +125,10 @@ vmd_vm_poll(vmd_vm *vm)
 	while (!vm->poll_stop.load()) {
 		int fd = qmp_open(vm->qmp);
 		if (fd < 0) {
+			static int conn_err = 0;
+			if ((conn_err++ % 10) == 0)
+				fprintf(stderr, "vmd: qmp connect %s: %s\n", vm->qmp.c_str(),
+				        strerror(errno));
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
@@ -132,6 +137,11 @@ vmd_vm_poll(vmd_vm *vm)
 		std::string rep = qmp_cmd(fd, cmd);
 		close(fd);
 		if (rep.find("error") != std::string::npos) {
+			static bool logged_err = false;
+			if (!logged_err) {
+				logged_err = true;
+				fprintf(stderr, "vmd: screendump error: %.160s\n", rep.c_str());
+			}
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 			continue;
 		}
@@ -139,6 +149,9 @@ vmd_vm_poll(vmd_vm *vm)
 		std::vector<uint8_t> rgb;
 		if (read_ppm(vm->ppm, &w, &h, &rgb) && w > 0 && h > 0) {
 			std::lock_guard<std::mutex> g(vm->fb_lock);
+			if (vm->fb.empty()) {
+				fprintf(stderr, "vmd: first guest framebuffer %dx%d\n", w, h);
+			}
 			vm->fb_w = w;
 			vm->fb_h = h;
 			vm->fb.swap(rgb);
@@ -148,60 +161,73 @@ vmd_vm_poll(vmd_vm *vm)
 }
 
 vmd_vm *
-vmd_vm_start(const std::string &imgdir, const std::string &kernel,
-             const std::string &dtb, const std::string &cmdline)
+vmd_vm_start(const vmd_vm_opts &opts)
 {
 	vmd_vm *vm = new vmd_vm();
 	vm->qmp = "/tmp/vmd-qmp-" + std::to_string(getpid()) + ".sock";
 	vm->ppm = "/tmp/vmd-fb-" + std::to_string(getpid()) + ".ppm";
 	unlink(vm->qmp.c_str());
 
-	std::string system_img = imgdir + "/system-hibiscus-full.img";
-	if (!file_exists(system_img)) {
-		system_img = imgdir + "/system-pn2-full.img";
+	// -img selects a guest disk set; with a bare -kernel the image is
+	// optional (kernel bring-up testing, arch-agnostic qemu testing)
+	std::string system_img;
+	for (const char *n : {"system-hibiscus-full.img", "system-pn2-full.img",
+	                      "system.img", "rootfs.img"}) {
+		if (file_exists(opts.imgdir + "/" + n)) {
+			system_img = opts.imgdir + "/" + n;
+			break;
+		}
 	}
-	if (!file_exists(system_img)) {
-		fprintf(stderr, "vmd: no system image under %s\n", imgdir.c_str());
+	if (system_img.empty() && opts.kernel.empty()) {
+		fprintf(stderr, "vmd: no system image under %s and no -kernel\n",
+		        opts.imgdir.c_str());
 		delete vm;
 		return nullptr;
 	}
 
+	// virt exposes virtio-mmio transports (-device), pc needs the pci
+	// variants (-pci); the guest side is identical either way
+	std::string t = opts.machine == "virt" ? "-device" : "-pci";
 	std::vector<std::string> args = {
-	    "qemu-system-aarch64", "-M",    "virt", "-cpu", "max", "-smp", "4",
+	    opts.qemu, "-M", opts.machine, "-cpu", "max", "-smp", "4",
 	    "-m", "4096",
-	    "-drive", "file=" + system_img + ",format=raw,if=none,id=system",
-	    "-device", "virtio-blk-device,drive=system",
 	    "-netdev", "user,id=n0",
-	    "-device", "virtio-net-device,netdev=n0",
-	    "-device", "virtio-gpu-device",
+	    "-device", "virtio-net" + t + ",netdev=n0",
+	    "-device", "virtio-gpu" + t,
 	    "-display", "none",
 	    "-qmp", "unix:" + vm->qmp + ",server=on,wait=off",
 	    "-serial", "null",
 	};
-	std::string vendor_img = imgdir + "/vendor.img";
+	if (!system_img.empty()) {
+		args.push_back("-drive");
+		args.push_back("file=" + system_img + ",format=raw,if=none,id=system");
+		args.push_back("-device");
+		args.push_back("virtio-blk" + t + ",drive=system");
+	}
+	std::string vendor_img = opts.imgdir + "/vendor.img";
 	if (file_exists(vendor_img)) {
 		args.push_back("-drive");
 		args.push_back("file=" + vendor_img + ",format=raw,if=none,id=vendor");
 		args.push_back("-device");
-		args.push_back("virtio-blk-device,drive=vendor");
+		args.push_back("virtio-blk" + t + ",drive=vendor");
 	}
-	if (!kernel.empty()) {
+	if (!opts.kernel.empty()) {
 		args.push_back("-kernel");
-		args.push_back(kernel);
+		args.push_back(opts.kernel);
 	} else {
-		std::string boot = imgdir + "/boot.img";
+		std::string boot = opts.imgdir + "/boot.img";
 		if (file_exists(boot)) {
 			args.push_back("-kernel");
 			args.push_back(boot);
 		}
 	}
-	if (!dtb.empty()) {
+	if (!opts.dtb.empty()) {
 		args.push_back("-dtb");
-		args.push_back(dtb);
+		args.push_back(opts.dtb);
 	}
-	if (!cmdline.empty()) {
+	if (!opts.cmdline.empty()) {
 		args.push_back("-append");
-		args.push_back(cmdline);
+		args.push_back(opts.cmdline);
 	}
 
 	std::vector<char *> argv;
@@ -214,7 +240,9 @@ vmd_vm_start(const std::string &imgdir, const std::string &kernel,
 	if (pid == 0) {
 		int devnull = open("/dev/null", O_WRONLY);
 		dup2(devnull, STDOUT_FILENO);
-		dup2(devnull, STDERR_FILENO);
+		int logfd = open("/tmp/vmd-qemu.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		dup2(logfd >= 0 ? logfd : devnull, STDERR_FILENO);
+		close(0);
 		execvp(argv[0], argv.data());
 		_exit(127);
 	}

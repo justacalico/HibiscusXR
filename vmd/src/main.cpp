@@ -83,11 +83,13 @@ int
 main(int argc, char **argv)
 {
 	enum { SIM, XR, SELFTEST } mode = SIM;
-	std::string imgdir, kernel, dtb, cmdline;
+	vmd_vm_opts opts;
 	bool novm = false;
 
 	const char *env_root = getenv("PN2_ROOT");
-	imgdir = env_root ? std::string(env_root) + "/out" : "out";
+	opts.imgdir = env_root ? std::string(env_root) + "/out" : "out";
+	if (getenv("VMD_QEMU") != nullptr)
+		opts.qemu = getenv("VMD_QEMU");
 
 	for (int i = 1; i < argc; i++) {
 		std::string a = argv[i];
@@ -95,13 +97,16 @@ main(int argc, char **argv)
 		else if (a == "-desktopsim" || a == "-novr" || a == "-pc") mode = SIM;
 		else if (a == "-selftest") mode = SELFTEST;
 		else if (a == "-novm") novm = true;
-		else if (a == "-img" && i + 1 < argc) imgdir = argv[++i];
-		else if (a == "-kernel" && i + 1 < argc) kernel = argv[++i];
-		else if (a == "-dtb" && i + 1 < argc) dtb = argv[++i];
-		else if (a == "-append" && i + 1 < argc) cmdline = argv[++i];
+		else if (a == "-img" && i + 1 < argc) opts.imgdir = argv[++i];
+		else if (a == "-kernel" && i + 1 < argc) opts.kernel = argv[++i];
+		else if (a == "-dtb" && i + 1 < argc) opts.dtb = argv[++i];
+		else if (a == "-append" && i + 1 < argc) opts.cmdline = argv[++i];
+		else if (a == "-qemu" && i + 1 < argc) opts.qemu = argv[++i];
+		else if (a == "-machine" && i + 1 < argc) opts.machine = argv[++i];
 		else {
 			fprintf(stderr, "usage: vmd [-openxr|-desktopsim|-novr|-pc|-selftest] "
-			        "[-img dir] [-novm] [-kernel k] [-dtb d] [-append c]\n");
+			        "[-img dir] [-novm] [-qemu bin] [-machine m] "
+			        "[-kernel k] [-dtb d] [-append c]\n");
 			return a == "-h" || a == "--help" ? 0 : 2;
 		}
 	}
@@ -112,10 +117,11 @@ main(int argc, char **argv)
 	}
 
 	signal(SIGINT, on_sigint);
+	signal(SIGTERM, on_sigint);
 
 	vmd_vm *vm = nullptr;
 	if (!novm) {
-		vm = vmd_vm_start(imgdir, kernel, dtb, cmdline);
+		vm = vmd_vm_start(opts);
 		if (vm == nullptr) {
 			fprintf(stderr, "vmd: no VM - pose channel + sim still up\n");
 		}

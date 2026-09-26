@@ -67,6 +67,8 @@ current_fbconfig(Display *dpy, GLXContext ctx)
 int
 vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 {
+	// the GL binding talks GLX: force X11 even on a wayland desktop
+	glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
 	if (!glfwInit()) {
 		fprintf(stderr, "vmd xr: glfwInit failed\n");
 		return 1;
@@ -98,10 +100,12 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 		return 1;
 	}
 
+	fprintf(stderr, "vmd xr: instance up, finding HMD system\n");
 	XrSystemGetInfo sgi = {XR_TYPE_SYSTEM_GET_INFO};
 	sgi.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
 	XrSystemId sysid;
 	if (!xr_ok(xrGetSystem(inst, &sgi, &sysid), "xrGetSystem")) {
+		fprintf(stderr, "vmd xr: no HMD system - connect a headset and retry\n");
 		xrDestroyInstance(inst);
 		return 1;
 	}
@@ -116,6 +120,10 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 
 	Display *dpy = glfwGetX11Display();
 	GLXContext glxctx = glfwGetGLXContext(win);
+	if (dpy == nullptr || glxctx == nullptr) {
+		fprintf(stderr, "vmd xr: no GLX context (wayland-only glfw?)\n");
+		return 1;
+	}
 	XrGraphicsBindingOpenGLXlibKHR binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 	binding.xDisplay = dpy;
 	binding.glxContext = glxctx;
@@ -131,6 +139,7 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	sci.systemId = sysid;
 	sci.next = &binding;
 	XrSession sess;
+	fprintf(stderr, "vmd xr: creating session (GLX binding)\n");
 	if (!xr_ok(xrCreateSession(inst, &sci, &sess), "xrCreateSession")) {
 		xrDestroyInstance(inst);
 		return 1;
@@ -141,6 +150,7 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	rci.poseInReferenceSpace.orientation.w = 1.0f;
 	XrSpace space;
 	xrCreateReferenceSpace(sess, &rci, &space);
+	fprintf(stderr, "vmd xr: session up, waiting for READY\n");
 
 	uint32_t nviews = 0;
 	XrViewConfigurationType vcfg = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
@@ -211,6 +221,9 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 			ev = {XR_TYPE_EVENT_DATA_BUFFER};
 		}
 		if (!running) {
+			static int dots = 0;
+			if ((++dots % 40) == 0)
+				fprintf(stderr, "vmd xr: waiting for session state\n");
 			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			continue;
 		}

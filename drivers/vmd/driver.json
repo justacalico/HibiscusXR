@@ -1,0 +1,15 @@
+{
+  "name": "vmd",
+  "label": "VMD virtual headset (qemu on a Linux host)",
+  "detect": {
+    "channel": "tcp:10.0.2.2:7781"
+  },
+  "monado": "vmd",
+  "image": {
+    "inputs": [],
+    "steps": {
+      "stage": [],
+      "inject": []
+    }
+  }
+}

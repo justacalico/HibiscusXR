@@ -1,0 +1,50 @@
+{
+  "name": "pn2",
+  "label": "Pico Neo 2 (PICOA7B10, sdm845)",
+  "detect": {
+    "sysprops": {
+      "ro.product.device": "PICOA7B10",
+      "ro.product.model": "Pico Neo 2",
+      "ro.product.name": "A7B10"
+    }
+  },
+  "monado": "pn2",
+  "image": {
+    "inputs": ["STACK", "APPS", "APPLIBS", "OEM", "LOADINGRES", "BLOBS", "SEETHROUGH"],
+    "steps": {
+      "stage": [
+        {
+          "run": "tools/build/144_stage_full.sh",
+          "log": "144_stage.txt",
+          "marker": "DONE"
+        }
+      ],
+      "inject": [
+        {
+          "run": "tools/build/300_img_dsp.sh",
+          "log": "300_img_dsp.txt",
+          "marker": "DSP STACK ADDED OK"
+        },
+        {
+          "run": "tools/build/301_mdsp_img.sh",
+          "log": "301_mdsp_img.txt"
+        },
+        {
+          "run": "tools/build/352_img_qvrclient.sh",
+          "log": "352_img_qvrclient.txt",
+          "marker": "QVR CLIENT ADDED OK"
+        },
+        {
+          "run": "tools/build/373_img_fan.sh",
+          "log": "373_img_fan.txt",
+          "marker": "FAN DAEMON ADDED OK"
+        },
+        {
+          "run": "tools/build/406_img_glespatch.sh",
+          "log": "406_glespatch.txt",
+          "marker": "GLES ROBUST PATCH OK"
+        }
+      ]
+    }
+  }
+}

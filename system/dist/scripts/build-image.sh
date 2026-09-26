@@ -53,11 +53,28 @@ ran 410_strip.txt "STRIP OK"
 step "LoadingRes stub image"
 "$SELF/scripts/make-loadingres-img.sh"
 
-step "stage Pico stack (144)"
-bash "$T/144_stage_full.sh" || true
-ran 144_stage.txt "DONE"
-[ -d "$R/fullstage/media/LoadingRes" ] || fail "LoadingRes not staged"
-echo "  staged: $(find "$R/fullstage" -type f | wc -l) files, $(du -sh "$R/fullstage" | cut -f1)"
+# device payloads come from the driver provider - each
+# drivers/<name>/driver.json lists its own steps, the pipeline only runs
+# them in order and checks their markers
+PROV="$SELF/../../tools/provider.py"
+run_phase() { # run_phase <stage|inject>; leaves the count in PHASE_RAN
+  local phase="$1" run log marker
+  PHASE_RAN=0
+  while IFS=$'\t' read -r run log marker; do
+    [ -n "$run" ] || continue
+    PHASE_RAN=$((PHASE_RAN + 1))
+    step "driver $phase: $(basename "$run")"
+    bash "$run" || true
+    [ -n "$marker" ] && ran "$log" "$marker"
+  done < <(python3 "$PROV" steps "$phase")
+}
+
+step "drivers: stage payloads"
+run_phase stage
+if [ "$PHASE_RAN" -gt 0 ]; then
+  [ -d "$R/fullstage/media/LoadingRes" ] || fail "LoadingRes not staged"
+  echo "  staged: $(find "$R/fullstage" -type f | wc -l) files, $(du -sh "$R/fullstage" | cut -f1)"
+fi
 
 step "grow + inject stack (145)"
 bash "$T/145_build_full.sh" || true
@@ -73,24 +90,8 @@ step "overlay fixes + patched libs + apps (267)"
 bash "$T/267_build_full.sh" || true
 ran 267_build.txt "BUILD OK"
 
-step "DSP stack (300)"
-bash "$T/300_img_dsp.sh" || true
-ran 300_img_dsp.txt "DSP STACK ADDED OK"
-
-step "mdsprpc (301)"
-bash "$T/301_mdsp_img.sh"
-
-step "QVR clients (352)"
-bash "$T/352_img_qvrclient.sh" || true
-ran 352_img_qvrclient.txt "QVR CLIENT ADDED OK"
-
-step "fan daemon (373)"
-bash "$T/373_img_fan.sh" || true
-ran 373_img_fan.txt "FAN DAEMON ADDED OK"
-
-step "GLES robust-context patch (406)"
-bash "$T/406_img_glespatch.sh" || true
-ran 406_glespatch.txt "GLES ROBUST PATCH OK"
+step "drivers: inject payloads"
+run_phase inject
 
 step "verify (268)"
 bash "$T/268_verify_img.sh" || true

@@ -4,6 +4,7 @@ int gChecks = 0, gFails = 0;
 
 void testMat4();
 void testHead();
+void testPoseFilt();
 void testLayout();
 void testText();
 void testSceneGeo();
@@ -21,6 +22,7 @@ void testPaletteThemes();
 int main() {
     testMat4();
     testHead();
+    testPoseFilt();
     testLayout();
     testText();
     testSceneGeo();

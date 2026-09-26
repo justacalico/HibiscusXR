@@ -1,9 +1,12 @@
 #include "sensor.h"
 
 #include "../engine.h"
+#include "../common/props.h"
 #include "../math/head.h"
 
 #include <cmath>
+#include <cstring>
+#include <ctime>
 
 void drainSensor(Engine* e) {
     if (!e->sensorQueue) return;
@@ -30,4 +33,23 @@ void drainSensor(Engine* e) {
             }
         }
     }
+}
+
+void smoothPose(Engine* e, bool useSensor) {
+    if (!useSensor || !propI("debug.vrhome.posefilt", 1)) {
+        poseFiltReset(&e->viewPose);
+        e->viewPoseMs = 0;
+        return;
+    }
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    const long long now = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    const float dt = e->viewPoseMs ? (float)(now - e->viewPoseMs) / 1000.0f
+                                   : 0.0f;
+    e->viewPoseMs = now;
+    poseFiltTick(&e->viewPose, e->quat,
+                 e->headPosValid ? e->headPos : nullptr, dt);
+    memcpy(e->quat, e->viewPose.quat, sizeof(e->quat));
+    if (e->headPosValid)
+        memcpy(e->headPos, e->viewPose.pos, sizeof(e->headPos));
 }

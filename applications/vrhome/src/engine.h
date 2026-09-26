@@ -6,6 +6,7 @@
 #include <android/sensor.h>
 
 #include "text/font.h"
+#include "math/head.h"
 
 struct Eye { GLuint fbo = 0, tex = 0, depth = 0; int w = 0, h = 0; };
 
@@ -52,6 +53,12 @@ struct Engine {
     bool quatFromQvr = false;   // rot-vec dead: e->quat carries the QVR quat
     int  qvrState = -1;         // raw service state: 3 tracked, other degraded, -1 gone
     void* qvrClient = nullptr;
+
+    // view-pose filter: smoothPose ticks this once a frame and rewrites
+    // quat/headPos with the smoothed pose, so the whole view chain renders
+    // it. viewPoseMs is the CLOCK_MONOTONIC ms of the last tick
+    PoseFilt viewPose;
+    long long viewPoseMs = 0;
 
     bool covered = false;        // a fullscreen app owns the physical display
     float gazeYaw = 0.0f;        // world yaw the user currently faces

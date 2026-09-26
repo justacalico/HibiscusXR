@@ -78,6 +78,30 @@ bool recenterAngles(const Mat4& head, float* yaw, float* pitch);
 // yaw/pitch/roll in degrees for the HUD
 void quatToYpr(const float q[4], float* yaw, float* pitch, float* roll);
 
+// angle in radians between two unit quats (xyzw), sign-agnostic
+float quatAngle(const float a[4], const float b[4]);
+
+// filtered view pose. The raw sensor quat is noisy enough that a perfectly
+// still head still renders a shaking world; poseFiltTick eases this pose
+// toward the raw sample each frame
+struct PoseFilt {
+    float quat[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+    float pos[3] = {0.0f, 0.0f, 0.0f};
+    bool init = false;  // false snaps the next tick instead of easing in
+};
+
+// drop the filter back to uninitialized: tracking lost, sensor off, or a
+// source switch - the next tick must snap, not ease in from a stale pose
+void poseFiltReset(PoseFilt* f);
+
+// one frame of filtering. dtSec is the time since the last tick; <=0 or a
+// gap over a quarter second snaps rather than easing. pos may be NULL on
+// 3DoF - the stored position is left alone then. The gain ramps on the
+// lead between raw and filtered pose (kFiltStill*/kFiltMove* in config.h)
+// so stillness gets heavy smoothing while a real turn keeps up
+void poseFiltTick(PoseFilt* f, const float quat[4], const float pos[3],
+                  float dtSec);
+
 // world position as direction arrows for the HUD debug line, e.g.
 // " →0.42 ↑0.10 ↗0.05": x is →/←, y is ↑/↓, z is ↗ fwd(-z)/↙ back(+z);
 // '·' under 5mm so the arrows don't flicker at rest

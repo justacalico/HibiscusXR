@@ -12,7 +12,6 @@
  * @ingroup drv_pn2
  */
 
-#include "pn2_interface.h"
 #include "pn2_ctrl.h"
 
 #include "ctrl_state.h"

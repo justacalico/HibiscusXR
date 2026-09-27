@@ -1,0 +1,26 @@
+# Force adb into the USB composition.
+#
+# persist.sys.usb.config=adb,mtp in prop.default is only a default - whatever
+# stock firmware or an earlier boot left persisted under /data/property wins,
+# which is how a reflashed system can still enumerate MTP-only with adbd
+# never started. Take the config back on every non-adb composition and
+# persist it once boot completes so /data agrees on the next boot too.
+#
+# The composition string has to match the trigger strings in init.usb.rc /
+# init.usb.configfs.rc exactly - on this device adb goes last ("mtp,adb",
+# "ptp,adb"), "adb,mtp" matches nothing and silently does nothing.
+
+on property:sys.usb.config=mtp
+    setprop sys.usb.config mtp,adb
+
+on property:sys.usb.config=ptp
+    setprop sys.usb.config mtp,adb
+
+on property:sys.usb.config=charging
+    setprop sys.usb.config mtp,adb
+
+on property:sys.usb.config=none
+    setprop sys.usb.config mtp,adb
+
+on property:sys.boot_completed=1
+    setprop persist.sys.usb.config mtp,adb

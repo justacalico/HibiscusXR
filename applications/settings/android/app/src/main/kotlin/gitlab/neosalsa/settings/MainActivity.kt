@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.IntentFilter
 import android.database.ContentObserver
@@ -441,9 +442,9 @@ class MainActivity : FlutterActivity() {
                 try {
                     wifiManager()?.isWifiEnabled = on
                 } catch (_: SecurityException) {
-                    startActivity(
-                        Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY),
-                    )
+                    // the connectivity panel lives in SystemUI, which the
+                    // image no longer carries - dead intent, not a crash
+                    safeLaunch(Intent(Settings.Panel.ACTION_INTERNET_CONNECTIVITY))
                 }
             }
             "bluetoothToggle" -> {
@@ -452,7 +453,7 @@ class MainActivity : FlutterActivity() {
                 try {
                     if (on) adapter?.enable() else adapter?.disable()
                 } catch (_: SecurityException) {
-                    startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                    safeLaunch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
                 }
             }
             "micMute" -> audio().isMicrophoneMute = !on
@@ -509,18 +510,26 @@ class MainActivity : FlutterActivity() {
         } catch (_: SecurityException) {}
     }
 
+    private fun safeLaunch(intent: Intent) {
+        try {
+            startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            android.util.Log.w(TAG, "no handler for ${intent.action}")
+        }
+    }
+
     private fun performAction(id: String) {
         when (id) {
             "wifiSettings" ->
-                startActivity(Intent(Settings.ACTION_WIFI_SETTINGS))
+                safeLaunch(Intent(Settings.ACTION_WIFI_SETTINGS))
             "bluetoothSettings" ->
-                startActivity(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
+                safeLaunch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
             "languagePicker" ->
-                startActivity(Intent(Settings.ACTION_LOCALE_SETTINGS))
+                safeLaunch(Intent(Settings.ACTION_LOCALE_SETTINGS))
             "timeZone" ->
-                startActivity(Intent(Settings.ACTION_DATE_SETTINGS))
+                safeLaunch(Intent(Settings.ACTION_DATE_SETTINGS))
             "keyboardPicker" ->
-                startActivity(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
+                safeLaunch(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
             "controllerPair" -> {
                 val c = controllers
                 if (c == null) {

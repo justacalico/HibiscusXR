@@ -60,7 +60,7 @@ echo
 echo "=== OpenXR chain ==="
 # the whole path wivrn/hello_xr takes: manifest -> staged runtime -> turnip.
 # presence-only checks for the apk (re-signed); content checks for the rest
-XR=${PN2_ROOT}/pn2xr
+XR=${PN2_ROOT}/hsvr
 check /etc/openxr/1/active_runtime.json            "$XR/android/active_runtime.json"
 check /product/etc/openxr/1/active_runtime.json    "$XR/android/active_runtime.json"
 check /etc/init/pn2-openxr.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-openxr.rc

@@ -82,7 +82,14 @@ cp "$SRC/notes/libart-patched.so" "$B/notes/"
 cp "$SRC/notes/vrshell_lib/libPvr_UnitySDK.patched2.so" "$B/notes/vrshell_lib/"
 cp "$SRC/build/keys/platform.pk8" "$SRC/build/keys/platform.x509.pem" "$B/build/keys/"
 for l in libgui libui libutils libcamera_client libtinyxml2 libGLESv2_adreno; do
-  cp "$SRC/notes/qlibs/$l.so" "$B/linklibs/"
+  cp "$SRC/notes/qlibs/$l.so" "$B/linklibs/" 2>/dev/null || true
+  # libGLESv2_adreno has been missing from notes/qlibs before - it always
+  # lives in the vendor image, so pull it from there as a fallback
+  if [ ! -f "$B/linklibs/$l.so" ]; then
+    debugfs -R "dump /lib64/egl/$l.so $B/linklibs/$l.so" \
+        "$SRC/images/vendor.img" >/dev/null 2>&1 || true
+  fi
+  [ -f "$B/linklibs/$l.so" ] || { echo "missing link lib $l.so (qlibs + vendor.img both empty)"; exit 1; }
 done
 find "$B" -name .git -prune -exec rm -rf {} + 2>/dev/null || true
 find "$B" -name .gitignore -delete 2>/dev/null || true

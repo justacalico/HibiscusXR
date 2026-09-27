@@ -13,7 +13,6 @@
  * @ingroup drv_pn2
  */
 
-#include "pn2_interface.h"
 #include "pn2_hmd.h"
 #include "pn2_qvr.h"
 

@@ -13,6 +13,32 @@ mkdir -p "$N" "$R/out"
 
 step() { echo; echo "######## $* ########"; }
 fail() { echo "FAILED: $*" >&2; exit 1; }
+
+# Every input the chain below reads, in one shot - the steps fail one at a
+# time otherwise, which costs a rebuild cycle per missing dir.
+step "preflight: required inputs"
+miss=0
+need() { [ -e "$R/$1" ] || { echo "  MISSING $1"; miss=$((miss+1)); }; }
+for p in \
+  tools overlay shim hsvr drivers vrhome library quick-panel settings \
+  gsi .stub/media/LoadingRes \
+  pvr_stack pvr_apps_final pvr_applibs oem_final \
+  overlay_pvr airsvc rfsa qvr cdsp fan seethrough linklibs build \
+  overlay/lib64 \
+  notes/libart-patched.so \
+  notes/vrshell_lib/libPvr_UnitySDK.patched2.so; do
+  need "$p"
+done
+[ -f "$R/gsi/gsi_raw.img" ] || \
+  [ -f "$R/gsi/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img.xz" ] || \
+  { echo "  MISSING gsi (no gsi_raw.img, no xz to make it)"; miss=$((miss+1)); }
+# the stock gles blob: qlibs/linklibs copy, or a device on adb to pull from
+[ -f "$R/linklibs/libGLESv2_adreno.so" ] || \
+  [ -f "$R/notes/qlibs/libGLESv2_adreno.so" ] || \
+  adb devices 2>/dev/null | grep -q "device$" || \
+  { echo "  MISSING libGLESv2_adreno.so (linklibs, notes/qlibs, no adb device)"; miss=$((miss+1)); }
+[ "$miss" -eq 0 ] || fail "$miss inputs missing - see system/dist/README.md (running locally)"
+echo "  all inputs present"
 ran() { # ran <logfile> <marker>
   local log="$N/$1" mark="$2"
   grep -qiE "error|failed|missing|not found" "$log" 2>/dev/null && {
@@ -53,11 +79,28 @@ ran 410_strip.txt "STRIP OK"
 step "LoadingRes stub image"
 "$SELF/scripts/make-loadingres-img.sh"
 
-step "stage Pico stack (144)"
-bash "$T/144_stage_full.sh" || true
-ran 144_stage.txt "DONE"
-[ -d "$R/fullstage/media/LoadingRes" ] || fail "LoadingRes not staged"
-echo "  staged: $(find "$R/fullstage" -type f | wc -l) files, $(du -sh "$R/fullstage" | cut -f1)"
+# device payloads come from the driver provider - each
+# drivers/<name>/driver.json lists its own steps, the pipeline only runs
+# them in order and checks their markers
+PROV="$SELF/../../tools/provider.py"
+run_phase() { # run_phase <stage|inject>; leaves the count in PHASE_RAN
+  local phase="$1" run log marker
+  PHASE_RAN=0
+  while IFS=$'\t' read -r run log marker; do
+    [ -n "$run" ] || continue
+    PHASE_RAN=$((PHASE_RAN + 1))
+    step "driver $phase: $(basename "$run")"
+    bash "$run" || true
+    [ -n "$marker" ] && ran "$log" "$marker"
+  done < <(python3 "$PROV" steps "$phase")
+}
+
+step "drivers: stage payloads"
+run_phase stage
+if [ "$PHASE_RAN" -gt 0 ]; then
+  [ -d "$R/fullstage/media/LoadingRes" ] || fail "LoadingRes not staged"
+  echo "  staged: $(find "$R/fullstage" -type f | wc -l) files, $(du -sh "$R/fullstage" | cut -f1)"
+fi
 
 step "grow + inject stack (145)"
 bash "$T/145_build_full.sh" || true
@@ -73,24 +116,8 @@ step "overlay fixes + patched libs + apps (267)"
 bash "$T/267_build_full.sh" || true
 ran 267_build.txt "BUILD OK"
 
-step "DSP stack (300)"
-bash "$T/300_img_dsp.sh" || true
-ran 300_img_dsp.txt "DSP STACK ADDED OK"
-
-step "mdsprpc (301)"
-bash "$T/301_mdsp_img.sh"
-
-step "QVR clients (352)"
-bash "$T/352_img_qvrclient.sh" || true
-ran 352_img_qvrclient.txt "QVR CLIENT ADDED OK"
-
-step "fan daemon (373)"
-bash "$T/373_img_fan.sh" || true
-ran 373_img_fan.txt "FAN DAEMON ADDED OK"
-
-step "GLES robust-context patch (406)"
-bash "$T/406_img_glespatch.sh" || true
-ran 406_glespatch.txt "GLES ROBUST PATCH OK"
+step "drivers: inject payloads"
+run_phase inject
 
 step "verify (268)"
 bash "$T/268_verify_img.sh" || true

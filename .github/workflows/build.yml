@@ -58,7 +58,7 @@ jobs:
           if [ ! -d "$ANDROID_HOME/platforms/android-29" ]; then
             yes | sudo "$SDKM" "platforms;android-29"
           fi
-          # pn2xr runtime-apk pins build-tools 35.0.0 + android-35
+          # hsvr runtime-apk pins build-tools 35.0.0 + android-35
           [ -d "$ANDROID_HOME/platforms/android-35" ] || \
             yes | sudo "$SDKM" "platforms;android-35"
           [ -d "$ANDROID_HOME/build-tools/35.0.0" ] || \
@@ -102,7 +102,8 @@ jobs:
             "system/tools:tools" \
             "system/overlay:overlay" \
             "system/shim:shim" \
-            "system/pn2xr:pn2xr" \
+            "system/hsvr:hsvr" \
+            "drivers:drivers" \
             "applications/vrhome:vrhome" \
             "applications/library:library" \
             "applications/quick-panel:quick-panel" \

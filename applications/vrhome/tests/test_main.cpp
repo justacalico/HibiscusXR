@@ -15,6 +15,7 @@ void testShelf();
 void testNotif();
 void testSysMsg();
 void testInput();
+void testCtrlDebug();
 void testStatus();
 void testPalette();
 void testPaletteThemes();
@@ -33,6 +34,7 @@ int main() {
     testNotif();
     testSysMsg();
     testInput();
+    testCtrlDebug();
     testStatus();
     testPalette();
     testPaletteThemes();

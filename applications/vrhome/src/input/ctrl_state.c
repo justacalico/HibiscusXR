@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 static int32_t be_i32(const uint8_t *p) {
@@ -22,6 +23,12 @@ static float be_f32(const uint8_t *p) {
     float f;
     memcpy(&f, &u, 4);
     return f;
+}
+
+static uint64_t mono_ns(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
 }
 
 static void pose_at(const uint8_t *p, struct ctrl_pose *out) {
@@ -117,5 +124,55 @@ int ctrl_share_snapshot(struct ctrl_share *s, uint8_t buf[CTRL_SHARE_SIZE]) {
             return 0;
     }
     memcpy(buf, (const uint8_t *)s->map, CTRL_SHARE_SIZE);
+    return 0;
+}
+
+int ctrl_live_feed(struct ctrl_live *l, uint64_t hash, int wire_edge,
+                   uint64_t now_ns) {
+    if (hash != l->hash) {
+        l->hash = hash;
+        // first read is just a baseline: the file can sit stale for
+        // hours, so a moved hash only counts once the tracker has one
+        if (l->seen) l->change_ns = now_ns;
+        l->seen = 1;
+    }
+    if (wire_edge) {
+        l->seen = 1;
+        l->change_ns = now_ns;
+    }
+    return l->change_ns != 0 && now_ns - l->change_ns < CTRL_LIVE_NS;
+}
+
+int ctrl_live_probe_due(struct ctrl_live *l, uint64_t hash, uint64_t now_ns) {
+    if (hash != l->hash || now_ns < l->probe_ns) return 0;
+    l->probe_ns = now_ns + CTRL_PROBE_GAP_NS;
+    return 1;
+}
+
+int ctrl_share_write_edge(const struct ctrl_share *s, int which,
+                          uint64_t budget_ns) {
+    if (!s->map) return 0;
+    volatile const uint8_t *fp = s->map + CTRL_POSE_FLAG(which);
+    volatile const uint8_t *fk = s->map + CTRL_KEY_FLAG(which);
+    uint8_t pv = *fp, kv = *fk;
+    const uint64_t end = mono_ns() + budget_ns;
+    // the flag sits at DONE between writes and only lifts to WRITING for
+    // the span of one section put, so the loop has to sample continuously -
+    // a flag frozen at WRITING (writer died mid-put) never edges and just
+    // burns the budget, which is the correct dead-writer answer
+    for (uint32_t i = 0;; i++) {
+        const uint8_t p = *fp, k = *fk;
+        if (p != pv || k != kv) return 1;
+        pv = p;
+        kv = k;
+        if ((i & 0x3ff) == 0x3ff && mono_ns() >= end) return 0;
+    }
+}
+
+int ctrl_block_has_data(const uint8_t buf[CTRL_SHARE_SIZE], int which) {
+    const uint8_t *p = buf + which * 512;
+    for (int i = 1; i < 512; i++) {
+        if (i != 100 && p[i] != 0) return 1;
+    }
     return 0;
 }

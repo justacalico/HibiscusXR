@@ -46,15 +46,29 @@ void ctrlTick(HudEngine* e, const Mat4& head, float sensRoll, float worldX,
             e->ctrlOpen = false;
         } else {
             const float posScale = propF("debug.vrhome.ctrlscale", 0.001f);
+            const uint64_t nowNs = (uint64_t)nowMs * 1000000ull;
             for (int w = 0; w < CTRL_COUNT; ++w) {
                 const bool was = ctrlConnected(e->input, w);
                 ctrl_state_decode(buf, w, &e->ctrl[w]);
                 InputEvent ev[BTN_COUNT * 2];
-                int n = inputTick(e->input, w, ctrl_state_hash(buf, w),
-                                  e->ctrl[w], nowMs, ev, BTN_COUNT * 2);
-                const bool now = ctrlConnected(e->input, w);
-                if (now != was)
-                    LOGI("ctrl %d %s bat=%d", w, now ? "connected" : "lost",
+                const uint64_t hash = ctrl_state_hash(buf, w);
+                const int data = ctrl_block_has_data(buf, w);
+                // a quiet hash isn't a dead link - a parked controller
+                // produces byte-identical frames while the service keeps
+                // writing. The write itself is the heartbeat: probe the
+                // flag bytes for an edge once the content stalls. A slot
+                // with no data can't go live anyway, so skip the spin
+                int edge = 0;
+                if (data && ctrl_live_probe_due(&e->ctrlLive[w], hash, nowNs))
+                    edge = ctrl_share_write_edge(&e->ctrlMem, w,
+                                                 CTRL_PROBE_SPIN_NS);
+                const bool live =
+                    ctrl_live_feed(&e->ctrlLive[w], hash, edge, nowNs) && data;
+                int n = inputTick(e->input, w, live, e->ctrl[w],
+                                  ev, BTN_COUNT * 2);
+                const bool conn = ctrlConnected(e->input, w);
+                if (conn != was)
+                    LOGI("ctrl %d %s bat=%d", w, conn ? "connected" : "lost",
                          e->ctrl[w].keys.battery);
                 for (int i = 0; i < n; ++i) e->ctrlEv.push_back(ev[i]);
 

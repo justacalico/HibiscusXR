@@ -40,21 +40,10 @@ static void emit(InputEvent* ev, int* n, int cap, int code, int action) {
     }
 }
 
-int inputTick(InputState& s, int which, uint64_t hash,
-              const ctrl_state& st, long long nowMs,
-              InputEvent* ev, int cap) {
+int inputTick(InputState& s, int which, bool live,
+              const ctrl_state& st, InputEvent* ev, int cap) {
     int n = 0;
 
-    // freshness: a streaming controller's block never holds still for a
-    // whole window; once it does the link is gone. The first read is just
-    // a baseline - the file can sit stale for hours, so a block only counts
-    // live once it changed after we started watching it
-    if (hash != s.hash[which]) {
-        s.hash[which] = hash;
-        s.changeMs[which] = s.seen[which] ? nowMs : nowMs - kCtrlLiveMs;
-        s.seen[which] = true;
-    }
-    const bool live = s.seen[which] && nowMs - s.changeMs[which] < kCtrlLiveMs;
     bool& conn = which == CTRL_LEFT ? s.leftConnected : s.rightConnected;
     if (live && !conn) {
         conn = true;

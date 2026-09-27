@@ -102,11 +102,16 @@ main(int argc, char **argv)
 		else if (a == "-dtb" && i + 1 < argc) opts.dtb = argv[++i];
 		else if (a == "-append" && i + 1 < argc) opts.cmdline = argv[++i];
 		else if (a == "-qemu" && i + 1 < argc) opts.qemu = argv[++i];
+		else if (a == "-iso" && i + 1 < argc) opts.iso = argv[++i];
+		else if (a == "-initrd" && i + 1 < argc) opts.initrd = argv[++i];
+		else if (a == "-disk" && i + 1 < argc) opts.disk = argv[++i];
+		else if (a == "-serial" && i + 1 < argc) opts.serial = argv[++i];
 		else if (a == "-machine" && i + 1 < argc) opts.machine = argv[++i];
 		else {
 			fprintf(stderr, "usage: vmd [-openxr|-desktopsim|-novr|-pc|-selftest] "
 			        "[-img dir] [-novm] [-qemu bin] [-machine m] "
-			        "[-kernel k] [-dtb d] [-append c]\n");
+			        "[-kernel k] [-dtb d] [-initrd r] [-disk f] "
+			        "[-serial s] [-append c]\n");
 			return a == "-h" || a == "--help" ? 0 : 2;
 		}
 	}

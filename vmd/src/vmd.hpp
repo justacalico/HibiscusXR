@@ -37,6 +37,10 @@ struct vmd_vm_opts
 	std::string qemu = "qemu-system-aarch64"; // VMD_QEMU or -qemu overrides
 	std::string machine = "virt";    // -machine
 	std::string kernel, dtb, cmdline;
+	std::string initrd;              // -initrd: guest ramdisk image
+	std::string disk;                // -disk: single GPT disk image
+	std::string serial;              // -serial: null|stdio|file:<path>
+	std::string iso;                 // -iso: attach as -cdrom + -boot d
 };
 
 vmd_vm *vmd_vm_start(const vmd_vm_opts &opts);

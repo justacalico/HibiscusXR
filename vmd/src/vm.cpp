@@ -26,6 +26,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/un.h>
+#include <sys/utsname.h>
 #include <sys/wait.h>
 #include <thread>
 #include <unistd.h>
@@ -178,7 +179,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 			break;
 		}
 	}
-	if (system_img.empty() && opts.kernel.empty()) {
+	if (system_img.empty() && opts.kernel.empty() && opts.iso.empty()) {
 		fprintf(stderr, "vmd: no system image under %s and no -kernel\n",
 		        opts.imgdir.c_str());
 		delete vm;
@@ -188,28 +189,65 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	// virt exposes virtio-mmio transports (-device), pc needs the pci
 	// variants (-pci); the guest side is identical either way
 	std::string t = opts.machine == "virt" ? "-device" : "-pci";
-	std::vector<std::string> args = {
-	    opts.qemu, "-M", opts.machine, "-cpu", "max", "-smp", "4",
+	std::vector<std::string> args = {opts.qemu};
+	// kvm only accelerates when the guest arch matches the host cpu -
+	// anything else runs under tcg and -enable-kvm would just fail
+	bool want_kvm = false;
+	{
+		struct utsname un;
+		if (uname(&un) == 0) {
+			std::string h = un.machine;
+			want_kvm = opts.qemu.find(h) != std::string::npos;
+		}
+	}
+	if (want_kvm && access("/dev/kvm", W_OK) == 0) {
+		args.push_back("-enable-kvm");
+	}
+	args.insert(args.end(), {"-M", opts.machine, "-cpu", "max", "-smp", "4",
 	    "-m", "4096",
 	    "-netdev", "user,id=n0",
 	    "-device", "virtio-net" + t + ",netdev=n0",
 	    "-device", "virtio-gpu" + t,
 	    "-display", "none",
 	    "-qmp", "unix:" + vm->qmp + ",server=on,wait=off",
-	    "-serial", "null",
-	};
-	if (!system_img.empty()) {
-		args.push_back("-drive");
-		args.push_back("file=" + system_img + ",format=raw,if=none,id=system");
-		args.push_back("-device");
-		args.push_back("virtio-blk" + t + ",drive=system");
+	});
+	if (!opts.serial.empty()) {
+		args.push_back("-serial");
+		args.push_back(opts.serial);
+	} else {
+		args.push_back("-serial");
+		args.push_back("file:/tmp/vmd-serial-" + std::to_string(getpid()) +
+		               ".log");
 	}
-	std::string vendor_img = opts.imgdir + "/vendor.img";
-	if (file_exists(vendor_img)) {
+	if (!opts.iso.empty()) {
+		args.push_back("-cdrom");
+		args.push_back(opts.iso);
+		args.push_back("-boot");
+		args.push_back("d");
+	}
+	if (!opts.disk.empty()) {
+		// whole-disk mode: one GPT image with named partitions so the
+		// guest sees /dev/vdaN + /dev/block/by-name/* like real UFS
 		args.push_back("-drive");
-		args.push_back("file=" + vendor_img + ",format=raw,if=none,id=vendor");
+		args.push_back("file=" + opts.disk + ",format=raw,if=none,id=disk0");
 		args.push_back("-device");
-		args.push_back("virtio-blk" + t + ",drive=vendor");
+		args.push_back("virtio-blk" + t + ",drive=disk0");
+	} else {
+		if (!system_img.empty()) {
+			args.push_back("-drive");
+			args.push_back("file=" + system_img +
+			               ",format=raw,if=none,id=system");
+			args.push_back("-device");
+			args.push_back("virtio-blk" + t + ",drive=system");
+		}
+		std::string vendor_img = opts.imgdir + "/vendor.img";
+		if (file_exists(vendor_img)) {
+			args.push_back("-drive");
+			args.push_back("file=" + vendor_img +
+			               ",format=raw,if=none,id=vendor");
+			args.push_back("-device");
+			args.push_back("virtio-blk" + t + ",drive=vendor");
+		}
 	}
 	if (!opts.kernel.empty()) {
 		args.push_back("-kernel");
@@ -224,6 +262,10 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	if (!opts.dtb.empty()) {
 		args.push_back("-dtb");
 		args.push_back(opts.dtb);
+	}
+	if (!opts.initrd.empty()) {
+		args.push_back("-initrd");
+		args.push_back(opts.initrd);
 	}
 	if (!opts.cmdline.empty()) {
 		args.push_back("-append");

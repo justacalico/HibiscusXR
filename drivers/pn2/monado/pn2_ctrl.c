@@ -53,6 +53,8 @@ struct pn2_ctrl
 	// a parked controller's block stays byte-identical while the service
 	// keeps rewriting it
 	struct ctrl_live live;
+	struct ctrl_probe probe;
+	uint64_t probe_ns;
 	bool connected;
 	bool logged_state;
 
@@ -152,15 +154,16 @@ pn2_ctrl_update_inputs(struct xrt_device *xdev)
 	const uint64_t hash = ctrl_state_hash(buf, d->which);
 	const int data = ctrl_block_has_data(buf, d->which);
 	// a quiet hash isn't a dead link: the service rewrites every block each
-	// ~4ms pass and brackets the write with the flag bytes, so a live wire
-	// flaps even when the decoded state holds still. Probe the flags once
-	// the content stalls before calling the controller gone; a slot with
-	// no data can't go live anyway, so skip the spin there.
-	int edge = 0;
-	if (data && ctrl_live_probe_due(&d->live, hash, now)) {
-		edge = ctrl_share_write_edge(&d->share, d->which, CTRL_PROBE_SPIN_NS);
+	// ~30ms pass and brackets the write with the flag bytes, so a live wire
+	// flaps even when the decoded state holds still. The flag-edge probe
+	// spins on a throwaway thread so the write period never stalls input.
+	int wire = ctrl_probe_poll(&d->probe);
+	if (wire == 0 && now >= d->probe_ns && d->probe.state == 0) {
+		d->probe_ns = now + CTRL_PROBE_GAP_NS;
+		ctrl_probe_start(&d->probe, d->share.path, d->which,
+		                 CTRL_PROBE_SPIN_NS);
 	}
-	const bool live = ctrl_live_feed(&d->live, hash, edge, now) && data;
+	const bool live = ctrl_live_feed(&d->live, hash, wire > 0, now) && data;
 	if (live != d->connected) {
 		d->connected = live;
 		PN2_CTRL_INFO(d, "ctrl %d %s", d->which, live ? "connected" : "lost");

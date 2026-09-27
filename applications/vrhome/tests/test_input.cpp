@@ -98,17 +98,6 @@ void testInput() {
     // nothing at all for a whole window and the link is gone
     CHECK(!ctrl_live_feed(&lv, 556, 0, 500 + CTRL_LIVE_NS));
 
-    // wire probes only run while the content sits quiet, and rate-limit
-    ctrl_live lv2 = {};
-    lv2.hash = 777;
-    lv2.probe_ns = 1000;
-    CHECK(!ctrl_live_probe_due(&lv2, 777, 999));          // before the slot
-    CHECK(ctrl_live_probe_due(&lv2, 777, 1000));          // claims the slot
-    CHECK(!ctrl_live_probe_due(&lv2, 777, 1000 + CTRL_PROBE_GAP_NS - 1));
-    CHECK(!ctrl_live_probe_due(&lv2, 778, 9000));         // hash moved
-    ctrl_live_feed(&lv2, 778, 0, 9000);
-    CHECK(ctrl_live_probe_due(&lv2, 778, 1000 + CTRL_PROBE_GAP_NS));
-
     // --- arbitration ---------------------------------------------------
     InputState s;
     InputEvent ev[16];

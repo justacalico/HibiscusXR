@@ -73,52 +73,76 @@ void testInput() {
     CHECK(ctrl_state_hash(buf, CTRL_LEFT) != h1);
     CHECK(ctrl_state_hash(buf, CTRL_RIGHT) != h1);
 
+    // a reset or never-linked slot is all-zero apart from the flag bytes;
+    // a real controller always leaves data behind (sentinel pose counts)
+    memset(buf, 0, sizeof(buf));
+    CHECK(!ctrl_block_has_data(buf, CTRL_LEFT));
+    buf[0] = CTRL_FLAG_DONE;
+    buf[100] = CTRL_FLAG_DONE;
+    CHECK(!ctrl_block_has_data(buf, CTRL_LEFT));   // flags alone aren't data
+    mkBlock(buf, CTRL_LEFT, -100.0f, 74, 0);
+    CHECK(ctrl_block_has_data(buf, CTRL_LEFT));
+    CHECK(!ctrl_block_has_data(buf, CTRL_RIGHT));
+
+    // --- liveness ------------------------------------------------------
+    ctrl_live lv = {};
+
+    // the first read is only a baseline - a stale file can't talk its way
+    // into looking live, it needs a write observed while we watch
+    CHECK(!ctrl_live_feed(&lv, 555, 0, 100));
+    // a flag edge is a real write: the link comes up immediately and a
+    // controller that never moves its content stays up on flap alone
+    CHECK(ctrl_live_feed(&lv, 555, 1, 200));
+    CHECK(ctrl_live_feed(&lv, 555, 0, 400));   // quiet wire, still warm
+    CHECK(ctrl_live_feed(&lv, 556, 0, 500));   // a moved hash refreshes too
+    // nothing at all for a whole window and the link is gone
+    CHECK(!ctrl_live_feed(&lv, 556, 0, 500 + CTRL_LIVE_NS));
+
     // --- arbitration ---------------------------------------------------
     InputState s;
     InputEvent ev[16];
-    ctrl_state live;
-    memset(&live, 0, sizeof(live));
+    memset(&st, 0, sizeof(st));
 
     // nothing yet: hmd input is the pointer
     CHECK(hmdInput(s));
     CHECK(s.active == -1);
 
-    // a block that keeps changing marks the controller connected and makes
-    // it the pointer straight away
-    int n = inputTick(s, CTRL_RIGHT, 100, live, 0, ev, 16);
-    n += inputTick(s, CTRL_RIGHT, 101, live, 10, ev + n, 16 - n);
+    // a live block connects the controller and makes it the pointer
+    int n = inputTick(s, CTRL_RIGHT, true, st, ev, 16);
     CHECK(s.rightConnected && s.active == CTRL_RIGHT);
     CHECK(!hmdInput(s));
 
+    // a parked controller keeps holding the pointer: only the link
+    // verdict flapping to dead moves it, a still frame doesn't
+    n = inputTick(s, CTRL_RIGHT, true, st, ev, 16);
+    CHECK(s.rightConnected && s.active == CTRL_RIGHT);
+
     // a trigger press on the other controller steals the pointer and emits
     // the confirm-down edge
-    live.keys.trigger = 1;
-    n = inputTick(s, CTRL_LEFT, 200, live, 20, ev, 16);
-    n += inputTick(s, CTRL_LEFT, 201, live, 30, ev + n, 16 - n);
+    st.keys.trigger = 1;
+    n = inputTick(s, CTRL_LEFT, true, st, ev, 16);
     CHECK(s.leftConnected && s.active == CTRL_LEFT);
     CHECK(n == 1 && ev[0].code == kKeyEnter && ev[0].action == 1);
 
     // release emits the up edge; the button map turns B/App into BACK
-    live.keys.trigger = 0;
-    live.keys.b = 1;
-    n = inputTick(s, CTRL_LEFT, 202, live, 40, ev, 16);
+    st.keys.trigger = 0;
+    st.keys.b = 1;
+    n = inputTick(s, CTRL_LEFT, true, st, ev, 16);
     CHECK(n == 2);   // trigger up + b down
-    live.keys.b = 0;
+    st.keys.b = 0;
 
-    // the frozen controller drops off after the window, and the pointer
-    // falls back to the live one - or back to the hmd with none left
-    for (int i = 0; i < 10; ++i)
-        inputTick(s, CTRL_LEFT, 202, live, 50 + i * 100, ev, 16);
+    // the dead controller drops off, and the pointer falls back to the
+    // live one - or back to the hmd with none left
+    inputTick(s, CTRL_LEFT, false, st, ev, 16);
     CHECK(!s.leftConnected);
     CHECK(s.active == CTRL_RIGHT);
-    inputTick(s, CTRL_RIGHT, 101, live, 2000, ev, 16);
+    inputTick(s, CTRL_RIGHT, false, st, ev, 16);
     CHECK(!s.rightConnected && s.active == -1 && hmdInput(s));
 
     // the sharemem channel itself dying drops everything at once: no new
-    // frames arrive to age out, so waiting on freshness would leave the
+    // frames arrive to age out, so waiting on liveness would leave the
     // dead controller owning the pointer and freeze the gaze pick
-    inputTick(s, CTRL_RIGHT, 300, live, 3000, ev, 16);
-    inputTick(s, CTRL_RIGHT, 301, live, 3010, ev, 16);
+    inputTick(s, CTRL_RIGHT, true, st, ev, 16);
     CHECK(s.rightConnected && s.active == CTRL_RIGHT && !hmdInput(s));
     ctrlDropAll(s);
     CHECK(!s.leftConnected && !s.rightConnected);

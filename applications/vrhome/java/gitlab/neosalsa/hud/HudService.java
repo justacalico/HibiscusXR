@@ -139,6 +139,26 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         super.onDestroy();
     }
 
+    // CVService only streams controller data while its SPI thread runs, and
+    // nothing on this build starts it (stock VRShell used to). The render
+    // thread calls this when the sharemem flags stop flapping - thread
+    // never started, or RemoteService crashed and came back bare. Every
+    // start also restarts a live thread, so the native side only calls it
+    // while the channel is actually quiet.
+    public void pokeCtrlThread() {
+        try {
+            Intent i = new Intent(
+                    "com.picovr.picovrlib.cv.broadcast.start.thread");
+            i.setPackage("com.picovr.picovrlib.cvcontroller");
+            i.putExtra("HeadTrackMode", 1);
+            i.putExtra("CtrlerTrackMode", 1);
+            sendBroadcast(i);
+            Log.i(TAG, "cvservice ctrl thread poked");
+        } catch (Throwable t) {
+            Log.e(TAG, "cvservice poke failed", t);
+        }
+    }
+
     @Override public IBinder onBind(Intent i) { return null; }
 
     private void foreground() {

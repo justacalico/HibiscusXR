@@ -7,7 +7,7 @@
  *
  * The wire decoder lives in ctrl_state.c - the same file the vrhome dash
  * compiles, copied into this tree by build.sh. This file only adapts the
- * decoded state to xrt_device: freshness-based connect, button/axis input
+ * decoded state to xrt_device: wire-activity connect, button/axis input
  * slots, pose rebase into the OpenXR view frame, battery.
  * @ingroup drv_pn2
  */
@@ -34,10 +34,6 @@ DEBUG_GET_ONCE_LOG_OPTION(pn2_ctrl_log, "PN2_CTRL_LOG", U_LOGGING_WARN)
 DEBUG_GET_ONCE_NUM_OPTION(pn2_ctrl_axismap, "PN2_CTRL_AXISMAP", -1)
 DEBUG_GET_ONCE_FLOAT_OPTION(pn2_ctrl_scale, "PN2_CTRL_SCALE", 0.001f)
 
-// a block that stopped changing for this long is a dead link - the service
-// rewrites it per packet while a controller streams
-#define PN2_CTRL_LIVE_NS 800000000ull
-
 // sharemem open retry while the service hasn't created the file yet
 #define PN2_CTRL_RETRY_NS 2000000000ull
 
@@ -53,10 +49,12 @@ struct pn2_ctrl
 	bool share_open;
 	uint64_t share_retry_ns;
 
-	// freshness tracking: a streaming block's hash never sits still
-	uint64_t hash;
-	uint64_t change_ns;
-	bool seen;
+	// link liveness: the write itself is the heartbeat, not the content -
+	// a parked controller's block stays byte-identical while the service
+	// keeps rewriting it
+	struct ctrl_live live;
+	struct ctrl_probe probe;
+	uint64_t probe_ns;
 	bool connected;
 	bool logged_state;
 
@@ -154,14 +152,18 @@ pn2_ctrl_update_inputs(struct xrt_device *xdev)
 	}
 
 	const uint64_t hash = ctrl_state_hash(buf, d->which);
-	if (hash != d->hash) {
-		d->hash = hash;
-		// first read is just a baseline: the file can sit stale for
-		// hours, so a block only counts live once it moved after that
-		d->change_ns = d->seen ? now : now - PN2_CTRL_LIVE_NS;
-		d->seen = true;
+	const int data = ctrl_block_has_data(buf, d->which);
+	// a quiet hash isn't a dead link: the service rewrites every block each
+	// ~30ms pass and brackets the write with the flag bytes, so a live wire
+	// flaps even when the decoded state holds still. The flag-edge probe
+	// spins on a throwaway thread so the write period never stalls input.
+	int wire = ctrl_probe_poll(&d->probe);
+	if (wire == 0 && now >= d->probe_ns && d->probe.state == 0) {
+		d->probe_ns = now + CTRL_PROBE_GAP_NS;
+		ctrl_probe_start(&d->probe, d->share.path, d->which,
+		                 CTRL_PROBE_SPIN_NS);
 	}
-	const bool live = d->seen && now - d->change_ns < PN2_CTRL_LIVE_NS;
+	const bool live = ctrl_live_feed(&d->live, hash, wire > 0, now) && data;
 	if (live != d->connected) {
 		d->connected = live;
 		PN2_CTRL_INFO(d, "ctrl %d %s", d->which, live ? "connected" : "lost");

@@ -1,9 +1,12 @@
 #include "ctrl_state.h"
 
 #include <fcntl.h>
+#include <pthread.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 static int32_t be_i32(const uint8_t *p) {
@@ -22,6 +25,12 @@ static float be_f32(const uint8_t *p) {
     float f;
     memcpy(&f, &u, 4);
     return f;
+}
+
+static uint64_t mono_ns(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
 }
 
 static void pose_at(const uint8_t *p, struct ctrl_pose *out) {
@@ -79,6 +88,7 @@ int ctrl_share_open(struct ctrl_share *s, const char *path) {
     memset(s, 0, sizeof(*s));
     s->fd = -1;
     if (!path) path = CTRL_SHARE_PATH;
+    strncpy(s->path, path, sizeof(s->path) - 1);
     int fd = open(path, O_RDONLY | O_CLOEXEC);
     if (fd < 0) return -1;
     struct stat st;
@@ -117,5 +127,110 @@ int ctrl_share_snapshot(struct ctrl_share *s, uint8_t buf[CTRL_SHARE_SIZE]) {
             return 0;
     }
     memcpy(buf, (const uint8_t *)s->map, CTRL_SHARE_SIZE);
+    return 0;
+}
+
+int ctrl_live_feed(struct ctrl_live *l, uint64_t hash, int wire_edge,
+                   uint64_t now_ns) {
+    if (hash != l->hash) {
+        l->hash = hash;
+        // first read is just a baseline: the file can sit stale for
+        // hours, so a moved hash only counts once the tracker has one
+        if (l->seen) l->change_ns = now_ns;
+        l->seen = 1;
+    }
+    if (wire_edge) {
+        l->seen = 1;
+        l->change_ns = now_ns;
+    }
+    return l->change_ns != 0 && now_ns - l->change_ns < CTRL_LIVE_NS;
+}
+
+struct probe_task {
+    struct ctrl_probe *p;
+    int which;           // CTRL_LEFT/CTRL_RIGHT, -1 = all four flags
+    uint64_t budget_ns;
+    char path[128];
+};
+
+// spin-samples the flag bytes for one write window: the flag sits at DONE
+// between writes and only lifts to WRITING for a few microseconds, so the
+// loop has to sample continuously. A flag frozen at WRITING (writer died
+// mid-put) never edges and just burns the budget - the dead-writer answer
+// either way. Maps its own view so the caller can close the file freely.
+static void *probe_main(void *arg) {
+    struct probe_task *t = (struct probe_task *)arg;
+    int edge = 0;
+    int fd = open(t->path[0] ? t->path : CTRL_SHARE_PATH, O_RDONLY | O_CLOEXEC);
+    if (fd >= 0) {
+        void *m = mmap(NULL, CTRL_SHARE_SIZE, PROT_READ, MAP_SHARED, fd, 0);
+        if (m != MAP_FAILED) {
+            volatile const uint8_t *v = (volatile const uint8_t *)m;
+            int offs[4];
+            int n;
+            if (t->which < 0) {
+                offs[0] = CTRL_POSE_FLAG(CTRL_LEFT);
+                offs[1] = CTRL_KEY_FLAG(CTRL_LEFT);
+                offs[2] = CTRL_POSE_FLAG(CTRL_RIGHT);
+                offs[3] = CTRL_KEY_FLAG(CTRL_RIGHT);
+                n = 4;
+            } else {
+                offs[0] = CTRL_POSE_FLAG(t->which);
+                offs[1] = CTRL_KEY_FLAG(t->which);
+                n = 2;
+            }
+            uint8_t prev[4];
+            for (int i = 0; i < n; i++) prev[i] = v[offs[i]];
+            const uint64_t end = mono_ns() + t->budget_ns;
+            for (uint32_t i = 0;; i++) {
+                for (int f = 0; f < n; f++) {
+                    const uint8_t cur = v[offs[f]];
+                    if (cur != prev[f]) { edge = 1; break; }
+                    prev[f] = cur;
+                }
+                if (edge || ((i & 0x3ff) == 0x3ff && mono_ns() >= end)) break;
+            }
+            munmap(m, CTRL_SHARE_SIZE);
+        }
+        close(fd);
+    }
+    __atomic_store_n(&t->p->state, edge ? 2 : 3, __ATOMIC_RELEASE);
+    free(t);
+    return NULL;
+}
+
+int ctrl_probe_start(struct ctrl_probe *p, const char *path, int which,
+                     uint64_t budget_ns) {
+    if (__atomic_load_n(&p->state, __ATOMIC_ACQUIRE) != 0) return 0;
+    struct probe_task *t = (struct probe_task *)malloc(sizeof(*t));
+    if (!t) return 0;
+    memset(t, 0, sizeof(*t));
+    t->p = p;
+    t->which = which;
+    t->budget_ns = budget_ns;
+    if (path) strncpy(t->path, path, sizeof(t->path) - 1);
+    __atomic_store_n(&p->state, 1, __ATOMIC_RELEASE);
+    pthread_t th;
+    if (pthread_create(&th, NULL, probe_main, t) != 0) {
+        __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE);
+        free(t);
+        return 0;
+    }
+    pthread_detach(th);
+    return 1;
+}
+
+int ctrl_probe_poll(struct ctrl_probe *p) {
+    const int s = __atomic_load_n(&p->state, __ATOMIC_ACQUIRE);
+    if (s == 2) { __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE); return 1; }
+    if (s == 3) { __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE); return -1; }
+    return 0;
+}
+
+int ctrl_block_has_data(const uint8_t buf[CTRL_SHARE_SIZE], int which) {
+    const uint8_t *p = buf + which * 512;
+    for (int i = 1; i < 512; i++) {
+        if (i != 100 && p[i] != 0) return 1;
+    }
     return 0;
 }

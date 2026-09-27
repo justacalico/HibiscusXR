@@ -172,6 +172,11 @@ struct HudEngine : Engine {
     bool ctrlLogged = false;
     long long ctrlRetryMs = 0;
     InputState input;
+    ctrl_live ctrlLive[2];       // per-block write-activity trackers
+    ctrl_probe ctrlProbe;        // channel flag-edge probe (async)
+    long long ctrlProbeNs = 0;   // next probe slot
+    long long ctrlQuietMs = 0;   // channel silent since; 0 = writing
+    long long ctrlPokeMs = 0;    // last service start-thread poke
     ctrl_state ctrl[2];
     float ctrlPos[2][3] = {{0}};
     float ctrlDir[2][3] = {{0}};

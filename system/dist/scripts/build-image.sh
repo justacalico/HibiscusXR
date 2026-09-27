@@ -13,6 +13,32 @@ mkdir -p "$N" "$R/out"
 
 step() { echo; echo "######## $* ########"; }
 fail() { echo "FAILED: $*" >&2; exit 1; }
+
+# Every input the chain below reads, in one shot - the steps fail one at a
+# time otherwise, which costs a rebuild cycle per missing dir.
+step "preflight: required inputs"
+miss=0
+need() { [ -e "$R/$1" ] || { echo "  MISSING $1"; miss=$((miss+1)); }; }
+for p in \
+  tools overlay shim hsvr drivers vrhome library quick-panel settings \
+  gsi .stub/media/LoadingRes \
+  pvr_stack pvr_apps_final pvr_applibs oem_final \
+  overlay_pvr airsvc rfsa qvr cdsp fan seethrough linklibs build \
+  overlay/lib64 \
+  notes/libart-patched.so \
+  notes/vrshell_lib/libPvr_UnitySDK.patched2.so; do
+  need "$p"
+done
+[ -f "$R/gsi/gsi_raw.img" ] || \
+  [ -f "$R/gsi/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img.xz" ] || \
+  { echo "  MISSING gsi (no gsi_raw.img, no xz to make it)"; miss=$((miss+1)); }
+# the stock gles blob: qlibs/linklibs copy, or a device on adb to pull from
+[ -f "$R/linklibs/libGLESv2_adreno.so" ] || \
+  [ -f "$R/notes/qlibs/libGLESv2_adreno.so" ] || \
+  adb devices 2>/dev/null | grep -q "device$" || \
+  { echo "  MISSING libGLESv2_adreno.so (linklibs, notes/qlibs, no adb device)"; miss=$((miss+1)); }
+[ "$miss" -eq 0 ] || fail "$miss inputs missing - see system/dist/README.md (running locally)"
+echo "  all inputs present"
 ran() { # ran <logfile> <marker>
   local log="$N/$1" mark="$2"
   grep -qiE "error|failed|missing|not found" "$log" 2>/dev/null && {

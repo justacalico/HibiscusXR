@@ -31,7 +31,8 @@ tar -cJf "$D/build-logs.tar.xz" --exclude='*.so' -C "$R" notes
   echo "input pins:"
   set | grep -E '^PIN_' | sort | sed 's/^/  /'
   echo "source refs:"
-  set | grep -E '^[A-Z]+_REF=' | sort | sed 's/^/  /'
+  # locally no *_REF vars are set - grep exits 1 under set -e without this
+  set | grep -E '^[A-Z]+_REF=' | sort | sed 's/^/  /' || true
   echo
   (cd "$D" && sha256sum *.img.xz)
 } > "$D/build-manifest.txt"

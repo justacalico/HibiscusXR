@@ -54,7 +54,8 @@ HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
             src/bridge/bridge.cpp \
             src/input/input.cpp src/input/keys.cpp \
-            src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp
+            src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp \
+            src/input/ctrl_debug.cpp
 
 # pure C, shared verbatim with the pn2 monado driver
 HUD_CSRCS := src/input/ctrl_state.c
@@ -85,7 +86,8 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \
              src/input/input_state.cpp \
-             src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c
+             src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c \
+             src/input/ctrl_debug.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 

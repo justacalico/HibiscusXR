@@ -22,6 +22,7 @@
 #include "../common/props.h"
 #include "../input/input.h"
 #include "../input/ctrl.h"
+#include "../input/ctrl_debug.h"
 #include "../math/head.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
@@ -512,6 +513,8 @@ static void hudFrame(HudEngine* e) {
     snprintf(extra, sizeof(extra), "  PNL %zu%s", e->panels.size(),
              e->bridge ? "" : "  BRIDGE:OFF");
     updateHud(e, extra);
+    fmtCtrlLine(e->hud2, sizeof(e->hud2), e->input, e->ctrl, e->ctrlPos,
+                e->ctrlDir);
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const float fov = propF("debug.vrhome.fov", kFovY);
     drawEyes(e, head, perspective(fov, aspect, 0.05f, 100.0f), true,

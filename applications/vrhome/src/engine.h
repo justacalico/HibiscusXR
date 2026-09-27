@@ -66,6 +66,7 @@ struct Engine {
 
     char hud[96] = "";
     int  hudLen = 0;
+    char hud2[128] = "";        // second debug line: controller poses (HUD)
     int  frames = 0;
     int  fps = 0;
     long long fpsMark = 0;

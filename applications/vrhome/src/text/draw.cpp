@@ -70,6 +70,10 @@ void drawHud(Engine* e, const Mat4& proj) {
     const float z = -1.2f;
     float w = measureText(e, e->hud, s);
     drawText(e, e->hud, -w * 0.5f, 0.34f, z, s);
+    if (e->hud2[0]) {
+        const float w2 = measureText(e, e->hud2, s);
+        drawText(e, e->hud2, -w2 * 0.5f, 0.305f, z, s);
+    }
     glDisable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
 }

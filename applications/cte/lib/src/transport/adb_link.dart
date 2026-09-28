@@ -86,9 +86,9 @@ class AdbLink extends HeadsetLink {
   Stream<PoseSample> poses() async* {
     await enablePoseFeed();
     final parser = PoseLogParser();
-    final tags = kPoseLogTags.map((t) => '$t:*').join(' ');
+    final filter = '${kPoseLogTags.map((t) => '$t:I').join(' ')} *:S';
     await for (final line in _adb
-        .streamLines(serial, ['shell', 'logcat -v brief -s $tags'])) {
+        .streamLines(serial, ['shell', 'logcat -v brief $filter'])) {
       final s = parser.feed(line);
       if (s != null) yield s;
     }

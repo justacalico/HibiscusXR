@@ -96,7 +96,7 @@ jobs:
           flutter build linux --release
           mkdir -p ../../dist
           tar -czf ../../dist/HCTE-linux-x86_64.tar.gz -C build/linux/x64/release/bundle .
-          (cd build/linux/x64/release && zip -qr ../../../../../dist/HCTE-linux-x86_64.zip bundle)
+          (cd build/linux/x64/release && zip -qr "$GITHUB_WORKSPACE/dist/HCTE-linux-x86_64.zip" bundle)
 
       - name: windows build + pack
         if: matrix.target == 'windows'
@@ -105,7 +105,7 @@ jobs:
           cd applications/cte
           flutter pub get
           flutter build windows --release
-          mkdir ../../dist | Out-Null
+          New-Item -ItemType Directory -Force ../../dist | Out-Null
           Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath ../../dist/HCTE-windows-x86_64.zip
 
       - name: macos build + pack
@@ -115,7 +115,7 @@ jobs:
           flutter pub get
           flutter build macos --release
           mkdir -p ../../dist
-          (cd build/macos/Build/Products/Release && zip -qr ../../../../../dist/HCTE-macos-arm64.zip .)
+          (cd build/macos/Build/Products/Release && zip -qr "$GITHUB_WORKSPACE/dist/HCTE-macos-arm64.zip" .)
 
       - uses: actions/upload-artifact@v4
         with:

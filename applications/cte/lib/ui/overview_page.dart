@@ -111,7 +111,7 @@ class _HeadsetCard extends StatelessWidget {
               '${or(info.androidRelease)} (sdk ${info.sdkInt})'),
           _Row(l10n.overviewHibiscus, or(info.hibiscusVersion)),
           _Row(l10n.overviewBuild, or(info.buildId)),
-          _Row(l10n.overviewTrackingMode, info.trackingMode.name),
+          _Row(l10n.overviewTrackingMode, l10n.trackingMode(info.trackingMode.name)),
           _Row(l10n.overviewBattery,
               info.batteryLevel >= 0 ? '${info.batteryLevel}%' : l10n.valueUnknown),
         ],

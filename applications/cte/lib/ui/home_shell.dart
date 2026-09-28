@@ -115,7 +115,8 @@ class _TitleBar extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleSmall),
             const Spacer(),
             if (state.deviceInfo != null)
-              Text(state.deviceInfo!.trackingMode.name,
+              Text(AppLocalizations.of(context)
+                  .trackingMode(state.deviceInfo!.trackingMode.name),
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall

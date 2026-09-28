@@ -103,6 +103,7 @@ jobs:
             "system/overlay:overlay" \
             "system/shim:shim" \
             "system/hsvr:hsvr" \
+            "system/cted:cted" \
             "drivers:drivers" \
             "applications/vrhome:vrhome" \
             "applications/library:library" \

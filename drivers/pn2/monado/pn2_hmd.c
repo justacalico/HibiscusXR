@@ -140,6 +140,7 @@ struct pn2_device
 	uint64_t posedump_poll;    //!< next prop re-read (monotonic ns)
 	uint64_t posedump_next;    //!< next raw-pose dump print (rate limit)
 	uint64_t servedump_next;   //!< next served-pose dump print
+	uint64_t ctefeed_next;     //!< next generic hibiscuspose feed line
 
 	float ipd_m;             //!< eye separation in metres (persist.pn2.ipd)
 	bool ipd_pinned;         //!< PN2_IPD env set: fixed at create, no poll
@@ -254,6 +255,31 @@ pn2_remap(const struct pn2_device *d, const struct xrt_vec3 *in, struct xrt_vec3
 	math_quat_rotate_vec3(&d->sens_to_head, in, out);
 }
 
+// Generic CTE pose feed: one machine-stable `HMD ...` line on the
+// hibiscuspose tag per served relation (~30 Hz while dumping is on), so
+// external tools like HCTE get a driver-agnostic stream and don't have to
+// parse the multi-line verbose dump. Same posedump switch as PN2_DUMP.
+static void
+pn2_cte_feed(struct pn2_device *d, const struct xrt_space_relation *rel,
+             int64_t ts, uint32_t st)
+{
+	if (!d->posedump) {
+		return;
+	}
+	uint64_t now = os_monotonic_get_ns();
+	if (now < d->ctefeed_next) {
+		return;
+	}
+	d->ctefeed_next = now + 33333333ull;
+	__android_log_print(ANDROID_LOG_INFO, "hibiscuspose",
+	                    "HMD ts=%lld qx=%.4f qy=%.4f qz=%.4f qw=%.4f "
+	                    "px=%.4f py=%.4f pz=%.4f st=%u",
+	                    (long long)ts, rel->pose.orientation.x,
+	                    rel->pose.orientation.y, rel->pose.orientation.z,
+	                    rel->pose.orientation.w, rel->pose.position.x,
+	                    rel->pose.position.y, rel->pose.position.z, st);
+}
+
 static void
 pn2_push_fused(struct pn2_device *d, uint64_t ts)
 {
@@ -269,6 +295,7 @@ pn2_push_fused(struct pn2_device *d, uint64_t ts)
 	rel.relation_flags =
 	    (enum xrt_space_relation_flags)(rel.relation_flags | XRT_SPACE_RELATION_ANGULAR_VELOCITY_VALID_BIT);
 	m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)ts);
+	pn2_cte_feed(d, &rel, (int64_t)ts, 1);
 }
 
 // returns false when the pose stream is dead - read failure, state 0, or a
@@ -316,6 +343,7 @@ pn2_push_qvr(struct pn2_device *d)
 	if (m_relation_history_push_with_motion_estimation(d->rh, &rel, (int64_t)pose.timestamp_ns)) {
 		d->qvr_last_ts = pose.timestamp_ns;
 	}
+	pn2_cte_feed(d, &rel, (int64_t)pose.timestamp_ns, pose.tracking_state);
 	PN2_TRACE(d, "qvr pos %.4f %.4f %.4f rot %.3f %.3f %.3f %.3f st %u", pose.position.x,
 	          pose.position.y, pose.position.z, pose.orientation.x, pose.orientation.y,
 	          pose.orientation.z, pose.orientation.w, pose.tracking_state);

@@ -1,5 +1,8 @@
 # Requirements
 
+The guides in this section cover the Pico Neo 2 - the first supported
+headset, and the only one for now.
+
 ## Hardware
 
 - A **Pico Neo 2** (`A7B10` / `PICOA7B10`). The Eye and non-Eye SKUs both work;

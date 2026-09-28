@@ -54,13 +54,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get languageLabel => '语言';
 
   @override
-  String get heroEyebrow => 'Pico Neo 2 · LineageOS 17.1';
+  String get heroEyebrow => 'VR 一体机 · LineageOS 17.1';
 
   @override
   String get heroTitle => 'Android 回来了,在 VR 里。';
 
   @override
-  String get heroSubtitle => '把 LineageOS 17.1 完整移植到 Pico Neo 2 头显。';
+  String get heroSubtitle =>
+      '为 VR 一体头显打造的操作系统,基于 LineageOS 17.1。Pico Neo 2 是第一个支持的设备。';
 
   @override
   String get heroPrimary => '查看现状';
@@ -116,6 +117,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shotAppGlasses => '眼镜';
 
   @override
+  String get statDevice => 'Pico Neo 2';
+
+  @override
+  String get statDeviceLabel => '首个支持的设备';
+
+  @override
   String get statSoc => '骁龙 845';
 
   @override
@@ -126,12 +133,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get statPanelLabel => 'JDI 4K 屏幕';
-
-  @override
-  String get statNotes => '约 300';
-
-  @override
-  String get statNotesLabel => '篇研究笔记';
 
   @override
   String get shotCollectionCaption => '集合与分组,带数量。';
@@ -145,6 +146,13 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get homeWayOverlayBody =>
       '系统主体是 LineageOS 17.1 GSI,我们的修复全部放在一个小的 overlay 里。vendor 分区保持和原厂逐字节一致,问题都在 system 侧解决。';
+
+  @override
+  String get homeWayDeviceTitle => '一个系统,所有头显';
+
+  @override
+  String get homeWayDeviceBody =>
+      '设备相关的驱动和配置各自独立成目录。移植到新头显只需要写这一层,不用 fork 整个系统。';
 
   @override
   String get homeWayNotesTitle => '研究过程全部公开';
@@ -164,7 +172,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeStatusBody =>
-      '移植版可以启动,有声音,头部旋转实时生效,VRShell 驱动着真正的 Pico 合成器——VR 画面已经能看到真实内容。';
+      '在 Pico Neo 2 上,系统可以启动,有声音,头部旋转实时生效,VRShell 驱动着真正的 Pico 合成器——VR 画面已经能看到真实内容。';
 
   @override
   String get homeStatusCta => '完整现状';
@@ -184,7 +192,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeDownloadBody =>
-      '完整的系统镜像——GSI、我们的修复和整套 Pico 栈——就在 out 仓库里。一条 fastboot 命令就能刷上头显。';
+      'Pico Neo 2 的完整系统镜像——GSI、我们的修复和整套 Pico 栈——就在 out 仓库里。一条 fastboot 命令就能刷上头显。';
 
   @override
   String get homeDownloadCta => '获取镜像';
@@ -193,7 +201,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get statusTitle => '现状';
 
   @override
-  String get statusSubtitle => '实话实说的清单,跟着移植进度更新。';
+  String get statusSubtitle => 'Pico Neo 2 的实话实说清单,跟着移植进度更新。';
 
   @override
   String get statusWorksTitle => '已正常';
@@ -416,7 +424,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get screenshotsTitle => '截图';
 
   @override
-  String get screenshotsSubtitle => 'vrhome 和它的 library 窗口,跑在真机上。';
+  String get screenshotsSubtitle => 'vrhome 和它的 library 窗口,跑在 Pico Neo 2 真机上。';
 
   @override
   String get shotGridCaption => 'vrhome 里的应用网格。';
@@ -469,7 +477,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadImageBody =>
-      'system-hibiscus-full.img——3.6 GB,ext4,fsck 检查干净。LineageOS GSI 加我们的修复加整套 Pico 栈,刷上即用。';
+      'system-hibiscus-full.img——3.6 GB,ext4,fsck 检查干净。LineageOS GSI 加我们的修复加整套 Pico 栈,可直接刷上 Neo 2。';
 
   @override
   String get downloadImageCta => '打开 out 仓库';
@@ -498,7 +506,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadReqTitle => '你需要准备';
 
   @override
-  String get downloadReq1 => '一台 Pico Neo 2(A7B10)——Eye 和非 Eye 版本都可以';
+  String get downloadReq1 => '一台 Pico Neo 2(A7B10)——目前唯一支持的头显,Eye 和非 Eye 版本都可以';
 
   @override
   String get downloadReq2 => '已 root 的原厂固件和可解锁的 bootloader';
@@ -561,10 +569,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get faqSubtitle => '短回答,不吹牛。';
 
   @override
-  String get faqQ1 => '这个移植真的能用吗?';
+  String get faqQ1 => '真的能用了吗?';
 
   @override
-  String get faqA1 => '能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。现状页维护着最新清单。';
+  String get faqA1 => '在 Neo 2 上能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。现状页维护着最新清单。';
 
   @override
   String get faqQ2 => '刷机安全吗?';
@@ -578,7 +586,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get faqA3 =>
-      'Pico Neo 2(A7B10 / PICOA7B10)。Eye 和非 Eye 两个版本都行,眼动追踪是额外的活。';
+      'Pico Neo 2(A7B10 / PICOA7B10)——第一个支持的设备,目前也是唯一一个。Eye 和非 Eye 两个版本都行,眼动追踪是额外的活。系统本身按跨厂商设计,驱动层拆分完成后会支持更多头显。';
 
   @override
   String get faqQ4 => 'Pico 的专有文件从哪来?';
@@ -605,14 +613,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get aboutTitle => '关于';
 
   @override
-  String get aboutSubtitle => '一次移植,一台头显,每一步都公开。';
+  String get aboutSubtitle => '一个系统,多台头显,每一步都公开。';
 
   @override
   String get aboutWhatTitle => '这是什么';
 
   @override
   String get aboutWhatBody =>
-      'Hibiscus 把 LineageOS 17.1——通过 phh GSI 实现的 Android 10——跑在了 Pico Neo 2 上,一台出厂只有 Android 8.1 和整套专有 VR 栈的头显。';
+      'Hibiscus 是为 VR 一体头显打造的操作系统,基于 LineageOS 17.1——通过 phh GSI 实现的 Android 10。Pico Neo 2 出厂只有 Android 8.1 和整套专有 VR 栈,是第一个支持的设备,目前所有开发都在这里进行。';
 
   @override
   String get aboutHowTitle => '怎么做到的';

@@ -124,9 +124,9 @@ class _Stats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = [
+      (l10n.statDevice, l10n.statDeviceLabel),
       (l10n.statSoc, l10n.statSocLabel),
       (l10n.statPanel, l10n.statPanelLabel),
-      (l10n.statNotes, l10n.statNotesLabel),
     ];
     return Band(
       padding: const EdgeInsets.symmetric(vertical: 56),
@@ -182,6 +182,7 @@ class _Trio extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = [
       (l10n.homeWayOverlayTitle, l10n.homeWayOverlayBody),
+      (l10n.homeWayDeviceTitle, l10n.homeWayDeviceBody),
       (l10n.homeWayNotesTitle, l10n.homeWayNotesBody),
     ];
     return Band(

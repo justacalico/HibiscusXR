@@ -1,11 +1,23 @@
 # Hibiscus
 
-LineageOS 17.1 (Android 10) running on the Pico Neo 2 VR headset
-(codename `A7B10`, Snapdragon 845, stock PUI 4.1.3 / Android 8.1 vendor).
+Hibiscus is a custom operating system for standalone VR headsets, built
+on LineageOS 17.1 (Android 10). One OS across hardware from different
+vendors - the device-specific drivers and fixes live in their own trees,
+so porting to a new headset means writing that layer, not forking the OS.
+
+The **Pico Neo 2** (codename `A7B10`, Snapdragon 845, stock PUI 4.1.3 /
+Android 8.1 vendor) is the first supported device and where all
+development happens today.
+
+| Headset | Status |
+| --- | --- |
+| Pico Neo 2 | Supported, in development |
+| Oculus Quest 1 | Planned |
+| Pico Neo 3 | Planned |
 
 This site documents the whole project: what each repository holds, how the
-port works, how to build and flash it, and how to reproduce every dumped file
-from hardware you own.
+Neo 2 port works, how to build and flash it, and how to reproduce every
+dumped file from hardware you own.
 
 !!! warning "Flashing risk"
     This project involves flashing partition images and patched system
@@ -14,17 +26,18 @@ from hardware you own.
 
 ## What this is
 
-Stock PUI 4.1.3 is Android 8.1 with Pico's proprietary VR stack on top.
-Hibiscus replaces the system partition with a LineageOS 17.1 GSI plus a
-small overlay of our own fixes, then layers Pico's VR stack back on - the
-proprietary parts come from **your own device**, never from this repo.
+On the Neo 2, stock PUI 4.1.3 is Android 8.1 with Pico's proprietary VR
+stack on top. Hibiscus replaces the system partition with a LineageOS
+17.1 GSI plus a small overlay of our own fixes, then layers Pico's VR
+stack back on - the proprietary parts come from **your own device**,
+never from this repo.
 
 ## Current status
 
-The port boots and runs VRShell (the VR home) with live head rotation, audio,
-suspend matching stock behaviour, and the 2D Pico apps rendering. The one
-remaining blocker is the VR display staying black - see
-[status](internals/status.md).
+On the Neo 2 the port boots and runs VRShell (the VR home) with live head
+rotation, audio, suspend matching stock behaviour, the 2D Pico apps
+rendering and a real picture on the VR display - see
+[status](internals/status.md) for the full list.
 
 ## The repositories
 

@@ -1,6 +1,6 @@
 # Hardware
 
-Pico Neo 2 - `A7B10` / `PICOA7B10`.
+The first supported device: Pico Neo 2 - `A7B10` / `PICOA7B10`.
 
 | | |
 |---|---|

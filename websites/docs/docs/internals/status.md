@@ -1,5 +1,7 @@
 # Current status
 
+Where the Neo 2 port stands today.
+
 ## Works
 
 - Boots, audio, landscape 3840x2160, no sensor aborts, suspend as stock

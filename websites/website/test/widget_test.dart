@@ -162,7 +162,7 @@ void main() {
     final answer = find.textContaining('VR display shows a real picture');
     expect(answer, findsNothing);
 
-    await tester.tap(find.text('Does the port actually work?'));
+    await tester.tap(find.text('Does it actually work?'));
     await tester.pumpAndSettle();
     expect(answer, findsOneWidget);
   });

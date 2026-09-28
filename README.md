@@ -31,7 +31,7 @@ below show what works on each headset.
 | Boot, 3840x2160 display | Working |
 | Audio | Working |
 | Suspend and resume | Working |
-| Head tracking | 3DoF only, 6DoF SLAM not working |
+| Head tracking | Working, 3DoF and 6DoF SLAM |
 | VR compositor | Working, async TimeWarp direct present |
 | 2D Pico apps | Working |
 | Controllers | Partial: pairing, buttons and battery work, no positional tracking |

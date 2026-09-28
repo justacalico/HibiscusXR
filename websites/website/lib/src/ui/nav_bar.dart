@@ -225,6 +225,7 @@ class _MobileMenu extends StatelessWidget {
       Destination(Routes.home, (l) => l.appTitle),
       ..._destinations(l10n),
       Destination(Routes.download, (l) => l.navDownload),
+      Destination(Routes.cte, (l) => l.navCte),
     ];
     return Material(
       type: MaterialType.transparency,

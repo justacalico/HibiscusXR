@@ -1375,6 +1375,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to HibiscusXR'**
   String get notFoundCta;
+
+  /// No description provided for @navCte.
+  ///
+  /// In en, this message translates to:
+  /// **'HCTE'**
+  String get navCte;
+
+  /// No description provided for @cteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HCTE'**
+  String get cteTitle;
+
+  /// No description provided for @cteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hibiscus Controller Testing Environment - the desktop companion for Hibiscus headsets.'**
+  String get cteSubtitle;
+
+  /// No description provided for @cteWhatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What it is'**
+  String get cteWhatTitle;
+
+  /// No description provided for @cteWhatBody.
+  ///
+  /// In en, this message translates to:
+  /// **'HCTE is a desktop app (Linux, Windows, macOS) that pairs with a headset running Hibiscus and puts the whole development surface in one window. Plug in over USB or connect over Wi-Fi - no extra setup on the PC beyond adb, or none at all when the on-device CTE service is enabled.'**
+  String get cteWhatBody;
+
+  /// No description provided for @cteFeatOverviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Device and controller overview'**
+  String get cteFeatOverviewTitle;
+
+  /// No description provided for @cteFeatOverviewBody.
+  ///
+  /// In en, this message translates to:
+  /// **'What the headset is - model, driver target, Android and Hibiscus versions, tracking mode - plus which controllers are paired, their battery and tracking state.'**
+  String get cteFeatOverviewBody;
+
+  /// No description provided for @cteFeatDisplayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen mirror'**
+  String get cteFeatDisplayTitle;
+
+  /// No description provided for @cteFeatDisplayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A live view of the headset\'s display at a few frames per second, enough to watch boot behavior and debug panels without wearing the headset.'**
+  String get cteFeatDisplayBody;
+
+  /// No description provided for @cteFeatInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'APK install'**
+  String get cteFeatInstallTitle;
+
+  /// No description provided for @cteFeatInstallBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Push an APK to the device with one click, over adb or the socket channel.'**
+  String get cteFeatInstallBody;
+
+  /// No description provided for @cteFeatTrackingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live 6DoF/3DoF tracking'**
+  String get cteFeatTrackingTitle;
+
+  /// No description provided for @cteFeatTrackingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The head pose stream straight off the runtime: orientation, position, sample rate, a top-down trail, and per-controller poses.'**
+  String get cteFeatTrackingBody;
+
+  /// No description provided for @cteFeatDebugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug surface'**
+  String get cteFeatDebugTitle;
+
+  /// No description provided for @cteFeatDebugBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The full getprop table and a rolling logcat tail, for when something needs poking.'**
+  String get cteFeatDebugBody;
+
+  /// No description provided for @cteConnectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How it connects'**
+  String get cteConnectTitle;
+
+  /// No description provided for @cteConnectBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Two transports: adb over USB or wireless adb for the full feature set, and the on-device cted service on port 7340 when you don\'t want adb involved at all. cted is off by default and starts when you ask for it - setprop persist.hibiscus.cted 1 - same opt-in stance as wireless adb.'**
+  String get cteConnectBody;
+
+  /// No description provided for @cteGetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting it'**
+  String get cteGetTitle;
+
+  /// No description provided for @cteGetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop bundles ship with every cte-v* release on the monorepo - tarballs and zips for Linux, Windows, and macOS, mirrored to the GitLab release page so they never expire.'**
+  String get cteGetBody;
+
+  /// No description provided for @cteReleasesCta.
+  ///
+  /// In en, this message translates to:
+  /// **'CTE releases'**
+  String get cteReleasesCta;
+
+  /// No description provided for @cteSourceCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get cteSourceCta;
 }
 
 class _AppLocalizationsDelegate

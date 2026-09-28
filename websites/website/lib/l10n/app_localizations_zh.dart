@@ -677,4 +677,71 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get notFoundCta => '回到 HibiscusXR';
+
+  @override
+  String get navCte => 'HCTE';
+
+  @override
+  String get cteTitle => 'HCTE';
+
+  @override
+  String get cteSubtitle => 'Hibiscus 头显调试环境 - 运行 Hibiscus 头显的桌面伴侣工具。';
+
+  @override
+  String get cteWhatTitle => '这是什么';
+
+  @override
+  String get cteWhatBody =>
+      'HCTE 是一个桌面应用(Linux、Windows、macOS),与运行 Hibiscus 的头显配对,把整个开发界面放进一个窗口。USB 直插或 Wi-Fi 连接都行 - 电脑上有 adb 就够,开启设备上的 CTE 服务后连 adb 都不用。';
+
+  @override
+  String get cteFeatOverviewTitle => '设备与手柄概览';
+
+  @override
+  String get cteFeatOverviewBody =>
+      '头显是什么 - 型号、驱动目标、安卓和 Hibiscus 版本、追踪模式 - 以及配对了哪些手柄、电量和追踪状态。';
+
+  @override
+  String get cteFeatDisplayTitle => '屏幕镜像';
+
+  @override
+  String get cteFeatDisplayBody => '实时查看头显画面,每秒几帧,不用戴头显就能看启动过程和调试面板。';
+
+  @override
+  String get cteFeatInstallTitle => '安装 APK';
+
+  @override
+  String get cteFeatInstallBody => '一键把 APK 推到设备上,走 adb 或 socket 通道都行。';
+
+  @override
+  String get cteFeatTrackingTitle => '实时 6DoF/3DoF 追踪';
+
+  @override
+  String get cteFeatTrackingBody => '直接从运行时拿到的头部位姿流:朝向、位置、采样率、俯视轨迹,还有每只手柄的位姿。';
+
+  @override
+  String get cteFeatDebugTitle => '调试面板';
+
+  @override
+  String get cteFeatDebugBody => '完整的 getprop 表和滚动的 logcat,排查问题的时候用。';
+
+  @override
+  String get cteConnectTitle => '怎么连接';
+
+  @override
+  String get cteConnectBody =>
+      '两条通道:adb(USB 或无线 adb)提供完整功能;设备上的 cted 服务在 7340 端口监听,不想用 adb 就走它。cted 默认关闭,需要时才开 - setprop persist.hibiscus.cted 1 - 和无线 adb 一样是可选开启的。';
+
+  @override
+  String get cteGetTitle => '获取方式';
+
+  @override
+  String get cteGetBody =>
+      '每个 cte-v* 版本都会在 monorepo 上发布桌面构建包 - Linux、Windows、macOS 的 tar 和 zip,并同步到 GitLab release 页面,链接不会过期。';
+
+  @override
+  String get cteReleasesCta => 'CTE 发布页';
+
+  @override
+  String get cteSourceCta => '源码';
 }

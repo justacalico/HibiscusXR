@@ -16,6 +16,9 @@ abstract final class Links {
       'https://gitlab.com/api/v4/projects/$projectId/releases';
   static String releasePage(String tag) => '$repo/-/releases/$tag';
 
+  /// HCTE desktop app releases (cte-v* tags).
+  static const cteReleases = '$repo/-/releases?search=cte';
+
   /// Canonical GitLab URL for a directory inside the monorepo.
   static String tree(String path) => '$repo/-/tree/main/$path';
 }

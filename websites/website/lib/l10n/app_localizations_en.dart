@@ -724,4 +724,76 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notFoundCta => 'Back to HibiscusXR';
+
+  @override
+  String get navCte => 'HCTE';
+
+  @override
+  String get cteTitle => 'HCTE';
+
+  @override
+  String get cteSubtitle =>
+      'Hibiscus Controller Testing Environment - the desktop companion for Hibiscus headsets.';
+
+  @override
+  String get cteWhatTitle => 'What it is';
+
+  @override
+  String get cteWhatBody =>
+      'HCTE is a desktop app (Linux, Windows, macOS) that pairs with a headset running Hibiscus and puts the whole development surface in one window. Plug in over USB or connect over Wi-Fi - no extra setup on the PC beyond adb, or none at all when the on-device CTE service is enabled.';
+
+  @override
+  String get cteFeatOverviewTitle => 'Device and controller overview';
+
+  @override
+  String get cteFeatOverviewBody =>
+      'What the headset is - model, driver target, Android and Hibiscus versions, tracking mode - plus which controllers are paired, their battery and tracking state.';
+
+  @override
+  String get cteFeatDisplayTitle => 'Screen mirror';
+
+  @override
+  String get cteFeatDisplayBody =>
+      'A live view of the headset\'s display at a few frames per second, enough to watch boot behavior and debug panels without wearing the headset.';
+
+  @override
+  String get cteFeatInstallTitle => 'APK install';
+
+  @override
+  String get cteFeatInstallBody =>
+      'Push an APK to the device with one click, over adb or the socket channel.';
+
+  @override
+  String get cteFeatTrackingTitle => 'Live 6DoF/3DoF tracking';
+
+  @override
+  String get cteFeatTrackingBody =>
+      'The head pose stream straight off the runtime: orientation, position, sample rate, a top-down trail, and per-controller poses.';
+
+  @override
+  String get cteFeatDebugTitle => 'Debug surface';
+
+  @override
+  String get cteFeatDebugBody =>
+      'The full getprop table and a rolling logcat tail, for when something needs poking.';
+
+  @override
+  String get cteConnectTitle => 'How it connects';
+
+  @override
+  String get cteConnectBody =>
+      'Two transports: adb over USB or wireless adb for the full feature set, and the on-device cted service on port 7340 when you don\'t want adb involved at all. cted is off by default and starts when you ask for it - setprop persist.hibiscus.cted 1 - same opt-in stance as wireless adb.';
+
+  @override
+  String get cteGetTitle => 'Getting it';
+
+  @override
+  String get cteGetBody =>
+      'Desktop bundles ship with every cte-v* release on the monorepo - tarballs and zips for Linux, Windows, and macOS, mirrored to the GitLab release page so they never expire.';
+
+  @override
+  String get cteReleasesCta => 'CTE releases';
+
+  @override
+  String get cteSourceCta => 'Source';
 }

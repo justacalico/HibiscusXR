@@ -29,6 +29,7 @@ class SiteFooter extends StatelessWidget {
       _Link(l10n.navScreenshots, Routes.screenshots),
       _Link(l10n.navFaq, Routes.faq),
       _Link(l10n.navDownload, Routes.download),
+      _Link(l10n.navCte, Routes.cte),
     ];
     final project = <_Link>[
       _Link(l10n.navAbout, Routes.about),

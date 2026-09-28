@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import 'routes.dart';
 import 'ui/pages/about_page.dart';
+import 'ui/pages/cte_page.dart';
 import 'ui/pages/downloads_page.dart';
 import 'ui/pages/faq_page.dart';
 import 'ui/pages/home_page.dart';
@@ -44,6 +45,10 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(
               path: Routes.download,
               pageBuilder: _fade(const DownloadsPage()),
+            ),
+            GoRoute(
+              path: Routes.cte,
+              pageBuilder: _fade(const CtePage()),
             ),
             GoRoute(
               path: Routes.faq,

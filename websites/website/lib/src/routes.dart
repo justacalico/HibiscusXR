@@ -5,6 +5,7 @@ abstract final class Routes {
   static const repositories = '/repositories';
   static const screenshots = '/screenshots';
   static const download = '/download';
+  static const cte = '/cte';
   static const faq = '/faq';
   static const about = '/about';
 }

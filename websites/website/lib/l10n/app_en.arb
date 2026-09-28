@@ -253,4 +253,27 @@
   "notFoundTitle": "Page not found",
   "notFoundBody": "The page you are looking for does not exist.",
   "notFoundCta": "Back to HibiscusXR"
+,
+  "navCte": "HCTE",
+
+  "cteTitle": "HCTE",
+  "cteSubtitle": "Hibiscus Controller Testing Environment - the desktop companion for Hibiscus headsets.",
+  "cteWhatTitle": "What it is",
+  "cteWhatBody": "HCTE is a desktop app (Linux, Windows, macOS) that pairs with a headset running Hibiscus and puts the whole development surface in one window. Plug in over USB or connect over Wi-Fi - no extra setup on the PC beyond adb, or none at all when the on-device CTE service is enabled.",
+  "cteFeatOverviewTitle": "Device and controller overview",
+  "cteFeatOverviewBody": "What the headset is - model, driver target, Android and Hibiscus versions, tracking mode - plus which controllers are paired, their battery and tracking state.",
+  "cteFeatDisplayTitle": "Screen mirror",
+  "cteFeatDisplayBody": "A live view of the headset's display at a few frames per second, enough to watch boot behavior and debug panels without wearing the headset.",
+  "cteFeatInstallTitle": "APK install",
+  "cteFeatInstallBody": "Push an APK to the device with one click, over adb or the socket channel.",
+  "cteFeatTrackingTitle": "Live 6DoF/3DoF tracking",
+  "cteFeatTrackingBody": "The head pose stream straight off the runtime: orientation, position, sample rate, a top-down trail, and per-controller poses.",
+  "cteFeatDebugTitle": "Debug surface",
+  "cteFeatDebugBody": "The full getprop table and a rolling logcat tail, for when something needs poking.",
+  "cteConnectTitle": "How it connects",
+  "cteConnectBody": "Two transports: adb over USB or wireless adb for the full feature set, and the on-device cted service on port 7340 when you don't want adb involved at all. cted is off by default and starts when you ask for it - setprop persist.hibiscus.cted 1 - same opt-in stance as wireless adb.",
+  "cteGetTitle": "Getting it",
+  "cteGetBody": "Desktop bundles ship with every cte-v* release on the monorepo - tarballs and zips for Linux, Windows, and macOS, mirrored to the GitLab release page so they never expire.",
+  "cteReleasesCta": "CTE releases",
+  "cteSourceCta": "Source"
 }

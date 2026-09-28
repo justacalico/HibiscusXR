@@ -49,6 +49,25 @@ void main() {
     );
   });
 
+  testWidgets('cte page renders features and links', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/cte');
+    await tester.pumpAndSettle();
+
+    expect(find.text('HCTE'), findsWidgets);
+    expect(find.text('What it is'), findsOneWidget);
+    expect(find.text('Screen mirror'), findsOneWidget);
+    expect(find.text('Live 6DoF/3DoF tracking'), findsOneWidget);
+    expect(find.text('How it connects'), findsOneWidget);
+    expect(find.text('CTE releases'), findsOneWidget);
+    expect(find.text('Source'), findsWidgets);
+  });
+
   testWidgets('navigates to download page', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;

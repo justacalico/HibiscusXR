@@ -11,6 +11,7 @@ void main() {
       Routes.repositories,
       Routes.screenshots,
       Routes.download,
+      Routes.cte,
       Routes.faq,
       Routes.about,
     ];

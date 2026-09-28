@@ -40,6 +40,11 @@
           "marker": "FAN DAEMON ADDED OK"
         },
         {
+          "run": "tools/build/380_img_cted.sh",
+          "log": "380_img_cted.txt",
+          "marker": "CTE DAEMON OK"
+        },
+        {
           "run": "tools/build/406_img_glespatch.sh",
           "log": "406_glespatch.txt",
           "marker": "GLES ROBUST PATCH OK"

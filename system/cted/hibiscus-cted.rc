@@ -1,0 +1,22 @@
+# HCTE daemon - the on-device socket HCTE (applications/cte) talks to.
+#
+# OFF by default - it opens a shell-capability control socket to anyone on
+# the LAN, so it has to be asked for, same stance as wireless adb:
+#     adb shell su -c 'setprop persist.hibiscus.cted 1'   (survives reboots)
+#     adb shell su -c 'setprop persist.hibiscus.cted 0'   (stop again)
+#
+# Runs in the shell domain: that is the same trust level as adb itself and
+# covers everything the protocol needs - getprop, dumpsys, screencap,
+# logcat, pm install, and /sdcard/CtrlShareMem.
+
+service cted /system/bin/cted
+    disabled
+    user shell
+    group shell sdcard_rw media_rw inet log
+    seclabel u:r:shell:s0
+
+on property:persist.hibiscus.cted=1
+    start cted
+
+on property:persist.hibiscus.cted=0
+    stop cted

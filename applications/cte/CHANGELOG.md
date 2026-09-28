@@ -11,6 +11,20 @@ All notable changes to this project will be documented in this file. See [conven
 - logcat 位姿过滤改用 tag:prio 显式写法 - (50f2ddc) - HttpAnimations
 #### Continuous Integration
 - 新增 CTE 发布通道,cog 版本号 + cte-v 标签流水线 - (a10ba72) - HttpAnimations
+#### Miscellaneous Chores
+- (**version**) cte-v0.1.0 - (5f0eb11) - GitLab CI
+
+- - -
+
+## cte-v0.1.0 - 2026-09-28
+#### Features
+- 新增 HCTE 桌面伴侣应用,adb/cted 双通道管理头显 - (b4d2c5e) - HttpAnimations
+#### Bug Fixes
+- cte bump 去掉无效的 hook-profile 参数 - (8887f81) - HttpAnimations
+- 追踪模式标题栏与概览改用本地化标签 - (b2f83bd) - HttpAnimations
+- logcat 位姿过滤改用 tag:prio 显式写法 - (50f2ddc) - HttpAnimations
+#### Continuous Integration
+- 新增 CTE 发布通道,cog 版本号 + cte-v 标签流水线 - (a10ba72) - HttpAnimations
 
 - - -
 

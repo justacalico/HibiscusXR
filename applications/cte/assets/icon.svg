@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-labelledby="t d">
+  <title id="t">Hibiscus CTE</title>
+  <desc id="d">The hibiscus mark above a desktop monitor bar - the companion tool badge.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16222e"/>
+      <stop offset="1" stop-color="#0a0f16"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="46%" r="55%">
+      <stop offset="0" stop-color="#5ee7ff" stop-opacity="0.20"/>
+      <stop offset="1" stop-color="#5ee7ff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="petal" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="172">
+      <stop offset="0" stop-color="#7a0838"/>
+      <stop offset="0.22" stop-color="#c8175a"/>
+      <stop offset="0.62" stop-color="#ff4f8b"/>
+      <stop offset="1" stop-color="#ffa27f"/>
+    </radialGradient>
+    <path id="p" d="M0 0 C-52 -22 -98 -92 -72 -142 C-56 -172 -20 -180 0 -168 C20 -180 56 -172 72 -142 C98 -92 52 -22 0 0 Z"/>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="112" fill="url(#glow)"/>
+
+  <g transform="translate(256 220) scale(0.86)">
+    <g transform="rotate(-25)">
+      <ellipse rx="192" ry="64" fill="none" stroke="#5ee7ff" stroke-width="7" stroke-opacity="0.35"/>
+    </g>
+    <g stroke="#ffc4d6" stroke-opacity="0.35" stroke-width="2" fill="url(#petal)">
+      <use href="#p" transform="rotate(0)"/>
+      <use href="#p" transform="rotate(72)"/>
+      <use href="#p" transform="rotate(144)"/>
+      <use href="#p" transform="rotate(216)"/>
+      <use href="#p" transform="rotate(288)"/>
+    </g>
+    <circle r="26" fill="#5a062c" fill-opacity="0.8"/>
+    <g transform="rotate(-25)">
+      <path d="M-192 0 A192 64 0 0 0 192 0" fill="none" stroke="#5ee7ff" stroke-width="9" stroke-linecap="round"/>
+      <circle cx="192" cy="0" r="13" fill="#5ee7ff"/>
+      <circle cx="192" cy="0" r="24" fill="#5ee7ff" fill-opacity="0.25"/>
+    </g>
+  </g>
+
+  <!-- monitor: the external device this app runs on -->
+  <g stroke="#c9d6e2" stroke-width="10" fill="none" stroke-linecap="round">
+    <rect x="126" y="368" width="260" height="84" rx="14" fill="#0d141d" fill-opacity="0.85"/>
+    <path d="M212 452 v18 M300 452 v18 M196 470 h120"/>
+  </g>
+  <text x="256" y="424" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="44" fill="#5ee7ff">CTE</text>
+</svg>

@@ -1,6 +1,7 @@
 # Architecture
 
-Hibiscus is a **GSI + overlay + user-restored-proprietary** port.
+Hibiscus keeps every device port in the same shape: **GSI + overlay +
+user-restored-proprietary**. For the Pico Neo 2:
 
 ```
 LineageOS 17.1 GSI (treble_arm64_avS, A-only, arm64)

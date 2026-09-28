@@ -191,7 +191,7 @@ abstract class AppLocalizations {
   /// No description provided for @heroEyebrow.
   ///
   /// In en, this message translates to:
-  /// **'Pico Neo 2 · LineageOS 17.1'**
+  /// **'Standalone VR · LineageOS 17.1'**
   String get heroEyebrow;
 
   /// No description provided for @heroTitle.
@@ -203,7 +203,7 @@ abstract class AppLocalizations {
   /// No description provided for @heroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A full port of LineageOS 17.1 to the Pico Neo 2 headset.'**
+  /// **'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.'**
   String get heroSubtitle;
 
   /// No description provided for @heroPrimary.
@@ -308,6 +308,18 @@ abstract class AppLocalizations {
   /// **'Glasses'**
   String get shotAppGlasses;
 
+  /// No description provided for @statDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pico Neo 2'**
+  String get statDevice;
+
+  /// No description provided for @statDeviceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First supported device'**
+  String get statDeviceLabel;
+
   /// No description provided for @statSoc.
   ///
   /// In en, this message translates to:
@@ -332,18 +344,6 @@ abstract class AppLocalizations {
   /// **'JDI 4K panel'**
   String get statPanelLabel;
 
-  /// No description provided for @statNotes.
-  ///
-  /// In en, this message translates to:
-  /// **'~300'**
-  String get statNotes;
-
-  /// No description provided for @statNotesLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Research notes'**
-  String get statNotesLabel;
-
   /// No description provided for @shotCollectionCaption.
   ///
   /// In en, this message translates to:
@@ -367,6 +367,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.'**
   String get homeWayOverlayBody;
+
+  /// No description provided for @homeWayDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One OS, every headset'**
+  String get homeWayDeviceTitle;
+
+  /// No description provided for @homeWayDeviceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Device-specific drivers and configs live in their own trees. Porting to a new headset means writing that layer, not forking the system.'**
+  String get homeWayDeviceBody;
 
   /// No description provided for @homeWayNotesTitle.
   ///
@@ -401,7 +413,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeStatusBody.
   ///
   /// In en, this message translates to:
-  /// **'The port boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.'**
+  /// **'On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.'**
   String get homeStatusBody;
 
   /// No description provided for @homeStatusCta.
@@ -437,7 +449,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDownloadBody.
   ///
   /// In en, this message translates to:
-  /// **'A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.'**
+  /// **'A full system image for the Pico Neo 2 - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.'**
   String get homeDownloadBody;
 
   /// No description provided for @homeDownloadCta.
@@ -455,7 +467,7 @@ abstract class AppLocalizations {
   /// No description provided for @statusSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'The honest list. It moves as the port does.'**
+  /// **'The honest list for the Pico Neo 2. It moves as the port does.'**
   String get statusSubtitle;
 
   /// No description provided for @statusWorksTitle.
@@ -893,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @screenshotsSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'vrhome and its library window, on real hardware.'**
+  /// **'vrhome and its library window, on the Pico Neo 2.'**
   String get screenshotsSubtitle;
 
   /// No description provided for @shotGridCaption.
@@ -989,7 +1001,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadImageBody.
   ///
   /// In en, this message translates to:
-  /// **'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.'**
+  /// **'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash onto the Neo 2.'**
   String get downloadImageBody;
 
   /// No description provided for @downloadImageCta.
@@ -1043,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @downloadReq1.
   ///
   /// In en, this message translates to:
-  /// **'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work'**
+  /// **'A Pico Neo 2 (A7B10) - the only supported headset for now; Eye and non-Eye SKUs both work'**
   String get downloadReq1;
 
   /// No description provided for @downloadReq2.
@@ -1169,13 +1181,13 @@ abstract class AppLocalizations {
   /// No description provided for @faqQ1.
   ///
   /// In en, this message translates to:
-  /// **'Does the port actually work?'**
+  /// **'Does it actually work?'**
   String get faqQ1;
 
   /// No description provided for @faqA1.
   ///
   /// In en, this message translates to:
-  /// **'It boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.'**
+  /// **'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.'**
   String get faqA1;
 
   /// No description provided for @faqQ2.
@@ -1199,7 +1211,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA3.
   ///
   /// In en, this message translates to:
-  /// **'The Pico Neo 2 (A7B10 / PICOA7B10). Both the Eye and non-Eye SKUs work; eye tracking is extra work on top.'**
+  /// **'The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.'**
   String get faqA3;
 
   /// No description provided for @faqQ4.
@@ -1247,7 +1259,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'One port, one headset, every step in the open.'**
+  /// **'One OS, many headsets, every step in the open.'**
   String get aboutSubtitle;
 
   /// No description provided for @aboutWhatTitle.
@@ -1259,7 +1271,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutWhatBody.
   ///
   /// In en, this message translates to:
-  /// **'Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.'**
+  /// **'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. The Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack, is the first supported device and where all development happens today.'**
   String get aboutWhatBody;
 
   /// No description provided for @aboutHowTitle.

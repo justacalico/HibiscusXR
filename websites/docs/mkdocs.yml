@@ -1,5 +1,5 @@
 site_name: HibiscusXR
-site_description: Hibiscus - LineageOS 17.1 on the Pico Neo 2
+site_description: Hibiscus - a custom OS for standalone VR headsets
 repo_url: https://gitlab.com/neosalsa/HibiscusXR
 edit_uri: '-/edit/main/websites/docs/docs/'
 

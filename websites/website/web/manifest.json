@@ -5,7 +5,7 @@
     "display": "standalone",
     "background_color": "#fbfbfd",
     "theme_color": "#fbfbfd",
-    "description": "LineageOS 17.1 running on the Pico Neo 2 VR headset.",
+    "description": "A custom OS for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.",
     "orientation": "any",
     "prefer_related_applications": false,
     "icons": [

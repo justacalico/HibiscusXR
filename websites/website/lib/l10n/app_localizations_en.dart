@@ -54,14 +54,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get languageLabel => 'Language';
 
   @override
-  String get heroEyebrow => 'Pico Neo 2 · LineageOS 17.1';
+  String get heroEyebrow => 'Standalone VR · LineageOS 17.1';
 
   @override
   String get heroTitle => 'Android back, in VR.';
 
   @override
   String get heroSubtitle =>
-      'A full port of LineageOS 17.1 to the Pico Neo 2 headset.';
+      'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.';
 
   @override
   String get heroPrimary => 'See the status';
@@ -117,6 +117,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shotAppGlasses => 'Glasses';
 
   @override
+  String get statDevice => 'Pico Neo 2';
+
+  @override
+  String get statDeviceLabel => 'First supported device';
+
+  @override
   String get statSoc => 'Snapdragon 845';
 
   @override
@@ -127,12 +133,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statPanelLabel => 'JDI 4K panel';
-
-  @override
-  String get statNotes => '~300';
-
-  @override
-  String get statNotesLabel => 'Research notes';
 
   @override
   String get shotCollectionCaption => 'Collections and groups, with counts.';
@@ -146,6 +146,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homeWayOverlayBody =>
       'A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.';
+
+  @override
+  String get homeWayDeviceTitle => 'One OS, every headset';
+
+  @override
+  String get homeWayDeviceBody =>
+      'Device-specific drivers and configs live in their own trees. Porting to a new headset means writing that layer, not forking the system.';
 
   @override
   String get homeWayNotesTitle => 'Research in the open';
@@ -165,7 +172,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeStatusBody =>
-      'The port boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.';
+      'On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.';
 
   @override
   String get homeStatusCta => 'Full status';
@@ -185,7 +192,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeDownloadBody =>
-      'A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.';
+      'A full system image for the Pico Neo 2 - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.';
 
   @override
   String get homeDownloadCta => 'Get the image';
@@ -194,7 +201,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusTitle => 'Status';
 
   @override
-  String get statusSubtitle => 'The honest list. It moves as the port does.';
+  String get statusSubtitle =>
+      'The honest list for the Pico Neo 2. It moves as the port does.';
 
   @override
   String get statusWorksTitle => 'Working';
@@ -457,7 +465,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get screenshotsSubtitle =>
-      'vrhome and its library window, on real hardware.';
+      'vrhome and its library window, on the Pico Neo 2.';
 
   @override
   String get shotGridCaption => 'The app grid inside vrhome.';
@@ -512,7 +520,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadImageBody =>
-      'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.';
+      'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash onto the Neo 2.';
 
   @override
   String get downloadImageCta => 'Open the out repo';
@@ -542,7 +550,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadReq1 =>
-      'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work';
+      'A Pico Neo 2 (A7B10) - the only supported headset for now; Eye and non-Eye SKUs both work';
 
   @override
   String get downloadReq2 =>
@@ -607,11 +615,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get faqSubtitle => 'Short answers, no marketing.';
 
   @override
-  String get faqQ1 => 'Does the port actually work?';
+  String get faqQ1 => 'Does it actually work?';
 
   @override
   String get faqA1 =>
-      'It boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.';
+      'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.';
 
   @override
   String get faqQ2 => 'Is it safe to flash?';
@@ -625,7 +633,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA3 =>
-      'The Pico Neo 2 (A7B10 / PICOA7B10). Both the Eye and non-Eye SKUs work; eye tracking is extra work on top.';
+      'The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.';
 
   @override
   String get faqQ4 => 'Where do Pico\'s proprietary files come from?';
@@ -652,14 +660,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutTitle => 'About';
 
   @override
-  String get aboutSubtitle => 'One port, one headset, every step in the open.';
+  String get aboutSubtitle => 'One OS, many headsets, every step in the open.';
 
   @override
   String get aboutWhatTitle => 'What it is';
 
   @override
   String get aboutWhatBody =>
-      'Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.';
+      'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. The Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack, is the first supported device and where all development happens today.';
 
   @override
   String get aboutHowTitle => 'How it works';

@@ -22,9 +22,9 @@
 
   "languageLabel": "Language",
 
-  "heroEyebrow": "Pico Neo 2 · LineageOS 17.1",
+  "heroEyebrow": "Standalone VR · LineageOS 17.1",
   "heroTitle": "Android back, in VR.",
-  "heroSubtitle": "A full port of LineageOS 17.1 to the Pico Neo 2 headset.",
+  "heroSubtitle": "A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.",
   "heroPrimary": "See the status",
   "heroSecondary": "Read the docs",
   "heroShotCaption": "The library window floating inside vrhome.",
@@ -49,25 +49,27 @@
   "shotAppGemini": "Gemini",
   "shotAppGlasses": "Glasses",
 
+  "statDevice": "Pico Neo 2",
+  "statDeviceLabel": "First supported device",
   "statSoc": "Snapdragon 845",
   "statSocLabel": "with Adreno 630",
   "statPanel": "3840×2160 @ 72 Hz",
   "statPanelLabel": "JDI 4K panel",
-  "statNotes": "~300",
-  "statNotesLabel": "Research notes",
 
   "shotCollectionCaption": "Collections and groups, with counts.",
   "shotMenuCaption": "The tile menu on a long press.",
 
   "homeWayOverlayTitle": "GSI plus overlay",
   "homeWayOverlayBody": "A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.",
+  "homeWayDeviceTitle": "One OS, every headset",
+  "homeWayDeviceBody": "Device-specific drivers and configs live in their own trees. Porting to a new headset means writing that layer, not forking the system.",
   "homeWayNotesTitle": "Research in the open",
   "homeWayNotesBody": "Every dead end is written down. The notes repo holds around 300 numbered files of raw findings, from first boot to the last black frame.",
   "homeWayCta": "Browse the repositories",
 
   "homeStatusEyebrow": "Where it stands",
   "homeStatusTitle": "Boots. Shell runs. Picture's on.",
-  "homeStatusBody": "The port boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.",
+  "homeStatusBody": "On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.",
   "homeStatusCta": "Full status",
 
   "homeOpenTitle": "Open all the way down.",
@@ -75,11 +77,11 @@
   "homeOpenSource": "Browse the repo",
 
   "homeDownloadTitle": "Flash it yourself.",
-  "homeDownloadBody": "A full system image - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.",
+  "homeDownloadBody": "A full system image for the Pico Neo 2 - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.",
   "homeDownloadCta": "Get the image",
 
   "statusTitle": "Status",
-  "statusSubtitle": "The honest list. It moves as the port does.",
+  "statusSubtitle": "The honest list for the Pico Neo 2. It moves as the port does.",
   "statusWorksTitle": "Working",
   "statusWorks1": "Boots clean: audio, 3840×2160 landscape, suspend matching stock",
   "statusWorks2": "pvrservice publishes live head rotation - valid unit quaternions",
@@ -160,7 +162,7 @@
   "repoRef": "Local clone of alvr-pico-legacy kept for reference.",
 
   "screenshotsTitle": "Screenshots",
-  "screenshotsSubtitle": "vrhome and its library window, on real hardware.",
+  "screenshotsSubtitle": "vrhome and its library window, on the Pico Neo 2.",
   "shotGridCaption": "The app grid inside vrhome.",
 
   "downloadTitle": "Download",
@@ -177,7 +179,7 @@
   "downloadBackupConfirm": "I created a full backup of my headset",
   "downloadLockedHint": "Confirm your backup above to reveal",
   "downloadImageTitle": "The full system image",
-  "downloadImageBody": "system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash.",
+  "downloadImageBody": "system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash onto the Neo 2.",
   "downloadImageCta": "Open the out repo",
   "downloadStepsTitle": "Flashing",
   "downloadStep1": "adb reboot bootloader",
@@ -186,7 +188,7 @@
   "downloadStep4": "fastboot reboot",
   "downloadStepsNote": "The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash. The tools repo has a script that handles both quirks for you.",
   "downloadReqTitle": "What you need",
-  "downloadReq1": "A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work",
+  "downloadReq1": "A Pico Neo 2 (A7B10) - the only supported headset for now; Eye and non-Eye SKUs both work",
   "downloadReq2": "Rooted stock firmware and an unlockable bootloader",
   "downloadReq3": "A Linux host with adb and fastboot",
 
@@ -210,12 +212,12 @@
 
   "faqTitle": "FAQ",
   "faqSubtitle": "Short answers, no marketing.",
-  "faqQ1": "Does the port actually work?",
-  "faqA1": "It boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.",
+  "faqQ1": "Does it actually work?",
+  "faqA1": "On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.",
   "faqQ2": "Is it safe to flash?",
   "faqA2": "There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.",
   "faqQ3": "Which headset does it run on?",
-  "faqA3": "The Pico Neo 2 (A7B10 / PICOA7B10). Both the Eye and non-Eye SKUs work; eye tracking is extra work on top.",
+  "faqA3": "The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.",
   "faqQ4": "Where do Pico's proprietary files come from?",
   "faqA4": "From your own device or its stock OTA. The overlay repo carries a manifest of every blob needed - path, size, sha256 prefix, purpose - and none of them are committed to source repos.",
   "faqQ5": "What is vrhome?",
@@ -224,9 +226,9 @@
   "faqA6": "Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.",
 
   "aboutTitle": "About",
-  "aboutSubtitle": "One port, one headset, every step in the open.",
+  "aboutSubtitle": "One OS, many headsets, every step in the open.",
   "aboutWhatTitle": "What it is",
-  "aboutWhatBody": "Hibiscus runs LineageOS 17.1 - Android 10 via a phh GSI - on the Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack.",
+  "aboutWhatBody": "Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. The Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack, is the first supported device and where all development happens today.",
   "aboutHowTitle": "How it works",
   "aboutHowBody": "GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.",
   "aboutGroupTitle": "The monorepo",

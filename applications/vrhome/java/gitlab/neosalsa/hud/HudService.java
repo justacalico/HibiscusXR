@@ -158,6 +158,14 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             Intent adc = new Intent("android.intent.pvrcon.grapadc");
             adc.setPackage("com.picovr.picovrlib.cvcontroller");
             sendBroadcast(adc);
+            // same story for the slpi side - CVService gates its ssc
+            // sensor receive path on this action, so without it the
+            // ndi_fpga stream never starts even when everything is
+            // configured
+            Intent rx = new Intent("pui.settings.action.ENABLE_RX");
+            rx.setPackage("com.picovr.picovrlib.cvcontroller");
+            rx.putExtra("enable", 1);
+            sendBroadcast(rx);
             Log.i(TAG, "cvservice ctrl thread poked");
         } catch (Throwable t) {
             Log.e(TAG, "cvservice poke failed", t);

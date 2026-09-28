@@ -16,7 +16,7 @@ if ! version=$(cog bump --package cte --auto --dry-run 2>/dev/null) || [ -z "$ve
 fi
 echo "Bumping cte to $version"
 
-cog bump --package cte --auto --hook-profile ci
+cog bump --package cte --auto
 
 TAG=$(git tag --points-at HEAD | grep '^cte-v' | head -n1)
 if [ -z "$TAG" ]; then

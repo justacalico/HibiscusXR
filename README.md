@@ -13,10 +13,32 @@ The Pico Neo 2 is the first supported device and where all development
 happens today. Other headsets, like the Oculus Quest 1 and Pico Neo 3, are
 planned once the OS is split from the drivers.
 
-**This is an early work in progress, not a finished product.** On the Neo 2
-the system boots, audio works, and the VR home launches and renders on the
-headset display with head tracking. Controllers, 6DoF tracking and
-passthrough still don't work.
+**This is an early work in progress, not a finished product.** The tables
+below show what works on each headset.
+
+## Device compatibility
+
+| Headset | Status |
+| --- | --- |
+| Pico Neo 2 | Supported, in development |
+| Oculus Quest 1 | Planned |
+| Pico Neo 3 | Planned |
+
+### Pico Neo 2
+
+| Feature | Status |
+| --- | --- |
+| Boot, 3840x2160 display | Working |
+| Audio | Working |
+| Suspend and resume | Working |
+| Head tracking | 3DoF only, 6DoF SLAM not working |
+| VR compositor | Working, async TimeWarp direct present |
+| 2D Pico apps | Working |
+| Controllers | Partial: pairing, buttons and battery work, no positional tracking |
+| Passthrough | Not working |
+| Software IPD adjustment | Working |
+| Wireless adb | Working, opt-in |
+| Setup wizard | Broken, disabled automatically on first boot |
 
 ## Before you install
 

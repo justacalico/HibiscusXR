@@ -13,6 +13,12 @@
  * added - the build globs the drivers tree into drv_hsvr and generates
  * the table.
  *
+ * Input devices that are not tied to one headset get their own tree:
+ * controllers/<name>/monado/ exports `hsvr_ctrl_<name>`, and the prober
+ * attaches every generic controller that probed (or was forced) after
+ * the winning driver's native controllers. Porting the OS to a new
+ * headset then never means porting its controllers.
+ *
  * Devices still return plain monado xrt_device objects: the kit is the
  * seam for discovery and ownership, not a second device model. Fuse
  * sensors, track and distort inside the driver exactly like before.
@@ -75,6 +81,49 @@ hsvr_driver_pick(void);
  */
 const struct hsvr_driver *
 hsvr_driver_find(const char *name);
+
+
+/*!
+ * One headset-independent controller type. Controllers live in
+ * controllers/<name>/monado/ and export this as
+ * `const struct hsvr_controller hsvr_ctrl_<name>`.
+ *
+ * A paired Wii Remote, a Bluetooth gamepad, anything that is not part
+ * of the headset's own tracking stack belongs here: it attaches to
+ * whatever driver won the HMD probe and carries over to new hardware
+ * unchanged.
+ */
+struct hsvr_controller
+{
+	//! Directory name under controllers/, e.g. "wii".
+	const char *name;
+
+	/*!
+	 * >0 when this controller is usable right now (paired, in range).
+	 * Must be cheap and side-effect free like hsvr_driver::probe. NULL
+	 * means the controller only activates through the HSVR_CTRL
+	 * force list.
+	 */
+	int (*probe)(void);
+
+	/*!
+	 * Create controller @p index (0,1,2,...). Same contract as
+	 * hsvr_driver::create_controller: NULL ends the list.
+	 */
+	struct xrt_device *(*create)(int index);
+};
+
+/*!
+ * Generated table of every controller linked into the build - emitted
+ * as hsvr_controllers.c by monado/build.sh from the controllers/ tree.
+ */
+extern const struct hsvr_controller *const hsvr_controllers[];
+
+/*!
+ * Looks up a controller by name - debugging and forced selection.
+ */
+const struct hsvr_controller *
+hsvr_controller_find(const char *name);
 
 
 #ifdef __cplusplus

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the presentation is chrome, not a dialog: no decor, no dim -->
+    <style name="KbdTheme" parent="android:Theme.DeviceDefault.Dialog.NoActionBar">
+        <item name="android:windowBackground">@color/kbd_bg</item>
+    </style>
+</resources>

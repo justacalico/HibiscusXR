@@ -25,7 +25,11 @@
 # owned by the panel shell, and a mono nav/status strip drawn across it lands
 # in both eyes. The shell's virtual displays have no decorations anyway, so
 # nothing the user interacts with loses them.
-service pn2_settings /system/bin/sh -c "settings put system accelerometer_rotation 0; settings put system user_rotation 0; settings put global policy_control immersive.full=*; settings put global device_provisioned 1; settings put secure user_setup_complete 1; settings put global hide_error_dialogs 1"
+# the IME pair bakes the floating keyboard in as the only input method:
+# LatinIME is stripped from the image, so without these writes the device
+# boots with no keyboard at all and every text field is dead. IMMS watches
+# both keys, so a settings-app IME switch still wins at runtime.
+service pn2_settings /system/bin/sh -c "settings put system accelerometer_rotation 0; settings put system user_rotation 0; settings put global policy_control immersive.full=*; settings put global device_provisioned 1; settings put secure user_setup_complete 1; settings put global hide_error_dialogs 1; settings put secure enabled_input_methods gitlab.neosalsa.keyboard/.KeyboardService; settings put secure default_input_method gitlab.neosalsa.keyboard/.KeyboardService"
     user root
     group root
     seclabel u:r:shell:s0

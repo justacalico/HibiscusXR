@@ -85,6 +85,9 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // a live crash/ANR card keeps the window up like a toast, but it is
     // modal: it stays until the user dismisses it, not for a few seconds
     private volatile boolean sysMsgOn;
+    // the floating keyboard over a covered app: the quad has to render, so
+    // the window pops for the IME's whole input session
+    private volatile boolean kbdOn;
     private final Runnable toastOff = new Runnable() {
         @Override public void run() {
             final long left = toastEnd - SystemClock.uptimeMillis();
@@ -232,7 +235,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // nothing underneath loses focus when the menu pops
     private void updateWindow() {
         final boolean shown = !covered || summoned || holdPreview || toastOn
-                || sysMsgOn || debugHud;
+                || sysMsgOn || kbdOn || debugHud;
         final int vis = shown ? View.VISIBLE : View.GONE;
         if (view.getVisibility() != vis) {
             Log.i(TAG, "window " + (shown ? "shown" : "hidden")
@@ -244,6 +247,9 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             // a system message over a covered app draws alone - the dash
             // chrome stays down unless the user summons it
             bridge.setSysMsgOnly(covered && sysMsgOn && !summoned);
+            // same for the floating keyboard: an IME request from a covered
+            // app pops just the quad
+            bridge.setKbdOnly(covered && kbdOn && !summoned);
             bridge.setDebugHud(debugHud);
             // window is up over a covered app only for the status line:
             // the render loop draws nothing else
@@ -310,6 +316,18 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         });
     }
 
+    // the keyboard's state broadcast lands in ShellBridge's receiver on the
+    // main looper already; the bounce is for symmetry with the other flags
+    @Override public void onKbd(final boolean shown) {
+        view.post(new Runnable() {
+            @Override public void run() {
+                if (kbdOn == shown) return;
+                kbdOn = shown;
+                updateWindow();
+            }
+        });
+    }
+
     // SummonKeyService calls these on its own binder thread: bounce to the
     // main looper so window/flag state stays single-threaded
     static void onSummonKey(final int action) {
@@ -325,7 +343,8 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // over a covered app owns keys too - its buttons are gaze + confirm
     static boolean menuKeysOwned() {
         HudService s = instance;
-        return s != null && (!s.covered || s.summoned || s.sysMsgOn);
+        return s != null && (!s.covered || s.summoned || s.sysMsgOn
+                || s.kbdOn);
     }
 
     static void forwardKey(final int code, final int action,

@@ -19,6 +19,7 @@ void testCtrlDebug();
 void testStatus();
 void testPalette();
 void testPaletteThemes();
+void testKbd();
 
 int main() {
     testMat4();
@@ -38,6 +39,7 @@ int main() {
     testStatus();
     testPalette();
     testPaletteThemes();
+    testKbd();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

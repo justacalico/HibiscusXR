@@ -108,7 +108,8 @@ jobs:
             "applications/vrhome:vrhome" \
             "applications/library:library" \
             "applications/quick-panel:quick-panel" \
-            "applications/settings:settings"; do
+            "applications/settings:settings" \
+            "applications/keyboard:keyboard"; do
             src="${pair%%:*}"; dst="${pair##*:}"
             cp -a "$GITHUB_WORKSPACE/$src" "$PN2_ROOT/$dst"
           done

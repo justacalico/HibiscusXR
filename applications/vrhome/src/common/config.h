@@ -58,6 +58,15 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 // so a window can never land on top of one that drifted off the slot grid
 constexpr float kPanelMinGap = 0.82f;
 
+// floating keyboard: the IME app draws into a texture the HUD owns, shown
+// as its own quad under the window that owns the text field. The px size
+// rides the panels' pixels-per-metre (kPanelW/kVdW) so keys match window
+// text size
+constexpr int   kKbdW = 1200, kKbdH = 420, kKbdDpi = 240;
+constexpr float kKbdHW = 0.4875f, kKbdHH = 0.1706f;  // world half extents
+constexpr float kKbdGap = 0.045f;   // between window bottom and quad top
+constexpr float kKbdLift = 0.025f;  // nudge toward the viewer off the plane
+
 // window chrome: a top bar bound to each panel's top edge, holding the app
 // name. It sits flush on the surface - square bottom corners on a square
 // top edge - so the pair reads as one rounded shape

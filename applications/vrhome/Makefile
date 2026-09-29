@@ -49,6 +49,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
             src/render/mesh.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
+            src/kbd/kbd.cpp src/kbd/glue.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
@@ -81,7 +82,7 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 
 # pure modules only - no Android/GL includes, so they build on the host
 HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
-             src/panels/layout.cpp \
+             src/panels/layout.cpp src/kbd/kbd.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \

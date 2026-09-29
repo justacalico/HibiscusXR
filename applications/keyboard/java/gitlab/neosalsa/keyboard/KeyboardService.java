@@ -60,6 +60,7 @@ public class KeyboardService extends InputMethodService
     private Keyboard letters, symbols;
 
     private Surface surf;
+    private int surfSeq = -1;         // HUD's surface generation
     private int kbdW, kbdH, kbdDpi;
     private VirtualDisplay vd;
     private KbdPanel panel;
@@ -74,8 +75,10 @@ public class KeyboardService extends InputMethodService
             }
             Surface s = i.getParcelableExtra("surface");
             if (s == null) return;
-            if (s != surf) {
+            final int seq = i.getIntExtra("seq", -1);
+            if (seq != surfSeq) {
                 surf = s;
+                surfSeq = seq;
                 kbdW = i.getIntExtra("w", 0);
                 kbdH = i.getIntExtra("h", 0);
                 kbdDpi = i.getIntExtra("dpi", 240);

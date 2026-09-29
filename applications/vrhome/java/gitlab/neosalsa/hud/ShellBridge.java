@@ -466,6 +466,11 @@ public class ShellBridge {
     private SurfaceTexture kbdSt;
     private Surface kbdSurf;
     private int kbdW = -1, kbdH = -1, kbdDpi = 0;
+    // the IME compares this instead of the Surface itself: each QUERY reply
+    // parcels a fresh Surface object, so instance equality can't tell an
+    // unchanged surface from a new one. uptimeMillis at creation time is
+    // unique per surface instance across HUD restarts
+    private int kbdSeq;
     private volatile boolean kbdShown;
     private volatile int kbdDisplay = -1;
     private volatile boolean kbdQuery;
@@ -480,6 +485,7 @@ public class ShellBridge {
             kbdSt.setDefaultBufferSize(w, h);
             kbdSurf = new Surface(kbdSt);
             kbdW = w; kbdH = h; kbdDpi = dpi;
+            kbdSeq = (int)(SystemClock.uptimeMillis() & 0x7fffffff);
             Log.i(TAG, "kbd surface " + w + "x" + h);
             return true;
         } catch (Throwable t) {
@@ -506,7 +512,7 @@ public class ShellBridge {
         ctx.sendBroadcast(new Intent(ACTION_KBD_SURFACE).setPackage(KBD_PKG)
                 .putExtra("surface", s)
                 .putExtra("w", kbdW).putExtra("h", kbdH)
-                .putExtra("dpi", kbdDpi));
+                .putExtra("dpi", kbdDpi).putExtra("seq", kbdSeq));
     }
 
     // render thread: ask the IME to put the quad away - BACK on a floating

@@ -27,4 +27,28 @@ abstract class SettingsSource {
   /// confirm dialog is accepted; platforms without the permission
   /// leave this as a no-op.
   Future<void> reboot();
+
+  /// Refresh the wifi scan list. Results come back through the
+  /// snapshot's wifi list and the wifiScanning flag.
+  Future<void> scanWifi();
+
+  /// Join a network: the platform resolves the saved configuration for
+  /// [join]'s ssid or writes a new one from security + password.
+  Future<void> connectWifi(WifiJoin join);
+
+  /// Drop a saved configuration by its WifiConfiguration id.
+  Future<void> forgetWifi(int networkId);
+
+  /// Start bluetooth discovery. Devices stream back through the bt
+  /// list while btDiscovering stays true.
+  Future<void> scanBt();
+
+  /// Bond with a discovered address.
+  Future<void> pairBt(String address);
+
+  /// Remove a bond.
+  Future<void> unpairBt(String address);
+
+  /// Make an input method id the system default.
+  Future<void> setIme(String imeId);
 }

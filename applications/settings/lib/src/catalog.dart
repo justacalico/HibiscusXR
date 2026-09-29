@@ -13,11 +13,11 @@ const kSections = <SectionDef>[
   SectionDef(SectionId.wifi, [
     ItemId.wifiToggle,
     ItemId.wifiSsid,
-    ItemId.wifiSettings,
+    ItemId.wifiList,
   ]),
   SectionDef(SectionId.bluetooth, [
     ItemId.bluetoothToggle,
-    ItemId.bluetoothSettings,
+    ItemId.btList,
   ]),
   SectionDef(SectionId.controllers, [
     ItemId.controllerPair,
@@ -35,7 +35,7 @@ const kSections = <SectionDef>[
   SectionDef(SectionId.sound, [ItemId.volume, ItemId.micMute]),
   SectionDef(SectionId.language, [ItemId.languagePicker]),
   SectionDef(SectionId.time, [ItemId.timeZone]),
-  SectionDef(SectionId.keyboard, [ItemId.keyboardPicker]),
+  SectionDef(SectionId.keyboard, [ItemId.imeList]),
   SectionDef(SectionId.developer, [
     ItemId.adbToggle,
     ItemId.stayAwake,
@@ -53,9 +53,9 @@ const kSections = <SectionDef>[
 const kItemKinds = <ItemId, ItemKind>{
   ItemId.wifiToggle: ItemKind.toggle,
   ItemId.wifiSsid: ItemKind.info,
-  ItemId.wifiSettings: ItemKind.action,
+  ItemId.wifiList: ItemKind.wifiList,
   ItemId.bluetoothToggle: ItemKind.toggle,
-  ItemId.bluetoothSettings: ItemKind.action,
+  ItemId.btList: ItemKind.btList,
   ItemId.controllerPair: ItemKind.scanCard,
   ItemId.controllerLeft: ItemKind.controller,
   ItemId.controllerRight: ItemKind.controller,
@@ -71,7 +71,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.micMute: ItemKind.toggle,
   ItemId.languagePicker: ItemKind.action,
   ItemId.timeZone: ItemKind.action,
-  ItemId.keyboardPicker: ItemKind.action,
+  ItemId.imeList: ItemKind.imeList,
   ItemId.adbToggle: ItemKind.toggle,
   ItemId.stayAwake: ItemKind.toggle,
   ItemId.showTouches: ItemKind.toggle,

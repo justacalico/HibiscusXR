@@ -31,6 +31,14 @@ class SettingsController {
     if (saved != null) store.restore(saved);
     store.applySnapshot(await source.load());
     _events = source.events.listen(store.applySnapshot);
+    _scanFor(store.section);
+  }
+
+  /// Entering a radio section kicks off a fresh scan so the list the
+  /// user lands on is current.
+  void _scanFor(SectionId id) {
+    if (id == SectionId.wifi) source.scanWifi();
+    if (id == SectionId.bluetooth) source.scanBt();
   }
 
   /// Flip a toggle: optimistic update, then tell the platform.
@@ -74,8 +82,23 @@ class SettingsController {
 
   Future<void> runAction(ItemId id) => source.performAction(id);
 
+  Future<void> scanWifi() => source.scanWifi();
+
+  Future<void> connectWifi(WifiJoin join) => source.connectWifi(join);
+
+  Future<void> forgetWifi(int networkId) => source.forgetWifi(networkId);
+
+  Future<void> scanBt() => source.scanBt();
+
+  Future<void> pairBt(String address) => source.pairBt(address);
+
+  Future<void> unpairBt(String address) => source.unpairBt(address);
+
+  Future<void> setIme(String imeId) => source.setIme(imeId);
+
   Future<void> selectSection(SectionId id) async {
     store.selectSection(id);
+    _scanFor(id);
     await persistence.save(store.snapshot());
   }
 

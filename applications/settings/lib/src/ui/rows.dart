@@ -9,9 +9,12 @@ import '../settings_store.dart';
 import '../theme_choice.dart';
 import 'battery_icon.dart';
 import 'brand_card.dart';
+import 'bt_card.dart';
+import 'ime_card.dart';
 import 'reboot_dialog.dart';
 import 'scan_card.dart';
 import 'theme.dart';
+import 'wifi_card.dart';
 
 /// One row in a section page: title + description on the left, the
 /// control the row's kind calls for on the right.
@@ -30,6 +33,27 @@ class SettingsRow extends StatelessWidget {
       return BrandCard(
         name: itemTitle(l10n, id),
         caption: itemDescription(l10n, id),
+      );
+    }
+    if (kindOf(id) == ItemKind.wifiList) {
+      return WifiCard(
+        title: itemTitle(l10n, id),
+        controller: controller,
+        enabled: enabled,
+      );
+    }
+    if (kindOf(id) == ItemKind.btList) {
+      return BtCard(
+        title: itemTitle(l10n, id),
+        controller: controller,
+        enabled: enabled,
+      );
+    }
+    if (kindOf(id) == ItemKind.imeList) {
+      return ImeCard(
+        title: itemTitle(l10n, id),
+        controller: controller,
+        enabled: enabled,
       );
     }
     if (kindOf(id) == ItemKind.scanCard) {
@@ -214,6 +238,9 @@ class _Control extends StatelessWidget {
         );
       case ItemKind.scanCard:
       case ItemKind.brand:
+      case ItemKind.wifiList:
+      case ItemKind.btList:
+      case ItemKind.imeList:
         // handled in SettingsRow.build, before the row layout
         return const SizedBox.shrink();
       case ItemKind.controller:

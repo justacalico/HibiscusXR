@@ -93,6 +93,38 @@ void main() {
     expect(store.controllerOf(ItemId.controllerRight).battery, 3);
   });
 
+  test('radio lists replace only when the event carries them', () {
+    final store = SettingsStore()
+      ..applySnapshot(const SettingsSnapshot(
+        wifi: [WifiNetwork(ssid: 'a')],
+        wifiScanning: true,
+      ));
+    expect(store.wifiNetworks.single.ssid, 'a');
+    expect(store.wifiScanning, isTrue);
+    expect(store.btDevices, isEmpty);
+
+    // an event without the wifi keys leaves the list and flag alone
+    store.applySnapshot(const SettingsSnapshot(
+      toggles: {ItemId.bluetoothToggle: true},
+    ));
+    expect(store.wifiNetworks.single.ssid, 'a');
+    expect(store.wifiScanning, isTrue);
+
+    // a carried-but-empty list clears it
+    store.applySnapshot(const SettingsSnapshot(
+      wifi: [],
+      wifiScanning: false,
+      bt: [BtDevice(address: 'AA:BB:CC:00:00:01')],
+      imes: [ImeOption(id: 'i/.I', active: true)],
+      btDiscovering: true,
+    ));
+    expect(store.wifiNetworks, isEmpty);
+    expect(store.wifiScanning, isFalse);
+    expect(store.btDevices.single.address, 'AA:BB:CC:00:00:01');
+    expect(store.imeOptions.single.active, isTrue);
+    expect(store.btDiscovering, isTrue);
+  });
+
   test('selectSection switches and dedupes', () {
     final store = SettingsStore();
     var ticks = 0;

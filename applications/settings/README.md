@@ -7,15 +7,19 @@ sections on the left, the selected section's rows on the right.
 
 ## Features
 
-- Wi-Fi, Bluetooth: live radio toggles, SSID display, links into the
-  system pages
+- Wi-Fi: live radio toggle, SSID display, in-app scan list with
+  connect / forget (privileged WifiManager calls, no trip to the system
+  settings app)
+- Bluetooth: live radio toggle, in-app device list - bonded devices,
+  discovery, pair and forget
 - Display: brightness slider, OS theme picker (dark / light / OLED -
   writes `hibiscus_theme`, which pn2-themed mirrors onto
   `persist.hibiscus.theme` so the HUD chrome and the other panel apps
   follow), night mode
 - Sound: volume slider, microphone switch
 - Camera: seethrough toggle (project seam broadcast)
-- Language and Region, Time, Keyboard: jump to the matching system page
+- Keyboard: in-app input method picker
+- Language and Region, Time: jump to the matching system page
 - Headset Tracking: tracking toggle, tracking frequency dropdown,
   boundary toggle, reset view
 - Backup, Developer, Software Update, About (brand mark / model /

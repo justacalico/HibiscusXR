@@ -54,10 +54,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemWifiSsidDesc => 'The network this headset is connected to';
 
   @override
-  String get itemWifiSettings => 'Manage networks';
+  String get itemWifiList => 'Available networks';
 
   @override
-  String get itemWifiSettingsDesc => 'Saved networks and advanced options';
+  String get itemWifiListDesc => 'Tap a network to connect or manage it';
 
   @override
   String get itemBluetoothToggle => 'Bluetooth';
@@ -66,10 +66,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemBluetoothToggleDesc => 'Pair controllers and accessories';
 
   @override
-  String get itemBluetoothSettings => 'Manage devices';
+  String get itemBtList => 'Devices';
 
   @override
-  String get itemBluetoothSettingsDesc => 'Pairing and connected devices';
+  String get itemBtListDesc => 'Bonded and nearby Bluetooth devices';
 
   @override
   String get itemControllerPair => 'Scan for controllers';
@@ -162,10 +162,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemTimeZoneDesc => 'Set the time zone and clock format';
 
   @override
-  String get itemKeyboardPicker => 'Keyboard';
+  String get itemImeList => 'On-screen keyboard';
 
   @override
-  String get itemKeyboardPickerDesc => 'Choose the active input method';
+  String get itemImeListDesc => 'Choose the active input method';
 
   @override
   String get itemAdbToggle => 'USB debugging';
@@ -244,6 +244,71 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get controllerScanIdle => 'Not scanning';
+
+  @override
+  String get wifiScanning => 'Scanning for networks…';
+
+  @override
+  String get wifiScanIdle => 'Tap refresh to scan';
+
+  @override
+  String get wifiEmpty => 'No networks found';
+
+  @override
+  String get wifiSecured => 'Secured';
+
+  @override
+  String get wifiOpen => 'Open';
+
+  @override
+  String get wifiSaved => 'Saved';
+
+  @override
+  String get wifiConnected => 'Connected';
+
+  @override
+  String get wifiRescan => 'Refresh';
+
+  @override
+  String wifiJoinTitle(String ssid) {
+    return 'Connect to $ssid';
+  }
+
+  @override
+  String get wifiPassword => 'Password';
+
+  @override
+  String get wifiConnect => 'Connect';
+
+  @override
+  String get wifiForget => 'Forget';
+
+  @override
+  String get btScanning => 'Searching for devices…';
+
+  @override
+  String get btScanIdle => 'Tap refresh to search';
+
+  @override
+  String get btEmpty => 'No devices found';
+
+  @override
+  String get btRescan => 'Refresh';
+
+  @override
+  String get btPair => 'Pair';
+
+  @override
+  String get btPaired => 'Paired';
+
+  @override
+  String get btConnected => 'Connected';
+
+  @override
+  String get btForget => 'Forget';
+
+  @override
+  String get imeActive => 'In use';
 
   @override
   String controllerBattery(int level) {

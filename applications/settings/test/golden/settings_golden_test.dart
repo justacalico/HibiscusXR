@@ -40,6 +40,22 @@ void main() {
         toggles: {ItemId.wifiToggle: true},
         sliders: {ItemId.volume: 0.6, ItemId.brightness: 0.4},
         texts: {ItemId.wifiSsid: 'neosalsa-5g'},
+        wifi: [
+          WifiNetwork(
+            ssid: 'neosalsa-5g',
+            capabilities: '[WPA2-PSK-CCMP][ESS]',
+            level: 4,
+            connected: true,
+            savedId: 2,
+          ),
+          WifiNetwork(
+            ssid: 'lab-guest',
+            capabilities: '[WPA2-PSK-CCMP]',
+            level: 2,
+            savedId: 5,
+          ),
+          WifiNetwork(ssid: 'cafe-open', capabilities: '[ESS]', level: 1),
+        ],
       ),
     );
 

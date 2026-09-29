@@ -69,6 +69,79 @@ void main() {
     });
   });
 
+  group('radio models', () {
+    test('wifi security parses the capabilities string', () {
+      expect(wifiSecurityOf('[WPA2-PSK-CCMP][ESS]'), WifiSecurity.wpa);
+      expect(wifiSecurityOf('[WPA-PSK][WEP]'), WifiSecurity.wpa);
+      expect(wifiSecurityOf('[WEP][ESS]'), WifiSecurity.wep);
+      expect(wifiSecurityOf('[ESS]'), WifiSecurity.open);
+      expect(wifiSecurityOf(''), WifiSecurity.open);
+    });
+
+    test('wifi entry roundtrips', () {
+      const net = WifiNetwork(
+        ssid: 'office-5g',
+        capabilities: '[WPA2-PSK-CCMP]',
+        level: 3,
+        connected: true,
+        savedId: 4,
+      );
+      final back = WifiNetwork.fromJson(net.toJson());
+      expect(back.ssid, 'office-5g');
+      expect(back.security, WifiSecurity.wpa);
+      expect(back.level, 3);
+      expect(back.connected, isTrue);
+      expect(back.saved, isTrue);
+      expect(back.savedId, 4);
+    });
+
+    test('bt device and ime option roundtrip', () {
+      const dev = BtDevice(
+        name: 'buds',
+        address: 'AA:BB:CC:00:00:01',
+        bonded: true,
+        connected: true,
+      );
+      final back = BtDevice.fromJson(dev.toJson());
+      expect(back.bonded, isTrue);
+      expect(back.connected, isTrue);
+
+      const ime = ImeOption(id: 'a/.b', label: 'Board', active: true);
+      final ib = ImeOption.fromJson(ime.toJson());
+      expect(ib.active, isTrue);
+      expect(ib.id, 'a/.b');
+    });
+  });
+
+  group('snapshot lists', () {
+    test('lists and scan flags roundtrip', () {
+      const snap = SettingsSnapshot(
+        wifi: [WifiNetwork(ssid: 'n', level: 2)],
+        bt: [BtDevice(address: 'AA:BB:CC:00:00:01')],
+        imes: [ImeOption(id: 'i')],
+        wifiScanning: true,
+        btDiscovering: true,
+      );
+      final back = SettingsSnapshot.fromJson(snap.toJson());
+      expect(back.wifi!.single.ssid, 'n');
+      expect(back.bt!.single.address, 'AA:BB:CC:00:00:01');
+      expect(back.imes!.single.id, 'i');
+      expect(back.wifiScanning, isTrue);
+      expect(back.btDiscovering, isTrue);
+    });
+
+    test('missing lists stay null, malformed entries drop', () {
+      final snap = SettingsSnapshot.fromJson({
+        'wifi': ['junk', {'ssid': 'ok'}],
+        'bt': 'notalist',
+      });
+      expect(snap.wifi!.single.ssid, 'ok');
+      expect(snap.bt, isNull);
+      expect(snap.imes, isNull);
+      expect(snap.wifiScanning, isNull);
+    });
+  });
+
   group('ControllerInfo', () {
     test('parses the wire shape', () {
       final info = ControllerInfo.fromJson({

@@ -16,12 +16,12 @@
   "itemWifiToggleDesc": "Connect to a wireless network",
   "itemWifiSsid": "Network",
   "itemWifiSsidDesc": "The network this headset is connected to",
-  "itemWifiSettings": "Manage networks",
-  "itemWifiSettingsDesc": "Saved networks and advanced options",
+  "itemWifiList": "Available networks",
+  "itemWifiListDesc": "Tap a network to connect or manage it",
   "itemBluetoothToggle": "Bluetooth",
   "itemBluetoothToggleDesc": "Pair controllers and accessories",
-  "itemBluetoothSettings": "Manage devices",
-  "itemBluetoothSettingsDesc": "Pairing and connected devices",
+  "itemBtList": "Devices",
+  "itemBtListDesc": "Bonded and nearby Bluetooth devices",
   "itemControllerPair": "Scan for controllers",
   "itemControllerPairDesc": "Starts the link scan, then hold the pairing button on each controller until it rumbles",
   "itemControllerLeft": "Left controller",
@@ -51,8 +51,8 @@
   "itemLanguagePickerDesc": "Change the system language",
   "itemTimeZone": "Date and time",
   "itemTimeZoneDesc": "Set the time zone and clock format",
-  "itemKeyboardPicker": "Keyboard",
-  "itemKeyboardPickerDesc": "Choose the active input method",
+  "itemImeList": "On-screen keyboard",
+  "itemImeListDesc": "Choose the active input method",
   "itemAdbToggle": "USB debugging",
   "itemAdbToggleDesc": "Allow a computer to debug this headset over USB",
   "itemStayAwake": "Stay awake",
@@ -79,6 +79,35 @@
   "controllerPairing": "Pairing…",
   "controllerScanning": "Scanning for controllers…",
   "controllerScanIdle": "Not scanning",
+
+  "wifiScanning": "Scanning for networks…",
+  "wifiScanIdle": "Tap refresh to scan",
+  "wifiEmpty": "No networks found",
+  "wifiSecured": "Secured",
+  "wifiOpen": "Open",
+  "wifiSaved": "Saved",
+  "wifiConnected": "Connected",
+  "wifiRescan": "Refresh",
+  "wifiJoinTitle": "Connect to {ssid}",
+  "@wifiJoinTitle": {
+    "placeholders": {
+      "ssid": {"type": "String"}
+    }
+  },
+  "wifiPassword": "Password",
+  "wifiConnect": "Connect",
+  "wifiForget": "Forget",
+
+  "btScanning": "Searching for devices…",
+  "btScanIdle": "Tap refresh to search",
+  "btEmpty": "No devices found",
+  "btRescan": "Refresh",
+  "btPair": "Pair",
+  "btPaired": "Paired",
+  "btConnected": "Connected",
+  "btForget": "Forget",
+
+  "imeActive": "In use",
   "controllerBattery": "Battery {level} of 5",
   "@controllerBattery": {
     "placeholders": {

@@ -17,6 +17,13 @@ class FakeSettingsSource implements SettingsSource {
   final textsSet = <(ItemId, String)>[];
   final actionsPerformed = <ItemId>[];
   var rebootsRequested = 0;
+  var wifiScans = 0;
+  final wifiJoins = <WifiJoin>[];
+  final wifiForgets = <int>[];
+  var btScans = 0;
+  final btPairs = <String>[];
+  final btUnpairs = <String>[];
+  final imesSet = <String>[];
 
   /// Test hook: pretend the OS changed something.
   void emit(SettingsSnapshot event) {
@@ -58,6 +65,41 @@ class FakeSettingsSource implements SettingsSource {
   @override
   Future<void> reboot() async {
     rebootsRequested++;
+  }
+
+  @override
+  Future<void> scanWifi() async {
+    wifiScans++;
+  }
+
+  @override
+  Future<void> connectWifi(WifiJoin join) async {
+    wifiJoins.add(join);
+  }
+
+  @override
+  Future<void> forgetWifi(int networkId) async {
+    wifiForgets.add(networkId);
+  }
+
+  @override
+  Future<void> scanBt() async {
+    btScans++;
+  }
+
+  @override
+  Future<void> pairBt(String address) async {
+    btPairs.add(address);
+  }
+
+  @override
+  Future<void> unpairBt(String address) async {
+    btUnpairs.add(address);
+  }
+
+  @override
+  Future<void> setIme(String imeId) async {
+    imesSet.add(imeId);
   }
 
   Future<void> dispose() => _events.close();

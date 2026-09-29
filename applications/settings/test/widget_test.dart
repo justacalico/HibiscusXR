@@ -71,9 +71,11 @@ void main() {
 
   testWidgets('action row forwards to the source', (tester) async {
     final (_, source) = await pumpApp(tester);
+    await tester.tap(find.text('Time'));
+    await tester.pump();
     await tester.tap(find.byIcon(Icons.chevron_right).first);
     await tester.pump();
-    expect(source.actionsPerformed, contains(ItemId.wifiSettings));
+    expect(source.actionsPerformed, contains(ItemId.timeZone));
   });
 
   testWidgets('unimplemented rows grey out and ignore input', (tester) async {
@@ -436,5 +438,161 @@ void main() {
     );
     await tester.pump();
     await tester.pump();
+  });
+
+  testWidgets('wifi list shows networks and rescans', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        wifi: [
+          WifiNetwork(
+            ssid: 'office-5g',
+            capabilities: '[WPA2-PSK-CCMP][ESS]',
+            level: 3,
+          ),
+          WifiNetwork(
+            ssid: 'open-cafe',
+            capabilities: '[ESS]',
+            level: 1,
+            connected: true,
+          ),
+        ],
+      ),
+    );
+    expect(find.text('office-5g'), findsOneWidget);
+    expect(find.text('open-cafe'), findsOneWidget);
+    expect(find.text('Secured'), findsOneWidget);
+    expect(find.text('Connected'), findsWidgets);
+
+    // entering the section already scanned once at start
+    expect(source.wifiScans, 1);
+    await tester.tap(find.text('Refresh'));
+    await tester.pump();
+    expect(source.wifiScans, 2);
+  });
+
+  testWidgets('secured network asks for a key then joins', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        wifi: [
+          WifiNetwork(
+            ssid: 'office-5g',
+            capabilities: '[WPA2-PSK-CCMP]',
+            level: 3,
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.text('office-5g'));
+    await tester.pump();
+    expect(find.text('Connect to office-5g'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'hunter2');
+    await tester.tap(find.text('Connect'));
+    await tester.pump();
+    expect(source.wifiJoins.single.ssid, 'office-5g');
+    expect(source.wifiJoins.single.security, WifiSecurity.wpa);
+    expect(source.wifiJoins.single.password, 'hunter2');
+  });
+
+  testWidgets('open network joins without a password', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        wifi: [WifiNetwork(ssid: 'open-cafe', capabilities: '[ESS]')],
+      ),
+    );
+    await tester.tap(find.text('open-cafe'));
+    await tester.pump();
+    expect(find.byType(TextField), findsNothing);
+    await tester.tap(find.text('Connect'));
+    await tester.pump();
+    expect(source.wifiJoins.single.security, WifiSecurity.open);
+    expect(source.wifiJoins.single.password, isEmpty);
+  });
+
+  testWidgets('saved network offers connect and forget', (tester) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        wifi: [
+          WifiNetwork(
+            ssid: 'home',
+            capabilities: '[WPA2-PSK-CCMP]',
+            level: 4,
+            savedId: 7,
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.text('home'));
+    await tester.pump();
+    await tester.tap(find.text('Forget'));
+    await tester.pump();
+    expect(source.wifiForgets, [7]);
+  });
+
+  testWidgets('bt card pairs a found device and forgets a bond', (
+    tester,
+  ) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        bt: [
+          BtDevice(
+            name: 'Quest Controller',
+            address: 'AA:BB:CC:00:00:01',
+            bonded: true,
+          ),
+          BtDevice(
+            name: 'Earbuds',
+            address: 'AA:BB:CC:00:00:02',
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.text('Bluetooth'));
+    await tester.pump();
+    expect(find.text('Quest Controller'), findsOneWidget);
+    expect(find.text('Earbuds'), findsOneWidget);
+
+    // unbonded rows pair straight from the list
+    await tester.tap(find.text('Earbuds'));
+    await tester.pump();
+    expect(source.btPairs, ['AA:BB:CC:00:00:02']);
+
+    // bonded rows confirm before dropping the bond
+    await tester.tap(find.text('Quest Controller'));
+    await tester.pump();
+    await tester.tap(find.text('Forget'));
+    await tester.pump();
+    expect(source.btUnpairs, ['AA:BB:CC:00:00:01']);
+  });
+
+  testWidgets('ime list marks the active method and switches', (
+    tester,
+  ) async {
+    final (_, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        imes: [
+          ImeOption(
+            id: 'com.android.inputmethod.latin/.LatinIME',
+            label: 'Android Keyboard',
+            active: true,
+          ),
+          ImeOption(id: 'com.other/.Ime', label: 'Other Board'),
+        ],
+      ),
+    );
+    await tester.tap(find.text('Keyboard'));
+    await tester.pump();
+    expect(find.text('Android Keyboard'), findsOneWidget);
+    expect(find.text('In use'), findsOneWidget);
+
+    await tester.tap(find.text('Other Board'));
+    await tester.pump();
+    expect(source.imesSet, ['com.other/.Ime']);
   });
 }

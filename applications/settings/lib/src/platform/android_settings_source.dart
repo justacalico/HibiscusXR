@@ -46,6 +46,38 @@ class AndroidSettingsSource implements SettingsSource {
   @override
   Future<void> reboot() => _channel.invokeMethod('reboot');
 
+  @override
+  Future<void> scanWifi() => _channel.invokeMethod('scanWifi');
+
+  @override
+  Future<void> connectWifi(WifiJoin join) => _channel.invokeMethod(
+    'connectWifi',
+    {
+      'ssid': join.ssid,
+      'security': join.security.name,
+      'password': join.password,
+    },
+  );
+
+  @override
+  Future<void> forgetWifi(int networkId) =>
+      _channel.invokeMethod('forgetWifi', {'netId': networkId});
+
+  @override
+  Future<void> scanBt() => _channel.invokeMethod('scanBt');
+
+  @override
+  Future<void> pairBt(String address) =>
+      _channel.invokeMethod('pairBt', {'address': address});
+
+  @override
+  Future<void> unpairBt(String address) =>
+      _channel.invokeMethod('unpairBt', {'address': address});
+
+  @override
+  Future<void> setIme(String imeId) =>
+      _channel.invokeMethod('setIme', {'id': imeId});
+
   /// Reverse of [setSlider]: the platform reports unit sliders in real
   /// units, the store only holds normalized positions.
   static SettingsSnapshot _fromWire(Map<String, dynamic> raw) {

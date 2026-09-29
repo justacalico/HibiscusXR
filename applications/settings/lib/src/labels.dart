@@ -36,12 +36,12 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemWifiToggle;
     case ItemId.wifiSsid:
       return l10n.itemWifiSsid;
-    case ItemId.wifiSettings:
-      return l10n.itemWifiSettings;
+    case ItemId.wifiList:
+      return l10n.itemWifiList;
     case ItemId.bluetoothToggle:
       return l10n.itemBluetoothToggle;
-    case ItemId.bluetoothSettings:
-      return l10n.itemBluetoothSettings;
+    case ItemId.btList:
+      return l10n.itemBtList;
     case ItemId.controllerPair:
       return l10n.itemControllerPair;
     case ItemId.controllerLeft:
@@ -68,8 +68,8 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemLanguagePicker;
     case ItemId.timeZone:
       return l10n.itemTimeZone;
-    case ItemId.keyboardPicker:
-      return l10n.itemKeyboardPicker;
+    case ItemId.imeList:
+      return l10n.itemImeList;
     case ItemId.adbToggle:
       return l10n.itemAdbToggle;
     case ItemId.stayAwake:
@@ -95,12 +95,12 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemWifiToggleDesc;
     case ItemId.wifiSsid:
       return l10n.itemWifiSsidDesc;
-    case ItemId.wifiSettings:
-      return l10n.itemWifiSettingsDesc;
+    case ItemId.wifiList:
+      return l10n.itemWifiListDesc;
     case ItemId.bluetoothToggle:
       return l10n.itemBluetoothToggleDesc;
-    case ItemId.bluetoothSettings:
-      return l10n.itemBluetoothSettingsDesc;
+    case ItemId.btList:
+      return l10n.itemBtListDesc;
     case ItemId.controllerPair:
       return l10n.itemControllerPairDesc;
     case ItemId.controllerLeft:
@@ -127,8 +127,8 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemLanguagePickerDesc;
     case ItemId.timeZone:
       return l10n.itemTimeZoneDesc;
-    case ItemId.keyboardPicker:
-      return l10n.itemKeyboardPickerDesc;
+    case ItemId.imeList:
+      return l10n.itemImeListDesc;
     case ItemId.adbToggle:
       return l10n.itemAdbToggleDesc;
     case ItemId.stayAwake:
@@ -173,6 +173,29 @@ String themeChoiceLabel(AppLocalizations l10n, ThemeChoice choice) =>
 /// Status line under the scan card title.
 String scanStatusLabel(AppLocalizations l10n, bool scanning) =>
     scanning ? l10n.controllerScanning : l10n.controllerScanIdle;
+
+/// Security description for a wifi list row.
+String wifiSecurityLabel(AppLocalizations l10n, WifiNetwork net) =>
+    net.security == WifiSecurity.open ? l10n.wifiOpen : l10n.wifiSecured;
+
+/// Subtitle under a wifi row's ssid: link state, then whether the
+/// network is saved, then how it's secured.
+String wifiNetworkLabel(AppLocalizations l10n, WifiNetwork net) {
+  if (net.connected) return l10n.wifiConnected;
+  if (net.saved) return '${l10n.wifiSaved} · ${wifiSecurityLabel(l10n, net)}';
+  return wifiSecurityLabel(l10n, net);
+}
+
+/// Subtitle under a bluetooth row's name.
+String btDeviceLabel(AppLocalizations l10n, BtDevice dev) => dev.connected
+    ? l10n.btConnected
+    : dev.bonded
+    ? l10n.btPaired
+    : dev.address;
+
+/// Status line under the bluetooth card title.
+String btScanLabel(AppLocalizations l10n, bool discovering) =>
+    discovering ? l10n.btScanning : l10n.btScanIdle;
 
 /// Text beside a slider showing its current value. Most sliders are a
 /// plain percentage; the IPD row reports millimetres.

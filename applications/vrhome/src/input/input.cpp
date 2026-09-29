@@ -3,6 +3,7 @@
 #include "keys.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../kbd/kbd.h"
 #include "../notif/notif.h"
 #include "../sysmsg/sysmsg.h"
 #include "../hud/engine.h"
@@ -43,6 +44,8 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->sysMsgPressZone = MZONE_NONE;
             e->sysMsgPressBtn = -1;
             e->sysMsgPressId = 0;
+            e->kbd.pressed = false;
+            e->kbd.moveHeld = false;
             if (e->sysMsgHover >= 0 && !e->sysMsgs.empty()) {
                 e->sysMsgPress = e->sysMsgHover;
                 e->sysMsgPressZone = e->sysMsgZone;
@@ -98,6 +101,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     e->dragDisp = p.displayId;
                     e->dragX = e->grabX = e->hitX;
                     e->dragY = e->grabY = e->hitY;
+                    // the window taking a tap owns the text field the IME
+                    // types into - the quad hangs under this panel
+                    e->kbd.hostDisp = p.displayId;
                     LOGI("drag start disp %d @ %.0f,%.0f",
                          p.displayId, e->hitX, e->hitY);
                     env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
@@ -106,11 +112,43 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     if (env->ExceptionCheck()) env->ExceptionClear();
                 }
             }
+            if (e->kbd.hover && e->kbd.zone == KZONE_HANDLE) {
+                // the pill under the quad: holding it drags the keyboard
+                // alone - grab the aim so moveTick can apply the delta
+                e->kbd.moveHeld = true;
+                e->kbd.grabAimYaw = e->aimYaw;
+                e->kbd.grabAimPitch = e->aimPitch;
+                e->kbd.grabOffYaw = e->kbd.offYaw;
+                e->kbd.grabOffY = e->kbd.offY;
+                LOGI("kbd drag grab @ yaw %.2f", e->aimYaw);
+            } else if (e->kbd.hover && e->kbd.displayId >= 0 && e->bridge) {
+                // a key tap on the floating quad: injected straight onto
+                // the IME's own display, no panel gesture involved
+                e->kbd.pressed = true;
+                kbdHitPx(e->kbd.u, e->kbd.v, &e->kbd.px, &e->kbd.py);
+                JNIEnv* env = threadEnv(e->vm);
+                env->CallVoidMethod(e->bridge, e->mInjectTouch,
+                                    e->kbd.displayId, e->kbd.px, e->kbd.py,
+                                    AMOTION_EVENT_ACTION_DOWN);
+                if (env->ExceptionCheck()) env->ExceptionClear();
+            }
         } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
             e->confirmHeld = false;
             e->moveHeld = false;
+            e->kbd.moveHeld = false;
             JNIEnv* env = threadEnv(e->vm);
-            if (e->sysMsgPress >= 0) {
+            if (e->kbd.pressed) {
+                // key tap: the UP lands where the DOWN did - the aim may
+                // have drifted off the key while the button was held
+                if (e->bridge && e->kbd.displayId >= 0) {
+                    env->CallVoidMethod(e->bridge, e->mInjectTouch,
+                                        e->kbd.displayId, e->kbd.px,
+                                        e->kbd.py,
+                                        AMOTION_EVENT_ACTION_UP);
+                    if (env->ExceptionCheck()) env->ExceptionClear();
+                }
+                e->kbd.pressed = false;
+            } else if (e->sysMsgPress >= 0) {
                 // a button press fires only when the release lands back on
                 // the same pill and the card underneath hasn't swapped -
                 // the id guard catches a dismissal mid-press
@@ -219,6 +257,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         return;
     }
     if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
+        // the floating keyboard owns BACK first: drop the quad, not the
+        // window or card behind it
+        if (e->kbd.shown && e->bridge && e->mKbdHide) {
+            JNIEnv* env = threadEnv(e->vm);
+            env->CallVoidMethod(e->bridge, e->mKbdHide);
+            if (env->ExceptionCheck()) env->ExceptionClear();
+            return;
+        }
         // a live system message is modal: BACK drops the front card, not
         // the window behind it
         if (!e->sysMsgs.empty()) {
@@ -267,8 +313,17 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
 
 // held on a drag handle: every panel keeps its slot offset and swings around
 // the viewer with the aim, up and down as well as side to side, and the dock
-// rides along - the whole dash moves as one piece
+// rides along - the whole dash moves as one piece. The keyboard's own pill
+// instead shifts just the quad's offset from its host anchor, so the dash
+// drag still carries it (the offset rides the ring) while the pill moves it
+// alone
 void moveTick(HudEngine* e) {
+    if (e->kbd.moveHeld) {
+        e->kbd.offYaw = wrapPi(e->kbd.grabOffYaw +
+                               wrapPi(e->aimYaw - e->kbd.grabAimYaw));
+        e->kbd.offY = e->kbd.grabOffY +
+                      (e->aimPitch - e->kbd.grabAimPitch) * kKbdDist;
+    }
     if (!e->moveHeld) return;
     const float dYaw = wrapPi(e->aimYaw - e->moveGrabYaw);
     dragRing(e->panels, dYaw, e->aimPitch - e->moveGrabPitch);

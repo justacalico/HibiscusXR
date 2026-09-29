@@ -28,6 +28,30 @@ Future<void> main() async {
               },
               sliders: {ItemId.volume: 0.6, ItemId.brightness: 0.8},
               texts: {ItemId.wifiSsid: 'dev-preview'},
+              wifi: [
+                WifiNetwork(
+                  ssid: 'dev-preview',
+                  capabilities: '[WPA2-PSK-CCMP]',
+                  level: 3,
+                  connected: true,
+                  savedId: 1,
+                ),
+                WifiNetwork(ssid: 'cafe-open', capabilities: '[ESS]'),
+              ],
+              bt: [
+                BtDevice(
+                  name: 'dev buds',
+                  address: 'DE:AD:00:00:00:01',
+                  bonded: true,
+                ),
+              ],
+              imes: [
+                ImeOption(
+                  id: 'com.android.inputmethod.latin/.LatinIME',
+                  label: 'Android Keyboard',
+                  active: true,
+                ),
+              ],
             ),
           ),
     persistence: persistence,

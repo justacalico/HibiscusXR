@@ -204,6 +204,19 @@ mkd /app/PN2Settings
 put "$PN2_ROOT/settings/build/app/outputs/flutter-apk/app-release.apk" /app/PN2Settings/PN2Settings.apk 644
 
 echo
+echo "=== floating keyboard ==="
+# The only IME in the image (LatinIME is stripped in 410): a plain java apk
+# built by its own Makefile, no flutter. Platform signing isn't required
+# for its job - BIND_INPUT_METHOD plus /system/app is all an IME needs -
+# but the global re-sign pass below would catch a debug build anyway; the
+# Makefile already signs with platform keys when they exist.
+[ -d "$PN2_ROOT/keyboard" ] || { echo "FAIL keyboard not linked"; fail=$((fail+1)); }
+make -C "$PN2_ROOT/keyboard" apk \
+    || { echo "FAIL keyboard build"; fail=$((fail+1)); }
+mkd /app/PN2Keyboard
+put "$PN2_ROOT/keyboard/out/pn2keyboard.apk" /app/PN2Keyboard/PN2Keyboard.apk 644
+
+echo
 echo "=== see-through calibration app ==="
 mkd /priv-app/seethroughsetting
 mkd /priv-app/seethroughsetting/lib

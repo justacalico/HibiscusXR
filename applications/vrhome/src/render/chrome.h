@@ -7,6 +7,9 @@ struct HudEngine;
 // window chrome: shadow + bottom bar + app surface + border + label
 void drawPanels(HudEngine* e, const Mat4& viewProj);
 
+// the floating keyboard quad under its host panel
+void drawKbd(HudEngine* e, const Mat4& viewProj);
+
 // gaze cursor on the hovered panel: thin ring + centre dot
 void drawCursor(HudEngine* e, const Mat4& viewProj);
 

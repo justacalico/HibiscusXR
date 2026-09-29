@@ -12,7 +12,7 @@ through the package registry, so they never expire.
 ## What a build does
 
 1. The workflow links `system/{tools,overlay,shim,hsvr}` and
-   `applications/{vrhome,library,quick-panel,settings}` into `$PN2_ROOT` -
+   `applications/{vrhome,library,quick-panel,settings,keyboard}` into `$PN2_ROOT` -
    the sources are the monorepo checkout itself, nothing gets cloned.
 2. `scripts/fetch-inputs.sh` downloads the pinned input packages from the
    private `neosalsa/dist-inputs` package registry (the proprietary blobs -
@@ -42,7 +42,7 @@ mkdir -p "$PN2_ROOT"/{notes,out,fullstage,gsi,images,.stub/media}
 ```
 
 - copy the monorepo dirs in like the workflow does: `system/{tools,overlay,shim,hsvr}`,
-  `drivers/`, `applications/{vrhome,library,quick-panel,settings}`
+  `drivers/`, `applications/{vrhome,library,quick-panel,settings,keyboard}`
 - supply the input packages - either run `fetch-inputs.sh` (needs the
   deploy-token secrets) or link the extracted dirs from an existing
   `~/PN2Lineage` workspace (`pvr_stack`, `pvr_apps_final`, `pvr_applibs`,

@@ -72,6 +72,20 @@ public class ShellBridge {
             "gitlab.neosalsa.hud.action.OPEN_PACKAGE";
     public static final String EXTRA_PACKAGE = "package";
 
+    // floating keyboard contract: the IME (gitlab.neosalsa.keyboard) draws
+    // into a Surface we own and reports the display id it landed on so the
+    // render thread can route touches. QUERY is it asking for the surface;
+    // KBD is it telling us the quad is up
+    private static final String KBD_PKG = "gitlab.neosalsa.keyboard";
+    private static final String ACTION_KBD =
+            "gitlab.neosalsa.hud.action.KBD";
+    private static final String ACTION_KBD_QUERY =
+            "gitlab.neosalsa.keyboard.action.QUERY";
+    private static final String ACTION_KBD_SURFACE =
+            "gitlab.neosalsa.keyboard.action.SURFACE";
+    private static final String ACTION_KBD_HIDE =
+            "gitlab.neosalsa.keyboard.action.HIDE";
+
     // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
     private static final int VD_FLAGS = 1 | 64;
 
@@ -80,6 +94,9 @@ public class ShellBridge {
         // the menu should drop so the user lands inside the app - an
         // immersive launch or a dock tap on a live XR item
         void onDismissMenu();
+        // the floating keyboard went up or down; over a covered app the
+        // window has to come up for the quad to be visible at all
+        void onKbd(boolean shown);
     }
 
     private final Context ctx;
@@ -170,6 +187,10 @@ public class ShellBridge {
                 "setLaunchDisplayId", int.class);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
+        IntentFilter kf = new IntentFilter();
+        kf.addAction(ACTION_KBD);
+        kf.addAction(ACTION_KBD_QUERY);
+        ctx.registerReceiver(kbdRecv, kf);
         loadPins();
         main.postDelayed(poll, 800);
         Log.i(TAG, "bridge up");
@@ -375,11 +396,32 @@ public class ShellBridge {
             v.st = st; v.surf = surf; v.vd = vd;
             v.createdMs = SystemClock.uptimeMillis();
             vds.put(id, v);
+            setDisplayIme(id, true);
             Log.i(TAG, "panel display id=" + id + " " + w + "x" + h);
             return id;
         } catch (Throwable t) {
             Log.e(TAG, "createPanel", t);
             return -1;
+        }
+    }
+
+    // Mark a panel display as IME-capable so a focused window on it gets
+    // the soft keyboard docked inside the panel instead of the keyboard
+    // falling back to the physical display - mono in both eyes, which is
+    // what "the keyboard breaks in VR" looked like. The call is
+    // IWindowManager.setShouldShowIme, hidden and gated to
+    // INTERNAL_SYSTEM_WINDOW callers plus a display owned by uid 1000;
+    // both hold only because this apk runs under android.uid.system.
+    private void setDisplayIme(int displayId, boolean on) {
+        try {
+            Class<?> wmg = Class.forName("android.view.WindowManagerGlobal");
+            Object wms = wmg.getMethod("getWindowManagerService").invoke(null);
+            wms.getClass()
+                    .getMethod("setShouldShowIme", int.class, boolean.class)
+                    .invoke(wms, displayId, on);
+        } catch (Throwable t) {
+            Log.w(TAG, "setShouldShowIme " + displayId + "=" + on +
+                    " failed", t);
         }
     }
 
@@ -404,11 +446,105 @@ public class ShellBridge {
         Vd v = vds.remove(displayId);
         launching.remove(displayId);
         if (v == null) return;
+        // the flag is persisted per display uniqueId; clear it so the
+        // display_settings.xml entry doesn't outlive the panel
+        setDisplayIme(displayId, false);
         try { v.vd.release(); } catch (Throwable ignored) {}
         try { v.surf.release(); } catch (Throwable ignored) {}
         try { v.st.release(); } catch (Throwable ignored) {}
         Log.i(TAG, "released display " + displayId);
     }
+
+    // ---------------------------------------------------------- keyboard
+
+    // The keyboard quad's backing: a surface owned here, drawn into by the
+    // IME app through a virtual display it creates itself. Android only
+    // lets a process put presentation windows on a private display it owns,
+    // so the split is fixed: surface/texture here, display + presentation
+    // there. No task ever lives on it, so the VD stays out of vds and the
+    // reaper never sees it
+    private SurfaceTexture kbdSt;
+    private Surface kbdSurf;
+    private int kbdW = -1, kbdH = -1, kbdDpi = 0;
+    // the IME compares this instead of the Surface itself: each QUERY reply
+    // parcels a fresh Surface object, so instance equality can't tell an
+    // unchanged surface from a new one. uptimeMillis at creation time is
+    // unique per surface instance across HUD restarts
+    private int kbdSeq;
+    private volatile boolean kbdShown;
+    private volatile int kbdDisplay = -1;
+    private volatile boolean kbdQuery;
+
+    // render thread: create the shared surface; texId is a GL texture in
+    // the render context. Idempotent - a HUD restart makes a new one and
+    // the next QUERY reply carries it to the IME
+    public boolean createKbdSurface(int texId, int w, int h, int dpi) {
+        if (kbdSurf != null) return true;
+        try {
+            kbdSt = new SurfaceTexture(texId);
+            kbdSt.setDefaultBufferSize(w, h);
+            kbdSurf = new Surface(kbdSt);
+            kbdW = w; kbdH = h; kbdDpi = dpi;
+            kbdSeq = (int)(SystemClock.uptimeMillis() & 0x7fffffff);
+            Log.i(TAG, "kbd surface " + w + "x" + h);
+            return true;
+        } catch (Throwable t) {
+            Log.e(TAG, "createKbdSurface", t);
+            return false;
+        }
+    }
+
+    // render thread: the SurfaceTexture feeding the quad texture
+    public SurfaceTexture kbdTexture() { return kbdSt; }
+
+    // render thread: the IME asked for the surface since the last take
+    public boolean takeKbdQuery() {
+        final boolean q = kbdQuery;
+        kbdQuery = false;
+        return q;
+    }
+
+    // send the surface over; the IME wraps it in a private virtual display
+    // and shows the keys as a Presentation on it
+    public void sendKbdSurface() {
+        final Surface s = kbdSurf;
+        if (s == null) return;
+        ctx.sendBroadcast(new Intent(ACTION_KBD_SURFACE).setPackage(KBD_PKG)
+                .putExtra("surface", s)
+                .putExtra("w", kbdW).putExtra("h", kbdH)
+                .putExtra("dpi", kbdDpi).putExtra("seq", kbdSeq));
+    }
+
+    // render thread: ask the IME to put the quad away - BACK on a floating
+    // keyboard should drop the keyboard, not the window behind it
+    public void sendKbdHide() {
+        if (!kbdShown) return;
+        ctx.sendBroadcast(new Intent(ACTION_KBD_HIDE).setPackage(KBD_PKG));
+    }
+
+    // render thread: {shown, displayId, kbdOnly} - only means the window is
+    // up over a covered app solely for the quad, like toastOnly/sysMsgOnly
+    private volatile boolean kbdOnly;
+    public void setKbdOnly(boolean v) { kbdOnly = v; }
+    public int[] kbdState() {
+        return new int[]{kbdShown ? 1 : 0, kbdDisplay, kbdOnly ? 1 : 0};
+    }
+
+    private final BroadcastReceiver kbdRecv = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) {
+            final String a = i.getAction();
+            if (ACTION_KBD.equals(a)) {
+                kbdShown = i.getBooleanExtra("shown", false);
+                kbdDisplay = i.getIntExtra("display", -1);
+                if (listener != null) listener.onKbd(kbdShown);
+            } else if (ACTION_KBD_QUERY.equals(a)) {
+                // the surface may already exist; answer inline so the IME
+                // doesn't wait on the render thread for the hand-off
+                if (kbdSurf != null) sendKbdSurface();
+                else kbdQuery = true;
+            }
+        }
+    };
 
     // ---------------------------------------------------------- launches
 

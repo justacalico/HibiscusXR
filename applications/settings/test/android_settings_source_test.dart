@@ -51,7 +51,7 @@ void main() {
     final src = AndroidSettingsSource();
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
-    await src.performAction(ItemId.wifiSettings);
+    await src.performAction(ItemId.languagePicker);
     await src.reboot();
     expect(calls.map((c) => c.method), [
       'setSlider',
@@ -61,7 +61,37 @@ void main() {
     ]);
     expect(calls[0].arguments, {'id': 'volume', 'value': 0.3});
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});
-    expect(calls[2].arguments, {'id': 'wifiSettings'});
+    expect(calls[2].arguments, {'id': 'languagePicker'});
+  });
+
+  test('radio intents forward with arguments', () async {
+    final src = AndroidSettingsSource();
+    await src.scanWifi();
+    await src.connectWifi(
+      const WifiJoin(ssid: 'net', security: WifiSecurity.wpa, password: 'pw'),
+    );
+    await src.forgetWifi(4);
+    await src.scanBt();
+    await src.pairBt('AA:BB:CC:00:00:01');
+    await src.unpairBt('AA:BB:CC:00:00:02');
+    await src.setIme('com.x/.Ime');
+    expect(calls.map((c) => c.method), [
+      'scanWifi',
+      'connectWifi',
+      'forgetWifi',
+      'scanBt',
+      'pairBt',
+      'unpairBt',
+      'setIme',
+    ]);
+    expect(calls[1].arguments, {
+      'ssid': 'net',
+      'security': 'wpa',
+      'password': 'pw',
+    });
+    expect(calls[2].arguments, {'netId': 4});
+    expect(calls[4].arguments, {'address': 'AA:BB:CC:00:00:01'});
+    expect(calls[6].arguments, {'id': 'com.x/.Ime'});
   });
 
   test('setText forwards id and value', () async {

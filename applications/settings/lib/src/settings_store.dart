@@ -10,6 +10,11 @@ class SettingsStore extends ChangeNotifier {
   final Map<ItemId, double> _sliders = {};
   final Map<ItemId, String> _texts = {};
   final Map<ItemId, ControllerInfo> _controllers = {};
+  List<WifiNetwork> _wifi = const [];
+  List<BtDevice> _bt = const [];
+  List<ImeOption> _imes = const [];
+  bool _wifiScanning = false;
+  bool _btDiscovering = false;
   SectionId _section = SectionId.wifi;
 
   SectionId get section => _section;
@@ -54,6 +59,19 @@ class SettingsStore extends ChangeNotifier {
   ControllerInfo controllerOf(ItemId id) =>
       _controllers[id] ?? const ControllerInfo();
 
+  /// Last wifi scan list the platform pushed.
+  List<WifiNetwork> get wifiNetworks => _wifi;
+
+  bool get wifiScanning => _wifiScanning;
+
+  /// Bonded plus discovered bluetooth devices.
+  List<BtDevice> get btDevices => _bt;
+
+  bool get btDiscovering => _btDiscovering;
+
+  /// Installed input methods, active one flagged.
+  List<ImeOption> get imeOptions => _imes;
+
   /// Merge a platform snapshot or change event. Only the keys the
   /// snapshot carries are touched, so partial updates work.
   void applySnapshot(SettingsSnapshot snap) {
@@ -61,6 +79,11 @@ class SettingsStore extends ChangeNotifier {
     _sliders.addAll(snap.sliders);
     _texts.addAll(snap.texts);
     _controllers.addAll(snap.controllers);
+    if (snap.wifi != null) _wifi = snap.wifi!;
+    if (snap.bt != null) _bt = snap.bt!;
+    if (snap.imes != null) _imes = snap.imes!;
+    if (snap.wifiScanning != null) _wifiScanning = snap.wifiScanning!;
+    if (snap.btDiscovering != null) _btDiscovering = snap.btDiscovering!;
     notifyListeners();
   }
 

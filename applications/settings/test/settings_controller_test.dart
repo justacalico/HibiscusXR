@@ -109,8 +109,64 @@ void main() {
     addTearDown(c.dispose);
     await c.start();
 
-    await c.runAction(ItemId.wifiSettings);
-    expect(source.actionsPerformed, [ItemId.wifiSettings]);
+    await c.runAction(ItemId.languagePicker);
+    expect(source.actionsPerformed, [ItemId.languagePicker]);
+  });
+
+  test('start scans the restored radio section', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(
+      source,
+      MemoryPersistence({'section': 'bluetooth'}),
+    );
+    addTearDown(c.dispose);
+    await c.start();
+    expect(source.btScans, 1);
+    expect(source.wifiScans, 0);
+  });
+
+  test('selectSection scans wifi and bluetooth', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(source, MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+    // default section is wifi: start() already scanned once
+    expect(source.wifiScans, 1);
+
+    await c.selectSection(SectionId.bluetooth);
+    expect(source.btScans, 1);
+    await c.selectSection(SectionId.about);
+    expect(source.wifiScans, 1);
+    expect(source.btScans, 1);
+  });
+
+  test('radio intents forward', () async {
+    final source = FakeSettingsSource();
+    addTearDown(source.dispose);
+    final c = makeController(source, MemoryPersistence());
+    addTearDown(c.dispose);
+    await c.start();
+
+    await c.scanWifi();
+    await c.connectWifi(
+      const WifiJoin(ssid: 'net', security: WifiSecurity.wpa, password: 'pw'),
+    );
+    await c.forgetWifi(3);
+    await c.scanBt();
+    await c.pairBt('AA:BB:CC:00:00:01');
+    await c.unpairBt('AA:BB:CC:00:00:02');
+    await c.setIme('com.android.inputmethod.latin/.LatinIME');
+
+    expect(source.wifiScans, 2);
+    expect(source.wifiJoins.single.ssid, 'net');
+    expect(source.wifiJoins.single.security, WifiSecurity.wpa);
+    expect(source.wifiForgets, [3]);
+    expect(source.btScans, 1);
+    expect(source.btPairs, ['AA:BB:CC:00:00:01']);
+    expect(source.btUnpairs, ['AA:BB:CC:00:00:02']);
+    expect(source.imesSet, ['com.android.inputmethod.latin/.LatinIME']);
   });
 
   test('setItemState forwards once per real change', () async {

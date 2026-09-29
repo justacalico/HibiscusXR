@@ -4,6 +4,7 @@
 #include "../common/config.h"
 #include "../common/palette.h"
 #include "../dock/layout.h"
+#include "../kbd/kbd.h"
 #include "../panels/layout.h"
 #include "shape.h"
 #include "../text/draw.h"
@@ -188,6 +189,91 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     glDisable(GL_BLEND);
 }
 
+// the floating keyboard: a textured quad under its host panel, rounded on
+// all four corners - unlike the windows it owns no chrome bar, the IME's
+// own window is a hairline on the app display and all the keys live in the
+// texture
+void drawKbd(HudEngine* e, const Mat4& viewProj) {
+    if (!e->kbd.shown || !e->kbd.st) return;
+    float c[3], r[3], up[3];
+    kbdFrame(e->panels, e->kbd.hostDisp, e->kbd.only,
+             e->kbd.only ? e->kbd.yaw : e->dockYaw,
+             e->kbd.offYaw, e->kbd.offY, e->ringPos, c, r, up);
+    const float hw = kKbdHW, hh = kKbdHH;
+    const bool hov = e->kbd.hover;
+
+    glEnable(GL_BLEND);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glDepthMask(GL_FALSE);
+
+    // shadow, same recipe the windows use
+    glUseProgram(e->shapeProg);
+    const float scol[4] = {0.0f, 0.0f, 0.0f, 0.36f};
+    shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, hw + 0.10f, hh + 0.10f,
+              hw, hh, 0.10f, -1.0f, 0.10f, scol);
+
+    // the IME's surface, rounded on all corners
+    glUseProgram(e->floatProg);
+    glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
+    glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), kCornerR);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), kCornerR);
+    const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
+    const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
+    const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
+    const GLint aUV  = glGetAttribLocation(e->floatProg, "aUV");
+    const float q[4][5] = {
+        {c[0]-r[0]*hw-up[0]*hh, c[1]-r[1]*hw-up[1]*hh,
+         c[2]-r[2]*hw-up[2]*hh, 0.0f, 0.0f},
+        {c[0]+r[0]*hw-up[0]*hh, c[1]+r[1]*hw-up[1]*hh,
+         c[2]+r[2]*hw-up[2]*hh, 1.0f, 0.0f},
+        {c[0]+r[0]*hw+up[0]*hh, c[1]+r[1]*hw+up[1]*hh,
+         c[2]+r[2]*hw+up[2]*hh, 1.0f, 1.0f},
+        {c[0]-r[0]*hw+up[0]*hh, c[1]-r[1]*hw+up[1]*hh,
+         c[2]-r[2]*hw+up[2]*hh, 0.0f, 1.0f},
+    };
+    const int tris[6] = {0,1,2, 0,2,3};
+    float verts[30];
+    for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
+    glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
+    glUniformMatrix4fv(uST, 1, GL_FALSE, e->kbd.stMat);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, e->kbd.tex);
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(aUV,  2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glDepthMask(GL_TRUE);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDepthMask(GL_FALSE);
+
+    // hairline border, brightened under the aim like the window frames
+    glUseProgram(e->shapeProg);
+    const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                           hov ? 0.55f : 0.14f};
+    shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
+              hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
+              0.0016f, 0.0012f, bcol);
+
+    // the move pill: a short line centred under the quad, same recipe as
+    // the dash's handle - holding it drags the keyboard on its own
+    {
+        const bool hhov = e->kbd.zone == KZONE_HANDLE || e->kbd.moveHeld;
+        const float hd = kbdHandleDrop();
+        const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
+                             c[2] - up[2] * hd};
+        const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               hhov ? 0.95f : 0.55f};
+        shapeQuad(e, viewProj, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
+                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+    }
+
+    glDepthMask(GL_TRUE);
+    glDisable(GL_BLEND);
+}
+
 // summon-key hold feedback: a flat overlay ring whose arc fills while the
 // button is held. The quad is built in clip space so it never touches the
 // head pose - it stays glued to the screen centre no matter how the user
@@ -247,6 +333,15 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
         pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
+    } else if (e->kbd.hover) {
+        // keys and the pill share the quad's plane, so u/v (even past the
+        // quad's edges, where the pill sits) drop the dot right on the hit
+        kbdFrame(e->panels, e->kbd.hostDisp, e->kbd.only,
+                 e->kbd.only ? e->kbd.yaw : e->dockYaw,
+                 e->kbd.offYaw, e->kbd.offY, e->ringPos, c, r, up);
+        pos[0] = c[0] + r[0]*e->kbd.u*kKbdHW + up[0]*e->kbd.v*kKbdHH;
+        pos[1] = c[1] + r[1]*e->kbd.u*kKbdHW + up[1]*e->kbd.v*kKbdHH;
+        pos[2] = c[2] + r[2]*e->kbd.u*kKbdHW + up[2]*e->kbd.v*kKbdHH;
     } else if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
         const Panel& p = e->panels[e->hover];
         panelCenter(p, e->ringPos, c, r, up);

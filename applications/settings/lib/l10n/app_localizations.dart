@@ -184,17 +184,17 @@ abstract class AppLocalizations {
   /// **'The network this headset is connected to'**
   String get itemWifiSsidDesc;
 
-  /// No description provided for @itemWifiSettings.
+  /// No description provided for @itemWifiList.
   ///
   /// In en, this message translates to:
-  /// **'Manage networks'**
-  String get itemWifiSettings;
+  /// **'Available networks'**
+  String get itemWifiList;
 
-  /// No description provided for @itemWifiSettingsDesc.
+  /// No description provided for @itemWifiListDesc.
   ///
   /// In en, this message translates to:
-  /// **'Saved networks and advanced options'**
-  String get itemWifiSettingsDesc;
+  /// **'Tap a network to connect or manage it'**
+  String get itemWifiListDesc;
 
   /// No description provided for @itemBluetoothToggle.
   ///
@@ -208,17 +208,17 @@ abstract class AppLocalizations {
   /// **'Pair controllers and accessories'**
   String get itemBluetoothToggleDesc;
 
-  /// No description provided for @itemBluetoothSettings.
+  /// No description provided for @itemBtList.
   ///
   /// In en, this message translates to:
-  /// **'Manage devices'**
-  String get itemBluetoothSettings;
+  /// **'Devices'**
+  String get itemBtList;
 
-  /// No description provided for @itemBluetoothSettingsDesc.
+  /// No description provided for @itemBtListDesc.
   ///
   /// In en, this message translates to:
-  /// **'Pairing and connected devices'**
-  String get itemBluetoothSettingsDesc;
+  /// **'Bonded and nearby Bluetooth devices'**
+  String get itemBtListDesc;
 
   /// No description provided for @itemControllerPair.
   ///
@@ -394,17 +394,17 @@ abstract class AppLocalizations {
   /// **'Set the time zone and clock format'**
   String get itemTimeZoneDesc;
 
-  /// No description provided for @itemKeyboardPicker.
+  /// No description provided for @itemImeList.
   ///
   /// In en, this message translates to:
-  /// **'Keyboard'**
-  String get itemKeyboardPicker;
+  /// **'On-screen keyboard'**
+  String get itemImeList;
 
-  /// No description provided for @itemKeyboardPickerDesc.
+  /// No description provided for @itemImeListDesc.
   ///
   /// In en, this message translates to:
   /// **'Choose the active input method'**
-  String get itemKeyboardPickerDesc;
+  String get itemImeListDesc;
 
   /// No description provided for @itemAdbToggle.
   ///
@@ -555,6 +555,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Not scanning'**
   String get controllerScanIdle;
+
+  /// No description provided for @wifiScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanning for networks…'**
+  String get wifiScanning;
+
+  /// No description provided for @wifiScanIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap refresh to scan'**
+  String get wifiScanIdle;
+
+  /// No description provided for @wifiEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No networks found'**
+  String get wifiEmpty;
+
+  /// No description provided for @wifiSecured.
+  ///
+  /// In en, this message translates to:
+  /// **'Secured'**
+  String get wifiSecured;
+
+  /// No description provided for @wifiOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get wifiOpen;
+
+  /// No description provided for @wifiSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get wifiSaved;
+
+  /// No description provided for @wifiConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get wifiConnected;
+
+  /// No description provided for @wifiRescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get wifiRescan;
+
+  /// No description provided for @wifiJoinTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to {ssid}'**
+  String wifiJoinTitle(String ssid);
+
+  /// No description provided for @wifiPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get wifiPassword;
+
+  /// No description provided for @wifiConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get wifiConnect;
+
+  /// No description provided for @wifiForget.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get wifiForget;
+
+  /// No description provided for @btScanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for devices…'**
+  String get btScanning;
+
+  /// No description provided for @btScanIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap refresh to search'**
+  String get btScanIdle;
+
+  /// No description provided for @btEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No devices found'**
+  String get btEmpty;
+
+  /// No description provided for @btRescan.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get btRescan;
+
+  /// No description provided for @btPair.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair'**
+  String get btPair;
+
+  /// No description provided for @btPaired.
+  ///
+  /// In en, this message translates to:
+  /// **'Paired'**
+  String get btPaired;
+
+  /// No description provided for @btConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get btConnected;
+
+  /// No description provided for @btForget.
+  ///
+  /// In en, this message translates to:
+  /// **'Forget'**
+  String get btForget;
+
+  /// No description provided for @imeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get imeActive;
 
   /// No description provided for @controllerBattery.
   ///

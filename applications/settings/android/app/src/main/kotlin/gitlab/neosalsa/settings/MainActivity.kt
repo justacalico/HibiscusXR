@@ -50,6 +50,7 @@ private const val TAG = "SettingsMain"
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
     private var controllers: ControllerClient? = null
+    private var radios: RadioClient? = null
     private var ipdObserver: ContentObserver? = null
     private var dofObserver: ContentObserver? = null
     private var themeObserver: ContentObserver? = null
@@ -139,6 +140,10 @@ class MainActivity : FlutterActivity() {
             c.onChange = { eventSink?.success(controllerSnapshot()) }
             c.bind()
         }
+        radios = RadioClient(applicationContext).also { r ->
+            r.onChange = { eventSink?.success(it) }
+            r.register()
+        }
         registerReceiver(
             scanReceiver,
             IntentFilter("gitlab.neosalsa.settings.CONTROLLER_SCAN"),
@@ -175,6 +180,44 @@ class MainActivity : FlutterActivity() {
                     }
                     "reboot" -> {
                         reboot()
+                        result.success(null)
+                    }
+                    "scanWifi" -> {
+                        radios?.scanWifi()
+                        result.success(null)
+                    }
+                    "connectWifi" -> {
+                        radios?.connectWifi(
+                            call.argument<String>("ssid") ?: "",
+                            call.argument<String>("security") ?: "",
+                            call.argument<String>("password") ?: "",
+                        )
+                        result.success(null)
+                    }
+                    "forgetWifi" -> {
+                        radios?.forgetWifi(
+                            call.argument<Int>("netId") ?: -1,
+                        )
+                        result.success(null)
+                    }
+                    "scanBt" -> {
+                        radios?.scanBt()
+                        result.success(null)
+                    }
+                    "pairBt" -> {
+                        radios?.pairBt(
+                            call.argument<String>("address") ?: "",
+                        )
+                        result.success(null)
+                    }
+                    "unpairBt" -> {
+                        radios?.unpairBt(
+                            call.argument<String>("address") ?: "",
+                        )
+                        result.success(null)
+                    }
+                    "setIme" -> {
+                        radios?.setIme(call.argument<String>("id") ?: "")
                         result.success(null)
                     }
                     else -> result.notImplemented()
@@ -270,48 +313,52 @@ class MainActivity : FlutterActivity() {
         unregisterReceiver(scanReceiver)
         controllers?.unbind()
         controllers = null
+        radios?.unregister()
+        radios = null
         super.onDestroy()
     }
 
-    private fun snapshot(): Map<String, Any?> = controllerSnapshot() + mapOf(
-        "toggles" to mapOf(
-            "wifiToggle" to wifiOn(),
-            "bluetoothToggle" to bluetoothOn(),
-            "micMute" to !audio().isMicrophoneMute,
-            "nightMode" to nightModeOn(),
-            "adbToggle" to
-                (Settings.Global.getInt(
-                    contentResolver, Settings.Global.ADB_ENABLED, 0,
-                ) == 1),
-            "stayAwake" to
-                (Settings.Global.getInt(
-                    contentResolver,
-                    Settings.Global.STAY_ON_WHILE_PLUGGED_IN, 0,
-                ) != 0),
-            "showTouches" to
-                (Settings.System.getInt(
-                    contentResolver, SHOW_TOUCHES, 0,
-                ) == 1),
-            "debugHud" to
-                (Settings.Global.getInt(
-                    contentResolver, DEBUG_HUD, 0,
-                ) == 1),
-            "deviceMode" to dof6(),
-            "controllerPair" to (controllers?.pairingActive ?: false),
-        ),
-        "sliders" to mapOf(
-            "volume" to volume(),
-            "brightness" to brightness(),
-            "ipd" to ipdMm(),
-        ),
-        "texts" to mapOf(
-            "wifiSsid" to (wifiSsid() ?: ""),
-            "themeMode" to theme(),
-            "modelName" to Build.MODEL,
-            "androidVersion" to Build.VERSION.RELEASE,
-            "hibiscusVersion" to hibiscusVersion(),
-        ),
-    )
+    private fun snapshot(): Map<String, Any?> = controllerSnapshot() +
+        (radios?.snapshot() ?: emptyMap()) +
+        mapOf(
+            "toggles" to mapOf(
+                "wifiToggle" to wifiOn(),
+                "bluetoothToggle" to bluetoothOn(),
+                "micMute" to !audio().isMicrophoneMute,
+                "nightMode" to nightModeOn(),
+                "adbToggle" to
+                    (Settings.Global.getInt(
+                        contentResolver, Settings.Global.ADB_ENABLED, 0,
+                    ) == 1),
+                "stayAwake" to
+                    (Settings.Global.getInt(
+                        contentResolver,
+                        Settings.Global.STAY_ON_WHILE_PLUGGED_IN, 0,
+                    ) != 0),
+                "showTouches" to
+                    (Settings.System.getInt(
+                        contentResolver, SHOW_TOUCHES, 0,
+                    ) == 1),
+                "debugHud" to
+                    (Settings.Global.getInt(
+                        contentResolver, DEBUG_HUD, 0,
+                    ) == 1),
+                "deviceMode" to dof6(),
+                "controllerPair" to (controllers?.pairingActive ?: false),
+            ),
+            "sliders" to mapOf(
+                "volume" to volume(),
+                "brightness" to brightness(),
+                "ipd" to ipdMm(),
+            ),
+            "texts" to mapOf(
+                "wifiSsid" to (wifiSsid() ?: ""),
+                "themeMode" to theme(),
+                "modelName" to Build.MODEL,
+                "androidVersion" to Build.VERSION.RELEASE,
+                "hibiscusVersion" to hibiscusVersion(),
+            ),
+        )
 
     // Controller state rides the same snapshot shape as the rest of the
     // app: a per-slot map plus the pairing flag and main-hand choice.
@@ -520,16 +567,10 @@ class MainActivity : FlutterActivity() {
 
     private fun performAction(id: String) {
         when (id) {
-            "wifiSettings" ->
-                safeLaunch(Intent(Settings.ACTION_WIFI_SETTINGS))
-            "bluetoothSettings" ->
-                safeLaunch(Intent(Settings.ACTION_BLUETOOTH_SETTINGS))
             "languagePicker" ->
                 safeLaunch(Intent(Settings.ACTION_LOCALE_SETTINGS))
             "timeZone" ->
                 safeLaunch(Intent(Settings.ACTION_DATE_SETTINGS))
-            "keyboardPicker" ->
-                safeLaunch(Intent(Settings.ACTION_INPUT_METHOD_SETTINGS))
             "controllerPair" -> {
                 val c = controllers
                 if (c == null) {

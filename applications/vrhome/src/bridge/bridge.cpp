@@ -96,6 +96,13 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
     e->mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
     e->mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
+    e->mKbdCreate    = env->GetMethodID(bc, "createKbdSurface", "(IIII)Z");
+    e->mKbdTex       = env->GetMethodID(bc, "kbdTexture",
+                        "()Landroid/graphics/SurfaceTexture;");
+    e->mKbdTakeQuery = env->GetMethodID(bc, "takeKbdQuery", "()Z");
+    e->mKbdSend      = env->GetMethodID(bc, "sendKbdSurface", "()V");
+    e->mKbdHide      = env->GetMethodID(bc, "sendKbdHide", "()V");
+    e->mKbdState     = env->GetMethodID(bc, "kbdState", "()[I");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");

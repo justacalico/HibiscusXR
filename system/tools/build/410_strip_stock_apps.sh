@@ -61,7 +61,7 @@ org.lineageos.updater org.lineageos.setupwizard \
 org.lineageos.profiles org.lineageos.customization \
 org.lineageos.audiofx \
 com.android.launcher3 com.android.fallbackhome \
-com.android.systemui \
+com.android.systemui com.android.inputmethod.latin \
 com.android.internal.display.cutout.emulation.corner \
 com.android.internal.display.cutout.emulation.double \
 com.android.internal.display.cutout.emulation.tall \
@@ -92,7 +92,7 @@ com.android.packageinstaller com.android.permissioncontroller \
 com.android.documentsui com.android.providers.downloads \
 com.android.providers.media com.android.webview com.android.bluetooth \
 com.android.providers.contacts com.android.providers.telephony \
-com.android.inputmethod.latin com.android.captiveportallogin \
+com.android.captiveportallogin \
 com.android.storagemanager com.android.networkstack"
 
 want_dead() {

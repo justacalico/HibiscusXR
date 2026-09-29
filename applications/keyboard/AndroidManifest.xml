@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The floating keyboard: an InputMethodService whose docked window stays a
+  hairline inside the app's panel while the real keys live in a Presentation
+  on our own private virtual display. That display's surface is handed to us
+  by the HUD over broadcast (the quad it renders sits under the panel that
+  owns the text field). No privileged permissions needed - Presentation on
+  an app-owned private display is public API.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="gitlab.neosalsa.keyboard"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
+
+    <application
+        android:label="Keyboard"
+        android:allowBackup="false"
+        android:directBootAware="true"
+        android:debuggable="false">
+
+        <service
+            android:name=".KeyboardService"
+            android:permission="android.permission.BIND_INPUT_METHOD"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.view.InputMethod" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/method" />
+        </service>
+    </application>
+</manifest>

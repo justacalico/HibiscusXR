@@ -43,6 +43,14 @@ Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `N
 
 > [!IMPORTANT]
 > If platform signing keys exist in `../build/keys`, the APK is signed with them and gets the system permissions the manifest asks for. With the fallback debug keystore the virtual-display permissions are NOT granted, so the shell can't host apps.
+>
+> The HUD runs under `android.uid.system` so the panel displays can host the soft keyboard; a debug-signed build won't install at all, and upgrading an older vrhud on a live device needs one `adb uninstall gitlab.neosalsa.hud` before `make install` goes through.
+
+## Keyboard
+
+The IME (`gitlab.neosalsa.keyboard`, in `applications/keyboard`) floats as its own quad under the window that owns the text field, the same place the Quest keyboard hangs. Android 10 only ever docks an IME on the target's display or the default one, so the quad is not an IME window at all: the HUD owns a `Surface`/`SurfaceTexture`, hands the `Surface` to the IME over broadcast, and the IME wraps it in a private virtual display hosting a `Presentation` with the keys (presentations are only allowed on a private display owned by the caller - hence the split). The IME reports its display id back over `gitlab.neosalsa.hud.action.KBD`, the HUD draws the texture under the last-tapped panel, and touches on the quad are injected onto that display like any panel tap. If the surface never arrives the IME falls back to a docked strip inside the app panel.
+
+No task ever lives on the keyboard display, so it is deliberately kept out of `vds` - the poller would otherwise reap it six seconds after creation.
 
 ## Controls
 

@@ -6,6 +6,7 @@
 #include "../dock/item.h"
 #include "../notif/item.h"
 #include "../sysmsg/item.h"
+#include "../kbd/kbd.h"
 #include "../common/config.h"
 #include "../input/ctrl_state.h"
 #include "../input/input_state.h"
@@ -42,7 +43,9 @@ struct HudEngine : Engine {
               mSysStatus = nullptr,
               mSysMsgVer = nullptr, mSysMsgs = nullptr,
               mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
-              mSysMsgOnly = nullptr;
+              mSysMsgOnly = nullptr,
+              mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
+              mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
@@ -199,6 +202,11 @@ struct HudEngine : Engine {
     float grabX = 0, grabY = 0;  // where the drag grabbed, px
     int pressDisp = -1;          // display the held confirm press started on
     int pressZone = ZONE_NONE;   // chrome zone that press started on
+
+    // floating keyboard: the IME draws into a texture we own and reports
+    // its virtual display id over broadcast; see src/kbd and the hud's
+    // ACTION_KBD contract
+    Kbd kbd;
 
     // surface handoff: the render thread owns the window end of the
     // SurfaceView. window is a newly-posted ANativeWindow, windowGone a

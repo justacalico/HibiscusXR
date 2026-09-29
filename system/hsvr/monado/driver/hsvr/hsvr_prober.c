@@ -3,8 +3,10 @@
 /*!
  * @file
  * @brief  hsvr auto prober: asks the driver kit which headset this is and
- *         instantiates its devices. The only monado-side driver - every
- *         device lives in drivers/<name>/ and registers through the kit.
+ *         instantiates its devices, then attaches every generic
+ *         controller that claimed the run. Headsets live in
+ *         drivers/<name>/, shared controllers in controllers/<name>/ -
+ *         both register through the kit.
  * @ingroup drv_hsvr
  */
 
@@ -15,9 +17,66 @@
 #include "util/u_debug.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 
 DEBUG_GET_ONCE_OPTION(hsvr_driver, "HSVR_DRIVER", NULL)
+DEBUG_GET_ONCE_OPTION(hsvr_ctrl, "HSVR_CTRL", NULL)
+
+// per-type create() cap, same bound the kit uses for native controllers
+#define HSVR_CTRL_MAX_PER_TYPE 8
+
+// is name one of the entries in a space/comma separated HSVR_CTRL list
+static bool
+hsvr_ctrl_forced(const char *list, const char *name)
+{
+	if (list == NULL || name == NULL) {
+		return false;
+	}
+	size_t len = strlen(name);
+	for (const char *p = list; *p != '\0';) {
+		while (*p == ' ' || *p == ',' || *p == ';' || *p == ':') {
+			p++;
+		}
+		const char *e = p;
+		while (*e != '\0' && *e != ' ' && *e != ',' && *e != ';' && *e != ':') {
+			e++;
+		}
+		if ((size_t)(e - p) == len && strncmp(p, name, len) == 0) {
+			return true;
+		}
+		p = e;
+	}
+	return false;
+}
+
+// attach every generic controller that probed or was force-listed,
+// filling out_xdevs from *io_n up to the probe capacity
+static void
+hsvr_prober_attach_controllers(struct xrt_device **out_xdevs, int *io_n)
+{
+	const char *forced = debug_get_option_hsvr_ctrl();
+	for (size_t c = 0; hsvr_controllers[c] != NULL; c++) {
+		const struct hsvr_controller *ctrl = hsvr_controllers[c];
+		bool on = hsvr_ctrl_forced(forced, ctrl->name);
+		if (!on && (ctrl->probe == NULL || ctrl->probe() <= 0)) {
+			continue;
+		}
+		if (ctrl->create == NULL) {
+			continue;
+		}
+		for (int i = 0; i < HSVR_CTRL_MAX_PER_TYPE; i++) {
+			if (*io_n >= XRT_MAX_DEVICES_PER_PROBE) {
+				return;
+			}
+			struct xrt_device *dev = ctrl->create(i);
+			if (dev == NULL) {
+				break;
+			}
+			out_xdevs[(*io_n)++] = dev;
+		}
+	}
+}
 
 /*!
  * @implements xrt_auto_prober
@@ -71,8 +130,9 @@ hsvr_prober_autoprobe(struct xrt_auto_prober *xap,
 
 	int n = 0;
 	out_xdevs[n++] = hmd;
+	// native controllers first, generic ones fill whatever slots remain
 	if (drv->create_controller != NULL) {
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < HSVR_CTRL_MAX_PER_TYPE && n < XRT_MAX_DEVICES_PER_PROBE; i++) {
 			struct xrt_device *c = drv->create_controller(i);
 			if (c == NULL) {
 				break;
@@ -80,6 +140,7 @@ hsvr_prober_autoprobe(struct xrt_auto_prober *xap,
 			out_xdevs[n++] = c;
 		}
 	}
+	hsvr_prober_attach_controllers(out_xdevs, &n);
 	return n;
 }
 

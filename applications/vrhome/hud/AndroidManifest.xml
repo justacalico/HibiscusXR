@@ -5,9 +5,16 @@
   over whatever owns the physical display - the env activity, or a running
   VR game when summoned. Virtual displays and all task/input plumbing live
   in this process, so panels survive both app switches and env restarts.
+
+  sharedUserId android.uid.system is what lets the panel displays host the
+  IME: WindowManagerService refuses setShouldShowIme on a virtual display
+  whose owner uid isn't system, and without it the keyboard falls back to
+  the physical display and lands mono in both eyes. The Pico shell does the
+  same thing - stock logs show vrshell's display owned by uid 1000.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="gitlab.neosalsa.hud"
+    android:sharedUserId="android.uid.system"
     android:versionCode="1"
     android:versionName="1.0">
 

@@ -43,6 +43,8 @@ Everything resolves from `ANDROID_SDK_ROOT` (default `/opt/android-sdk`); the `N
 
 > [!IMPORTANT]
 > If platform signing keys exist in `../build/keys`, the APK is signed with them and gets the system permissions the manifest asks for. With the fallback debug keystore the virtual-display permissions are NOT granted, so the shell can't host apps.
+>
+> The HUD runs under `android.uid.system` so the panel displays can host the soft keyboard; a debug-signed build won't install at all, and upgrading an older vrhud on a live device needs one `adb uninstall gitlab.neosalsa.hud` before `make install` goes through.
 
 ## Controls
 

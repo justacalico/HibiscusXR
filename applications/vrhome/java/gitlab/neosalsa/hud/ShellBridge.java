@@ -375,11 +375,32 @@ public class ShellBridge {
             v.st = st; v.surf = surf; v.vd = vd;
             v.createdMs = SystemClock.uptimeMillis();
             vds.put(id, v);
+            setDisplayIme(id, true);
             Log.i(TAG, "panel display id=" + id + " " + w + "x" + h);
             return id;
         } catch (Throwable t) {
             Log.e(TAG, "createPanel", t);
             return -1;
+        }
+    }
+
+    // Mark a panel display as IME-capable so a focused window on it gets
+    // the soft keyboard docked inside the panel instead of the keyboard
+    // falling back to the physical display - mono in both eyes, which is
+    // what "the keyboard breaks in VR" looked like. The call is
+    // IWindowManager.setShouldShowIme, hidden and gated to
+    // INTERNAL_SYSTEM_WINDOW callers plus a display owned by uid 1000;
+    // both hold only because this apk runs under android.uid.system.
+    private void setDisplayIme(int displayId, boolean on) {
+        try {
+            Class<?> wmg = Class.forName("android.view.WindowManagerGlobal");
+            Object wms = wmg.getMethod("getWindowManagerService").invoke(null);
+            wms.getClass()
+                    .getMethod("setShouldShowIme", int.class, boolean.class)
+                    .invoke(wms, displayId, on);
+        } catch (Throwable t) {
+            Log.w(TAG, "setShouldShowIme " + displayId + "=" + on +
+                    " failed", t);
         }
     }
 
@@ -404,6 +425,9 @@ public class ShellBridge {
         Vd v = vds.remove(displayId);
         launching.remove(displayId);
         if (v == null) return;
+        // the flag is persisted per display uniqueId; clear it so the
+        // display_settings.xml entry doesn't outlive the panel
+        setDisplayIme(displayId, false);
         try { v.vd.release(); } catch (Throwable ignored) {}
         try { v.surf.release(); } catch (Throwable ignored) {}
         try { v.st.release(); } catch (Throwable ignored) {}

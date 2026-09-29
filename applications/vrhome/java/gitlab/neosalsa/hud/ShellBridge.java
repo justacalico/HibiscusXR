@@ -83,6 +83,8 @@ public class ShellBridge {
             "gitlab.neosalsa.keyboard.action.QUERY";
     private static final String ACTION_KBD_SURFACE =
             "gitlab.neosalsa.keyboard.action.SURFACE";
+    private static final String ACTION_KBD_HIDE =
+            "gitlab.neosalsa.keyboard.action.HIDE";
 
     // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
     private static final int VD_FLAGS = 1 | 64;
@@ -505,6 +507,13 @@ public class ShellBridge {
                 .putExtra("surface", s)
                 .putExtra("w", kbdW).putExtra("h", kbdH)
                 .putExtra("dpi", kbdDpi));
+    }
+
+    // render thread: ask the IME to put the quad away - BACK on a floating
+    // keyboard should drop the keyboard, not the window behind it
+    public void sendKbdHide() {
+        if (!kbdShown) return;
+        ctx.sendBroadcast(new Intent(ACTION_KBD_HIDE).setPackage(KBD_PKG));
     }
 
     // render thread: {shown, displayId, kbdOnly} - only means the window is

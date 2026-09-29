@@ -45,7 +45,7 @@ struct HudEngine : Engine {
               mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
               mSysMsgOnly = nullptr,
               mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
-              mKbdSend = nullptr, mKbdState = nullptr;
+              mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;

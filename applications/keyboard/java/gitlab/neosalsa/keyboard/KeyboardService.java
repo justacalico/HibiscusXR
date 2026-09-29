@@ -51,6 +51,9 @@ public class KeyboardService extends InputMethodService
     // HUD -> us: here is the surface (+ w/h/dpi extras)
     private static final String ACTION_SURFACE =
             "gitlab.neosalsa.keyboard.action.SURFACE";
+    // HUD -> us: the shell's BACK wants the quad down
+    private static final String ACTION_HIDE =
+            "gitlab.neosalsa.keyboard.action.HIDE";
 
     private FrameLayout dockBox;      // inputView container on the app display
     private KeyboardView kv;          // the one view, reparented dock <-> quad
@@ -65,6 +68,10 @@ public class KeyboardService extends InputMethodService
 
     private final BroadcastReceiver surfaceRecv = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
+            if (ACTION_HIDE.equals(i.getAction())) {
+                requestHideSelf(0);
+                return;
+            }
             Surface s = i.getParcelableExtra("surface");
             if (s == null) return;
             if (s != surf) {
@@ -80,13 +87,18 @@ public class KeyboardService extends InputMethodService
 
     @Override public void onCreate() {
         super.onCreate();
-        registerReceiver(surfaceRecv, new IntentFilter(ACTION_SURFACE));
+        IntentFilter f = new IntentFilter();
+        f.addAction(ACTION_SURFACE);
+        f.addAction(ACTION_HIDE);
+        registerReceiver(surfaceRecv, f);
         sendBroadcast(new Intent(ACTION_QUERY).setPackage(HUD_PKG));
     }
 
     @Override public void onDestroy() {
         unregisterReceiver(surfaceRecv);
         tearDownPanel();
+        // a dead IME leaves a frozen quad up otherwise
+        reportState(false);
         super.onDestroy();
     }
 

@@ -101,6 +101,7 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
                         "()Landroid/graphics/SurfaceTexture;");
     e->mKbdTakeQuery = env->GetMethodID(bc, "takeKbdQuery", "()Z");
     e->mKbdSend      = env->GetMethodID(bc, "sendKbdSurface", "()V");
+    e->mKbdHide      = env->GetMethodID(bc, "sendKbdHide", "()V");
     e->mKbdState     = env->GetMethodID(bc, "kbdState", "()[I");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");

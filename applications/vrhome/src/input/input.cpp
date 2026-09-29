@@ -246,6 +246,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         return;
     }
     if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
+        // the floating keyboard owns BACK first: drop the quad, not the
+        // window or card behind it
+        if (e->kbd.shown && e->bridge && e->mKbdHide) {
+            JNIEnv* env = threadEnv(e->vm);
+            env->CallVoidMethod(e->bridge, e->mKbdHide);
+            if (env->ExceptionCheck()) env->ExceptionClear();
+            return;
+        }
         // a live system message is modal: BACK drops the front card, not
         // the window behind it
         if (!e->sysMsgs.empty()) {

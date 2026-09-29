@@ -14,8 +14,8 @@ int kbdHostIndex(const std::vector<Panel>& panels, int hostDisp) {
     return -1;
 }
 
-void kbdCenter(const Panel& p, const float origin[3], float c[3],
-               float r[3], float up[3]) {
+void kbdCenter(const Panel& p, const float origin[3], float offYaw,
+               float offY, float c[3], float r[3], float up[3]) {
     float pc[3];
     panelCenter(p, origin, pc, r, up);
     // the quad is its own window: it keeps the host's yaw and up, drops
@@ -29,27 +29,50 @@ void kbdCenter(const Panel& p, const float origin[3], float c[3],
     const float drop = kPanelH * 0.5f + kKbdGap + kKbdHH;
     for (int i = 0; i < 3; ++i)
         c[i] = pc[i] - up[i] * drop + n[i] * inv * pull;
+    // the pill's placement: swinging the frame around the viewer's vertical
+    // axis moves the quad like a ring drag moves its host, and offY slides
+    // it along its own up
+    if (offYaw != 0.0f) {
+        const float cs = cosf(offYaw), sn = sinf(offYaw);
+        float* v3[3] = {c, r, up};
+        for (int i = 0; i < 3; ++i) {
+            const float x = v3[i][0] * cs - v3[i][2] * sn;
+            v3[i][2] = v3[i][0] * sn + v3[i][2] * cs;
+            v3[i][0] = x;
+        }
+    }
+    c[0] += up[0] * offY; c[1] += up[1] * offY; c[2] += up[2] * offY;
 }
 
-void kbdFreeCenter(float yaw, const float origin[3], float c[3],
-                   float r[3], float up[3]) {
+void kbdFreeCenter(float yaw, const float origin[3], float offYaw,
+                   float offY, float c[3], float r[3], float up[3]) {
     Panel ghost;
     ghost.yaw = yaw;
     ghost.pitch = 0.0f;
-    kbdCenter(ghost, origin, c, r, up);
+    kbdCenter(ghost, origin, offYaw, offY, c, r, up);
 }
 
 void kbdFrame(const std::vector<Panel>& panels, int hostDisp, bool free,
-              float freeYaw, const float origin[3], float c[3], float r[3],
-              float up[3]) {
+              float freeYaw, float offYaw, float offY,
+              const float origin[3], float c[3], float r[3], float up[3]) {
     if (!free) {
         const int hi = kbdHostIndex(panels, hostDisp);
         if (hi >= 0) {
-            kbdCenter(panels[hi], origin, c, r, up);
+            kbdCenter(panels[hi], origin, offYaw, offY, c, r, up);
             return;
         }
     }
-    kbdFreeCenter(freeYaw, origin, c, r, up);
+    kbdFreeCenter(freeYaw, origin, offYaw, offY, c, r, up);
+}
+
+float kbdHandleDrop() {
+    return kKbdHH + kHandleGap + kHandleT;
+}
+
+bool onKbdHandle(float u, float v) {
+    const float x = u * kKbdHW, y = v * kKbdHH;
+    return fabsf(x) <= kHandleW + kHandlePad &&
+           fabsf(y + kbdHandleDrop()) <= kHandleT + kHandlePad;
 }
 
 void kbdHitPx(float u, float v, float* x, float* y) {

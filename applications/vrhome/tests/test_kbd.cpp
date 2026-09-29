@@ -38,7 +38,7 @@ void testKbd() {
     Panel p = mkPanel(10);
     float pc[3], pr[3], pu[3], c[3], r[3], up[3];
     panelCenter(p, o0, pc, pr, pu);
-    kbdCenter(p, o0, c, r, up);
+    kbdCenter(p, o0, 0.0f, 0.0f, c, r, up);
     for (int i = 0; i < 3; ++i) {
         CHECK_F(r[i], pr[i], 1e-6f);
         CHECK_F(up[i], pu[i], 1e-6f);
@@ -57,6 +57,32 @@ void testKbd() {
     const float dlen = sqrtf(dc[0]*dc[0] + dc[1]*dc[1] + dc[2]*dc[2]);
     CHECK_F(dlen, kKbdDist, 1e-4f);
     CHECK(kKbdDist < kDockDist);
+
+    // the pill's own placement: offYaw swings the frame around the viewer
+    // like a ring move (centre lands where a yaw+offYaw point on the same
+    // ring would), offY slides it along its up
+    float c2[3], r2[3], up2[3];
+    kbdCenter(p, o0, 0.4f, 0.2f, c2, r2, up2);
+    const float cs = cosf(0.4f), sn = sinf(0.4f);
+    // centre: rotate the un-offset centre by the yaw, then shift along up
+    const float cx = c[0] * cs - c[2] * sn;
+    const float cz = c[0] * sn + c[2] * cs;
+    for (int i = 0; i < 3; ++i) {
+        const float want = (i == 0 ? cx : i == 1 ? c[1] : cz) +
+                           up2[i] * 0.2f;
+        CHECK_F(c2[i], want, 1e-5f);
+    }
+    // right/up rotate by the same yaw: the frame stays rigid
+    CHECK_F(r2[0], r[0] * cs - r[2] * sn, 1e-5f);
+    CHECK_F(r2[2], r[0] * sn + r[2] * cs, 1e-5f);
+    CHECK_F(r2[1], r[1], 1e-5f);
+
+    // the drag pill sits under the quad's bottom edge
+    CHECK_F(kbdHandleDrop(), kKbdHH + kHandleGap + kHandleT, 1e-6f);
+    CHECK(onKbdHandle(0.0f, -kbdHandleDrop() / kKbdHH));
+    CHECK(!onKbdHandle(0.0f, 0.0f));   // quad centre is a key, not the pill
+    CHECK(!onKbdHandle(0.0f, -1.0f));  // the bottom edge itself isn't
+    CHECK(!onKbdHandle(0.9f, -kbdHandleDrop() / kKbdHH));
 
     // a ray from the eye straight at the quad hits inside its bounds and
     // nearer than the panel plane behind it

@@ -197,7 +197,8 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     if (!e->kbd.shown || !e->kbd.st) return;
     float c[3], r[3], up[3];
     kbdFrame(e->panels, e->kbd.hostDisp, e->kbd.only,
-             e->kbd.only ? e->kbd.yaw : e->dockYaw, e->ringPos, c, r, up);
+             e->kbd.only ? e->kbd.yaw : e->dockYaw,
+             e->kbd.offYaw, e->kbd.offY, e->ringPos, c, r, up);
     const float hw = kKbdHW, hh = kKbdHH;
     const bool hov = e->kbd.hover;
 
@@ -255,6 +256,19 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
               hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
               0.0016f, 0.0012f, bcol);
+
+    // the move pill: a short line centred under the quad, same recipe as
+    // the dash's handle - holding it drags the keyboard on its own
+    {
+        const bool hhov = e->kbd.zone == KZONE_HANDLE || e->kbd.moveHeld;
+        const float hd = kbdHandleDrop();
+        const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
+                             c[2] - up[2] * hd};
+        const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               hhov ? 0.95f : 0.55f};
+        shapeQuad(e, viewProj, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
+                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
+    }
 
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
@@ -319,6 +333,15 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
         pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
+    } else if (e->kbd.hover) {
+        // keys and the pill share the quad's plane, so u/v (even past the
+        // quad's edges, where the pill sits) drop the dot right on the hit
+        kbdFrame(e->panels, e->kbd.hostDisp, e->kbd.only,
+                 e->kbd.only ? e->kbd.yaw : e->dockYaw,
+                 e->kbd.offYaw, e->kbd.offY, e->ringPos, c, r, up);
+        pos[0] = c[0] + r[0]*e->kbd.u*kKbdHW + up[0]*e->kbd.v*kKbdHH;
+        pos[1] = c[1] + r[1]*e->kbd.u*kKbdHW + up[1]*e->kbd.v*kKbdHH;
+        pos[2] = c[2] + r[2]*e->kbd.u*kKbdHW + up[2]*e->kbd.v*kKbdHH;
     } else if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
         const Panel& p = e->panels[e->hover];
         panelCenter(p, e->ringPos, c, r, up);

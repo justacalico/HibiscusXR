@@ -425,19 +425,25 @@ static void hudFrame(HudEngine* e) {
     const Pick pk = pickPanelRay(e->panels, e->ringPos, e->aimO, e->aimD);
     // the keyboard quad hangs under its host panel (or free in the dash's
     // centre when the field lives in a covered app); the ray test shares
-    // the draw path's frame so the pick always matches what is on screen
+    // the draw path's frame so the pick always matches what is on screen.
+    // The pill under the quad is part of the hit area even though it sits
+    // outside the quad's v bounds
     float kU = 0.0f, kV = 0.0f, kT = -1.0f;
+    int kZone = KZONE_KEY;
     if (e->kbd.shown && e->kbd.displayId >= 0) {
         float kc[3], kr[3], kup[3];
         kbdFrame(e->panels, e->kbd.hostDisp, e->kbd.only,
-                 e->kbd.only ? e->kbd.yaw : e->dockYaw, e->ringPos,
-                 kc, kr, kup);
+                 e->kbd.only ? e->kbd.yaw : e->dockYaw,
+                 e->kbd.offYaw, e->kbd.offY, e->ringPos, kc, kr, kup);
         if (rayQuad(kc, kr, kup, e->ringPos, e->aimO, e->aimD,
-                    kKbdHW, kKbdHH, &kU, &kV, &kT) &&
-                (kU < -1.0f || kU > 1.0f || kV < -1.0f || kV > 1.0f))
-            kT = -1.0f;
+                    kKbdHW, kKbdHH, &kU, &kV, &kT)) {
+            if (onKbdHandle(kU, kV)) kZone = KZONE_HANDLE;
+            else if (kU < -1.0f || kU > 1.0f || kV < -1.0f || kV > 1.0f)
+                kT = -1.0f;
+        }
     }
     e->kbd.hover = false;
+    e->kbd.zone = KZONE_KEY;
     const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
                                   e->dockPitch, e->ringPos, e->aimO, e->aimD);
     const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
@@ -458,7 +464,7 @@ static void hudFrame(HudEngine* e) {
         e->hoverZone = ZONE_NONE;
         e->aimHitT = mp.t;
     } else if (np.stack && (!dp.bar || np.t <= dp.t) &&
-            (pk.idx < 0 || np.t <= pk.t)) {
+            (pk.idx < 0 || np.t <= pk.t) && (kT < 0.0f || np.t <= kT)) {
         e->sysMsgHover = -1;
         e->sysMsgZone = MZONE_NONE;
         e->sysMsgBtn = -1;
@@ -470,7 +476,8 @@ static void hudFrame(HudEngine* e) {
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
         e->aimHitT = np.t;
-    } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t)) {
+    } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t) &&
+            (kT < 0.0f || sp.t <= kT)) {
         e->sysMsgHover = -1;
         e->sysMsgZone = MZONE_NONE;
         e->sysMsgBtn = -1;
@@ -482,7 +489,10 @@ static void hudFrame(HudEngine* e) {
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
         e->aimHitT = sp.t;
-    } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t)) {
+    // the quad rides nearer than the dock and shelf, so it wins the aim
+    // whenever they overlap on screen
+    } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t) &&
+            (kT < 0.0f || dp.t <= kT)) {
         e->sysMsgHover = -1;
         e->sysMsgZone = MZONE_NONE;
         e->sysMsgBtn = -1;
@@ -507,8 +517,9 @@ static void hudFrame(HudEngine* e) {
         e->dockZone = DZONE_NONE;
         if (kT >= 0.0f && (pk.idx < 0 || kT <= pk.t)) {
             // the keyboard is the nearest surface: no panel hover at all,
-            // the hit belongs to the quad
+            // the hit belongs to the quad or its pill
             e->kbd.hover = true;
+            e->kbd.zone = kZone;
             e->kbd.u = kU;
             e->kbd.v = kV;
             e->hover = -1;

@@ -106,14 +106,24 @@ public class KeyboardService extends InputMethodService
     }
 
     @Override public View onCreateInputView() {
-        letters = new Keyboard(this, R.xml.kbd_qwerty);
-        symbols = new Keyboard(this, R.xml.kbd_symbols);
-        kv = (KeyboardView) getLayoutInflater().inflate(R.layout.kbd, null);
-        kv.setKeyboard(letters);
-        kv.setOnKeyboardActionListener(this);
-        kv.setPreviewEnabled(false);
+        // config changes make the framework drop and recreate the input
+        // view mid-session, so every call gets a fresh container; the keys
+        // themselves are a singleton that moves dock <-> quad as needed
+        if (kv == null) {
+            letters = new Keyboard(this, R.xml.kbd_qwerty);
+            symbols = new Keyboard(this, R.xml.kbd_symbols);
+            kv = (KeyboardView) getLayoutInflater()
+                    .inflate(R.layout.kbd, null);
+            kv.setKeyboard(letters);
+            kv.setOnKeyboardActionListener(this);
+            kv.setPreviewEnabled(false);
+        }
         dockBox = new FrameLayout(this);
-        dockBox.addView(kv);
+        if (floating) {
+            dockBox.setVisibility(View.GONE);
+        } else {
+            moveKeys(dockBox);
+        }
         return dockBox;
     }
 
@@ -121,6 +131,13 @@ public class KeyboardService extends InputMethodService
         // the quad floats over whatever the app is doing - never go
         // landscape-fullscreen extract mode
         return false;
+    }
+
+    @Override public void onConfigurationChanged(
+            android.content.res.Configuration newConfig) {
+        // stock handling rebuilds the IME window and recreates the input
+        // view mid-flight; the keys are a singleton that moves between the
+        // dock box and the quad, so the rebuild is skipped entirely
     }
 
     @Override public void onStartInputView(EditorInfo info, boolean restarting) {
@@ -158,6 +175,11 @@ public class KeyboardService extends InputMethodService
             if (panel == null)
                 panel = new KbdPanel(this, vd.getDisplay());
             if (!panel.isShowing()) panel.show();
+            // %p sizes in the key xml resolve against the metrics of the
+            // context that builds the Keyboard - the panel context carries
+            // our VD's 1400x490@240, the service's would be the physical
+            // panel and the keys would blow past the texture
+            useKeyboards(panel.getContext());
             moveKeys(panel.box);
             floating = true;
             dockBox.setVisibility(View.GONE);
@@ -190,8 +212,24 @@ public class KeyboardService extends InputMethodService
 
     private void attachDocked() {
         if (dockBox == null || kv == null) return;
+        // docked means the keys sit in the IME window on the app display -
+        // size them off that display, not the quad's
+        try {
+            useKeyboards(createDisplayContext(
+                    getWindow().getWindow().getWindowManager()
+                            .getDefaultDisplay()));
+        } catch (Throwable ignored) {}
         moveKeys(dockBox);
         dockBox.setVisibility(View.VISIBLE);
+    }
+
+    private void useKeyboards(Context ctx) {
+        final boolean sym = kv != null && kv.getKeyboard() == symbols;
+        final boolean shifted = letters != null && letters.isShifted();
+        letters = new Keyboard(ctx, R.xml.kbd_qwerty);
+        symbols = new Keyboard(ctx, R.xml.kbd_symbols);
+        if (shifted) letters.setShifted(true);
+        if (kv != null) kv.setKeyboard(sym ? symbols : letters);
     }
 
     private void moveKeys(ViewGroup into) {

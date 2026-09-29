@@ -33,8 +33,8 @@ void testKbd() {
     std::vector<Panel> none;
     CHECK(kbdHostIndex(none, 5) == -1);
 
-    // the quad hangs under its host: centre is the panel's minus a drop
-    // along its up vector, plus a nudge toward the ring anchor
+    // the quad is its own window: host orientation, dropped under the
+    // host's bottom edge, pulled toward the eye to kKbdDist
     Panel p = mkPanel(10);
     float pc[3], pr[3], pu[3], c[3], r[3], up[3];
     panelCenter(p, o0, pc, pr, pu);
@@ -44,19 +44,19 @@ void testKbd() {
         CHECK_F(up[i], pu[i], 1e-6f);
     }
     const float drop = kPanelH * 0.5f + kKbdGap + kKbdHH;
-    // expected centre: panel centre dropped along -up, nudged along the
-    // unit vector toward the ring anchor
     float n[3] = {o0[0] - pc[0], o0[1] - pc[1], o0[2] - pc[2]};
     const float nl = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
+    const float pull = nl - kKbdDist;
     for (int i = 0; i < 3; ++i) {
-        const float want = pc[i] - up[i] * drop + n[i] / nl * kKbdLift;
+        const float want = pc[i] - up[i] * drop + n[i] / nl * pull;
         CHECK_F(c[i], want, 1e-5f);
     }
-    // the nudge pushes the quad off the panel plane toward the viewer:
-    // the centre is not on the panel's plane
-    float off = 0.0f;
-    for (int i = 0; i < 3; ++i) off += (c[i] - pc[i] + up[i] * drop) * n[i] / nl;
-    CHECK_F(off, kKbdLift, 1e-5f);
+    // the pull carries the quad to its own ring nearer than the dock
+    float dc[3];
+    for (int i = 0; i < 3; ++i) dc[i] = c[i] + up[i] * drop;
+    const float dlen = sqrtf(dc[0]*dc[0] + dc[1]*dc[1] + dc[2]*dc[2]);
+    CHECK_F(dlen, kKbdDist, 1e-4f);
+    CHECK(kKbdDist < kDockDist);
 
     // a ray from the eye straight at the quad hits inside its bounds and
     // nearer than the panel plane behind it

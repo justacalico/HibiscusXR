@@ -59,13 +59,15 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 constexpr float kPanelMinGap = 0.82f;
 
 // floating keyboard: the IME app draws into a texture the HUD owns, shown
-// as its own quad under the window that owns the text field. The px size
+// as its own window under the one holding the text field. It rides nearer
+// than the panels AND the dock (kDockDist 1.35) so nothing can occlude it -
+// like Quest, the keyboard is the closest thing on screen. The px size
 // rides the panels' pixels-per-metre (kPanelW/kVdW) so keys match window
 // text size
-constexpr int   kKbdW = 1200, kKbdH = 420, kKbdDpi = 240;
-constexpr float kKbdHW = 0.4875f, kKbdHH = 0.1706f;  // world half extents
-constexpr float kKbdGap = 0.045f;   // between window bottom and quad top
-constexpr float kKbdLift = 0.025f;  // nudge toward the viewer off the plane
+constexpr int   kKbdW = 1400, kKbdH = 490, kKbdDpi = 240;
+constexpr float kKbdHW = 0.56f, kKbdHH = 0.196f;  // world half extents
+constexpr float kKbdDist = 1.15f;   // metres off the eye, in front of dock
+constexpr float kKbdGap = 0.03f;    // view-space dip below the host window
 
 // window chrome: a top bar bound to each panel's top edge, holding the app
 // name. It sits flush on the surface - square bottom corners on a square

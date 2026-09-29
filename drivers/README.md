@@ -13,6 +13,11 @@ drivers/<name>/
                      driver.json
 ```
 
+Input devices that are not bound to one headset (Bluetooth wands,
+gamepads, anything usable on every port) do not belong here - they live
+in `controllers/` at the repo root and attach to whatever driver wins.
+See `controllers/README.md`.
+
 `driver.json` fields:
 
 - `detect.sysprops` - props that identify the hardware

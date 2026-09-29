@@ -21,8 +21,9 @@ in `/etc/ld.config.27.txt`, letting sphal resolve it from `/system/lib64`.
 
 - `monado/` - pinned Monado + the `hsvr` kit shim (one prober, fixed
   forever) applied via `patches/hsvr-driver-registration.patch`;
-  `build.sh` pulls the kit and every `drivers/<name>/monado/` into
-  `drv_hsvr` and produces `libopenxr_monado.so`
+  `build.sh` pulls the kit, every `drivers/<name>/monado/` and every
+  shared `controllers/<name>/monado/` into `drv_hsvr` and produces
+  `libopenxr_monado.so`
 - `turnip/` - `build.sh` clones `mesa-25.2.4` and applies
   `patches/ahb-mip-storage-fixes.patch` (AHB export sized for mip chains,
   implicit layout for multi-level images, no `GPU_DATA_BUFFER` on

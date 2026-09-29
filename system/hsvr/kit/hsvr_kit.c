@@ -43,3 +43,17 @@ hsvr_driver_find(const char *name)
 	}
 	return NULL;
 }
+
+const struct hsvr_controller *
+hsvr_controller_find(const char *name)
+{
+	if (name == NULL) {
+		return NULL;
+	}
+	for (size_t i = 0; hsvr_controllers[i] != NULL; i++) {
+		if (strcmp(hsvr_controllers[i]->name, name) == 0) {
+			return hsvr_controllers[i];
+		}
+	}
+	return NULL;
+}

@@ -197,6 +197,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  panel_theme:
+    dependency: "direct main"
+    description:
+      path: "../panel_theme"
+      relative: true
+    source: path
+    version: "1.0.0"
   path:
     dependency: transitive
     description:

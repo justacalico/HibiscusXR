@@ -1,7 +1,7 @@
 import '../l10n/app_localizations.dart';
 import 'envs/env_info.dart';
 import 'models.dart';
-import 'theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'units.dart';
 
 /// id -> localized string resolution. Kept out of the widgets so the

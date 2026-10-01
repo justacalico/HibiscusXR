@@ -9,7 +9,7 @@ import 'src/platform/android_settings_source.dart';
 import 'src/platform/fake_settings_source.dart';
 import 'src/platform/prefs_persistence.dart';
 import 'src/settings_controller.dart';
-import 'src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'src/ui/settings_page.dart';
 import 'src/ui/theme.dart';
 

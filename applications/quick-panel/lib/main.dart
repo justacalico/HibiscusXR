@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 import 'l10n/app_localizations.dart';
 import 'src/platform/android_settings_source.dart';

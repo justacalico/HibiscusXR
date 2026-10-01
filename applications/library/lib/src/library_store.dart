@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'models.dart';
 import 'persistence.dart';
 import 'text_norm.dart';
-import 'theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 /// How the grid arranges apps. [custom] is the user-arranged order: the
 /// manual order list for flat views, member order inside a group.

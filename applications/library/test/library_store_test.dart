@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_library/src/library_store.dart';
 import 'package:pn2_library/src/models.dart';
 import 'package:pn2_library/src/persistence.dart';
-import 'package:pn2_library/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 AppEntry app(
   String pkg, {

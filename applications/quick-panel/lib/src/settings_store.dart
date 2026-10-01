@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'models.dart';
-import 'theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 /// All panel state: toggles, sliders, battery, radios and the clock.
 /// Pure Dart - every value the UI shows is computed here so tests can

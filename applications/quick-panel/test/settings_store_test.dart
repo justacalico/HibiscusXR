@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_quicksettings/src/models.dart';
 import 'package:pn2_quicksettings/src/settings_store.dart';
-import 'package:pn2_quicksettings/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 void main() {
   test('toggles default to off and flip', () {

@@ -34,6 +34,8 @@ dependencies:
     sdk: flutter
   intl: any
   shared_preferences: ^2.5.5
+  panel_theme:
+    path: ../panel_theme
 
 dev_dependencies:
   flutter_test:

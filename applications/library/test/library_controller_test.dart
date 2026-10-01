@@ -3,7 +3,7 @@ import 'package:pn2_library/src/library_controller.dart';
 import 'package:pn2_library/src/models.dart';
 import 'package:pn2_library/src/persistence.dart';
 import 'package:pn2_library/src/platform/fake_app_source.dart';
-import 'package:pn2_library/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 void main() {
   test('init loads apps and reaches ready', () async {

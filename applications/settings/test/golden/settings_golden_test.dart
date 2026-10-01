@@ -7,6 +7,7 @@ import 'package:pn2_settings/l10n/app_localizations.dart';
 import 'package:pn2_settings/src/envs/env_info.dart';
 import 'package:pn2_settings/src/envs/env_source.dart';
 import 'package:pn2_settings/src/models.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
 import 'package:pn2_settings/src/settings_controller.dart';

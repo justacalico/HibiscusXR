@@ -6,7 +6,7 @@ import '../labels.dart';
 import '../models.dart';
 import '../settings_controller.dart';
 import '../settings_store.dart';
-import '../theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'battery_icon.dart';
 import 'brand_card.dart';
 import 'bt_card.dart';

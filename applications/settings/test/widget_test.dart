@@ -6,7 +6,7 @@ import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
 import 'package:pn2_settings/src/settings_controller.dart';
 import 'package:pn2_settings/src/settings_store.dart';
-import 'package:pn2_settings/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'package:pn2_settings/src/ui/theme.dart';
 
 Future<(SettingsController, FakeSettingsSource)> pumpApp(

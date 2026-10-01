@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/l10n/app_localizations.dart';
 import 'package:pn2_settings/src/labels.dart';
 import 'package:pn2_settings/src/models.dart';
-import 'package:pn2_settings/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 
 Future<AppLocalizations> l10nOf(WidgetTester tester) async {
   late AppLocalizations found;

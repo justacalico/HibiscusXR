@@ -37,14 +37,14 @@ void testPt() {
     // the mesh is a full NDC square of cols*rows quads
     const int n = buildPtMesh(verts.data(), (int)verts.size(), 0, cams,
                               cols, rows, tanX, tanY,
-                              false, false, true, 0.0f, 0);
+                              false, false, true, 0.0f);
     CHECK(n == cols * rows * 6);
 
     // vertex count sanity: bad inputs refuse to build
     CHECK(buildPtMesh(nullptr, 10, 0, cams, cols, rows,
-                      tanX, tanY, false, false, true, 0.0f, 0) == 0);
+                      tanX, tanY, false, false, true, 0.0f) == 0);
     CHECK(buildPtMesh(verts.data(), 4, 0, cams, cols, rows,
-                      tanX, tanY, false, false, true, 0.0f, 0) == 0);
+                      tanX, tanY, false, false, true, 0.0f) == 0);
 
     // every NDC coordinate sits inside the clip square
     for (int i = 0; i < n; ++i) {
@@ -52,52 +52,45 @@ void testPt() {
         CHECK(verts[i*5+1] >= -1.0001f && verts[i*5+1] <= 1.0001f);
     }
 
-    // the dead-centre ray lands on the left half's principal point: with
-    // the default flips that means u just under 0.5 and v just over 0.5
-    // (v flips: image row 207 out of 400 reads v ~0.48 pre-flip)
+    // the dead-centre ray lands on the left camera's principal point:
+    // u from the image row (turned sideways), v from the column inside
+    // the top band
     {
-        // find a vertex near NDC origin
         for (int i = 0; i < n; ++i) {
             if (fabsf(verts[i*5]) < 1e-6f && fabsf(verts[i*5+1]) < 1e-6f) {
                 const float u = verts[i*5+3], v = verts[i*5+4];
-                CHECK(fabsf(u * 1280.0f - roundf(u*1280.f)) <= 0.5f);
-                CHECK_F(u, floorf(319.78693f) * 2.0f / 1280.0f + 0.5f/1280.f,
-                        2e-3f);
-                CHECK_F(v, 1.0f - 207.4184f / 400.0f, 1e-3f);
+                CHECK_F(u, 1.0f - 207.4184f / 400.0f, 1e-3f);
+                CHECK_F(v, 319.78693f / 1280.0f, 1e-3f);
             }
         }
     }
 
-    // the pair packs column-interleaved: eye 0 reads even columns,
-    // eye 1 odd ones - each u lands within half a texel of its parity
+    // the pair packs as stacked bands: eye 0 stays in the top band
+    // (v < 0.5), eye 1 in the bottom one
     {
         for (int i = 0; i < n; ++i) {
-            const float u = verts[i*5+3];
-            const float col = floorf(u * 1280.0f);
-            CHECK(((int)col % 2) == 0);
+            const float v = verts[i*5+4];
+            CHECK(v >= 0.0f && v <= 0.5f);
         }
         std::vector<float> v2(ptMeshFloats(cols, rows));
         const int n2 = buildPtMesh(v2.data(), (int)v2.size(), 1, cams,
                                    cols, rows, tanX, tanY,
-                                   false, false, true, 0.0f, 0);
+                                   false, false, true, 0.0f);
         for (int i = 0; i < n2; ++i) {
-            const float u = v2[i*5+3];
-            const float col = floorf(u * 1280.0f);
-            CHECK(((int)col % 2) == 1);
+            const float v = v2[i*5+4];
+            CHECK(v >= 0.5f && v <= 1.0f);
         }
     }
 
-    // swapEyes flips the parity: eye 0 then reads the odd columns
+    // swapEyes flips the bands: eye 0 then reads the bottom one
     {
         std::vector<float> v2(ptMeshFloats(cols, rows));
         const int n2 = buildPtMesh(v2.data(), (int)v2.size(), 0, cams,
                                    cols, rows, tanX, tanY,
-                                   true, false, true, 0.0f, 0);
+                                   true, false, true, 0.0f);
         CHECK(n2 == n);
-        for (int i = 0; i < n2; ++i) {
-            const float col = floorf(v2[i*5+3] * 1280.0f);
-            CHECK(((int)col % 2) == 1);
-        }
+        for (int i = 0; i < n2; ++i)
+            CHECK(v2[i*5+4] >= 0.5f && v2[i*5+4] <= 1.0f);
     }
 
     // coverage: the fisheye is wider than the render fov, so no eye

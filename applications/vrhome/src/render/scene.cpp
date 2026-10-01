@@ -33,15 +33,14 @@ static const CamIntr kPtCams[2] = {
 // debug.vrhome.pt{swap,flipx,flipy,roll} exist to find the mount's real
 // orientation without a rebuild
 static void ptMeshes(Engine* e, float tanX, float tanY) {
-    static int pSwap = -1, pFx = -1, pFy = -1, pRot = -1;
+    static int pSwap = -1, pFx = -1, pFy = -1;
     static float pRoll = -9999.0f;
     const int sw = propI("debug.vrhome.ptswap", 0);
     const int fx = propI("debug.vrhome.ptflipx", 0);
-    const int fy = propI("debug.vrhome.ptflipy", 1);
+    const int fy = propI("debug.vrhome.ptflipy", 0);
     const float roll = propF("debug.vrhome.ptroll", 0.0f);
-    const int rot = propI("debug.vrhome.ptrot", 1);
     if (e->ptVbo[0] && sw == pSwap && fx == pFx && fy == pFy &&
-            roll == pRoll && rot == pRot)
+            roll == pRoll)
         return;
     if (!e->ptVbo[0]) glGenBuffers(2, e->ptVbo);
     const int cols = 40, rows = 30;
@@ -49,13 +48,13 @@ static void ptMeshes(Engine* e, float tanX, float tanY) {
     for (int i = 0; i < 2; ++i) {
         const int n = buildPtMesh(verts.data(), (int)verts.size(), i,
                                   kPtCams, cols, rows, tanX, tanY,
-                                  sw != 0, fx != 0, fy != 0, roll, rot);
+                                  sw != 0, fx != 0, fy != 0, roll);
         glBindBuffer(GL_ARRAY_BUFFER, e->ptVbo[i]);
         glBufferData(GL_ARRAY_BUFFER, n * 5 * sizeof(float),
                      verts.data(), GL_STATIC_DRAW);
         e->ptVerts[i] = n;
     }
-    pSwap = sw; pFx = fx; pFy = fy; pRoll = roll; pRot = rot;
+    pSwap = sw; pFx = fx; pFy = fy; pRoll = roll;
 }
 
 // one eye's passthrough mesh fills the eye buffer: NDC-space grid, the

@@ -5,7 +5,6 @@
     "description": "Project name"
   },
 
-  "navStatus": "Status",
   "navRepos": "Repos",
   "navScreenshots": "Screenshots",
   "navDownload": "Download",
@@ -24,7 +23,6 @@
   "heroEyebrow": "Standalone VR · LineageOS 17.1",
   "heroTitle": "Android back, in VR.",
   "heroSubtitle": "A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.",
-  "heroPrimary": "See the status",
   "heroSecondary": "Read the docs",
   "heroShotCaption": "The library window floating inside vrhome.",
 
@@ -66,11 +64,6 @@
   "homeWayNotesBody": "Every dead end is written down. The notes repo holds around 300 numbered files of raw findings, from first boot to the last black frame.",
   "homeWayCta": "Browse the repositories",
 
-  "homeStatusEyebrow": "Where it stands",
-  "homeStatusTitle": "Boots. Shell runs. Picture's on.",
-  "homeStatusBody": "On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.",
-  "homeStatusCta": "Full status",
-
   "homeOpenTitle": "Open all the way down.",
   "homeOpenBody": "Everything we wrote is AGPL-3.0. Pico's binaries stay Pico's - pulled from your own device, mapped in a manifest, never redistributed.",
   "homeOpenSource": "Browse the repo",
@@ -91,24 +84,6 @@
   "deviceNeo3Name": "Pico Neo 3",
   "deviceNeo3Specs": "Snapdragon XR2 · 3664×1920",
   "devicePlannedBody": "Planned once the driver layer splits into its own tree.",
-
-  "statusTitle": "Status",
-  "statusSubtitle": "The honest list for the Pico Neo 2. It moves as the port does.",
-  "statusWorksTitle": "Working",
-  "statusWorks1": "Boots clean: audio, 3840×2160 landscape, suspend matching stock",
-  "statusWorks2": "pvrservice publishes live head rotation - valid unit quaternions",
-  "statusWorks3": "VRShell launches reliably and drives the real Pico compositor",
-  "statusWorks4": "airservice, virtual_input and pn2_qvrd all start",
-  "statusWorks5": "See-through calibration app installed, platform-signed, launching",
-  "statusWorks6": "2D Pico apps render - VRUserCenter, Pico Store",
-  "statusWorks7": "Optional wireless adb via persist.pn2.adbwifi",
-  "statusWorks8": "VR display shows a real picture - tracking state reaches apps",
-  "statusBrokenTitle": "Not yet",
-  "statusBroken1": "Passthrough imagery - libgui calls deleted in Android 10",
-  "statusBroken2": "CVService controllers - crashes on a wifi broadcast, disabled",
-  "statusBroken3": "Provision setup wizard - crashes in its language picker",
-  "statusBlockerTitle": "No bug between here and a picture.",
-  "statusBlockerBody": "pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor's unit-quaternion check and every frame lands on the display.",
 
   "reposTitle": "Repositories",
   "reposSubtitle": "One tree per component in the HibiscusXR monorepo.",
@@ -223,7 +198,7 @@
   "faqTitle": "FAQ",
   "faqSubtitle": "Short answers, no marketing.",
   "faqQ1": "Does it actually work?",
-  "faqA1": "On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.",
+  "faqA1": "On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture.",
   "faqQ2": "Is it safe to flash?",
   "faqA2": "There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.",
   "faqQ3": "Which headset does it run on?",

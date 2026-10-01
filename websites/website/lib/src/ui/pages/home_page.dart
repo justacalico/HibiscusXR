@@ -24,7 +24,6 @@ class HomePage extends StatelessWidget {
         _Stats(l10n: l10n),
         _Trio(l10n: l10n),
         const DevicesSection(),
-        _StatusBand(l10n: l10n),
         _OpenBand(l10n: l10n),
         _DownloadBand(l10n: l10n),
       ],
@@ -82,8 +81,8 @@ class _Hero extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 PillButton(
-                  label: l10n.heroPrimary,
-                  onPressed: () => context.go(Routes.status),
+                  label: l10n.navDownload,
+                  onPressed: () => context.go(Routes.download),
                 ),
                 ChevronLink(
                   label: l10n.heroSecondary,
@@ -229,54 +228,6 @@ class _Trio extends StatelessWidget {
                 label: l10n.homeWayCta,
                 onPressed: () => context.go(Routes.repositories),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Status teaser band - leads to the full status page.
-class _StatusBand extends StatelessWidget {
-  const _StatusBand({required this.l10n});
-
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Band(
-      color: context.colors.surfaceContainerHighest,
-      child: Column(
-        children: [
-          Reveal(child: Eyebrow(l10n.homeStatusEyebrow, center: true)),
-          const SizedBox(height: 12),
-          Reveal(
-            child: Text(
-              l10n.homeStatusTitle,
-              textAlign: TextAlign.center,
-              style: context.text.displayMedium!.copyWith(
-                fontSize: Layout.isMobile(context) ? 36 : 56,
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Reveal(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: Layout.text),
-              child: Text(
-                l10n.homeStatusBody,
-                textAlign: TextAlign.center,
-                style: context.text.bodyLarge!
-                    .copyWith(color: context.colors.secondary),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Reveal(
-            child: ChevronLink(
-              label: l10n.homeStatusCta,
-              onPressed: () => context.go(Routes.status),
             ),
           ),
         ],

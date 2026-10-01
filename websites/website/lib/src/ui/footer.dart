@@ -24,7 +24,6 @@ class SiteFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final site = <_Link>[
-      _Link(l10n.navStatus, Routes.status),
       _Link(l10n.navRepos, Routes.repositories),
       _Link(l10n.navScreenshots, Routes.screenshots),
       _Link(l10n.navFaq, Routes.faq),

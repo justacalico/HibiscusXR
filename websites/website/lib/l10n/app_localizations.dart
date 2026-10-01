@@ -104,12 +104,6 @@ abstract class AppLocalizations {
   /// **'HibiscusXR'**
   String get appTitle;
 
-  /// No description provided for @navStatus.
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get navStatus;
-
   /// No description provided for @navRepos.
   ///
   /// In en, this message translates to:
@@ -199,12 +193,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.'**
   String get heroSubtitle;
-
-  /// No description provided for @heroPrimary.
-  ///
-  /// In en, this message translates to:
-  /// **'See the status'**
-  String get heroPrimary;
 
   /// No description provided for @heroSecondary.
   ///
@@ -392,30 +380,6 @@ abstract class AppLocalizations {
   /// **'Browse the repositories'**
   String get homeWayCta;
 
-  /// No description provided for @homeStatusEyebrow.
-  ///
-  /// In en, this message translates to:
-  /// **'Where it stands'**
-  String get homeStatusEyebrow;
-
-  /// No description provided for @homeStatusTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Boots. Shell runs. Picture\'s on.'**
-  String get homeStatusTitle;
-
-  /// No description provided for @homeStatusBody.
-  ///
-  /// In en, this message translates to:
-  /// **'On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.'**
-  String get homeStatusBody;
-
-  /// No description provided for @homeStatusCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Full status'**
-  String get homeStatusCta;
-
   /// No description provided for @homeOpenTitle.
   ///
   /// In en, this message translates to:
@@ -523,108 +487,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Planned once the driver layer splits into its own tree.'**
   String get devicePlannedBody;
-
-  /// No description provided for @statusTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Status'**
-  String get statusTitle;
-
-  /// No description provided for @statusSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The honest list for the Pico Neo 2. It moves as the port does.'**
-  String get statusSubtitle;
-
-  /// No description provided for @statusWorksTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Working'**
-  String get statusWorksTitle;
-
-  /// No description provided for @statusWorks1.
-  ///
-  /// In en, this message translates to:
-  /// **'Boots clean: audio, 3840×2160 landscape, suspend matching stock'**
-  String get statusWorks1;
-
-  /// No description provided for @statusWorks2.
-  ///
-  /// In en, this message translates to:
-  /// **'pvrservice publishes live head rotation - valid unit quaternions'**
-  String get statusWorks2;
-
-  /// No description provided for @statusWorks3.
-  ///
-  /// In en, this message translates to:
-  /// **'VRShell launches reliably and drives the real Pico compositor'**
-  String get statusWorks3;
-
-  /// No description provided for @statusWorks4.
-  ///
-  /// In en, this message translates to:
-  /// **'airservice, virtual_input and pn2_qvrd all start'**
-  String get statusWorks4;
-
-  /// No description provided for @statusWorks5.
-  ///
-  /// In en, this message translates to:
-  /// **'See-through calibration app installed, platform-signed, launching'**
-  String get statusWorks5;
-
-  /// No description provided for @statusWorks6.
-  ///
-  /// In en, this message translates to:
-  /// **'2D Pico apps render - VRUserCenter, Pico Store'**
-  String get statusWorks6;
-
-  /// No description provided for @statusWorks7.
-  ///
-  /// In en, this message translates to:
-  /// **'Optional wireless adb via persist.pn2.adbwifi'**
-  String get statusWorks7;
-
-  /// No description provided for @statusWorks8.
-  ///
-  /// In en, this message translates to:
-  /// **'VR display shows a real picture - tracking state reaches apps'**
-  String get statusWorks8;
-
-  /// No description provided for @statusBrokenTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Not yet'**
-  String get statusBrokenTitle;
-
-  /// No description provided for @statusBroken1.
-  ///
-  /// In en, this message translates to:
-  /// **'Passthrough imagery - libgui calls deleted in Android 10'**
-  String get statusBroken1;
-
-  /// No description provided for @statusBroken2.
-  ///
-  /// In en, this message translates to:
-  /// **'CVService controllers - crashes on a wifi broadcast, disabled'**
-  String get statusBroken2;
-
-  /// No description provided for @statusBroken3.
-  ///
-  /// In en, this message translates to:
-  /// **'Provision setup wizard - crashes in its language picker'**
-  String get statusBroken3;
-
-  /// No description provided for @statusBlockerTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'No bug between here and a picture.'**
-  String get statusBlockerTitle;
-
-  /// No description provided for @statusBlockerBody.
-  ///
-  /// In en, this message translates to:
-  /// **'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.'**
-  String get statusBlockerBody;
 
   /// No description provided for @reposTitle.
   ///
@@ -1241,7 +1103,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA1.
   ///
   /// In en, this message translates to:
-  /// **'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.'**
+  /// **'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture.'**
   String get faqA1;
 
   /// No description provided for @faqQ2.

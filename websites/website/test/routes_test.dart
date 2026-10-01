@@ -7,7 +7,6 @@ void main() {
   test('site routes are all root-anchored and unique', () {
     final paths = [
       Routes.home,
-      Routes.status,
       Routes.repositories,
       Routes.screenshots,
       Routes.download,

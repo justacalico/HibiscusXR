@@ -125,9 +125,9 @@ class _Stats extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stats = [
-      (l10n.statDevice, l10n.statDeviceLabel),
-      (l10n.statSoc, l10n.statSocLabel),
-      (l10n.statPanel, l10n.statPanelLabel),
+      (l10n.statBase, l10n.statBaseLabel),
+      (l10n.statVendor, l10n.statVendorLabel),
+      (l10n.statLicense, l10n.statLicenseLabel),
     ];
     return Band(
       padding: const EdgeInsets.symmetric(vertical: 56),

@@ -49,7 +49,7 @@ class FlashDocDevice {
 final flashDocDevices = <FlashDocDevice>[
   FlashDocDevice(
     slug: 'pico-neo-2',
-    name: (l) => l.statDevice,
+    name: (l) => l.deviceNeo2Name,
     specs: (l) => l.deviceNeo2Specs,
     systems: const [
       FlashDocSystem(slug: 'linux', name: _linuxName),

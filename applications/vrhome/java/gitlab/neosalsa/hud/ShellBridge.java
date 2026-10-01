@@ -1,14 +1,10 @@
 package gitlab.neosalsa.hud;
 
 import android.app.Activity;
-import android.app.ActivityOptions;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
@@ -20,38 +16,30 @@ import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
-import android.hardware.display.VirtualDisplay;
 import android.hardware.input.InputManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.BatteryManager;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.InputEvent;
-import android.view.MotionEvent;
-import android.view.Surface;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /*
- * System-side plumbing for the panel shell, living in the HUD service now:
- * virtual displays, tasks and input injection all belong to the process
- * that renders them, and the HUD's overlay window is that process. Hidden
- * API access is expected: the app is platform signed and
- * gitlab.neosalsa.hud is in hidden_api_blacklist_exemptions.
+ * JNI facade for the panel shell, living in the HUD service: the render
+ * thread calls in through the methods cached in bridge.cpp, so every
+ * signature here is a hard contract. The work itself is split by
+ * responsibility: DockPins (pin persistence), PanelDisplays (virtual
+ * displays), Taskman (tasks + launches), Injector (touch injection) and
+ * KbdLink (the floating keyboard surface). Hidden API access is expected:
+ * the app is platform signed and gitlab.neosalsa.hud is in
+ * hidden_api_blacklist_exemptions.
  *
  * Threading: createPanel, launch/adopt/release, the takePending getters and
  * the inject methods are all called from the render thread. The poller and
@@ -69,8 +57,6 @@ public class ShellBridge {
     // dash replaced it. Kept out of the grid itself so nothing launches a
     // leftover install
     private static final String LIB_PKG = "gitlab.neosalsa.library";
-    // the settings app seeds the dock's pin list on first boot
-    private static final String SETTINGS_PKG = "gitlab.neosalsa.settings";
 
     // cross-process launch contract: the library app (or anything else on
     // a panel) asks the shell for a fresh window with a package-scoped
@@ -78,23 +64,6 @@ public class ShellBridge {
     public static final String ACTION_OPEN_PACKAGE =
             "gitlab.neosalsa.hud.action.OPEN_PACKAGE";
     public static final String EXTRA_PACKAGE = "package";
-
-    // floating keyboard contract: the IME (gitlab.neosalsa.keyboard) draws
-    // into a Surface we own and reports the display id it landed on so the
-    // render thread can route touches. QUERY is it asking for the surface;
-    // KBD is it telling us the quad is up
-    private static final String KBD_PKG = "gitlab.neosalsa.keyboard";
-    private static final String ACTION_KBD =
-            "gitlab.neosalsa.hud.action.KBD";
-    private static final String ACTION_KBD_QUERY =
-            "gitlab.neosalsa.keyboard.action.QUERY";
-    private static final String ACTION_KBD_SURFACE =
-            "gitlab.neosalsa.keyboard.action.SURFACE";
-    private static final String ACTION_KBD_HIDE =
-            "gitlab.neosalsa.keyboard.action.HIDE";
-
-    // VIRTUAL_DISPLAY_FLAG_PUBLIC | VIRTUAL_DISPLAY_FLAG_SUPPORTS_TOUCH
-    private static final int VD_FLAGS = 1 | 64;
 
     public interface CoveredListener {
         void onCovered(boolean covered);
@@ -107,27 +76,15 @@ public class ShellBridge {
     }
 
     private final Context ctx;
-    private final DisplayManager dm;
     private final PackageManager pm;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final CoveredListener listener;
 
-    // IActivityTaskManager proxy + the methods we use on it
-    private Object atm;
-    private Method mGetTasks, mRemoveTask, mSetFocusedTask, mMoveStack;
-    private Method mSetDisplayId, mInject, mSetLaunchDisplayId;
-    private InputManager input;
-
-    private Field fTaskId, fStackId, fDisplayId, fTopActivity, fBaseActivity,
-                  fBaseIntent, fNumActivities;
-
-    static class Vd {
-        SurfaceTexture st;
-        Surface surf;
-        VirtualDisplay vd;
-        long createdMs;
-    }
-    private final Map<Integer, Vd> vds = new HashMap<>();
+    private final DockPins pins;
+    private final PanelDisplays displays;
+    private final Taskman taskman;
+    private final Injector injector;
+    private final KbdLink kbd;
 
     public static class Pending {
         public int taskId;
@@ -136,17 +93,11 @@ public class ShellBridge {
     private final ArrayDeque<Pending> pendingAdopts = new ArrayDeque<>();
     private final ArrayDeque<Integer> pendingReleases = new ArrayDeque<>();
     private final Set<Integer> adopting = new HashSet<>();
-    // displays the render thread just launched something onto; don't reap
-    // them while the task is still landing
-    private final Set<Integer> launching = new HashSet<>();
-    // dock state: pinned pkgs persisted in prefs, immersive tasks on the
-    // physical display rebuilt every poll (vrVer bumps on change so the
-    // render thread only pulls the array when it moved)
-    private final List<String> pins = new ArrayList<>();
-    private volatile boolean pinsDirty = true;
+    // dock state: immersive tasks on the physical display rebuilt every
+    // poll (vrVer bumps on change so the render thread only pulls the
+    // array when it moved)
     private final List<Pending> vrRunning = new ArrayList<>();
     private volatile int vrVer = 0;
-    private final Map<String, Boolean> vrCache = new HashMap<>();
     // set by the poller: a non-env task owns the physical display
     private volatile boolean covered = false;
     // the listener only hears CHANGES, so the first poll must fire
@@ -161,37 +112,18 @@ public class ShellBridge {
     public ShellBridge(Context c, CoveredListener l) throws Exception {
         ctx = c;
         listener = l;
-        dm = (DisplayManager) c.getSystemService(Context.DISPLAY_SERVICE);
         pm = c.getPackageManager();
-        input = (InputManager) c.getSystemService(Context.INPUT_SERVICE);
+        DisplayManager dm =
+                (DisplayManager) c.getSystemService(Context.DISPLAY_SERVICE);
+        InputManager input =
+                (InputManager) c.getSystemService(Context.INPUT_SERVICE);
 
-        Class<?> atmCls = Class.forName("android.app.ActivityTaskManager");
-        atm = atmCls.getDeclaredMethod("getService").invoke(null);
-        Class<?> proxy = atm.getClass();
-        mGetTasks = proxy.getMethod("getTasks", int.class);
-        mRemoveTask = proxy.getMethod("removeTask", int.class);
-        mSetFocusedTask = proxy.getMethod("setFocusedTask", int.class);
-        try {
-            mMoveStack = proxy.getMethod("moveStackToDisplay",
-                    int.class, int.class);
-        } catch (NoSuchMethodException e) {
-            mMoveStack = null;
-        }
-
-        Class<?> rti = Class.forName("android.app.ActivityManager$RunningTaskInfo");
-        fTaskId = rti.getField("taskId");
-        fStackId = rti.getField("stackId");
-        fDisplayId = rti.getField("displayId");
-        fTopActivity = rti.getField("topActivity");
-        fBaseActivity = rti.getField("baseActivity");
-        fBaseIntent = rti.getField("baseIntent");
-        fNumActivities = rti.getField("numActivities");
-
-        mSetDisplayId = InputEvent.class.getDeclaredMethod("setDisplayId", int.class);
-        mInject = InputManager.class.getDeclaredMethod("injectInputEvent",
-                InputEvent.class, int.class);
-        mSetLaunchDisplayId = ActivityOptions.class.getDeclaredMethod(
-                "setLaunchDisplayId", int.class);
+        pins = new DockPins(c, pm);
+        displays = new PanelDisplays(dm);
+        taskman = new Taskman(c, main, l, displays, pendingAdopts,
+                adopting, pendingReleases);
+        injector = new Injector(input);
+        kbd = new KbdLink(c, l);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
         IntentFilter pf = new IntentFilter();
@@ -200,67 +132,19 @@ public class ShellBridge {
         pf.addAction(Intent.ACTION_PACKAGE_CHANGED);
         pf.addDataScheme("package");
         ctx.registerReceiver(pkgWatch, pf);
-        IntentFilter kf = new IntentFilter();
-        kf.addAction(ACTION_KBD);
-        kf.addAction(ACTION_KBD_QUERY);
-        ctx.registerReceiver(kbdRecv, kf);
-        loadPins();
+        kbd.register();
         main.postDelayed(poll, 800);
         Log.i(TAG, "bridge up");
     }
 
     // ---------------------------------------------------------- dock
 
-    // persisted pin list; first boot seeds the settings app so the strip
-    // is never empty - everything else pins/unpins from the dock itself.
-    // Saved pins for apps that went away (the standalone library app, an
-    // uninstall) drop off here instead of drawing dead icons.
-    private void loadPins() {
-        SharedPreferences sp = ctx.getSharedPreferences("dock", 0);
-        String saved = sp.getString("pins", null);
-        synchronized (pins) {
-            if (saved == null) {
-                pins.add(SETTINGS_PKG);
-                savePins();
-            } else if (!saved.isEmpty()) {
-                for (String p : saved.split(",")) {
-                    if (pm.getLaunchIntentForPackage(p) != null)
-                        pins.add(p);
-                }
-            }
-        }
-    }
-
-    private void savePins() {
-        StringBuilder b = new StringBuilder();
-        synchronized (pins) {
-            for (String p : pins) {
-                if (b.length() > 0) b.append(',');
-                b.append(p);
-            }
-        }
-        ctx.getSharedPreferences("dock", 0).edit()
-                .putString("pins", b.toString()).apply();
-    }
-
     // render thread: the pin list when it changed since the last take,
     // else null. Called every frame, so keep it cheap when clean
-    public String[] takePins() {
-        if (!pinsDirty) return null;
-        pinsDirty = false;
-        synchronized (pins) {
-            return pins.toArray(new String[0]);
-        }
-    }
+    public String[] takePins() { return pins.take(); }
 
     // render thread: the dock long-press pushed a new pin list
-    public void setPins(String[] pkgs) {
-        synchronized (pins) {
-            pins.clear();
-            pins.addAll(Arrays.asList(pkgs));
-        }
-        savePins();
-    }
+    public void setPins(String[] pkgs) { pins.set(pkgs); }
 
     // render thread: app icon as a 96px ARGB bitmap for the dock texture,
     // or null - the dock falls back to a letter tile
@@ -385,7 +269,7 @@ public class ShellBridge {
                     if (r.activityInfo == null) continue;
                     String p = r.activityInfo.packageName;
                     if (p == null || p.equals(SELF) || p.equals(ENV_PKG) ||
-                            p.equals(LIB_PKG) || p.equals(KBD_PKG))
+                            p.equals(LIB_PKG) || p.equals(KbdLink.PKG))
                         continue;
                     LauncherApp a = new LauncherApp();
                     a.pkg = p;
@@ -398,7 +282,7 @@ public class ShellBridge {
                 }
                 Collections.sort(apps,
                         (a, b) -> a.label.compareToIgnoreCase(b.label));
-                vrCache.clear();
+                taskman.clearVrCache();
             }
             return apps.toArray(new LauncherApp[0]);
         }
@@ -441,65 +325,15 @@ public class ShellBridge {
     // render thread: drop the card without acting on it
     public void sysMsgDismiss(long id) { SysMsgs.dismiss(id); }
 
-    // isVrApp does binder calls; the poll hits every display-0 task each
-    // 400ms, so cache the answer per package
-    private boolean vrApp(String pkg) {
-        Boolean v = vrCache.get(pkg);
-        if (v == null) {
-            v = isVrApp(pkg);
-            vrCache.put(pkg, v);
-        }
-        return v;
-    }
-
     // ---------------------------------------------------------- displays
 
     // Called on the render thread: texId must come from its GL context.
     public int createPanel(int texId, int w, int h, int dpi) {
-        try {
-            SurfaceTexture st = new SurfaceTexture(texId);
-            st.setDefaultBufferSize(w, h);
-            Surface surf = new Surface(st);
-            VirtualDisplay vd = dm.createVirtualDisplay("pn2panel",
-                    w, h, dpi, surf, VD_FLAGS);
-            if (vd == null) { surf.release(); st.release(); return -1; }
-            int id = vd.getDisplay().getDisplayId();
-            Vd v = new Vd();
-            v.st = st; v.surf = surf; v.vd = vd;
-            v.createdMs = SystemClock.uptimeMillis();
-            vds.put(id, v);
-            setDisplayIme(id, true);
-            Log.i(TAG, "panel display id=" + id + " " + w + "x" + h);
-            return id;
-        } catch (Throwable t) {
-            Log.e(TAG, "createPanel", t);
-            return -1;
-        }
-    }
-
-    // Mark a panel display as IME-capable so a focused window on it gets
-    // the soft keyboard docked inside the panel instead of the keyboard
-    // falling back to the physical display - mono in both eyes, which is
-    // what "the keyboard breaks in VR" looked like. The call is
-    // IWindowManager.setShouldShowIme, hidden and gated to
-    // INTERNAL_SYSTEM_WINDOW callers plus a display owned by uid 1000;
-    // both hold only because this apk runs under android.uid.system.
-    private void setDisplayIme(int displayId, boolean on) {
-        try {
-            Class<?> wmg = Class.forName("android.view.WindowManagerGlobal");
-            Object wms = wmg.getMethod("getWindowManagerService").invoke(null);
-            wms.getClass()
-                    .getMethod("setShouldShowIme", int.class, boolean.class)
-                    .invoke(wms, displayId, on);
-        } catch (Throwable t) {
-            Log.w(TAG, "setShouldShowIme " + displayId + "=" + on +
-                    " failed", t);
-        }
+        return displays.create(texId, w, h, dpi);
     }
 
     public SurfaceTexture panelTexture(int displayId) {
-        Vd v = vds.get(displayId);
-        return v != null ? v.st : null;
+        return displays.texture(displayId);
     }
 
     // display name for a panel's window bar
@@ -512,355 +346,75 @@ public class ShellBridge {
         }
     }
 
-    public void releasePanel(int displayId) {
-        Vd v = vds.remove(displayId);
-        launching.remove(displayId);
-        if (v == null) return;
-        // the flag is persisted per display uniqueId; clear it so the
-        // display_settings.xml entry doesn't outlive the panel
-        setDisplayIme(displayId, false);
-        try { v.vd.release(); } catch (Throwable ignored) {}
-        try { v.surf.release(); } catch (Throwable ignored) {}
-        try { v.st.release(); } catch (Throwable ignored) {}
-        Log.i(TAG, "released display " + displayId);
-    }
+    public void releasePanel(int displayId) { displays.release(displayId); }
 
     // ---------------------------------------------------------- keyboard
-
-    // The keyboard quad's backing: a surface owned here, drawn into by the
-    // IME app through a virtual display it creates itself. Android only
-    // lets a process put presentation windows on a private display it owns,
-    // so the split is fixed: surface/texture here, display + presentation
-    // there. No task ever lives on it, so the VD stays out of vds and the
-    // reaper never sees it
-    private SurfaceTexture kbdSt;
-    private Surface kbdSurf;
-    private int kbdW = -1, kbdH = -1, kbdDpi = 0;
-    // the IME compares this instead of the Surface itself: each QUERY reply
-    // parcels a fresh Surface object, so instance equality can't tell an
-    // unchanged surface from a new one. uptimeMillis at creation time is
-    // unique per surface instance across HUD restarts
-    private int kbdSeq;
-    private volatile boolean kbdShown;
-    private volatile int kbdDisplay = -1;
-    private volatile boolean kbdQuery;
 
     // render thread: create the shared surface; texId is a GL texture in
     // the render context. Idempotent - a HUD restart makes a new one and
     // the next QUERY reply carries it to the IME
     public boolean createKbdSurface(int texId, int w, int h, int dpi) {
-        if (kbdSurf != null) return true;
-        try {
-            kbdSt = new SurfaceTexture(texId);
-            kbdSt.setDefaultBufferSize(w, h);
-            kbdSurf = new Surface(kbdSt);
-            kbdW = w; kbdH = h; kbdDpi = dpi;
-            kbdSeq = (int)(SystemClock.uptimeMillis() & 0x7fffffff);
-            Log.i(TAG, "kbd surface " + w + "x" + h);
-            return true;
-        } catch (Throwable t) {
-            Log.e(TAG, "createKbdSurface", t);
-            return false;
-        }
+        return kbd.createSurface(texId, w, h, dpi);
     }
 
     // render thread: the SurfaceTexture feeding the quad texture
-    public SurfaceTexture kbdTexture() { return kbdSt; }
+    public SurfaceTexture kbdTexture() { return kbd.texture(); }
 
     // render thread: the IME asked for the surface since the last take
-    public boolean takeKbdQuery() {
-        final boolean q = kbdQuery;
-        kbdQuery = false;
-        return q;
-    }
+    public boolean takeKbdQuery() { return kbd.takeQuery(); }
 
     // send the surface over; the IME wraps it in a private virtual display
     // and shows the keys as a Presentation on it
-    public void sendKbdSurface() {
-        final Surface s = kbdSurf;
-        if (s == null) return;
-        ctx.sendBroadcast(new Intent(ACTION_KBD_SURFACE).setPackage(KBD_PKG)
-                .putExtra("surface", s)
-                .putExtra("w", kbdW).putExtra("h", kbdH)
-                .putExtra("dpi", kbdDpi).putExtra("seq", kbdSeq));
-    }
+    public void sendKbdSurface() { kbd.sendSurface(); }
 
     // render thread: ask the IME to put the quad away - BACK on a floating
     // keyboard should drop the keyboard, not the window behind it
-    public void sendKbdHide() {
-        if (!kbdShown) return;
-        ctx.sendBroadcast(new Intent(ACTION_KBD_HIDE).setPackage(KBD_PKG));
-    }
+    public void sendKbdHide() { kbd.sendHide(); }
 
-    // render thread: {shown, displayId, kbdOnly} - only means the window is
-    // up over a covered app solely for the quad, like toastOnly/sysMsgOnly
-    private volatile boolean kbdOnly;
-    public void setKbdOnly(boolean v) { kbdOnly = v; }
-    public int[] kbdState() {
-        return new int[]{kbdShown ? 1 : 0, kbdDisplay, kbdOnly ? 1 : 0};
-    }
+    public void setKbdOnly(boolean v) { kbd.setOnly(v); }
 
-    private final BroadcastReceiver kbdRecv = new BroadcastReceiver() {
-        @Override public void onReceive(Context c, Intent i) {
-            final String a = i.getAction();
-            if (ACTION_KBD.equals(a)) {
-                kbdShown = i.getBooleanExtra("shown", false);
-                kbdDisplay = i.getIntExtra("display", -1);
-                if (listener != null) listener.onKbd(kbdShown);
-            } else if (ACTION_KBD_QUERY.equals(a)) {
-                // the surface may already exist; answer inline so the IME
-                // doesn't wait on the render thread for the hand-off
-                if (kbdSurf != null) sendKbdSurface();
-                else kbdQuery = true;
-            }
-        }
-    };
+    // render thread: {shown, displayId, kbdOnly}
+    public int[] kbdState() { return kbd.state(); }
 
     // ---------------------------------------------------------- launches
 
-    private Bundle displayOpts(int displayId) throws Exception {
-        ActivityOptions o = ActivityOptions.makeBasic();
-        mSetLaunchDisplayId.invoke(o, displayId);
-        return o.toBundle();
-    }
-
-    // ATMS on this build can NPE in ActivityRecord.computeBounds when an
-    // activity lands on a not-yet-laid-out VD; mark the display busy up front
-    // and retry briefly on the main thread
-    private void startWithRetry(final Intent i, final int displayId,
-                                final int tries) {
-        try {
-            ctx.startActivity(i, displayOpts(displayId));
-            Log.i(TAG, "launched " + i.getComponent() + " on " + displayId);
-        } catch (Throwable t) {
-            if (tries > 0) {
-                main.postDelayed(new Runnable() {
-                    @Override public void run() {
-                        startWithRetry(i, displayId, tries - 1);
-                    }
-                }, 350);
-            } else {
-                Log.e(TAG, "startActivity failed " + i.getComponent(), t);
-                synchronized (pendingAdopts) {
-                    pendingReleases.add(displayId);
-                }
-            }
-        }
-    }
-
     public void launchPackageOn(String pkg, int displayId) {
-        try {
-            Intent i = pm.getLaunchIntentForPackage(pkg);
-            if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            launching.add(displayId);
-            startWithRetry(i, displayId, 3);
-        } catch (Throwable t) {
-            Log.e(TAG, "launchPackageOn " + pkg, t);
-        }
+        taskman.launchPackageOn(pkg, displayId);
     }
 
-    // real Pico VR apps declare pvr.app.type=vr (or com.picovr.type=vr);
-    // they drive the compositor directly and must own the physical display,
-    // a virtual window can't host them
-    public boolean isVrApp(String pkg) {
-        try {
-            ApplicationInfo ai = pm.getApplicationInfo(pkg,
-                    PackageManager.GET_META_DATA);
-            if (ai.metaData != null) {
-                for (String key : new String[]{"pvr.app.type", "com.picovr.type"}) {
-                    Object v = ai.metaData.get(key);
-                    if (v != null && "vr".equalsIgnoreCase(String.valueOf(v)))
-                        return true;
-                }
-            }
-            // OpenXR-style apps mark their activity with an immersive
-            // category instead of Pico's metadata; same rule applies.
-            // The query must be implicit: getLaunchIntentForPackage sets a
-            // component, and an explicit intent resolves by component with
-            // the category ignored - that classified every app as VR and
-            // sent all of them to display 0. Package-scoped + category, no
-            // action so any activity in the package declaring it counts.
-            for (String cat : new String[]{
-                    "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
-                    "com.oculus.intent.category.VR"}) {
-                Intent i = new Intent();
-                i.addCategory(cat);
-                i.setPackage(pkg);
-                if (!pm.queryIntentActivities(i, 0).isEmpty())
-                    return true;
-            }
-        } catch (Throwable ignored) {}
-        return false;
-    }
+    public boolean isVrApp(String pkg) { return taskman.isVrApp(pkg); }
 
-    // VR apps launch plain on display 0: no panel, no display override.
-    // One immersive app at a time - the Monado runtime lives in-process, so
-    // two live XR apps would fight over the panel, the IMU and the Vulkan
-    // device. A second launch kills the running one first; relaunching the
-    // running one just refocuses it
-    public void launchVrApp(String pkg) {
-        try {
-            for (Object t : tasks()) {
-                String p = pkgOf(t);
-                if (p == null || p.equals(pkg) || !vrApp(p)) continue;
-                Log.i(TAG, "closing vr app " + p + " for " + pkg);
-                mRemoveTask.invoke(atm, fTaskId.getInt(t));
-            }
-            for (Object t : tasks()) {
-                if (pkg.equals(pkgOf(t))) {
-                    mSetFocusedTask.invoke(atm, fTaskId.getInt(t));
-                    Log.i(TAG, "vr app " + pkg + " already running, focused");
-                    if (listener != null) listener.onDismissMenu();
-                    return;
-                }
-            }
-            Intent i = pm.getLaunchIntentForPackage(pkg);
-            if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            ctx.startActivity(i);
-            Log.i(TAG, "launched vr app " + pkg + " on display 0");
-            if (listener != null) listener.onDismissMenu();
-        } catch (Throwable t) {
-            Log.e(TAG, "launchVrApp " + pkg, t);
-        }
-    }
+    // VR apps launch plain on display 0: no panel, no display override
+    public void launchVrApp(String pkg) { taskman.launchVrApp(pkg); }
 
     // render thread: true while something other than the env owns display 0
     public boolean isCovered() { return covered; }
 
-    // a task that spawned on the physical display gets moved into a panel.
-    // Prefer moveStackToDisplay (atomic, keeps the running activity); the
-    // relaunch+remove path is only a fallback - it races when the system
-    // retargets the still-living original task for the new intent
+    // a task that spawned on the physical display gets moved into a panel
     public void adoptTaskOn(int taskId, int displayId) {
-        try {
-            int stackId = -1;
-            Intent i = null;
-            String pkg = null;
-            for (Object t : tasks()) {
-                if (fTaskId.getInt(t) != taskId) continue;
-                stackId = fStackId.getInt(t);
-                Intent base = (Intent) fBaseIntent.get(t);
-                if (base != null && base.getComponent() != null) {
-                    i = new Intent(base);
-                } else {
-                    ComponentName b = (ComponentName) fBaseActivity.get(t);
-                    if (b != null) {
-                        pkg = b.getPackageName();
-                        i = pm.getLaunchIntentForPackage(pkg);
-                    }
-                }
-                break;
-            }
-            launching.add(displayId);
-            if (stackId >= 0 && mMoveStack != null) {
-                try {
-                    mMoveStack.invoke(atm, stackId, displayId);
-                    Log.i(TAG, "moved stack " + stackId + " (task " + taskId +
-                            ") onto " + displayId);
-                    return;
-                } catch (Throwable moveErr) {
-                    Log.w(TAG, "moveStackToDisplay failed, relaunching",
-                            moveErr);
-                }
-            }
-            if (i != null) {
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startWithRetry(i, displayId, 3);
-                mRemoveTask.invoke(atm, taskId);
-                Log.i(TAG, "adopted task " + taskId + " onto " + displayId);
-            } else {
-                // nothing to relaunch: kill it rather than leave a mono app
-                // welded to the physical display
-                mRemoveTask.invoke(atm, taskId);
-                Log.w(TAG, "task " + taskId + " had no intent, removed");
-            }
-        } catch (Throwable t) {
-            Log.e(TAG, "adoptTaskOn " + taskId, t);
-        } finally {
-            synchronized (pendingAdopts) {
-                adopting.remove(taskId);
-            }
-        }
+        taskman.adoptTaskOn(taskId, displayId);
     }
 
-    public void focusTask(int taskId) {
-        try { mSetFocusedTask.invoke(atm, taskId); } catch (Throwable ignored) {}
-    }
+    public void focusTask(int taskId) { taskman.focusTask(taskId); }
 
-    public void removeTask(int taskId) {
-        try { mRemoveTask.invoke(atm, taskId); } catch (Throwable t) {
-            Log.e(TAG, "removeTask " + taskId, t);
-        }
-    }
+    public void removeTask(int taskId) { taskman.removeTask(taskId); }
 
-    // render thread: kill every task living on a panel's display. A panel's
-    // cached taskId lies once adoption's relaunch path swaps the real task
-    // underneath it - and launchPackageOn panels never learn one at all -
-    // so the display binding is what a close can trust
+    // render thread: kill every task living on a panel's display
     public void removeTasksOnDisplay(int displayId) {
-        try {
-            for (Object t : tasks()) {
-                if (fDisplayId.getInt(t) != displayId) continue;
-                int taskId = fTaskId.getInt(t);
-                mRemoveTask.invoke(atm, taskId);
-                Log.i(TAG, "removed task " + taskId + " on display "
-                        + displayId);
-            }
-        } catch (Throwable t) {
-            Log.e(TAG, "removeTasksOnDisplay " + displayId, t);
-        }
+        taskman.removeTasksOnDisplay(displayId);
     }
 
     // ---------------------------------------------------------- input
 
-    // a drag is one gesture: MOVEs and the final UP keep the DOWN's downTime
-    private long mDownTime = 0;
-
     public void injectTouch(int displayId, float x, float y, int action) {
-        try {
-            long now = SystemClock.uptimeMillis();
-            if (action == MotionEvent.ACTION_DOWN || mDownTime == 0)
-                mDownTime = now;
-            MotionEvent ev = MotionEvent.obtain(mDownTime, now, action, x, y, 0);
-            ev.setSource(android.view.InputDevice.SOURCE_TOUCHSCREEN);
-            mSetDisplayId.invoke(ev, displayId);
-            boolean ok = (Boolean) mInject.invoke(input, ev, 0);
-            if (action != MotionEvent.ACTION_MOVE)
-                Log.i(TAG, "inject " + action + " @" + (int)x + "," + (int)y +
-                        " disp " + displayId + " -> " + ok);
-            ev.recycle();
-            if (action == MotionEvent.ACTION_UP ||
-                    action == MotionEvent.ACTION_CANCEL)
-                mDownTime = 0;
-        } catch (Throwable t) {
-            Log.e(TAG, "injectTouch", t);
-        }
+        injector.touch(displayId, x, y, action);
     }
 
     public void injectTap(int displayId, float x, float y) {
-        injectTouch(displayId, x, y, MotionEvent.ACTION_DOWN);
-        injectTouch(displayId, x, y, MotionEvent.ACTION_UP);
+        injector.tap(displayId, x, y);
     }
 
     // ---------------------------------------------------------- polling
-
-    @SuppressWarnings("unchecked")
-    private List<Object> tasks() {
-        try {
-            return (List<Object>) mGetTasks.invoke(atm, 80);
-        } catch (Throwable t) {
-            return java.util.Collections.emptyList();
-        }
-    }
-
-    private String pkgOf(Object t) throws Exception {
-        ComponentName top = (ComponentName) fTopActivity.get(t);
-        if (top != null) return top.getPackageName();
-        ComponentName base = (ComponentName) fBaseActivity.get(t);
-        return base != null ? base.getPackageName() : null;
-    }
 
     private final Runnable poll = new Runnable() {
         @Override public void run() {
@@ -876,7 +430,7 @@ public class ShellBridge {
     private void pollOnce() throws Exception {
         Set<Integer> liveDisplays = new HashSet<>();
         Set<Integer> liveTasks = new HashSet<>();
-        final List<Object> tl = tasks();
+        final List<Object> tl = taskman.tasks();
         synchronized (pendingAdopts) {
             // the task list is MRU-ordered: the first display-0 entry is the
             // top one - anything but the env means an app owns the HMD. An
@@ -884,10 +438,10 @@ public class ShellBridge {
             // keep the last covered state instead of wiping a summon
             boolean top = !tl.isEmpty();
             for (Object t : tl) {
-                int disp = fDisplayId.getInt(t);
+                int disp = taskman.displayId(t);
                 if (disp != 0) continue;
                 if (top) {
-                    String p = pkgOf(t);
+                    String p = taskman.pkgOf(t);
                     final boolean cov = p != null && !ownPkg(p);
                     if (cov != covered || firstPoll) {
                         covered = cov;
@@ -907,12 +461,12 @@ public class ShellBridge {
 
             List<Pending> vr = new ArrayList<>();
             for (Object t : tl) {
-                int taskId = fTaskId.getInt(t);
-                int disp = fDisplayId.getInt(t);
+                int taskId = taskman.taskId(t);
+                int disp = taskman.displayId(t);
                 liveTasks.add(taskId);
-                String pkg = pkgOf(t);
+                String pkg = taskman.pkgOf(t);
                 if (pkg == null) continue;
-                if (vrApp(pkg)) {
+                if (taskman.vrApp(pkg)) {
                     // immersive tasks on the physical display feed the
                     // dock's running section - panels never host them
                     if (disp == 0) {
@@ -948,15 +502,7 @@ public class ShellBridge {
                 }
             }
 
-            long now = SystemClock.uptimeMillis();
-            for (Map.Entry<Integer, Vd> e : vds.entrySet()) {
-                int id = e.getKey();
-                if (liveDisplays.contains(id)) { launching.remove(id); continue; }
-                if (launching.contains(id) && now - e.getValue().createdMs < 6000)
-                    continue;   // task still landing on it
-                launching.remove(id);
-                pendingReleases.add(id);
-            }
+            displays.reap(liveDisplays, pendingReleases);
         }
     }
 

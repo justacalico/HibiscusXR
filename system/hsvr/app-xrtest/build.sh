@@ -54,7 +54,7 @@ mkdir -p "$OUT/classes" "$OUT/apk/lib/arm64-v8a"
 echo "[1/5] native lib"
 "$CLANG" -O2 -fPIC -shared \
     -I include -I "$NDK/sources/android/native_app_glue" \
-    native/main.c "$NDK/sources/android/native_app_glue/android_native_app_glue.c" \
+    native/*.c "$NDK/sources/android/native_app_glue/android_native_app_glue.c" \
     -o "$OUT/apk/lib/arm64-v8a/libxrtest.so" \
     -landroid -llog -lEGL -lGLESv2 -ldl
 

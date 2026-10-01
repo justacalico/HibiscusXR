@@ -25,7 +25,7 @@
 # The HUD service is started on every boot, not just the first: it owns the
 # overlay window and the virtual displays, so panel tasks die with it.
 
-service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v6 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; pm disable com.picovr.provision; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud,gitlab.neosalsa.settings'; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; cmd notification allow_listener gitlab.neosalsa.quicksettings/gitlab.neosalsa.quicksettings.NotifService 0; touch /data/local/.pn2_panels_done_v6; fi"
+service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v7 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; pm disable com.picovr.provision; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud,gitlab.neosalsa.settings'; pm grant gitlab.neosalsa.home android.permission.CAMERA; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; cmd notification allow_listener gitlab.neosalsa.quicksettings/gitlab.neosalsa.quicksettings.NotifService 0; touch /data/local/.pn2_panels_done_v7; fi"
     user root
     group root
     seclabel u:r:shell:s0

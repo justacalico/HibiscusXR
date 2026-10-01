@@ -61,6 +61,22 @@ struct Engine {
     long long viewPoseMs = 0;
 
     bool covered = false;        // a fullscreen app owns the physical display
+
+    // passthrough camera (env only): the stereo tracking pair streams into
+    // an external texture through a Java-made SurfaceTexture, and each eye
+    // draws a pre-warped fisheye mesh against it. ptCam is the opaque
+    // PtCam* that env/cam.cpp owns
+    jobject ptSt = nullptr;
+    jobject ptStArr = nullptr;   // float[16] for getTransformMatrix
+    jmethodID stUpdate = nullptr, stMatrix = nullptr;
+    GLuint ptTex = 0;
+    GLuint ptVbo[2] = {0, 0};
+    int ptVerts[2] = {0, 0};
+    float ptMat[16] = {};
+    bool ptLive = false;         // session is up and frames have arrived
+    int curEye = 0;              // set by drawEyes for the draw callback
+    void* ptCam = nullptr;
+
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     float gazePitch = 0.0f;      // world pitch the user currently faces
 

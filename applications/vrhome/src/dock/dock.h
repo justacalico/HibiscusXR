@@ -39,14 +39,19 @@ void dockTogglePin(HudEngine* e, const char* pkg);
 void dockPushPins(HudEngine* e);
 
 // shared app-icon rendering: the textured icon, or a coloured letter tile
-// for a package with no bitmap. The strip, the shelf and the notification
-// cards all draw through these
+// for a package with no bitmap. The strip, the shelf, the app grid and the
+// notification cards all draw through these. clipY/clipC/clipH carry the
+// grid's scroll band when a caller is inside it; clipH=0 disables the clip
 void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
                  const float r[3], const float up[3], float s,
-                 unsigned tex, float alpha);
+                 unsigned tex, float alpha,
+                 float clipY = 0.0f, float clipC = 0.0f,
+                 float clipH = 0.0f);
 void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                     const float r[3], const float up[3], float s,
-                    const char* label);
+                    const char* label,
+                    float clipY = 0.0f, float clipC = 0.0f,
+                    float clipH = 0.0f);
 
 // the minimized-window shelf, drawn between the strip and the card stack
 void drawShelf(HudEngine* e, const Mat4& vp);

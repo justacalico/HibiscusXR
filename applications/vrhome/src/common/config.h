@@ -57,6 +57,10 @@ constexpr float kSlotYaw[kMaxPanels] = {0.0f, -0.88f, 0.88f};
 // minimum centre-to-centre yaw between panels: just under the slot spacing
 // so a window can never land on top of one that drifted off the slot grid
 constexpr float kPanelMinGap = 0.82f;
+// window scale limits for the corner-grip resize
+constexpr float kScaleMin = 0.45f, kScaleMax = 1.9f;
+// resize grip: a small hot zone on the window's bottom-right corner
+constexpr float kResizeR = 0.055f;   // corner hit radius, world units
 
 // floating keyboard: the IME app draws into a texture the HUD owns, shown
 // as its own window under the one holding the text field. It rides nearer
@@ -75,14 +79,10 @@ constexpr float kKbdGap = 0.03f;    // view-space dip below the host window
 constexpr float kBarH = 0.085f;
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
 constexpr float kBarPadX = 0.070f;    // label padding inside the bar's left end
-// minimize + close circles on the bar's right end; the library panel is the
-// shell's own launcher and gets the close disc only - it leaves the ring
-// instead of parking on the shelf
+// float + minimize + close circles on the bar's right end
 constexpr float kBarBtnR = 0.028f;    // button disc radius
-constexpr float kBarBtnGap = 0.014f;  // between the two discs
+constexpr float kBarBtnGap = 0.014f;  // between the discs
 constexpr float kBarBtnPad = 0.014f;  // close disc's margin to the bar edge
-// total strip the buttons reserve on the bar's right end
-constexpr float kBarBtnW = kBarBtnPad + 4.0f * kBarBtnR + kBarBtnGap;
 constexpr float kCornerR = 0.028f;
 
 // drag handle: a short white line centred under the dock strip. Holding
@@ -124,6 +124,22 @@ constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 constexpr float kDockPitchScale = 0.35f, kDockPitchDrop = 0.55f;
 constexpr float kDockPitchMin = -0.95f, kDockPitchMax = -0.20f;
 constexpr float kDockPitchRest = -0.55f;   // before the first anchor
+// the windows ride a fixed lift above the strip: the dash is one assembly,
+// so a window's elevation is the strip's pitch plus this gap - the strip
+// sits just under the window row like the sketch ties them together
+constexpr float kRingLift = 0.55f;
+
+// the app-grid overlay: a big rounded card in front of the window slots,
+// opened from the dock's app button - the library lives inside the dash
+// now instead of being a window of its own
+constexpr float kGridDist = 1.38f;    // metres; panels at 1.5, dock at 1.35
+constexpr float kGridHW = 0.78f, kGridHH = 0.46f;   // card half extents
+constexpr float kGridHeadH = 0.10f;   // title band height
+constexpr int   kGridCols = 5;
+constexpr float kGridCellH = 0.20f;   // row pitch: icon + label
+constexpr float kGridIconHW = 0.055f; // icon half-width
+constexpr float kGridSidePad = 0.04f; // inner left/right padding
+constexpr float kGridCloseR = 0.024f; // close disc radius on the title row
 
 // minimized-window shelf: hidden panels park as a row of small icons on a
 // pill floating just above the dock bar, so a minimized app stays visible
@@ -173,6 +189,8 @@ constexpr int   kSysMsgMaxBtn = 4;
 
 // package the dock's quick-panel button launches
 constexpr const char* kQuickPanelPkg = "gitlab.neosalsa.quicksettings";
+// the full settings app - dock's default pin
+constexpr const char* kSettingsPkg = "gitlab.neosalsa.settings";
 
 // Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
 // 1003 is the headset home button remapped off HOME (system_server eats
@@ -185,7 +203,3 @@ constexpr int kPicoHome = 1003;
 // ring's size as a screen-space overlay
 constexpr int   kHoldMs = 600;
 constexpr float kHoldSize = 0.10f;  // quad half height in clip space
-
-// package adopted by the app-library panel: the standalone Flutter app,
-// hosted on its own virtual display like every other panel window
-constexpr const char* kLibraryPkg = "gitlab.neosalsa.library";

@@ -4,8 +4,10 @@
 #include "../common/config.h"
 #include "../common/palette.h"
 #include "../dock/layout.h"
+#include "../grid/layout.h"
 #include "../kbd/kbd.h"
 #include "../panels/layout.h"
+#include "../pill/pill.h"
 #include "shape.h"
 #include "../text/draw.h"
 
@@ -18,7 +20,6 @@
 
 void drawPanels(HudEngine* e, const Mat4& viewProj) {
     if (e->panels.empty()) return;
-    const float hw = kPanelW / 2, hh = kPanelH / 2;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
@@ -30,6 +31,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
+        const float hw = panelHW(p), hh = panelHH(p);
         // chrome hangs above: the bound top bar tops the window, so the
         // shadow spreads symmetric past the taller side
         const float shw = hw + 0.10f, shh = (hh + kBarH) + 0.10f;
@@ -43,10 +45,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         if (p.minimized) continue;
         float c[3], r[3], up[3];
         panelCenter(p, e->ringPos, c, r, up);
+        const float hw = panelHW(p), hh = panelHH(p);
         const bool hov = (e->hover == i);
-        // the library is the shell's own launcher: it closes like any
-        // window but never minimizes, so its strip is the close disc alone
-        const int nbtns = p.pkg == kLibraryPkg ? 1 : 2;
+        const int nbtns = 3;
 
         // the label is measured first so it can shrink to fit the bar's
         // text region left of the button strip
@@ -76,28 +77,50 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         shapeQuad(e, viewProj, barC, r, up, 0.004f, 0.0f, barHW, kBarH * 0.5f,
                   barHW, kBarH * 0.5f, kCornerR, 0.0f, 0.002f, barCol, 0.0f);
 
-        // minimize + close discs on the bar's right end; glyphs are small
-        // capsules, the close pair rotated into an x. The library draws
-        // the close disc only, so its loop starts on the second slot
+        // float + minimize + close discs on the bar's right end; glyphs are
+        // small capsules, the close pair rotated into an x, the float one
+        // four diagonal ticks pointing out - the window leaves the grid
         {
             const float icon[4] = {kPalText[0], kPalText[1], kPalText[2],
                                    0.92f};
             const float il = kBarBtnR * 0.55f, it = 0.0028f;
-            for (int b = 2 - nbtns; b < 2; ++b) {
-                const int zone = b == 0 ? ZONE_MIN : ZONE_CLOSE;
-                const float bx = b == 0 ? barMinX(barHW) : barCloseX(barHW);
-                const bool bhov = hov && e->hoverZone == zone;
+            const float bxs[3] = {barFloatX(barHW), barMinX(barHW),
+                                  barCloseX(barHW)};
+            const int zones[3] = {ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE};
+            for (int b = 0; b < 3; ++b) {
+                const float bx = bxs[b];
+                const bool bhov = hov && e->hoverZone == zones[b];
                 const float bc[3] = {c[0] + r[0]*bx + up[0]*barOff,
                                      c[1] + r[1]*bx + up[1]*barOff,
                                      c[2] + r[2]*bx + up[2]*barOff};
-                const float* bgp = bhov && zone == ZONE_CLOSE
-                                   ? kPalDanger : kPalText;
+                const float* bgp = bhov && zones[b] == ZONE_CLOSE
+                                   ? kPalDanger
+                                   : p.floating && zones[b] == ZONE_FLOAT
+                                     ? kPalAccent : kPalText;
                 const float bg[4] = {bgp[0], bgp[1], bgp[2],
                                      bhov ? 0.32f : 0.13f};
                 shapeQuad(e, viewProj, bc, r, up, 0.006f, 0.0f,
                           kBarBtnR, kBarBtnR, kBarBtnR, kBarBtnR,
                           kBarBtnR, 0.0f, 0.002f, bg);
-                if (zone == ZONE_MIN) {
+                if (zones[b] == ZONE_FLOAT) {
+                    // four ticks at the diagonals, lit while floating
+                    const float* gcp = p.floating ? kPalAccent : kPalText;
+                    const float gc[4] = {gcp[0], gcp[1], gcp[2], 0.92f};
+                    const float tl = kBarBtnR * 0.34f;
+                    const float to = kBarBtnR * 0.42f;
+                    for (int q = 0; q < 4; ++q) {
+                        const float sx = (q & 1) ? 1.0f : -1.0f;
+                        const float sy = (q & 2) ? 1.0f : -1.0f;
+                        const float tc[3] = {
+                            bc[0] + r[0]*to*sx + up[0]*to*sy,
+                            bc[1] + r[1]*to*sx + up[1]*to*sy,
+                            bc[2] + r[2]*to*sx + up[2]*to*sy};
+                        shapeQuad(e, viewProj, tc, r, up, 0.008f,
+                                  sx * sy * 0.785398f, tl, it * 0.8f,
+                                  tl, it * 0.8f, it * 0.8f, 0.0f,
+                                  0.0015f, gc);
+                    }
+                } else if (zones[b] == ZONE_MIN) {
                     shapeQuad(e, viewProj, bc, r, up, 0.008f, 0.0f, il, it,
                               il, it, it, 0.0f, 0.0015f, icon);
                 } else {
@@ -159,6 +182,36 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         shapeQuad(e, viewProj, bdC, r, up, 0.006f, 0.0f, hw + 0.006f,
                   bdH, hw + 0.006f, bdH, kCornerR + 0.006f,
                   0.0016f, 0.0012f, bdCol);
+
+        // the resize grip on the window's bottom-right corner: two short
+        // diagonal ticks tucked inside the corner, lighting while held
+        {
+            const bool ghov = hov && e->hoverZone == ZONE_RESIZE;
+            const bool gheld = e->pressZone == ZONE_RESIZE &&
+                               e->pressDisp == p.displayId;
+            const float* gp = ghov || gheld ? kPalAccent : kPalText;
+            const float gcol[4] = {gp[0], gp[1], gp[2],
+                                   ghov || gheld ? 0.9f : 0.45f};
+            for (int g = 0; g < 2; ++g) {
+                const float off = 0.030f - g * 0.016f;
+                const float gc[3] = {
+                    c[0] + r[0]*(hw - off) + up[0]*(-hh + off),
+                    c[1] + r[1]*(hw - off) + up[1]*(-hh + off),
+                    c[2] + r[2]*(hw - off) + up[2]*(-hh + off)};
+                const float gl = 0.011f;
+                shapeQuad(e, viewProj, gc, r, up, 0.008f, 0.785398f,
+                          gl, 0.0022f, gl, 0.0022f, 0.0022f, 0.0f,
+                          0.0015f, gcol);
+            }
+        }
+
+        // a floating window carries the shared move pill under its bottom
+        // edge - holding it drags this window alone off the slot grid
+        if (p.floating)
+            drawMovePill(e, viewProj, c, r, up, movePillDrop(hh),
+                         (hov && e->hoverZone == ZONE_PILL) ||
+                         (e->pressZone == ZONE_PILL &&
+                          e->pressDisp == p.displayId));
 
         // app label left-aligned in the bar, bold, shrunk to fit if the
         // name is long. Centering uses the real glyph bounds, not the
@@ -257,21 +310,23 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
               hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
               0.0016f, 0.0012f, bcol);
 
-    // the move pill: a short line centred under the quad, same recipe as
-    // the dash's handle - holding it drags the keyboard on its own
-    {
-        const bool hhov = e->kbd.zone == KZONE_HANDLE || e->kbd.moveHeld;
-        const float hd = kbdHandleDrop();
-        const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
-                             c[2] - up[2] * hd};
-        const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               hhov ? 0.95f : 0.55f};
-        shapeQuad(e, viewProj, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
-                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
-    }
+    // the move pill under the quad: holding it drags the keyboard alone
+    drawMovePill(e, viewProj, c, r, up, movePillDrop(kKbdHH),
+                 e->kbd.zone == KZONE_HANDLE || e->kbd.moveHeld);
 
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
+}
+
+void drawMovePill(HudEngine* e, const Mat4& vp, const float c[3],
+                  const float r[3], const float up[3], float drop,
+                  bool hot) {
+    const float hc[3] = {c[0] - up[0] * drop, c[1] - up[1] * drop,
+                         c[2] - up[2] * drop};
+    const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                           hot ? 0.95f : 0.55f};
+    shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
+              kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
 }
 
 // summon-key hold feedback: a flat overlay ring whose arc fills while the
@@ -333,6 +388,13 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
         pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
+    } else if (e->grid.zone != GZONE_NONE) {
+        // on the app-grid card the dot lands on the card's own plane
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                   c, r, up);
+        pos[0] = c[0] + r[0]*e->grid.u*kGridHW + up[0]*e->grid.v*kGridHH;
+        pos[1] = c[1] + r[1]*e->grid.u*kGridHW + up[1]*e->grid.v*kGridHH;
+        pos[2] = c[2] + r[2]*e->grid.u*kGridHW + up[2]*e->grid.v*kGridHH;
     } else if (e->kbd.hover) {
         // keys and the pill share the quad's plane, so u/v (even past the
         // quad's edges, where the pill sits) drop the dot right on the hit
@@ -345,9 +407,8 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
     } else if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
         const Panel& p = e->panels[e->hover];
         panelCenter(p, e->ringPos, c, r, up);
-        const float u = e->hitX / kVdW * 2.0f - 1.0f;
-        const float v = 1.0f - e->hitY / kVdH * 2.0f;
-        const float hw = kPanelW / 2, hh = kPanelH / 2;
+        const float u = e->hitU, v = e->hitV;
+        const float hw = panelHW(p), hh = panelHH(p);
         pos[0] = c[0] + r[0]*u*hw + up[0]*v*hh;
         pos[1] = c[1] + r[1]*u*hw + up[1]*v*hh;
         pos[2] = c[2] + r[2]*u*hw + up[2]*v*hh;

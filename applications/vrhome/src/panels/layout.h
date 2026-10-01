@@ -23,32 +23,31 @@ void ringPoint(float yaw, float pitch, float dist, float y0,
 void panelCenter(const Panel& p, const float origin[3], float out[3],
                  float right[3], float up[3]);
 
-// yaw of the next free ring slot around a centre yaw; centre when full
+// the window's half extents with its user scale folded in
+float panelHW(const Panel& p);
+float panelHH(const Panel& p);
+
+// yaw of the next free ring slot around the dash's centre yaw; centre when
+// full
 float freeSlotYaw(const std::vector<Panel>& panels, float centre);
 
-// the ring's current elevation: panels share one pitch, so a window opened
-// while the ring is raised joins at the same height instead of the horizon
+// the ring's current elevation: docked panels share one pitch
 float ringPitch(const std::vector<Panel>& panels);
 
-// index of the oldest evictable panel (first that isn't the library
-// launcher), or -1 when nothing can go
+// index of the oldest evictable panel - a floating window the user placed
+// by hand goes last - or -1 when nothing can go
 int evictIndex(const std::vector<Panel>& panels);
 
-// index of the library panel, or -1 - there is at most one
-int libraryIndex(const std::vector<Panel>& panels);
+// snap every docked panel to its nearest ring slot around a new centre yaw
+// and pull the whole ring to the given elevation. Floating windows keep
+// their own offsets: they shift by the centre's yaw delta instead of
+// snapping, so a recenter carries them without re-docking them
+void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
+                   float prevCentre);
 
-// clear the middle slot for the launcher and return its yaw: a window
-// sitting there shifts onto the left slot, and a window that was on the
-// left minimizes to the shelf first so the two never stack. A minimized
-// panel still owns its slot (same model as freeSlotYaw), so it shuffles
-// like any other - its restore lands where it was moved, not under the
-// launcher. The parked window's stored yaw slides to the far slot when
-// it's free, so a shelf tap restores it beside the shifted window
-float libraryMiddleYaw(std::vector<Panel>& panels, float centre);
-
-// snap every panel to its nearest ring slot around a new centre yaw and pull
-// the whole ring to the given elevation
-void recenterSlots(std::vector<Panel>& panels, float centre, float pitch);
+// the slot a re-docked window should take: the free slot closest to its
+// current yaw, falling back to the first free one
+float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre);
 
 // the strip n button discs reserve on the bar's right end: edge pad, the
 // discs themselves and the gaps between them
@@ -56,20 +55,29 @@ float barBtnsW(int n);
 
 // widest the label may get before it must shrink to stay inside the top
 // bar: the bar spans the window's full width, so the text region is what
-// the left pad and the button strip leave over. btns is the disc count -
-// the library shows close only, regular windows minimize + close
+// the left pad and the button strip leave over. btns is the disc count
 float barTextLimit(float winHW, int btns);
 
-// x of the minimize/close button centres inside the bar, in world units
-// measured from the bar centre toward its right edge
-float barMinX(float winHW);
+// x of the float/minimize/close button centres inside the bar, in world
+// units measured from the bar centre toward its right edge
 float barCloseX(float winHW);
+float barMinX(float winHW);
+float barFloatX(float winHW);
 
-// is (u,v) in panel coords inside the top bar band above the window
-bool onBar(float u, float v);
+// is (u,v) in panel coords inside the top bar band above the window; hw is
+// the window's scaled half width
+bool onBar(float u, float v, float hw, float hh);
 
-// which button a point on the bar hits: ZONE_MIN, ZONE_CLOSE or ZONE_LABEL
-int barButtonAt(float u, float v);
+// which button a point on the bar hits: ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE
+// or ZONE_LABEL; hw/hh are the window's scaled half extents
+int barButtonAt(float u, float v, float hw, float hh);
+
+// is (u,v) on the resize grip at the window's bottom-right corner
+bool onResizeGrip(float u, float v, float hw, float hh);
+
+// resize drag: the new scale from a hit whose distance from the window's
+// centre moved from grabR to r metres, clamped to the scale limits
+float resizeScale(float grabScale, float grabR, float r);
 
 // arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
 // offset by the gaze delta
@@ -77,8 +85,12 @@ void grabRing(std::vector<Panel>& panels);
 
 // ring drag tick: shift every panel by the gaze delta from its snapshot -
 // yaw wraps around the ring, pitch elevates the whole ring and is clamped so
-// the windows can't flip over the poles
+// the windows can't flip over the poles. Floating panels ride along: the
+// dash stays one assembly
 void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch);
+
+// first panel running pkg, or -1: one window per package
+int panelIndex(const std::vector<Panel>& panels, const std::string& pkg);
 
 // first minimized panel running pkg, or -1: relaunching an app whose window
 // is minimized brings the same window back instead of opening a new one
@@ -105,7 +117,8 @@ struct Pick {
 };
 
 // arbitrary ray (origin o, direction d) vs all panels: the window rects
-// plus the top bar above them; minimized panels are skipped. nearest wins
+// plus the top bar above them; floating windows add their move pill and
+// the resize grip; minimized panels are skipped. nearest wins
 Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
                   const float o[3], const float d[3]);
 

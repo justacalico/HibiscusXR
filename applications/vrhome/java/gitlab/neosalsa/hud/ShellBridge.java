@@ -10,6 +10,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -38,6 +39,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,11 +61,16 @@ public class ShellBridge {
     private static final String TAG = "vrhud.bridge";
     // packages that may legitimately top display 0 without being "covered":
     // the env activity is the only one, everything else is a covered app.
-    // Our own tasks never sit on display 0 (the library lives on a panel)
-    // but exclude this package anyway so a stray can never be ourselves
+    // Our own tasks never sit on display 0 but exclude this package anyway
+    // so a stray can never be ourselves
     private static final String ENV_PKG = "gitlab.neosalsa.home";
     private static final String SELF = "gitlab.neosalsa.hud";
+    // the standalone library app is deprecated: the app grid inside the
+    // dash replaced it. Kept out of the grid itself so nothing launches a
+    // leftover install
     private static final String LIB_PKG = "gitlab.neosalsa.library";
+    // the settings app seeds the dock's pin list on first boot
+    private static final String SETTINGS_PKG = "gitlab.neosalsa.settings";
 
     // cross-process launch contract: the library app (or anything else on
     // a panel) asks the shell for a fresh window with a package-scoped
@@ -187,6 +194,12 @@ public class ShellBridge {
                 "setLaunchDisplayId", int.class);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
+        IntentFilter pf = new IntentFilter();
+        pf.addAction(Intent.ACTION_PACKAGE_ADDED);
+        pf.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        pf.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        pf.addDataScheme("package");
+        ctx.registerReceiver(pkgWatch, pf);
         IntentFilter kf = new IntentFilter();
         kf.addAction(ACTION_KBD);
         kf.addAction(ACTION_KBD_QUERY);
@@ -198,17 +211,22 @@ public class ShellBridge {
 
     // ---------------------------------------------------------- dock
 
-    // persisted pin list; first boot seeds the library so the strip is
-    // never empty - everything else pins/unpins from the dock itself
+    // persisted pin list; first boot seeds the settings app so the strip
+    // is never empty - everything else pins/unpins from the dock itself.
+    // Saved pins for apps that went away (the standalone library app, an
+    // uninstall) drop off here instead of drawing dead icons.
     private void loadPins() {
         SharedPreferences sp = ctx.getSharedPreferences("dock", 0);
         String saved = sp.getString("pins", null);
         synchronized (pins) {
             if (saved == null) {
-                pins.add(LIB_PKG);
+                pins.add(SETTINGS_PKG);
                 savePins();
             } else if (!saved.isEmpty()) {
-                pins.addAll(Arrays.asList(saved.split(",")));
+                for (String p : saved.split(",")) {
+                    if (pm.getLaunchIntentForPackage(p) != null)
+                        pins.add(p);
+                }
             }
         }
     }
@@ -339,6 +357,60 @@ public class ShellBridge {
     // render thread: bumped on every post/removal by the listener
     public int notifVersion() { return NotifService.version(); }
 
+    // ---------------------------------------------------------- app grid
+
+    // one launchable app for the in-dash library overlay
+    public static class LauncherApp {
+        public String pkg;
+        public String label;
+    }
+    private final List<LauncherApp> apps = new ArrayList<>();
+    private volatile int appsVer = 0;
+    private volatile boolean appsDirty = true;
+
+    // render thread: bumped whenever the launchable package set changes
+    public int appsVersion() { return appsVer; }
+
+    // render thread: the launchable apps, sorted by label; the shell's own
+    // pieces and the deprecated library app stay out
+    public LauncherApp[] launcherApps() {
+        synchronized (apps) {
+            if (appsDirty) {
+                appsDirty = false;
+                apps.clear();
+                Intent it = new Intent(Intent.ACTION_MAIN);
+                it.addCategory(Intent.CATEGORY_LAUNCHER);
+                List<ResolveInfo> rs = pm.queryIntentActivities(it, 0);
+                for (ResolveInfo r : rs) {
+                    if (r.activityInfo == null) continue;
+                    String p = r.activityInfo.packageName;
+                    if (p == null || p.equals(SELF) || p.equals(ENV_PKG) ||
+                            p.equals(LIB_PKG) || p.equals(KBD_PKG))
+                        continue;
+                    LauncherApp a = new LauncherApp();
+                    a.pkg = p;
+                    try {
+                        a.label = r.loadLabel(pm).toString();
+                    } catch (Throwable t) {
+                        a.label = p;
+                    }
+                    apps.add(a);
+                }
+                Collections.sort(apps,
+                        (a, b) -> a.label.compareToIgnoreCase(b.label));
+                vrCache.clear();
+            }
+            return apps.toArray(new LauncherApp[0]);
+        }
+    }
+
+    private final BroadcastReceiver pkgWatch = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent in) {
+            appsDirty = true;
+            appsVer++;
+        }
+    };
+
     // render thread: the live notification set, newest first
     public NotifService.Info[] notifs() { return NotifService.snapshot(); }
 
@@ -430,10 +502,8 @@ public class ShellBridge {
         return v != null ? v.st : null;
     }
 
-    // display name for a panel's window bar; the library gets a fixed label
-    // so the pill matches whatever the app itself is called
+    // display name for a panel's window bar
     public String appLabel(String pkg) {
-        if (LIB_PKG.equals(pkg)) return "Library";
         try {
             return pm.getApplicationLabel(
                     pm.getApplicationInfo(pkg, 0)).toString();

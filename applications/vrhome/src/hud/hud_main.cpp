@@ -1,8 +1,8 @@
-// The HUD: panels, the app library and the summonable menu, drawn into a
-// fullscreen TYPE_SYSTEM_OVERLAY window owned by HudService. Virtual
-// displays live in this process (ShellBridge is constructed on the java
-// side), so every panel - and the library itself - keeps running no matter
-// which app owns the physical display underneath.
+// The HUD: panels, the app-grid overlay and the summonable menu, drawn
+// into a fullscreen TYPE_SYSTEM_OVERLAY window owned by HudService.
+// Virtual displays live in this process (ShellBridge is constructed on
+// the java side), so every panel keeps running no matter which app owns
+// the physical display underneath.
 //
 // Threading: HudService runs on the main thread and feeds this file through
 // JNI - surface post/gone, key presses. One pthread runs the render loop and
@@ -15,6 +15,8 @@
 #include "../common/config.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../grid/grid.h"
+#include "../grid/layout.h"
 #include "../notif/notif.h"
 #include "../notif/layout.h"
 #include "../common/jni.h"
@@ -27,6 +29,7 @@
 #include "../math/head.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
+#include "../pill/pill.h"
 #include "../render/chrome.h"
 #include "../render/ctrl_render.h"
 #include "../render/egl.h"
@@ -185,52 +188,17 @@ static void debugSysMsgHook(HudEngine* e) {
     }
 }
 
-// the library panel opens dead ahead once tracking is live, and since the
-// app is its own process a dead one respawns the same way instead of
-// leaving the shell without a launcher. A user-closed launcher is not a
-// dead one: it stays gone until something launches it again - the dock
-// pin is how the user brings it back. recenterAngles covers the desk-flat
-// case too, so a boot with the headset lying on its back still puts the
-// launcher in front of the head's heading
-static void spawnLauncher(HudEngine* e, const Mat4& head) {
-    if (!e->bridge || !e->haveQuat) return;
-    if (libraryIndex(e->panels) >= 0) {
-        e->launcherSpawned = true;
-        e->libDismissed = false;
-        return;
-    }
-    if (e->libDismissed) return;
-    if (!e->launcherSpawned)
-        // the dash's first appearance anchors the ring at the head's spot
-        // too, so a fresh boot doesn't park the panels around the tracking
-        // origin; a respawn keeps the ring where the user left it
-        memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
-    e->launcherSpawned = true;
+// the dash's first anchor: once tracking is live the dock claims the head's
+// heading as its centre yaw, so the window slots and the app grid open dead
+// ahead instead of wherever world yaw zero happened to leave them
+static void anchorDash(HudEngine* e, const Mat4& head) {
+    if (!e->bridge || !e->haveQuat || e->dockAnchored) return;
+    e->dockAnchored = true;
     float gy = 0.0f, gp = 0.0f;
     recenterAngles(head, &gy, &gp);
-    if (!e->dockAnchored) {
-        // first summon anchors the strip in front of the head
-        e->dockAnchored = true;
-        e->dockYaw = gy;
-        e->dockPitch = dockPitchFor(gp);
-    }
-    // the launcher always lands on the middle slot: the window there
-    // shifts left, parking the old left window on the shelf if it has to
-    const float yaw = libraryMiddleYaw(e->panels, gy);
-    const float pitch = e->panels.empty() ? gp : ringPitch(e->panels);
-    int idx = openPanel(e, yaw, pitch);
-    // the library stays even under slot pressure: an app window goes first
-    if (idx < 0 && evictOldestApp(e))
-        idx = openPanel(e, yaw, pitch);
-    if (idx >= 0) {
-        e->panels[idx].pkg = kLibraryPkg;
-        JNIEnv* env = threadEnv(e->vm);
-        jstring jpkg = env->NewStringUTF(kLibraryPkg);
-        env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
-                            e->panels[idx].displayId);
-        env->DeleteLocalRef(jpkg);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-    }
+    memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
+    e->dockYaw = gy;
+    e->dockPitch = dockPitchFor(gp);
 }
 
 // the HUD's world is just the chrome: panels plus the gaze cursor, over
@@ -273,6 +241,9 @@ static void hudScene(Engine* e, const Mat4& vp) {
     }
     drawPanels(h, vp);
     drawKbd(h, vp);
+    // the app grid hangs in front of the window slots: it draws over the
+    // panels it covers like the system overlay it is
+    drawGrid(h, vp);
     drawDock(h, vp);
     drawShelf(h, vp);
     drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
@@ -318,6 +289,12 @@ static void hudFrame(HudEngine* e) {
         }
         hudKey(e, k.code, k.action, k.repeat);
     }
+
+    // dev hook: force the app grid open (1) or shut (0) for headless
+    // testing; unset (-1) leaves the state to the UI
+    const int gprop = propI("debug.vrhome.grid", -1);
+    if (gprop == 1) e->grid.shown = true;
+    else if (gprop == 0) e->grid.shown = false;
 
     qvrPoll(e);
     const bool useSensor = propI("debug.vrhome.sensor", 1) && e->haveQuat;
@@ -365,7 +342,7 @@ static void hudFrame(HudEngine* e) {
     debugDockPinHook(e);
     debugNotifCloseHook(e);
     debugSysMsgHook(e);
-    spawnLauncher(e, head);
+    anchorDash(e, head);
 
     // hold-to-recenter fill: the java side owns the threshold and fires the
     // recenter; native just turns the held time into the ring's 0..1
@@ -380,20 +357,25 @@ static void hudFrame(HudEngine* e) {
     }
 
     if (takeWantRecenter()) {
-        // the ring re-anchors to where the head is right now: panels keep
-        // their slot offsets but the whole dash lands in front of the user
+        // the dash re-anchors to where the head is right now: docked panels
+        // snap back onto their slots around the strip's new yaw and the
+        // ring's elevation follows the strip's; floating windows keep their
+        // offsets and ride along
         memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
         float yaw, pitch;
         recenterAngles(head, &yaw, &pitch);
-        recenterSlots(e->panels, yaw, pitch);
+        const float prevCentre = e->dockYaw;
         e->dockYaw = yaw;
         e->dockPitch = dockPitchFor(pitch);
+        recenterSlots(e->panels, yaw, ringPitchFor(e->dockPitch),
+                      prevCentre);
         e->dockAnchored = true;
     }
     pumpBridge(e);
 
     // sync first: the pick needs this frame's item list and strip width
     syncDock(e);
+    syncGrid(e);
     syncNotifs(e);
     syncSysMsgs(e);
     // cards age out of the dash on postMs + kNotifShowMs; the record
@@ -437,7 +419,7 @@ static void hudFrame(HudEngine* e) {
                  e->kbd.offYaw, e->kbd.offY, e->ringPos, kc, kr, kup);
         if (rayQuad(kc, kr, kup, e->ringPos, e->aimO, e->aimD,
                     kKbdHW, kKbdHH, &kU, &kV, &kT)) {
-            if (onKbdHandle(kU, kV)) kZone = KZONE_HANDLE;
+            if (onMovePill(kU, kV, kKbdHW, kKbdHH)) kZone = KZONE_HANDLE;
             else if (kU < -1.0f || kU > 1.0f || kV < -1.0f || kV > 1.0f)
                 kT = -1.0f;
         }
@@ -451,6 +433,13 @@ static void hudFrame(HudEngine* e) {
                                       e->aimO, e->aimD);
     const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
                                       e->ringPos, e->aimO, e->aimD);
+    const GridPick gp = e->grid.shown
+        ? pickGridRay((int)e->grid.items.size(), e->grid.scroll,
+                      e->dockYaw, ringPitchFor(e->dockPitch),
+                      e->ringPos, e->aimO, e->aimD)
+        : GridPick{};
+    e->grid.hover = -1;
+    e->grid.zone = GZONE_NONE;
     if (mp.hit) {
         e->sysMsgHover = 0;
         e->sysMsgZone = mp.zone;
@@ -476,6 +465,27 @@ static void hudFrame(HudEngine* e) {
         e->hover = -1;
         e->hoverZone = ZONE_NONE;
         e->aimHitT = np.t;
+    // the app grid hangs in front of the window plane but behind the dock:
+    // a hit on its card wins over panels and loses to anything nearer by t
+    } else if (gp.hit && (pk.idx < 0 || gp.t <= pk.t) &&
+            (kT < 0.0f || gp.t <= kT) && (!dp.bar || gp.t <= dp.t) &&
+            (!sp.hit || gp.t <= sp.t)) {
+        e->sysMsgHover = -1;
+        e->sysMsgZone = MZONE_NONE;
+        e->sysMsgBtn = -1;
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
+        e->shelfHover = -1;
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->kbd.hover = false;
+        e->grid.hover = gp.idx;
+        e->grid.zone = gp.zone;
+        e->grid.u = gp.u;
+        e->grid.v = gp.v;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+        e->aimHitT = gp.t;
     } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t) &&
             (kT < 0.0f || sp.t <= kT)) {
         e->sysMsgHover = -1;
@@ -530,6 +540,8 @@ static void hudFrame(HudEngine* e) {
             e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
             e->aimHitT = pk.idx >= 0 ? pk.t : -1.0f;
             if (pk.idx >= 0) {
+                e->hitU = pk.u;
+                e->hitV = pk.v;
                 e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
                 e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
             }

@@ -13,9 +13,13 @@ struct HudEngine;
 // radB rounds the bottom corners separately - pass 0 for a shape that
 // should sit flush on top of a square edge; <0 reuses radius for both.
 // arc clips the shape to an upward-opening wedge about the quad centre:
-// the value is tan(half-angle), 0 disables it - the wifi fan's arcs use it
+// the value is tan(half-angle), 0 disables it - the wifi fan's arcs use it.
+// clipY shifts the quad's local y into a parent's frame and clipC/clipH
+// fade the shape out past a band centred there - the app grid's scroll band
+// uses it; clipH=0 disables the clip
 void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                const float r[3], const float up[3],
                float toward, float ang, float qw, float qh,
                float bw, float bh, float radius, float border, float soft,
-               const float col[4], float radB = -1.0f, float arc = 0.0f);
+               const float col[4], float radB = -1.0f, float arc = 0.0f,
+               float clipY = 0.0f, float clipC = 0.0f, float clipH = 0.0f);

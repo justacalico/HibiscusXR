@@ -7,6 +7,8 @@
 #include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/palette.h"
+#include "../pill/pill.h"
+#include "../render/chrome.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
 
@@ -179,6 +181,7 @@ void syncDock(HudEngine* e) {
     e->shelfHW = shelfLayout(e->shelf);
     if (!e->bridge) return;
     for (auto& it : e->dock) {
+        if (it.pkg.empty()) continue;   // the grid button carries its label
         const DockIcon& ic = iconFor(e, it.pkg);
         it.label = ic.label;
         if (ic.vr) it.vr = true;
@@ -193,6 +196,10 @@ void dockActivate(HudEngine* e, int idx) {
     if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockItem it = e->dock[idx];
     JNIEnv* env = threadEnv(e->vm);
+    if (it.kind == DK_GRID) {
+        e->grid.shown = !e->grid.shown;
+        return;
+    }
     if (it.kind == DK_QUICK) {
         // a live quick panel gets focused like any other running item
         if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size() &&
@@ -243,7 +250,6 @@ void dockClose(HudEngine* e, int idx) {
     if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size()) {
         env->CallVoidMethod(e->bridge, e->mRemoveDisp,
                             e->panels[it.panelIdx].displayId);
-        if (it.pkg == kLibraryPkg) e->libDismissed = true;
     } else if (it.taskId >= 0) {
         env->CallVoidMethod(e->bridge, e->mRemoveTask, it.taskId);
     } else {
@@ -307,7 +313,8 @@ void dockTick(HudEngine* e) {
 // the label's first letter
 void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                     const float r[3], const float up[3], float s,
-                    const char* label) {
+                    const char* label,
+                    float clipY, float clipC, float clipH) {
     static const float pal[][3] = {
         {0.30f, 0.36f, 0.52f}, {0.36f, 0.30f, 0.50f}, {0.22f, 0.42f, 0.48f},
         {0.40f, 0.30f, 0.34f}, {0.26f, 0.44f, 0.36f}, {0.44f, 0.38f, 0.26f},
@@ -317,8 +324,13 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
     const float* pc = pal[h % 6];
     const float col[4] = {pc[0], pc[1], pc[2], 1.0f};
     shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * kIconRad,
-              0.0f, 0.002f, col);
-    if (*label && e->font.ok) {
+              0.0f, 0.002f, col, -1.0f, 0.0f, clipY, clipC, clipH);
+    // text has no clip hook: inside a scroll band the letter only draws
+    // while the whole tile fits the band
+    const bool clipped = clipH > 0.0f &&
+                         (clipY + s > clipC + clipH ||
+                          clipY - s < clipC - clipH);
+    if (*label && e->font.ok && !clipped) {
         char ch[2] = {*label, 0};
         // glyph height lands a bit under the tile's: mPerPx is metres per
         // font pixel, not a fraction of the tile
@@ -348,7 +360,8 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
 // icon shader; bitmaps upload top-row-first, so v=0 is the image's top
 void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
                  const float r[3], const float up[3], float s,
-                 unsigned tex, float alpha) {
+                 unsigned tex, float alpha,
+                 float clipY, float clipC, float clipH) {
     glUseProgram(e->iconProg);
     const GLint uMVP = glGetUniformLocation(e->iconProg, "uMVP");
     const GLint uTex = glGetUniformLocation(e->iconProg, "uTex");
@@ -375,6 +388,8 @@ void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
     glUniform2f(uHalf, s, s);
     glUniform1f(uRad, s * kIconRad);
     glUniform1f(uAl, alpha);
+    glUniform3f(glGetUniformLocation(e->iconProg, "uClip"),
+                clipY, clipC, clipH);
     glUniform1i(uTex, 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -577,7 +592,24 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         }
 
         const float alpha = it.minimized ? 0.45f : 1.0f;
-        if (icon && icon->tex) {
+        if (it.kind == DK_GRID) {
+            // the app-grid glyph: a 3x3 dot square, active while the
+            // overlay is open
+            const float dg = s * 0.62f;
+            const float* dc = e->grid.shown ? kPalAccent : kPalText;
+            const float dcol[4] = {dc[0], dc[1], dc[2],
+                                   hov || e->grid.shown ? 0.95f : 0.72f};
+            for (int gy = 0; gy < 3; ++gy)
+                for (int gx = 0; gx < 3; ++gx) {
+                    const float pc[3] = {
+                        ic[0] + r[0]*(gx - 1)*dg + up[0]*(1 - gy)*dg,
+                        ic[1] + r[1]*(gx - 1)*dg + up[1]*(1 - gy)*dg,
+                        ic[2] + r[2]*(gx - 1)*dg + up[2]*(1 - gy)*dg};
+                    const float dr = s * 0.105f;
+                    shapeQuad(e, vp, pc, r, up, 0.008f, 0.0f, dr, dr,
+                              dr, dr, dr, 0.0f, 0.0015f, dcol);
+                }
+        } else if (icon && icon->tex) {
             drawIconTex(e, vp, ic, r, up, s, icon->tex, alpha);
         } else {
             glUseProgram(e->shapeProg);
@@ -667,18 +699,10 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         }
     }
 
-    // move handle: a short line centred under the strip; holding it
-    // drags the whole dash, so brighten it while gazed
-    {
-        const bool hhov = e->dockZone == DZONE_HANDLE;
-        const float hd = dockHandleDrop();
-        const float hc[3] = {c[0] - up[0] * hd, c[1] - up[1] * hd,
-                             c[2] - up[2] * hd};
-        const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               hhov ? 0.95f : 0.55f};
-        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
-                  kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
-    }
+    // move pill under the strip: holding it drags the whole dash, so it
+    // brightens while gazed or held
+    drawMovePill(e, vp, c, r, up, movePillDrop(kDockBarH * 0.5f),
+                 e->dockZone == DZONE_HANDLE || e->moveHeld);
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 }

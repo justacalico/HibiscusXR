@@ -76,6 +76,8 @@ uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
 uniform float uArc;      // >0 clips to an upward wedge: tan(half-angle)
+uniform vec3 uClip;      // y-offset into a parent plane + band centre and
+                         // half-height; z<=0 disables it (grid scroll band)
 void main() {
     vec2 p = vUV * uQuad;
     float r = p.y > 0.0 ? uRadius : uRadiusB;
@@ -90,6 +92,9 @@ void main() {
         a = 1.0 - smoothstep(-uSoft, uSoft, d);
     if (uArc > 0.0)
         a *= 1.0 - smoothstep(-uSoft, uSoft, abs(p.x) - uArc * p.y);
+    if (uClip.z > 0.0)
+        a *= 1.0 - smoothstep(uClip.z - 0.01, uClip.z,
+                              abs(p.y + uClip.x - uClip.y));
     if (a < 0.01) discard;
     gl_FragColor = vec4(uColor.rgb, uColor.a * a);
 }
@@ -139,12 +144,16 @@ uniform sampler2D uTex;
 uniform vec2 uHalf;
 uniform float uRadius;
 uniform float uAlpha;
+uniform vec3 uClip;      // same band-clip convention the shape FS uses
 void main() {
     vec4 c = texture2D(uTex, vUV);
     vec2 p = (vUV - 0.5) * 2.0 * uHalf;
     vec2 q = abs(p) - uHalf + vec2(uRadius);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - uRadius;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    if (uClip.z > 0.0)
+        a *= 1.0 - smoothstep(uClip.z - 0.012, uClip.z,
+                              abs(p.y + uClip.x - uClip.y));
     gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
 }
 )";

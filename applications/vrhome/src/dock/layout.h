@@ -19,6 +19,15 @@ void dockCenter(float yaw, float pitch, const float origin[3],
 // level and clamped so the strip stays below the windows, never overhead
 float dockPitchFor(float headPitch);
 
+// the window ring's elevation given the strip's: the dash is one assembly,
+// so the windows ride a fixed lift over the bar instead of carrying an
+// independent pitch
+float ringPitchFor(float dockPitch);
+
+// the elevation a window joins at: a running row keeps its pitch, an empty
+// (or all-floating) ring derives it off the strip the dash is tied to
+float dashRingPitch(const std::vector<Panel>& panels, float dockPitch);
+
 // dock elevation while a handle drag holds: the strip is tied to the window
 // ring, so it picks up exactly the pitch the ring gained since the grab -
 // pole clamp included - and the dash moves as one piece
@@ -40,14 +49,6 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 // its height); *zone gets DZONE_CLOSE on a live immersive item's badge
 int dockItemAt(const std::vector<DockItem>& items, float halfW,
                float u, float v, int* zone);
-
-// how far under the strip's centre the move handle's centre hangs, world
-// units
-float dockHandleDrop();
-
-// is a bar-local point on the move handle under the strip; the hit box is
-// padded past the drawn line since gaze aim is coarse
-bool onDockHandle(float u, float v, float halfW);
 
 // gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1
 bool rayDock(float yaw, float pitch, const float origin[3],

@@ -4,6 +4,7 @@
 #include "../math/mat4.h"
 #include "../panels/panel.h"
 #include "../dock/item.h"
+#include "../grid/item.h"
 #include "../notif/item.h"
 #include "../sysmsg/item.h"
 #include "../kbd/kbd.h"
@@ -45,10 +46,13 @@ struct HudEngine : Engine {
               mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
               mSysMsgOnly = nullptr,
               mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
-              mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr;
+              mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr,
+              mAppsVer = nullptr, mApps = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
     jclass pendingCls = nullptr;
     jfieldID fPendTask = nullptr, fPendPkg = nullptr;
+    jclass appCls = nullptr;             // ShellBridge.LauncherApp
+    jfieldID fAppPkg = nullptr, fAppLabel = nullptr;
     jclass notifCls = nullptr;
     jfieldID fNotifKey = nullptr, fNotifPkg = nullptr,
              fNotifTitle = nullptr, fNotifText = nullptr,
@@ -76,11 +80,11 @@ struct HudEngine : Engine {
     int hover = -1;              // panel index under the gaze ray
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
-    bool launcherSpawned = false;
-    // the library was closed on purpose (bar x, BACK, or swapped for an
-    // app it launched): a user-closed launcher stays closed - only a dead
-    // one respawns. Cleared when a library panel exists again
-    bool libDismissed = false;
+    float hitU = 0, hitV = 0;    // raw panel coords of the hit
+
+    // the app-grid overlay: opened from the dock's grid button, closes on
+    // BACK, its close disc, a re-tap of the button or a launched app
+    GridOverlay grid;
 
     // dock: rebuilt each frame by syncDock from the pin list, the live
     // panels and the immersive tasks the java poller sees. dockYaw anchors

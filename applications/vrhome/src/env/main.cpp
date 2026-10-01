@@ -20,6 +20,7 @@
 #include "../render/scene.h"
 #include "../sensor/sensor.h"
 #include "../sensor/qvr.h"
+#include "cam.h"
 
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
@@ -78,6 +79,11 @@ static void drawFrame(Engine* e) {
     // covered by a fullscreen app: nothing to present and no vsync to pace
     // us, but the GL context stays warm on the pbuffer
     if (!e->ready || e->covered) { usleep(33000); return; }
+
+    // passthrough: bring the tracking pair up if it isn't, latch the
+    // newest frame's texture matrix before the eyes draw
+    ptTick(e);
+    ptUpdate(e);
 
     const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
     const float fov = propF("debug.vrhome.fov", kFovY);
@@ -172,6 +178,7 @@ void android_main(android_app* app) {
         }
         drawFrame(&e);
     }
+    ptStop(&e);
     termDisplay(&e);
     gEnv = nullptr;
 }

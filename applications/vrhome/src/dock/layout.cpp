@@ -3,6 +3,7 @@
 #include "../common/config.h"
 #include "../math/head.h"
 #include "../panels/layout.h"
+#include "../pill/pill.h"
 
 #include <cmath>
 
@@ -15,6 +16,17 @@ float dockPitchFor(float headPitch) {
     const float p = headPitch * kDockPitchScale - kDockPitchDrop;
     return p < kDockPitchMin ? kDockPitchMin
          : p > kDockPitchMax ? kDockPitchMax : p;
+}
+
+float ringPitchFor(float dockPitch) {
+    const float p = dockPitch + kRingLift;
+    return p > kPitchMax ? kPitchMax : p < -kPitchMax ? -kPitchMax : p;
+}
+
+float dashRingPitch(const std::vector<Panel>& panels, float dockPitch) {
+    for (auto& p : panels)
+        if (!p.floating) return p.pitch;
+    return ringPitchFor(dockPitch);
 }
 
 float dockDragPitch(float grabPitch, float ringGrabPitch, float ringPitch) {
@@ -98,10 +110,19 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
         runSep = true;
         out.push_back(it);
     }
+    // the app-grid button: the library lives inside the dash, its icon is a
+    // permanent slot beside quick settings. It carries no pkg so it never
+    // resolves through the icon cache
+    DockItem g;
+    g.kind = DK_GRID;
+    g.label = "Library";
+    g.sep = !out.empty();
+    out.push_back(g);
+
     DockItem q;
     q.kind = DK_QUICK;
     q.pkg = kQuickPanelPkg;
-    q.sep = !out.empty();
+    q.sep = false;
     // a running quick-panel task rides its own button rather than adding a
     // second icon to the strip
     const int qi = findPanel(panels, kQuickPanelPkg);
@@ -162,15 +183,8 @@ static void badgeAt(float itemX, float* bx, float* by) {
     *by = kDockIconY + kDockIconHW * 0.72f;
 }
 
-float dockHandleDrop() {
-    return kDockBarH * 0.5f + kHandleGap + kHandleT;
-}
-
-bool onDockHandle(float u, float v, float halfW) {
-    const float x = u * halfW, y = v * (kDockBarH * 0.5f);
-    return fabsf(x) <= kHandleW + kHandlePad &&
-           fabsf(y + dockHandleDrop()) <= kHandleT + kHandlePad;
-}
+// the move handle hangs under the strip: the shared pill, sized off the
+// bar's own half-height
 
 int dockItemAt(const std::vector<DockItem>& items, float halfW,
                float u, float v, int* zone) {
@@ -216,7 +230,7 @@ DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
     if (!rayDock(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
     // the move handle hangs under the strip: it lives outside the bar box
     // so it checks before the in-bar bounds
-    if (onDockHandle(u, v, halfW)) {
+    if (onMovePill(u, v, halfW, kDockBarH * 0.5f)) {
         pk.bar = true;
         pk.u = u; pk.v = v; pk.t = t;
         pk.zone = DZONE_HANDLE;
@@ -238,7 +252,7 @@ DockPick pickDock(const std::vector<DockItem>& items, float halfW,
 }
 
 bool dockPinnable(const DockItem& it) {
-    return it.kind != DK_QUICK;
+    return it.kind == DK_PIN || it.kind == DK_RUN;
 }
 
 std::vector<std::string> pinToggle(const std::vector<std::string>& pins,

@@ -1304,6 +1304,18 @@ abstract class AppLocalizations {
   /// **'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.'**
   String get faqA6;
 
+  /// No description provided for @faqQ7.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I change the home environment?'**
+  String get faqQ7;
+
+  /// No description provided for @faqA7.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes - the Settings app has a Home environment section with three picks: the passthrough camera feed, the built-in sky scene, or a custom zip pack pushed to /data/local/tmp/hibiscus/envs over adb. A pack is a map.obj whose SpawnUser part marks where you stand, plus an optional map.png screenshot and map.json metadata.'**
+  String get faqA7;
+
   /// No description provided for @aboutTitle.
   ///
   /// In en, this message translates to:

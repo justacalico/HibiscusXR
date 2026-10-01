@@ -19,6 +19,7 @@ class FaqPage extends StatelessWidget {
       (l10n.faqQ4, l10n.faqA4),
       (l10n.faqQ5, l10n.faqA5),
       (l10n.faqQ6, l10n.faqA6),
+      (l10n.faqQ7, l10n.faqA7),
     ];
     return PageBody(
       children: [

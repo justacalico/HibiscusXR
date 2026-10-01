@@ -234,6 +234,8 @@
   "faqA5": "Our own VR home environment. Stock VRShell needs the closed Pico compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.",
   "faqQ6": "What is the license?",
   "faqA6": "Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.",
+  "faqQ7": "Can I change the home environment?",
+  "faqA7": "Yes - the Settings app has a Home environment section with three picks: the passthrough camera feed, the built-in sky scene, or a custom zip pack pushed to /data/local/tmp/hibiscus/envs over adb. A pack is a map.obj whose SpawnUser part marks where you stand, plus an optional map.png screenshot and map.json metadata.",
 
   "aboutTitle": "About",
   "aboutSubtitle": "One OS, many headsets, every step in the open.",

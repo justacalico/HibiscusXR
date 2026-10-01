@@ -122,6 +122,86 @@ void main() {
     expect(find.byType(ImageFiltered), findsNothing);
   });
 
+  testWidgets('flashdocs home asks for the headset', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/flashdocs');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Which headset do you have?'), findsOneWidget);
+    expect(find.text('Pico Neo 2'), findsWidgets);
+  });
+
+  testWidgets('flashdocs walks device then OS to the linux guide',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/flashdocs/pico-neo-2');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Which OS is your computer running?'),
+        findsOneWidget);
+    expect(find.text('Linux'), findsWidgets);
+
+    _routerOf(tester).go('/flashdocs/pico-neo-2/linux');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Flash Hibiscus on the Pico Neo 2'), findsOneWidget);
+    expect(find.text('Read this first'), findsOneWidget);
+    expect(find.text('1. Root the headset'), findsOneWidget);
+    expect(find.text('fastboot oem pico unlock'), findsWidgets);
+    expect(
+        find.text('fastboot flash boot magisk_patched_pico_neo_2_boot.img'),
+        findsOneWidget);
+    expect(find.text('Download the patched boot image'), findsOneWidget);
+  });
+
+  testWidgets('flashdocs rejects unknown device and OS slugs',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/flashdocs/nope');
+    await tester.pumpAndSettle();
+    expect(find.text('Page not found'), findsOneWidget);
+
+    _routerOf(tester).go('/flashdocs/pico-neo-2/windows');
+    await tester.pumpAndSettle();
+    expect(find.text('Page not found'), findsOneWidget);
+  });
+
+  testWidgets('download page links to the flashing guide', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/download');
+    await tester.pumpAndSettle();
+
+    final link = find.text('Open the guide');
+    expect(link, findsOneWidget);
+    await Scrollable.ensureVisible(tester.element(link),
+        alignment: 0.5);
+    await tester.pumpAndSettle();
+    await tester.tap(link);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Which headset do you have?'), findsOneWidget);
+  });
+
   testWidgets('repositories page lists all groups', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;

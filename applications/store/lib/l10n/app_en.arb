@@ -1,0 +1,59 @@
+{
+  "appTitle": "Store",
+
+  "searchHint": "Search apps",
+  "categoryAll": "All",
+  "sortUpdated": "Recently updated",
+  "sortName": "Name A-Z",
+  "appsCount": "{count, plural, =1{1 app} other{{count} apps}}",
+  "@appsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "install": "Install",
+  "installing": "Installing",
+  "downloading": "Downloading",
+  "open": "Open",
+  "retry": "Retry",
+  "installedBadge": "Installed",
+  "installFailed": "Install failed",
+  "installPrompted": "Confirm the install in the system dialog",
+  "versionRow": "{version} ({code})",
+  "@versionRow": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "code": { "type": "int" }
+    }
+  },
+
+  "loadErrorTitle": "Couldn't load the catalog",
+  "loadErrorBody": "Check the repository address and the network connection.",
+  "emptyResults": "No apps match your search",
+  "selectAppPrompt": "Pick an app to see details",
+
+  "repoMenu": "Repository",
+  "repoDialogTitle": "Repository",
+  "repoDialogBody": "Catalog and packages come from this F-Droid compatible repository.",
+  "repoUrlLabel": "Repository URL",
+  "repoUrlInvalid": "Enter an http or https URL",
+  "repoReset": "Reset to default",
+  "cancel": "Cancel",
+  "save": "Save",
+
+  "sectionDescription": "About",
+  "sectionScreenshots": "Screenshots",
+  "sectionVersions": "Versions",
+  "metaVersion": "Version",
+  "metaSize": "Size",
+  "metaLicense": "License",
+  "metaUpdated": "Updated",
+  "metaMinSdk": "Min SDK",
+  "byAuthor": "by {author}",
+  "@byAuthor": {
+    "placeholders": {
+      "author": { "type": "String" }
+    }
+  }
+}

@@ -37,9 +37,24 @@ static void project(const CamIntr& c, float vx, float vy, float vz,
     *py = c.cy + c.fy * y * sc;
 }
 
+// rotate a projected pixel around the camera's principal point in 90 deg
+// steps: 1 = quarter turn ccw. The tracking sensors sit portrait in the
+// frame, so the image lands rotated in the half and the fix belongs in
+// image space - rolling the view ray instead pushes samples past the
+// half's edge and they clamp to stripes
+static void rotPx(const CamIntr& c, int quarters, float* px, float* py) {
+    float x = *px - c.cx, y = *py - c.cy;
+    for (int i = 0; i < quarters; ++i) {
+        const float xr = -y, yr = x;
+        x = xr; y = yr;
+    }
+    *px = c.cx + x; *py = c.cy + y;
+}
+
 int buildPtMesh(float* verts, int cap, int eye, const CamIntr cams[2],
                 int cols, int rows, float tanX, float tanY,
-                bool swapEyes, bool flipU, bool flipV, float rollDeg) {
+                bool swapEyes, bool flipU, bool flipV, float rollDeg,
+                int rotQuarters) {
     if (!verts || cols < 2 || rows < 2) return 0;
     const int need = ptMeshFloats(cols, rows);
     if (cap < need) return 0;
@@ -59,10 +74,15 @@ int buildPtMesh(float* verts, int cap, int eye, const CamIntr cams[2],
                 float px, py;
                 project(cam, nx * tanX, ny * tanY, -1.0f,
                         rollDeg, &px, &py);
-                float u = px / 640.0f, v = py / 400.0f;
-                if (flipU) u = 1.0f - u;
-                if (flipV) v = 1.0f - v;
-                u = u * 0.5f + (((eye == 0) != swapEyes) ? 0.0f : 0.5f);
+                rotPx(cam, ((rotQuarters % 4) + 4) % 4, &px, &py);
+                if (flipU) px = 640.0f - px;
+                if (flipV) py = 400.0f - py;
+                // the pair packs into the 1280x400 frame as interleaved
+                // columns: camera 0 owns the even ones, camera 1 the odd
+                const int cam = (eye == 0) != swapEyes ? 0 : 1;
+                const float u = (floorf(px) * 2.0f + (float)cam + 0.5f)
+                                / 1280.0f;
+                const float v = py / 400.0f;
                 o[0] = nx; o[1] = ny; o[2] = 0.0f;
                 o[3] = u;  o[4] = v;
                 o += 5;

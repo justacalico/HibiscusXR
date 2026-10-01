@@ -37,14 +37,14 @@ void testPt() {
     // the mesh is a full NDC square of cols*rows quads
     const int n = buildPtMesh(verts.data(), (int)verts.size(), 0, cams,
                               cols, rows, tanX, tanY,
-                              false, false, true, 0.0f);
+                              false, false, true, 0.0f, 0);
     CHECK(n == cols * rows * 6);
 
     // vertex count sanity: bad inputs refuse to build
     CHECK(buildPtMesh(nullptr, 10, 0, cams, cols, rows,
-                      tanX, tanY, false, false, true, 0.0f) == 0);
+                      tanX, tanY, false, false, true, 0.0f, 0) == 0);
     CHECK(buildPtMesh(verts.data(), 4, 0, cams, cols, rows,
-                      tanX, tanY, false, false, true, 0.0f) == 0);
+                      tanX, tanY, false, false, true, 0.0f, 0) == 0);
 
     // every NDC coordinate sits inside the clip square
     for (int i = 0; i < n; ++i) {
@@ -60,38 +60,44 @@ void testPt() {
         for (int i = 0; i < n; ++i) {
             if (fabsf(verts[i*5]) < 1e-6f && fabsf(verts[i*5+1]) < 1e-6f) {
                 const float u = verts[i*5+3], v = verts[i*5+4];
-                CHECK_F(u, 319.78693f / 640.0f * 0.5f, 1e-3f);
+                CHECK(fabsf(u * 1280.0f - roundf(u*1280.f)) <= 0.5f);
+                CHECK_F(u, floorf(319.78693f) * 2.0f / 1280.0f + 0.5f/1280.f,
+                        2e-3f);
                 CHECK_F(v, 1.0f - 207.4184f / 400.0f, 1e-3f);
             }
         }
     }
 
-    // all u values stay inside the left camera's half when swap is off,
-    // and inside the right half for eye 1
+    // the pair packs column-interleaved: eye 0 reads even columns,
+    // eye 1 odd ones - each u lands within half a texel of its parity
     {
         for (int i = 0; i < n; ++i) {
             const float u = verts[i*5+3];
-            CHECK(u >= 0.0f && u <= 0.5f);
+            const float col = floorf(u * 1280.0f);
+            CHECK(((int)col % 2) == 0);
         }
         std::vector<float> v2(ptMeshFloats(cols, rows));
         const int n2 = buildPtMesh(v2.data(), (int)v2.size(), 1, cams,
                                    cols, rows, tanX, tanY,
-                                   false, false, true, 0.0f);
+                                   false, false, true, 0.0f, 0);
         for (int i = 0; i < n2; ++i) {
             const float u = v2[i*5+3];
-            CHECK(u >= 0.5f && u <= 1.0f);
+            const float col = floorf(u * 1280.0f);
+            CHECK(((int)col % 2) == 1);
         }
     }
 
-    // swapEyes mirrors the halves: eye 0 then reads the right camera
+    // swapEyes flips the parity: eye 0 then reads the odd columns
     {
         std::vector<float> v2(ptMeshFloats(cols, rows));
         const int n2 = buildPtMesh(v2.data(), (int)v2.size(), 0, cams,
                                    cols, rows, tanX, tanY,
-                                   true, false, true, 0.0f);
+                                   true, false, true, 0.0f, 0);
         CHECK(n2 == n);
-        for (int i = 0; i < n2; ++i)
-            CHECK(v2[i*5+3] >= 0.5f && v2[i*5+3] <= 1.0f);
+        for (int i = 0; i < n2; ++i) {
+            const float col = floorf(v2[i*5+3] * 1280.0f);
+            CHECK(((int)col % 2) == 1);
+        }
     }
 
     // coverage: the fisheye is wider than the render fov, so no eye

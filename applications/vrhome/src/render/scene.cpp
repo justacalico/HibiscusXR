@@ -33,14 +33,15 @@ static const CamIntr kPtCams[2] = {
 // debug.vrhome.pt{swap,flipx,flipy,roll} exist to find the mount's real
 // orientation without a rebuild
 static void ptMeshes(Engine* e, float tanX, float tanY) {
-    static int pSwap = -1, pFx = -1, pFy = -1;
+    static int pSwap = -1, pFx = -1, pFy = -1, pRot = -1;
     static float pRoll = -9999.0f;
     const int sw = propI("debug.vrhome.ptswap", 0);
     const int fx = propI("debug.vrhome.ptflipx", 0);
     const int fy = propI("debug.vrhome.ptflipy", 1);
     const float roll = propF("debug.vrhome.ptroll", 0.0f);
+    const int rot = propI("debug.vrhome.ptrot", 1);
     if (e->ptVbo[0] && sw == pSwap && fx == pFx && fy == pFy &&
-            roll == pRoll)
+            roll == pRoll && rot == pRot)
         return;
     if (!e->ptVbo[0]) glGenBuffers(2, e->ptVbo);
     const int cols = 40, rows = 30;
@@ -48,13 +49,13 @@ static void ptMeshes(Engine* e, float tanX, float tanY) {
     for (int i = 0; i < 2; ++i) {
         const int n = buildPtMesh(verts.data(), (int)verts.size(), i,
                                   kPtCams, cols, rows, tanX, tanY,
-                                  sw != 0, fx != 0, fy != 0, roll);
+                                  sw != 0, fx != 0, fy != 0, roll, rot);
         glBindBuffer(GL_ARRAY_BUFFER, e->ptVbo[i]);
         glBufferData(GL_ARRAY_BUFFER, n * 5 * sizeof(float),
                      verts.data(), GL_STATIC_DRAW);
         e->ptVerts[i] = n;
     }
-    pSwap = sw; pFx = fx; pFy = fy; pRoll = roll;
+    pSwap = sw; pFx = fx; pFy = fy; pRoll = roll; pRot = rot;
 }
 
 // one eye's passthrough mesh fills the eye buffer: NDC-space grid, the
@@ -91,8 +92,48 @@ static void drawPt(Engine* e, float fovY, float aspect) {
     glEnable(GL_DEPTH_TEST);
 }
 
+// debug.vrhome.ptraw: draw the camera texture flat across the eye so the
+// real frame layout is visible while bring-up tunes the warp
+static void drawPtRaw(Engine* e) {
+    glUseProgram(e->floatProg);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_BLEND);
+    glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
+    glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), 1.0f, 1.0f);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), 0.0f);
+    const Mat4 id = identity();
+    glUniformMatrix4fv(glGetUniformLocation(e->floatProg, "uMVP"),
+                       1, GL_FALSE, id.m);
+    glUniformMatrix4fv(glGetUniformLocation(e->floatProg, "uST"),
+                       1, GL_FALSE, e->ptMat);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, e->ptTex);
+    const float q[4][5] = {
+        {-1,-1,0, 0,0}, {1,-1,0, 1,0}, {1,1,0, 1,1}, {-1,1,0, 0,1}};
+    const int tris[6] = {0,1,2, 0,2,3};
+    float verts[30];
+    for (int t = 0; t < 6; ++t) memcpy(verts + t*5, q[tris[t]], 20);
+    glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
+    const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
+    const GLint aUV  = glGetAttribLocation(e->floatProg, "aUV");
+    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
+    glVertexAttribPointer(aUV, 2, GL_FLOAT, GL_FALSE, 20, (void*)12);
+    glEnableVertexAttribArray(aPos);
+    glEnableVertexAttribArray(aUV);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    glDisableVertexAttribArray(aPos);
+    glDisableVertexAttribArray(aUV);
+    glEnable(GL_DEPTH_TEST);
+}
+
 void drawScene(Engine* e, const Mat4& viewProj) {
     // live camera: the fisheye mesh IS the scene, no sky behind it
+    if (e->ptLive && e->ptTex && propI("debug.vrhome.ptraw", 0)) {
+        drawPtRaw(e);
+        return;
+    }
     if (e->ptLive && e->ptTex) {
         const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
         drawPt(e, propF("debug.vrhome.fov", kFovY), aspect);

@@ -52,6 +52,67 @@ class AppDownloadsPage extends StatelessWidget {
             ],
           ),
         ),
+        if (app == SiteApp.hbsup)
+          Band(
+            width: Layout.text + 96,
+            padding: const EdgeInsets.symmetric(vertical: 72),
+            child: _HbsupShots(l10n: l10n),
+          ),
+      ],
+    );
+  }
+}
+
+/// The app's test goldens, shown as a preview strip on the download page.
+/// Files are copied from applications/hbsup/test/golden/goldens -
+/// hbsup_assets_test.dart fails when the two sets drift apart.
+class _HbsupShots extends StatelessWidget {
+  const _HbsupShots({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final shots = [
+      ('assets/hbsup/hbsup_connect.png', l10n.hbsupShotConnect),
+      ('assets/hbsup/hbsup_connect_unsupported.png',
+          l10n.hbsupShotConnectUnsupported),
+      ('assets/hbsup/hbsup_backup_ready.png', l10n.hbsupShotBackupReady),
+      ('assets/hbsup/hbsup_backup_blocked.png',
+          l10n.hbsupShotBackupBlocked),
+      ('assets/hbsup/hbsup_backup_done.png', l10n.hbsupShotBackupDone),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Reveal(
+          child:
+              Text(l10n.hbsupShotsTitle, style: context.text.titleLarge),
+        ),
+        const SizedBox(height: 32),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 560;
+            final half = (constraints.maxWidth - 32) / 2;
+            return Wrap(
+              spacing: 32,
+              runSpacing: 40,
+              children: [
+                for (var i = 0; i < shots.length; i++)
+                  Reveal(
+                    delay: Duration(milliseconds: (i % 2) * 100),
+                    child: SizedBox(
+                      width: wide ? half : constraints.maxWidth,
+                      child: ShotCard(
+                        asset: shots[i].$1,
+                        caption: shots[i].$2,
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ],
     );
   }

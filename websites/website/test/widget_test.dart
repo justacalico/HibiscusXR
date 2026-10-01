@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hibiscusxr_website/main.dart';
 import 'package:hibiscusxr_website/src/settings.dart';
 import 'package:hibiscusxr_website/src/ui/hero_shot.dart';
+import 'package:hibiscusxr_website/src/ui/widgets.dart';
 
 Future<Widget> _app() async {
   SharedPreferences.setMockInitialValues({});
@@ -119,11 +120,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('HBSUP downloads'), findsWidgets);
     expect(find.text('Windows is unsupported'), findsOneWidget);
+    expect(find.text('What it looks like'), findsOneWidget);
+    expect(find.byType(ShotCard), findsNWidgets(5));
 
     _routerOf(tester).go('/download/cte');
     await tester.pumpAndSettle();
     expect(find.text('HCTE downloads'), findsWidgets);
     expect(find.text('Windows is unsupported'), findsNothing);
+    expect(find.byType(ShotCard), findsNothing);
   });
 
   testWidgets('backup section links to the HBSUP downloads',

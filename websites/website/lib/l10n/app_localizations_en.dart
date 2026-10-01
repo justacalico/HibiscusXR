@@ -687,6 +687,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.';
 
   @override
+  String get hbsupShotsTitle => 'What it looks like';
+
+  @override
+  String get hbsupShotConnect =>
+      'The connect screen once adb sees the headset.';
+
+  @override
+  String get hbsupShotConnectUnsupported =>
+      'On Windows the same screen opens with an unsupported-host banner.';
+
+  @override
+  String get hbsupShotBackupReady =>
+      'Headset connected, folder picked, partitions sized - ready to dump.';
+
+  @override
+  String get hbsupShotBackupBlocked =>
+      'A run that cannot start: the destination is short on space.';
+
+  @override
+  String get hbsupShotBackupDone => 'A finished dump, with the log underneath.';
+
+  @override
   String get navFlashdocs => 'Flashing';
 
   @override

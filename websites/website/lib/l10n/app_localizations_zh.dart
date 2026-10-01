@@ -648,6 +648,24 @@ class AppLocalizationsZh extends AppLocalizations {
       'HBSUP 提供 Windows 构建,但 Windows 不是受支持的主机系统——应用打开时也会提示,在那上面出问题自己承担。';
 
   @override
+  String get hbsupShotsTitle => '界面长这样';
+
+  @override
+  String get hbsupShotConnect => 'adb 认到头显之后的连接页。';
+
+  @override
+  String get hbsupShotConnectUnsupported => '在 Windows 上打开,同一个页面会带上「不受支持」横幅。';
+
+  @override
+  String get hbsupShotBackupReady => '头显已连接、目录已选好、分区大小已列出,可以开始转储。';
+
+  @override
+  String get hbsupShotBackupBlocked => '目标目录空间不够时,备份会被拦住。';
+
+  @override
+  String get hbsupShotBackupDone => '一次完成的转储,下面是日志。';
+
+  @override
   String get navFlashdocs => '刷机指南';
 
   @override

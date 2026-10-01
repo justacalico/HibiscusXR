@@ -1310,6 +1310,42 @@ abstract class AppLocalizations {
   /// **'HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.'**
   String get hbsupWindowsBody;
 
+  /// No description provided for @hbsupShotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What it looks like'**
+  String get hbsupShotsTitle;
+
+  /// No description provided for @hbsupShotConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'The connect screen once adb sees the headset.'**
+  String get hbsupShotConnect;
+
+  /// No description provided for @hbsupShotConnectUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'On Windows the same screen opens with an unsupported-host banner.'**
+  String get hbsupShotConnectUnsupported;
+
+  /// No description provided for @hbsupShotBackupReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Headset connected, folder picked, partitions sized - ready to dump.'**
+  String get hbsupShotBackupReady;
+
+  /// No description provided for @hbsupShotBackupBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'A run that cannot start: the destination is short on space.'**
+  String get hbsupShotBackupBlocked;
+
+  /// No description provided for @hbsupShotBackupDone.
+  ///
+  /// In en, this message translates to:
+  /// **'A finished dump, with the log underneath.'**
+  String get hbsupShotBackupDone;
+
   /// No description provided for @navFlashdocs.
   ///
   /// In en, this message translates to:

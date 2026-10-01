@@ -249,6 +249,12 @@
   },
   "hbsupWindowsTitle": "Windows is unsupported",
   "hbsupWindowsBody": "HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.",
+  "hbsupShotsTitle": "What it looks like",
+  "hbsupShotConnect": "The connect screen once adb sees the headset.",
+  "hbsupShotConnectUnsupported": "On Windows the same screen opens with an unsupported-host banner.",
+  "hbsupShotBackupReady": "Headset connected, folder picked, partitions sized - ready to dump.",
+  "hbsupShotBackupBlocked": "A run that cannot start: the destination is short on space.",
+  "hbsupShotBackupDone": "A finished dump, with the log underneath.",
 
   "navFlashdocs": "Flashing",
 

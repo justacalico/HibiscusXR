@@ -100,6 +100,42 @@ for lib in lib64 lib; do
 done
 
 echo
+echo "=== boot animation ==="
+# overlay/media/bootanimation is the unpacked zip. The panel is 3840x2160
+# split between the lenses, so frames carry one logo per eye centre - a single
+# centred phone-style animation lands on the seam and each eye sees half a
+# logo. bootanimation wants desc.txt first and every entry stored, not
+# deflated; python's zipfile so we don't depend on zip(1) behaviour.
+BA="$OUT/bootanimation.zip"
+python3 - "$OV/media/bootanimation" "$BA" <<'EOF'
+import os, sys, zipfile
+src, out = sys.argv[1], sys.argv[2]
+with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as z:
+    z.write(os.path.join(src, "desc.txt"), "desc.txt")
+    for part in sorted(d for d in os.listdir(src) if d.startswith("part")):
+        for f in sorted(os.listdir(os.path.join(src, part))):
+            z.write(os.path.join(src, part, f), f"{part}/{f}")
+EOF
+debugfs -w -R "mkdir /media" "$IMG" >/dev/null 2>&1
+put "$BA" "/media/bootanimation.zip" 644
+# The stock lookup order is apex -> product -> oem -> system, and the GSI
+# ships its phone-sized animation under product/apex - drop whichever of
+# those exists so ours is the one that plays.
+for d in /product/media /system/product/media; do
+  if debugfs -R "stat $d" "$IMG" 2>/dev/null | grep -q "Inode:"; then
+    put "$BA" "$d/bootanimation.zip" 644
+    debugfs -w -R "rm $d/bootanimation-dark.zip" "$IMG" >/dev/null 2>&1
+  fi
+done
+for v in /apex/com.android.bootanimation/etc/bootanimation.zip \
+         /apex/com.android.bootanimation.apex; do
+  if debugfs -R "stat $v" "$IMG" 2>/dev/null | grep -q "Inode:"; then
+    debugfs -w -R "rm $v" "$IMG" >/dev/null 2>&1
+    echo "  removed $v"
+  fi
+done
+
+echo
 echo "=== build.prop ==="
 TMP=$(mktemp -d)
 debugfs -R "dump /build.prop $TMP/build.prop" "$IMG" 2>/dev/null

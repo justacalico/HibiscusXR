@@ -35,6 +35,12 @@ check /etc/init/pn2-ipd.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-ip
 check /etc/init/pn2-dof.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-dof.rc
 check /bin/pn2-ipdd                          ${PN2_ROOT}/overlay/bin/pn2-ipdd
 check /bin/pn2-dofd                          ${PN2_ROOT}/overlay/bin/pn2-dofd
+check /media/bootanimation.zip               ${PN2_ROOT}/out/bootanimation.zip
+check /media/LoadingRes/config.txt           ${PN2_ROOT}/.stub/media/LoadingRes/config.txt
+check /media/LoadingRes/inside_background_img.png \
+    ${PN2_ROOT}/.stub/media/LoadingRes/inside_background_img.png
+check /media/LoadingRes/img/loading_animation_00012.png \
+    ${PN2_ROOT}/.stub/media/LoadingRes/img/loading_animation_00012.png
 # apks get re-signed with the platform key in 267, so the image copy never
 # md5-matches the staged source - verify the signature instead
 debugfs -R "dump /priv-app/seethroughsetting/seethroughsetting.apk $T/st.apk" "$IMG" >/dev/null 2>&1

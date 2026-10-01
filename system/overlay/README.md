@@ -17,6 +17,7 @@ Pico 8.1 vendor. VNDK 27, non-A/B, kernel 4.9.65.
 | `etc/pn2/vendor_manifest.xml` | stock manifest minus the `android.hardware.boot` block |
 | `etc/init/pn2-snd.rc` | loads the audio kernel modules once the runtime APEX is up |
 | `etc/init/pn2-settings.rc` | pins rotation on every boot (survives factory reset) |
+| `etc/init/pn2-env.rc` + `bin/pn2-envd` | home-environment pick: creates `/data/local/tmp/hibiscus/envs` and mirrors `hibiscus_environment` onto `persist.hibiscus.environment` |
 | `lib64/libsensorservice.so` | one-instruction patch; without it any sensor reboots the device |
 | `props.append` | append verbatim to `/system/build.prop` and `/system/etc/prop.default` |
 | `media/bootanimation/` | unpacked Hibiscus boot animation; `143_build_image2.sh` packs it into `/system/media/bootanimation.zip` (and `/product/media/` when the GSI has one). Frames are a per-eye pair authored for the 3840x2160 panel |

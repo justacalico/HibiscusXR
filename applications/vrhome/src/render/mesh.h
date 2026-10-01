@@ -12,6 +12,12 @@ struct Mesh {
 
 bool meshFromObj(const char* text, size_t len, Mesh* out);
 
+// face element -> vertex index (1-based, negative counts from the end).
+// Texture/normal parts after slashes are skipped. *next advances past the
+// element; returns 0 on parse failure. Shared with env/envmap.cpp.
+int objFaceIndex(const char* p, const char* end, int vcount,
+                 const char** next);
+
 // centre the bbox on the origin and scale the longest axis to `size` -
 // the source models are authored in arbitrary units, so the dash pins them
 // to a real-world size instead of trusting the export

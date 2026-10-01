@@ -24,6 +24,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sectionDisplay => 'Display';
 
   @override
+  String get sectionEnvironment => 'Home environment';
+
+  @override
   String get sectionSound => 'Sound';
 
   @override
@@ -136,6 +139,54 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemNightModeDesc => 'Warm the display colors after dark';
+
+  @override
+  String get itemEnvList => 'Home environments';
+
+  @override
+  String get itemEnvListDesc =>
+      'Pick what surrounds you at home. Push .zip files to /data/local/tmp/hibiscus/envs over adb';
+
+  @override
+  String get itemHomeEnv => 'Active environment';
+
+  @override
+  String get itemHomeEnvDesc => 'The environment the home shell loads';
+
+  @override
+  String get envPassthrough => 'Passthrough';
+
+  @override
+  String get envPassthroughDesc => 'Live view from the tracking cameras';
+
+  @override
+  String get envBuiltin => 'Built-in';
+
+  @override
+  String get envBuiltinDesc => 'The default sky dome and floor grid';
+
+  @override
+  String get envEmpty => 'No environments installed';
+
+  @override
+  String get envMissingMap => 'No map.obj inside';
+
+  @override
+  String get envBadName => 'Filename is not a valid environment id';
+
+  @override
+  String get envUnreadable => 'Not a readable zip';
+
+  @override
+  String envRemoveTitle(String name) {
+    return 'Remove $name?';
+  }
+
+  @override
+  String get envRemoveBody => 'The zip file is deleted from the headset.';
+
+  @override
+  String get envRemove => 'Remove';
 
   @override
   String get itemVolume => 'Volume';

@@ -32,6 +32,10 @@ const kSections = <SectionDef>[
     ItemId.deviceMode,
     ItemId.nightMode,
   ]),
+  SectionDef(SectionId.environment, [
+    ItemId.envList,
+    ItemId.homeEnv,
+  ]),
   SectionDef(SectionId.sound, [ItemId.volume, ItemId.micMute]),
   SectionDef(SectionId.language, [ItemId.languagePicker]),
   SectionDef(SectionId.time, [ItemId.timeZone]),
@@ -67,6 +71,9 @@ const kItemKinds = <ItemId, ItemKind>{
   // two modes, one bool on the wire: off is 3DoF, on is 6DoF
   ItemId.deviceMode: ItemKind.choice,
   ItemId.nightMode: ItemKind.toggle,
+  ItemId.envList: ItemKind.envList,
+  // the selection itself is a text row: the card edits it, the row shows it
+  ItemId.homeEnv: ItemKind.info,
   ItemId.volume: ItemKind.slider,
   ItemId.micMute: ItemKind.toggle,
   ItemId.languagePicker: ItemKind.action,

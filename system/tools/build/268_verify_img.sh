@@ -33,8 +33,10 @@ check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${PN2_ROOT}/notes/vrshel
 check /etc/init/pn2-qvrd.rc                  ${PN2_ROOT}/overlay/etc/init/pn2-qvrd.rc
 check /etc/init/pn2-ipd.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-ipd.rc
 check /etc/init/pn2-dof.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-dof.rc
+check /etc/init/pn2-env.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-env.rc
 check /bin/pn2-ipdd                          ${PN2_ROOT}/overlay/bin/pn2-ipdd
 check /bin/pn2-dofd                          ${PN2_ROOT}/overlay/bin/pn2-dofd
+check /bin/pn2-envd                          ${PN2_ROOT}/overlay/bin/pn2-envd
 check /media/bootanimation.zip               ${PN2_ROOT}/out/bootanimation.zip
 check /media/LoadingRes/config.txt           ${PN2_ROOT}/.stub/media/LoadingRes/config.txt
 check /media/LoadingRes/inside_background_img.png \

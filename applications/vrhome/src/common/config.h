@@ -42,6 +42,21 @@ constexpr float kFiltMoveM = 0.10f;
 constexpr int kSensorIdent = 3;
 constexpr int kInputIdent  = 4;
 
+// home environments: zips live in /data/local/tmp - the one spot on /data
+// that is both shell-writable (adb push) and app-readable, same place the
+// OpenXR runtime is staged. persist.hibiscus.environment carries the
+// selection: unset or "passthrough" is the live camera (how the shell
+// ships), "builtin" is the procedural sky+grid, anything else names
+// <id>.zip inside kEnvDir. debug.vrhome.env overrides for tuning.
+constexpr const char* kEnvProp = "persist.hibiscus.environment";
+constexpr const char* kEnvDebugProp = "debug.vrhome.env";
+constexpr const char* kEnvDir = "/data/local/tmp/hibiscus/envs";
+// floor height the SpawnUser marker maps to: the same plane the built-in
+// grid sits on, so switching scenes never moves the ground under the user
+constexpr float kEnvFloorY = -1.2f;
+// the selection prop is polled on a slow tick, not every frame
+constexpr long long kEnvPollMs = 400;
+
 // panel defaults: roughly Quest-size panels
 constexpr int   kVdW = 1600, kVdH = 900, kVdDpi = 240;
 constexpr float kPanelDist = 1.5f;    // metres

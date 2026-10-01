@@ -9,6 +9,7 @@
 
 #include "cam.h"
 
+#include "envmap.h"
 #include "../engine.h"
 #include "../common/log.h"
 #include "../common/jni.h"
@@ -164,7 +165,10 @@ bool start(Engine* e, PtCam* c) {
 } // namespace
 
 void ptTick(Engine* e) {
-    const bool want = propI("debug.vrhome.passthrough", 1) &&
+    // the camera only runs while the home backdrop is passthrough - a
+    // built-in or zip environment never opens the tracking pair
+    const bool want = e->envMode == kEnvPassthrough &&
+                      propI("debug.vrhome.passthrough", 1) &&
                       e->ready && !e->covered && e->context != EGL_NO_CONTEXT;
     PtCam* c = (PtCam*)e->ptCam;
     if (!want) {

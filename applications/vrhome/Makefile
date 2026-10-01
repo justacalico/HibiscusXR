@@ -45,7 +45,8 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/render/scene_geo.cpp src/sensor/sensor.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/env/cam.cpp src/render/scene.cpp \
-            src/render/pt_geo.cpp
+            src/render/pt_geo.cpp src/env/homeenv.cpp \
+            src/env/envmap.cpp src/env/zipfile.cpp
 HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
             src/render/mesh.cpp \
@@ -95,7 +96,7 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \
              src/input/input_state.cpp \
              src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c \
-             src/input/ctrl_debug.cpp
+             src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -142,7 +143,7 @@ $(OUT)/obj/render/ctrl_render.o: $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 $(ENV_SO): $(ENV_OBJS) $(GLUE_O)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -shared -fPIC -O2 -std=c++17 -static-libstdc++ \
-	    -o $@ $^ -landroid -lcamera2ndk -lEGL -lGLESv2 -llog -ldl -lm -u ANativeActivity_onCreate
+	    -o $@ $^ -landroid -lcamera2ndk -lEGL -lGLESv2 -llog -ldl -lz -lm -u ANativeActivity_onCreate
 
 $(HUD_SO): $(HUD_OBJS)
 	@mkdir -p $(dir $@)
@@ -217,7 +218,7 @@ $(HUD_APK): $(HUD_UNALIGNED) $(HUD_SO) $(HUD_DEX) | toolcheck
 
 $(TEST_BIN): $(TEST_SRCS) $(HOST_SRCS) tests/test.h
 	@mkdir -p $(dir $@)
-	$(CXX) $(HOST_CXXFLAGS) -o $@ $(TEST_SRCS) $(HOST_SRCS) -lm
+	$(CXX) $(HOST_CXXFLAGS) -o $@ $(TEST_SRCS) $(HOST_SRCS) -lz -lm
 
 test: $(TEST_BIN)
 	./$(TEST_BIN)

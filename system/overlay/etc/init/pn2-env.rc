@@ -1,0 +1,34 @@
+# Home-environment bridge (passthrough / builtin / zip id).
+#
+# Two pieces:
+#
+#   - the shared drop dir /data/local/tmp/hibiscus/envs. It lives where
+#     /data is both shell-writable (adb push) and app-readable, the same
+#     spot the OpenXR staging uses. The envs dir is world-writable so the
+#     settings app can delete zips as well as list them.
+#   - pn2-envd mirrors the hibiscus_environment Settings.Global key onto
+#     persist.hibiscus.environment, which libvrhome polls for the pick.
+#     Started at boot_completed like the other settings bridges: the
+#     settings table lives in /data and does not exist at post-fs.
+#
+# Manual override for tuning:
+#     adb shell su -c 'setprop persist.hibiscus.environment skyloft'
+#     adb push skyloft.zip /data/local/tmp/hibiscus/envs/
+
+on post-fs-data
+    mkdir /data/local/tmp/hibiscus 0775 shell shell
+    mkdir /data/local/tmp/hibiscus/envs 0777 shell shell
+    # mkdir skips existing dirs - force the modes so a leftover from manual
+    # staging can never leave the tree untraversable for apps
+    chmod 0775 /data/local/tmp/hibiscus
+    chmod 0777 /data/local/tmp/hibiscus/envs
+    restorecon_recursive /data/local/tmp/hibiscus
+
+service pn2_envd /system/bin/pn2-envd
+    user root
+    group root
+    seclabel u:r:shell:s0
+    disabled
+
+on property:sys.boot_completed=1
+    start pn2_envd

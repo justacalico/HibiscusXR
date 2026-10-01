@@ -10,6 +10,7 @@ import '../theme_choice.dart';
 import 'battery_icon.dart';
 import 'brand_card.dart';
 import 'bt_card.dart';
+import 'env_card.dart';
 import 'ime_card.dart';
 import 'reboot_dialog.dart';
 import 'scan_card.dart';
@@ -44,6 +45,13 @@ class SettingsRow extends StatelessWidget {
     }
     if (kindOf(id) == ItemKind.btList) {
       return BtCard(
+        title: itemTitle(l10n, id),
+        controller: controller,
+        enabled: enabled,
+      );
+    }
+    if (kindOf(id) == ItemKind.envList) {
+      return EnvCard(
         title: itemTitle(l10n, id),
         controller: controller,
         enabled: enabled,
@@ -241,6 +249,7 @@ class _Control extends StatelessWidget {
       case ItemKind.wifiList:
       case ItemKind.btList:
       case ItemKind.imeList:
+      case ItemKind.envList:
         // handled in SettingsRow.build, before the row layout
         return const SizedBox.shrink();
       case ItemKind.controller:
@@ -265,7 +274,9 @@ class _Control extends StatelessWidget {
             ? l10n.valueNotConnected
             : l10n.valueUnknown;
         return Text(
-          text == null || text.isEmpty ? empty : text,
+          id == ItemId.homeEnv
+              ? envSelectionLabel(l10n, text)
+              : (text == null || text.isEmpty ? empty : text),
           style: TextStyle(fontSize: 15, color: PanelTheme.textSecondary),
         );
     }

@@ -1,4 +1,5 @@
 import '../l10n/app_localizations.dart';
+import 'envs/env_info.dart';
 import 'models.dart';
 import 'theme_choice.dart';
 import 'units.dart';
@@ -15,6 +16,8 @@ String sectionTitle(AppLocalizations l10n, SectionId id) {
       return l10n.sectionControllers;
     case SectionId.display:
       return l10n.sectionDisplay;
+    case SectionId.environment:
+      return l10n.sectionEnvironment;
     case SectionId.sound:
       return l10n.sectionSound;
     case SectionId.language:
@@ -60,6 +63,10 @@ String itemTitle(AppLocalizations l10n, ItemId id) {
       return l10n.itemDeviceMode;
     case ItemId.nightMode:
       return l10n.itemNightMode;
+    case ItemId.envList:
+      return l10n.itemEnvList;
+    case ItemId.homeEnv:
+      return l10n.itemHomeEnv;
     case ItemId.volume:
       return l10n.itemVolume;
     case ItemId.micMute:
@@ -119,6 +126,10 @@ String itemDescription(AppLocalizations l10n, ItemId id) {
       return l10n.itemDeviceModeDesc;
     case ItemId.nightMode:
       return l10n.itemNightModeDesc;
+    case ItemId.envList:
+      return l10n.itemEnvListDesc;
+    case ItemId.homeEnv:
+      return l10n.itemHomeEnvDesc;
     case ItemId.volume:
       return l10n.itemVolumeDesc;
     case ItemId.micMute:
@@ -161,6 +172,14 @@ String controllerLinkLabel(AppLocalizations l10n, ControllerLink link) {
       return l10n.valueUnknown;
   }
 }
+
+/// What the "Active environment" row prints for a selection id. The
+/// reserved ids get proper names; an environment id shows as-is.
+String envSelectionLabel(AppLocalizations l10n, String? id) => switch (id) {
+  null || '' || kEnvPassthrough => l10n.envPassthrough,
+  kEnvBuiltin => l10n.envBuiltin,
+  _ => id,
+};
 
 /// Label for one segment of the theme picker.
 String themeChoiceLabel(AppLocalizations l10n, ThemeChoice choice) =>

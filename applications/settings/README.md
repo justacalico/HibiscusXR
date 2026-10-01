@@ -16,6 +16,10 @@ sections on the left, the selected section's rows on the right.
   writes `hibiscus_theme`, which pn2-themed mirrors onto
   `persist.hibiscus.theme` so the HUD chrome and the other panel apps
   follow), night mode
+- Home environment: pick the home backdrop - passthrough, the built-in
+  sky scene, or a zip package dropped in /data/local/tmp/hibiscus/envs
+  (writes `hibiscus_environment`, which pn2-envd mirrors onto
+  `persist.hibiscus.environment` for the home shell)
 - Sound: volume slider, microphone switch
 - Camera: seethrough toggle (project seam broadcast)
 - Keyboard: in-app input method picker

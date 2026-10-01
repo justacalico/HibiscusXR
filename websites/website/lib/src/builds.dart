@@ -104,3 +104,9 @@ List<BuildRelease> releasesInChannel(
         List<BuildRelease> all, BuildChannel ch) =>
     (all.where((r) => r.channel == ch).toList()
           ..sort((a, b) => b.createdAt.compareTo(a.createdAt)));
+
+/// The newest release in one channel, or null when the lane is empty.
+BuildRelease? latestInChannel(List<BuildRelease> all, BuildChannel ch) {
+  final builds = releasesInChannel(all, ch);
+  return builds.isEmpty ? null : builds.first;
+}

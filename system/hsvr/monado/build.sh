@@ -71,7 +71,10 @@ git apply "$ROOT/patches/hsvr-compositor-pacing.patch"
 # device driver under drivers/<name>/monado/ and every shared controller
 # under controllers/<name>/monado/, all flattened in.
 # File names are prefixed <dev>_ by convention so devices cannot collide.
+# wipe first: sources are globbed, so copies left from an earlier build
+# (renamed/deleted drivers) would silently compile back in
 HSVR_DST=src/xrt/drivers/hsvr
+rm -rf "$HSVR_DST"
 mkdir -p "$HSVR_DST"
 cp "$ROOT"/../kit/hsvr_kit.c "$ROOT"/../kit/hsvr_kit.h "$HSVR_DST/"
 cp "$ROOT"/driver/hsvr/*.c "$ROOT"/driver/hsvr/*.h "$HSVR_DST/"

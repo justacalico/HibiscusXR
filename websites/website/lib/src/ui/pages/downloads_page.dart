@@ -1,11 +1,13 @@
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../links.dart';
+import '../../routes.dart';
 import '../../theme.dart';
 import '../builds_section.dart';
 import '../shell.dart';
@@ -36,6 +38,8 @@ class _DownloadsPageState extends State<DownloadsPage> {
               Reveal(child: _AlphaCard(l10n: l10n)),
               const SizedBox(height: 32),
               Reveal(child: _WarnCard(l10n: l10n)),
+              const SizedBox(height: 32),
+              Reveal(child: _GuideCard(l10n: l10n)),
               const SizedBox(height: 32),
               Reveal(
                 child: _BackupCard(
@@ -143,6 +147,39 @@ class _WarnCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(l10n.downloadWarnBody, style: context.text.bodyMedium),
+        ],
+      ),
+    );
+  }
+}
+
+class _GuideCard extends StatelessWidget {
+  const _GuideCard({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return _Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.menu_book_outlined,
+                  size: 20, color: context.colors.primary),
+              const SizedBox(width: 10),
+              Text(l10n.downloadGuideTitle, style: context.text.titleMedium),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(l10n.downloadGuideBody, style: context.text.bodyMedium),
+          const SizedBox(height: 16),
+          ChevronLink(
+            label: l10n.downloadGuideCta,
+            large: false,
+            onPressed: () => context.go(Routes.flashdocs),
+          ),
         ],
       ),
     );

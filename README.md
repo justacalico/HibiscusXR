@@ -43,23 +43,15 @@ below show what works on each headset.
 ## Before you install
 
 Installing Hibiscus means flashing new software onto your headset. The
-guides currently cover the Pico Neo 2. Follow them exactly: writing the
+guide currently covers the Pico Neo 2. Follow it exactly: writing the
 wrong partition, or a bootloader older than the device allows, can
-permanently brick the headset. A way back to the stock software is covered
-in the docs as well.
+permanently brick the headset. Backing up the stock software first is
+covered in the guide as well.
 
 ## Getting started
 
-Everything you need is in the docs:
-
-- Requirements and what to expect
-- Building the image
-- Flashing it to the headset
-- First boot setup
-- Restoring the stock software
-
-Read them on the [project site](https://hibiscusxr-37c6a7.gitlab.io/docs/)
-or in this repository under [`websites/docs/`](websites/docs/).
+The flashing guide lives on the
+[project site](https://hibiscusxr-37c6a7.gitlab.io/#/flashdocs).
 
 ## Links
 

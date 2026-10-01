@@ -24,7 +24,7 @@ class RepoEntry {
   String get label => name.split('/').last;
 }
 
-/// Every public tree in the monorepo, matching docs/repos/index.md.
+/// Every public tree in the monorepo.
 /// Order is display order.
 /// Not const - the describe tear-offs are not constant expressions.
 final repositories = <RepoEntry>[
@@ -32,7 +32,6 @@ final repositories = <RepoEntry>[
   RepoEntry('applications/vrhome', RepoGroup.software, (l) => l.repoVrhome),
   RepoEntry('applications/library', RepoGroup.software, (l) => l.repoLibrary),
   RepoEntry('applications/vrdemo', RepoGroup.software, (l) => l.repoVrdemo),
-  RepoEntry('websites/docs', RepoGroup.software, (l) => l.repoDocs),
   RepoEntry('websites/website', RepoGroup.software, (l) => l.repoWebsite),
 
   // Port source - our own work: device tree, fixes, tooling, research.

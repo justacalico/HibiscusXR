@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../links.dart';
+import '../../routes.dart';
 import '../../theme.dart';
 import '../shell.dart';
 import '../widgets.dart';
@@ -39,7 +41,7 @@ class AboutPage extends StatelessWidget {
                   ),
                   ChevronLink(
                     label: l10n.aboutDocsCta,
-                    onPressed: () => launchUrl(Uri.parse(Links.docs)),
+                    onPressed: () => context.go(Routes.flashdocs),
                   ),
                   ChevronLink(
                     label: l10n.aboutNotesCta,

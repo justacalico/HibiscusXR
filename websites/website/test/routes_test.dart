@@ -26,7 +26,6 @@ void main() {
 
   test('external links are https gitlab URLs', () {
     for (final url in [
-      Links.docs,
       Links.repo,
       Links.vrhome,
       Links.library,

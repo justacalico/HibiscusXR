@@ -1,50 +1,16 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_cte/src/adb_runner.dart';
 import 'package:hibiscus_cte/src/app_state.dart';
-import 'package:hibiscus_cte/src/link.dart';
 import 'package:hibiscus_cte/src/models.dart';
 
-class FakeLink extends HeadsetLink {
-  FakeLink(this.desc);
-
-  final String desc;
-  final ctrlCtl = StreamController<List<CtrlState>>.broadcast();
-  final poseCtl = StreamController<PoseSample>.broadcast();
-  final frameCtl = StreamController<Uint8List>.broadcast();
-  final logCtl = StreamController<String>.broadcast();
-  bool disposed = false;
-
-  @override
-  String get description => desc;
-  @override
-  Future<DeviceInfo> fetchInfo() async =>
-      const DeviceInfo(model: 'Pico Neo 2', device: 'PICOA7B10');
-  @override
-  Future<Map<String, String>> fetchProps() async => {'ro.test': '1'};
-  @override
-  Stream<String> installApk(String path, {Uint8List? bytes}) =>
-      Stream.fromIterable(['Success']);
-  @override
-  Stream<Uint8List> frames() => frameCtl.stream;
-  @override
-  Stream<String> logLines() => logCtl.stream;
-  @override
-  Stream<PoseSample> poses() => poseCtl.stream;
-  @override
-  Stream<List<CtrlState>> controllers() => ctrlCtl.stream;
-  @override
-  Future<void> dispose() async {
-    disposed = true;
-  }
-}
+import 'fakes.dart';
 
 void main() {
   test('connectAdb attaches feeds and fills state', () async {
-    final fake = FakeLink('adb:FAKE');
+    final fake = FakeLink(description: 'adb:FAKE');
     final state = AppState(
       adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
       adbLinkFactory: (_) => fake,
@@ -55,14 +21,14 @@ void main() {
     expect(state.connected, isTrue);
     expect(state.connectedLabel, contains('adb:FAKE'));
 
-    fake.ctrlCtl.add(const [
+    fake.ctrlFeed.add(const [
       CtrlState(index: 0, connected: true, battery: 90),
       CtrlState(index: 1),
     ]);
-    fake.poseCtl.add(const PoseSample(
+    fake.poseFeed.add(const PoseSample(
         pose: Pose(x: 1, y: 2, z: 3), timestampNs: 5, hasPosition: true));
-    fake.frameCtl.add(Uint8List.fromList([1, 2]));
-    fake.logCtl.add('line one');
+    fake.frameFeed.add(Uint8List.fromList([1, 2]));
+    fake.logFeed.add('line one');
     await pumpEventQueue();
 
     expect(state.ctrls[0].connected, isTrue);
@@ -73,6 +39,7 @@ void main() {
     expect(state.logBuf.last, 'line one');
     await state.disconnect();
     expect(state.connected, isFalse);
+    expect(fake.disposed, isTrue);
   });
 
   test('connect failure surfaces the error', () async {
@@ -87,7 +54,7 @@ void main() {
   });
 
   test('wireless falls back to adb connect when no cted', () async {
-    final fake = FakeLink('adb:10.0.0.2:5555');
+    final fake = FakeLink(description: 'adb:10.0.0.2:5555');
     final state = AppState(
       adb: AdbRunner(
         run: (args) async => args.first == 'connect'
@@ -103,7 +70,7 @@ void main() {
   });
 
   test('wireless prefers cted when it answers', () async {
-    final fake = FakeLink('cte://10.0.0.2');
+    final fake = FakeLink(description: 'cte://10.0.0.2');
     final state = AppState(
       adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
       socketFactory: (_) async => fake,
@@ -140,7 +107,9 @@ void main() {
   });
 
   test('install logs output lines', () async {
-    final fake = FakeLink('adb:F');
+    final fake = FakeLink(
+        description: 'adb:F',
+        install: (_) => Stream.fromIterable(const ['Success']));
     final state = AppState(
       adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
       adbLinkFactory: (_) => fake,
@@ -153,7 +122,7 @@ void main() {
   });
 
   test('setMirror toggles the frame feed', () async {
-    final fake = FakeLink('adb:F');
+    final fake = FakeLink(description: 'adb:F');
     final state = AppState(
       adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
       adbLinkFactory: (_) => fake,
@@ -164,7 +133,7 @@ void main() {
     expect(state.mirrorOn, isFalse);
     expect(state.frame, isNull);
     await state.setMirror(true);
-    fake.frameCtl.add(Uint8List.fromList([7]));
+    fake.frameFeed.add(Uint8List.fromList([7]));
     await pumpEventQueue();
     expect(state.frame, [7]);
   });

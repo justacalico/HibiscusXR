@@ -8,16 +8,19 @@ import 'connect_page.dart';
 import 'home_shell.dart';
 
 class CteApp extends StatelessWidget {
-  const CteApp({super.key, required this.state});
+  const CteApp({super.key, required this.state, this.theme});
 
   final AppState state;
+
+  /// Override point for golden tests - real fonts need a loaded family.
+  final ThemeData? theme;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'HCTE',
       debugShowCheckedModeBanner: false,
-      theme: CteTheme.dark(),
+      theme: theme ?? CteTheme.dark(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

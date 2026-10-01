@@ -12,10 +12,11 @@ enum DockZone {
 };
 
 // item kinds in left-to-right group order: pinned favourites, live tasks,
-// the quick-panel button on the end
+// the app-grid and quick-panel buttons on the end
 enum DockKind {
     DK_PIN = 0,
     DK_RUN,            // a live task: a 2D panel app or an immersive XR app
+    DK_GRID,           // opens the app-grid overlay over the windows
     DK_QUICK,
 };
 

@@ -3,6 +3,8 @@
 #include "keys.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../grid/grid.h"
+#include "../grid/layout.h"
 #include "../kbd/kbd.h"
 #include "../notif/notif.h"
 #include "../sysmsg/sysmsg.h"
@@ -46,6 +48,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->sysMsgPressId = 0;
             e->kbd.pressed = false;
             e->kbd.moveHeld = false;
+            e->grid.press = -1;
+            e->grid.pressZone = GZONE_NONE;
+            e->grid.scrollHeld = false;
             if (e->sysMsgHover >= 0 && !e->sysMsgs.empty()) {
                 e->sysMsgPress = e->sysMsgHover;
                 e->sysMsgPressZone = e->sysMsgZone;
@@ -66,6 +71,22 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->notifPress = e->notifHover;
                 e->notifPressZone = e->notifZone;
                 e->notifPressKey = e->notifs[e->notifHover].key;
+            }
+            if (e->grid.zone == GZONE_ITEM && e->grid.hover >= 0) {
+                // a cell press: arms the launch, fires on a same-cell
+                // release
+                e->grid.press = e->grid.hover;
+                e->grid.pressZone = GZONE_ITEM;
+                e->grid.pressPkg = e->grid.items[e->grid.hover].pkg;
+            } else if (e->grid.zone == GZONE_CLOSE) {
+                e->grid.pressZone = GZONE_CLOSE;
+            } else if (e->grid.zone == GZONE_BODY) {
+                // the card body holds a scroll drag: grab the aim's
+                // card-local v and the current scroll so moveTick can
+                // reapply them each frame
+                e->grid.scrollHeld = true;
+                e->grid.grabV = e->grid.v;
+                e->grid.grabScroll = e->grid.scroll;
             }
             if (e->dockHover >= 0 && e->dockHover < (int)e->dock.size()) {
                 e->dockPress = e->dockHover;
@@ -89,8 +110,28 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 LOGI("ring drag grab @ yaw %.2f", e->aimYaw);
             }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
-                const Panel& p = e->panels[e->hover];
+                Panel& p = e->panels[e->hover];
                 e->pressDisp = p.displayId;
+                if (e->hoverZone == ZONE_PILL) {
+                    // a floating window's own move pill: grab the aim and
+                    // the panel's spot so moveTick can apply the delta
+                    p.grabYaw = p.yaw;
+                    p.grabPitch = p.pitch;
+                    e->moveGrabYaw = e->aimYaw;
+                    e->moveGrabPitch = e->aimPitch;
+                    LOGI("pill drag grab disp %d", p.displayId);
+                } else if (e->hoverZone == ZONE_RESIZE) {
+                    // corner grip: grab the scale and the hit's distance
+                    // from centre so the drag's radial gain drives resize.
+                    // The radius is in the window's unscaled metres - the
+                    // grip would chase its own growth otherwise
+                    p.grabScale = p.scale;
+                    const float rx = e->hitU * kPanelW * 0.5f,
+                                ry = e->hitV * kPanelH * 0.5f;
+                    p.grabR = sqrtf(rx * rx + ry * ry);
+                    LOGI("resize grab disp %d r %.3f", p.displayId,
+                         p.grabR);
+                }
                 // a press on the window surface starts a real gesture:
                 // DOWN here, MOVEs while held, UP on release - a quick press
                 // still lands as a plain tap. a press on the top bar only
@@ -136,8 +177,26 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->confirmHeld = false;
             e->moveHeld = false;
             e->kbd.moveHeld = false;
+            e->grid.scrollHeld = false;
             JNIEnv* env = threadEnv(e->vm);
-            if (e->kbd.pressed) {
+            if (e->grid.pressZone == GZONE_ITEM ||
+                    e->grid.pressZone == GZONE_CLOSE) {
+                // an app cell or the close disc: fires only when the
+                // release lands back on the same spot and a package-list
+                // rebuild hasn't moved the cell under the press
+                const bool same = e->grid.press >= 0 &&
+                    e->grid.hover == e->grid.press &&
+                    e->grid.zone == e->grid.pressZone &&
+                    e->grid.press < (int)e->grid.items.size() &&
+                    e->grid.items[e->grid.press].pkg == e->grid.pressPkg;
+                const bool sameClose = e->grid.pressZone == GZONE_CLOSE &&
+                                       e->grid.zone == GZONE_CLOSE;
+                if (same) gridActivate(e, e->grid.press);
+                else if (sameClose) e->grid.shown = false;
+                e->grid.press = -1;
+                e->grid.pressZone = GZONE_NONE;
+                e->grid.pressPkg.clear();
+            } else if (e->kbd.pressed) {
                 // key tap: the UP lands where the DOWN did - the aim may
                 // have drifted off the key while the button was held
                 if (e->bridge && e->kbd.displayId >= 0) {
@@ -233,15 +292,24 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                                                 p.displayId);
                             if (env->ExceptionCheck()) env->ExceptionClear();
                         }
-                        // closing the launcher is a real close, not a
-                        // crash - keep spawnLauncher from reviving it
-                        if (p.pkg == kLibraryPkg) e->libDismissed = true;
                         closePanel(e, i);
                     } else if (e->pressZone == ZONE_MIN) {
                         LOGI("bar minimize disp %d", p.displayId);
                         p.minimized = true;
                         e->hover = -1;
                         e->hoverZone = ZONE_NONE;
+                    } else if (e->pressZone == ZONE_FLOAT) {
+                        // float unpins the window from the slot grid and
+                        // hands it its own move pill; un-float snaps it
+                        // back onto the slot nearest where it floats
+                        p.floating = !p.floating;
+                        LOGI("float %s disp %d",
+                             p.floating ? "on" : "off", p.displayId);
+                        if (!p.floating) {
+                            p.yaw = dockSlotYaw(e->panels, i, e->dockYaw);
+                            p.pitch = dashRingPitch(e->panels,
+                                                    e->dockPitch);
+                        }
                     } else if (e->pressZone == ZONE_LABEL && e->bridge &&
                                p.taskId >= 0) {
                         env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
@@ -271,6 +339,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             sysMsgDismiss(e);
             return;
         }
+        // the app grid drops before the windows under it do
+        if (e->grid.shown) {
+            e->grid.shown = false;
+            return;
+        }
         // close the newest panel; over a covered app the service consumes
         // BACK itself to dismiss the menu, so this only ever runs in home
         // space
@@ -281,7 +354,6 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 env->CallVoidMethod(e->bridge, e->mRemoveDisp, p.displayId);
                 if (env->ExceptionCheck()) env->ExceptionClear();
             }
-            if (p.pkg == kLibraryPkg) e->libDismissed = true;
             closePanel(e, (int)e->panels.size() - 1);
         }
         return;
@@ -318,6 +390,48 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
 // drag still carries it (the offset rides the ring) while the pill moves it
 // alone
 void moveTick(HudEngine* e) {
+    // a floating window's own pill drags it alone: its yaw/pitch chase the
+    // aim delta from the grab, the rest of the dash stays put
+    if (e->pressZone == ZONE_PILL && e->confirmHeld && e->pressDisp >= 0) {
+        for (auto& p : e->panels) {
+            if (p.displayId != e->pressDisp || !p.floating) continue;
+            p.yaw = wrapPi(p.grabYaw + wrapPi(e->aimYaw - e->moveGrabYaw));
+            const float np = p.grabPitch + (e->aimPitch - e->moveGrabPitch);
+            p.pitch = np > kPitchMax ? kPitchMax
+                      : np < -kPitchMax ? -kPitchMax : np;
+            break;
+        }
+    }
+    // the corner grip drags the window's scale: the hit's distance from
+    // centre over its grab distance drives the gain
+    if (e->pressZone == ZONE_RESIZE && e->confirmHeld &&
+            e->pressDisp >= 0) {
+        for (auto& p : e->panels) {
+            if (p.displayId != e->pressDisp) continue;
+            float u, v;
+            if (rayPanel(p, e->ringPos, e->aimO, e->aimD, &u, &v)) {
+                const float rx = u * kPanelW * 0.5f,
+                            ry = v * kPanelH * 0.5f;
+                p.scale = resizeScale(p.grabScale, p.grabR,
+                                      sqrtf(rx * rx + ry * ry));
+            }
+            break;
+        }
+    }
+    // a held drag on the grid's body scrolls it: the card-local v delta
+    // from the grab slides the cells
+    if (e->grid.scrollHeld && e->confirmHeld && e->grid.shown) {
+        float c[3], r[3], up[3];
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                   c, r, up);
+        float u, v, t;
+        if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
+                    kGridHW, kGridHH, &u, &v, &t)) {
+            e->grid.scroll = gridClampScroll(
+                e->grid.grabScroll + (v - e->grid.grabV) * kGridHH,
+                (int)e->grid.items.size());
+        }
+    }
     if (e->kbd.moveHeld) {
         e->kbd.offYaw = wrapPi(e->kbd.grabOffYaw +
                                wrapPi(e->aimYaw - e->kbd.grabAimYaw));

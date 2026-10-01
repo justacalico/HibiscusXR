@@ -2,6 +2,11 @@
 
 [HibiscusXR/applications/library](https://gitlab.com/neosalsa/HibiscusXR/-/tree/main/applications/library)
 
+**Deprecated**: the standalone library app is gone. The HUD in `vrhome`
+draws its own app-grid overlay over the windows instead - same idea,
+no extra window. This app is kept in the tree for reference but is no
+longer built into the image.
+
 Flutter app library (`gitlab.neosalsa.library`) - the Quest-style dark grid
 of launchable apps meant to run as `vrhome`'s app window, also usable as a
 plain launcher activity.

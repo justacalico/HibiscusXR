@@ -3,6 +3,7 @@
 #include "panels/layout.h"
 #include "common/config.h"
 #include "math/head.h"
+#include "pill/pill.h"
 
 static Panel mkPanel(float yaw, const char* pkg = "com.x.app") {
     Panel p;
@@ -151,130 +152,71 @@ void testLayout() {
     ps.push_back(mkPanel(1.0f));
     CHECK_F(freeSlotYaw(ps, 1.0f), 1.0f + kSlotYaw[1], 1e-6f);
 
-    // eviction: library panel is protected, oldest app goes first
+    // eviction: a docked window goes first; a window the user floated by
+    // hand is the last to be reclaimed
     ps.clear();
-    ps.push_back(mkPanel(0.0f, kLibraryPkg));
+    ps.push_back(mkPanel(0.0f));
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps.push_back(mkPanel(kSlotYaw[2]));
+    CHECK(evictIndex(ps) == 0);
+    ps[0].floating = true;
     CHECK(evictIndex(ps) == 1);
-    ps[1].pkg = kLibraryPkg;
+    ps[1].floating = true;
     CHECK(evictIndex(ps) == 2);
-    ps[2].pkg = kLibraryPkg;
-    CHECK(evictIndex(ps) == -1);
+    ps[2].floating = true;
+    CHECK(evictIndex(ps) == 0);    // all floating: the oldest goes
     ps.clear();
     CHECK(evictIndex(ps) == -1);
 
-    // the library panel is found by package, exactly once
-    CHECK(libraryIndex(ps) == -1);
+    // a floating panel still blocks the slot it floats over: a new window
+    // must not land on top of it
+    ps.clear();
     ps.push_back(mkPanel(0.0f));
-    ps.push_back(mkPanel(kSlotYaw[1], kLibraryPkg));
-    CHECK(libraryIndex(ps) == 1);
-    ps.push_back(mkPanel(kSlotYaw[2], kLibraryPkg));
-    CHECK(libraryIndex(ps) == 1);
+    ps[0].floating = true;
+    CHECK_F(freeSlotYaw(ps, 0.0f), kSlotYaw[1], 1e-6f);
 
-    // the launcher claims the middle slot: an empty ring hands back the
-    // centre yaw untouched
+    // re-docking picks the free slot nearest the floating yaw: a floater
+    // parked between centre and left lands on the left slot
     ps.clear();
-    CHECK_F(libraryMiddleYaw(ps, 0.0f), 0.0f, 1e-6f);
-
-    // a window on the middle slot shifts onto the left one, unharmed
-    ps.push_back(mkPanel(0.0f, "com.x.mid"));
-    CHECK_F(libraryMiddleYaw(ps, 0.0f), 0.0f, 1e-6f);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(!ps[0].minimized);
-
-    // with the left slot taken its window parks on the shelf so the middle
-    // one can take its place; the parked record keeps the left yaw because
-    // the far slot is occupied, and the right window is untouched
-    ps.clear();
-    ps.push_back(mkPanel(kSlotYaw[1], "com.x.left"));
-    ps.push_back(mkPanel(0.0f, "com.x.mid"));
-    ps.push_back(mkPanel(kSlotYaw[2], "com.x.right"));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK(ps[0].minimized);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(!ps[1].minimized);
-    CHECK_F(ps[1].yaw, kSlotYaw[1], 1e-6f);
-    CHECK_F(ps[2].yaw, kSlotYaw[2], 1e-6f);
-    CHECK(!ps[2].minimized);
-
-    // far slot free: the parked window's stored yaw slides over so a shelf
-    // tap restores it beside the shifted window instead of on top of it
-    ps.clear();
-    ps.push_back(mkPanel(0.0f, "com.x.mid"));
-    ps.push_back(mkPanel(kSlotYaw[1], "com.x.left"));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK(!ps[0].minimized);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(ps[1].minimized);
-    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
-
-    // a free middle needs no shuffle: a lone left window stays put
-    ps.clear();
+    ps.push_back(mkPanel(-0.5f));
+    ps[0].floating = true;
+    CHECK_F(dockSlotYaw(ps, 0, 0.0f), kSlotYaw[1], 1e-6f);
+    // the slot it blocks goes to a different window, not itself
     ps.push_back(mkPanel(kSlotYaw[1]));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(!ps[0].minimized);
+    CHECK_F(dockSlotYaw(ps, 0, 0.0f), 0.0f, 1e-6f);
 
-    // middle taken with the left slot free: the window slides over with
-    // nothing to minimize
-    ps.clear();
-    ps.push_back(mkPanel(0.0f));
-    ps.push_back(mkPanel(kSlotYaw[2]));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(!ps[0].minimized);
-    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
-
-    // the slots follow whatever centre the caller's gaze gave, not yaw 0
-    ps.clear();
-    ps.push_back(mkPanel(1.2f));
-    CHECK_F(libraryMiddleYaw(ps, 1.2f), 1.2f, 1e-6f);
-    CHECK_F(ps[0].yaw, 1.2f + kSlotYaw[1], 1e-6f);
-
-    // a minimized window still owns its slot: parked on the middle it
-    // shifts left too, so a later restore doesn't land under the launcher
-    ps.clear();
-    Panel mp = mkPanel(0.0f);
-    mp.minimized = true;
-    ps.push_back(mp);
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-    CHECK(ps[0].minimized);
-
-    // a window sitting between slots still counts as blocking the middle:
-    // the gap check is about yaw clearance, not exact slot membership
-    ps.clear();
-    ps.push_back(mkPanel(kSlotYaw[1] * 0.5f));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
-
-    // the library panel itself never counts as the occupant to shove
-    ps.clear();
-    ps.push_back(mkPanel(0.0f, kLibraryPkg));
-    libraryMiddleYaw(ps, 0.0f);
-    CHECK_F(ps[0].yaw, 0.0f, 1e-6f);
-    CHECK(!ps[0].minimized);
-
-    // recenter snaps each panel to its nearest slot around the new centre
+    // recenter snaps each docked panel to its slot around the new centre
     ps.clear();
     ps.push_back(mkPanel(1.02f));   // near the centre slot -> stays
     ps.push_back(mkPanel(1.0f + kSlotYaw[1] * 0.6f));  // nearer left slot
-    recenterSlots(ps, 1.0f, 0.0f);
+    recenterSlots(ps, 1.0f, 0.0f, 1.0f);
     CHECK_F(ps[0].yaw, 1.0f + kSlotYaw[0], 1e-5f);
     CHECK_F(ps[1].yaw, 1.0f + kSlotYaw[1], 1e-5f);
     // recenter also pulls the ring to the given elevation, clamped
-    recenterSlots(ps, 1.0f, 0.4f);
+    recenterSlots(ps, 1.0f, 0.4f, 1.0f);
     CHECK_F(ps[0].pitch, 0.4f, 1e-6f);
-    recenterSlots(ps, 1.0f, 9.0f);
+    recenterSlots(ps, 1.0f, 9.0f, 1.0f);
     CHECK_F(ps[0].pitch, kPitchMax, 1e-6f);
+
+    // a floating window is carried by the centre shift but keeps its own
+    // pitch and never snaps onto a slot
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    Panel fl = mkPanel(0.7f);
+    fl.floating = true;
+    fl.pitch = 0.6f;
+    ps.push_back(fl);
+    recenterSlots(ps, 1.2f, 0.1f, 0.0f);
+    CHECK_F(ps[0].yaw, 1.2f + kSlotYaw[0], 1e-5f);   // docked: snapped
+    CHECK_F(ps[1].yaw, 0.7f + 1.2f, 1e-5f);          // floated: shifted
+    CHECK_F(ps[1].pitch, 0.6f, 1e-6f);               // own pitch kept
 
     // two panels nearest the same slot must not collapse onto each other:
     // windows keep their left-to-right order but each takes its own slot
     ps.clear();
     ps.push_back(mkPanel(1.02f));
     ps.push_back(mkPanel(0.95f));
-    recenterSlots(ps, 1.0f, 0.0f);
+    recenterSlots(ps, 1.0f, 0.0f, 1.0f);
     CHECK(fabsf(wrapPi(ps[0].yaw - ps[1].yaw)) >= kPanelMinGap - 1e-4f);
     CHECK_F(ps[0].yaw, 1.0f + kSlotYaw[0], 1e-5f);
     CHECK_F(ps[1].yaw, 1.0f + kSlotYaw[1], 1e-5f);
@@ -282,7 +224,7 @@ void testLayout() {
     // a lone panel lands dead ahead, not pushed onto a side slot
     ps.clear();
     ps.push_back(mkPanel(1.5f));
-    recenterSlots(ps, 1.0f, 0.0f);
+    recenterSlots(ps, 1.0f, 0.0f, 1.0f);
     CHECK_F(ps[0].yaw, 1.0f, 1e-5f);
 
     // gaze pick: identity head looks down -z, hits the centre panel
@@ -364,42 +306,104 @@ void testLayout() {
     // top bar sizing: the text region is the window's width minus the left
     // pad and whatever the button strip reserves on the right
     const float winHW = kPanelW / 2;
+    const float winHH = kPanelH / 2;
     CHECK_F(barBtnsW(0), 0.0f, 1e-6f);
-    CHECK_F(barBtnsW(2), kBarBtnW, 1e-6f);
+    CHECK_F(barBtnsW(3),
+            kBarBtnPad + 6.0f * kBarBtnR + 2.0f * kBarBtnGap, 1e-6f);
     CHECK_F(barBtnsW(1), kBarBtnPad + 2.0f * kBarBtnR, 1e-6f);
     CHECK_F(barTextLimit(winHW, 0), 2.0f * (winHW - kBarPadX), 1e-6f);
-    CHECK_F(barTextLimit(winHW, 2),
-            2.0f * (winHW - kBarPadX - kBarBtnW), 1e-6f);
-    CHECK(barTextLimit(winHW, 2) < kPanelW);
-    CHECK(barTextLimit(winHW, 2) < barTextLimit(winHW, 1));
+    CHECK_F(barTextLimit(winHW, 3),
+            2.0f * (winHW - kBarPadX - barBtnsW(3)), 1e-6f);
+    CHECK(barTextLimit(winHW, 3) < kPanelW);
+    CHECK(barTextLimit(winHW, 3) < barTextLimit(winHW, 2));
     CHECK(barTextLimit(winHW, 1) < barTextLimit(winHW, 0));
 
-    // button layout: close hugs the right edge, minimize sits to its left
+    // button layout: close hugs the right edge, minimize and float march
+    // left from it
     CHECK_F(barCloseX(winHW), winHW - kBarBtnPad - kBarBtnR, 1e-6f);
     CHECK_F(barMinX(winHW),
             winHW - kBarBtnPad - 3.0f * kBarBtnR - kBarBtnGap, 1e-6f);
-    CHECK(barMinX(winHW) > 0.0f && barMinX(winHW) < barCloseX(winHW));
+    CHECK_F(barFloatX(winHW),
+            winHW - kBarBtnPad - 5.0f * kBarBtnR - 2.0f * kBarBtnGap,
+            1e-6f);
+    CHECK(barFloatX(winHW) < barMinX(winHW) &&
+          barMinX(winHW) < barCloseX(winHW));
 
     // the bar band sits flush on the window's top edge: centred v is on
     // it, the window's midriff and points above the bar are not
     const float barVC = (kPanelH * 0.5f + kBarH * 0.5f) / (kPanelH * 0.5f);
-    CHECK(onBar(0.0f, barVC));
-    CHECK(!onBar(0.0f, 0.0f));
-    CHECK(!onBar(0.0f, barVC + 0.20f));
-    CHECK(!onBar(0.0f, barVC - 0.30f));
-    CHECK(!onBar(1.05f, barVC));
+    CHECK(onBar(0.0f, barVC, winHW, winHH));
+    CHECK(!onBar(0.0f, 0.0f, winHW, winHH));
+    CHECK(!onBar(0.0f, barVC + 0.20f, winHW, winHH));
+    CHECK(!onBar(0.0f, barVC - 0.30f, winHW, winHH));
+    CHECK(!onBar(1.05f, barVC, winHW, winHH));
     // the bar's bottom edge is the window's top edge: the edge itself is
     // bar, a hair inside the window is not, a hair above it is
     const float eps = 0.004f / (kPanelH * 0.5f);
-    CHECK(onBar(0.0f, 1.0f));
-    CHECK(!onBar(0.0f, 1.0f - eps));
-    CHECK(onBar(0.0f, 1.0f + eps));
+    CHECK(onBar(0.0f, 1.0f, winHW, winHH));
+    CHECK(!onBar(0.0f, 1.0f - eps, winHW, winHH));
+    CHECK(onBar(0.0f, 1.0f + eps, winHW, winHH));
     // button hits land on their discs, the middle of the bar is label
     const float uc = barCloseX(winHW) / (kPanelW * 0.5f);
     const float um = barMinX(winHW) / (kPanelW * 0.5f);
-    CHECK(barButtonAt(uc, barVC) == ZONE_CLOSE);
-    CHECK(barButtonAt(um, barVC) == ZONE_MIN);
-    CHECK(barButtonAt(0.0f, barVC) == ZONE_LABEL);
+    const float uf = barFloatX(winHW) / (kPanelW * 0.5f);
+    CHECK(barButtonAt(uc, barVC, winHW, winHH) == ZONE_CLOSE);
+    CHECK(barButtonAt(um, barVC, winHW, winHH) == ZONE_MIN);
+    CHECK(barButtonAt(uf, barVC, winHW, winHH) == ZONE_FLOAT);
+    CHECK(barButtonAt(0.0f, barVC, winHW, winHH) == ZONE_LABEL);
+
+    // the resize grip rides the bottom-right corner; the opposite corner
+    // and the midriff are window
+    CHECK(onResizeGrip(1.0f, -1.0f, winHW, winHH));
+    CHECK(onResizeGrip(1.0f - kResizeR * 0.4f / winHW,
+                       -1.0f + kResizeR * 0.4f / winHH, winHW, winHH));
+    CHECK(!onResizeGrip(-1.0f, -1.0f, winHW, winHH));
+    CHECK(!onResizeGrip(1.0f, 1.0f, winHW, winHH));
+    CHECK(!onResizeGrip(0.0f, -0.6f, winHW, winHH));
+
+    // the resize gain follows the hit radius and clamps at the limits
+    CHECK_F(resizeScale(1.0f, 0.4f, 0.6f), 1.5f, 1e-6f);
+    CHECK_F(resizeScale(1.0f, 0.4f, 0.8f), kScaleMax, 1e-6f);
+    CHECK_F(resizeScale(1.0f, 0.4f, 0.2f), 0.5f, 1e-6f);
+    CHECK_F(resizeScale(1.0f, 0.4f, 9.0f), kScaleMax, 1e-6f);
+    CHECK_F(resizeScale(1.0f, 0.4f, 0.0f), kScaleMin, 1e-6f);
+    CHECK_F(resizeScale(1.3f, 0.0f, 0.5f), 1.3f, 1e-6f);  // dead grab: keep
+
+    // window scale folds into the half extents
+    {
+        Panel sp = mkPanel(0.0f);
+        sp.scale = 1.5f;
+        CHECK_F(panelHW(sp), winHW * 1.5f, 1e-6f);
+        CHECK_F(panelHH(sp), winHH * 1.5f, 1e-6f);
+    }
+
+    // a scaled window picks by its grown quad: dead ahead at scale 2 still
+    // hits the window past the old edge, a docked panel reports no pill
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps[0].scale = 2.0f;
+    Mat4 side = identity();
+    side.m[2] = -(kPanelW * 0.9f);   // past the unscaled right edge
+    side.m[10] = kPanelDist;
+    pk = pickPanel(ps, side, o0, o0);
+    CHECK(pk.idx == 0);
+    {
+        // the pill spot under a docked window picks nothing; the same spot
+        // under a floating one is ZONE_PILL
+        Mat4 pam = identity();
+        float c0[3], r0[3], u0[3];
+        panelCenter(ps[0], o0, c0, r0, u0);
+        const float drop = movePillDrop(panelHH(ps[0]));
+        pam.m[2] = -(c0[0] - u0[0] * drop);
+        pam.m[6] = -(c0[1] - u0[1] * drop);
+        pam.m[10] = -(c0[2] - u0[2] * drop);
+        pk = pickPanel(ps, pam, o0, o0);
+        CHECK(pk.idx == -1);
+        ps[0].floating = true;
+        pk = pickPanel(ps, pam, o0, o0);
+        CHECK(pk.idx == 0 && pk.zone == ZONE_PILL);
+        ps[0].floating = false;
+    }
 
     // gaze picks report the chrome zone: aim a fake head straight at a
     // world point (pickPanel only reads the head's -z column)
@@ -416,6 +420,9 @@ void testLayout() {
     aim.m[2] = -barMinX(winHW);     // next to it: minimize
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_MIN);
+    aim.m[2] = -barFloatX(winHW);   // left of that: float
+    pk = pickPanel(ps, aim, o0, o0);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_FLOAT);
     // just inside the top edge is app content, just above it is the bar
     aim.m[2] = -0.0f;
     aim.m[6] = -(kPanelY + kPanelH * 0.5f - 0.01f);
@@ -459,26 +466,22 @@ void testLayout() {
     dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
-    // the library bar shows the close disc only: a hit on it picks
-    // ZONE_CLOSE, the empty minimize slot and the rest read as label
+    // every window's bar carries all three discs: float, minimize, close
     ps.clear();
-    ps.push_back(mkPanel(0.0f, kLibraryPkg));
+    ps.push_back(mkPanel(0.0f, "com.x.app"));
     aim.m[2] = -barCloseX(winHW); aim.m[6] = -barY;
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_CLOSE);
-    aim.m[2] = -barMinX(winHW);
+    aim.m[2] = -barFloatX(winHW);
     pk = pickPanel(ps, aim, o0, o0);
-    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
-    aim.m[2] = -0.0f;
-    pk = pickPanel(ps, aim, o0, o0);
-    CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
+    CHECK(pk.idx == 0 && pk.zone == ZONE_FLOAT);
 
     // minimized windows vanish from picking and stay findable for restore
     ps[0].minimized = true;
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == -1);
-    CHECK(minimizedIndex(ps, kLibraryPkg) == 0);
-    CHECK(minimizedIndex(ps, "com.x.app") == -1);
+    CHECK(minimizedIndex(ps, "com.x.app") == 0);
+    CHECK(minimizedIndex(ps, "com.y.other") == -1);
     ps[0].minimized = false;
-    CHECK(minimizedIndex(ps, kLibraryPkg) == -1);
+    CHECK(minimizedIndex(ps, "com.x.app") == -1);
 }

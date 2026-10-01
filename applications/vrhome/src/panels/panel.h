@@ -6,9 +6,12 @@
 enum Zone {
     ZONE_NONE   = -1,
     ZONE_WINDOW = 0,   // the app surface
-    ZONE_LABEL,        // the top bar, off both buttons
+    ZONE_LABEL,        // the top bar, off the buttons
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
+    ZONE_FLOAT,        // float button: unpin the window off the slot grid
+    ZONE_RESIZE,       // corner grip on the window's bottom-right
+    ZONE_PILL,         // move pill under a floating window
 };
 
 // One floating window: a GL texture fed by a virtual display plus the task
@@ -24,9 +27,14 @@ struct Panel {
     float stMat[16] = {};
     float yaw = 0;            // world yaw of panel centre
     float pitch = 0;          // elevation on the ring; plane tilts to face you
+    float scale = 1.0f;       // quad size multiplier; the display keeps its
+                              // own px size, the window just scales on screen
+    bool floating = false;    // off the slot grid: own yaw/pitch + move pill
     std::string pkg;
     std::string label;        // resolved app label for the window bar
     bool minimized = false;   // hidden window; task and display stay alive
-    float grabYaw = 0;        // yaw snapped when a ring drag grabbed
-    float grabPitch = 0;      // pitch snapped when a ring drag grabbed
+    float grabYaw = 0;        // yaw snapped when a drag grabbed
+    float grabPitch = 0;      // pitch snapped when a drag grabbed
+    float grabScale = 0.0f;   // scale snapped when a resize drag grabbed
+    float grabR = 0.0f;       // hit's distance from centre at grab, metres
 };

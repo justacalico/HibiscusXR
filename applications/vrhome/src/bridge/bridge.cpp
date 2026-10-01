@@ -4,6 +4,7 @@
 #include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
+#include "../dock/layout.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 #include "../common/props.h"
@@ -12,16 +13,8 @@
 #include <deque>
 #include <mutex>
 
-// one queued launch: the package plus whether it came through the
-// open-package broadcast - the library's own contract, so those swap the
-// launcher window for the app it picked
-struct LaunchReq {
-    std::string pkg;
-    bool fromLib;
-};
-
 // launch requests arrive from Java (open-package broadcast, test hook)
-static std::deque<LaunchReq> gLaunchQ;
+static std::deque<std::string> gLaunchQ;
 static std::mutex gLaunchMu;
 
 static volatile bool gWantRecenter = false;
@@ -29,13 +22,13 @@ static volatile bool gWantRecenter = false;
 extern "C" JNIEXPORT void JNICALL
 Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
     const char* p = env->GetStringUTFChars(pkg, nullptr);
-    queueLaunch(p, true);
+    queueLaunch(p);
     env->ReleaseStringUTFChars(pkg, p);
 }
 
-void queueLaunch(const char* pkg, bool fromLib) {
+void queueLaunch(const char* pkg) {
     std::lock_guard<std::mutex> l(gLaunchMu);
-    gLaunchQ.push_back({pkg, fromLib});
+    gLaunchQ.push_back(pkg);
 }
 
 void wantRecenter() { gWantRecenter = true; }
@@ -103,6 +96,9 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mKbdSend      = env->GetMethodID(bc, "sendKbdSurface", "()V");
     e->mKbdHide      = env->GetMethodID(bc, "sendKbdHide", "()V");
     e->mKbdState     = env->GetMethodID(bc, "kbdState", "()[I");
+    e->mAppsVer      = env->GetMethodID(bc, "appsVersion", "()I");
+    e->mApps         = env->GetMethodID(bc, "launcherApps",
+                        "()[Lgitlab/neosalsa/hud/ShellBridge$LauncherApp;");
 
     jclass stc = env->FindClass("android/graphics/SurfaceTexture");
     e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
@@ -135,46 +131,37 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
                         "Ljava/lang/String;");
     e->fMsgBtns  = env->GetFieldID(e->sysMsgCls, "buttons",
                         "[Ljava/lang/String;");
+    e->appCls = (jclass)env->NewGlobalRef(loadAppClass(env,
+        e->ctx, "gitlab.neosalsa.hud.ShellBridge$LauncherApp"));
+    if (e->appCls) {
+        e->fAppPkg   = env->GetFieldID(e->appCls, "pkg",
+                            "Ljava/lang/String;");
+        e->fAppLabel = env->GetFieldID(e->appCls, "label",
+                            "Ljava/lang/String;");
+    }
     LOGI("bridge ready");
+}
+
+// the elevation a new window joins at: a running row keeps its pitch, an
+// empty (or all-floating) ring derives it off the strip the dash is tied to
+static float ringPitchNow(HudEngine* e) {
+    return dashRingPitch(e->panels, e->dockPitch);
 }
 
 void pumpBridge(HudEngine* e) {
     if (!e->bridge) return;
     JNIEnv* env = threadEnv(e->vm);
 
-    // app launches requested by the library panel / test hook
+    // app launches requested by the app grid / open-package broadcast /
+    // test hook
     for (;;) {
-        LaunchReq req;
+        std::string pkg;
         {
             std::lock_guard<std::mutex> l(gLaunchMu);
             if (gLaunchQ.empty()) break;
-            req = gLaunchQ.front(); gLaunchQ.pop_front();
+            pkg = gLaunchQ.front(); gLaunchQ.pop_front();
         }
-        const std::string& pkg = req.pkg;
         jstring jpkg = env->NewStringUTF(pkg.c_str());
-        // the library is the one window that must never duplicate: a second
-        // launch request just keeps the existing panel
-        if (pkg == kLibraryPkg && libraryIndex(e->panels) >= 0) {
-            env->DeleteLocalRef(jpkg);
-            continue;
-        }
-        // a launch the library asked for swaps it out: the launcher window
-        // closes and the new app lands on the freed slot, whatever kind of
-        // launch it turns out to be
-        float repYaw = 0.0f;
-        bool haveRep = false;
-        if (req.fromLib) {
-            const int li = libraryIndex(e->panels);
-            if (li >= 0) {
-                repYaw = e->panels[li].yaw;
-                haveRep = true;
-                env->CallVoidMethod(e->bridge, e->mRemoveDisp,
-                                    e->panels[li].displayId);
-                if (env->ExceptionCheck()) env->ExceptionClear();
-                e->libDismissed = true;
-                closePanel(e, li);
-            }
-        }
         // Pico VR apps take over the headset; no panel is spent on them
         if (e->mIsVr && env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)) {
             env->CallVoidMethod(e->bridge, e->mLaunchVr, jpkg);
@@ -197,16 +184,27 @@ void pumpBridge(HudEngine* e) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
+        // a running window just refocuses: one panel per package
+        if (panelIndex(e->panels, pkg) >= 0) {
+            for (int i = 0; i < (int)e->panels.size(); ++i)
+                if (e->panels[i].pkg == pkg && e->panels[i].taskId >= 0) {
+                    env->CallVoidMethod(e->bridge, e->mFocusTask,
+                                        e->panels[i].taskId);
+                    if (env->ExceptionCheck()) env->ExceptionClear();
+                    break;
+                }
+            env->DeleteLocalRef(jpkg);
+            continue;
+        }
         if ((int)e->panels.size() >= kMaxPanels && !evictOldestApp(e)) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        // the launcher always takes the middle slot: the window there
-        // shifts left, parking the old left window on the shelf if needed
-        const float yaw = pkg == kLibraryPkg
-                ? libraryMiddleYaw(e->panels, e->gazeYaw)
-                : (haveRep ? repYaw : freeSlotYaw(e->panels, e->gazeYaw));
-        int idx = openPanel(e, yaw, ringPitch(e->panels));
+        // the window row is the dash's: slots sit around the strip's yaw
+        // and the elevation follows the strip, so a window opens glued to
+        // the assembly instead of wherever the gaze happened to be
+        const float yaw = freeSlotYaw(e->panels, e->dockYaw);
+        int idx = openPanel(e, yaw, ringPitchNow(e));
         if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
         e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
@@ -250,21 +248,10 @@ void pumpBridge(HudEngine* e) {
         jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
         const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
         LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
-        const bool isLib = pc != nullptr && strcmp(pc, kLibraryPkg) == 0;
-        const bool dupLib = isLib && libraryIndex(e->panels) >= 0;
         if (pc) env->ReleaseStringUTFChars(jpkg, pc);
-        if (dupLib) {
-            // a stray library task would double the launcher: kill it and
-            // keep the canonical panel
-            env->CallVoidMethod(e->bridge, e->mRemoveTask, taskId);
-            if (env->ExceptionCheck()) { env->ExceptionClear(); }
-            env->DeleteLocalRef(p);
-            continue;
-        }
         if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
-        int idx = openPanel(e, isLib ? libraryMiddleYaw(e->panels, e->gazeYaw)
-                                     : freeSlotYaw(e->panels, e->gazeYaw),
-                            ringPitch(e->panels));
+        int idx = openPanel(e, freeSlotYaw(e->panels, e->dockYaw),
+                            ringPitchNow(e));
         if (idx >= 0) {
             e->panels[idx].taskId = taskId;
             if (jpkg) {

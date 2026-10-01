@@ -11,7 +11,8 @@ void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                const float r[3], const float up[3],
                float toward, float ang, float qw, float qh,
                float bw, float bh, float radius, float border, float soft,
-               const float col[4], float radB, float arc) {
+               const float col[4], float radB, float arc,
+               float clipY, float clipC, float clipH) {
     const GLint uMVP    = glGetUniformLocation(e->shapeProg, "uMVP");
     const GLint uQuad   = glGetUniformLocation(e->shapeProg, "uQuad");
     const GLint uBox    = glGetUniformLocation(e->shapeProg, "uBox");
@@ -47,6 +48,8 @@ void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
     glUniform1f(uBorder, border);
     glUniform1f(uArc, arc);
     glUniform1f(uSoft, soft);
+    glUniform3f(glGetUniformLocation(e->shapeProg, "uClip"),
+                clipY, clipC, clipH);
     glUniform4fv(uColor, 1, col);
     glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);

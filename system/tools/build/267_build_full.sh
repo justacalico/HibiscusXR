@@ -180,11 +180,12 @@ mkd /app/PN2Hud
 put "$PN2_ROOT/vrhome/out/vrhud.apk" /app/PN2Hud/PN2Hud.apk 644
 
 echo
-echo "=== shell flutter apps: library + quick settings + settings ==="
+echo "=== shell flutter apps: quick settings + settings ==="
 # Same contract as vrhome: cloned at pinned refs, built from source here,
 # platform-signed, non-uninstallable under /system/app. flutter must be on
 # PATH - the dist runner installs the pinned toolchain (manifest.env).
-for app in library quick-panel settings; do
+# The standalone library app is gone: the HUD's own app grid replaced it.
+for app in quick-panel settings; do
   command -v flutter >/dev/null 2>&1 || { echo "FAIL flutter not on PATH"; fail=$((fail+1)); break; }
   [ -d "$PN2_ROOT/$app" ] || { echo "FAIL $PN2_ROOT/$app not cloned"; fail=$((fail+1)); continue; }
   (cd "$PN2_ROOT/$app" && flutter build apk --release) \
@@ -196,8 +197,6 @@ for app in library quick-panel settings; do
   "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=PN2" \
       || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
 done
-mkd /app/PN2Library
-put "$PN2_ROOT/library/build/app/outputs/flutter-apk/app-release.apk" /app/PN2Library/PN2Library.apk 644
 mkd /app/PN2QuickSettings
 put "$PN2_ROOT/quick-panel/build/app/outputs/flutter-apk/app-release.apk" /app/PN2QuickSettings/PN2QuickSettings.apk 644
 mkd /app/PN2Settings

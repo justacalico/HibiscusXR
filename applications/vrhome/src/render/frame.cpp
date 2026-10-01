@@ -34,6 +34,7 @@ void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
                          kPalBackground[2], 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         const Mat4 vp = multiply(proj, eyeMatrix(head, ipd, i));
+        e->curEye = i;
         scene(e, vp);
         if (status) drawHud(e, proj);
         if (++errTick >= 144) {

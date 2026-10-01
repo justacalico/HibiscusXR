@@ -67,13 +67,7 @@ void kbdFrame(const std::vector<Panel>& panels, int hostDisp, bool free,
               float freeYaw, float offYaw, float offY,
               const float origin[3], float c[3], float r[3], float up[3]);
 
-// how far under the quad's centre the drag pill floats (world units)
-float kbdHandleDrop();
 
-// is a quad-space hit on the drag pill? u/v come from rayQuad with the
-// quad's half extents - the pill lives below v=-1 so this checks before
-// the in-bounds test, same shape as the dash's handle
-bool onKbdHandle(float u, float v);
 
 // quad-space hit coords -> display px for injection
 void kbdHitPx(float u, float v, float* x, float* y);

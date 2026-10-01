@@ -2,6 +2,7 @@
 
 #include "kbd/kbd.h"
 #include "panels/layout.h"
+#include "pill/pill.h"
 #include "common/config.h"
 
 #include <cmath>
@@ -78,11 +79,13 @@ void testKbd() {
     CHECK_F(r2[1], r[1], 1e-5f);
 
     // the drag pill sits under the quad's bottom edge
-    CHECK_F(kbdHandleDrop(), kKbdHH + kHandleGap + kHandleT, 1e-6f);
-    CHECK(onKbdHandle(0.0f, -kbdHandleDrop() / kKbdHH));
-    CHECK(!onKbdHandle(0.0f, 0.0f));   // quad centre is a key, not the pill
-    CHECK(!onKbdHandle(0.0f, -1.0f));  // the bottom edge itself isn't
-    CHECK(!onKbdHandle(0.9f, -kbdHandleDrop() / kKbdHH));
+    CHECK_F(movePillDrop(kKbdHH), kKbdHH + kHandleGap + kHandleT, 1e-6f);
+    CHECK(onMovePill(0.0f, -movePillDrop(kKbdHH) / kKbdHH, kKbdHW,
+                     kKbdHH));
+    CHECK(!onMovePill(0.0f, 0.0f, kKbdHW, kKbdHH));
+    CHECK(!onMovePill(0.0f, -1.0f, kKbdHW, kKbdHH));
+    CHECK(!onMovePill(0.9f, -movePillDrop(kKbdHH) / kKbdHH, kKbdHW,
+                      kKbdHH));
 
     // a ray from the eye straight at the quad hits inside its bounds and
     // nearer than the panel plane behind it

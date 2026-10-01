@@ -3,6 +3,7 @@
 #include "dock/layout.h"
 #include "common/config.h"
 #include "math/head.h"
+#include "pill/pill.h"
 
 static Panel mkPanel(const char* pkg, int taskId = -1) {
     Panel p;
@@ -22,7 +23,7 @@ void testDock() {
                                      mkPanel("com.c.free", 12)};
         std::vector<XrTask> xr = {{21, "com.d.vr"}};
         auto items = buildDock(pins, panels, xr);
-        CHECK(items.size() == 5);
+        CHECK(items.size() == 6);
         CHECK(items[0].kind == DK_PIN && items[0].pkg == "com.a.pin");
         CHECK(!items[0].running && items[0].panelIdx < 0);
         CHECK(items[1].kind == DK_PIN && items[1].pkg == "com.b.busy");
@@ -32,8 +33,12 @@ void testDock() {
         CHECK(items[2].sep);               // pin -> running boundary
         CHECK(items[3].kind == DK_RUN && items[3].pkg == "com.d.vr");
         CHECK(items[3].vr && items[3].taskId == 21 && !items[3].sep);
-        CHECK(items[4].kind == DK_QUICK && items[4].sep);
-        CHECK(items[4].pkg == kQuickPanelPkg);
+        // the grid button owns the tail: separator before it, quick rides
+        // in its group on the very end
+        CHECK(items[4].kind == DK_GRID && items[4].sep);
+        CHECK(items[4].pkg.empty());
+        CHECK(items[5].kind == DK_QUICK && !items[5].sep);
+        CHECK(items[5].pkg == kQuickPanelPkg);
     }
 
     // a pinned XR app shows once, marked immersive + running
@@ -41,18 +46,21 @@ void testDock() {
         std::vector<std::string> pins = {"com.d.vr"};
         std::vector<XrTask> xr = {{7, "com.d.vr"}};
         auto items = buildDock(pins, {}, xr);
-        CHECK(items.size() == 2);
+        CHECK(items.size() == 3);
         CHECK(items[0].kind == DK_PIN && items[0].vr && items[0].running &&
               items[0].taskId == 7);
+        CHECK(items[1].kind == DK_GRID);
+        CHECK(items[2].kind == DK_QUICK);
     }
 
     // a pin for the quick-panel app is dropped: its slot already exists
     {
         std::vector<std::string> pins = {kQuickPanelPkg, "com.a.pin"};
         auto items = buildDock(pins, {}, {});
-        CHECK(items.size() == 2);
+        CHECK(items.size() == 3);
         CHECK(items[0].pkg == "com.a.pin");
-        CHECK(items[1].kind == DK_QUICK);
+        CHECK(items[1].kind == DK_GRID);
+        CHECK(items[2].kind == DK_QUICK);
     }
 
     // a running quick-panel task rides its own button: no duplicate icon,
@@ -60,10 +68,11 @@ void testDock() {
     {
         std::vector<Panel> panels = {mkPanel(kQuickPanelPkg, 9)};
         auto items = buildDock({}, panels, {});
-        CHECK(items.size() == 1);
-        CHECK(items[0].kind == DK_QUICK && items[0].running);
-        CHECK(items[0].taskId == 9 && items[0].panelIdx == 0);
-        CHECK(!items[0].sep);              // alone: nothing to split off
+        CHECK(items.size() == 2);
+        CHECK(items[0].kind == DK_GRID);
+        CHECK(items[1].kind == DK_QUICK && items[1].running);
+        CHECK(items[1].taskId == 9 && items[1].panelIdx == 0);
+        CHECK(!items[1].sep);              // rides the grid button's group
     }
 
     // minimized panels stay listed as running, marked minimized
@@ -71,9 +80,10 @@ void testDock() {
         std::vector<Panel> panels = {mkPanel("com.c.free", 5)};
         panels[0].minimized = true;
         auto items = buildDock({}, panels, {});
-        CHECK(items.size() == 2);
+        CHECK(items.size() == 3);
         CHECK(items[0].kind == DK_RUN && items[0].minimized &&
               !items[0].sep);              // nothing before it to split off
+        CHECK(items[1].kind == DK_GRID && items[1].sep);
     }
 
     // layout: monotone x, separators widen the bar, symmetric extents
@@ -225,15 +235,17 @@ void testDock() {
         CHECK_F(t, dl, 1e-4f);
     }
 
-    // move handle: a padded line centred under the strip; the bar body and
+    // move pill: a padded line centred under the strip; the bar body and
     // points far below or to the side miss
     {
         const float hw = 0.4f;
-        const float hv = -dockHandleDrop() / (kDockBarH * 0.5f);
-        CHECK(onDockHandle(0.0f, hv, hw));
-        CHECK(!onDockHandle(0.0f, 0.0f, hw));
-        CHECK(!onDockHandle(0.0f, hv - 0.40f, hw));
-        CHECK(!onDockHandle((kHandleW + kHandlePad + 0.02f) / hw, hv, hw));
+        const float hv = -movePillDrop(kDockBarH * 0.5f) /
+                         (kDockBarH * 0.5f);
+        CHECK(onMovePill(0.0f, hv, hw, kDockBarH * 0.5f));
+        CHECK(!onMovePill(0.0f, 0.0f, hw, kDockBarH * 0.5f));
+        CHECK(!onMovePill(0.0f, hv - 0.40f, hw, kDockBarH * 0.5f));
+        CHECK(!onMovePill((kHandleW + kHandlePad + 0.02f) / hw, hv, hw,
+                          kDockBarH * 0.5f));
     }
 
     // the handle pick lives outside the bar box: pickDock reports it
@@ -246,7 +258,7 @@ void testDock() {
         const float hw = dockLayout(items, st);
         float c[3], r[3], up[3];
         dockCenter(0.0f, -0.55f, o0, c, r, up);
-        const float hd = dockHandleDrop();
+        const float hd = movePillDrop(kDockBarH * 0.5f);
         Mat4 aim = identity();
         aim.m[2]  = -(c[0] - up[0] * hd);   // -z column aims at the handle
         aim.m[6]  = -(c[1] - up[1] * hd);

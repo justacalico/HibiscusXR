@@ -18,8 +18,10 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
 
-    <!-- task polling for the covered flag -->
+    <!-- task polling for the covered flag; the tracking pair feeds the
+         passthrough view -->
     <uses-permission android:name="android.permission.REAL_GET_TASKS" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 

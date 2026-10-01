@@ -65,15 +65,7 @@ void kbdFrame(const std::vector<Panel>& panels, int hostDisp, bool free,
     kbdFreeCenter(freeYaw, origin, offYaw, offY, c, r, up);
 }
 
-float kbdHandleDrop() {
-    return kKbdHH + kHandleGap + kHandleT;
-}
 
-bool onKbdHandle(float u, float v) {
-    const float x = u * kKbdHW, y = v * kKbdHH;
-    return fabsf(x) <= kHandleW + kHandlePad &&
-           fabsf(y + kbdHandleDrop()) <= kHandleT + kHandlePad;
-}
 
 void kbdHitPx(float u, float v, float* x, float* y) {
     *x = (u * 0.5f + 0.5f) * kKbdW;

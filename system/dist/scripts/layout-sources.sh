@@ -28,6 +28,7 @@ PAIRS=(
   "applications/library:library"
   "applications/quick-panel:quick-panel"
   "applications/settings:settings"
+  "applications/store:store"
   "applications/keyboard:keyboard"
 )
 

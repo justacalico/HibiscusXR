@@ -14,8 +14,8 @@ through the package registry, so they never expire.
 1. `scripts/layout-sources.sh` copies the monorepo source dirs into
    `$PN2_ROOT` (`system/{tools,overlay,shim,hsvr,cted}`, `drivers/`,
    `controllers/`, `applications/{vrhome,library,quick-panel,settings,
-   keyboard}`) - the sources are the monorepo checkout itself, nothing gets
-   cloned.
+   store,keyboard}`) - the sources are the monorepo checkout itself, nothing
+   gets cloned.
 2. `scripts/fetch-inputs.sh` downloads the pinned input packages from the
    private `neosalsa/dist-inputs` package registry (the proprietary blobs -
    kept private, see `overlay/PROPRIETARY-PVR.md` in the overlay repo).

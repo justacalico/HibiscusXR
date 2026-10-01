@@ -12,9 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'HibiscusXR';
 
   @override
-  String get navStatus => 'Status';
-
-  @override
   String get navRepos => 'Repos';
 
   @override
@@ -59,9 +56,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get heroSubtitle =>
       'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.';
-
-  @override
-  String get heroPrimary => 'See the status';
 
   @override
   String get heroSecondary => 'Read the docs';
@@ -162,19 +156,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeWayCta => 'Browse the repositories';
 
   @override
-  String get homeStatusEyebrow => 'Where it stands';
-
-  @override
-  String get homeStatusTitle => 'Boots. Shell runs. Picture\'s on.';
-
-  @override
-  String get homeStatusBody =>
-      'On the Pico Neo 2 the OS boots with audio, live head rotation and VRShell driving the real Pico compositor - and the VR display shows a real picture.';
-
-  @override
-  String get homeStatusCta => 'Full status';
-
-  @override
   String get homeOpenTitle => 'Open all the way down.';
 
   @override
@@ -231,67 +212,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get devicePlannedBody =>
       'Planned once the driver layer splits into its own tree.';
-
-  @override
-  String get statusTitle => 'Status';
-
-  @override
-  String get statusSubtitle =>
-      'The honest list for the Pico Neo 2. It moves as the port does.';
-
-  @override
-  String get statusWorksTitle => 'Working';
-
-  @override
-  String get statusWorks1 =>
-      'Boots clean: audio, 3840×2160 landscape, suspend matching stock';
-
-  @override
-  String get statusWorks2 =>
-      'pvrservice publishes live head rotation - valid unit quaternions';
-
-  @override
-  String get statusWorks3 =>
-      'VRShell launches reliably and drives the real Pico compositor';
-
-  @override
-  String get statusWorks4 => 'airservice, virtual_input and pn2_qvrd all start';
-
-  @override
-  String get statusWorks5 =>
-      'See-through calibration app installed, platform-signed, launching';
-
-  @override
-  String get statusWorks6 => '2D Pico apps render - VRUserCenter, Pico Store';
-
-  @override
-  String get statusWorks7 => 'Optional wireless adb via persist.pn2.adbwifi';
-
-  @override
-  String get statusWorks8 =>
-      'VR display shows a real picture - tracking state reaches apps';
-
-  @override
-  String get statusBrokenTitle => 'Not yet';
-
-  @override
-  String get statusBroken1 =>
-      'Passthrough imagery - libgui calls deleted in Android 10';
-
-  @override
-  String get statusBroken2 =>
-      'CVService controllers - crashes on a wifi broadcast, disabled';
-
-  @override
-  String get statusBroken3 =>
-      'Provision setup wizard - crashes in its language picker';
-
-  @override
-  String get statusBlockerTitle => 'No bug between here and a picture.';
-
-  @override
-  String get statusBlockerBody =>
-      'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.';
 
   @override
   String get reposTitle => 'Repositories';
@@ -647,7 +567,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA1 =>
-      'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.';
+      'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture.';
 
   @override
   String get faqQ2 => 'Is it safe to flash?';

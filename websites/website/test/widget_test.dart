@@ -26,9 +26,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('HibiscusXR'), findsWidgets);
-    expect(find.text('Status'), findsWidgets);
     expect(find.text('Repos'), findsWidgets);
-    expect(find.text('See the status'), findsOneWidget);
+    expect(find.text('Download'), findsWidgets);
     expect(find.text('Read the docs'), findsOneWidget);
   });
 
@@ -218,7 +217,7 @@ void main() {
     expect(find.text('vrhome'), findsOneWidget);
   });
 
-  testWidgets('status page shows both lists', (tester) async {
+  testWidgets('old status route shows the not-found page', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -228,8 +227,7 @@ void main() {
     _routerOf(tester).go('/status');
     await tester.pumpAndSettle();
 
-    expect(find.text('Working'), findsOneWidget);
-    expect(find.text('Not yet'), findsOneWidget);
+    expect(find.text('Page not found'), findsOneWidget);
   });
 
   testWidgets('unknown route shows the not-found page', (tester) async {
@@ -256,8 +254,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('HibiscusXR'), findsWidgets);
-    expect(find.text('现状'), findsWidgets);
-    expect(find.text('查看现状'), findsOneWidget);
+    expect(find.text('下载'), findsWidgets);
+    expect(find.text('阅读文档'), findsOneWidget);
   });
 
   testWidgets('faq rows expand on tap', (tester) async {

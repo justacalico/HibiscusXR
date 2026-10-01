@@ -12,9 +12,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get appTitle => 'HibiscusXR';
 
   @override
-  String get navStatus => '现状';
-
-  @override
   String get navRepos => '仓库';
 
   @override
@@ -59,9 +56,6 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get heroSubtitle =>
       '为 VR 一体头显打造的操作系统,基于 LineageOS 17.1。Pico Neo 2 是第一个支持的设备。';
-
-  @override
-  String get heroPrimary => '查看现状';
 
   @override
   String get heroSecondary => '阅读文档';
@@ -162,19 +156,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeWayCta => '浏览所有仓库';
 
   @override
-  String get homeStatusEyebrow => '进展';
-
-  @override
-  String get homeStatusTitle => '能开机,桌面能跑,有画面了。';
-
-  @override
-  String get homeStatusBody =>
-      '在 Pico Neo 2 上,系统可以启动,有声音,头部旋转实时生效,VRShell 驱动着真正的 Pico 合成器——VR 画面已经能看到真实内容。';
-
-  @override
-  String get homeStatusCta => '完整现状';
-
-  @override
   String get homeOpenTitle => '彻底开源。';
 
   @override
@@ -230,58 +211,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get devicePlannedBody => '等驱动层拆成独立目录后列入计划。';
-
-  @override
-  String get statusTitle => '现状';
-
-  @override
-  String get statusSubtitle => 'Pico Neo 2 的实话实说清单,跟着移植进度更新。';
-
-  @override
-  String get statusWorksTitle => '已正常';
-
-  @override
-  String get statusWorks1 => '干净启动:音频、3840×2160 横屏、休眠表现与原厂一致';
-
-  @override
-  String get statusWorks2 => 'pvrservice 实时发布头部旋转,四元数合法';
-
-  @override
-  String get statusWorks3 => 'VRShell 稳定启动,驱动真正的 Pico 合成器';
-
-  @override
-  String get statusWorks4 => 'airservice、virtual_input、pn2_qvrd 全部正常启动';
-
-  @override
-  String get statusWorks5 => '透视校准应用已安装、平台签名、可启动';
-
-  @override
-  String get statusWorks6 => '2D Pico 应用可渲染:VRUserCenter、Pico Store';
-
-  @override
-  String get statusWorks7 => '可选无线 adb:persist.pn2.adbwifi';
-
-  @override
-  String get statusWorks8 => 'VR 画面正常出图:应用侧 tracking state 有效';
-
-  @override
-  String get statusBrokenTitle => '还不行';
-
-  @override
-  String get statusBroken1 => '透视画面——libgui 接口在 Android 10 里被删了';
-
-  @override
-  String get statusBroken2 => 'CVService 手柄——因 wifi 广播崩溃,目前已禁用';
-
-  @override
-  String get statusBroken3 => 'Provision 初始化向导——语言选择器里崩溃';
-
-  @override
-  String get statusBlockerTitle => '离出画面一个 bug 都不剩。';
-
-  @override
-  String get statusBlockerBody =>
-      'pvrservice 给出的旋转数据是好的,应用内部 SDK 报回来的 tracking state 现在也是真实值。提交的 pose 通过了合成器的单位四元数校验,每一帧都落在屏幕上。';
 
   @override
   String get reposTitle => '仓库';
@@ -600,7 +529,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get faqQ1 => '真的能用了吗?';
 
   @override
-  String get faqA1 => '在 Neo 2 上能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。现状页维护着最新清单。';
+  String get faqA1 => '在 Neo 2 上能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。';
 
   @override
   String get faqQ2 => '刷机安全吗?';

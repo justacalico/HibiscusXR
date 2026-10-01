@@ -14,7 +14,6 @@ import 'ui/pages/home_page.dart';
 import 'ui/pages/not_found_page.dart';
 import 'ui/pages/repositories_page.dart';
 import 'ui/pages/screenshots_page.dart';
-import 'ui/pages/status_page.dart';
 import 'ui/shell.dart';
 
 GoRouter buildRouter() => GoRouter(
@@ -33,10 +32,6 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(
               path: Routes.home,
               pageBuilder: _fade(const HomePage()),
-            ),
-            GoRoute(
-              path: Routes.status,
-              pageBuilder: _fade(const StatusPage()),
             ),
             GoRoute(
               path: Routes.repositories,

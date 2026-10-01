@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../devices.dart';
-import '../routes.dart';
 import '../theme.dart';
 import 'widgets.dart';
 
@@ -106,14 +104,6 @@ class _DeviceCard extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(device.describe(l10n), style: context.text.bodyMedium),
-          if (device.status == DeviceStatus.supported) ...[
-            const SizedBox(height: 16),
-            ChevronLink(
-              label: l10n.homeStatusCta,
-              large: false,
-              onPressed: () => context.go(Routes.status),
-            ),
-          ],
         ],
       ),
     );

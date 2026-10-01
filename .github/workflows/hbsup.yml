@@ -1,0 +1,174 @@
+name: hbsup
+
+# Release lane for applications/hbsup: a hbsup-v* tag on the GitHub mirror
+# (pushed by the GitLab cte-release job) builds the desktop bundles and
+# cuts the release here; GitLab then mirrors the assets back through the
+# hbsup-release-sync job so they never expire.
+
+on:
+  push:
+    tags:
+      - 'hbsup-v*'
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.44.6"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: flutter toolchain
+        run: |
+          curl -fsSL -o /tmp/flutter.tar.xz \
+            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+          tar -xJf /tmp/flutter.tar.xz -C "$HOME"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+          git config --global --add safe.directory "$HOME/flutter"
+          "$HOME/flutter/bin/flutter" config --no-analytics
+          "$HOME/flutter/bin/flutter" --version
+      - name: analyze + test
+        run: |
+          cd applications/hbsup
+          flutter pub get
+          flutter analyze
+          flutter test
+
+  build:
+    needs: verify
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {target: linux, os: ubuntu-latest}
+          - {target: windows, os: windows-latest}
+          - {target: macos, os: macos-latest}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: flutter toolchain (linux)
+        if: runner.os == 'Linux'
+        run: |
+          curl -fsSL -o /tmp/flutter.tar.xz \
+            "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+          tar -xJf /tmp/flutter.tar.xz -C "$HOME"
+          echo "$HOME/flutter/bin" >> "$GITHUB_PATH"
+          git config --global --add safe.directory "$HOME/flutter"
+          "$HOME/flutter/bin/flutter" config --no-analytics
+          "$HOME/flutter/bin/flutter" precache --linux
+
+      - name: flutter toolchain (windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          git clone --depth 1 -b stable https://github.com/flutter/flutter.git "$env:RUNNER_TEMP\flutter"
+          echo "$env:RUNNER_TEMP\flutter\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+          git config --global --add safe.directory "$env:RUNNER_TEMP/flutter"
+          & "$env:RUNNER_TEMP\flutter\bin\flutter.bat" config --no-analytics
+          & "$env:RUNNER_TEMP\flutter\bin\flutter.bat" precache --windows
+
+      - name: flutter toolchain (macos)
+        if: runner.os == 'macOS'
+        run: |
+          git clone --depth 1 -b stable https://github.com/flutter/flutter.git "$RUNNER_TEMP/flutter"
+          echo "$RUNNER_TEMP/flutter/bin" >> "$GITHUB_PATH"
+          git config --global --add safe.directory "$RUNNER_TEMP/flutter"
+          "$RUNNER_TEMP/flutter/bin/flutter" config --no-analytics
+          "$RUNNER_TEMP/flutter/bin/flutter" precache --macos
+
+      - name: linux deps
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            clang cmake ninja-build pkg-config \
+            libgtk-3-dev liblzma-dev libstdc++-12-dev
+
+      - name: linux build + pack
+        if: matrix.target == 'linux'
+        run: |
+          cd applications/hbsup
+          flutter pub get
+          flutter build linux --release
+          mkdir -p ../../dist
+          tar -czf ../../dist/HBSUP-linux-x86_64.tar.gz -C build/linux/x64/release/bundle .
+          (cd build/linux/x64/release && zip -qr "$GITHUB_WORKSPACE/dist/HBSUP-linux-x86_64.zip" bundle)
+
+      - name: windows build + pack
+        if: matrix.target == 'windows'
+        shell: pwsh
+        run: |
+          cd applications/hbsup
+          flutter pub get
+          flutter build windows --release
+          New-Item -ItemType Directory -Force ../../dist | Out-Null
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath ../../dist/HBSUP-windows-x86_64.zip
+
+      - name: macos build + pack
+        if: matrix.target == 'macos'
+        run: |
+          cd applications/hbsup
+          flutter pub get
+          flutter build macos --release
+          mkdir -p ../../dist
+          (cd build/macos/Build/Products/Release && zip -qr "$GITHUB_WORKSPACE/dist/HBSUP-macos-arm64.zip" .)
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hbsup-${{ matrix.target }}
+          path: dist/*
+          retention-days: 7
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/hbsup-v')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: hbsup-*
+          path: dist
+          merge-multiple: true
+
+      - name: github release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          ls -la dist/
+          (cd dist && sha256sum * > SHA256SUMS.txt)
+          cat > NOTES.md <<'EOF'
+          HBSUP - Hibiscus Backup.
+
+          Full-disk backup for Hibiscus headsets: dumps every partition
+          over rooted adb into a folder you pick, checks free space
+          first, and writes a manifest so the dump stays restorable.
+          Linux and macOS are supported; Windows builds exist but are
+          not a supported host OS.
+          EOF
+          gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
+            --title "HBSUP $TAG" --notes-file NOTES.md dist/*
+
+      - name: gitlab release sync
+        env:
+          GITLAB_TRIGGER_TOKEN: ${{ secrets.GITLAB_TRIGGER_TOKEN }}
+          GITLAB_PROJECT_ID: ${{ secrets.GITLAB_PROJECT_ID }}
+        run: |
+          if [ -z "$GITLAB_TRIGGER_TOKEN" ] || [ -z "$GITLAB_PROJECT_ID" ]; then
+            echo "GitLab trigger secrets not set, skipping release sync"
+            exit 0
+          fi
+          curl -sf --request POST \
+            --form "token=$GITLAB_TRIGGER_TOKEN" \
+            --form "ref=main" \
+            --form "variables[RELEASE_TAG]=${GITHUB_REF_NAME}" \
+            --form "variables[GITHUB_RUN_ID]=${GITHUB_RUN_ID}" \
+            "https://gitlab.com/api/v4/projects/$GITLAB_PROJECT_ID/trigger/pipeline" > /dev/null
+          echo "Triggered GitLab hbsup-release-sync for ${GITHUB_REF_NAME}"

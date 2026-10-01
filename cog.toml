@@ -1,7 +1,7 @@
-# Monorepo versioning: only the CTE app is cog-versioned today; the OS
-# images version by date+run (system/dist). Package tags come out as
-# cte-v0.1.0 - the cte GitLab tag pipeline and the GitHub cte.yml release
-# workflow key off that prefix.
+# Monorepo versioning: the desktop apps are cog-versioned; the OS images
+# version by date+run (system/dist). Package tags come out as
+# cte-v0.1.0 / hbsup-v0.1.0 - the matching GitLab tag pipelines and the
+# GitHub release workflows key off those prefixes.
 monorepo_version_separator = "-v"
 
 [monorepo.packages.cte]
@@ -12,6 +12,19 @@ pre_bump_hooks = [
 
 # Hook profile the cte-bump CI job uses.
 [monorepo.packages.cte.bump_profiles.ci]
+pre_bump_hooks = [
+  "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
+]
+
+
+[monorepo.packages.hbsup]
+path = "applications/hbsup"
+pre_bump_hooks = [
+  "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
+]
+
+# Hook profile the hbsup-bump CI job uses.
+[monorepo.packages.hbsup.bump_profiles.ci]
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]

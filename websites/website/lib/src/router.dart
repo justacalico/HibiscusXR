@@ -1,11 +1,15 @@
 import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
+import 'flashdocs.dart';
 import 'routes.dart';
 import 'ui/pages/about_page.dart';
 import 'ui/pages/cte_page.dart';
 import 'ui/pages/downloads_page.dart';
 import 'ui/pages/faq_page.dart';
+import 'ui/pages/flashdocs/device_page.dart';
+import 'ui/pages/flashdocs/guide_page.dart';
+import 'ui/pages/flashdocs/home_page.dart';
 import 'ui/pages/home_page.dart';
 import 'ui/pages/not_found_page.dart';
 import 'ui/pages/repositories_page.dart';
@@ -58,6 +62,23 @@ GoRouter buildRouter() => GoRouter(
               path: Routes.about,
               pageBuilder: _fade(const AboutPage()),
             ),
+            GoRoute(
+              path: Routes.flashdocs,
+              pageBuilder: _fade(const FlashDocsHomePage()),
+            ),
+            GoRoute(
+              path: '${Routes.flashdocs}/:device',
+              pageBuilder: (context, state) =>
+                  _flashdocsDevice(state.pathParameters['device'])(
+                      context, state),
+            ),
+            GoRoute(
+              path: '${Routes.flashdocs}/:device/:system',
+              pageBuilder: (context, state) => _flashdocsGuide(
+                state.pathParameters['device'],
+                state.pathParameters['system'],
+              )(context, state),
+            ),
           ],
         ),
       ],
@@ -73,3 +94,24 @@ CustomTransitionPage<void> Function(BuildContext, GoRouterState) _fade(
           transitionsBuilder: (context, animation, _, child) =>
               FadeTransition(opacity: animation, child: child),
         );
+
+/// Page builder for /flashdocs/:device - NotFoundPage on an unknown slug.
+CustomTransitionPage<void> Function(BuildContext, GoRouterState)
+    _flashdocsDevice(String? slug) {
+  final device = flashDocDevice(slug);
+  return _fade(device == null
+      ? const NotFoundPage()
+      : FlashDocsDevicePage(device: device));
+}
+
+/// Page builder for /flashdocs/:device/:system - NotFoundPage when either
+/// slug is unknown.
+CustomTransitionPage<void> Function(BuildContext, GoRouterState)
+    _flashdocsGuide(String? deviceSlug, String? systemSlug) {
+  final device = flashDocDevice(deviceSlug);
+  final system =
+      device == null ? null : flashDocSystem(device, systemSlug);
+  return _fade(device == null || system == null
+      ? const NotFoundPage()
+      : FlashDocsGuidePage(device: device, system: system));
+}

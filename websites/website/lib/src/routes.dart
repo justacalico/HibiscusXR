@@ -8,6 +8,14 @@ abstract final class Routes {
   static const cte = '/cte';
   static const faq = '/faq';
   static const about = '/about';
+  static const flashdocs = '/flashdocs';
+
+  /// Device page under the flashing docs, e.g. /flashdocs/pico-neo-2.
+  static String flashdocsDevice(String device) => '$flashdocs/$device';
+
+  /// One host-OS guide under a device, e.g. /flashdocs/pico-neo-2/linux.
+  static String flashdocsGuide(String device, String system) =>
+      '$flashdocs/$device/$system';
 }
 
 /// One nav destination: where it goes and which l10n getter names it.

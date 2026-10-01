@@ -224,6 +224,7 @@ class _MobileMenu extends StatelessWidget {
     final destinations = [
       Destination(Routes.home, (l) => l.appTitle),
       ..._destinations(l10n),
+      Destination(Routes.flashdocs, (l) => l.navFlashdocs),
       Destination(Routes.download, (l) => l.navDownload),
       Destination(Routes.cte, (l) => l.navCte),
     ];

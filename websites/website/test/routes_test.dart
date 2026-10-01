@@ -5,7 +5,7 @@ import 'package:hibiscusxr_website/src/routes.dart';
 
 void main() {
   test('site routes are all root-anchored and unique', () {
-    const paths = [
+    final paths = [
       Routes.home,
       Routes.status,
       Routes.repositories,
@@ -14,6 +14,9 @@ void main() {
       Routes.cte,
       Routes.faq,
       Routes.about,
+      Routes.flashdocs,
+      Routes.flashdocsDevice('pico-neo-2'),
+      Routes.flashdocsGuide('pico-neo-2', 'linux'),
     ];
     expect(paths.toSet().length, paths.length);
     for (final path in paths) {

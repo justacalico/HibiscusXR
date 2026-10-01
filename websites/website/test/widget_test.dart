@@ -68,6 +68,19 @@ void main() {
     expect(find.text('Source'), findsWidgets);
   });
 
+  testWidgets('home page shows the supported devices grid', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    expect(find.text('Oculus Quest 1'), findsOneWidget);
+    expect(find.text('Pico Neo 3'), findsOneWidget);
+    expect(find.text('Supported, in development'), findsOneWidget);
+    expect(find.text('Planned'), findsNWidgets(2));
+  });
+
   testWidgets('navigates to download page', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;

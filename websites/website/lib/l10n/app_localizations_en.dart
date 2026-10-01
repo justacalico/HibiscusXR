@@ -198,6 +198,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeDownloadCta => 'Get the image';
 
   @override
+  String get homeDevicesEyebrow => 'Device compatibility';
+
+  @override
+  String get homeDevicesTitle => 'What it runs on.';
+
+  @override
+  String get homeDevicesBody =>
+      'The Pico Neo 2 is the first supported device and where all development happens today. More headsets follow once the OS is split from the drivers.';
+
+  @override
+  String get deviceStateSupported => 'Supported, in development';
+
+  @override
+  String get deviceStatePlanned => 'Planned';
+
+  @override
+  String get deviceNeo2Specs => 'A7B10 · Snapdragon 845 · 3840×2160';
+
+  @override
+  String get deviceNeo2Body => 'The first port and the development target.';
+
+  @override
+  String get deviceQuest1Name => 'Oculus Quest 1';
+
+  @override
+  String get deviceQuest1Specs => 'Snapdragon 835 · 2880×1600 OLED';
+
+  @override
+  String get deviceNeo3Name => 'Pico Neo 3';
+
+  @override
+  String get deviceNeo3Specs => 'Snapdragon XR2 · 3664×1920';
+
+  @override
+  String get devicePlannedBody =>
+      'Planned once the driver layer splits into its own tree.';
+
+  @override
   String get statusTitle => 'Status';
 
   @override

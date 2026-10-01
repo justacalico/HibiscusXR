@@ -29,15 +29,7 @@ class _BuildsSectionState extends State<BuildsSection> {
   @override
   void initState() {
     super.initState();
-    _future = _fetch();
-  }
-
-  Future<List<BuildRelease>> _fetch() async {
-    final res = await http.get(Uri.parse(Links.releasesApi));
-    if (res.statusCode != 200) {
-      throw http.ClientException('HTTP ${res.statusCode}', res.request?.url);
-    }
-    return parseReleases(jsonDecode(res.body) as List<dynamic>);
+    _future = fetchReleases();
   }
 
   @override
@@ -60,18 +52,19 @@ class _BuildsSectionState extends State<BuildsSection> {
           future: _future,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
-              return _ErrorState(
+              return BuildsError(
                 message: l10n.buildsError,
                 retry: l10n.buildsRetry,
-                onRetry: () => setState(() => _future = _fetch()),
+                onRetry: () => setState(() => _future = fetchReleases()),
               );
             }
             if (!snapshot.hasData) {
-              return _Loading(message: l10n.buildsLoading);
+              return BuildsLoading(message: l10n.buildsLoading);
             }
-            final builds = releasesInChannel(snapshot.data!, _channel);
+            final builds =
+                releasesInChannel(osReleases(snapshot.data!), _channel);
             if (builds.isEmpty) {
-              return _Empty(message: l10n.buildsEmpty);
+              return BuildsEmpty(message: l10n.buildsEmpty);
             }
             return Column(
               children: [
@@ -157,22 +150,22 @@ class _BuildCard extends StatelessWidget {
             runSpacing: 10,
             children: [
               if (release.fullImage!.url.isNotEmpty)
-                _AssetChip(
+                AssetChip(
                   label: l10n.buildsFullImage,
                   url: release.fullImage!.url,
                   prominent: true,
                 ),
               if (release.cleanImage!.url.isNotEmpty)
-                _AssetChip(
+                AssetChip(
                   label: l10n.buildsCleanImage,
                   url: release.cleanImage!.url,
                 ),
               for (final a in release.assets)
                 if (a.name == 'build-logs.tar.xz')
-                  _AssetChip(label: l10n.buildsLogs, url: a.url),
+                  AssetChip(label: l10n.buildsLogs, url: a.url),
               for (final a in release.assets)
                 if (a.name == 'SHA256SUMS.txt')
-                  _AssetChip(label: l10n.buildsChecksums, url: a.url),
+                  AssetChip(label: l10n.buildsChecksums, url: a.url),
             ],
           ),
           const SizedBox(height: 14),
@@ -187,8 +180,8 @@ class _BuildCard extends StatelessWidget {
   }
 }
 
-class _AssetChip extends StatefulWidget {
-  const _AssetChip({
+class AssetChip extends StatefulWidget {
+  const AssetChip({super.key,
     required this.label,
     required this.url,
     this.prominent = false,
@@ -199,10 +192,10 @@ class _AssetChip extends StatefulWidget {
   final bool prominent;
 
   @override
-  State<_AssetChip> createState() => _AssetChipState();
+  State<AssetChip> createState() => _AssetChipState();
 }
 
-class _AssetChipState extends State<_AssetChip> {
+class _AssetChipState extends State<AssetChip> {
   bool _hover = false;
 
   @override
@@ -240,8 +233,8 @@ class _AssetChipState extends State<_AssetChip> {
   }
 }
 
-class _Loading extends StatelessWidget {
-  const _Loading({required this.message});
+class BuildsLoading extends StatelessWidget {
+  const BuildsLoading({super.key, required this.message});
   final String message;
 
   @override
@@ -268,8 +261,8 @@ class _Loading extends StatelessWidget {
   }
 }
 
-class _Empty extends StatelessWidget {
-  const _Empty({required this.message});
+class BuildsEmpty extends StatelessWidget {
+  const BuildsEmpty({super.key, required this.message});
   final String message;
 
   @override
@@ -283,8 +276,8 @@ class _Empty extends StatelessWidget {
   }
 }
 
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({
+class BuildsError extends StatelessWidget {
+  const BuildsError({super.key,
     required this.message,
     required this.retry,
     required this.onRetry,
@@ -312,4 +305,15 @@ class _ErrorState extends StatelessWidget {
       ),
     );
   }
+}
+
+
+/// Pulls every release lane off the monorepo's GitLab releases API.
+/// Callers filter with [osReleases] or [appReleases] afterwards.
+Future<List<BuildRelease>> fetchReleases() async {
+  final res = await http.get(Uri.parse(Links.releasesApi));
+  if (res.statusCode != 200) {
+    throw http.ClientException('HTTP ${res.statusCode}', res.request?.url);
+  }
+  return parseReleases(jsonDecode(res.body) as List<dynamic>);
 }

@@ -152,4 +152,43 @@ void main() {
     expect(releases[0].name, 'v2026.01.01-r1');
     expect(releases[0].assets, isEmpty);
   });
+  group('app lanes are blacklisted from OS builds', () {
+    final releases = parseReleases([
+      {
+        'tag_name': 'cte-v0.1.0',
+        'created_at': '2026-09-28T10:00:00.000Z',
+        'assets': {'links': []},
+      },
+      {
+        'tag_name': 'hbsup-v0.1.0',
+        'created_at': '2026-09-29T10:00:00.000Z',
+        'assets': {'links': []},
+      },
+      {
+        'tag_name': 'v2026.09.15-r6',
+        'created_at': '2026-09-15T16:00:00.000Z',
+        'assets': {'links': []},
+      },
+    ]);
+
+    test('isAppTag flags app releases', () {
+      expect(isAppTag('cte-v0.1.0'), isTrue);
+      expect(isAppTag('hbsup-v1.2.3'), isTrue);
+      expect(isAppTag('v2026.09.15-r6'), isFalse);
+      expect(isAppTag('alpha-v2026.09.15-r7'), isFalse);
+    });
+
+    test('osReleases drops the app lanes', () {
+      final os = osReleases(releases);
+      expect(os.length, 1);
+      expect(os.single.tag, 'v2026.09.15-r6');
+    });
+
+    test('appReleases picks one lane, newest first', () {
+      expect(appReleases(releases, 'cte-').single.tag, 'cte-v0.1.0');
+      expect(appReleases(releases, 'hbsup-').single.tag,
+          'hbsup-v0.1.0');
+      expect(appReleases(releases, 'nope-'), isEmpty);
+    });
+  });
 }

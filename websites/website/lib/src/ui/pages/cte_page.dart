@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../links.dart';
+import '../../routes.dart';
 import '../../theme.dart';
 import '../shell.dart';
 import '../widgets.dart';
@@ -77,8 +79,7 @@ class CtePage extends StatelessWidget {
                   children: [
                     ChevronLink(
                       label: l10n.cteReleasesCta,
-                      onPressed: () =>
-                          launchUrl(Uri.parse(Links.cteReleases)),
+                      onPressed: () => context.go(Routes.cteDownload),
                     ),
                     ChevronLink(
                       label: l10n.cteSourceCta,

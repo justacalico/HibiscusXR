@@ -47,6 +47,23 @@ class BuildRelease {
   }
 }
 
+/// Tag prefixes that belong to desktop-app release lanes, not OS images.
+/// The releases API returns every lane mixed together - the downloads
+/// page for OS images must skip these.
+const appTagPrefixes = ['cte-', 'hbsup-'];
+
+bool isAppTag(String tag) =>
+    appTagPrefixes.any((p) => tag.startsWith(p));
+
+/// OS image releases only - app lanes (cte-v*, hbsup-v*) are blacklisted.
+List<BuildRelease> osReleases(List<BuildRelease> all) =>
+    all.where((r) => !isAppTag(r.tag)).toList();
+
+/// One app lane's releases (tag prefix like `cte-`), newest first.
+List<BuildRelease> appReleases(List<BuildRelease> all, String prefix) =>
+    (all.where((r) => r.tag.startsWith(prefix)).toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt)));
+
 /// Determines the channel from a tag name.
 ///
 /// release: `v2026.09.15-r6`

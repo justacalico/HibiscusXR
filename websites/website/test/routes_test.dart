@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:hibiscusxr_website/src/apps.dart';
 import 'package:hibiscusxr_website/src/links.dart';
 import 'package:hibiscusxr_website/src/routes.dart';
 
@@ -12,6 +13,8 @@ void main() {
       Routes.screenshots,
       Routes.download,
       Routes.cte,
+      Routes.cteDownload,
+      Routes.hbsupDownload,
       Routes.faq,
       Routes.about,
       Routes.flashdocs,
@@ -42,6 +45,15 @@ void main() {
         expect(uri.host.endsWith('.gitlab.io'), isTrue, reason: url);
       }
     }
+  });
+
+  test('site app metadata', () {
+    expect(SiteApps.label(SiteApp.cte), 'HCTE');
+    expect(SiteApps.label(SiteApp.hbsup), 'HBSUP');
+    expect(SiteApps.tagPrefix(SiteApp.cte), 'cte-');
+    expect(SiteApps.tagPrefix(SiteApp.hbsup), 'hbsup-');
+    expect(SiteApps.treePath(SiteApp.cte), 'applications/cte');
+    expect(SiteApps.treePath(SiteApp.hbsup), 'applications/hbsup');
   });
 
   test('destination flags external targets', () {

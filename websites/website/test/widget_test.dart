@@ -122,6 +122,46 @@ void main() {
     expect(find.byType(ImageFiltered), findsNothing);
   });
 
+  testWidgets('app download pages render and show source links',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/download/hbsup');
+    await tester.pumpAndSettle();
+    expect(find.text('HBSUP downloads'), findsWidgets);
+    expect(find.text('Windows is unsupported'), findsOneWidget);
+
+    _routerOf(tester).go('/download/cte');
+    await tester.pumpAndSettle();
+    expect(find.text('HCTE downloads'), findsWidgets);
+    expect(find.text('Windows is unsupported'), findsNothing);
+  });
+
+  testWidgets('backup section links to the HBSUP downloads',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/download');
+    await tester.pumpAndSettle();
+
+    final cta = find.text('Get HBSUP');
+    await Scrollable.ensureVisible(tester.element(cta),
+        alignment: 0.5);
+    await tester.pumpAndSettle();
+    await tester.tap(cta);
+    await tester.pumpAndSettle();
+
+    expect(find.text('HBSUP downloads'), findsWidgets);
+  });
+
   testWidgets('flashdocs home asks for the headset', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;

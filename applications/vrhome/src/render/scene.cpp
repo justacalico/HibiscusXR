@@ -35,7 +35,7 @@ static const CamIntr kPtCams[2] = {
 static void ptMeshes(Engine* e, float tanX, float tanY) {
     static int pSwap = -1, pFx = -1, pFy = -1;
     static float pRoll = -9999.0f;
-    const int sw = propI("debug.vrhome.ptswap", 0);
+    const int sw = propI("debug.vrhome.ptswap", 1);
     const int fx = propI("debug.vrhome.ptflipx", 0);
     const int fy = propI("debug.vrhome.ptflipy", 0);
     const float roll = propF("debug.vrhome.ptroll", 0.0f);

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/main.dart';
+import 'package:pn2_settings/l10n/app_localizations.dart';
 import 'package:pn2_settings/src/envs/env_info.dart';
 import 'package:pn2_settings/src/envs/env_source.dart';
 import 'package:pn2_settings/src/models.dart';
@@ -8,6 +11,8 @@ import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
 import 'package:pn2_settings/src/settings_controller.dart';
 import 'package:pn2_settings/src/settings_store.dart';
+import 'package:pn2_settings/src/ui/settings_page.dart';
+import 'package:pn2_settings/src/ui/theme.dart';
 
 class _StubEnvs implements EnvSource {
   const _StubEnvs(this.options);
@@ -21,7 +26,38 @@ class _StubEnvs implements EnvSource {
   Future<bool> remove(String id) async => false;
 }
 
+/// Canonical goldens render real Roboto and MaterialIcons, loaded from
+/// the Flutter SDK font cache - without them every glyph paints as a
+/// box. Hosts without the font cache skip the assertions instead of
+/// failing.
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  final fontDir = '${Platform.environment['FLUTTER_ROOT'] ?? ''}'
+      '/bin/cache/artifacts/material_fonts';
+  var fontsReady = false;
+
+  setUpAll(() async {
+    if (!File('$fontDir/Roboto-Regular.ttf').existsSync()) return;
+    Future<void> load(String family, String file) async {
+      final bytes = await File('$fontDir/$file').readAsBytes();
+      await (FontLoader(family)
+            ..addFont(Future.value(ByteData.sublistView(bytes))))
+          .load();
+    }
+
+    await load('Roboto', 'Roboto-Regular.ttf');
+    await load('Roboto', 'Roboto-Medium.ttf');
+    await load('Roboto', 'Roboto-Bold.ttf');
+    await load('MaterialIcons', 'MaterialIcons-Regular.otf');
+    fontsReady = true;
+  });
+
+  ThemeData themed() => PanelTheme.data().copyWith(
+        textTheme:
+            PanelTheme.data().textTheme.apply(fontFamily: 'Roboto'),
+      );
+
   Future<SettingsController> pump(
     WidgetTester tester,
     SettingsSnapshot initial, {
@@ -32,6 +68,7 @@ void main() {
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
 
+    PanelTheme.palette = kDarkPalette;
     final source = FakeSettingsSource(initial: initial);
     addTearDown(source.dispose);
     final c = SettingsController(
@@ -42,7 +79,15 @@ void main() {
     );
     addTearDown(c.dispose);
     await c.start();
-    await tester.pumpWidget(SettingsApp(controller: c));
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: themed(),
+        debugShowCheckedModeBanner: false,
+        home: SettingsPage(controller: c),
+      ),
+    );
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
@@ -50,6 +95,7 @@ void main() {
   }
 
   testWidgets('settings wifi section golden', (tester) async {
+    if (!fontsReady) return;
     await pump(
       tester,
       const SettingsSnapshot(
@@ -82,6 +128,7 @@ void main() {
   });
 
   testWidgets('about section golden', (tester) async {
+    if (!fontsReady) return;
     await pump(
       tester,
       const SettingsSnapshot(
@@ -101,6 +148,7 @@ void main() {
   });
 
   testWidgets('display section golden', (tester) async {
+    if (!fontsReady) return;
     await pump(
       tester,
       const SettingsSnapshot(
@@ -116,6 +164,7 @@ void main() {
   });
 
   testWidgets('controllers section golden', (tester) async {
+    if (!fontsReady) return;
     await pump(
       tester,
       const SettingsSnapshot(
@@ -140,6 +189,7 @@ void main() {
   });
 
   testWidgets('environment section golden', (tester) async {
+    if (!fontsReady) return;
     final c = await pump(
       tester,
       const SettingsSnapshot(

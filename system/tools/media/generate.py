@@ -24,7 +24,7 @@ import subprocess
 import sys
 import tempfile
 
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
@@ -154,8 +154,9 @@ def bootanimation(mark, to_px, k):
         f.write("p 0 0 part1\n")
 
 
-def loadingres(big, mark):
-    # the panel VRShell draws the loading screen on; dark gradient, centred mark
+def loadingres(big):
+    # backgrounds are black in the stock set - ours get a dark branded gradient
+    # with a faint centred mark. inside_ and outside_ are the two shell views.
     bg = Image.new("RGB", (1080, 720))
     top, bot = (26, 18, 54), (15, 8, 25)
     px = bg.load()
@@ -164,23 +165,32 @@ def loadingres(big, mark):
         row = tuple(round(a + (b - a) * u) for a, b in zip(top, bot))
         for x in range(1080):
             px[x, y] = row
+    mark, to_px, k = load_mark(big, 300)
     glow = glow_blob(720, 230, 46)
     bg.paste(glow, (180, 0), glow)
-    h = 320
-    w = round(mark.width * h / mark.height)
-    m = mark.resize((w, h), Image.LANCZOS)
-    bg.paste(m, (540 - w // 2, 340 - h // 2), m)
+    bg.paste(mark, (540 - mark.width // 2, 340 - mark.height // 2), mark)
     save(bg, LOADING_DIR, "inside_background_img.png")
+    save(bg, LOADING_DIR, "outside_background_img.png")
 
-    # spinner: the mark's orbit ring with the dot running it
-    small, to_px2, k2 = load_mark(big, 150)
+    # stock frames are full 1080x720 canvases: 3 pulsing dots over a baked
+    # "Loading..." caption. Ours: the mark where the dots sat, orbit dot
+    # running the ring, same caption below.
+    mark, to_px, k = load_mark(big, 270)
+    try:
+        font = ImageFont.truetype("/usr/share/fonts/noto/NotoSans-Regular.ttf", 64)
+    except OSError:
+        font = ImageFont.load_default()
+    probe = Image.new("RGBA", (8, 8))
+    tw = ImageDraw.Draw(probe).textlength("Loading...", font=font)
     for i in range(24):
         t = 2 * math.pi * i / 24
-        fr = Image.new("RGBA", (200, 200), (0, 0, 0, 0))
-        ox, oy = 100 - small.width // 2, 100 - small.height // 2
-        fr.alpha_composite(small, (ox, oy))
-        dx, dy = orbit_pos(t, to_px2)
-        draw_dot(fr, ox + dx, oy + dy, DOT_R * k2, HALO_R * k2)
+        fr = Image.new("RGBA", (1080, 720), (0, 0, 0, 0))
+        mx, my = 540 - mark.width // 2, 335 - mark.height // 2
+        fr.alpha_composite(mark, (mx, my))
+        dx, dy = orbit_pos(t, to_px)
+        draw_dot(fr, mx + dx, my + dy, DOT_R * k, HALO_R * k)
+        ImageDraw.Draw(fr).text(((1080 - tw) / 2, 545), "Loading...",
+                                font=font, fill=(255, 255, 255, 230))
         save(fr, LOADING_DIR, "img", f"loading_animation_{i:05d}.png")
 
 
@@ -197,7 +207,7 @@ def main():
     if "bootanim" in which:
         bootanimation(mark, to_px, k)
     if "loadingres" in which:
-        loadingres(big, mark)
+        loadingres(big)
     os.unlink(big)
 
 

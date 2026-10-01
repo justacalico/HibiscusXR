@@ -1,6 +1,6 @@
 # cted
 
-On-device half of HCTE (`applications/cte`). A small TCP daemon that gives
+On-device half of HCTE (`applications/desktop/cte`). A small TCP daemon that gives
 the desktop tool a shell-capability channel without needing adb on the
 host. Compiled into the image by `system/tools/build/380_img_cted.sh` and
 kept **off by default** - same opt-in stance as wireless adb:

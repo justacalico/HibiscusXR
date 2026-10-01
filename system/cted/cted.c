@@ -5,7 +5,7 @@
  * @brief  cted - CTE daemon: the on-headset half of HCTE.
  *
  * Listens on TCP (default port 7340) and serves the line-based protocol
- * applications/cte speaks. One command per connection; the client gets a
+ * applications/desktop/cte speaks. One command per connection; the client gets a
  * `CTE/1` banner, writes a command, reads the reply:
  *
  *   PING           -> +PONG

@@ -1,5 +1,5 @@
 #!/bin/bash
-# HBSUP release bump: cog decides whether commits under applications/hbsup
+# HBSUP release bump: cog decides whether commits under applications/desktop/hbsup
 # warrant a version bump, writes the changelog + version commit + tag,
 # which we push back to main. Same model as the cte lane: the bump commit
 # goes up with ci.skip, the tag push starts the tag pipeline that builds

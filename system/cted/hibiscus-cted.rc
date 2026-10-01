@@ -1,4 +1,4 @@
-# HCTE daemon - the on-device socket HCTE (applications/cte) talks to.
+# HCTE daemon - the on-device socket HCTE (applications/desktop/cte) talks to.
 #
 # OFF by default - it opens a shell-capability control socket to anyone on
 # the LAN, so it has to be asked for, same stance as wireless adb:

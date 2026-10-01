@@ -122,7 +122,7 @@ apps-test:
   script:
     - export PATH="/opt/flutter/bin:$PATH"
     - |
-      for d in applications/*/; do
+      for d in applications/*/ applications/*/*/; do
         if [ -f "$d/pubspec.yaml" ]; then
           (cd "$d" && flutter pub get && flutter analyze && flutter test) || exit 1
         fi
@@ -170,7 +170,7 @@ pages:
 # ------------------------------------------------------------- cte app ----
 
 # Every main push that touched the app: cog decides if the conventional
-# commits under applications/cte warrant a cte-v* tag. The bump commit
+# commits under applications/desktop/cte warrant a cte-v* tag. The bump commit
 # goes back via the hcte-release deploy key (writes to protected main);
 # its push carries ci.skip, the tag push then starts the release lane.
 cte-bump:
@@ -181,7 +181,7 @@ cte-bump:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - "applications/cte/**/*"
+        - "applications/desktop/cte/**/*"
         - "cog.toml"
   variables:
     COCOGITTO_VERSION: "7.0.0"
@@ -199,7 +199,7 @@ cte-bump:
     - git config user.name "GitLab CI"
     - git config user.email "ci@gitlab.com"
   script:
-    - bash applications/cte/ci/bump-cte.sh
+    - bash applications/desktop/cte/ci/bump-cte.sh
 
 # A cte-v* tag: mirror it to GitHub and watch the cte.yml release run.
 cte-release:
@@ -218,7 +218,7 @@ cte-release:
     - chmod 600 ~/.ssh/id_ed25519
     - ssh-keyscan -t ed25519 github.com > ~/.ssh/known_hosts
   script:
-    - bash applications/cte/ci/trigger-cte-release.sh "$CI_COMMIT_TAG"
+    - bash applications/desktop/cte/ci/trigger-cte-release.sh "$CI_COMMIT_TAG"
 
 # Fired by the GitHub release via the pipeline trigger token: pulls the
 # release assets back into a GitLab release so the binaries never expire.
@@ -239,7 +239,7 @@ cte-release-sync:
         glab auth login --job-token "$CI_JOB_TOKEN" --hostname "$CI_SERVER_FQDN" --api-protocol "https" --insecure-storage || true
       fi
   script:
-    - bash applications/cte/ci/sync-cte-release.sh
+    - bash applications/desktop/cte/ci/sync-cte-release.sh
 
 # ------------------------------------------------------------- hbsup app ---
 
@@ -254,7 +254,7 @@ hbsup-bump:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
-        - "applications/hbsup/**/*"
+        - "applications/desktop/hbsup/**/*"
         - "cog.toml"
   variables:
     COCOGITTO_VERSION: "7.0.0"
@@ -272,7 +272,7 @@ hbsup-bump:
     - git config user.name "GitLab CI"
     - git config user.email "ci@gitlab.com"
   script:
-    - bash applications/hbsup/ci/bump-hbsup.sh
+    - bash applications/desktop/hbsup/ci/bump-hbsup.sh
 
 hbsup-release:
   stage: release
@@ -290,7 +290,7 @@ hbsup-release:
     - chmod 600 ~/.ssh/id_ed25519
     - ssh-keyscan -t ed25519 github.com > ~/.ssh/known_hosts
   script:
-    - bash applications/hbsup/ci/trigger-hbsup-release.sh "$CI_COMMIT_TAG"
+    - bash applications/desktop/hbsup/ci/trigger-hbsup-release.sh "$CI_COMMIT_TAG"
 
 hbsup-release-sync:
   stage: release
@@ -309,4 +309,4 @@ hbsup-release-sync:
         glab auth login --job-token "$CI_JOB_TOKEN" --hostname "$CI_SERVER_FQDN" --api-protocol "https" --insecure-storage || true
       fi
   script:
-    - bash applications/hbsup/ci/sync-hbsup-release.sh
+    - bash applications/desktop/hbsup/ci/sync-hbsup-release.sh

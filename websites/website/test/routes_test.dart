@@ -50,8 +50,8 @@ void main() {
     expect(SiteApps.label(SiteApp.hbsup), 'HBSUP');
     expect(SiteApps.tagPrefix(SiteApp.cte), 'cte-');
     expect(SiteApps.tagPrefix(SiteApp.hbsup), 'hbsup-');
-    expect(SiteApps.treePath(SiteApp.cte), 'applications/cte');
-    expect(SiteApps.treePath(SiteApp.hbsup), 'applications/hbsup');
+    expect(SiteApps.treePath(SiteApp.cte), 'applications/desktop/cte');
+    expect(SiteApps.treePath(SiteApp.hbsup), 'applications/desktop/hbsup');
   });
 
   test('destination flags external targets', () {

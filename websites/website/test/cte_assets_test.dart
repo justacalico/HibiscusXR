@@ -6,7 +6,7 @@ void main() {
   test('cte page shots mirror the app goldens byte for byte', () {
     const shotsDir = 'assets/cte';
     const goldensDir =
-        '../../applications/cte/test/golden/goldens';
+        '../../applications/desktop/cte/test/golden/goldens';
 
     Set<String> names(String dir) => Directory(dir)
         .listSync()
@@ -19,7 +19,7 @@ void main() {
     final goldens = names(goldensDir);
     expect(shots, goldens,
         reason:
-            're-copy the changed files from applications/cte goldens');
+            're-copy the changed files from applications/desktop/cte goldens');
 
     for (final name in shots) {
       expect(

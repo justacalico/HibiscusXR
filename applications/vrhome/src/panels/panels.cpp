@@ -7,6 +7,7 @@
 #include "../common/config.h"
 
 #include <cstring>
+#include <ctime>
 
 #ifndef GL_TEXTURE_EXTERNAL_OES
 #define GL_TEXTURE_EXTERNAL_OES 0x8D65
@@ -43,6 +44,11 @@ int openPanel(HudEngine* e, float yaw, float pitch) {
     p.pitch = pitch;
     p.grabYaw = yaw;
     p.grabPitch = pitch;
+    {
+        struct timespec ts;
+        clock_gettime(CLOCK_MONOTONIC, &ts);
+        p.bornMs = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+    }
     e->panels.push_back(p);
     LOGI("panel %d on display %d yaw %.2f", (int)e->panels.size() - 1,
          dispId, yaw);

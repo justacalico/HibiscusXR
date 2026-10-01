@@ -229,7 +229,7 @@ void testDock() {
         const float dl = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= dl; d[1] /= dl; d[2] /= dl;
         float u, v, t;
-        CHECK(rayDock(0.0f, -0.55f, o0, o0, d, 0.4f, &u, &v, &t));
+        CHECK(rayDock(0.0f, -0.55f, 0.0f, o0, o0, d, 0.4f, &u, &v, &t));
         CHECK_F(u, 0.0f, 1e-4f);
         CHECK_F(v, 0.0f, 1e-4f);
         CHECK_F(t, dl, 1e-4f);
@@ -263,11 +263,11 @@ void testDock() {
         aim.m[2]  = -(c[0] - up[0] * hd);   // -z column aims at the handle
         aim.m[6]  = -(c[1] - up[1] * hd);
         aim.m[10] = -(c[2] - up[2] * hd);
-        DockPick pk = pickDock(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        DockPick pk = pickDock(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(pk.bar && pk.idx == -1 && pk.zone == DZONE_HANDLE);
         // aiming at the bar body still picks the bar, not the handle
         aim.m[2] = -c[0]; aim.m[6] = -c[1]; aim.m[10] = -c[2];
-        pk = pickDock(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        pk = pickDock(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(pk.bar && pk.zone != DZONE_HANDLE);
     }
 

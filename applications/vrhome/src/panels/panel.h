@@ -33,6 +33,11 @@ struct Panel {
     std::string pkg;
     std::string label;        // resolved app label for the window bar
     bool minimized = false;   // hidden window; task and display stay alive
+    long long bornMs = 0;     // CLOCK_MONOTONIC at spawn; the scale/fade-in
+                              // runs off it. 0 = predates anim, skip intro
+    float minT = 0.0f;        // park flight 0..1: chases `minimized`, so a
+                              // restore is just the flag dropping early.
+                              // 1 = fully shrunk onto the shelf slot
     float grabYaw = 0;        // yaw snapped when a drag grabbed
     float grabPitch = 0;      // pitch snapped when a drag grabbed
     float grabScale = 0.0f;   // scale snapped when a resize drag grabbed

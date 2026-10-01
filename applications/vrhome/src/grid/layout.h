@@ -21,6 +21,10 @@ void gridCenter(float yaw, float pitch, const float origin[3],
 // content height in metres
 float gridLayout(std::vector<GridItem>& items);
 
+// per-frame hover smoothing: the hovered cell's hs chases kGridHoverScale,
+// the rest relax to 1.0f
+void tickGridHover(std::vector<GridItem>& items, int hover, float dtMs);
+
 // the y-band cells must stay inside: clipped to under the title band.
 // lo/hi are card-local metres
 void gridClipBand(float* lo, float* hi);

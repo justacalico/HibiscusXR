@@ -13,10 +13,11 @@ float drawText(Engine* e, const char* utf8, float x, float y, float z,
 
 // text on a panel plane: o is the baseline start in world space, r and up the
 // plane's edge vectors so glyphs tilt with a pitched window. bold > 0
-// double-strikes each glyph offset that far along +x (in metres)
+// double-strikes each glyph offset that far along +x (in metres). alpha fades
+// the string with the element it rides on - transitions feed it their own
 void drawTextPanel(Engine* e, const char* utf8, const float o[3],
                    const float r[3], const float up[3], float mPerPx,
-                   float bold = 0.0f);
+                   float bold = 0.0f, float alpha = 1.0f);
 
 // HUD: head-locked status line so the pipeline can be verified without adb
 void drawHud(Engine* e, const Mat4& proj);

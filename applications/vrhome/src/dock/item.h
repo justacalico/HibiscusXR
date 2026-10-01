@@ -38,6 +38,9 @@ struct DockItem {
     bool vr = false;        // immersive app: amber ring + close badge
     bool sep = false;       // group separator gap before this item
     float x = 0;            // bar-local centre x in metres, set by dockLayout
+    float hs = 1.0f;        // smoothed hover scale, 1.0..kHoverScale; the
+                            // item list rebuilds each frame so carryHover
+                            // hands it forward
 };
 
 // icon texture + resolved metadata for one package, cached per pkg. tex is
@@ -65,6 +68,7 @@ struct ShelfItem {
     std::string pkg;
     std::string label;      // resolved app label, shown while hovered
     float x = 0;            // pill-local centre x, set by shelfLayout
+    float hs = 1.0f;        // smoothed hover scale, see DockItem.hs
 };
 
 struct ShelfPick {

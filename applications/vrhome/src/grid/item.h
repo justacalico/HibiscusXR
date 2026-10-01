@@ -18,6 +18,7 @@ struct GridItem {
     std::string label;
     bool vr = false;        // immersive app: launches straight to display 0
     float x = 0, y = 0;     // cell centre before scroll, card-local metres
+    float hs = 1.0f;        // smoothed hover scale, see DockItem.hs
 };
 
 struct GridPick {
@@ -32,6 +33,8 @@ struct GridPick {
 // package set changes, the rest is per-frame input bookkeeping
 struct GridOverlay {
     bool shown = false;
+    float openT = 0.0f;     // card open progress 0..1: chases `shown`, so
+                            // the card keeps drawing while it fades out
     std::vector<GridItem> items;
     int appsVer = -1;       // last pulled launcherApps version
     float scroll = 0.0f;    // metres the grid is scrolled by

@@ -77,6 +77,14 @@ struct HudEngine : Engine {
     long long holdStartMs = 0;
     float holdP = 0.0f;
 
+    // frame clock for the animation state: frameMs is this frame's
+    // CLOCK_MONOTONIC stamp, animMs the previous tick's - their delta
+    // drives every transition; summonMs stamps the last window bring-up
+    // and feeds the strip's slide/fade-in
+    long long frameMs = 0;
+    long long animMs = 0;
+    long long summonMs = 0;
+
     int hover = -1;              // panel index under the gaze ray
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit

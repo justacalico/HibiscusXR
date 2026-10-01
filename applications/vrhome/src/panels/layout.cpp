@@ -1,5 +1,6 @@
 #include "layout.h"
 
+#include "../anim/anim.h"
 #include "../common/config.h"
 #include "../math/head.h"
 #include "../pill/pill.h"
@@ -207,6 +208,11 @@ float resizeScale(float grabScale, float grabR, float r) {
     return s < kScaleMin ? kScaleMin : s > kScaleMax ? kScaleMax : s;
 }
 
+void tickPanels(std::vector<Panel>& panels, float dtMs) {
+    for (auto& p : panels)
+        p.minT = stepT(p.minT, p.minimized, dtMs, kMinMs);
+}
+
 void grabRing(std::vector<Panel>& panels) {
     for (auto& p : panels) { p.grabYaw = p.yaw; p.grabPitch = p.pitch; }
 }
@@ -268,7 +274,9 @@ Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
     float bestT = 1e9f;
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
-        if (p.minimized) continue;
+        // parked or mid-flight either way: a window that's still shrinking
+        // or growing back isn't interactive until it lands
+        if (p.minimized || p.minT > 0.0f) continue;
         const float hw = panelHW(p), hh = panelHH(p);
         float u, v, t;
         if (!rayPanel(p, origin, o, d, &u, &v, &t)) continue;

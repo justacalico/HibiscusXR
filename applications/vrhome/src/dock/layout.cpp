@@ -1,5 +1,6 @@
 #include "layout.h"
 
+#include "../anim/anim.h"
 #include "../common/config.h"
 #include "../math/head.h"
 #include "../panels/layout.h"
@@ -10,6 +11,13 @@
 void dockCenter(float yaw, float pitch, const float origin[3],
                 float c[3], float r[3], float up[3]) {
     ringPoint(yaw, pitch, kDockDist, 0.0f, origin, c, r, up);
+}
+
+void dockCenterDrop(float yaw, float pitch, float drop,
+                    const float origin[3], float c[3], float r[3],
+                    float up[3]) {
+    dockCenter(yaw, pitch, origin, c, r, up);
+    for (int i = 0; i < 3; ++i) c[i] -= up[i] * drop;
 }
 
 float dockPitchFor(float headPitch) {
@@ -212,22 +220,24 @@ int dockItemAt(const std::vector<DockItem>& items, float halfW,
     return -1;
 }
 
-bool rayDock(float yaw, float pitch, const float origin[3],
+bool rayDock(float yaw, float pitch, float drop, const float origin[3],
              const float o[3], const float d[3], float halfW,
              float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    dockCenter(yaw, pitch, origin, c, r, up);
+    dockCenterDrop(yaw, pitch, drop, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, halfW, kDockBarH * 0.5f,
                    u, v, t);
 }
 
 DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
-                     float yaw, float pitch, const float origin[3],
-                     const float o[3], const float d[3]) {
+                     float yaw, float pitch, float drop,
+                     const float origin[3], const float o[3],
+                     const float d[3]) {
     DockPick pk;
     if (items.empty() || halfW <= 0.0f) return pk;
     float u, v, t;
-    if (!rayDock(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
+    if (!rayDock(yaw, pitch, drop, origin, o, d, halfW, &u, &v, &t))
+        return pk;
     // the move handle hangs under the strip: it lives outside the bar box
     // so it checks before the in-bar bounds
     if (onMovePill(u, v, halfW, kDockBarH * 0.5f)) {
@@ -244,11 +254,11 @@ DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
 }
 
 DockPick pickDock(const std::vector<DockItem>& items, float halfW,
-                  float yaw, float pitch, const Mat4& head,
+                  float yaw, float pitch, float drop, const Mat4& head,
                   const float origin[3], const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickDockRay(items, halfW, yaw, pitch, origin, o, d);
+    return pickDockRay(items, halfW, yaw, pitch, drop, origin, o, d);
 }
 
 bool dockPinnable(const DockItem& it) {
@@ -272,13 +282,52 @@ std::vector<std::string> pinToggle(const std::vector<std::string>& pins,
 std::vector<ShelfItem> buildShelf(const std::vector<Panel>& panels) {
     std::vector<ShelfItem> out;
     for (int i = 0; i < (int)panels.size(); ++i) {
-        if (!panels[i].minimized) continue;
+        // minimized parks; a restore keeps the slot until the flight lands
+        if (!panels[i].minimized && panels[i].minT <= 0.0f) continue;
         ShelfItem it;
         it.panelIdx = i;
         it.pkg = panels[i].pkg;
         out.push_back(it);
     }
     return out;
+}
+
+bool shelfXFor(const std::vector<ShelfItem>& items, int panelIdx,
+               float* x) {
+    for (auto& it : items)
+        if (it.panelIdx == panelIdx) { *x = it.x; return true; }
+    return false;
+}
+
+void carryHover(std::vector<DockItem>& items,
+                const std::vector<DockItem>& prev) {
+    for (auto& it : items)
+        for (auto& p : prev)
+            if (p.kind == it.kind && p.pkg == it.pkg) {
+                it.hs = p.hs;
+                break;
+            }
+}
+
+void carryShelfHover(std::vector<ShelfItem>& items,
+                     const std::vector<ShelfItem>& prev) {
+    for (auto& it : items)
+        for (auto& p : prev)
+            if (p.pkg == it.pkg) { it.hs = p.hs; break; }
+}
+
+void tickDockHover(std::vector<DockItem>& items, int hover, float dtMs) {
+    for (int i = 0; i < (int)items.size(); ++i)
+        items[i].hs = dampMs(items[i].hs,
+                             i == hover ? kHoverScale : 1.0f,
+                             dtMs, kHoverTauMs);
+}
+
+void tickShelfHover(std::vector<ShelfItem>& items, int hover, float dtMs) {
+    for (int i = 0; i < (int)items.size(); ++i)
+        items[i].hs = dampMs(items[i].hs,
+                             i == hover ? kHoverScale : 1.0f,
+                             dtMs, kHoverTauMs);
 }
 
 float shelfLayout(std::vector<ShelfItem>& items) {
@@ -308,6 +357,13 @@ void shelfCenter(float yaw, float pitch, const float origin[3],
     for (int i = 0; i < 3; ++i) c[i] += up[i] * shelfLift();
 }
 
+void shelfCenterDrop(float yaw, float pitch, float drop,
+                     const float origin[3], float c[3], float r[3],
+                     float up[3]) {
+    shelfCenter(yaw, pitch, origin, c, r, up);
+    for (int i = 0; i < 3; ++i) c[i] -= up[i] * drop;
+}
+
 int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
                 float u, float v) {
     if (halfW <= 0.0f || fabsf(u) > 1.0f || fabsf(v) > 1.0f) return -1;
@@ -320,21 +376,23 @@ int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
     return -1;
 }
 
-bool rayShelf(float yaw, float pitch, const float origin[3],
+bool rayShelf(float yaw, float pitch, float drop, const float origin[3],
               const float o[3], const float d[3], float halfW,
               float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    shelfCenter(yaw, pitch, origin, c, r, up);
+    shelfCenterDrop(yaw, pitch, drop, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, halfW, kShelfHH, u, v, t);
 }
 
 ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
-                       float yaw, float pitch, const float origin[3],
-                       const float o[3], const float d[3]) {
+                       float yaw, float pitch, float drop,
+                       const float origin[3], const float o[3],
+                       const float d[3]) {
     ShelfPick pk;
     if (items.empty() || halfW <= 0.0f) return pk;
     float u, v, t;
-    if (!rayShelf(yaw, pitch, origin, o, d, halfW, &u, &v, &t)) return pk;
+    if (!rayShelf(yaw, pitch, drop, origin, o, d, halfW, &u, &v, &t))
+        return pk;
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.hit = true;
     pk.t = t;
@@ -343,9 +401,9 @@ ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
 }
 
 ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
-                    float yaw, float pitch, const Mat4& head,
+                    float yaw, float pitch, float drop, const Mat4& head,
                     const float origin[3], const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickShelfRay(items, halfW, yaw, pitch, origin, o, d);
+    return pickShelfRay(items, halfW, yaw, pitch, drop, origin, o, d);
 }

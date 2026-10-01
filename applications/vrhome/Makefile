@@ -50,6 +50,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
             src/render/mesh.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
+            src/anim/anim.cpp \
             src/pill/pill.cpp \
             src/grid/grid.cpp src/grid/layout.cpp \
             src/kbd/kbd.cpp src/kbd/glue.cpp \
@@ -85,6 +86,7 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 
 # pure modules only - no Android/GL includes, so they build on the host
 HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
+             src/anim/anim.cpp \
              src/panels/layout.cpp src/kbd/kbd.cpp src/pill/pill.cpp \
              src/grid/layout.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \

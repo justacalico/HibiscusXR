@@ -1,6 +1,7 @@
 #include "chrome.h"
 
 #include "../hud/engine.h"
+#include "../anim/anim.h"
 #include "../common/config.h"
 #include "../common/palette.h"
 #include "../dock/layout.h"
@@ -18,45 +19,77 @@
 #define GL_TEXTURE_EXTERNAL_OES 0x8D65
 #endif
 
+// the panel's animated transform this frame: the spawn-in scale/fade and
+// the park flight fold into a centre offset toward the shelf slot, a size
+// multiplier and a master alpha. False once the window is fully parked -
+// minimized panels draw nothing the rest of the time
+static bool panelVis(HudEngine* e, int i, const float shc[3],
+                     const float shr[3], float c[3], float r[3],
+                     float up[3], float* sc, float* a) {
+    Panel& p = e->panels[i];
+    if (p.minT >= 1.0f) return false;
+    panelCenter(p, e->ringPos, c, r, up);
+    const float st = progT(p.bornMs, e->frameMs, kSpawnMs);
+    *sc = spawnScale(st);
+    *a = spawnAlpha(st);
+    if (p.minT > 0.0f) {
+        const float mt = minEase(p.minT);
+        float tx = 0.0f;
+        shelfXFor(e->shelf, i, &tx);
+        const float ic[3] = {shc[0] + shr[0]*tx, shc[1] + shr[1]*tx,
+                             shc[2] + shr[2]*tx};
+        lerp3(c, ic, mt, c);
+        *sc *= minScale(mt);
+        *a *= minAlpha(mt);
+    }
+    return true;
+}
+
 void drawPanels(HudEngine* e, const Mat4& viewProj) {
     if (e->panels.empty()) return;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
+    // the park flight's target frame: the shelf pill's anchor, shared by
+    // every window in transit
+    float shc[3], shr[3], shu[3];
+    shelfCenter(e->dockYaw, e->dockPitch, e->ringPos, shc, shr, shu);
+
     // shadows first: they sit behind the panels and must not cover a
     // neighbouring window
     glUseProgram(e->shapeProg);
-    for (auto& p : e->panels) {
-        if (p.minimized) continue;
-        float c[3], r[3], up[3];
-        panelCenter(p, e->ringPos, c, r, up);
-        const float hw = panelHW(p), hh = panelHH(p);
+    for (int i = 0; i < (int)e->panels.size(); ++i) {
+        Panel& p = e->panels[i];
+        float c[3], r[3], up[3], sc, a;
+        if (!panelVis(e, i, shc, shr, c, r, up, &sc, &a)) continue;
+        const float hw = panelHW(p) * sc, hh = panelHH(p) * sc;
         // chrome hangs above: the bound top bar tops the window, so the
         // shadow spreads symmetric past the taller side
-        const float shw = hw + 0.10f, shh = (hh + kBarH) + 0.10f;
-        const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f};
-        shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, shw, shh,
-                  shw - 0.10f, shh - 0.10f, 0.10f, -1.0f, 0.10f, col);
+        const float shw = hw + 0.10f * sc, shh = (hh + kBarH * sc) + 0.10f * sc;
+        const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f * a};
+        shapeQuad(e, viewProj, c, r, up, -0.03f * sc, 0.0f, shw, shh,
+                  shw - 0.10f * sc, shh - 0.10f * sc, 0.10f * sc, -1.0f,
+                  0.10f * sc, col);
     }
 
     for (int i = 0; i < (int)e->panels.size(); ++i) {
         Panel& p = e->panels[i];
-        if (p.minimized) continue;
-        float c[3], r[3], up[3];
-        panelCenter(p, e->ringPos, c, r, up);
-        const float hw = panelHW(p), hh = panelHH(p);
+        float c[3], r[3], up[3], sc, a;
+        if (!panelVis(e, i, shc, shr, c, r, up, &sc, &a)) continue;
+        const float hw = panelHW(p) * sc, hh = panelHH(p) * sc;
         const bool hov = (e->hover == i);
         const int nbtns = 3;
 
         // the label is measured first so it can shrink to fit the bar's
-        // text region left of the button strip
+        // text region left of the button strip - the fit math runs on the
+        // rest size so the font doesn't pump mid-transition
         float s = 0.0014f, bold = 0.0f, w = 0.0f;
         if (!p.label.empty() && e->font.ok) {
             bold = 0.8f * s;
             w = measureText(e, p.label.c_str(), s) + bold;
-            if (w > barTextLimit(hw, nbtns)) {
-                s *= barTextLimit(hw, nbtns) / w;
+            if (w > barTextLimit(panelHW(p), nbtns)) {
+                s *= barTextLimit(panelHW(p), nbtns) / w;
                 bold = 0.8f * s;
                 w = measureText(e, p.label.c_str(), s) + bold;
             }
@@ -66,24 +99,25 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // no part of the bar covers the app surface. Square bottom corners
         // meet the surface's square top edge, rounded top corners carry
         // the silhouette - one shape. Label left, buttons on the right end
-        const float barOff = hh + kBarH * 0.5f;
+        const float barOff = hh + kBarH * 0.5f * sc;
         const float barHW = hw;
         const float* bcp = hov ? kPalSurfaceHigh : kPalPanel;
         const float barCol[4] = {bcp[0], bcp[1], bcp[2],
-                                 hov ? 0.95f : 0.88f};
+                                 (hov ? 0.95f : 0.88f) * a};
         const float barC[3] = {c[0] + up[0] * barOff, c[1] + up[1] * barOff,
                                c[2] + up[2] * barOff};
         glUseProgram(e->shapeProg);
-        shapeQuad(e, viewProj, barC, r, up, 0.004f, 0.0f, barHW, kBarH * 0.5f,
-                  barHW, kBarH * 0.5f, kCornerR, 0.0f, 0.002f, barCol, 0.0f);
+        shapeQuad(e, viewProj, barC, r, up, 0.004f, 0.0f, barHW,
+                  kBarH * 0.5f * sc, barHW, kBarH * 0.5f * sc,
+                  kCornerR * sc, 0.0f, 0.002f, barCol, 0.0f);
 
         // float + minimize + close discs on the bar's right end; glyphs are
         // small capsules, the close pair rotated into an x, the float one
         // four diagonal ticks pointing out - the window leaves the grid
         {
             const float icon[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                   0.92f};
-            const float il = kBarBtnR * 0.55f, it = 0.0028f;
+                                   0.92f * a};
+            const float il = kBarBtnR * 0.55f * sc, it = 0.0028f * sc;
             const float bxs[3] = {barFloatX(barHW), barMinX(barHW),
                                   barCloseX(barHW)};
             const int zones[3] = {ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE};
@@ -98,16 +132,16 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                                    : p.floating && zones[b] == ZONE_FLOAT
                                      ? kPalAccent : kPalText;
                 const float bg[4] = {bgp[0], bgp[1], bgp[2],
-                                     bhov ? 0.32f : 0.13f};
+                                     (bhov ? 0.32f : 0.13f) * a};
                 shapeQuad(e, viewProj, bc, r, up, 0.006f, 0.0f,
-                          kBarBtnR, kBarBtnR, kBarBtnR, kBarBtnR,
-                          kBarBtnR, 0.0f, 0.002f, bg);
+                          kBarBtnR * sc, kBarBtnR * sc, kBarBtnR * sc,
+                          kBarBtnR * sc, kBarBtnR * sc, 0.0f, 0.002f, bg);
                 if (zones[b] == ZONE_FLOAT) {
                     // four ticks at the diagonals, lit while floating
                     const float* gcp = p.floating ? kPalAccent : kPalText;
-                    const float gc[4] = {gcp[0], gcp[1], gcp[2], 0.92f};
-                    const float tl = kBarBtnR * 0.34f;
-                    const float to = kBarBtnR * 0.42f;
+                    const float gc[4] = {gcp[0], gcp[1], gcp[2], 0.92f * a};
+                    const float tl = kBarBtnR * 0.34f * sc;
+                    const float to = kBarBtnR * 0.42f * sc;
                     for (int q = 0; q < 4; ++q) {
                         const float sx = (q & 1) ? 1.0f : -1.0f;
                         const float sy = (q & 2) ? 1.0f : -1.0f;
@@ -138,7 +172,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
         glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
         glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
-        glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), kCornerR);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"),
+                    kCornerR * sc);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), a);
         const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
         const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
         const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -174,13 +210,13 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // bar reads as one rounded shape, brightened while gazed at
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                hov ? 0.55f : 0.14f};
-        const float bdUp = kBarH * 0.5f;
+                                (hov ? 0.55f : 0.14f) * a};
+        const float bdUp = kBarH * 0.5f * sc;
         const float bdH = hh + bdUp + 0.006f;
         const float bdC[3] = {c[0] + up[0] * bdUp, c[1] + up[1] * bdUp,
                               c[2] + up[2] * bdUp};
         shapeQuad(e, viewProj, bdC, r, up, 0.006f, 0.0f, hw + 0.006f,
-                  bdH, hw + 0.006f, bdH, kCornerR + 0.006f,
+                  bdH, hw + 0.006f, bdH, kCornerR * sc + 0.006f,
                   0.0016f, 0.0012f, bdCol);
 
         // the resize grip on the window's bottom-right corner: two short
@@ -191,14 +227,14 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                                e->pressDisp == p.displayId;
             const float* gp = ghov || gheld ? kPalAccent : kPalText;
             const float gcol[4] = {gp[0], gp[1], gp[2],
-                                   ghov || gheld ? 0.9f : 0.45f};
+                                   (ghov || gheld ? 0.9f : 0.45f) * a};
             for (int g = 0; g < 2; ++g) {
-                const float off = 0.030f - g * 0.016f;
+                const float off = (0.030f - g * 0.016f) * sc;
                 const float gc[3] = {
                     c[0] + r[0]*(hw - off) + up[0]*(-hh + off),
                     c[1] + r[1]*(hw - off) + up[1]*(-hh + off),
                     c[2] + r[2]*(hw - off) + up[2]*(-hh + off)};
-                const float gl = 0.011f;
+                const float gl = 0.011f * sc;
                 shapeQuad(e, viewProj, gc, r, up, 0.008f, 0.785398f,
                           gl, 0.0022f, gl, 0.0022f, 0.0022f, 0.0f,
                           0.0015f, gcol);
@@ -211,7 +247,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             drawMovePill(e, viewProj, c, r, up, movePillDrop(hh),
                          (hov && e->hoverZone == ZONE_PILL) ||
                          (e->pressZone == ZONE_PILL &&
-                          e->pressDisp == p.displayId));
+                          e->pressDisp == p.displayId), a);
 
         // app label left-aligned in the bar, bold, shrunk to fit if the
         // name is long. Centering uses the real glyph bounds, not the
@@ -221,7 +257,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             float gt, gb;
             if (textBounds(e->font.set, p.label.c_str(), s, &gt, &gb))
                 boff = barOff - (gt + gb) * 0.5f;
-            const float tx = -(hw - kBarPadX);
+            const float tx = -(hw - kBarPadX * sc);
             float to[3] = {c[0] + r[0] * tx + up[0] * boff,
                            c[1] + r[1] * tx + up[1] * boff,
                            c[2] + r[2] * tx + up[2] * boff};
@@ -235,7 +271,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
-            drawTextPanel(e, p.label.c_str(), to, r, up, s, bold);
+            drawTextPanel(e, p.label.c_str(), to, r, up, s * sc,
+                          bold * sc, a);
         }
     }
     glDepthMask(GL_TRUE);
@@ -271,6 +308,9 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), kCornerR);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), kCornerR);
+    // the panel loop leaves its transition fade on the program - the quad
+    // doesn't animate, so it draws opaque
+    glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), 1.0f);
     const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
     const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
     const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -320,11 +360,11 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
 
 void drawMovePill(HudEngine* e, const Mat4& vp, const float c[3],
                   const float r[3], const float up[3], float drop,
-                  bool hot) {
+                  bool hot, float alpha) {
     const float hc[3] = {c[0] - up[0] * drop, c[1] - up[1] * drop,
                          c[2] - up[2] * drop};
     const float hcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                           hot ? 0.95f : 0.55f};
+                           (hot ? 0.95f : 0.55f) * alpha};
     shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, kHandleW, kHandleT,
               kHandleW, kHandleT, kHandleT, 0.0f, 0.0015f, hcol);
 }
@@ -382,8 +422,11 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
     if (e->dockHover >= 0 || e->dockZone == DZONE_HANDLE) {
         // on the dock the cursor sits on the strip's own plane - a handle
         // hit has no item index but still carries u,v, so it lands on the
-        // line under the bar
-        dockCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
+        // line under the bar. The summon slide counts: the dot rides the
+        // strip while it settles
+        dockCenterDrop(e->dockYaw, e->dockPitch,
+                       dashDrop(progT(e->summonMs, e->frameMs, kDashMs)),
+                       e->ringPos, c, r, up);
         const float hw = e->dockHW, hh = kDockBarH * 0.5f;
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;

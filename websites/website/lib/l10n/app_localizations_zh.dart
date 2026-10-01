@@ -18,9 +18,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navGuide => '刷机指南';
 
   @override
-  String get navScreenshots => '截图';
-
-  @override
   String get navAbout => '关于';
 
   @override
@@ -124,12 +121,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get statPanelLabel => 'JDI 4K 屏幕';
-
-  @override
-  String get shotCollectionCaption => '集合与分组,带数量。';
-
-  @override
-  String get shotMenuCaption => '长按弹出的磁贴菜单。';
 
   @override
   String get homeWayOverlayTitle => 'GSI 加 overlay';
@@ -376,15 +367,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get repoRef => 'alvr-pico-legacy 的本地克隆,仅作参考。';
-
-  @override
-  String get screenshotsTitle => '截图';
-
-  @override
-  String get screenshotsSubtitle => 'vrhome 和它的 library 窗口,跑在 Pico Neo 2 真机上。';
-
-  @override
-  String get shotGridCaption => 'vrhome 里的应用网格。';
 
   @override
   String get downloadBackupCta => '获取 HBSUP';

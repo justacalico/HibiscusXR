@@ -116,12 +116,6 @@ abstract class AppLocalizations {
   /// **'Guide'**
   String get navGuide;
 
-  /// No description provided for @navScreenshots.
-  ///
-  /// In en, this message translates to:
-  /// **'Screenshots'**
-  String get navScreenshots;
-
   /// No description provided for @navAbout.
   ///
   /// In en, this message translates to:
@@ -325,18 +319,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'JDI 4K panel'**
   String get statPanelLabel;
-
-  /// No description provided for @shotCollectionCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'Collections and groups, with counts.'**
-  String get shotCollectionCaption;
-
-  /// No description provided for @shotMenuCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'The tile menu on a long press.'**
-  String get shotMenuCaption;
 
   /// No description provided for @homeWayOverlayTitle.
   ///
@@ -811,24 +793,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Local clone of alvr-pico-legacy kept for reference.'**
   String get repoRef;
-
-  /// No description provided for @screenshotsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Screenshots'**
-  String get screenshotsTitle;
-
-  /// No description provided for @screenshotsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'vrhome and its library window, on the Pico Neo 2.'**
-  String get screenshotsSubtitle;
-
-  /// No description provided for @shotGridCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'The app grid inside vrhome.'**
-  String get shotGridCaption;
 
   /// No description provided for @downloadBackupCta.
   ///

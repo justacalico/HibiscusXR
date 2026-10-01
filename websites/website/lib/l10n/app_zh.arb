@@ -4,7 +4,6 @@
 
   "navRepos": "仓库",
   "navGuide": "刷机指南",
-  "navScreenshots": "截图",
   "navAbout": "关于",
   "navFaq": "常见问题",
   "navMenu": "菜单",
@@ -45,8 +44,6 @@
   "statPanel": "3840×2160 @ 72 Hz",
   "statPanelLabel": "JDI 4K 屏幕",
 
-  "shotCollectionCaption": "集合与分组,带数量。",
-  "shotMenuCaption": "长按弹出的磁贴菜单。",
 
   "homeWayOverlayTitle": "GSI 加 overlay",
   "homeWayOverlayBody": "系统主体是 LineageOS 17.1 GSI,我们的修复全部放在一个小的 overlay 里。vendor 分区保持和原厂逐字节一致,问题都在 system 侧解决。",
@@ -133,9 +130,6 @@
   "repoOut": "构建产物:system-pn2-full.img 和编译好的 shim。",
   "repoRef": "alvr-pico-legacy 的本地克隆,仅作参考。",
 
-  "screenshotsTitle": "截图",
-  "screenshotsSubtitle": "vrhome 和它的 library 窗口,跑在 Pico Neo 2 真机上。",
-  "shotGridCaption": "vrhome 里的应用网格。",
 
   "downloadBackupCta": "获取 HBSUP",
 

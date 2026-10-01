@@ -18,9 +18,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navGuide => 'Guide';
 
   @override
-  String get navScreenshots => 'Screenshots';
-
-  @override
   String get navAbout => 'About';
 
   @override
@@ -124,12 +121,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statPanelLabel => 'JDI 4K panel';
-
-  @override
-  String get shotCollectionCaption => 'Collections and groups, with counts.';
-
-  @override
-  String get shotMenuCaption => 'The tile menu on a long press.';
 
   @override
   String get homeWayOverlayTitle => 'GSI plus overlay';
@@ -407,16 +398,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get repoRef => 'Local clone of alvr-pico-legacy kept for reference.';
-
-  @override
-  String get screenshotsTitle => 'Screenshots';
-
-  @override
-  String get screenshotsSubtitle =>
-      'vrhome and its library window, on the Pico Neo 2.';
-
-  @override
-  String get shotGridCaption => 'The app grid inside vrhome.';
 
   @override
   String get downloadBackupCta => 'Get HBSUP';

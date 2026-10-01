@@ -87,7 +87,7 @@ class _Hero extends StatelessWidget {
                 ),
                 ChevronLink(
                   label: l10n.heroSecondary,
-                  onPressed: () => launchUrl(Uri.parse(Links.docs)),
+                  onPressed: () => context.go(Routes.flashdocs),
                 ),
               ],
             ),

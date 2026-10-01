@@ -30,9 +30,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navFaq => 'FAQ';
 
   @override
-  String get navDocs => 'Docs';
-
-  @override
   String get navMenu => 'Menu';
 
   @override
@@ -297,9 +294,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.';
 
   @override
-  String get statusBlockerCta => 'Read the internals docs';
-
-  @override
   String get reposTitle => 'Repositories';
 
   @override
@@ -342,10 +336,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get repoVrdemo =>
       'Minimal native VR test app (pn2vr) used for compositor bring-up.';
-
-  @override
-  String get repoDocs =>
-      'The MkDocs documentation site - guides, internals, repo map.';
 
   @override
   String get repoWebsite => 'This site.';
@@ -664,7 +654,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA2 =>
-      'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.';
+      'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.';
 
   @override
   String get faqQ3 => 'Which headset does it run on?';

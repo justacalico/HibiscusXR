@@ -30,9 +30,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navFaq => '常见问题';
 
   @override
-  String get navDocs => '文档';
-
-  @override
   String get navMenu => '菜单';
 
   @override
@@ -287,9 +284,6 @@ class AppLocalizationsZh extends AppLocalizations {
       'pvrservice 给出的旋转数据是好的,应用内部 SDK 报回来的 tracking state 现在也是真实值。提交的 pose 通过了合成器的单位四元数校验,每一帧都落在屏幕上。';
 
   @override
-  String get statusBlockerCta => '看内部原理文档';
-
-  @override
   String get reposTitle => '仓库';
 
   @override
@@ -327,9 +321,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get repoVrdemo => '最小原生 VR 测试应用(pn2vr),用于合成器通路调试。';
-
-  @override
-  String get repoDocs => 'MkDocs 文档站——指南、内部原理、仓库地图。';
 
   @override
   String get repoWebsite => '就是本站。';
@@ -616,7 +607,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get faqA2 =>
-      '有真实风险。只刷 system 分区——写入低于防回滚熔丝允许版本的 bootloader 镜像会让 sdm845 永久硬砖。先读文档里的刷机指南。';
+      '有真实风险。只刷 system 分区——写入低于防回滚熔丝允许版本的 bootloader 镜像会让 sdm845 永久硬砖。先读刷机指南。';
 
   @override
   String get faqQ3 => '支持哪个头显?';

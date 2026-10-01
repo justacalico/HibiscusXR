@@ -169,8 +169,8 @@ class _BlockerBand extends StatelessWidget {
               const SizedBox(height: 24),
               Reveal(
                 child: ChevronLink(
-                  label: l10n.statusBlockerCta,
-                  onPressed: () => launchUrl(Uri.parse(Links.docs)),
+                  label: l10n.aboutNotesCta,
+                  onPressed: () => launchUrl(Uri.parse(Links.notes)),
                 ),
               ),
             ],

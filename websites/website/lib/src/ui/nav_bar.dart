@@ -4,7 +4,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
-import '../links.dart';
 import '../routes.dart';
 import '../settings.dart';
 import '../theme.dart';
@@ -88,7 +87,6 @@ List<Destination> _destinations(AppLocalizations l10n) => [
       Destination(Routes.screenshots, (l) => l.navScreenshots),
       Destination(Routes.faq, (l) => l.navFaq),
       Destination(Routes.about, (l) => l.navAbout),
-      Destination(Links.docs, (l) => l.navDocs),
     ];
 
 void _open(Destination d, BuildContext context) {

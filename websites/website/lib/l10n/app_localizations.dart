@@ -140,12 +140,6 @@ abstract class AppLocalizations {
   /// **'FAQ'**
   String get navFaq;
 
-  /// No description provided for @navDocs.
-  ///
-  /// In en, this message translates to:
-  /// **'Docs'**
-  String get navDocs;
-
   /// No description provided for @navMenu.
   ///
   /// In en, this message translates to:
@@ -632,12 +626,6 @@ abstract class AppLocalizations {
   /// **'pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor\'s unit-quaternion check and every frame lands on the display.'**
   String get statusBlockerBody;
 
-  /// No description provided for @statusBlockerCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Read the internals docs'**
-  String get statusBlockerCta;
-
   /// No description provided for @reposTitle.
   ///
   /// In en, this message translates to:
@@ -709,12 +697,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Minimal native VR test app (pn2vr) used for compositor bring-up.'**
   String get repoVrdemo;
-
-  /// No description provided for @repoDocs.
-  ///
-  /// In en, this message translates to:
-  /// **'The MkDocs documentation site - guides, internals, repo map.'**
-  String get repoDocs;
 
   /// No description provided for @repoWebsite.
   ///
@@ -1271,7 +1253,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA2.
   ///
   /// In en, this message translates to:
-  /// **'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.'**
+  /// **'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.'**
   String get faqA2;
 
   /// No description provided for @faqQ3.

@@ -11,7 +11,6 @@
   "navDownload": "Download",
   "navAbout": "About",
   "navFaq": "FAQ",
-  "navDocs": "Docs",
   "navMenu": "Menu",
   "navClose": "Close",
 
@@ -110,7 +109,6 @@
   "statusBroken3": "Provision setup wizard - crashes in its language picker",
   "statusBlockerTitle": "No bug between here and a picture.",
   "statusBlockerBody": "pvrservice hands out good rotation and app-side tracking state now arrives valid. Poses pass the compositor's unit-quaternion check and every frame lands on the display.",
-  "statusBlockerCta": "Read the internals docs",
 
   "reposTitle": "Repositories",
   "reposSubtitle": "One tree per component in the HibiscusXR monorepo.",
@@ -130,7 +128,6 @@
   "repoVrhome": "Open VR home: 2D apps as floating windows, Pico VR apps fullscreen.",
   "repoLibrary": "Flutter app grid inside vrhome - search, pin, group, launch.",
   "repoVrdemo": "Minimal native VR test app (pn2vr) used for compositor bring-up.",
-  "repoDocs": "The MkDocs documentation site - guides, internals, repo map.",
   "repoWebsite": "This site.",
   "repoTools": "Every script for the port, sorted by job: recon, build, flash.",
   "repoAndroid": "LineageOS device tree device/pico/A7B10, read from stock firmware.",
@@ -228,7 +225,7 @@
   "faqQ1": "Does it actually work?",
   "faqA1": "On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture. The status page keeps the current list.",
   "faqQ2": "Is it safe to flash?",
-  "faqA2": "There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the docs flashing guide first.",
+  "faqA2": "There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.",
   "faqQ3": "Which headset does it run on?",
   "faqA3": "The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.",
   "faqQ4": "Where do Pico's proprietary files come from?",

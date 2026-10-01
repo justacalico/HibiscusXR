@@ -248,6 +248,7 @@ static void hudFrame(HudEngine* e) {
     pumpBridge(e);
 
     // sync first: the pick needs this frame's item list and strip width
+    syncUiStrings(e);
     syncDock(e);
     syncGrid(e);
     syncNotifs(e);

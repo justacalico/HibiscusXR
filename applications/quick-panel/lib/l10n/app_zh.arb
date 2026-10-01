@@ -1,0 +1,38 @@
+{
+  "@@locale": "zh",
+  "appTitle": "快捷设置",
+  "@appTitle": {
+    "description": "App and panel title"
+  },
+  "settings": "设置",
+  "tileWifi": "Wi-Fi",
+  "tileBluetooth": "蓝牙",
+  "tileSeethrough": "透视",
+  "tileBoundary": "边界",
+  "tileMicrophone": "麦克风",
+  "tileNightMode": "夜间模式",
+  "tileDoNotDisturb": "勿扰",
+  "tileAirplaneMode": "飞行模式",
+  "tileBatterySaver": "省电模式",
+  "actionResetView": "重置视角",
+  "actionReportProblem": "报告问题",
+  "actionAboutDevice": "关于设备",
+  "sliderVolume": "音量",
+  "sliderBrightness": "亮度",
+  "stateOn": "开",
+  "stateOff": "关",
+  "stateNotConnected": "未连接",
+  "notifTitle": "通知",
+  "notifEmpty": "没有通知",
+  "notifDismiss": "关闭",
+  "notifClearAll": "全部清除",
+  "batteryPercent": "{level}%",
+  "@batteryPercent": {
+    "description": "Battery charge level in the status bar",
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  }
+}

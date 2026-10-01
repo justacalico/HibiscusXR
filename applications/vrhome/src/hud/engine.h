@@ -45,6 +45,7 @@ struct HudEngine : Engine {
               mSysMsgVer = nullptr, mSysMsgs = nullptr,
               mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
               mSysMsgOnly = nullptr,
+              mUiStrVer = nullptr, mUiStrings = nullptr,
               mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
               mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr,
               mAppsVer = nullptr, mApps = nullptr;
@@ -171,6 +172,13 @@ struct HudEngine : Engine {
     bool sysMsgOnly = false;
     bool sysMsgWas = false;
     float sysMsgYaw = 0.0f;
+
+    // localized chrome labels pulled from java on a version bump, same
+    // pattern as the notif/sysmsg feeds; uiLib is the app-grid button's
+    // label - empty until the first pull lands, draw sites fall back to
+    // the English text
+    int uiStrVer = -1;
+    std::string uiLib;
 
     // developer-settings debug line: debugHud is the toggle itself;
     // debugOnly means the window is up over a covered app solely for that

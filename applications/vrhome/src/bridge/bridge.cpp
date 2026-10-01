@@ -19,6 +19,38 @@ static std::mutex gLaunchMu;
 
 static volatile bool gWantRecenter = false;
 
+static std::string jstr(JNIEnv* env, jstring s) {
+    if (!s) return "";
+    const char* c = env->GetStringUTFChars(s, nullptr);
+    std::string out = c ? c : "";
+    if (c) env->ReleaseStringUTFChars(s, c);
+    env->DeleteLocalRef(s);
+    return out;
+}
+
+// localized chrome labels: the java side bumps its version when the
+// configuration changes, then the labels - plus every cached app label -
+// are refetched so a locale switch doesn't leave stale text behind
+void syncUiStrings(HudEngine* e) {
+    if (!e->bridge || !e->mUiStrVer || !e->mUiStrings) return;
+    JNIEnv* env = threadEnv(e->vm);
+    const int v = env->CallIntMethod(e->bridge, e->mUiStrVer);
+    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    if (v == e->uiStrVer) return;
+    jobjectArray arr =
+        (jobjectArray)env->CallObjectMethod(e->bridge, e->mUiStrings);
+    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    e->uiStrVer = v;
+    if (arr) {
+        if (env->GetArrayLength(arr) > 0)
+            e->uiLib =
+                jstr(env, (jstring)env->GetObjectArrayElement(arr, 0));
+        env->DeleteLocalRef(arr);
+    }
+    for (auto& p : e->panels) p.label.clear();
+    for (auto& kv : e->dockIcons) kv.second.label.clear();
+}
+
 extern "C" JNIEXPORT void JNICALL
 Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
     const char* p = env->GetStringUTFChars(pkg, nullptr);
@@ -89,6 +121,9 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
     e->mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
     e->mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
+    e->mUiStrVer     = env->GetMethodID(bc, "uiStringsVersion", "()I");
+    e->mUiStrings    = env->GetMethodID(bc, "uiStrings",
+                        "()[Ljava/lang/String;");
     e->mKbdCreate    = env->GetMethodID(bc, "createKbdSurface", "(IIII)Z");
     e->mKbdTex       = env->GetMethodID(bc, "kbdTexture",
                         "()Landroid/graphics/SurfaceTexture;");

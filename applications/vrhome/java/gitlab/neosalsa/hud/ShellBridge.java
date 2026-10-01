@@ -288,6 +288,13 @@ public class ShellBridge {
         }
     }
 
+    // main looper via onConfigurationChanged: app labels resolved under
+    // the old locale re-resolve on the next launcherApps() pull
+    public void invalidateAppLabels() {
+        appsDirty = true;
+        appsVer++;
+    }
+
     private final BroadcastReceiver pkgWatch = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent in) {
             appsDirty = true;
@@ -324,6 +331,14 @@ public class ShellBridge {
 
     // render thread: drop the card without acting on it
     public void sysMsgDismiss(long id) { SysMsgs.dismiss(id); }
+
+    // -------------------------------------------------------- ui strings
+
+    // render thread: bumps on a locale switch
+    public int uiStringsVersion() { return UiStrings.version(); }
+
+    // render thread: localized labels for chrome the GL side draws
+    public String[] uiStrings() { return UiStrings.snapshot(ctx); }
 
     // ---------------------------------------------------------- displays
 

@@ -128,7 +128,8 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     }
     if (e->font.ok) {
         const float ts = 0.0016f * gs;
-        const char* title = "Library";
+        const char* title =
+            e->uiLib.empty() ? "Library" : e->uiLib.c_str();
         float gt, gb, yo = hy;
         if (textBounds(e->font.set, title, ts, &gt, &gb))
             yo = hy - (gt + gb) * 0.5f;

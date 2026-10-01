@@ -12,6 +12,7 @@
 #include "../render/chrome.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
+#include "../text/utf8.h"
 
 #include <android/bitmap.h>
 #include <GLES2/gl2.h>
@@ -190,7 +191,13 @@ void syncDock(HudEngine* e) {
     e->shelfHW = shelfLayout(e->shelf);
     if (!e->bridge) return;
     for (auto& it : e->dock) {
-        if (it.pkg.empty()) continue;   // the grid button carries its label
+        if (it.pkg.empty()) {
+            // the grid button carries its label; the localized one rides
+            // the ui-strings feed, the built-in text is the fallback
+            if (it.kind == DK_GRID && !e->uiLib.empty())
+                it.label = e->uiLib;
+            continue;
+        }
         const DockIcon& ic = iconFor(e, it.pkg);
         it.label = ic.label;
         if (ic.vr) it.vr = true;
@@ -324,7 +331,12 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                          (clipY + s > clipC + clipH ||
                           clipY - s < clipC - clipH);
     if (*label && e->font.ok && !clipped) {
-        char ch[2] = {*label, 0};
+        // the tile letter is the first codepoint, not the first byte -
+        // a CJK label would otherwise draw a lone lead byte
+        char ch[5] = {0};
+        const char* q = label;
+        nextCp(q);
+        memcpy(ch, label, (size_t)(q - label));
         // glyph height lands a bit under the tile's: mPerPx is metres per
         // font pixel, not a fraction of the tile
         const float ts = s * 0.04f;

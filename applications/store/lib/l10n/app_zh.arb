@@ -1,0 +1,60 @@
+{
+  "@@locale": "zh",
+  "appTitle": "商店",
+
+  "searchHint": "搜索应用",
+  "categoryAll": "全部",
+  "sortUpdated": "最近更新",
+  "sortName": "名称 A-Z",
+  "appsCount": "{count, plural, =1{1 个应用} other{{count} 个应用}}",
+  "@appsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "install": "安装",
+  "installing": "安装中",
+  "downloading": "下载中",
+  "open": "打开",
+  "retry": "重试",
+  "installedBadge": "已安装",
+  "installFailed": "安装失败",
+  "installPrompted": "在系统对话框里确认安装",
+  "versionRow": "{version} ({code})",
+  "@versionRow": {
+    "placeholders": {
+      "version": { "type": "String" },
+      "code": { "type": "int" }
+    }
+  },
+
+  "loadErrorTitle": "无法加载目录",
+  "loadErrorBody": "检查仓库地址和网络连接。",
+  "emptyResults": "没有匹配搜索的应用",
+  "selectAppPrompt": "选一个应用查看详情",
+
+  "repoMenu": "仓库",
+  "repoDialogTitle": "仓库",
+  "repoDialogBody": "目录和安装包来自这个兼容 F-Droid 的仓库。",
+  "repoUrlLabel": "仓库地址",
+  "repoUrlInvalid": "输入 http 或 https 地址",
+  "repoReset": "重置为默认",
+  "cancel": "取消",
+  "save": "保存",
+
+  "sectionDescription": "关于",
+  "sectionScreenshots": "截图",
+  "sectionVersions": "版本",
+  "metaVersion": "版本",
+  "metaSize": "大小",
+  "metaLicense": "许可证",
+  "metaUpdated": "更新",
+  "metaMinSdk": "最低 SDK",
+  "byAuthor": "作者 {author}",
+  "@byAuthor": {
+    "placeholders": {
+      "author": { "type": "String" }
+    }
+  }
+}

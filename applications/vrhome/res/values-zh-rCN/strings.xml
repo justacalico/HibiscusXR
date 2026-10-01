@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_label">Hibiscus 主界面</string>
+    <string name="hud_label">PN2 HUD</string>
+    <string name="hud_channel">HUD</string>
+    <string name="dock_library">应用库</string>
+    <string name="sysmsg_keeps_stopping">%1$s 屡次停止运行</string>
+    <string name="sysmsg_not_responding">%1$s 无响应</string>
+    <string name="sysmsg_close_app">关闭应用</string>
+    <string name="sysmsg_restart">重新启动</string>
+    <string name="sysmsg_system">系统</string>
+</resources>

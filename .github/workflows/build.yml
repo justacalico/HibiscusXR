@@ -93,27 +93,12 @@ jobs:
 
       - name: layout sources
         run: |
-          # The monorepo checkout is the source - copy (not symlink) the dirs
-          # the tools/ scripts expect under $PN2_ROOT. Input packages extract
-          # into overlay/ and tar refuses to write through symlinked dirs, so
-          # real directories are required.
-          mkdir -p "$PN2_ROOT"/{notes,out}
-          for pair in \
-            "system/tools:tools" \
-            "system/overlay:overlay" \
-            "system/shim:shim" \
-            "system/hsvr:hsvr" \
-            "system/cted:cted" \
-            "drivers:drivers" \
-            "applications/vrhome:vrhome" \
-            "applications/library:library" \
-            "applications/quick-panel:quick-panel" \
-            "applications/settings:settings" \
-            "applications/keyboard:keyboard"; do
-            src="${pair%%:*}"; dst="${pair##*:}"
-            cp -a "$GITHUB_WORKSPACE/$src" "$PN2_ROOT/$dst"
-          done
-          ls -la "$PN2_ROOT"
+          # The monorepo checkout is the source - the script copies (not
+          # symlinks) the dirs the tools/ scripts expect under $PN2_ROOT.
+          # Input packages extract into overlay/ and tar refuses to write
+          # through symlinked dirs, so real directories are required. Local
+          # builds run the same script, so both lay out an identical set.
+          bash system/dist/scripts/layout-sources.sh
 
       - name: input packages
         env:

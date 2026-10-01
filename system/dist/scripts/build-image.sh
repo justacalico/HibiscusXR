@@ -15,13 +15,16 @@ step() { echo; echo "######## $* ########"; }
 fail() { echo "FAILED: $*" >&2; exit 1; }
 
 # Every input the chain below reads, in one shot - the steps fail one at a
-# time otherwise, which costs a rebuild cycle per missing dir.
+# time otherwise, which costs a rebuild cycle per missing dir. The source
+# dirs come from layout-sources.sh --list, the same list the workflow lays
+# out - preflight catches a local build root missing one of them.
 step "preflight: required inputs"
 miss=0
 need() { [ -e "$R/$1" ] || { echo "  MISSING $1"; miss=$((miss+1)); }; }
+while read -r p; do
+  need "$p"
+done < <("$SELF/scripts/layout-sources.sh" --list)
 for p in \
-  tools overlay shim hsvr drivers vrhome library quick-panel settings \
-  keyboard \
   gsi .stub/media/LoadingRes overlay/media/bootanimation/desc.txt \
   pvr_stack pvr_apps_final pvr_applibs oem_final \
   overlay_pvr airsvc rfsa qvr cdsp fan seethrough linklibs build \

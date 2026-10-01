@@ -1,0 +1,75 @@
+{
+  "@@locale": "en",
+  "appTitle": "HBSUP",
+  "appSubtitle": "Hibiscus Backup",
+  "unsupportedHostTitle": "Unsupported host OS",
+  "unsupportedHostBody": "Windows is not a supported host OS for HBSUP. Things may not work - use Linux or macOS if you run into problems.",
+  "unsupportedHostDismiss": "Dismiss",
+  "connectTitle": "Connect a headset",
+  "connectHint": "HBSUP needs rooted adb. Boot the stock system, run adb root, then plug the headset in.",
+  "connectRefresh": "Refresh",
+  "connectNoDevices": "No adb devices. Plug a headset in, or bring wireless adb up first.",
+  "connectUnknown": "Unknown model",
+  "connectButton": "Connect",
+  "disconnect": "Disconnect",
+  "backupDestTitle": "Backup folder",
+  "backupDestPick": "Choose folder",
+  "backupDestNone": "No folder picked yet",
+  "backupFreeSpace": "{free} free",
+  "@backupFreeSpace": {
+    "placeholders": {
+      "free": {
+        "type": "String"
+      }
+    }
+  },
+  "backupFreeUnknown": "Free space unknown",
+  "backupPartsTitle": "Partitions",
+  "backupPartsLoading": "Reading the partition table...",
+  "backupPartsEmpty": "No partitions found. Is adb rooted on the headset?",
+  "backupTotalSize": "Full dump: {size}",
+  "@backupTotalSize": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "backupSpaceOk": "Enough free space for the full dump",
+  "backupSpaceShort": "Not enough space - the dump needs {needed}, only {free} free",
+  "@backupSpaceShort": {
+    "placeholders": {
+      "needed": {
+        "type": "String"
+      },
+      "free": {
+        "type": "String"
+      }
+    }
+  },
+  "backupStart": "Start backup",
+  "backupRunning": "Backing up...",
+  "backupCancel": "Cancel",
+  "backupDone": "Backup finished. Keep this folder somewhere safe - it is your way back to stock.",
+  "backupFailed": "Backup failed: {error}",
+  "@backupFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "backupCancelled": "Backup cancelled",
+  "backupProgress": "{done} of {total} partitions",
+  "@backupProgress": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "backupLogTitle": "Log"
+}

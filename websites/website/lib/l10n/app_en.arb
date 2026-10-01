@@ -159,7 +159,8 @@
   "downloadBackupTitle": "Back up first",
   "downloadBackupBody": "Flashing replaces your system partition for good. Before anything else, take a full backup of the stock system - if something goes wrong, that dump is your only way back.",
   "downloadBackupStep1": "Boot stock and get rooted adb: adb root",
-  "downloadBackupStep2": "Dump every partition with dd over adb shell - the tools repo has a backup script that does it end to end",
+  "downloadBackupStep2": "Back up with HBSUP - it dumps every partition and checks disk space first. By hand: dd over adb shell, the tools repo has a backup script that does it end to end",
+  "downloadBackupCta": "Get HBSUP",
   "downloadBackupStep3": "Pull the dump to your computer and keep it somewhere safe",
   "downloadBackupConfirm": "I created a full backup of my headset",
   "downloadLockedHint": "Confirm your backup above to reveal",
@@ -242,6 +243,7 @@
   "notFoundCta": "Back to HibiscusXR"
 ,
   "navCte": "HCTE",
+  "navHbsup": "HBSUP",
 
   "cteTitle": "HCTE",
   "cteSubtitle": "Hibiscus Controller Testing Environment - the desktop companion for Hibiscus headsets.",
@@ -263,6 +265,16 @@
   "cteGetBody": "Desktop bundles ship with every cte-v* release on the monorepo - tarballs and zips for Linux, Windows, and macOS, mirrored to the GitLab release page so they never expire.",
   "cteReleasesCta": "CTE releases",
   "cteSourceCta": "Source",
+  "appDownloadsTitle": "{app} downloads",
+  "@appDownloadsTitle": {
+    "placeholders": {"app": {"type": "String"}}
+  },
+  "appDownloadsSubtitle": "Desktop bundles for {app}, pulled live from the release pipeline.",
+  "@appDownloadsSubtitle": {
+    "placeholders": {"app": {"type": "String"}}
+  },
+  "hbsupWindowsTitle": "Windows is unsupported",
+  "hbsupWindowsBody": "HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.",
 
   "navFlashdocs": "Flashing",
 
@@ -297,7 +309,7 @@
   "flashdocsNeo2RootCmd4": "fastboot reboot",
   "flashdocsNeo2RootNote": "oem pico unlock is needed once per fastboot session. If it hangs, power the headset off, boot back into fastboot and run it again.",
   "flashdocsNeo2BackupTitle": "2. Back up stock",
-  "flashdocsNeo2BackupBody": "With rooted adb, dump every partition before flashing anything - the tools repo has a backup script that does it end to end. Keep the dump somewhere safe: it is your only way back to stock.",
+  "flashdocsNeo2BackupBody": "With rooted adb, dump every partition before flashing anything - HBSUP does it end to end, or the tools repo has a backup script if you would rather do it by hand. Keep the dump somewhere safe: it is your only way back to stock.",
   "flashdocsNeo2FlashTitle": "3. Flash Hibiscus",
   "flashdocsNeo2FlashBody": "With the full system image downloaded, put the headset back into fastboot and run:",
   "flashdocsNeo2FlashCmd1": "adb reboot bootloader",

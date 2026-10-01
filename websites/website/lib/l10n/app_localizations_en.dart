@@ -451,7 +451,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get downloadBackupStep2 =>
-      'Dump every partition with dd over adb shell - the tools repo has a backup script that does it end to end';
+      'Back up with HBSUP - it dumps every partition and checks disk space first. By hand: dd over adb shell, the tools repo has a backup script that does it end to end';
+
+  @override
+  String get downloadBackupCta => 'Get HBSUP';
 
   @override
   String get downloadBackupStep3 =>
@@ -684,6 +687,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navCte => 'HCTE';
 
   @override
+  String get navHbsup => 'HBSUP';
+
+  @override
   String get cteTitle => 'HCTE';
 
   @override
@@ -751,6 +757,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cteSourceCta => 'Source';
+
+  @override
+  String appDownloadsTitle(String app) {
+    return '$app downloads';
+  }
+
+  @override
+  String appDownloadsSubtitle(String app) {
+    return 'Desktop bundles for $app, pulled live from the release pipeline.';
+  }
+
+  @override
+  String get hbsupWindowsTitle => 'Windows is unsupported';
+
+  @override
+  String get hbsupWindowsBody =>
+      'HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.';
 
   @override
   String get navFlashdocs => 'Flashing';
@@ -855,7 +878,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashdocsNeo2BackupBody =>
-      'With rooted adb, dump every partition before flashing anything - the tools repo has a backup script that does it end to end. Keep the dump somewhere safe: it is your only way back to stock.';
+      'With rooted adb, dump every partition before flashing anything - HBSUP does it end to end, or the tools repo has a backup script if you would rather do it by hand. Keep the dump somewhere safe: it is your only way back to stock.';
 
   @override
   String get flashdocsNeo2FlashTitle => '3. Flash Hibiscus';

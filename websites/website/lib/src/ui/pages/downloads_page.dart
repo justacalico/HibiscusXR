@@ -228,6 +228,12 @@ class _BackupCard extends StatelessWidget {
               child: _NumRow(index: i + 1, text: steps[i]),
             ),
           const SizedBox(height: 8),
+          ChevronLink(
+            label: l10n.downloadBackupCta,
+            large: false,
+            onPressed: () => context.go(Routes.hbsupDownload),
+          ),
+          const SizedBox(height: 20),
           _BackupConfirm(
             label: l10n.downloadBackupConfirm,
             confirmed: confirmed,

@@ -418,7 +418,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get downloadBackupStep2 =>
-      '用 dd 通过 adb shell 把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定';
+      '用 HBSUP 备份——它会转储所有分区,还会先检查磁盘空间。手动的话:adb shell 里 dd,tools 仓库有一条龙脚本';
+
+  @override
+  String get downloadBackupCta => '获取 HBSUP';
 
   @override
   String get downloadBackupStep3 => '把转储拉到电脑上,妥善保存';
@@ -646,6 +649,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navCte => 'HCTE';
 
   @override
+  String get navHbsup => 'HBSUP';
+
+  @override
   String get cteTitle => 'HCTE';
 
   @override
@@ -708,6 +714,23 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cteSourceCta => '源码';
+
+  @override
+  String appDownloadsTitle(String app) {
+    return '$app 下载';
+  }
+
+  @override
+  String appDownloadsSubtitle(String app) {
+    return '$app 的桌面构建包,从发布流水线实时拉取。';
+  }
+
+  @override
+  String get hbsupWindowsTitle => 'Windows 不受支持';
+
+  @override
+  String get hbsupWindowsBody =>
+      'HBSUP 提供 Windows 构建,但 Windows 不是受支持的主机系统——应用打开时也会提示,在那上面出问题自己承担。';
 
   @override
   String get navFlashdocs => '刷机指南';
@@ -805,7 +828,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsNeo2BackupBody =>
-      '拿到 root 的 adb 之后,刷任何东西之前先把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定。把转储存到安全的地方:出了问题它是回原厂的唯一退路。';
+      '拿到 root 的 adb 之后,刷任何东西之前先把每个分区转储出来——HBSUP 一条龙搞定,想手动的话 tools 仓库里有备份脚本。把转储存到安全的地方:出了问题它是回原厂的唯一退路。';
 
   @override
   String get flashdocsNeo2FlashTitle => '3. 刷入 Hibiscus';

@@ -146,7 +146,8 @@
   "downloadBackupTitle": "先备份",
   "downloadBackupBody": "刷机会彻底替换 system 分区。动手之前先把原厂系统完整备份下来——出了问题,这份转储是你唯一的退路。",
   "downloadBackupStep1": "进原厂系统,拿到 root 过的 adb:adb root",
-  "downloadBackupStep2": "用 dd 通过 adb shell 把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定",
+  "downloadBackupStep2": "用 HBSUP 备份——它会转储所有分区,还会先检查磁盘空间。手动的话:adb shell 里 dd,tools 仓库有一条龙脚本",
+  "downloadBackupCta": "获取 HBSUP",
   "downloadBackupStep3": "把转储拉到电脑上,妥善保存",
   "downloadBackupConfirm": "我已经完整备份了我的头显",
   "downloadLockedHint": "在上方确认备份后才会显示",
@@ -224,6 +225,7 @@
   "notFoundCta": "回到 HibiscusXR"
 ,
   "navCte": "HCTE",
+  "navHbsup": "HBSUP",
 
   "cteTitle": "HCTE",
   "cteSubtitle": "Hibiscus 头显调试环境 - 运行 Hibiscus 头显的桌面伴侣工具。",
@@ -245,6 +247,10 @@
   "cteGetBody": "每个 cte-v* 版本都会在 monorepo 上发布桌面构建包 - Linux、Windows、macOS 的 tar 和 zip,并同步到 GitLab release 页面,链接不会过期。",
   "cteReleasesCta": "CTE 发布页",
   "cteSourceCta": "源码",
+  "appDownloadsTitle": "{app} 下载",
+  "appDownloadsSubtitle": "{app} 的桌面构建包,从发布流水线实时拉取。",
+  "hbsupWindowsTitle": "Windows 不受支持",
+  "hbsupWindowsBody": "HBSUP 提供 Windows 构建,但 Windows 不是受支持的主机系统——应用打开时也会提示,在那上面出问题自己承担。",
 
   "navFlashdocs": "刷机指南",
 
@@ -279,7 +285,7 @@
   "flashdocsNeo2RootCmd4": "fastboot reboot",
   "flashdocsNeo2RootNote": "oem pico unlock 每个 fastboot 会话只需要执行一次。如果卡住,把头显关机、重新进 fastboot 再跑一遍。",
   "flashdocsNeo2BackupTitle": "2. 备份原厂系统",
-  "flashdocsNeo2BackupBody": "拿到 root 的 adb 之后,刷任何东西之前先把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定。把转储存到安全的地方:出了问题它是回原厂的唯一退路。",
+  "flashdocsNeo2BackupBody": "拿到 root 的 adb 之后,刷任何东西之前先把每个分区转储出来——HBSUP 一条龙搞定,想手动的话 tools 仓库里有备份脚本。把转储存到安全的地方:出了问题它是回原厂的唯一退路。",
   "flashdocsNeo2FlashTitle": "3. 刷入 Hibiscus",
   "flashdocsNeo2FlashBody": "下载好完整系统镜像后,让头显重新进 fastboot,执行:",
   "flashdocsNeo2FlashCmd1": "adb reboot bootloader",

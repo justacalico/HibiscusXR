@@ -887,8 +887,14 @@ abstract class AppLocalizations {
   /// No description provided for @downloadBackupStep2.
   ///
   /// In en, this message translates to:
-  /// **'Dump every partition with dd over adb shell - the tools repo has a backup script that does it end to end'**
+  /// **'Back up with HBSUP - it dumps every partition and checks disk space first. By hand: dd over adb shell, the tools repo has a backup script that does it end to end'**
   String get downloadBackupStep2;
+
+  /// No description provided for @downloadBackupCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Get HBSUP'**
+  String get downloadBackupCta;
 
   /// No description provided for @downloadBackupStep3.
   ///
@@ -1310,6 +1316,12 @@ abstract class AppLocalizations {
   /// **'HCTE'**
   String get navCte;
 
+  /// No description provided for @navHbsup.
+  ///
+  /// In en, this message translates to:
+  /// **'HBSUP'**
+  String get navHbsup;
+
   /// No description provided for @cteTitle.
   ///
   /// In en, this message translates to:
@@ -1429,6 +1441,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source'**
   String get cteSourceCta;
+
+  /// No description provided for @appDownloadsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{app} downloads'**
+  String appDownloadsTitle(String app);
+
+  /// No description provided for @appDownloadsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop bundles for {app}, pulled live from the release pipeline.'**
+  String appDownloadsSubtitle(String app);
+
+  /// No description provided for @hbsupWindowsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows is unsupported'**
+  String get hbsupWindowsTitle;
+
+  /// No description provided for @hbsupWindowsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'HBSUP ships Windows builds, but Windows is not a supported host OS - the app says the same thing on open, and things may not work there.'**
+  String get hbsupWindowsBody;
 
   /// No description provided for @navFlashdocs.
   ///
@@ -1613,7 +1649,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsNeo2BackupBody.
   ///
   /// In en, this message translates to:
-  /// **'With rooted adb, dump every partition before flashing anything - the tools repo has a backup script that does it end to end. Keep the dump somewhere safe: it is your only way back to stock.'**
+  /// **'With rooted adb, dump every partition before flashing anything - HBSUP does it end to end, or the tools repo has a backup script if you would rather do it by hand. Keep the dump somewhere safe: it is your only way back to stock.'**
   String get flashdocsNeo2BackupBody;
 
   /// No description provided for @flashdocsNeo2FlashTitle.

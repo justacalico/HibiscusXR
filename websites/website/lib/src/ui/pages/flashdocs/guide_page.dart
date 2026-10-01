@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../../../flashdocs.dart';
 import '../../../links.dart';
+import '../../../routes.dart';
 import '../../../theme.dart';
 import '../../widgets.dart';
 import 'flashdocs_layout.dart';
@@ -71,6 +73,12 @@ class FlashDocsGuidePage extends StatelessWidget {
             title: l10n.flashdocsNeo2BackupTitle,
             body: l10n.flashdocsNeo2BackupBody,
             l10n: l10n,
+          ),
+          const SizedBox(height: 16),
+          PillButton(
+            label: l10n.downloadBackupCta,
+            small: true,
+            onPressed: () => context.go(Routes.hbsupDownload),
           ),
           const SizedBox(height: 40),
           _StepSection(

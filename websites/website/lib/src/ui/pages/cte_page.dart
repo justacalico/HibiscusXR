@@ -84,7 +84,7 @@ class CtePage extends StatelessWidget {
                     ChevronLink(
                       label: l10n.cteSourceCta,
                       onPressed: () =>
-                          launchUrl(Uri.parse(Links.tree('applications/cte'))),
+                          launchUrl(Uri.parse(Links.tree('applications/desktop/cte'))),
                     ),
                   ],
                 ),
@@ -103,7 +103,7 @@ class CtePage extends StatelessWidget {
 }
 
 /// The app's test goldens, shown as a preview strip on the cte page.
-/// Files are copied from applications/cte/test/golden/goldens -
+/// Files are copied from applications/desktop/cte/test/golden/goldens -
 /// cte_assets_test.dart fails when the two sets drift apart.
 class _CteShots extends StatelessWidget {
   const _CteShots({required this.l10n});

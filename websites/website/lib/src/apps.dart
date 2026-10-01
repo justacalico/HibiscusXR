@@ -11,5 +11,5 @@ abstract final class SiteApps {
   static String tagPrefix(SiteApp app) => '${app.name}-';
 
   /// Source directory inside the monorepo.
-  static String treePath(SiteApp app) => 'applications/${app.name}';
+  static String treePath(SiteApp app) => 'applications/desktop/${app.name}';
 }

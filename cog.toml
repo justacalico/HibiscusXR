@@ -5,7 +5,7 @@
 monorepo_version_separator = "-v"
 
 [monorepo.packages.cte]
-path = "applications/cte"
+path = "applications/desktop/cte"
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]
@@ -18,7 +18,7 @@ pre_bump_hooks = [
 
 
 [monorepo.packages.hbsup]
-path = "applications/hbsup"
+path = "applications/desktop/hbsup"
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]

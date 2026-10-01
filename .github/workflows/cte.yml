@@ -1,6 +1,6 @@
 name: cte
 
-# Release lane for applications/cte: a cte-v* tag on the GitHub mirror
+# Release lane for applications/desktop/cte: a cte-v* tag on the GitHub mirror
 # (pushed by the GitLab cte-release job) builds the desktop bundles and
 # cuts the release here; GitLab then mirrors the assets back through the
 # cte-release-sync job so they never expire.
@@ -31,7 +31,7 @@ jobs:
           "$HOME/flutter/bin/flutter" --version
       - name: analyze + test
         run: |
-          cd applications/cte
+          cd applications/desktop/cte
           flutter pub get
           flutter analyze
           flutter test
@@ -91,30 +91,30 @@ jobs:
       - name: linux build + pack
         if: matrix.target == 'linux'
         run: |
-          cd applications/cte
+          cd applications/desktop/cte
           flutter pub get
           flutter build linux --release
-          mkdir -p ../../dist
-          tar -czf ../../dist/HCTE-linux-x86_64.tar.gz -C build/linux/x64/release/bundle .
+          mkdir -p ../../../dist
+          tar -czf ../../../dist/HCTE-linux-x86_64.tar.gz -C build/linux/x64/release/bundle .
           (cd build/linux/x64/release && zip -qr "$GITHUB_WORKSPACE/dist/HCTE-linux-x86_64.zip" bundle)
 
       - name: windows build + pack
         if: matrix.target == 'windows'
         shell: pwsh
         run: |
-          cd applications/cte
+          cd applications/desktop/cte
           flutter pub get
           flutter build windows --release
-          New-Item -ItemType Directory -Force ../../dist | Out-Null
-          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath ../../dist/HCTE-windows-x86_64.zip
+          New-Item -ItemType Directory -Force ../../../dist | Out-Null
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath ../../../dist/HCTE-windows-x86_64.zip
 
       - name: macos build + pack
         if: matrix.target == 'macos'
         run: |
-          cd applications/cte
+          cd applications/desktop/cte
           flutter pub get
           flutter build macos --release
-          mkdir -p ../../dist
+          mkdir -p ../../../dist
           (cd build/macos/Build/Products/Release && zip -qr "$GITHUB_WORKSPACE/dist/HCTE-macos-arm64.zip" .)
 
       - uses: actions/upload-artifact@v4

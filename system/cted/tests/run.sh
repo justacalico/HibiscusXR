@@ -1,6 +1,6 @@
 #!/bin/bash
 # Host-side cted smoke test: builds the daemon for the local machine and
-# exercises the wire protocol the same way applications/cte does.
+# exercises the wire protocol the same way applications/desktop/cte does.
 set -e
 cd "$(dirname "$0")/.."
 ROOT=$(git rev-parse --show-toplevel)

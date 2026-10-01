@@ -64,7 +64,7 @@ class AppDownloadsPage extends StatelessWidget {
 }
 
 /// The app's test goldens, shown as a preview strip on the download page.
-/// Files are copied from applications/hbsup/test/golden/goldens -
+/// Files are copied from applications/desktop/hbsup/test/golden/goldens -
 /// hbsup_assets_test.dart fails when the two sets drift apart.
 class _HbsupShots extends StatelessWidget {
   const _HbsupShots({required this.l10n});

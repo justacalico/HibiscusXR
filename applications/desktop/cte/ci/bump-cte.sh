@@ -1,5 +1,5 @@
 #!/bin/bash
-# CTE release bump: cog decides whether commits under applications/cte
+# CTE release bump: cog decides whether commits under applications/desktop/cte
 # warrant a version bump, writes the changelog + version commit + tag,
 # which we push back to main. Same model as devinorium's auto-release:
 # the bump commit goes up with ci.skip, the tag push starts the tag

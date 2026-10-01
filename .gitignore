@@ -113,6 +113,8 @@ htmlcov/
 .venv/
 venv/
 env/
+# ...but vrhome's env module is real source, not a virtualenv dir
+!applications/vrhome/src/env/
 .m2/
 .gradle-home/
 .gradle-cache/

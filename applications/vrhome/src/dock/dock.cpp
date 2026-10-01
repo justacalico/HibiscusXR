@@ -1,6 +1,7 @@
 #include "dock.h"
 
 #include "layout.h"
+#include "../anim/anim.h"
 #include "../hud/engine.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
@@ -175,9 +176,17 @@ void syncDock(HudEngine* e) {
     std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
                   std::localtime(&tt));
     e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
+    // the item lists rebuild from scratch, so the smoothed hover scale
+    // needs handing forward or every frame would restart the chase
+    std::vector<DockItem> prevDock;
+    prevDock.swap(e->dock);
     e->dock = buildDock(e->dockPins, e->panels, e->dockXr);
+    carryHover(e->dock, prevDock);
     e->dockHW = dockLayout(e->dock, e->dockSys);
+    std::vector<ShelfItem> prevShelf;
+    prevShelf.swap(e->shelf);
     e->shelf = buildShelf(e->panels);
+    carryShelfHover(e->shelf, prevShelf);
     e->shelfHW = shelfLayout(e->shelf);
     if (!e->bridge) return;
     for (auto& it : e->dock) {
@@ -314,7 +323,7 @@ void dockTick(HudEngine* e) {
 void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                     const float r[3], const float up[3], float s,
                     const char* label,
-                    float clipY, float clipC, float clipH) {
+                    float clipY, float clipC, float clipH, float alpha) {
     static const float pal[][3] = {
         {0.30f, 0.36f, 0.52f}, {0.36f, 0.30f, 0.50f}, {0.22f, 0.42f, 0.48f},
         {0.40f, 0.30f, 0.34f}, {0.26f, 0.44f, 0.36f}, {0.44f, 0.38f, 0.26f},
@@ -322,7 +331,7 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
     unsigned h = 0;
     for (const char* q = label; *q; ++q) h = h * 31 + (unsigned char)*q;
     const float* pc = pal[h % 6];
-    const float col[4] = {pc[0], pc[1], pc[2], 1.0f};
+    const float col[4] = {pc[0], pc[1], pc[2], alpha};
     shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * kIconRad,
               0.0f, 0.002f, col, -1.0f, 0.0f, clipY, clipC, clipH);
     // text has no clip hook: inside a scroll band the letter only draws
@@ -351,7 +360,7 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
         glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, e->font.tex);
-        drawTextPanel(e, ch, o, r, up, ts, 0.0f);
+        drawTextPanel(e, ch, o, r, up, ts, 0.0f, alpha);
         glUseProgram(e->shapeProg);
     }
 }
@@ -410,8 +419,13 @@ void drawIconTex(HudEngine* e, const Mat4& vp, const float ic[3],
 
 void drawDock(HudEngine* e, const Mat4& vp) {
     if (e->dock.empty() || e->dockHW <= 0.0f) return;
+    // summon: the strip slides up from just under its rest position while
+    // fading in; the same drop feeds the pick path so the aim matches
+    const float sumT = progT(e->summonMs, e->frameMs, kDashMs);
+    const float a = dashAlpha(sumT);
+    const float drop = dashDrop(sumT);
     float c[3], r[3], up[3];
-    dockCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
+    dockCenterDrop(e->dockYaw, e->dockPitch, drop, e->ringPos, c, r, up);
     const float hw = e->dockHW, hh = kDockBarH * 0.5f;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -423,16 +437,17 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // the soft falloff reaches past it - a padded box reads as a dark slab
     const float shc[3] = {c[0] - up[0] * 0.02f, c[1] - up[1] * 0.02f,
                           c[2] - up[2] * 0.02f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * a};
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
               hw, hh, hh, -1.0f, 0.05f, shCol);
     // the bar itself
-    const float barCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2], 0.82f};
+    const float barCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
+                             0.82f * a};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, hh, 0.0f,
               0.003f, barCol);
     // group separators
     const float sepCol[4] = {kPalSurfaceHigh[0], kPalSurfaceHigh[1],
-                             kPalSurfaceHigh[2], 0.22f};
+                             kPalSurfaceHigh[2], 0.22f * a};
     for (auto& it : e->dock) {
         if (!it.sep) continue;
         const float sx = it.x - kDockIconHW - (kDockGap + kDockSepW) * 0.5f;
@@ -448,7 +463,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // state out of the last bridge pull
     const DockStatus& st = e->dockSys;
     const float pillCol[4] = {kPalSurface[0], kPalSurface[1],
-                              kPalSurface[2], 0.90f};
+                              kPalSurface[2], 0.90f * a};
     {
         const float ax = (st.pillAL + st.pillAR) * 0.5f;
         const float aw = (st.pillAR - st.pillAL) * 0.5f;
@@ -487,7 +502,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, e->font.tex);
-        drawTextPanel(e, e->sysClock, co, r, up, kSysPx, 0.0f);
+        drawTextPanel(e, e->sysClock, co, r, up, kSysPx, 0.0f, a);
         glUseProgram(e->shapeProg);
     }
 
@@ -496,7 +511,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // the slot like the battery and clock do
     {
         const float wcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               e->sysWifi ? 0.92f : 0.25f};
+                               (e->sysWifi ? 0.92f : 0.25f) * a};
         const float wy = -0.019f;
         const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
                              c[1] + r[1]*st.wifiX + up[1]*wy,
@@ -516,7 +531,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float bw = 0.044f, bh = 0.024f, bt = 0.0030f;
         const float bc[3] = {c[0] + r[0]*st.battX, c[1] + r[1]*st.battX,
                              c[2] + r[2]*st.battX};
-        const float ocol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.80f};
+        const float ocol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               0.80f * a};
         shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, bw * 0.5f + 0.006f,
                   bh * 0.5f + 0.006f, bw * 0.5f, bh * 0.5f, bh * 0.30f,
                   bt, 0.002f, ocol);
@@ -528,7 +544,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float fc[3] = {bc[0] + r[0] * fx, bc[1] + r[1] * fx,
                              bc[2] + r[2] * fx};
         const float* fill = batteryTint(e->sysBatt, e->sysChg != 0);
-        const float fcol[4] = {fill[0], fill[1], fill[2], 0.85f};
+        const float fcol[4] = {fill[0], fill[1], fill[2], 0.85f * a};
         if (fw > 0.001f)
             shapeQuad(e, vp, fc, r, up, 0.008f, 0.0f, fw * 0.5f, fhh,
                       fw * 0.5f, fhh, fhh * 0.3f, 0.0f, 0.0015f, fcol);
@@ -544,7 +560,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     {
         const bool any = !e->notifsAll.empty();
         const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               any ? 0.90f : 0.30f};
+                               (any ? 0.90f : 0.30f) * a};
         const float bx = st.bellX;
         const float bc[3] = {c[0] + r[0]*bx + up[0]*0.002f,
                              c[1] + r[1]*bx + up[1]*0.002f,
@@ -566,7 +582,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                                  c[1] + r[1]*(bx + 0.014f) + up[1]*0.018f,
                                  c[2] + r[2]*(bx + 0.014f) + up[2]*0.018f};
             const float dcol[4] = {kPalDanger[0], kPalDanger[1],
-                                   kPalDanger[2], 0.95f};
+                                   kPalDanger[2], 0.95f * a};
             shapeQuad(e, vp, dc, r, up, 0.009f, 0.0f, 0.007f, 0.007f,
                       0.006f, 0.006f, 0.006f, 0.0f, 0.0015f, dcol);
         }
@@ -575,7 +591,10 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     for (int i = 0; i < (int)e->dock.size(); ++i) {
         const DockItem& it = e->dock[i];
         const bool hov = e->dockHover == i;
-        const float s = kDockIconHW * (hov ? 1.14f : 1.0f);
+        // hs is the smoothed scale; hp is its 0..1 form for the extras
+        // that fade with the icon instead of popping on the flag
+        const float hp = hoverP(it.hs, kHoverScale);
+        const float s = kDockIconHW * it.hs;
         const float ic[3] = {c[0] + r[0]*it.x + up[0]*kDockIconY,
                              c[1] + r[1]*it.x + up[1]*kDockIconY,
                              c[2] + r[2]*it.x + up[2]*kDockIconY};
@@ -583,22 +602,24 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         auto f = e->dockIcons.find(it.pkg);
         if (f != e->dockIcons.end()) icon = &f->second;
 
-        if (hov) {
+        if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f};
+                                 0.10f * hp * a};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.018f,
                       s + 0.018f, s + 0.018f, s + 0.018f,
                       (s + 0.018f) * kIconRad, 0.0f, 0.002f, hl);
         }
 
-        const float alpha = it.minimized ? 0.45f : 1.0f;
+        const float alpha = (it.minimized ? 0.45f : 1.0f) * a;
         if (it.kind == DK_GRID) {
             // the app-grid glyph: a 3x3 dot square, active while the
             // overlay is open
             const float dg = s * 0.62f;
             const float* dc = e->grid.shown ? kPalAccent : kPalText;
             const float dcol[4] = {dc[0], dc[1], dc[2],
-                                   hov || e->grid.shown ? 0.95f : 0.72f};
+                                   (e->grid.shown ? 0.95f
+                                                  : 0.72f + 0.23f * hp)
+                                       * a};
             for (int gy = 0; gy < 3; ++gy)
                 for (int gx = 0; gx < 3; ++gx) {
                     const float pc[3] = {
@@ -615,11 +636,12 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             glUseProgram(e->shapeProg);
             drawLetterTile(e, vp, ic, r, up, s,
                            it.label.empty() ? it.pkg.c_str()
-                                            : it.label.c_str());
+                                            : it.label.c_str(),
+                           0.0f, 0.0f, 0.0f, alpha);
             glUseProgram(e->shapeProg);
         }
         if (it.minimized) {
-            const float dim[4] = {0.0f, 0.0f, 0.0f, 0.35f};
+            const float dim[4] = {0.0f, 0.0f, 0.0f, 0.35f * a};
             shapeQuad(e, vp, ic, r, up, 0.010f, 0.0f, s, s, s, s,
                       s * kIconRad, 0.0f, 0.002f, dim);
         }
@@ -627,7 +649,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         // immersive marker: an amber ring around live/pinned XR items
         if (it.vr) {
             const float vc[4] = {kPalWarn[0], kPalWarn[1], kPalWarn[2],
-                                 hov ? 0.95f : 0.65f};
+                                 (0.65f + 0.30f * hp) * a};
             shapeQuad(e, vp, ic, r, up, 0.009f, 0.0f, s + 0.006f,
                       s + 0.006f, s + 0.006f, s + 0.006f, s + 0.006f,
                       0.0018f, 0.0015f, vc);
@@ -640,7 +662,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                                  ic[2] - up[2] * (kDockIconHW + 0.026f)};
             const float* dc2 = it.vr ? kPalWarn : kPalText;
             const float dcol[4] = {dc2[0], dc2[1], dc2[2],
-                                   it.minimized ? 0.4f : 0.85f};
+                                   (it.minimized ? 0.4f : 0.85f) * a};
             shapeQuad(e, vp, dc, r, up, 0.008f, 0.0f, 0.007f, 0.007f,
                       0.007f, 0.007f, 0.007f, 0.0f, 0.0015f, dcol);
         }
@@ -648,18 +670,18 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         // close badge on a live immersive item: a disc off the icon's
         // top-right corner carrying a rotated capsule x
         if (it.vr && it.running) {
-            const float bo = kDockIconHW * 0.72f;
+            const float bo = s * 0.72f;
             const float bc[3] = {c[0] + r[0]*(it.x + bo) + up[0]*(kDockIconY + bo),
                                  c[1] + r[1]*(it.x + bo) + up[1]*(kDockIconY + bo),
                                  c[2] + r[2]*(it.x + bo) + up[2]*(kDockIconY + bo)};
             const bool bhov = hov && e->dockZone == DZONE_CLOSE;
             const float* bg2 = bhov ? kPalDanger : kPalSurfaceHigh;
-            const float bcol[4] = {bg2[0], bg2[1], bg2[2], 0.92f};
+            const float bcol[4] = {bg2[0], bg2[1], bg2[2], 0.92f * a};
             shapeQuad(e, vp, bc, r, up, 0.011f, 0.0f, kDockBadgeR,
                       kDockBadgeR, kDockBadgeR, kDockBadgeR, kDockBadgeR,
                       0.0f, 0.0015f, bcol);
             const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                   0.95f};
+                                   0.95f * a};
             const float il = kDockBadgeR * 0.52f, it2 = 0.0024f;
             shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, it2,
                       il, it2, it2, 0.0f, 0.001f, xcol);
@@ -670,7 +692,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         // pin-hold fill: an accent ring tightening around the icon
         if (e->dockPress == i && e->dockPinP > 0.0f && dockPinnable(it)) {
             const float pr[4] = {kPalAccent[0], kPalAccent[1], kPalAccent[2],
-                                 0.25f + 0.75f * e->dockPinP};
+                                 (0.25f + 0.75f * e->dockPinP) * a};
             shapeQuad(e, vp, ic, r, up, 0.013f, 0.0f, s + 0.014f,
                       s + 0.014f, s + 0.014f, s + 0.014f, s + 0.014f,
                       0.0022f + 0.002f * e->dockPinP, 0.0015f, pr);
@@ -694,7 +716,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
-            drawTextPanel(e, it.label.c_str(), o, r, up, ts, 0.0f);
+            drawTextPanel(e, it.label.c_str(), o, r, up, ts, 0.0f, a);
             glUseProgram(e->shapeProg);
         }
     }
@@ -702,15 +724,19 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // move pill under the strip: holding it drags the whole dash, so it
     // brightens while gazed or held
     drawMovePill(e, vp, c, r, up, movePillDrop(kDockBarH * 0.5f),
-                 e->dockZone == DZONE_HANDLE || e->moveHeld);
+                 e->dockZone == DZONE_HANDLE || e->moveHeld, a);
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
 }
 
 void drawShelf(HudEngine* e, const Mat4& vp) {
     if (e->shelf.empty() || e->shelfHW <= 0.0f) return;
+    // the pill rides the strip's summon slide/fade with it
+    const float sumT = progT(e->summonMs, e->frameMs, kDashMs);
+    const float a = dashAlpha(sumT);
+    const float drop = dashDrop(sumT);
     float c[3], r[3], up[3];
-    shelfCenter(e->dockYaw, e->dockPitch, e->ringPos, c, r, up);
+    shelfCenterDrop(e->dockYaw, e->dockPitch, drop, e->ringPos, c, r, up);
     const float hw = e->shelfHW;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -721,38 +747,47 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
     // shadow + pill: the strip's recipe shrunk to a one-row tray
     const float shc[3] = {c[0] - up[0] * 0.016f, c[1] - up[1] * 0.016f,
                           c[2] - up[2] * 0.016f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * a};
     shapeQuad(e, vp, shc, r, up, -0.024f, 0.0f, hw + 0.04f,
               kShelfHH + 0.04f, hw, kShelfHH, kShelfHH, -1.0f, 0.04f,
               shCol);
     const float pillCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.78f};
+                              0.78f * a};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, kShelfHH, hw, kShelfHH,
               kShelfHH, 0.0f, 0.003f, pillCol);
 
     for (int i = 0; i < (int)e->shelf.size(); ++i) {
         const ShelfItem& it = e->shelf[i];
         const bool hov = e->shelfHover == i;
-        const float s = kShelfIconHW * (hov ? 1.14f : 1.0f);
+        const float hp = hoverP(it.hs, kHoverScale);
+        const float s = kShelfIconHW * it.hs;
         const float ic[3] = {c[0] + r[0]*it.x, c[1] + r[1]*it.x,
                              c[2] + r[2]*it.x};
         const DockIcon* icon = nullptr;
         auto f = e->dockIcons.find(it.pkg);
         if (f != e->dockIcons.end()) icon = &f->second;
 
-        if (hov) {
+        // the parked icon's alpha tracks its window's flight: it fades in
+        // as the window shrinks onto the slot and back out on a restore,
+        // so the icon only reads solid once the window has landed
+        float ia = a;
+        if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size())
+            ia *= e->panels[it.panelIdx].minT;
+
+        if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f};
+                                 0.10f * hp * a};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.014f,
                       s + 0.014f, s + 0.014f, s + 0.014f,
                       (s + 0.014f) * kIconRad, 0.0f, 0.002f, hl);
         }
         if (icon && icon->tex) {
-            drawIconTex(e, vp, ic, r, up, s, icon->tex, 1.0f);
+            drawIconTex(e, vp, ic, r, up, s, icon->tex, ia);
         } else {
             drawLetterTile(e, vp, ic, r, up, s,
                            it.label.empty() ? it.pkg.c_str()
-                                            : it.label.c_str());
+                                            : it.label.c_str(),
+                           0.0f, 0.0f, 0.0f, ia);
             glUseProgram(e->shapeProg);
         }
 
@@ -777,7 +812,7 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
-            drawTextPanel(e, it.label.c_str(), o, r, up, ts, 0.0f);
+            drawTextPanel(e, it.label.c_str(), o, r, up, ts, 0.0f, a);
             glUseProgram(e->shapeProg);
         }
     }

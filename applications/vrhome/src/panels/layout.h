@@ -89,6 +89,11 @@ void grabRing(std::vector<Panel>& panels);
 // dash stays one assembly
 void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch);
 
+// per-frame transition driver: every panel's park progress chases its
+// minimized flag over kMinMs, so minimize flies the window to its shelf
+// slot and a restore is the same flight in reverse
+void tickPanels(std::vector<Panel>& panels, float dtMs);
+
 // first panel running pkg, or -1: one window per package
 int panelIndex(const std::vector<Panel>& panels, const std::string& pkg);
 
@@ -118,7 +123,8 @@ struct Pick {
 
 // arbitrary ray (origin o, direction d) vs all panels: the window rects
 // plus the top bar above them; floating windows add their move pill and
-// the resize grip; minimized panels are skipped. nearest wins
+// the resize grip; minimized panels and park flights are skipped. nearest
+// wins
 Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
                   const float o[3], const float d[3]);
 

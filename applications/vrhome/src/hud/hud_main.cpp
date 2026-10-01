@@ -11,6 +11,7 @@
 #include "engine.h"
 #include "status.h"
 
+#include "../anim/anim.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
 #include "../dock/dock.h"
@@ -260,11 +261,21 @@ static void hudScene(Engine* e, const Mat4& vp) {
 }
 
 static void hudFrame(HudEngine* e) {
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    const long long now = (long long)ts.tv_sec * 1000 +
+                          ts.tv_nsec / 1000000;
+    e->frameMs = now;
+
     // surface handoff from the SurfaceHolder callbacks
     ANativeWindow* nw = e->window.exchange(nullptr);
     if (nw) {
+        // a fresh surface after being hidden is a summon: the strip plays
+        // its slide/fade-in from this stamp
+        const bool wasReady = e->ready;
         if (e->ready) termWindow(e);
         if (initWindow(e, nw) != 0) LOGE("initWindow failed");
+        else if (!wasReady) e->summonMs = now;
         ANativeWindow_release(nw);
     }
     if (e->windowGone.exchange(false)) termWindow(e);
@@ -326,12 +337,8 @@ static void hudFrame(HudEngine* e) {
         sensRoll, worldX,
         propF("debug.vrhome.roll",     kRoll), useSensor, headPos);
 
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        ctrlTick(e, head, sensRoll, worldX, propF("debug.vrhome.roll", kRoll),
-                 (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-    }
+    ctrlTick(e, head, sensRoll, worldX, propF("debug.vrhome.roll", kRoll),
+             now);
 
     debugLaunchHook(e);
     debugTapHook(e);
@@ -347,9 +354,6 @@ static void hudFrame(HudEngine* e) {
     // hold-to-recenter fill: the java side owns the threshold and fires the
     // recenter; native just turns the held time into the ring's 0..1
     if (e->holdStartMs > 0) {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        const long long now = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
         const float p = (float)(now - e->holdStartMs) / (float)kHoldMs;
         e->holdP = p < 0.0f ? 0.0f : p > 1.0f ? 1.0f : p;
     } else {
@@ -426,10 +430,15 @@ static void hudFrame(HudEngine* e) {
     }
     e->kbd.hover = false;
     e->kbd.zone = KZONE_KEY;
+    // the strip's summon slide counts for the picks too: while the fade-in
+    // runs the plane sits `dDrop` lower, and the aim must land on what's
+    // drawn, not where the strip will rest
+    const float dDrop = dashDrop(progT(e->summonMs, now, kDashMs));
     const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
-                                  e->dockPitch, e->ringPos, e->aimO, e->aimD);
+                                    e->dockPitch, dDrop, e->ringPos,
+                                    e->aimO, e->aimD);
     const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
-                                      e->dockPitch, e->ringPos,
+                                      e->dockPitch, dDrop, e->ringPos,
                                       e->aimO, e->aimD);
     const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
                                       e->ringPos, e->aimO, e->aimD);
@@ -565,6 +574,20 @@ static void hudFrame(HudEngine* e) {
     dragTick(e, e->aimO, e->aimD);
     moveTick(e);
     dockTick(e);
+
+    // every transition steps off the frame delta: park flights chase the
+    // minimized flags, icon hovers chase the aim, the grid card chases
+    // `shown` so it can fade out instead of vanishing
+    const float dtMs = e->animMs ? (float)(now - e->animMs) : 0.0f;
+    e->animMs = now;
+    if (dtMs > 0.0f) {
+        tickPanels(e->panels, dtMs);
+        tickDockHover(e->dock, e->dockHover, dtMs);
+        tickShelfHover(e->shelf, e->shelfHover, dtMs);
+        tickGridHover(e->grid.items, e->grid.hover, dtMs);
+        e->grid.openT = stepT(e->grid.openT, e->grid.shown, dtMs, kGridMs);
+    }
+
     updatePanels(e);
     // keyboard surface + shown/display state: works while hidden too, the
     // hand-off must not depend on the overlay being up

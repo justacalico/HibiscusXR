@@ -41,8 +41,11 @@ float drawText(Engine* e, const char* utf8, float x, float y, float z,
 
 void drawTextPanel(Engine* e, const char* utf8, const float o[3],
                    const float r[3], const float up[3], float mPerPx,
-                   float bold) {
+                   float bold, float alpha) {
     if (!e->font.ok) return;
+    // uAlpha is program state: every text draw sets it so a fading call
+    // can't bleed into the next caller's string
+    glUniform1f(glGetUniformLocation(e->textProg, "uAlpha"), alpha);
     ensureGlyphs(e, utf8);
     std::vector<float> lv;
     emitText(e->font.set, utf8, mPerPx, lv, bold);
@@ -59,6 +62,7 @@ void drawHud(Engine* e, const Mat4& proj) {
                      proj.m);
     glUniform3f(glGetUniformLocation(e->textProg, "uColor"),
                 kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
+    glUniform1f(glGetUniformLocation(e->textProg, "uAlpha"), 1.0f);
     glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, e->font.tex);

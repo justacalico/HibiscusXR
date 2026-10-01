@@ -151,6 +151,20 @@ constexpr float kShelfPad = 0.014f;     // pill inset around the icon row
 constexpr float kShelfHH = kShelfIconHW + kShelfPad;  // pill half-height
 constexpr float kShelfGapY = 0.016f;    // between bar top and pill bottom
 
+// HUD motion: every transition runs off these. The easing/interpolation
+// itself lives in the pure anim/ module so make test covers it; the draw
+// and pick paths only apply the results
+constexpr float kSpawnMs = 240.0f;      // panel scale/fade-in
+constexpr float kSpawnScale0 = 0.82f;   // launch size as a share of final
+constexpr float kMinMs = 260.0f;        // minimize/restore flight, one way
+constexpr float kDashMs = 220.0f;       // strip slide/fade-in on summon
+constexpr float kDashDrop = 0.07f;      // metres the strip rises in from
+constexpr float kHoverScale = 1.14f;    // dock/shelf icon magnification
+constexpr float kHoverTauMs = 65.0f;    // hover-scale smoothing constant
+constexpr float kGridMs = 200.0f;       // app-grid card open/close
+constexpr float kGridScale0 = 0.94f;    // card's open-from size share
+constexpr float kGridHoverScale = 1.12f; // cell icon magnification
+
 // notification cards: a stack floating above the dock bar (and the
 // minimized shelf when one is up) while the dash is up; over a covered app
 // the toast window draws it alone for kNotifToastMs. The stack rides the

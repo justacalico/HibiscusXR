@@ -15,6 +15,13 @@
 void dockCenter(float yaw, float pitch, const float origin[3],
                 float c[3], float r[3], float up[3]);
 
+// the summon slide: drop shifts the strip down its own up axis while the
+// fade-in runs, and the pick path takes the same value so a hit always
+// lands where the strip is actually drawn
+void dockCenterDrop(float yaw, float pitch, float drop,
+                    const float origin[3], float c[3], float r[3],
+                    float up[3]);
+
 // the dock's elevation when the dash anchors on a head pitch: scaled toward
 // level and clamped so the strip stays below the windows, never overhead
 float dockPitchFor(float headPitch);
@@ -50,20 +57,22 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 int dockItemAt(const std::vector<DockItem>& items, float halfW,
                float u, float v, int* zone);
 
-// gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1
-bool rayDock(float yaw, float pitch, const float origin[3],
+// gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1.
+// drop is the strip's summon-slide offset (see dockCenterDrop)
+bool rayDock(float yaw, float pitch, float drop, const float origin[3],
              const float o[3], const float d[3], float halfW,
              float* u, float* v, float* t);
 
 // the dock item under an arbitrary ray; pk.bar is set even when the ray
 // lands on the strip between icons, so the bar body still blocks clicks
 DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
-                     float yaw, float pitch, const float origin[3],
-                     const float o[3], const float d[3]);
+                     float yaw, float pitch, float drop,
+                     const float origin[3], const float o[3],
+                     const float d[3]);
 
 // the dock item under the gaze ray
 DockPick pickDock(const std::vector<DockItem>& items, float halfW,
-                  float yaw, float pitch, const Mat4& head,
+                  float yaw, float pitch, float drop, const Mat4& head,
                   const float origin[3], const float o[3]);
 
 // can a long-press pin this item: the quick button isn't pinnable
@@ -73,8 +82,28 @@ bool dockPinnable(const DockItem& it);
 std::vector<std::string> pinToggle(const std::vector<std::string>& pins,
                                    const std::string& pkg);
 
-// hidden panels parked on the shelf above the dock bar, in panel order
+// hidden panels parked on the shelf above the dock bar, in panel order. A
+// panel mid-restore (minT still draining) keeps its slot so the flight has
+// a stable point to grow out of and the icon can fade with it
 std::vector<ShelfItem> buildShelf(const std::vector<Panel>& panels);
+
+// the parked window's pill-local icon x, or false while the panel has no
+// slot to aim at - the minimize flight targets this point
+bool shelfXFor(const std::vector<ShelfItem>& items, int panelIdx,
+               float* x);
+
+// hover-scale handoff across syncDock's per-frame rebuilds: without it the
+// smoothed scale would snap back to 1.0f every frame. Items match by
+// identity - kind+pkg on the strip, pkg on the shelf - never by index
+void carryHover(std::vector<DockItem>& items,
+                const std::vector<DockItem>& prev);
+void carryShelfHover(std::vector<ShelfItem>& items,
+                     const std::vector<ShelfItem>& prev);
+
+// per-frame hover smoothing: each icon's hs chases kHoverScale while it's
+// the hovered slot and relaxes to 1.0f otherwise
+void tickDockHover(std::vector<DockItem>& items, int hover, float dtMs);
+void tickShelfHover(std::vector<ShelfItem>& items, int hover, float dtMs);
 
 // centre the icon row on a pill and return the pill's half-width
 float shelfLayout(std::vector<ShelfItem>& items);
@@ -87,22 +116,29 @@ float shelfTop();
 void shelfCenter(float yaw, float pitch, const float origin[3],
                  float c[3], float r[3], float up[3]);
 
+// the pill rides the strip's summon slide with it
+void shelfCenterDrop(float yaw, float pitch, float drop,
+                     const float origin[3], float c[3], float r[3],
+                     float up[3]);
+
 // which icon a pill-local point hits; -1 on the body or in the gaps
 int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
                 float u, float v);
 
-// gaze ray vs the shelf plane; u,v in pill coords, may fall outside -1..1
-bool rayShelf(float yaw, float pitch, const float origin[3],
+// gaze ray vs the shelf plane; u,v in pill coords, may fall outside -1..1.
+// drop matches rayDock's: the pill slides with the strip on summon
+bool rayShelf(float yaw, float pitch, float drop, const float origin[3],
               const float o[3], const float d[3], float halfW,
               float* u, float* v, float* t);
 
 // the shelf icon under an arbitrary ray; hit is set even on the pill body
 // between icons, so the shelf blocks clicks like the dock bar does
 ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
-                       float yaw, float pitch, const float origin[3],
-                       const float o[3], const float d[3]);
+                       float yaw, float pitch, float drop,
+                       const float origin[3], const float o[3],
+                       const float d[3]);
 
 // the shelf icon under the gaze ray
 ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
-                    float yaw, float pitch, const Mat4& head,
+                    float yaw, float pitch, float drop, const Mat4& head,
                     const float origin[3], const float o[3]);

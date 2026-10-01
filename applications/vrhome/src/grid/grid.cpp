@@ -1,6 +1,7 @@
 #include "grid.h"
 
 #include "layout.h"
+#include "../anim/anim.h"
 #include "../hud/engine.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
@@ -68,11 +69,15 @@ void gridActivate(HudEngine* e, int idx) {
 }
 
 void drawGrid(HudEngine* e, const Mat4& vp) {
-    if (!e->grid.shown) return;
+    // openT chases `shown`, so the card is still drawn while it closes
+    if (e->grid.openT <= 0.0f) return;
+    const float gt = easeOutCubic(e->grid.openT);
+    const float gs = kGridScale0 + (1.0f - kGridScale0) * gt;
+    const float ga = gt;
     float c[3], r[3], up[3];
     gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
                c, r, up);
-    const float hw = kGridHW, hh = kGridHH;
+    const float hw = kGridHW * gs, hh = kGridHH * gs;
 
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -81,53 +86,55 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     glUseProgram(e->shapeProg);
 
     // shadow + card, same recipe the windows wear
-    const float shc[3] = {c[0] - up[0] * 0.02f, c[1] - up[1] * 0.02f,
-                          c[2] - up[2] * 0.02f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
+    const float shc[3] = {c[0] - up[0] * 0.02f * gs, c[1] - up[1] * 0.02f * gs,
+                          c[2] - up[2] * 0.02f * gs};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
               hw, hh, 0.05f, -1.0f, 0.05f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.86f};
+                              0.86f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.05f,
               0.0f, 0.003f, cardCol);
 
     // title band: label left, close disc on the right end
-    const float hy = hh - kGridHeadH * 0.5f;
+    const float hy = hh - kGridHeadH * 0.5f * gs;
     {
         const float tcol[4] = {kPalSurface[0], kPalSurface[1],
-                               kPalSurface[2], 0.60f};
+                               kPalSurface[2], 0.60f * ga};
         const float hc[3] = {c[0] + up[0]*hy, c[1] + up[1]*hy,
                              c[2] + up[2]*hy};
-        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, hw, kGridHeadH * 0.5f,
-                  hw, kGridHeadH * 0.5f, 0.0f, 0.0f, 0.002f, tcol);
+        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, hw, kGridHeadH * 0.5f * gs,
+                  hw, kGridHeadH * 0.5f * gs, 0.0f, 0.0f, 0.002f, tcol);
     }
     {
         const bool bhov = e->grid.zone == GZONE_CLOSE;
-        const float bx = gridCloseX();
+        const float bx = gridCloseX() * gs;
         const float bc[3] = {c[0] + r[0]*bx + up[0]*hy,
                              c[1] + r[1]*bx + up[1]*hy,
                              c[2] + r[2]*bx + up[2]*hy};
         const float* bgp = bhov ? kPalDanger : kPalText;
-        const float bg[4] = {bgp[0], bgp[1], bgp[2], bhov ? 0.32f : 0.13f};
-        shapeQuad(e, vp, bc, r, up, 0.006f, 0.0f, kGridCloseR,
-                  kGridCloseR, kGridCloseR, kGridCloseR, kGridCloseR,
-                  0.0f, 0.002f, bg);
-        const float icol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.92f};
-        const float il = kGridCloseR * 0.52f, it = 0.0026f;
+        const float bg[4] = {bgp[0], bgp[1], bgp[2],
+                             (bhov ? 0.32f : 0.13f) * ga};
+        shapeQuad(e, vp, bc, r, up, 0.006f, 0.0f, kGridCloseR * gs,
+                  kGridCloseR * gs, kGridCloseR * gs, kGridCloseR * gs,
+                  kGridCloseR * gs, 0.0f, 0.002f, bg);
+        const float icol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                               0.92f * ga};
+        const float il = kGridCloseR * 0.52f * gs, it = 0.0026f;
         shapeQuad(e, vp, bc, r, up, 0.008f, 0.785398f, il, it,
                   il, it, it, 0.0f, 0.0015f, icol);
         shapeQuad(e, vp, bc, r, up, 0.008f, -0.785398f, il, it,
                   il, it, it, 0.0f, 0.0015f, icol);
     }
     if (e->font.ok) {
-        const float ts = 0.0016f;
+        const float ts = 0.0016f * gs;
         const char* title = "Library";
         float gt, gb, yo = hy;
         if (textBounds(e->font.set, title, ts, &gt, &gb))
             yo = hy - (gt + gb) * 0.5f;
-        float to[3] = {c[0] + r[0]*(-hw + kGridSidePad) + up[0]*yo,
-                       c[1] + r[1]*(-hw + kGridSidePad) + up[1]*yo,
-                       c[2] + r[2]*(-hw + kGridSidePad) + up[2]*yo};
+        float to[3] = {c[0] + r[0]*(-hw + kGridSidePad * gs) + up[0]*yo,
+                       c[1] + r[1]*(-hw + kGridSidePad * gs) + up[1]*yo,
+                       c[2] + r[2]*(-hw + kGridSidePad * gs) + up[2]*yo};
         to[0] -= c[0] * 0.010f; to[1] -= c[1] * 0.010f;
         to[2] -= c[2] * 0.010f;
         glUseProgram(e->textProg);
@@ -138,7 +145,7 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, e->font.tex);
-        drawTextPanel(e, title, to, r, up, ts, 0.0f);
+        drawTextPanel(e, title, to, r, up, ts, 0.0f, ga);
         glUseProgram(e->shapeProg);
     }
 
@@ -146,51 +153,53 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     // the band edges while a row scrolls through
     float blo, bhi;
     gridClipBand(&blo, &bhi);
+    blo *= gs; bhi *= gs;
     const float clipC = (blo + bhi) * 0.5f, clipH = (bhi - blo) * 0.5f;
     for (int i = 0; i < (int)e->grid.items.size(); ++i) {
         const GridItem& it = e->grid.items[i];
-        const float iy = it.y + e->grid.scroll;
-        if (iy + kGridCellH * 0.5f < blo - 0.02f ||
-                iy - kGridCellH * 0.5f > bhi + 0.02f)
+        const float iy = (it.y + e->grid.scroll) * gs;
+        if (iy + kGridCellH * 0.5f * gs < blo - 0.02f ||
+                iy - kGridCellH * 0.5f * gs > bhi + 0.02f)
             continue;
         const bool hov = e->grid.hover == i;
-        const float s = kGridIconHW * (hov ? 1.12f : 1.0f);
-        const float ic[3] = {c[0] + r[0]*it.x + up[0]*iy,
-                             c[1] + r[1]*it.x + up[1]*iy,
-                             c[2] + r[2]*it.x + up[2]*iy};
+        const float hp = hoverP(it.hs, kGridHoverScale);
+        const float s = kGridIconHW * gs * it.hs;
+        const float ic[3] = {c[0] + r[0]*it.x*gs + up[0]*iy,
+                             c[1] + r[1]*it.x*gs + up[1]*iy,
+                             c[2] + r[2]*it.x*gs + up[2]*iy};
         const DockIcon* icon = nullptr;
         auto f = e->dockIcons.find(it.pkg);
         if (f != e->dockIcons.end()) icon = &f->second;
 
-        if (hov) {
+        if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f};
+                                 0.10f * hp * ga};
             const float hx = s + 0.024f;
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, hx, hx, hx, hx,
                       hx * kIconRad, 0.0f, 0.002f, hl,
                       -1.0f, 0.0f, iy, clipC, clipH);
         }
         if (icon && icon->tex) {
-            drawIconTex(e, vp, ic, r, up, s, icon->tex, 1.0f,
+            drawIconTex(e, vp, ic, r, up, s, icon->tex, ga,
                         iy, clipC, clipH);
         } else {
             glUseProgram(e->shapeProg);
             drawLetterTile(e, vp, ic, r, up, s,
                            it.label.empty() ? it.pkg.c_str()
                                             : it.label.c_str(),
-                           iy, clipC, clipH);
+                           iy, clipC, clipH, ga);
             glUseProgram(e->shapeProg);
         }
         if (it.vr) {
             const float vc[4] = {kPalWarn[0], kPalWarn[1], kPalWarn[2],
-                                 hov ? 0.95f : 0.65f};
+                                 (0.65f + 0.30f * hp) * ga};
             shapeQuad(e, vp, ic, r, up, 0.009f, 0.0f, s + 0.006f,
                       s + 0.006f, s + 0.006f, s + 0.006f, s + 0.006f,
                       0.0018f, 0.0015f, vc, -1.0f, 0.0f, iy, clipC, clipH);
         }
         // the label line sits under the icon; it only draws while it fits
         // the visible band whole, the icon fade carries the edge cases
-        const float ly = iy - kGridIconHW - 0.038f;
+        const float ly = iy - (kGridIconHW + 0.038f) * gs;
         if (!it.label.empty() && e->font.ok &&
                 ly + 0.018f < bhi && ly - 0.018f > blo) {
             const float ts = 0.0011f;
@@ -198,9 +207,9 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
             const float maxW = (kGridHW * 2.0f - kGridSidePad * 2.0f) /
                                kGridCols * 0.48f;
             const float lw2 = lw > maxW ? maxW : lw;
-            float lo3[3] = {c[0] + r[0]*(it.x - lw2) + up[0]*ly,
-                            c[1] + r[1]*(it.x - lw2) + up[1]*ly,
-                            c[2] + r[2]*(it.x - lw2) + up[2]*ly};
+            float lo3[3] = {c[0] + r[0]*(it.x*gs - lw2) + up[0]*ly,
+                            c[1] + r[1]*(it.x*gs - lw2) + up[1]*ly,
+                            c[2] + r[2]*(it.x*gs - lw2) + up[2]*ly};
             lo3[0] -= c[0] * 0.010f; lo3[1] -= c[1] * 0.010f;
             lo3[2] -= c[2] * 0.010f;
             glUseProgram(e->textProg);
@@ -212,7 +221,7 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
             drawTextPanel(e, it.label.c_str(), lo3, r, up,
-                          lw > maxW ? ts * maxW / lw : ts, 0.0f);
+                          lw > maxW ? ts * maxW / lw : ts, 0.0f, ga);
             glUseProgram(e->shapeProg);
         }
     }

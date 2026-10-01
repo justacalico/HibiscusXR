@@ -91,7 +91,7 @@ void testShelf() {
         const float dl = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= dl; d[1] /= dl; d[2] /= dl;
         float u, v, t;
-        CHECK(rayShelf(0.0f, -0.55f, o0, o0, d, 0.2f, &u, &v, &t));
+        CHECK(rayShelf(0.0f, -0.55f, 0.0f, o0, o0, d, 0.2f, &u, &v, &t));
         CHECK_F(u, 0.0f, 1e-4f);
         CHECK_F(v, 0.0f, 1e-4f);
         CHECK_F(t, dl, 1e-4f);
@@ -109,17 +109,17 @@ void testShelf() {
         float d[3] = {c[0], c[1], c[2]};
         const float dl = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         aim.m[2] = -d[0] / dl; aim.m[6] = -d[1] / dl; aim.m[10] = -d[2] / dl;
-        ShelfPick pk = pickShelf(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        ShelfPick pk = pickShelf(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(pk.hit && pk.idx == 0);
         float dc[3], dr[3], dup[3];
         dockCenter(0.0f, -0.55f, o0, dc, dr, dup);
         const float bdl = sqrtf(dc[0]*dc[0] + dc[1]*dc[1] + dc[2]*dc[2]);
         aim.m[2] = -dc[0] / bdl; aim.m[6] = -dc[1] / bdl;
         aim.m[10] = -dc[2] / bdl;
-        pk = pickShelf(items, hw, 0.0f, -0.55f, aim, o0, o0);
+        pk = pickShelf(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(!pk.hit);
         std::vector<ShelfItem> none;
-        pk = pickShelf(none, 0.0f, 0.0f, -0.55f, aim, o0, o0);
+        pk = pickShelf(none, 0.0f, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(!pk.hit && pk.idx == -1);
     }
 }

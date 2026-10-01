@@ -32,7 +32,8 @@ void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
 
 // app panel: samples an external OES texture fed by the virtual display,
 // corners rounded off in panel space. uRadius rounds the top corners,
-// uRadiusB the bottom ones - the bound top bar wants a square top edge
+// uRadiusB the bottom ones - the bound top bar wants a square top edge.
+// uAlpha fades the whole surface for spawn-in and the park flight
 const char* const kFloatFS = R"(
 #extension GL_OES_EGL_image_external : require
 precision mediump float;
@@ -42,6 +43,7 @@ uniform mat4 uST;
 uniform vec2 uHalf;
 uniform float uRadius;
 uniform float uRadiusB;
+uniform float uAlpha;
 void main() {
     vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
     vec4 c = texture2D(uTex, uv);
@@ -50,7 +52,7 @@ void main() {
     vec2 q = abs(p) - uHalf + vec2(r);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
-    gl_FragColor = vec4(c.rgb, c.a * a);
+    gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
 }
 )";
 
@@ -191,10 +193,11 @@ precision mediump float;
 varying vec2 vUV;
 uniform sampler2D uFont;
 uniform vec3 uColor;
+uniform float uAlpha;
 void main() {
     float a = texture2D(uFont, vUV).a;
     if (a < 0.05) discard;
-    gl_FragColor = vec4(uColor, a);
+    gl_FragColor = vec4(uColor, a * uAlpha);
 }
 )";
 

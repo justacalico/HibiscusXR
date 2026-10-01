@@ -22,6 +22,7 @@ void testPaletteThemes();
 void testKbd();
 void testGrid();
 void testPt();
+void testAnim();
 
 int main() {
     testMat4();
@@ -44,6 +45,7 @@ int main() {
     testKbd();
     testGrid();
     testPt();
+    testAnim();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

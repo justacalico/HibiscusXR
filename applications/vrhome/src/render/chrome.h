@@ -12,7 +12,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj);
 // the aim is on it or it is being dragged
 void drawMovePill(HudEngine* e, const Mat4& viewProj, const float c[3],
                   const float r[3], const float up[3], float drop,
-                  bool hot);
+                  bool hot, float alpha = 1.0f);
 
 // the floating keyboard quad under its host panel
 void drawKbd(HudEngine* e, const Mat4& viewProj);

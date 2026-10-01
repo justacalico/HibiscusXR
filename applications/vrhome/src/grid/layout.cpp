@@ -1,5 +1,6 @@
 #include "layout.h"
 
+#include "../anim/anim.h"
 #include "../common/config.h"
 #include "../panels/layout.h"
 
@@ -10,6 +11,13 @@ void gridCenter(float yaw, float pitch, const float origin[3],
     // same anchor cylinder the windows and strip ride: the card hangs at
     // its own distance so it lands in front of the windows' plane
     ringPoint(yaw, pitch, kGridDist, kPanelY, origin, c, r, up);
+}
+
+void tickGridHover(std::vector<GridItem>& items, int hover, float dtMs) {
+    for (int i = 0; i < (int)items.size(); ++i)
+        items[i].hs = dampMs(items[i].hs,
+                             i == hover ? kGridHoverScale : 1.0f,
+                             dtMs, kHoverTauMs);
 }
 
 float gridLayout(std::vector<GridItem>& items) {

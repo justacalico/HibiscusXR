@@ -51,7 +51,7 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                     const float r[3], const float up[3], float s,
                     const char* label,
                     float clipY = 0.0f, float clipC = 0.0f,
-                    float clipH = 0.0f);
+                    float clipH = 0.0f, float alpha = 1.0f);
 
 // the minimized-window shelf, drawn between the strip and the card stack
 void drawShelf(HudEngine* e, const Mat4& vp);

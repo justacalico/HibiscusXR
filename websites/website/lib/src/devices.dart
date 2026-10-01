@@ -36,7 +36,7 @@ class DeviceEntry {
 final devices = <DeviceEntry>[
   DeviceEntry(
     status: DeviceStatus.supported,
-    name: (l) => l.statDevice,
+    name: (l) => l.deviceNeo2Name,
     specs: (l) => l.deviceNeo2Specs,
     describe: (l) => l.deviceNeo2Body,
   ),

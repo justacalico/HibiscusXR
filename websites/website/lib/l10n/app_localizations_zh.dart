@@ -51,8 +51,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get heroTitle => 'Android 回来了,在 VR 里。';
 
   @override
-  String get heroSubtitle =>
-      '为 VR 一体头显打造的操作系统,基于 LineageOS 17.1。Pico Neo 2 是第一个支持的设备。';
+  String get heroSubtitle => '为 VR 一体头显打造的操作系统,基于 LineageOS 17.1。';
 
   @override
   String get heroSecondary => '阅读文档';
@@ -105,22 +104,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shotAppGlasses => '眼镜';
 
   @override
-  String get statDevice => 'Pico Neo 2';
+  String get statBase => 'Android 10';
 
   @override
-  String get statDeviceLabel => '首个支持的设备';
+  String get statBaseLabel => 'LineageOS 17.1 GSI';
 
   @override
-  String get statSoc => '骁龙 845';
+  String get statVendor => 'vendor 原样';
 
   @override
-  String get statSocLabel => 'Adreno 630 GPU';
+  String get statVendorLabel => '修复都在 overlay 里';
 
   @override
-  String get statPanel => '3840×2160 @ 72 Hz';
+  String get statLicense => 'AGPL-3.0';
 
   @override
-  String get statPanelLabel => 'JDI 4K 屏幕';
+  String get statLicenseLabel => '所有原创代码';
 
   @override
   String get homeWayOverlayTitle => 'GSI 加 overlay';
@@ -151,7 +150,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeOpenBody =>
-      '我们写的所有东西都是 AGPL-3.0。Pico 的二进制归 Pico 所有——从你自己的设备提取,写进清单,绝不二次分发。';
+      '我们写的所有东西都是 AGPL-3.0。厂商的二进制归厂商所有——从你自己的设备提取,写进清单,绝不二次分发。';
 
   @override
   String get homeOpenSource => '浏览仓库';
@@ -161,7 +160,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeDownloadBody =>
-      'Pico Neo 2 的完整系统镜像——GSI、我们的修复和整套 Pico 栈——就在 out 仓库里。一条 fastboot 命令就能刷上头显。';
+      '完整系统镜像——GSI、我们的修复和头显自己的整套栈——就在 out 仓库里。一条 fastboot 命令就能刷上去。';
 
   @override
   String get homeDownloadCta => '获取镜像';
@@ -173,8 +172,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeDevicesTitle => '能跑在哪些头显上。';
 
   @override
-  String get homeDevicesBody =>
-      'Pico Neo 2 是第一个支持的设备,目前所有开发都在它上面进行。等系统从驱动里拆出来之后会支持更多头显。';
+  String get homeDevicesBody => '每个移植都带自己的驱动和配置。新头显做完移植就会加进这个列表。';
 
   @override
   String get deviceStateSupported => '已支持,开发中';
@@ -183,10 +181,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deviceStatePlanned => '计划中';
 
   @override
+  String get deviceNeo2Name => 'Pico Neo 2';
+
+  @override
   String get deviceNeo2Specs => 'A7B10 · 骁龙 845 · 3840×2160';
 
   @override
-  String get deviceNeo2Body => '第一个移植完成的设备,也是目前的开发目标机。';
+  String get deviceNeo2Body => '目前的移植和开发目标机。';
 
   @override
   String get deviceQuest1Name => 'Oculus Quest 1';
@@ -225,8 +226,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reposDumpsTitle => '转储与暂存';
 
   @override
-  String get reposDumpsBody =>
-      '从硬件里拉出的二进制和流水线中间产物,仅供研究。Pico 专有文件归 Pico 所有,绝不二次分发。';
+  String get reposDumpsBody => '从硬件里拉出的二进制和流水线中间产物,仅供研究。厂商专有文件归各自所有者所有,绝不二次分发。';
 
   @override
   String reposCount(int count) {
@@ -234,7 +234,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get repoVrhome => '开源 VR 桌面:2D 应用悬浮成窗,Pico VR 应用全屏运行。';
+  String get repoVrhome => '开源 VR 桌面:2D 应用悬浮成窗,原厂 VR 应用全屏运行。';
 
   @override
   String get repoLibrary => 'vrhome 里的 Flutter 应用网格——搜索、置顶、分组、启动。';
@@ -429,24 +429,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get faqQ1 => '真的能用了吗?';
 
   @override
-  String get faqA1 => '在 Neo 2 上能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。';
+  String get faqA1 => '在支持的硬件上能开机,VRShell 能跑,头部追踪实时生效,VR 画面正常出图。';
 
   @override
   String get faqQ2 => '刷机安全吗?';
 
   @override
   String get faqA2 =>
-      '有真实风险。只刷 system 分区——写入低于防回滚熔丝允许版本的 bootloader 镜像会让 sdm845 永久硬砖。先读刷机指南。';
+      '有真实风险。只刷 system 分区——写入低于防回滚熔丝允许版本的 bootloader 镜像会让头显永久硬砖。先读刷机指南。';
 
   @override
   String get faqQ3 => '支持哪个头显?';
 
   @override
   String get faqA3 =>
-      'Pico Neo 2(A7B10 / PICOA7B10)——第一个支持的设备,目前也是唯一一个。Eye 和非 Eye 两个版本都行,眼动追踪是额外的活。系统本身按跨厂商设计,驱动层拆分完成后会支持更多头显。';
+      'Pico Neo 2(A7B10 / PICOA7B10)是目前唯一支持的设备,Eye 和非 Eye 两个版本都行,眼动追踪是额外的活。系统本身按跨厂商设计,驱动层拆分完成后会支持更多头显。';
 
   @override
-  String get faqQ4 => 'Pico 的专有文件从哪来?';
+  String get faqQ4 => '厂商专有文件从哪来?';
 
   @override
   String get faqA4 =>
@@ -457,14 +457,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get faqA5 =>
-      '我们自己写的 VR 桌面环境。原厂 VRShell 依赖闭源的 Pico 合成器;vrhome 是一个 NativeActivity,把 2D 应用放到悬浮面板上,真正的 VR 应用照常全屏启动。';
+      '我们自己写的 VR 桌面环境。原厂 VRShell 依赖闭源的厂商合成器;vrhome 是一个 NativeActivity,把 2D 应用放到悬浮面板上,真正的 VR 应用照常全屏启动。';
 
   @override
   String get faqQ6 => '用什么许可证?';
 
   @override
   String get faqA6 =>
-      '我们写的所有东西都是 AGPL-3.0。转储出来的 Pico 和 vendor 二进制归各自所有者所有,放在转储仓库里仅供研究。';
+      '我们写的所有东西都是 AGPL-3.0。转储出来的 vendor 二进制归各自所有者所有,放在转储仓库里仅供研究。';
 
   @override
   String get faqQ7 => '能换主环境吗?';
@@ -484,14 +484,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutWhatBody =>
-      'Hibiscus 是为 VR 一体头显打造的操作系统,基于 LineageOS 17.1——通过 phh GSI 实现的 Android 10。Pico Neo 2 出厂只有 Android 8.1 和整套专有 VR 栈,是第一个支持的设备,目前所有开发都在这里进行。';
+      'Hibiscus 是为 VR 一体头显打造的操作系统,基于 LineageOS 17.1——通过 phh GSI 实现的 Android 10。目标是那些卡在旧版 Android、VR 栈高度专有的头显,一台一台移植。';
 
   @override
   String get aboutHowTitle => '怎么做到的';
 
   @override
   String get aboutHowBody =>
-      'GSI 加 overlay 再加你自己的 Pico 栈。vendor 分区一概不动,所以每个兼容性问题——vold 死锁、声卡缺失、ABI 断裂——都在 system 侧用 init 规则和 shim 库解决。';
+      'GSI 加 overlay 再加头显自己的栈。vendor 分区一概不动,所以每个兼容性问题——vold 死锁、声卡缺失、ABI 断裂——都在 system 侧用 init 规则和 shim 库解决。';
 
   @override
   String get aboutGroupTitle => '单仓库';
@@ -505,7 +505,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutLicenseBody =>
-      '所有原创内容都是 AGPL-3.0。转储仓库里的 Pico 和 vendor 专有二进制归各自所有者所有,绝不二次分发。本站内嵌的 Inter 字体遵循 SIL OFL 1.1。';
+      '所有原创内容都是 AGPL-3.0。转储仓库里的 vendor 专有二进制归各自所有者所有,绝不二次分发。本站内嵌的 Inter 字体遵循 SIL OFL 1.1。';
 
   @override
   String get aboutRepoCta => 'GitLab 仓库';

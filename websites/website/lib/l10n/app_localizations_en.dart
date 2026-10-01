@@ -52,7 +52,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get heroSubtitle =>
-      'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.';
+      'A custom operating system for standalone VR headsets, built on LineageOS 17.1.';
 
   @override
   String get heroSecondary => 'Read the docs';
@@ -105,22 +105,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shotAppGlasses => 'Glasses';
 
   @override
-  String get statDevice => 'Pico Neo 2';
+  String get statBase => 'Android 10';
 
   @override
-  String get statDeviceLabel => 'First supported device';
+  String get statBaseLabel => 'LineageOS 17.1 via GSI';
 
   @override
-  String get statSoc => 'Snapdragon 845';
+  String get statVendor => 'Vendor untouched';
 
   @override
-  String get statSocLabel => 'with Adreno 630';
+  String get statVendorLabel => 'fixes live in the overlay';
 
   @override
-  String get statPanel => '3840×2160 @ 72 Hz';
+  String get statLicense => 'AGPL-3.0';
 
   @override
-  String get statPanelLabel => 'JDI 4K panel';
+  String get statLicenseLabel => 'all original work';
 
   @override
   String get homeWayOverlayTitle => 'GSI plus overlay';
@@ -151,7 +151,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeOpenBody =>
-      'Everything we wrote is AGPL-3.0. Pico\'s binaries stay Pico\'s - pulled from your own device, mapped in a manifest, never redistributed.';
+      'Everything we wrote is AGPL-3.0. Vendor binaries stay the vendor\'s - pulled from your own device, mapped in a manifest, never redistributed.';
 
   @override
   String get homeOpenSource => 'Browse the repo';
@@ -161,7 +161,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeDownloadBody =>
-      'A full system image for the Pico Neo 2 - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.';
+      'A full system image - GSI, our fixes and the headset\'s own stack - sits in the out repository. One fastboot command puts it on the device.';
 
   @override
   String get homeDownloadCta => 'Get the image';
@@ -174,7 +174,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeDevicesBody =>
-      'The Pico Neo 2 is the first supported device and where all development happens today. More headsets follow once the OS is split from the drivers.';
+      'Every port carries its own drivers and configs. New headsets join the list as ports land.';
 
   @override
   String get deviceStateSupported => 'Supported, in development';
@@ -183,10 +183,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceStatePlanned => 'Planned';
 
   @override
+  String get deviceNeo2Name => 'Pico Neo 2';
+
+  @override
   String get deviceNeo2Specs => 'A7B10 · Snapdragon 845 · 3840×2160';
 
   @override
-  String get deviceNeo2Body => 'The first port and the development target.';
+  String get deviceNeo2Body => 'The current port and development target.';
 
   @override
   String get deviceQuest1Name => 'Oculus Quest 1';
@@ -229,7 +232,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reposDumpsBody =>
-      'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary Pico files belong to Pico and are never redistributed.';
+      'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary vendor files belong to their owners and are never redistributed.';
 
   @override
   String reposCount(int count) {
@@ -238,7 +241,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get repoVrhome =>
-      'Open VR home: 2D apps as floating windows, Pico VR apps fullscreen.';
+      'Open VR home: 2D apps as floating windows, stock VR apps fullscreen.';
 
   @override
   String get repoLibrary =>
@@ -462,24 +465,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA1 =>
-      'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture.';
+      'It boots on supported hardware, VRShell runs, head tracking is live and the VR display shows a real picture.';
 
   @override
   String get faqQ2 => 'Is it safe to flash?';
 
   @override
   String get faqA2 =>
-      'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.';
+      'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows can hard-brick a headset permanently. Read the flashing guide first.';
 
   @override
   String get faqQ3 => 'Which headset does it run on?';
 
   @override
   String get faqA3 =>
-      'The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.';
+      'The Pico Neo 2 (A7B10 / PICOA7B10) is the only supported device today - both the Eye and non-Eye SKUs work, eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.';
 
   @override
-  String get faqQ4 => 'Where do Pico\'s proprietary files come from?';
+  String get faqQ4 => 'Where do the proprietary vendor files come from?';
 
   @override
   String get faqA4 =>
@@ -490,14 +493,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqA5 =>
-      'Our own VR home environment. Stock VRShell needs the closed Pico compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.';
+      'Our own VR home environment. Stock VRShell needs the closed vendor compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.';
 
   @override
   String get faqQ6 => 'What is the license?';
 
   @override
   String get faqA6 =>
-      'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.';
+      'Everything we wrote is AGPL-3.0. Dumped vendor binaries remain property of their owners and live in dump repos for research only.';
 
   @override
   String get faqQ7 => 'Can I change the home environment?';
@@ -517,14 +520,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutWhatBody =>
-      'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. The Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack, is the first supported device and where all development happens today.';
+      'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. It targets headsets stuck on old Android releases with heavily proprietary VR stacks, one port at a time.';
 
   @override
   String get aboutHowTitle => 'How it works';
 
   @override
   String get aboutHowBody =>
-      'GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.';
+      'GSI plus overlay plus the headset\'s own stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.';
 
   @override
   String get aboutGroupTitle => 'The monorepo';
@@ -538,7 +541,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutLicenseBody =>
-      'All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.';
+      'All original work is AGPL-3.0. Proprietary vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.';
 
   @override
   String get aboutRepoCta => 'GitLab repo';

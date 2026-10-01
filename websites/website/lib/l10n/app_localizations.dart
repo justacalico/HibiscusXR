@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @heroSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'A custom operating system for standalone VR headsets, built on LineageOS 17.1. The Pico Neo 2 is the first supported device.'**
+  /// **'A custom operating system for standalone VR headsets, built on LineageOS 17.1.'**
   String get heroSubtitle;
 
   /// No description provided for @heroSecondary.
@@ -284,41 +284,41 @@ abstract class AppLocalizations {
   /// **'Glasses'**
   String get shotAppGlasses;
 
-  /// No description provided for @statDevice.
+  /// No description provided for @statBase.
   ///
   /// In en, this message translates to:
-  /// **'Pico Neo 2'**
-  String get statDevice;
+  /// **'Android 10'**
+  String get statBase;
 
-  /// No description provided for @statDeviceLabel.
+  /// No description provided for @statBaseLabel.
   ///
   /// In en, this message translates to:
-  /// **'First supported device'**
-  String get statDeviceLabel;
+  /// **'LineageOS 17.1 via GSI'**
+  String get statBaseLabel;
 
-  /// No description provided for @statSoc.
+  /// No description provided for @statVendor.
   ///
   /// In en, this message translates to:
-  /// **'Snapdragon 845'**
-  String get statSoc;
+  /// **'Vendor untouched'**
+  String get statVendor;
 
-  /// No description provided for @statSocLabel.
+  /// No description provided for @statVendorLabel.
   ///
   /// In en, this message translates to:
-  /// **'with Adreno 630'**
-  String get statSocLabel;
+  /// **'fixes live in the overlay'**
+  String get statVendorLabel;
 
-  /// No description provided for @statPanel.
+  /// No description provided for @statLicense.
   ///
   /// In en, this message translates to:
-  /// **'3840×2160 @ 72 Hz'**
-  String get statPanel;
+  /// **'AGPL-3.0'**
+  String get statLicense;
 
-  /// No description provided for @statPanelLabel.
+  /// No description provided for @statLicenseLabel.
   ///
   /// In en, this message translates to:
-  /// **'JDI 4K panel'**
-  String get statPanelLabel;
+  /// **'all original work'**
+  String get statLicenseLabel;
 
   /// No description provided for @homeWayOverlayTitle.
   ///
@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeOpenBody.
   ///
   /// In en, this message translates to:
-  /// **'Everything we wrote is AGPL-3.0. Pico\'s binaries stay Pico\'s - pulled from your own device, mapped in a manifest, never redistributed.'**
+  /// **'Everything we wrote is AGPL-3.0. Vendor binaries stay the vendor\'s - pulled from your own device, mapped in a manifest, never redistributed.'**
   String get homeOpenBody;
 
   /// No description provided for @homeOpenSource.
@@ -389,7 +389,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDownloadBody.
   ///
   /// In en, this message translates to:
-  /// **'A full system image for the Pico Neo 2 - GSI, our fixes and the complete Pico stack - sits in the out repository. One fastboot command puts it on the headset.'**
+  /// **'A full system image - GSI, our fixes and the headset\'s own stack - sits in the out repository. One fastboot command puts it on the device.'**
   String get homeDownloadBody;
 
   /// No description provided for @homeDownloadCta.
@@ -413,7 +413,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeDevicesBody.
   ///
   /// In en, this message translates to:
-  /// **'The Pico Neo 2 is the first supported device and where all development happens today. More headsets follow once the OS is split from the drivers.'**
+  /// **'Every port carries its own drivers and configs. New headsets join the list as ports land.'**
   String get homeDevicesBody;
 
   /// No description provided for @deviceStateSupported.
@@ -428,6 +428,12 @@ abstract class AppLocalizations {
   /// **'Planned'**
   String get deviceStatePlanned;
 
+  /// No description provided for @deviceNeo2Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Pico Neo 2'**
+  String get deviceNeo2Name;
+
   /// No description provided for @deviceNeo2Specs.
   ///
   /// In en, this message translates to:
@@ -437,7 +443,7 @@ abstract class AppLocalizations {
   /// No description provided for @deviceNeo2Body.
   ///
   /// In en, this message translates to:
-  /// **'The first port and the development target.'**
+  /// **'The current port and development target.'**
   String get deviceNeo2Body;
 
   /// No description provided for @deviceQuest1Name.
@@ -515,7 +521,7 @@ abstract class AppLocalizations {
   /// No description provided for @reposDumpsBody.
   ///
   /// In en, this message translates to:
-  /// **'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary Pico files belong to Pico and are never redistributed.'**
+  /// **'Binaries pulled from hardware and mid-pipeline trees, kept for research. Proprietary vendor files belong to their owners and are never redistributed.'**
   String get reposDumpsBody;
 
   /// No description provided for @reposCount.
@@ -527,7 +533,7 @@ abstract class AppLocalizations {
   /// No description provided for @repoVrhome.
   ///
   /// In en, this message translates to:
-  /// **'Open VR home: 2D apps as floating windows, Pico VR apps fullscreen.'**
+  /// **'Open VR home: 2D apps as floating windows, stock VR apps fullscreen.'**
   String get repoVrhome;
 
   /// No description provided for @repoLibrary.
@@ -917,7 +923,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA1.
   ///
   /// In en, this message translates to:
-  /// **'On the Neo 2 it boots, VRShell runs, head tracking is live and the VR display shows a real picture.'**
+  /// **'It boots on supported hardware, VRShell runs, head tracking is live and the VR display shows a real picture.'**
   String get faqA1;
 
   /// No description provided for @faqQ2.
@@ -929,7 +935,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA2.
   ///
   /// In en, this message translates to:
-  /// **'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows hard-bricks sdm845 permanently. Read the flashing guide first.'**
+  /// **'There is real risk. Only the system partition gets flashed - writing a bootloader image older than the anti-rollback fuse allows can hard-brick a headset permanently. Read the flashing guide first.'**
   String get faqA2;
 
   /// No description provided for @faqQ3.
@@ -941,13 +947,13 @@ abstract class AppLocalizations {
   /// No description provided for @faqA3.
   ///
   /// In en, this message translates to:
-  /// **'The Pico Neo 2 (A7B10 / PICOA7B10) - the first supported device, and the only one for now. Both the Eye and non-Eye SKUs work; eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.'**
+  /// **'The Pico Neo 2 (A7B10 / PICOA7B10) is the only supported device today - both the Eye and non-Eye SKUs work, eye tracking is extra work on top. The OS itself is built to run across vendors, with more headsets planned as the driver layer splits out.'**
   String get faqA3;
 
   /// No description provided for @faqQ4.
   ///
   /// In en, this message translates to:
-  /// **'Where do Pico\'s proprietary files come from?'**
+  /// **'Where do the proprietary vendor files come from?'**
   String get faqQ4;
 
   /// No description provided for @faqA4.
@@ -965,7 +971,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA5.
   ///
   /// In en, this message translates to:
-  /// **'Our own VR home environment. Stock VRShell needs the closed Pico compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.'**
+  /// **'Our own VR home environment. Stock VRShell needs the closed vendor compositor; vrhome is a NativeActivity that puts 2D apps on floating panels and still launches real VR apps fullscreen.'**
   String get faqA5;
 
   /// No description provided for @faqQ6.
@@ -977,7 +983,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqA6.
   ///
   /// In en, this message translates to:
-  /// **'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.'**
+  /// **'Everything we wrote is AGPL-3.0. Dumped vendor binaries remain property of their owners and live in dump repos for research only.'**
   String get faqA6;
 
   /// No description provided for @faqQ7.
@@ -1013,7 +1019,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutWhatBody.
   ///
   /// In en, this message translates to:
-  /// **'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. The Pico Neo 2, a headset that shipped with Android 8.1 and a heavily proprietary VR stack, is the first supported device and where all development happens today.'**
+  /// **'Hibiscus is a custom operating system for standalone VR headsets, built on LineageOS 17.1 - Android 10 via a phh GSI. It targets headsets stuck on old Android releases with heavily proprietary VR stacks, one port at a time.'**
   String get aboutWhatBody;
 
   /// No description provided for @aboutHowTitle.
@@ -1025,7 +1031,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutHowBody.
   ///
   /// In en, this message translates to:
-  /// **'GSI plus overlay plus your own Pico stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.'**
+  /// **'GSI plus overlay plus the headset\'s own stack. The vendor partition is never touched, so every compatibility problem - the vold deadlock, the missing sound card, the ABI breaks - gets fixed on the system side with init rules and shim libraries.'**
   String get aboutHowBody;
 
   /// No description provided for @aboutGroupTitle.
@@ -1049,7 +1055,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutLicenseBody.
   ///
   /// In en, this message translates to:
-  /// **'All original work is AGPL-3.0. Proprietary Pico and vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.'**
+  /// **'All original work is AGPL-3.0. Proprietary vendor binaries in dump repos belong to their owners and are never redistributed. The Inter typeface bundled on this site is under the SIL Open Font License 1.1.'**
   String get aboutLicenseBody;
 
   /// No description provided for @aboutRepoCta.

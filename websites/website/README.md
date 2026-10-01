@@ -1,7 +1,7 @@
 # website
 
 Project site for HibiscusXR - a custom OS for standalone VR headsets,
-built on LineageOS 17.1. Covers the whole project: the Neo 2 port, the
+built on LineageOS 17.1. Covers the whole project: the device ports, the
 software, the repository map and the research notes. Built with Flutter
 web, deployed to GitLab Pages.
 

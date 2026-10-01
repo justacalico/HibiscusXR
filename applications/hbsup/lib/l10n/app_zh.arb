@@ -8,7 +8,6 @@
   "connectTitle": "连接头显",
   "connectHint": "HBSUP 需要 root 过的 adb。先启动原厂系统,执行 adb root,再插上头显。",
   "connectRefresh": "刷新",
-  "connectScanning": "正在扫描设备...",
   "connectNoDevices": "没有 adb 设备。插上头显,或者先把无线 adb 开起来。",
   "connectUnknown": "未知型号",
   "connectButton": "连接",

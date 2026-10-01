@@ -138,6 +138,70 @@ void main() {
       expect(s.lastError, 'no partitions found');
     });
 
+    test('an empty table can never become a plan', () async {
+      final s = await connectedState(adb: FakeAdb());
+      await s.setDestination('/tmp/dest');
+      expect(s.partitions, isEmpty);
+      expect(s.plan, isNull);
+      await s.startBackup();
+      expect(s.backupState, BackupState.idle);
+    });
+
+    test('reconnect resets a finished run', () async {
+      final tmp = Directory.systemTemp.createTempSync('hbsup-state');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+      final adb = FakeAdb(shell: {
+        'ls -l $_byName': '''
+total 0
+lrwxrwxrwx 1 root root 1970 tiny -> /dev/block/sde1
+''',
+        'cat /sys/class/block/sde1/size': '2',
+      }, exec: {
+        ddOf('/dev/block/sde1'): Stream.value(Uint8List(1024)),
+      });
+      final s = fakeState(adb: adb);
+      await s.connect('SER');
+      await s.setDestination(tmp.path);
+      await s.startBackup();
+      expect(s.backupState, BackupState.done);
+      await s.connect('SER');
+      expect(s.backupState, BackupState.idle);
+      expect(s.items, isEmpty);
+      expect(s.manifestWritten, isFalse);
+    });
+
+    test('disconnect during a run keeps the session clean', () async {
+      final tmp = Directory.systemTemp.createTempSync('hbsup-state');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+      final gate = Completer<void>();
+      Stream<Uint8List> stream() async* {
+        yield Uint8List(512);
+        await gate.future;
+        yield Uint8List(512);
+      }
+
+      final adb = FakeAdb(shell: {
+        'ls -l $_byName': '''
+total 0
+lrwxrwxrwx 1 root root 1970 tiny -> /dev/block/sde1
+''',
+        'cat /sys/class/block/sde1/size': '2',
+      }, exec: {
+        ddOf('/dev/block/sde1'): stream(),
+      });
+      final s = fakeState(adb: adb);
+      await s.connect('SER');
+      await s.setDestination(tmp.path);
+      final run = s.startBackup();
+      await Future<void>.delayed(Duration.zero);
+      s.disconnect();
+      gate.complete();
+      await run;
+      expect(s.backupState, BackupState.idle);
+      expect(s.connected, isFalse);
+      expect(s.lastError, isNull);
+    });
+
     test('shell errors degrade to an empty table', () async {
       final s = fakeState(adb: _ThrowingShellAdb());
       await s.connect('SER');

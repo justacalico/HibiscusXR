@@ -8,7 +8,6 @@
   "connectTitle": "Connect a headset",
   "connectHint": "HBSUP needs rooted adb. Boot the stock system, run adb root, then plug the headset in.",
   "connectRefresh": "Refresh",
-  "connectScanning": "Scanning for devices...",
   "connectNoDevices": "No adb devices. Plug a headset in, or bring wireless adb up first.",
   "connectUnknown": "Unknown model",
   "connectButton": "Connect",

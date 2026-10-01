@@ -63,6 +63,13 @@ x
     expect(String.fromCharCodes(bytes).trim(), 'chunk');
   });
 
+  test('execOut throws on a nonzero exit code', () async {
+    final adb =
+        AdbRunner(spawn: (args) => Process.start('false', const []));
+    await expectLater(adb.execOut('S', 'dd if=/x').drain<void>(),
+        throwsA(isA<ProcessException>()));
+  });
+
   test('default run/spawn hit the real executable', () async {
     final adb = AdbRunner(adbPath: 'echo');
     final r = await adb.run(['hello']);

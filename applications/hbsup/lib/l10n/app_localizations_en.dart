@@ -35,9 +35,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connectRefresh => 'Refresh';
 
   @override
-  String get connectScanning => 'Scanning for devices...';
-
-  @override
   String get connectNoDevices =>
       'No adb devices. Plug a headset in, or bring wireless adb up first.';
 

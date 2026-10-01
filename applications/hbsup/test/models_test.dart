@@ -4,13 +4,14 @@ import 'package:hibiscus_hbsup/src/models.dart';
 void main() {
   group('parseByNameLs', () {
     test('parses ls -l by-name output', () {
+      const dir = '/dev/block/bootdevice/by-name';
       const out = '''
 total 0
 lrwxrwxrwx 1 root root 1970-01-01 00:14 abl -> /dev/block/sde8
 lrwxrwxrwx 1 root root 1970-01-01 00:14 boot -> /dev/block/sde17
 lrwxrwxrwx 1 root root 1970-01-01 00:14 system -> /dev/block/sde32
 ''';
-      final parts = parseByNameLs(out);
+      final parts = parseByNameLs(dir, out);
       expect(parts.length, 3);
       expect(parts[0].name, 'abl');
       expect(parts[0].path, '/dev/block/sde8');
@@ -23,11 +24,28 @@ total 4
 -rw-r--r-- 1 root root 3 boot
 
 ''';
-      expect(parseByNameLs(out), isEmpty);
+      expect(parseByNameLs('/d', out), isEmpty);
     });
 
     test('returns empty on garbage', () {
-      expect(parseByNameLs('not a listing\nnope\n'), isEmpty);
+      expect(parseByNameLs('/d', 'not a listing\nnope\n'), isEmpty);
+    });
+
+    test('rejects hostile names and targets', () {
+      const out = '''
+lrwxrwxrwx 1 root root x ../escape -> /dev/block/sde1
+lrwxrwxrwx 1 root root x boot -> /tmp/x; rm -rf /
+lrwxrwxrwx 1 root root x ok -> /dev/block/sde1
+''';
+      final parts = parseByNameLs('/d', out);
+      expect(parts.length, 1);
+      expect(parts.single.name, 'ok');
+    });
+
+    test('relative symlink targets resolve under the by-name dir', () {
+      final parts =
+          parseByNameLs('/dev/block/by-name', 'boot -> sde17\n');
+      expect(parts.single.path, '/dev/block/by-name/sde17');
     });
   });
 

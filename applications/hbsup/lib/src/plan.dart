@@ -81,15 +81,17 @@ Future<int?> freeSpaceOf(String dir,
   return _dfFree(dir, run);
 }
 
-/// `df -B1 <dir>` second row, column 4 (available 1-byte blocks).
+/// `df -Pk <dir>` - POSIX one-line output in 1K blocks; works on GNU
+/// and BSD/macOS alike. Column 4 is available blocks.
 Future<int?> _dfFree(String dir, RunProc run) async {
   try {
-    final r = await run('df', ['-B1', dir]);
+    final r = await run('df', ['-Pk', dir]);
     final lines = (r.stdout as String? ?? '').trim().split('\n');
     if (lines.length < 2) return null;
     final cols = lines[1].split(RegExp(r'\s+'));
     if (cols.length < 4) return null;
-    return int.tryParse(cols[3]);
+    final blocks = int.tryParse(cols[3]);
+    return blocks == null ? null : blocks * 1024;
   } catch (_) {
     return null;
   }

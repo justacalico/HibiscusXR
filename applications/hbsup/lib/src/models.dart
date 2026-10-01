@@ -14,10 +14,15 @@ class Partition {
   String get fileName => '$name.img';
 }
 
+final _nameRe = RegExp(r'^[A-Za-z0-9._-]+$');
+final _pathRe = RegExp(r'^/[A-Za-z0-9._/-]+$');
+
 /// Parses `ls -l <by-name dir>` output into (name, target) pairs:
 ///   boot -> /dev/block/sde17
-///   lrwxrwxrwx ... boot -> /dev/block/bootdevice/by-name/boot on some builds
-List<({String name, String path})> parseByNameLs(String out) {
+/// Relative targets resolve against [dir]. Names and paths are
+/// whitelisted - ls output off a hostile endpoint must never become a
+/// filename or a shell fragment.
+List<({String name, String path})> parseByNameLs(String dir, String out) {
   final found = <({String name, String path})>[];
   for (final line in out.split('\n')) {
     final t = line.trim();
@@ -27,8 +32,12 @@ List<({String name, String path})> parseByNameLs(String out) {
     final target = t.substring(arrow + 4).trim();
     final left = t.substring(0, arrow).trim();
     final name = left.split(RegExp(r'\s+')).last;
-    if (name.isEmpty || name == '.' || name == '..') continue;
-    found.add((name: name, path: target));
+    if (!_nameRe.hasMatch(name) || name == '.' || name == '..') {
+      continue;
+    }
+    final path = target.startsWith('/') ? target : '$dir/$target';
+    if (!_pathRe.hasMatch(path)) continue;
+    found.add((name: name, path: path));
   }
   return found;
 }

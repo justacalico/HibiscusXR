@@ -146,12 +146,6 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get connectRefresh;
 
-  /// No description provided for @connectScanning.
-  ///
-  /// In en, this message translates to:
-  /// **'Scanning for devices...'**
-  String get connectScanning;
-
   /// No description provided for @connectNoDevices.
   ///
   /// In en, this message translates to:

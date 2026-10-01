@@ -61,9 +61,10 @@ class AppState extends ChangeNotifier {
   bool get connected => activeSerial != null;
   bool get running => backupState == BackupState.running;
 
-  BackupPlan? get plan => destDir == null || partitions == null
-      ? null
-      : BackupPlan(destDir: destDir!, partitions: partitions!);
+  BackupPlan? get plan =>
+      destDir == null || partitions == null || partitions!.isEmpty
+          ? null
+          : BackupPlan(destDir: destDir!, partitions: partitions!);
 
   SpaceCheck? get space {
     final p = plan;
@@ -97,11 +98,17 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Picks a headset and pulls its partition table.
+  /// Picks a headset and pulls its partition table. Resets any state
+  /// left over from a previous session.
   Future<void> connect(String serial) async {
     activeSerial = serial;
     partitions = null;
     loadingPartitions = true;
+    lastError = null;
+    backupState = BackupState.idle;
+    items = const [];
+    currentItem = -1;
+    manifestWritten = false;
     notifyListeners();
     try {
       partitions = await _readPartitions(serial) ?? const [];
@@ -121,7 +128,7 @@ class AppState extends ChangeNotifier {
   Future<List<Partition>?> _readPartitions(String serial) async {
     for (final dir in byNameDirs) {
       final listing = await _adb.shellText(serial, 'ls -l $dir');
-      final entries = parseByNameLs(listing);
+      final entries = parseByNameLs(dir, listing);
       if (entries.isEmpty) continue;
       final parts = <Partition>[];
       for (final e in entries) {
@@ -160,7 +167,10 @@ class AppState extends ChangeNotifier {
     partitions = null;
     destDir = null;
     destFreeBytes = null;
+    lastError = null;
     items = const [];
+    currentItem = -1;
+    manifestWritten = false;
     backupState = BackupState.idle;
     logBuf.clear();
     notifyListeners();
@@ -192,6 +202,8 @@ class AppState extends ChangeNotifier {
       }
       notifyListeners();
     }
+    // a disconnect mid-run already reset everything - don't clobber it
+    if (activeSerial != serial) return;
     if (cancelled) {
       backupState = BackupState.cancelled;
       _log('backup cancelled');

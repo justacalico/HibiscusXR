@@ -25,12 +25,23 @@ class AdbRunner {
     return (r.stdout as String? ?? '') + (r.stderr as String? ?? '');
   }
 
-  /// `adb exec-out` byte stream - the dd data channel.
+  /// `adb exec-out` byte stream - the dd data channel. A nonzero exit
+  /// code surfaces as a stream error so failed dumps can't look clean.
+  /// Cancelling the subscription kills the adb process.
   Stream<Uint8List> execOut(String serial, String command) async* {
-    final p = await spawn(
-        ['-s', serial, 'exec-out', command]);
-    yield* p.stdout.map((c) => c is Uint8List ? c : Uint8List.fromList(c));
-    await p.exitCode;
+    final p = await spawn(['-s', serial, 'exec-out', command]);
+    unawaited(p.stderr.drain());
+    try {
+      yield* p.stdout
+          .map((c) => c is Uint8List ? c : Uint8List.fromList(c));
+      final code = await p.exitCode;
+      if (code != 0) {
+        throw ProcessException(adbPath, ['exec-out', command],
+            'exec-out exited $code', code);
+      }
+    } finally {
+      p.kill();
+    }
   }
 
   /// `adb devices -l` rows.

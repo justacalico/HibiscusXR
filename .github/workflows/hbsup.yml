@@ -1,7 +1,7 @@
 name: hbsup
 
 # Release lane for applications/hbsup: a hbsup-v* tag on the GitHub mirror
-# (pushed by the GitLab cte-release job) builds the desktop bundles and
+# (pushed by the GitLab hbsup-release job) builds the desktop bundles and
 # cuts the release here; GitLab then mirrors the assets back through the
 # hbsup-release-sync job so they never expire.
 

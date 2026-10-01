@@ -34,9 +34,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get connectRefresh => '刷新';
 
   @override
-  String get connectScanning => '正在扫描设备...';
-
-  @override
   String get connectNoDevices => '没有 adb 设备。插上头显,或者先把无线 adb 开起来。';
 
   @override

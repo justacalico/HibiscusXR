@@ -66,11 +66,11 @@ void main() {
     test('df output parses the available column', () async {
       Future<ProcessResult> proc(String e, List<String> a) async =>
           ProcessResult(0, 0,
-              'Filesystem  1B-blocks  Used Available Use% Mounted on\n'
-              '/dev/sda1  1000000 400000 600000  40% /\n',
+              'Filesystem 1024-blocks Used Available Capacity Mounted on\n'
+              '/dev/sda1  1000000 400000 600000  60% /\n',
               '');
       expect(await freeSpaceOf('/x', proc: proc, isWindows: false),
-          600000);
+          600000 * 1024);
     });
 
     test('unparseable or failing df gives null', () async {

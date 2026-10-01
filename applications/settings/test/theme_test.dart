@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/theme_choice.dart';
+import 'package:panel_theme/panel_theme.dart';
 import 'package:pn2_settings/src/ui/theme.dart';
 
 void main() {

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:panel_theme/panel_theme.dart';
 
-/// Store chrome colors. Same palette the other panel apps share - the
-/// values mirror applications/vrhome/src/common/palette.cpp so a panel
-/// pixel and the native chrome stay in the same family.
+/// Store chrome colors. The dark table the other panel apps share - the
+/// store has no light mode yet, and these stay consts because the
+/// widgets read them inside const styles.
 class StoreTheme {
-  static const background = Color(0xFF141A21);
-  static const panel = Color(0xFF1B232D);
-  static const surface = Color(0xFF232D38);
-  static const surfaceHigh = Color(0xFF2E3A47);
-  static const accent = Color(0xFF4E9CFF);
-  static const danger = Color(0xFFFF5E5E);
-  static const warn = Color(0xFFF5C542);
-  static const good = Color(0xFF3DD68C);
-  static const textPrimary = Color(0xFFF2F5F8);
-  static const textSecondary = Color(0xFF9AA7B4);
+  static const background = kPanelDarkBackground;
+  static const panel = kPanelDarkPanel;
+  static const surface = kPanelDarkSurface;
+  static const surfaceHigh = kPanelDarkSurfaceHigh;
+  static const accent = kPanelDarkAccent;
+  static const danger = kPanelDarkDanger;
+  static const warn = kPanelDarkWarn;
+  static const good = kPanelDarkGood;
+  static const textPrimary = kPanelDarkTextPrimary;
+  static const textSecondary = kPanelDarkTextSecondary;
 
   static const cardRadius = 18.0;
 

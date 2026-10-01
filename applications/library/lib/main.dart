@@ -5,7 +5,8 @@ import 'src/library_controller.dart';
 import 'src/platform/android_app_source.dart';
 import 'src/platform/prefs_persistence.dart';
 import 'src/ui/library_page.dart';
-import 'src/ui/theme.dart' show LibraryTheme, paletteFor;
+import 'package:panel_theme/panel_theme.dart' show paletteFor;
+import 'src/ui/theme.dart' show LibraryTheme;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

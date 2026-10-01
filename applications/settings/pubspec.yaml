@@ -34,6 +34,8 @@ dependencies:
     sdk: flutter
   intl: any
   shared_preferences: ^2.5.5
+  panel_theme:
+    path: ../panel_theme
   flutter_svg: ^2.2.3
 
   # The following adds the Cupertino Icons font to your application.

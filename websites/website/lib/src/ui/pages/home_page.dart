@@ -7,6 +7,7 @@ import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 import '../../links.dart';
 import '../../routes.dart';
 import '../../theme.dart';
+import '../devices_section.dart';
 import '../hero_shot.dart';
 import '../shell.dart';
 import '../widgets.dart';
@@ -22,6 +23,7 @@ class HomePage extends StatelessWidget {
         _Hero(l10n: l10n),
         _Stats(l10n: l10n),
         _Trio(l10n: l10n),
+        const DevicesSection(),
         _StatusBand(l10n: l10n),
         _OpenBand(l10n: l10n),
         _DownloadBand(l10n: l10n),

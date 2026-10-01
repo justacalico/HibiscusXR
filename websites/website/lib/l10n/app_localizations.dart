@@ -458,6 +458,78 @@ abstract class AppLocalizations {
   /// **'Get the image'**
   String get homeDownloadCta;
 
+  /// No description provided for @homeDevicesEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Device compatibility'**
+  String get homeDevicesEyebrow;
+
+  /// No description provided for @homeDevicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What it runs on.'**
+  String get homeDevicesTitle;
+
+  /// No description provided for @homeDevicesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Pico Neo 2 is the first supported device and where all development happens today. More headsets follow once the OS is split from the drivers.'**
+  String get homeDevicesBody;
+
+  /// No description provided for @deviceStateSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Supported, in development'**
+  String get deviceStateSupported;
+
+  /// No description provided for @deviceStatePlanned.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get deviceStatePlanned;
+
+  /// No description provided for @deviceNeo2Specs.
+  ///
+  /// In en, this message translates to:
+  /// **'A7B10 · Snapdragon 845 · 3840×2160'**
+  String get deviceNeo2Specs;
+
+  /// No description provided for @deviceNeo2Body.
+  ///
+  /// In en, this message translates to:
+  /// **'The first port and the development target.'**
+  String get deviceNeo2Body;
+
+  /// No description provided for @deviceQuest1Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Oculus Quest 1'**
+  String get deviceQuest1Name;
+
+  /// No description provided for @deviceQuest1Specs.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapdragon 835 · 2880×1600 OLED'**
+  String get deviceQuest1Specs;
+
+  /// No description provided for @deviceNeo3Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Pico Neo 3'**
+  String get deviceNeo3Name;
+
+  /// No description provided for @deviceNeo3Specs.
+  ///
+  /// In en, this message translates to:
+  /// **'Snapdragon XR2 · 3664×1920'**
+  String get deviceNeo3Specs;
+
+  /// No description provided for @devicePlannedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned once the driver layer splits into its own tree.'**
+  String get devicePlannedBody;
+
   /// No description provided for @statusTitle.
   ///
   /// In en, this message translates to:

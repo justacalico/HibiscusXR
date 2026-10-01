@@ -198,6 +198,43 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeDownloadCta => '获取镜像';
 
   @override
+  String get homeDevicesEyebrow => '设备兼容性';
+
+  @override
+  String get homeDevicesTitle => '能跑在哪些头显上。';
+
+  @override
+  String get homeDevicesBody =>
+      'Pico Neo 2 是第一个支持的设备,目前所有开发都在它上面进行。等系统从驱动里拆出来之后会支持更多头显。';
+
+  @override
+  String get deviceStateSupported => '已支持,开发中';
+
+  @override
+  String get deviceStatePlanned => '计划中';
+
+  @override
+  String get deviceNeo2Specs => 'A7B10 · 骁龙 845 · 3840×2160';
+
+  @override
+  String get deviceNeo2Body => '第一个移植完成的设备,也是目前的开发目标机。';
+
+  @override
+  String get deviceQuest1Name => 'Oculus Quest 1';
+
+  @override
+  String get deviceQuest1Specs => '骁龙 835 · 2880×1600 OLED';
+
+  @override
+  String get deviceNeo3Name => 'Pico Neo 3';
+
+  @override
+  String get deviceNeo3Specs => '骁龙 XR2 · 3664×1920';
+
+  @override
+  String get devicePlannedBody => '等驱动层拆成独立目录后列入计划。';
+
+  @override
   String get statusTitle => '现状';
 
   @override

@@ -60,4 +60,25 @@ void main() {
       expect(implementedOf(id), isTrue, reason: '$id');
     }
   });
+
+  test('languageOptionFor maps dialects and rejects other locales', () {
+    expect(languageOptionFor('en'), 'en');
+    expect(languageOptionFor('en-US'), 'en');
+    expect(languageOptionFor('zh'), 'zh-CN');
+    expect(languageOptionFor('zh-CN'), 'zh-CN');
+    expect(languageOptionFor('zh-Hans-SG'), 'zh-CN');
+    expect(languageOptionFor('zh-MY'), 'zh-CN');
+    // Traditional Chinese is not the Simplified option
+    expect(languageOptionFor('zh-TW'), isNull);
+    expect(languageOptionFor('zh-Hant'), isNull);
+    expect(languageOptionFor('fr-FR'), isNull);
+    expect(languageOptionFor(''), isNull);
+    expect(languageOptionFor(null), isNull);
+  });
+
+  test('language options stay in sync with the generated locales', () {
+    for (final tag in kLanguageOptions) {
+      expect(languageOptionFor(tag), tag, reason: tag);
+    }
+  });
 }

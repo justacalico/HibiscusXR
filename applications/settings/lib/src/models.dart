@@ -10,6 +10,7 @@ enum ItemKind {
   brand,
   choice,
   theme,
+  language,
   wifiList,
   btList,
   imeList,

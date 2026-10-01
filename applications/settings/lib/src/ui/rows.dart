@@ -191,6 +191,34 @@ class _Control extends StatelessWidget {
               ? (sel) => _pick(context, sel.first)
               : null,
         );
+      case ItemKind.language:
+        // the language picker rides the text channel: the wire value is
+        // the BCP 47 tag the platform pushes back once the locale lands
+        final tag = store.textOf(id);
+        return DropdownButton<String>(
+          value: languageOptionFor(tag),
+          hint: tag == null || tag.isEmpty
+              ? null
+              : Text(
+                  tag,
+                  style: TextStyle(color: PanelTheme.textSecondary),
+                ),
+          items: [
+            for (final o in kLanguageOptions)
+              DropdownMenuItem(
+                value: o,
+                child: Text(languageOptionLabel(l10n, o)),
+              ),
+          ],
+          onChanged: enabled
+              ? (v) {
+                  if (v != null) controller.setText(id, v);
+                }
+              : null,
+          underline: const SizedBox.shrink(),
+          dropdownColor: PanelTheme.surfaceHigh,
+          iconEnabledColor: PanelTheme.textSecondary,
+        );
       case ItemKind.theme:
         // the theme picker rides the text channel: the segment's enum
         // name is the hibiscus_theme value

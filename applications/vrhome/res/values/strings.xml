@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_label">PN2 Home</string>
+    <string name="hud_label">PN2 HUD</string>
+    <string name="hud_channel">HUD</string>
+    <string name="dock_library">Library</string>
+    <string name="sysmsg_keeps_stopping">%1$s keeps stopping</string>
+    <string name="sysmsg_not_responding">%1$s isn\'t responding</string>
+    <string name="sysmsg_close_app">Close app</string>
+    <string name="sysmsg_restart">Restart</string>
+    <string name="sysmsg_system">System</string>
+</resources>

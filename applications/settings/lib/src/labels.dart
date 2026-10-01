@@ -181,6 +181,15 @@ String envSelectionLabel(AppLocalizations l10n, String? id) => switch (id) {
   _ => id,
 };
 
+/// Display name for a language dropdown entry. Language names stay in
+/// their own language on purpose: a user lost in a locale they cannot
+/// read still finds theirs.
+String languageOptionLabel(AppLocalizations l10n, String tag) =>
+    switch (tag) {
+      'zh-CN' => l10n.languageChineseSimplified,
+      _ => l10n.languageEnglish,
+    };
+
 /// Label for one segment of the theme picker.
 String themeChoiceLabel(AppLocalizations l10n, ThemeChoice choice) =>
     switch (choice) {

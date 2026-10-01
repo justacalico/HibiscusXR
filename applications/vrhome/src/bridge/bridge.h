@@ -15,6 +15,10 @@ void queueLaunch(const char* pkg);
 // drain everything the bridge has queued; run on the render thread
 void pumpBridge(HudEngine* e);
 
+// pull the localized chrome labels when the java-side version bumps;
+// run on the render thread beside the other sync calls
+void syncUiStrings(HudEngine* e);
+
 // ask the render thread to recenter the ring on the next frame (summon key
 // in home space, plus the automatic recenter when a covered app lets go)
 void wantRecenter();

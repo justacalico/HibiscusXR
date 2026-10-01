@@ -158,13 +158,16 @@ public class SysMsgs {
         Msg m = new Msg();
         m.id = nextId++;
         m.pkg = parsePkg(body);
-        m.title = appLabel(m.pkg)
-                + (anr ? " isn't responding" : " keeps stopping");
+        m.title = ctx.getString(anr ? R.string.sysmsg_not_responding
+                                    : R.string.sysmsg_keeps_stopping,
+                                appLabel(m.pkg));
         m.text = faultLine(body);
         final boolean restart = !m.pkg.isEmpty()
                 && pm.getLaunchIntentForPackage(m.pkg) != null;
-        m.buttons = restart ? new String[]{"Close app", "Restart"}
-                            : new String[]{"Close app"};
+        m.buttons = restart
+                ? new String[]{ctx.getString(R.string.sysmsg_close_app),
+                               ctx.getString(R.string.sysmsg_restart)}
+                : new String[]{ctx.getString(R.string.sysmsg_close_app)};
         synchronized (cur) {
             cur.add(m);
             while (cur.size() > MAX_CARDS) cur.remove(0);
@@ -204,7 +207,7 @@ public class SysMsgs {
                         pm.getApplicationInfo(pkg, 0)).toString();
             } catch (Throwable ignored) {}
         }
-        return pkg.isEmpty() ? "System" : pkg;
+        return pkg.isEmpty() ? ctx.getString(R.string.sysmsg_system) : pkg;
     }
 
     // the card body: the first exception-ish line in the record, else the

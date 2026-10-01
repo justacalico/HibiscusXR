@@ -109,8 +109,8 @@ void main() {
     addTearDown(c.dispose);
     await c.start();
 
-    await c.runAction(ItemId.languagePicker);
-    expect(source.actionsPerformed, [ItemId.languagePicker]);
+    await c.runAction(ItemId.timeZone);
+    expect(source.actionsPerformed, [ItemId.timeZone]);
   });
 
   test('start scans the restored radio section', () async {

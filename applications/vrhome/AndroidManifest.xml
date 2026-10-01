@@ -26,14 +26,14 @@
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
 
     <application
-        android:label="PN2 Home"
+        android:label="@string/app_label"
         android:icon="@mipmap/ic_launcher"
         android:hasCode="true"
         android:debuggable="false">
 
         <activity
             android:name=".PanelActivity"
-            android:label="PN2 Home"
+            android:label="@string/app_label"
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode|density"
             android:launchMode="singleTask"

@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.os.Handler;
@@ -142,6 +143,15 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         super.onDestroy();
     }
 
+    // a locale switch lands here: bump the ui-strings version so the
+    // render thread refetches the chrome labels it draws itself, and
+    // re-resolve the cached launcher-app labels under the new locale
+    @Override public void onConfigurationChanged(Configuration c) {
+        super.onConfigurationChanged(c);
+        UiStrings.invalidate();
+        if (bridge != null) bridge.invalidateAppLabels();
+    }
+
     // CVService only streams controller data while its SPI thread runs, and
     // nothing on this build starts it (stock VRShell used to). The render
     // thread calls this when the sharemem flags stop flapping - thread
@@ -181,9 +191,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         NotificationManager nm =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.createNotificationChannel(new NotificationChannel("vrhud",
-                "HUD", NotificationManager.IMPORTANCE_MIN));
+                getString(R.string.hud_channel),
+                NotificationManager.IMPORTANCE_MIN));
         startForeground(1, new Notification.Builder(this, "vrhud")
-                .setContentTitle("PN2 HUD")
+                .setContentTitle(getString(R.string.hud_label))
                 .setSmallIcon(android.R.drawable.ic_menu_compass)
                 .build());
     }

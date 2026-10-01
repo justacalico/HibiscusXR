@@ -14,7 +14,6 @@ import 'ui/pages/flashdocs/home_page.dart';
 import 'ui/pages/home_page.dart';
 import 'ui/pages/not_found_page.dart';
 import 'ui/pages/repositories_page.dart';
-import 'ui/pages/screenshots_page.dart';
 import 'ui/shell.dart';
 
 GoRouter buildRouter() => GoRouter(
@@ -37,10 +36,6 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(
               path: Routes.repositories,
               pageBuilder: _fade(const RepositoriesPage()),
-            ),
-            GoRoute(
-              path: Routes.screenshots,
-              pageBuilder: _fade(const ScreenshotsPage()),
             ),
             GoRoute(
               path: Routes.download,

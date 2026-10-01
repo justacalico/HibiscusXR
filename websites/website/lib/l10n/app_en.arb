@@ -7,7 +7,6 @@
 
   "navRepos": "Repos",
   "navGuide": "Guide",
-  "navScreenshots": "Screenshots",
   "navAbout": "About",
   "navFaq": "FAQ",
   "navMenu": "Menu",
@@ -53,8 +52,6 @@
   "statPanel": "3840×2160 @ 72 Hz",
   "statPanelLabel": "JDI 4K panel",
 
-  "shotCollectionCaption": "Collections and groups, with counts.",
-  "shotMenuCaption": "The tile menu on a long press.",
 
   "homeWayOverlayTitle": "GSI plus overlay",
   "homeWayOverlayBody": "A LineageOS 17.1 GSI carries the system; a small overlay holds every fix we made. The vendor partition stays byte-identical to stock, so each problem gets solved on our side.",
@@ -146,9 +143,6 @@
   "repoOut": "Built images: system-pn2-full.img and the compiled shims.",
   "repoRef": "Local clone of alvr-pico-legacy kept for reference.",
 
-  "screenshotsTitle": "Screenshots",
-  "screenshotsSubtitle": "vrhome and its library window, on the Pico Neo 2.",
-  "shotGridCaption": "The app grid inside vrhome.",
 
   "downloadBackupCta": "Get HBSUP",
 

@@ -9,7 +9,6 @@ void main() {
     final paths = [
       Routes.home,
       Routes.repositories,
-      Routes.screenshots,
       Routes.download,
       Routes.cte,
       Routes.cteDownload,

@@ -83,7 +83,6 @@ class _Wordmark extends StatelessWidget {
 
 List<Destination> _destinations(AppLocalizations l10n) => [
       Destination(Routes.repositories, (l) => l.navRepos),
-      Destination(Routes.screenshots, (l) => l.navScreenshots),
       Destination(Routes.faq, (l) => l.navFaq),
       Destination(Routes.about, (l) => l.navAbout),
     ];

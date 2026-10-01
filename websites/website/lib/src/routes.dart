@@ -2,7 +2,6 @@
 abstract final class Routes {
   static const home = '/';
   static const repositories = '/repositories';
-  static const screenshots = '/screenshots';
 
   /// Legacy path kept live - redirects to the flashing docs.
   static const download = '/download';

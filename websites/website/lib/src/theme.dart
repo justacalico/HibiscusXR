@@ -202,4 +202,13 @@ extension SiteTheme on BuildContext {
   ColorScheme get colors => Theme.of(this).colorScheme;
   TextTheme get text => Theme.of(this).textTheme;
   bool get isDark => Theme.of(this).brightness == Brightness.dark;
+
+  /// Monospace style for shell commands - the platform's generic mono
+  /// family, no bundled font needed.
+  TextStyle get mono => TextStyle(
+        fontFamily: 'monospace',
+        fontSize: 14,
+        height: 1.6,
+        color: colors.onSurface,
+      );
 }

@@ -834,4 +834,140 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cteSourceCta => 'Source';
+
+  @override
+  String get navFlashdocs => 'Flashing';
+
+  @override
+  String get downloadGuideTitle => 'Flashing guide';
+
+  @override
+  String get downloadGuideBody =>
+      'Step-by-step docs for each supported headset, per host OS.';
+
+  @override
+  String get downloadGuideCta => 'Open the guide';
+
+  @override
+  String get flashdocsTitle => 'Flashing docs';
+
+  @override
+  String get flashdocsSidebarHome => 'Getting started';
+
+  @override
+  String get flashdocsDevicesTitle => 'Devices';
+
+  @override
+  String get flashdocsPickDeviceTitle => 'Which headset do you have?';
+
+  @override
+  String get flashdocsPickDeviceBody =>
+      'Pick your headset to get its flashing guide. More devices land here as ports do.';
+
+  @override
+  String get flashdocsPickOsTitle => 'Which OS is your computer running?';
+
+  @override
+  String get flashdocsPickOsBody =>
+      'The guide is per host OS. Only Linux is covered for now.';
+
+  @override
+  String get flashdocsOsLinux => 'Linux';
+
+  @override
+  String get flashdocsOsCardBody =>
+      'adb and fastboot from your distro\'s repos.';
+
+  @override
+  String get flashdocsNeo2Title => 'Flash Hibiscus on the Pico Neo 2';
+
+  @override
+  String get flashdocsNeo2Intro =>
+      'The full flow on a Linux host: root stock, back it up, then flash the system image.';
+
+  @override
+  String get flashdocsNeo2WarnTitle => 'Read this first';
+
+  @override
+  String get flashdocsNeo2WarnBody =>
+      'Only the boot and system images below are safe to flash. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.';
+
+  @override
+  String get flashdocsNeo2ReqTitle => 'Before you start';
+
+  @override
+  String get flashdocsNeo2Req1 => 'A Linux PC with adb and fastboot';
+
+  @override
+  String get flashdocsNeo2Req2 =>
+      'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work';
+
+  @override
+  String get flashdocsNeo2Req3 =>
+      'A USB cable that carries data, not charge-only';
+
+  @override
+  String get flashdocsNeo2RootTitle => '1. Root the headset';
+
+  @override
+  String get flashdocsNeo2RootBody =>
+      'Root on stock is what gives the backup step adb root. Download the Magisk-patched boot image, then run:';
+
+  @override
+  String get flashdocsNeo2RootDownload => 'Download the patched boot image';
+
+  @override
+  String get flashdocsNeo2RootCmd1 => 'adb reboot bootloader';
+
+  @override
+  String get flashdocsNeo2RootCmd2 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2RootCmd3 =>
+      'fastboot flash boot magisk_patched_pico_neo_2_boot.img';
+
+  @override
+  String get flashdocsNeo2RootCmd4 => 'fastboot reboot';
+
+  @override
+  String get flashdocsNeo2RootNote =>
+      'oem pico unlock is needed once per fastboot session. If it hangs, power the headset off, boot back into fastboot and run it again.';
+
+  @override
+  String get flashdocsNeo2BackupTitle => '2. Back up stock';
+
+  @override
+  String get flashdocsNeo2BackupBody =>
+      'With rooted adb, dump every partition before flashing anything - the tools repo has a backup script that does it end to end. Keep the dump somewhere safe: it is your only way back to stock.';
+
+  @override
+  String get flashdocsNeo2FlashTitle => '3. Flash Hibiscus';
+
+  @override
+  String get flashdocsNeo2FlashBody =>
+      'With the full system image downloaded, put the headset back into fastboot and run:';
+
+  @override
+  String get flashdocsNeo2FlashCmd1 => 'adb reboot bootloader';
+
+  @override
+  String get flashdocsNeo2FlashCmd2 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2FlashCmd3 =>
+      'fastboot -S 128M flash system system-hibiscus-full.img';
+
+  @override
+  String get flashdocsNeo2FlashCmd4 => 'fastboot reboot';
+
+  @override
+  String get flashdocsNeo2FlashNote =>
+      'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash.';
+
+  @override
+  String get flashdocsNeo2DoneTitle => '4. Done';
+
+  @override
+  String get flashdocsNeo2DoneBody =>
+      'The headset restarts into Hibiscus. First boot takes a couple of minutes while the Pico stack settles.';
 }

@@ -1573,6 +1573,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Source'**
   String get cteSourceCta;
+
+  /// No description provided for @navFlashdocs.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashing'**
+  String get navFlashdocs;
+
+  /// No description provided for @downloadGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashing guide'**
+  String get downloadGuideTitle;
+
+  /// No description provided for @downloadGuideBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Step-by-step docs for each supported headset, per host OS.'**
+  String get downloadGuideBody;
+
+  /// No description provided for @downloadGuideCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the guide'**
+  String get downloadGuideCta;
+
+  /// No description provided for @flashdocsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashing docs'**
+  String get flashdocsTitle;
+
+  /// No description provided for @flashdocsSidebarHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting started'**
+  String get flashdocsSidebarHome;
+
+  /// No description provided for @flashdocsDevicesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Devices'**
+  String get flashdocsDevicesTitle;
+
+  /// No description provided for @flashdocsPickDeviceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which headset do you have?'**
+  String get flashdocsPickDeviceTitle;
+
+  /// No description provided for @flashdocsPickDeviceBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick your headset to get its flashing guide. More devices land here as ports do.'**
+  String get flashdocsPickDeviceBody;
+
+  /// No description provided for @flashdocsPickOsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Which OS is your computer running?'**
+  String get flashdocsPickOsTitle;
+
+  /// No description provided for @flashdocsPickOsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The guide is per host OS. Only Linux is covered for now.'**
+  String get flashdocsPickOsBody;
+
+  /// No description provided for @flashdocsOsLinux.
+  ///
+  /// In en, this message translates to:
+  /// **'Linux'**
+  String get flashdocsOsLinux;
+
+  /// No description provided for @flashdocsOsCardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'adb and fastboot from your distro\'s repos.'**
+  String get flashdocsOsCardBody;
+
+  /// No description provided for @flashdocsNeo2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash Hibiscus on the Pico Neo 2'**
+  String get flashdocsNeo2Title;
+
+  /// No description provided for @flashdocsNeo2Intro.
+  ///
+  /// In en, this message translates to:
+  /// **'The full flow on a Linux host: root stock, back it up, then flash the system image.'**
+  String get flashdocsNeo2Intro;
+
+  /// No description provided for @flashdocsNeo2WarnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read this first'**
+  String get flashdocsNeo2WarnTitle;
+
+  /// No description provided for @flashdocsNeo2WarnBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Only the boot and system images below are safe to flash. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.'**
+  String get flashdocsNeo2WarnBody;
+
+  /// No description provided for @flashdocsNeo2ReqTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you start'**
+  String get flashdocsNeo2ReqTitle;
+
+  /// No description provided for @flashdocsNeo2Req1.
+  ///
+  /// In en, this message translates to:
+  /// **'A Linux PC with adb and fastboot'**
+  String get flashdocsNeo2Req1;
+
+  /// No description provided for @flashdocsNeo2Req2.
+  ///
+  /// In en, this message translates to:
+  /// **'A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work'**
+  String get flashdocsNeo2Req2;
+
+  /// No description provided for @flashdocsNeo2Req3.
+  ///
+  /// In en, this message translates to:
+  /// **'A USB cable that carries data, not charge-only'**
+  String get flashdocsNeo2Req3;
+
+  /// No description provided for @flashdocsNeo2RootTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Root the headset'**
+  String get flashdocsNeo2RootTitle;
+
+  /// No description provided for @flashdocsNeo2RootBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Root on stock is what gives the backup step adb root. Download the Magisk-patched boot image, then run:'**
+  String get flashdocsNeo2RootBody;
+
+  /// No description provided for @flashdocsNeo2RootDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download the patched boot image'**
+  String get flashdocsNeo2RootDownload;
+
+  /// No description provided for @flashdocsNeo2RootCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'adb reboot bootloader'**
+  String get flashdocsNeo2RootCmd1;
+
+  /// No description provided for @flashdocsNeo2RootCmd2.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot oem pico unlock'**
+  String get flashdocsNeo2RootCmd2;
+
+  /// No description provided for @flashdocsNeo2RootCmd3.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot flash boot magisk_patched_pico_neo_2_boot.img'**
+  String get flashdocsNeo2RootCmd3;
+
+  /// No description provided for @flashdocsNeo2RootCmd4.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot reboot'**
+  String get flashdocsNeo2RootCmd4;
+
+  /// No description provided for @flashdocsNeo2RootNote.
+  ///
+  /// In en, this message translates to:
+  /// **'oem pico unlock is needed once per fastboot session. If it hangs, power the headset off, boot back into fastboot and run it again.'**
+  String get flashdocsNeo2RootNote;
+
+  /// No description provided for @flashdocsNeo2BackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Back up stock'**
+  String get flashdocsNeo2BackupTitle;
+
+  /// No description provided for @flashdocsNeo2BackupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'With rooted adb, dump every partition before flashing anything - the tools repo has a backup script that does it end to end. Keep the dump somewhere safe: it is your only way back to stock.'**
+  String get flashdocsNeo2BackupBody;
+
+  /// No description provided for @flashdocsNeo2FlashTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Flash Hibiscus'**
+  String get flashdocsNeo2FlashTitle;
+
+  /// No description provided for @flashdocsNeo2FlashBody.
+  ///
+  /// In en, this message translates to:
+  /// **'With the full system image downloaded, put the headset back into fastboot and run:'**
+  String get flashdocsNeo2FlashBody;
+
+  /// No description provided for @flashdocsNeo2FlashCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'adb reboot bootloader'**
+  String get flashdocsNeo2FlashCmd1;
+
+  /// No description provided for @flashdocsNeo2FlashCmd2.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot oem pico unlock'**
+  String get flashdocsNeo2FlashCmd2;
+
+  /// No description provided for @flashdocsNeo2FlashCmd3.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot -S 128M flash system system-hibiscus-full.img'**
+  String get flashdocsNeo2FlashCmd3;
+
+  /// No description provided for @flashdocsNeo2FlashCmd4.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot reboot'**
+  String get flashdocsNeo2FlashCmd4;
+
+  /// No description provided for @flashdocsNeo2FlashNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash.'**
+  String get flashdocsNeo2FlashNote;
+
+  /// No description provided for @flashdocsNeo2DoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'4. Done'**
+  String get flashdocsNeo2DoneTitle;
+
+  /// No description provided for @flashdocsNeo2DoneBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The headset restarts into Hibiscus. First boot takes a couple of minutes while the Pico stack settles.'**
+  String get flashdocsNeo2DoneBody;
 }
 
 class _AppLocalizationsDelegate

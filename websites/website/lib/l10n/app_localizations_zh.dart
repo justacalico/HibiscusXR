@@ -781,4 +781,130 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cteSourceCta => '源码';
+
+  @override
+  String get navFlashdocs => '刷机指南';
+
+  @override
+  String get downloadGuideTitle => '刷机指南';
+
+  @override
+  String get downloadGuideBody => '按头显和电脑系统分类的逐步刷机文档。';
+
+  @override
+  String get downloadGuideCta => '打开指南';
+
+  @override
+  String get flashdocsTitle => '刷机文档';
+
+  @override
+  String get flashdocsSidebarHome => '入门';
+
+  @override
+  String get flashdocsDevicesTitle => '设备';
+
+  @override
+  String get flashdocsPickDeviceTitle => '你用的是哪个头显?';
+
+  @override
+  String get flashdocsPickDeviceBody => '选择你的头显查看对应的刷机指南。后续移植的设备也会出现在这里。';
+
+  @override
+  String get flashdocsPickOsTitle => '你的电脑跑的是什么系统?';
+
+  @override
+  String get flashdocsPickOsBody => '刷机指南按电脑的系统区分,目前只有 Linux 版。';
+
+  @override
+  String get flashdocsOsLinux => 'Linux';
+
+  @override
+  String get flashdocsOsCardBody => '用发行版仓库里的 adb 和 fastboot。';
+
+  @override
+  String get flashdocsNeo2Title => '在 Pico Neo 2 上刷入 Hibiscus';
+
+  @override
+  String get flashdocsNeo2Intro => '在 Linux 主机上的完整流程:root 原厂系统、备份、然后刷系统镜像。';
+
+  @override
+  String get flashdocsNeo2WarnTitle => '先读这个';
+
+  @override
+  String get flashdocsNeo2WarnBody =>
+      '下面的 boot 和 system 镜像是唯一能安全刷写的分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。';
+
+  @override
+  String get flashdocsNeo2ReqTitle => '开始之前';
+
+  @override
+  String get flashdocsNeo2Req1 => '一台装了 adb 和 fastboot 的 Linux 电脑';
+
+  @override
+  String get flashdocsNeo2Req2 => '一台 Pico Neo 2(A7B10),Eye 和非 Eye 版本都可以';
+
+  @override
+  String get flashdocsNeo2Req3 => '一根能传数据的 USB 线,不是只能充电的那种';
+
+  @override
+  String get flashdocsNeo2RootTitle => '1. Root 头显';
+
+  @override
+  String get flashdocsNeo2RootBody =>
+      '在原厂系统上 root,备份步骤才能拿到 adb root。下载 Magisk 修补过的 boot 镜像,然后执行:';
+
+  @override
+  String get flashdocsNeo2RootDownload => '下载修补过的 boot 镜像';
+
+  @override
+  String get flashdocsNeo2RootCmd1 => 'adb reboot bootloader';
+
+  @override
+  String get flashdocsNeo2RootCmd2 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2RootCmd3 =>
+      'fastboot flash boot magisk_patched_pico_neo_2_boot.img';
+
+  @override
+  String get flashdocsNeo2RootCmd4 => 'fastboot reboot';
+
+  @override
+  String get flashdocsNeo2RootNote =>
+      'oem pico unlock 每个 fastboot 会话只需要执行一次。如果卡住,把头显关机、重新进 fastboot 再跑一遍。';
+
+  @override
+  String get flashdocsNeo2BackupTitle => '2. 备份原厂系统';
+
+  @override
+  String get flashdocsNeo2BackupBody =>
+      '拿到 root 的 adb 之后,刷任何东西之前先把每个分区转储出来——tools 仓库里的备份脚本可以一条龙搞定。把转储存到安全的地方:出了问题它是回原厂的唯一退路。';
+
+  @override
+  String get flashdocsNeo2FlashTitle => '3. 刷入 Hibiscus';
+
+  @override
+  String get flashdocsNeo2FlashBody => '下载好完整系统镜像后,让头显重新进 fastboot,执行:';
+
+  @override
+  String get flashdocsNeo2FlashCmd1 => 'adb reboot bootloader';
+
+  @override
+  String get flashdocsNeo2FlashCmd2 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2FlashCmd3 =>
+      'fastboot -S 128M flash system system-hibiscus-full.img';
+
+  @override
+  String get flashdocsNeo2FlashCmd4 => 'fastboot reboot';
+
+  @override
+  String get flashdocsNeo2FlashNote => '-S 128M 分块是硬性要求:更大的块会在刷到一半时弄断 USB 连接。';
+
+  @override
+  String get flashdocsNeo2DoneTitle => '4. 完成';
+
+  @override
+  String get flashdocsNeo2DoneBody => '头显重启后进入 Hibiscus。第一次开机会花几分钟,等 Pico 栈就位。';
 }

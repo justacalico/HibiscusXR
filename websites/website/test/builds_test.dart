@@ -151,6 +151,30 @@ void main() {
     });
   });
 
+  group('latestInChannel', () {
+    final releases = parseReleases([
+      {
+        'tag_name': 'alpha-v2026.09.15-r7',
+        'created_at': '2026-09-15T17:00:00.000Z',
+        'assets': {'links': []},
+      },
+      {
+        'tag_name': 'alpha-v2026.09.14-r3',
+        'created_at': '2026-09-14T10:00:00.000Z',
+        'assets': {'links': []},
+      },
+    ]);
+
+    test('returns only the newest build', () {
+      expect(latestInChannel(releases, BuildChannel.alpha)!.tag,
+          'alpha-v2026.09.15-r7');
+    });
+
+    test('returns null when the channel is empty', () {
+      expect(latestInChannel(releases, BuildChannel.beta), isNull);
+    });
+  });
+
   test('parseReleases handles missing name and assets', () {
     final releases = parseReleases([
       {'tag_name': 'v2026.01.01-r1', 'created_at': '2026-01-01T00:00:00.000Z'},

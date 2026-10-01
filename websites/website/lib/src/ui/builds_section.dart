@@ -65,17 +65,12 @@ class _BuildsSectionState extends State<BuildsSection> {
             if (!snapshot.hasData) {
               return BuildsLoading(message: l10n.buildsLoading);
             }
-            final builds =
-                releasesInChannel(osReleases(snapshot.data!), _channel);
-            if (builds.isEmpty) {
+            final latest =
+                latestInChannel(osReleases(snapshot.data!), _channel);
+            if (latest == null) {
               return BuildsEmpty(message: l10n.buildsEmpty);
             }
-            return Column(
-              children: [
-                for (final b in builds.take(5))
-                  _BuildCard(release: b, device: widget.device),
-              ],
-            );
+            return _BuildCard(release: latest, device: widget.device);
           },
         ),
       ],

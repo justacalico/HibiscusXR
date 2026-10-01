@@ -90,29 +90,7 @@ class _HbsupShots extends StatelessWidget {
               Text(l10n.hbsupShotsTitle, style: context.text.titleLarge),
         ),
         const SizedBox(height: 32),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final wide = constraints.maxWidth >= 560;
-            final half = (constraints.maxWidth - 32) / 2;
-            return Wrap(
-              spacing: 32,
-              runSpacing: 40,
-              children: [
-                for (var i = 0; i < shots.length; i++)
-                  Reveal(
-                    delay: Duration(milliseconds: (i % 2) * 100),
-                    child: SizedBox(
-                      width: wide ? half : constraints.maxWidth,
-                      child: ShotCard(
-                        asset: shots[i].$1,
-                        caption: shots[i].$2,
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
-        ),
+        ShotGrid(shots: shots),
       ],
     );
   }

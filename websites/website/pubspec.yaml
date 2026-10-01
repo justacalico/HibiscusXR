@@ -29,6 +29,7 @@ flutter:
   assets:
     - assets/screenshots/
     - assets/hbsup/
+    - assets/cte/
     - assets/brand/
 
   fonts:

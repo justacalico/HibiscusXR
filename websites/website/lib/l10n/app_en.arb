@@ -239,6 +239,13 @@
   "cteGetBody": "Desktop bundles ship with every cte-v* release on the monorepo - tarballs and zips for Linux, Windows, and macOS, mirrored to the GitLab release page so they never expire.",
   "cteReleasesCta": "CTE releases",
   "cteSourceCta": "Source",
+  "cteShotsTitle": "What it looks like",
+  "cteShotConnect": "The connect page: scanned USB/adb devices up top, wireless connect below.",
+  "cteShotOverview": "Once connected: headset info, controller battery and tracking state, and the link.",
+  "cteShotDisplay": "The display mirror pulling frames straight off the headset.",
+  "cteShotInstall": "A finished APK push, with the install log underneath.",
+  "cteShotTracking": "Head pose with the top-down trail and the raw pose log.",
+  "cteShotDebug": "The debug page: a filterable getprop table next to the logcat tail.",
   "appDownloadsTitle": "{app} downloads",
   "@appDownloadsTitle": {
     "placeholders": {"app": {"type": "String"}}

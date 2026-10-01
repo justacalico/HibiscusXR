@@ -66,6 +66,8 @@ void main() {
     expect(find.text('How it connects'), findsOneWidget);
     expect(find.text('CTE releases'), findsOneWidget);
     expect(find.text('Source'), findsWidgets);
+    expect(find.text('What it looks like'), findsOneWidget);
+    expect(find.byType(ShotCard), findsNWidgets(6));
   });
 
   testWidgets('home page shows the supported devices grid', (tester) async {

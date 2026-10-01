@@ -325,6 +325,41 @@ class PageHead extends StatelessWidget {
   }
 }
 
+/// A wrap of shot cards, two per row when the width allows.
+/// `shots` is a list of (asset, caption) pairs.
+class ShotGrid extends StatelessWidget {
+  const ShotGrid({super.key, required this.shots});
+
+  final List<(String, String)> shots;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final wide = constraints.maxWidth >= 560;
+        final half = (constraints.maxWidth - 32) / 2;
+        return Wrap(
+          spacing: 32,
+          runSpacing: 40,
+          children: [
+            for (var i = 0; i < shots.length; i++)
+              Reveal(
+                delay: Duration(milliseconds: (i % 2) * 100),
+                child: SizedBox(
+                  width: wide ? half : constraints.maxWidth,
+                  child: ShotCard(
+                    asset: shots[i].$1,
+                    caption: shots[i].$2,
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
 /// A screenshot with a hairline border and a caption under it.
 class ShotCard extends StatelessWidget {
   const ShotCard({

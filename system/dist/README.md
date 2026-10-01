@@ -11,9 +11,11 @@ through the package registry, so they never expire.
 
 ## What a build does
 
-1. The workflow links `system/{tools,overlay,shim,hsvr}` and
-   `applications/{vrhome,library,quick-panel,settings,keyboard}` into `$PN2_ROOT` -
-   the sources are the monorepo checkout itself, nothing gets cloned.
+1. `scripts/layout-sources.sh` copies the monorepo source dirs into
+   `$PN2_ROOT` (`system/{tools,overlay,shim,hsvr,cted}`, `drivers/`,
+   `controllers/`, `applications/{vrhome,library,quick-panel,settings,
+   keyboard}`) - the sources are the monorepo checkout itself, nothing gets
+   cloned.
 2. `scripts/fetch-inputs.sh` downloads the pinned input packages from the
    private `neosalsa/dist-inputs` package registry (the proprietary blobs -
    kept private, see `overlay/PROPRIETARY-PVR.md` in the overlay repo).
@@ -34,15 +36,14 @@ the job trace; `github-release-sync` publishes the assets when it succeeds.
 ## Running locally
 
 The same `build-image.sh` runs without CI. Point `PN2_ROOT` at a build root
-holding the same layout the workflow makes:
+and lay out the sources exactly like the workflow does - one script, one
+list, so a local image ships the same content a GitHub run would:
 
 ```
 export PN2_ROOT=/path/to/build-root
-mkdir -p "$PN2_ROOT"/{notes,out,fullstage,gsi,images,.stub/media}
+bash system/dist/scripts/layout-sources.sh
 ```
 
-- copy the monorepo dirs in like the workflow does: `system/{tools,overlay,shim,hsvr}`,
-  `drivers/`, `applications/{vrhome,library,quick-panel,settings,keyboard}`
 - supply the input packages - either run `fetch-inputs.sh` (needs the
   deploy-token secrets) or link the extracted dirs from an existing
   `~/PN2Lineage` workspace (`pvr_stack`, `pvr_apps_final`, `pvr_applibs`,

@@ -22,7 +22,7 @@ need() { [ -e "$R/$1" ] || { echo "  MISSING $1"; miss=$((miss+1)); }; }
 for p in \
   tools overlay shim hsvr drivers vrhome library quick-panel settings \
   keyboard \
-  gsi .stub/media/LoadingRes \
+  gsi .stub/media/LoadingRes overlay/media/bootanimation/desc.txt \
   pvr_stack pvr_apps_final pvr_applibs oem_final \
   overlay_pvr airsvc rfsa qvr cdsp fan seethrough linklibs build \
   overlay/lib64 \

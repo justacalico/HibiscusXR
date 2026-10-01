@@ -15,3 +15,8 @@ etc/pvr/                                resources and configs
 Written into the image by `tools/build/144_stage_full.sh` /
 `145_build_full.sh`. The apks here come out of the repack pipeline
 (`pvr_apps_final`, `oem_final`).
+
+`media/LoadingRes/` is the exception to the above: it is our own
+Hibiscus-branded set (background + loading spinner frames) rather than staged
+Pico content. `dist/scripts/make-loadingres-img.sh` overlays it onto the
+packaged stub, so this copy in the repo is the one that ships.

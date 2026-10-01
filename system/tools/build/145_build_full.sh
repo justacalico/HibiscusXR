@@ -66,7 +66,9 @@ echo "=== spot check ==="
 for p in /bin/pvrservice /lib64/libcompositor.pxr.so /lib64/lib6DofReset.so \
          /framework/pxr_sdk_api.jar /etc/pvr/slam/ORBvoc.bin \
          /priv-app/VRShell2/VRShell2.apk /priv-app/VRShell2/lib/arm64/libmain.so \
-         /priv-app/PVRLauncher/PVRLauncher.apk /media/LoadingRes/inside_background_img.png; do
+         /priv-app/PVRLauncher/PVRLauncher.apk /media/bootanimation.zip \
+         /media/LoadingRes/inside_background_img.png \
+         /media/LoadingRes/img/loading_animation_00000.png; do
   sz=$(debugfs -R "ls -l $(dirname $p)" "$FULL" 2>/dev/null | awk -v b="$(basename $p)" '$NF==b {print $6}' | head -1)
   printf '  %-52s %s\n' "$p" "${sz:-MISSING}"
 done

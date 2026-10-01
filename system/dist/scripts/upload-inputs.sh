@@ -65,7 +65,9 @@ tarball "$W/oem_final.tar.xz" -C "$SRC" oem_final
 up oem-final "$VER_OEM" oem_final.tar.xz
 
 echo "=== LoadingRes ==="
-tar -cJf "$W/LoadingRes.tar.xz" -C "$SRC/fullstage/media" LoadingRes
+# canonical copy is the repo (system/fullstage/media/LoadingRes) - it carries
+# the Hibiscus-branded set, not whatever happened to be in the workspace
+tar -cJf "$W/LoadingRes.tar.xz" -C "$SELF/../fullstage/media" LoadingRes
 up loadingres "$VER_RES" LoadingRes.tar.xz
 
 echo "=== blobs ==="

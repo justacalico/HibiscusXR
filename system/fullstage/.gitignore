@@ -67,6 +67,11 @@
 *.mov
 *.wav
 *.mp3
+
+# the LoadingRes art is ours (Hibiscus-branded), not pulled blobs - it IS
+# committed, and make-loadingres-img.sh overlays it on the packaged stub
+!/media/LoadingRes/*.png
+!/media/LoadingRes/img/*.png
 /bin/pvrservice
 /bin/pvr_compute
 /bin/qvrservice

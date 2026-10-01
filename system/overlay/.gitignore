@@ -67,3 +67,7 @@
 *.mov
 *.wav
 *.mp3
+
+# the bootanimation frames are our art (tools/media/generate.py) - committed
+# deliberately; 143_build_image2.sh packs them into /media/bootanimation.zip
+!/media/bootanimation/**/*.png

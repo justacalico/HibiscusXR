@@ -37,7 +37,7 @@ static void ptMeshes(Engine* e, float tanX, float tanY) {
     static float pRoll = -9999.0f;
     const int sw = propI("debug.vrhome.ptswap", 0);
     const int fx = propI("debug.vrhome.ptflipx", 0);
-    const int fy = propI("debug.vrhome.ptflipy", 0);
+    const int fy = propI("debug.vrhome.ptflipy", 1);
     const float roll = propF("debug.vrhome.ptroll", 0.0f);
     const int rot = propI("debug.vrhome.ptrot", 1);
     if (e->ptVbo[0] && sw == pSwap && fx == pFx && fy == pFy &&

@@ -112,7 +112,7 @@ apps-test:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ ca-certificates libglu1-mesa
+    - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ ca-certificates libglu1-mesa zlib1g-dev
     - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.44.6-stable.tar.xz"
     - tar -xJf /tmp/flutter.tar.xz -C /opt
     - export PATH="/opt/flutter/bin:$PATH"

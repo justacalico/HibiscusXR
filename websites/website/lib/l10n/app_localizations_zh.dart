@@ -638,6 +638,13 @@ class AppLocalizationsZh extends AppLocalizations {
       '我们写的所有东西都是 AGPL-3.0。转储出来的 Pico 和 vendor 二进制归各自所有者所有,放在转储仓库里仅供研究。';
 
   @override
+  String get faqQ7 => '能换主环境吗?';
+
+  @override
+  String get faqA7 =>
+      '能。设置里的「主环境」页有三个选项:摄像头透视、内置天空场景,或用 adb 推到 /data/local/tmp/hibiscus/envs 的自定义 zip 环境包。包里是一个 map.obj(里面的 SpawnUser 部件标记站立点),可再带 map.png 截图和 map.json 元数据。';
+
+  @override
   String get aboutTitle => '关于';
 
   @override

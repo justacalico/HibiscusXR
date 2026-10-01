@@ -1,17 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/main.dart';
+import 'package:pn2_settings/src/envs/env_info.dart';
+import 'package:pn2_settings/src/envs/env_source.dart';
 import 'package:pn2_settings/src/models.dart';
 import 'package:pn2_settings/src/persistence.dart';
 import 'package:pn2_settings/src/platform/fake_settings_source.dart';
 import 'package:pn2_settings/src/settings_controller.dart';
 import 'package:pn2_settings/src/settings_store.dart';
 
+class _StubEnvs implements EnvSource {
+  const _StubEnvs(this.options);
+
+  final List<EnvOption> options;
+
+  @override
+  Future<List<EnvOption>> list() async => options;
+
+  @override
+  Future<bool> remove(String id) async => false;
+}
+
 void main() {
   Future<SettingsController> pump(
     WidgetTester tester,
     SettingsSnapshot initial, {
     MemoryPersistence? persistence,
+    EnvSource envs = const EmptyEnvSource(),
   }) async {
     tester.view.physicalSize = const Size(1280, 800);
     tester.view.devicePixelRatio = 1.0;
@@ -23,6 +38,7 @@ void main() {
       source: source,
       persistence: persistence ?? MemoryPersistence(),
       store: SettingsStore(),
+      envs: envs,
     );
     addTearDown(c.dispose);
     await c.start();
@@ -120,6 +136,42 @@ void main() {
     await expectLater(
       find.byType(MaterialApp),
       matchesGoldenFile('goldens/settings_controllers.png'),
+    );
+  });
+
+  testWidgets('environment section golden', (tester) async {
+    final c = await pump(
+      tester,
+      const SettingsSnapshot(
+        texts: {ItemId.homeEnv: 'skyloft'},
+      ),
+      persistence: MemoryPersistence({'section': 'environment'}),
+      envs: const _StubEnvs([
+        EnvOption(
+          id: 'skyloft',
+          name: 'Sky Loft',
+          version: '1.4',
+          license: 'CC0',
+        ),
+        EnvOption(
+          id: 'cabin',
+          name: 'Forest Cabin',
+          version: '0.9',
+          license: 'MIT',
+          homepage: 'https://example.com/cabin',
+        ),
+        EnvOption(id: 'broken', hasMap: false),
+      ]),
+    );
+    // the section-entry rescan lands async; let it settle before the shot
+    for (var i = 0; i < 20; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    expect(c.store.envOptions, hasLength(3));
+
+    await expectLater(
+      find.byType(MaterialApp),
+      matchesGoldenFile('goldens/settings_environment.png'),
     );
   });
 }

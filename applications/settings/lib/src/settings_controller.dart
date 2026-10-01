@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'envs/env_info.dart';
+import 'envs/env_source.dart';
 import 'models.dart';
 import 'persistence.dart';
 import 'platform/settings_source.dart';
@@ -13,10 +15,16 @@ class SettingsController {
     required this.source,
     required this.persistence,
     SettingsStore? store,
-  }) : store = store ?? SettingsStore();
+    EnvSource? envs,
+  }) : store = store ?? SettingsStore(),
+       envs = envs ?? const EmptyEnvSource();
 
   final SettingsSource source;
   final SettingsPersistence persistence;
+
+  /// Environment zip backend. Separate from [source] because the env list
+  /// comes from the filesystem, not the platform channel.
+  final EnvSource envs;
 
   final SettingsStore store;
   StreamSubscription<SettingsSnapshot>? _events;
@@ -39,6 +47,7 @@ class SettingsController {
   void _scanFor(SectionId id) {
     if (id == SectionId.wifi) source.scanWifi();
     if (id == SectionId.bluetooth) source.scanBt();
+    if (id == SectionId.environment) refreshEnvs();
   }
 
   /// Flip a toggle: optimistic update, then tell the platform.
@@ -95,6 +104,22 @@ class SettingsController {
   Future<void> unpairBt(String address) => source.unpairBt(address);
 
   Future<void> setIme(String imeId) => source.setIme(imeId);
+
+  /// Rescan the environment dir into the store.
+  Future<void> refreshEnvs() async => store.setEnvs(await envs.list());
+
+  /// Pick the active home environment: kEnvPassthrough, kEnvBuiltin or an
+  /// environment id. Rides the text channel onto hibiscus_environment.
+  Future<void> selectEnv(String id) => setText(ItemId.homeEnv, id);
+
+  /// Remove an environment zip. When the removed one was active the
+  /// selection falls back to passthrough rather than pointing at a file
+  /// that no longer exists.
+  Future<void> deleteEnv(String id) async {
+    if (!await envs.remove(id)) return;
+    if (store.homeEnv == id) await selectEnv(kEnvPassthrough);
+    await refreshEnvs();
+  }
 
   Future<void> selectSection(SectionId id) async {
     store.selectSection(id);

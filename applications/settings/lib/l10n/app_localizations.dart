@@ -124,6 +124,12 @@ abstract class AppLocalizations {
   /// **'Display'**
   String get sectionDisplay;
 
+  /// No description provided for @sectionEnvironment.
+  ///
+  /// In en, this message translates to:
+  /// **'Home environment'**
+  String get sectionEnvironment;
+
   /// No description provided for @sectionSound.
   ///
   /// In en, this message translates to:
@@ -345,6 +351,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Warm the display colors after dark'**
   String get itemNightModeDesc;
+
+  /// No description provided for @itemEnvList.
+  ///
+  /// In en, this message translates to:
+  /// **'Home environments'**
+  String get itemEnvList;
+
+  /// No description provided for @itemEnvListDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick what surrounds you at home. Push .zip files to /data/local/tmp/hibiscus/envs over adb'**
+  String get itemEnvListDesc;
+
+  /// No description provided for @itemHomeEnv.
+  ///
+  /// In en, this message translates to:
+  /// **'Active environment'**
+  String get itemHomeEnv;
+
+  /// No description provided for @itemHomeEnvDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The environment the home shell loads'**
+  String get itemHomeEnvDesc;
+
+  /// No description provided for @envPassthrough.
+  ///
+  /// In en, this message translates to:
+  /// **'Passthrough'**
+  String get envPassthrough;
+
+  /// No description provided for @envPassthroughDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Live view from the tracking cameras'**
+  String get envPassthroughDesc;
+
+  /// No description provided for @envBuiltin.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get envBuiltin;
+
+  /// No description provided for @envBuiltinDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The default sky dome and floor grid'**
+  String get envBuiltinDesc;
+
+  /// No description provided for @envEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No environments installed'**
+  String get envEmpty;
+
+  /// No description provided for @envMissingMap.
+  ///
+  /// In en, this message translates to:
+  /// **'No map.obj inside'**
+  String get envMissingMap;
+
+  /// No description provided for @envBadName.
+  ///
+  /// In en, this message translates to:
+  /// **'Filename is not a valid environment id'**
+  String get envBadName;
+
+  /// No description provided for @envUnreadable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a readable zip'**
+  String get envUnreadable;
+
+  /// No description provided for @envRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name}?'**
+  String envRemoveTitle(String name);
+
+  /// No description provided for @envRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The zip file is deleted from the headset.'**
+  String get envRemoveBody;
+
+  /// No description provided for @envRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get envRemove;
 
   /// No description provided for @itemVolume.
   ///

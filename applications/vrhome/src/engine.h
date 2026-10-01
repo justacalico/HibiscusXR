@@ -77,6 +77,18 @@ struct Engine {
     int curEye = 0;              // set by drawEyes for the draw callback
     void* ptCam = nullptr;
 
+    // home environment (env only): envTick polls persist.hibiscus
+    // .environment and parks the loaded mesh in envVbo. envMode is an
+    // EnvMode (env/envmap.h): passthrough, builtin or custom - the scene
+    // picks its backdrop off it and ptTick opens the camera only under
+    // kEnvPassthrough
+    int envMode = 0;
+    char envSel[96] = "";        // id currently loaded (or last attempted)
+    GLuint envVbo = 0;
+    int envVerts = 0;
+    long long envPollAt = 0;
+    long long envRetryAt = 0;    // failed loads back off instead of spinning
+
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     float gazePitch = 0.0f;      // world pitch the user currently faces
 

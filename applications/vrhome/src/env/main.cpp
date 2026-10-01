@@ -21,6 +21,7 @@
 #include "../sensor/sensor.h"
 #include "../sensor/qvr.h"
 #include "cam.h"
+#include "homeenv.h"
 
 #include <android/native_window.h>
 #include <android_native_app_glue.h>
@@ -80,8 +81,9 @@ static void drawFrame(Engine* e) {
     // us, but the GL context stays warm on the pbuffer
     if (!e->ready || e->covered) { usleep(33000); return; }
 
-    // passthrough: bring the tracking pair up if it isn't, latch the
-    // newest frame's texture matrix before the eyes draw
+    // the environment pick feeds both branches: envTick loads the mesh,
+    // ptTick runs the camera only while the pick is passthrough
+    envTick(e);
     ptTick(e);
     ptUpdate(e);
 
@@ -179,6 +181,7 @@ void android_main(android_app* app) {
         drawFrame(&e);
     }
     ptStop(&e);
+    envRelease(&e);
     termDisplay(&e);
     gEnv = nullptr;
 }

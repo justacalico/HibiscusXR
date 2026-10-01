@@ -14,6 +14,8 @@ IconData iconFor(SectionId id) {
       return Icons.sports_esports_outlined;
     case SectionId.display:
       return Icons.brightness_6_outlined;
+    case SectionId.environment:
+      return Icons.landscape_outlined;
     case SectionId.sound:
       return Icons.volume_up_outlined;
     case SectionId.language:

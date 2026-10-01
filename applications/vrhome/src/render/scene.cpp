@@ -4,6 +4,8 @@
 #include "../common/config.h"
 #include "../common/props.h"
 #include "../render/pt_geo.h"
+#include "../env/envmap.h"
+#include "../env/homeenv.h"
 
 #include <GLES2/gl2.h>
 
@@ -128,12 +130,22 @@ static void drawPtRaw(Engine* e) {
 }
 
 void drawScene(Engine* e, const Mat4& viewProj) {
-    // live camera: the fisheye mesh IS the scene, no sky behind it
-    if (e->ptLive && e->ptTex && propI("debug.vrhome.ptraw", 0)) {
+    // a loaded environment replaces the backdrop entirely; the built-in
+    // sky+grid covers "builtin", passthrough-with-a-dead-camera, and any
+    // custom pick whose zip failed to load
+    if (e->envMode == kEnvCustom && e->envVerts > 0) {
+        envDraw(e, viewProj);
+        return;
+    }
+    // live camera: the fisheye mesh IS the scene, no sky behind it. Only
+    // a live feed under the passthrough mode draws - the camera session
+    // itself is gated on envMode inside ptTick
+    if (e->envMode == kEnvPassthrough && e->ptLive && e->ptTex &&
+            propI("debug.vrhome.ptraw", 0)) {
         drawPtRaw(e);
         return;
     }
-    if (e->ptLive && e->ptTex) {
+    if (e->envMode == kEnvPassthrough && e->ptLive && e->ptTex) {
         const float aspect = (float)e->eye[0].w / (float)e->eye[0].h;
         drawPt(e, propF("debug.vrhome.fov", kFovY), aspect);
         return;

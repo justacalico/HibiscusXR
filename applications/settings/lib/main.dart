@@ -3,6 +3,7 @@ import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 
 import 'l10n/app_localizations.dart';
+import 'src/envs/env_source.dart';
 import 'src/models.dart';
 import 'src/platform/android_settings_source.dart';
 import 'src/platform/fake_settings_source.dart';
@@ -55,6 +56,8 @@ Future<void> main() async {
             ),
           ),
     persistence: persistence,
+    // environment zips live on shared storage - nothing to scan off-device
+    envs: Platform.isAndroid ? DirEnvSource() : const EmptyEnvSource(),
   );
   // Fire and forget: the page renders with defaults and fills in as
   // the platform snapshot arrives.

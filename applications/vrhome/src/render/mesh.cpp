@@ -4,10 +4,8 @@
 #include <cstdlib>
 #include <cstring>
 
-// face element -> vertex index (1-based, negative counts from the end).
-// Texture/normal parts after slashes are skipped. 0 = parse failure
-static int faceIndex(const char* p, const char* end, int vcount,
-                     const char** next) {
+int objFaceIndex(const char* p, const char* end, int vcount,
+                 const char** next) {
     char* stop;
     long idx = strtol(p, &stop, 10);
     if (stop == p) return 0;
@@ -47,7 +45,7 @@ bool meshFromObj(const char* text, size_t len, Mesh* out) {
             while (q < le && n < 32) {
                 while (q < le && (*q == ' ' || *q == '\t')) ++q;
                 if (q >= le || !(*q == '-' || (*q >= '0' && *q <= '9'))) break;
-                idx[n] = faceIndex(q, le, (int)(verts.size() / 3), &q);
+                idx[n] = objFaceIndex(q, le, (int)(verts.size() / 3), &q);
                 if (!idx[n]) break;
                 ++n;
             }

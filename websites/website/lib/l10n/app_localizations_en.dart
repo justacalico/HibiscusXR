@@ -685,6 +685,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everything we wrote is AGPL-3.0. Dumped Pico and vendor binaries remain property of their owners and live in dump repos for research only.';
 
   @override
+  String get faqQ7 => 'Can I change the home environment?';
+
+  @override
+  String get faqA7 =>
+      'Yes - the Settings app has a Home environment section with three picks: the passthrough camera feed, the built-in sky scene, or a custom zip pack pushed to /data/local/tmp/hibiscus/envs over adb. A pack is a map.obj whose SpawnUser part marks where you stand, plus an optional map.png screenshot and map.json metadata.';
+
+  @override
   String get aboutTitle => 'About';
 
   @override

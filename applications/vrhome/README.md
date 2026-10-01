@@ -74,14 +74,15 @@ The library's bar carries the × disc only: it can be closed but never minimized
 
 Two processes, each with its own native library built from one source tree:
 
-- **Environment** (`gitlab.neosalsa.home`, `libvrhome.so`): `PanelActivity`, a `NativeActivity`, owns the physical display and renders the sky scene through barrel distortion. A `CoverWatch` poller watches the task stack; while a fullscreen app covers display 0 the loop idles on a pbuffer so VR titles get the GPU to themselves.
+- **Environment** (`gitlab.neosalsa.home`, `libvrhome.so`): `PanelActivity`, a `NativeActivity`, owns the physical display and renders the scenery through barrel distortion: the passthrough camera feed, the built-in sky dome, or a user-installed environment loaded from a zip package (`map.obj` + optional `map.png`/`map.json`, a `SpawnUser` part marks the standing spot). The Settings app's Home environment section picks; a `CoverWatch` poller watches the task stack; while a fullscreen app covers display 0 the loop idles on a pbuffer so VR titles get the GPU to themselves.
 - **HUD** (`gitlab.neosalsa.hud`, `libvrhud.so`): `HudService` holds a fullscreen `TYPE_SYSTEM_OVERLAY` window with a `SurfaceView`, renders the panel ring in stereo over whatever is front, and reads the rotation vector itself for gaze. `ShellBridge` creates a virtual display per window, launches or adopts tasks onto it, injects input, and resolves app labels. Because the HUD process owns the displays, panel tasks survive environment restarts and stay live while a game is front.
 - The headset home key arrives as keycode 1003 via a hidden `InputManager` gesture monitor. When a fullscreen app is front it toggles the overlay between hidden and focused; while focused, confirm and BACK go to the menu instead of the app. Dismissing restores focus to the covered task.
 
 ## Project structure
 
 ```
-src/env/         environment entry point (native_app_glue loop)
+src/env/         environment entry point (native_app_glue loop), home
+                 environment loader and passthrough camera
 src/hud/         HUD entry point (render thread + JNI surface plumbing)
 src/engine.h     environment engine state
 src/common/      constants, logging, system properties, shared JNI helpers
@@ -128,6 +129,8 @@ Live-tunable system properties (`setprop` on the headset):
 | `debug.vrhome.fill` | `1` paints each eye a different colour |
 | `debug.vrhome.launch` | set to a package name to open it on a window (HUD process) |
 | `debug.vrhome.tap` | `"displayId,x,y"` injects a tap (HUD process) |
+| `debug.vrhome.env` | overrides the home environment pick: `passthrough`, `builtin` or an environment id |
+| `persist.hibiscus.environment` | the actual pick, mirrored from the `hibiscus_environment` settings key by `pn2-envd`; custom ids load `/data/local/tmp/hibiscus/envs/<id>.zip` |
 
 Logcat tags are `vrhome` (environment) and `vrhud` (HUD).
 

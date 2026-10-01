@@ -45,6 +45,12 @@ private const val DOF_6 = "6dof"
 // chrome (vrhome env + HUD) polls every frame. Absent means dark.
 private const val THEME = "hibiscus_theme"
 private const val THEME_DEFAULT = "dark"
+// Hibiscus-owned global key for the home environment: "passthrough",
+// "builtin" or an environment id naming <id>.zip under the shared env
+// dir. pn2-envd mirrors it onto persist.hibiscus.environment for the
+// vrhome env process. Absent means passthrough.
+private const val HOME_ENV = "hibiscus_environment"
+private const val HOME_ENV_DEFAULT = "passthrough"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
@@ -54,6 +60,7 @@ class MainActivity : FlutterActivity() {
     private var ipdObserver: ContentObserver? = null
     private var dofObserver: ContentObserver? = null
     private var themeObserver: ContentObserver? = null
+    private var envObserver: ContentObserver? = null
 
     // adb-triggerable scan toggle, same path as tapping the card.
     // "device" extra drives a raw startPairingMode probe instead.
@@ -279,6 +286,23 @@ class MainActivity : FlutterActivity() {
                                 it,
                             )
                         }
+                    envObserver =
+                        object : ContentObserver(Handler(mainLooper)) {
+                            override fun onChange(selfChange: Boolean) {
+                                eventSink?.success(
+                                    mapOf(
+                                        "texts" to
+                                            mapOf("homeEnv" to homeEnv()),
+                                    ),
+                                )
+                            }
+                        }.also {
+                            contentResolver.registerContentObserver(
+                                Settings.Global.getUriFor(HOME_ENV),
+                                false,
+                                it,
+                            )
+                        }
                     registerReceiver(
                         receiver,
                         IntentFilter().apply {
@@ -304,6 +328,10 @@ class MainActivity : FlutterActivity() {
                         contentResolver.unregisterContentObserver(it)
                     }
                     themeObserver = null
+                    envObserver?.let {
+                        contentResolver.unregisterContentObserver(it)
+                    }
+                    envObserver = null
                     unregisterReceiver(receiver)
                 }
             })
@@ -354,6 +382,7 @@ class MainActivity : FlutterActivity() {
             "texts" to mapOf(
                 "wifiSsid" to (wifiSsid() ?: ""),
                 "themeMode" to theme(),
+                "homeEnv" to homeEnv(),
                 "modelName" to Build.MODEL,
                 "androidVersion" to Build.VERSION.RELEASE,
                 "hibiscusVersion" to hibiscusVersion(),
@@ -447,9 +476,14 @@ class MainActivity : FlutterActivity() {
     private fun theme(): String =
         Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
 
+    private fun homeEnv(): String =
+        Settings.Global.getString(contentResolver, HOME_ENV)
+            ?: HOME_ENV_DEFAULT
+
     private fun setText(id: String, v: String) {
         when (id) {
             "themeMode" -> putGlobalString(THEME, v)
+            "homeEnv" -> putGlobalString(HOME_ENV, v)
         }
     }
 

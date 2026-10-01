@@ -13,6 +13,7 @@ enum ItemKind {
   wifiList,
   btList,
   imeList,
+  envList,
 }
 
 /// Sidebar sections, top to bottom in display order.
@@ -21,6 +22,7 @@ enum SectionId {
   bluetooth,
   controllers,
   display,
+  environment,
   sound,
   language,
   time,
@@ -46,6 +48,8 @@ enum ItemId {
   ipd,
   deviceMode,
   nightMode,
+  envList,
+  homeEnv,
   volume,
   micMute,
   languagePicker,

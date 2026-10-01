@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'envs/env_info.dart';
 import 'models.dart';
 
 /// All app state: toggle values, slider positions, platform-reported
@@ -13,6 +14,7 @@ class SettingsStore extends ChangeNotifier {
   List<WifiNetwork> _wifi = const [];
   List<BtDevice> _bt = const [];
   List<ImeOption> _imes = const [];
+  List<EnvOption> _envs = const [];
   bool _wifiScanning = false;
   bool _btDiscovering = false;
   SectionId _section = SectionId.wifi;
@@ -71,6 +73,18 @@ class SettingsStore extends ChangeNotifier {
 
   /// Installed input methods, active one flagged.
   List<ImeOption> get imeOptions => _imes;
+
+  /// Environment zips found on the last scan of the shared env dir.
+  List<EnvOption> get envOptions => _envs;
+
+  /// Replace the environment list after a rescan.
+  void setEnvs(List<EnvOption> envs) {
+    _envs = envs;
+    notifyListeners();
+  }
+
+  /// The picked environment id, normalized: an unset key is passthrough.
+  String get homeEnv => envSelOr(textOf(ItemId.homeEnv));
 
   /// Merge a platform snapshot or change event. Only the keys the
   /// snapshot carries are touched, so partial updates work.

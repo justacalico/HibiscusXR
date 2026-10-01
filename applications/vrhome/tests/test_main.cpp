@@ -23,6 +23,9 @@ void testKbd();
 void testGrid();
 void testPt();
 void testAnim();
+void testZip();
+void testEnvSel();
+void testEnvMap();
 
 int main() {
     testMat4();
@@ -46,6 +49,9 @@ int main() {
     testGrid();
     testPt();
     testAnim();
+    testZip();
+    testEnvSel();
+    testEnvMap();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

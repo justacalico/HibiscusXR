@@ -670,6 +670,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cteSourceCta => 'Source';
 
   @override
+  String get cteShotsTitle => 'What it looks like';
+
+  @override
+  String get cteShotConnect =>
+      'The connect page: scanned USB/adb devices up top, wireless connect below.';
+
+  @override
+  String get cteShotOverview =>
+      'Once connected: headset info, controller battery and tracking state, and the link.';
+
+  @override
+  String get cteShotDisplay =>
+      'The display mirror pulling frames straight off the headset.';
+
+  @override
+  String get cteShotInstall =>
+      'A finished APK push, with the install log underneath.';
+
+  @override
+  String get cteShotTracking =>
+      'Head pose with the top-down trail and the raw pose log.';
+
+  @override
+  String get cteShotDebug =>
+      'The debug page: a filterable getprop table next to the logcat tail.';
+
+  @override
   String appDownloadsTitle(String app) {
     return '$app downloads';
   }

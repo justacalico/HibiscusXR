@@ -92,6 +92,43 @@ class CtePage extends StatelessWidget {
             ),
           ),
         ),
+        Band(
+          width: Layout.text + 96,
+          padding: const EdgeInsets.symmetric(vertical: 72),
+          child: _CteShots(l10n: l10n),
+        ),
+      ],
+    );
+  }
+}
+
+/// The app's test goldens, shown as a preview strip on the cte page.
+/// Files are copied from applications/cte/test/golden/goldens -
+/// cte_assets_test.dart fails when the two sets drift apart.
+class _CteShots extends StatelessWidget {
+  const _CteShots({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final shots = [
+      ('assets/cte/cte_connect.png', l10n.cteShotConnect),
+      ('assets/cte/cte_overview.png', l10n.cteShotOverview),
+      ('assets/cte/cte_display.png', l10n.cteShotDisplay),
+      ('assets/cte/cte_install.png', l10n.cteShotInstall),
+      ('assets/cte/cte_tracking.png', l10n.cteShotTracking),
+      ('assets/cte/cte_debug.png', l10n.cteShotDebug),
+    ];
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Reveal(
+          child:
+              Text(l10n.cteShotsTitle, style: context.text.titleLarge),
+        ),
+        const SizedBox(height: 32),
+        ShotGrid(shots: shots),
       ],
     );
   }

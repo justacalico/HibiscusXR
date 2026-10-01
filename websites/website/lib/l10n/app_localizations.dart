@@ -1286,6 +1286,48 @@ abstract class AppLocalizations {
   /// **'Source'**
   String get cteSourceCta;
 
+  /// No description provided for @cteShotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What it looks like'**
+  String get cteShotsTitle;
+
+  /// No description provided for @cteShotConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'The connect page: scanned USB/adb devices up top, wireless connect below.'**
+  String get cteShotConnect;
+
+  /// No description provided for @cteShotOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Once connected: headset info, controller battery and tracking state, and the link.'**
+  String get cteShotOverview;
+
+  /// No description provided for @cteShotDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'The display mirror pulling frames straight off the headset.'**
+  String get cteShotDisplay;
+
+  /// No description provided for @cteShotInstall.
+  ///
+  /// In en, this message translates to:
+  /// **'A finished APK push, with the install log underneath.'**
+  String get cteShotInstall;
+
+  /// No description provided for @cteShotTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Head pose with the top-down trail and the raw pose log.'**
+  String get cteShotTracking;
+
+  /// No description provided for @cteShotDebug.
+  ///
+  /// In en, this message translates to:
+  /// **'The debug page: a filterable getprop table next to the logcat tail.'**
+  String get cteShotDebug;
+
   /// No description provided for @appDownloadsTitle.
   ///
   /// In en, this message translates to:

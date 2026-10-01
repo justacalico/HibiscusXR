@@ -631,6 +631,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cteSourceCta => '源码';
 
   @override
+  String get cteShotsTitle => '界面长这样';
+
+  @override
+  String get cteShotConnect => '连接页:上面是扫到的 USB/adb 设备,下面走无线连接。';
+
+  @override
+  String get cteShotOverview => '连上之后:头显信息、手柄电量与追踪状态、连接状态都在。';
+
+  @override
+  String get cteShotDisplay => '显示页从头显实时拉帧镜像画面。';
+
+  @override
+  String get cteShotInstall => '一次完成的 APK 推送,下面是安装日志。';
+
+  @override
+  String get cteShotTracking => '头部位姿、俯视轨迹和原始位姿日志。';
+
+  @override
+  String get cteShotDebug => '调试页:左边是可过滤的 getprop 表,右边是 logcat。';
+
+  @override
   String appDownloadsTitle(String app) {
     return '$app 下载';
   }

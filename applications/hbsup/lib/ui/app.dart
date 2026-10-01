@@ -8,12 +8,15 @@ import 'backup_page.dart';
 import 'connect_page.dart';
 
 class HbsupApp extends StatelessWidget {
-  const HbsupApp({super.key, required this.state, this.locale});
+  const HbsupApp({super.key, required this.state, this.locale, this.theme});
 
   final AppState state;
 
   /// Locale override for tests - null follows the system.
   final Locale? locale;
+
+  /// Theme override for tests - null uses the dark theme.
+  final ThemeData? theme;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +24,7 @@ class HbsupApp extends StatelessWidget {
       title: 'HBSUP',
       locale: locale,
       debugShowCheckedModeBanner: false,
-      theme: HbsupTheme.dark(),
+      theme: theme ?? HbsupTheme.dark(),
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

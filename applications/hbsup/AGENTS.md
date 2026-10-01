@@ -11,7 +11,9 @@ the design is wrong - move the logic somewhere that can.
 ## Tests
 
 `flutter test` must pass before a change is called done. No exceptions,
-no "should work". New logic ships with new coverage in `test/`.
+no "should work". New logic ships with new coverage in `test/`. Visual
+changes update the goldens under `test/golden/goldens/` via
+`flutter test test/golden --update-goldens`.
 
 ## Strings
 

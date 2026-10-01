@@ -9,7 +9,9 @@ class AppVersion {
     required this.apkPath,
     required this.size,
     required this.added,
+    this.sha256,
     this.minSdk,
+    this.maxSdk,
   });
 
   final int versionCode;
@@ -19,13 +21,18 @@ class AppVersion {
   /// [repoFileUri] instead of string math.
   final String apkPath;
   final int size;
+
+  /// `file.sha256` - verified against the downloaded bytes before the
+  /// package manager ever sees them. Null when the repo omits it.
+  final String? sha256;
   final DateTime added;
   final int? minSdk;
+  final int? maxSdk;
 }
 
 /// An app entry from the repository index.
-class StoreApp {
-  const StoreApp({
+class RepoApp {
+  const RepoApp({
     required this.packageName,
     required this.name,
     required this.summary,
@@ -52,12 +59,24 @@ class StoreApp {
   /// downloadable builds.
   final List<AppVersion> versions;
 
+
   final String? author;
   final String? license;
   final String? iconPath;
   final List<String> screenshots;
 
   AppVersion? get latest => versions.isEmpty ? null : versions.first;
+
+  /// Newest build that can run on [sdk]: minSdk below it and maxSdk not
+  /// under it. Falls back to [latest] when nothing declares constraints.
+  AppVersion? compatibleVersion(int sdk) {
+    for (final v in versions) {
+      if ((v.minSdk ?? 0) <= sdk && (v.maxSdk == null || v.maxSdk! >= sdk)) {
+        return v;
+      }
+    }
+    return null;
+  }
 }
 
 /// A parsed `index-v2.json`.
@@ -75,15 +94,22 @@ class RepoIndex {
   /// relative to this, not to wherever the index was fetched from.
   final String address;
   final DateTime timestamp;
-  final List<StoreApp> apps;
+  final List<RepoApp> apps;
 }
 
 /// Repo-relative file resolution. Index `file.name` entries sometimes
-/// lead with a slash, and the base may or may not end with one.
+/// lead with a slash, and the base may or may not end with one. The
+/// configured URL's own query/fragment never leaks into file URLs.
 Uri repoFileUri(Uri repo, String name) {
   final base = repo.path.endsWith('/') ? repo.path : '${repo.path}/';
   final rel = name.startsWith('/') ? name.substring(1) : name;
-  return repo.replace(path: base + rel);
+  return Uri(
+    scheme: repo.scheme,
+    userInfo: repo.userInfo,
+    host: repo.host,
+    port: repo.port,
+    path: base + rel,
+  );
 }
 
 /// Localized values look like `{"en-US": "text", "de": "..."}`. Pick the
@@ -139,8 +165,10 @@ AppVersion _parseVersion(Map<String, dynamic> v) {
     versionName: manifest['versionName'] as String? ?? '',
     apkPath: file['name'] as String? ?? '',
     size: file['size'] as int? ?? 0,
+    sha256: file['sha256'] as String?,
     added: _millis(v['added']),
     minSdk: usesSdk['minSdkVersion'] as int?,
+    maxSdk: usesSdk['maxSdkVersion'] as int?,
   );
 }
 
@@ -177,7 +205,7 @@ RepoIndex parseFdroidIndex(Map<String, dynamic> json) {
   final repoMap = repo.cast<String, dynamic>();
   final packagesMap = packages.cast<String, dynamic>();
   final address = repoMap['address'] as String? ?? '';
-  final apps = <StoreApp>[
+  final apps = <RepoApp>[
     for (final entry in packagesMap.entries)
       if (entry.value is Map)
         _parseApp(entry.key, (entry.value as Map).cast<String, dynamic>()),
@@ -193,7 +221,7 @@ RepoIndex parseFdroidIndex(Map<String, dynamic> json) {
 RepoIndex decodeFdroidIndex(String body) =>
     parseFdroidIndex(jsonDecode(body) as Map<String, dynamic>);
 
-StoreApp _parseApp(String packageName, Map<String, dynamic> pkg) {
+RepoApp _parseApp(String packageName, Map<String, dynamic> pkg) {
   final meta = _asMap(pkg['metadata']);
   final rawVersions = pkg['versions'];
   final versions = <AppVersion>[
@@ -202,7 +230,7 @@ StoreApp _parseApp(String packageName, Map<String, dynamic> pkg) {
         if (v is Map) _parseVersion(v.cast<String, dynamic>()),
   ]..sort((a, b) => b.versionCode.compareTo(a.versionCode));
   final rawCategories = meta['categories'];
-  return StoreApp(
+  return RepoApp(
     packageName: packageName,
     name: localized(_asMapOrNull(meta['name']), fallback: packageName),
     summary: localized(_asMapOrNull(meta['summary'])),

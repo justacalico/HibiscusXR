@@ -83,6 +83,19 @@ void main() {
       expect(store.apps, isEmpty);
     });
 
+    test('setReady clears a category the new index dropped', () {
+      store.setReady(testIndex());
+      store.setCategory('System');
+      store.setReady(RepoIndex(
+        name: 'x',
+        address: 'https://r',
+        timestamp: DateTime.fromMillisecondsSinceEpoch(0, isUtc: true),
+        apps: [testIndex().apps.first], // Multimedia only
+      ));
+      expect(store.category, isNull);
+      expect(store.apps, hasLength(1));
+    });
+
     test('setReady clears a selection the new index dropped', () {
       store.setReady(testIndex());
       store.select('com.example.alpha');

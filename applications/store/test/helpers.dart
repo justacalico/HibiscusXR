@@ -61,7 +61,7 @@ const kIndexJson = '''
       },
       "versions": {
         "hash-two": {
-          "file": {"name": "beta/beta_7.apk", "size": 500},
+          "file": {"name": "beta/beta_7.apk", "size": 500, "sha256": "dd37c2d7274f7ea982cb83390c36918fee9ce8889073c44b68cdc00bdb8c3e04"},
           "manifest": {"versionName": "0.7", "versionCode": 7}
         }
       }
@@ -104,11 +104,13 @@ Future<StoreController> readyController({
   RepoIndex? index,
   StorePersistence? persistence,
   FakeInstaller? installer,
+  FakeDownloader? downloader,
 }) async {
   final c = testController(
     index: index,
     persistence: persistence,
     installer: installer,
+    downloader: downloader,
   );
   await c.start();
   return c;

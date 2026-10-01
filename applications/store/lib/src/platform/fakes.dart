@@ -19,7 +19,7 @@ class FakeRepoClient implements RepoClient {
     address: 'https://repo.example/fdroid/repo',
     timestamp: DateTime.utc(2026, 9, 1),
     apps: [
-      StoreApp(
+      RepoApp(
         packageName: 'com.example.dialer',
         name: 'Dialer',
         summary: 'A plain phone dialer',
@@ -40,7 +40,7 @@ class FakeRepoClient implements RepoClient {
           ),
         ],
       ),
-      StoreApp(
+      RepoApp(
         packageName: 'com.example.paint',
         name: 'Paint',
         summary: 'Sketches on a canvas',
@@ -75,6 +75,9 @@ class FakeRepoClient implements RepoClient {
     if (error != null) throw error;
     return index;
   }
+
+  @override
+  void dispose() {}
 }
 
 /// A download that resolves instantly without touching the disk - real
@@ -89,6 +92,7 @@ class FakeDownloader extends ApkDownloader {
   Future<File> download(
     Uri url,
     String fileName, {
+    String? expectedSha256,
     void Function(int received, int total)? onProgress,
   }) {
     downloads.add(url);

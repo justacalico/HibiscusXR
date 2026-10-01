@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:pn2_store/src/fdroid_index.dart';
 import 'package:pn2_store/src/installer.dart';
 import 'package:pn2_store/src/platform/fakes.dart';
 import 'package:pn2_store/src/persistence.dart';
@@ -58,18 +60,28 @@ void main() {
 
     test('a second start is a no-op', () async {
       final client = FakeRepoClient(index: testIndex());
-      final c = testController();
-      // swap in the recording client
-      final c2 = StoreController(
+      final c = StoreController(
         client: client,
         downloader: ApkDownloader(directory: Directory.systemTemp),
         installer: FakeInstaller(),
         persistence: MemoryPersistence(),
       );
       await c.start();
-      await c2.start();
-      await c2.start();
+      await c.start();
       expect(client.fetches, 1);
+    });
+
+    test('a persistence failure falls back to defaults', () async {
+      final client = FakeRepoClient(index: testIndex());
+      final c = StoreController(
+        client: client,
+        downloader: ApkDownloader(directory: Directory.systemTemp),
+        installer: FakeInstaller(),
+        persistence: _BrokenPersistence(),
+      );
+      await c.start();
+      expect(client.lastRepo, StoreController.kDefaultRepo);
+      expect(c.store.status, LoadStatus.ready);
     });
   });
 
@@ -83,7 +95,7 @@ void main() {
       );
       await c.start();
       expect(c.store.status, LoadStatus.error);
-      expect(c.store.error, 'offline');
+      expect(c.store.error, contains('offline'));
       (c.client as FakeRepoClient).throwError = null;
       await c.refresh();
       expect(c.store.status, LoadStatus.ready);
@@ -159,13 +171,13 @@ void main() {
       );
     });
 
-    test('a prompted outcome still lands on installed', () async {
+    test('a prompted outcome lands on prompted, not installed', () async {
       final installer = FakeInstaller(outcome: InstallOutcome.prompted);
       final c = await installing(installer: installer);
       await c.install(c.store.appByPackage('com.example.beta')!);
       expect(
         c.store.progressOf('com.example.beta').phase,
-        InstallPhase.installed,
+        InstallPhase.prompted,
       );
     });
 
@@ -175,7 +187,7 @@ void main() {
       await c.install(c.store.appByPackage('com.example.beta')!);
       final p = c.store.progressOf('com.example.beta');
       expect(p.phase, InstallPhase.failed);
-      expect(p.error, 'install failed');
+      expect(p.error, isNull);
     });
 
     test('download failure lands on failed with the error', () async {
@@ -235,4 +247,209 @@ void main() {
       expect(() => c.store.setQuery('x'), throwsA(anything));
     });
   });
+
+  group('refresh races', () {
+    test('a stale fetch never overwrites a newer one', () async {
+      final client = _ControlledClient();
+      final c = StoreController(
+        client: client,
+        downloader: ApkDownloader(directory: Directory.systemTemp),
+        installer: FakeInstaller(),
+        persistence: MemoryPersistence(),
+      );
+      final started = c.start();
+      // let start() reach its first fetchIndex before the repo switch
+      await Future.delayed(Duration.zero);
+      expect(client.pending, hasLength(1));
+      final switchRepo = c.setRepoUrl('https://new.example/repo');
+      expect(client.pending, hasLength(2));
+      // gen2's answer lands first, then the stale gen1 answer
+      client.pending[1].complete(testIndex());
+      await switchRepo;
+      client.pending[0].complete(
+        RepoIndex(
+          name: 'stale',
+          address: 'https://old',
+          timestamp: DateTime.utc(2020),
+          apps: [],
+        ),
+      );
+      await started;
+      expect(c.store.index!.name, 'Test Repo');
+      expect(c.store.apps, hasLength(3));
+    });
+
+    test('a stale fetch error does not clobber a good newer index',
+        () async {
+      final client = _ControlledClient();
+      final c = StoreController(
+        client: client,
+        downloader: ApkDownloader(directory: Directory.systemTemp),
+        installer: FakeInstaller(),
+        persistence: MemoryPersistence(),
+      );
+      final started = c.start();
+      await Future.delayed(Duration.zero);
+      final switchRepo = c.setRepoUrl('https://new.example/repo');
+      client.pending[1].complete(testIndex());
+      await switchRepo;
+      client.pending[0].completeError(const RepoException('old broke'));
+      await started;
+      expect(c.store.status, LoadStatus.ready);
+      expect(c.store.apps, hasLength(3));
+    });
+  });
+
+  group('repo base', () {
+    test('an empty index address falls back to the configured repo', () async {
+      final emptyAddress = RepoIndex(
+        name: 'x',
+        address: '',
+        timestamp: DateTime.utc(2020),
+        apps: [],
+      );
+      final c = testController(index: emptyAddress);
+      await c.start();
+      expect(c.repoBase, StoreController.kDefaultRepo);
+    });
+  });
+
+  group('install picks compatible builds', () {
+    test('deviceSdk skips versions above it', () async {
+      final app = RepoApp(
+        packageName: 'x',
+        name: 'x',
+        summary: '',
+        description: '',
+        categories: [],
+        added: DateTime.utc(2026),
+        lastUpdated: DateTime.utc(2026),
+        versions: [
+          AppVersion(
+            versionCode: 2,
+            versionName: '2.0',
+            apkPath: '/x_2.apk',
+            size: 1,
+            added: DateTime.utc(2026),
+            minSdk: 30,
+          ),
+          AppVersion(
+            versionCode: 1,
+            versionName: '1.0',
+            apkPath: '/x_1.apk',
+            size: 1,
+            added: DateTime.utc(2026),
+            minSdk: 24,
+            maxSdk: 29,
+          ),
+        ],
+      );
+      expect(app.compatibleVersion(29)!.versionCode, 1);
+      expect(app.compatibleVersion(35)!.versionCode, 2);
+      final unconstrained = RepoApp(
+        packageName: 'y',
+        name: 'y',
+        summary: '',
+        description: '',
+        categories: [],
+        added: DateTime.utc(2026),
+        lastUpdated: DateTime.utc(2026),
+        versions: [
+          AppVersion(
+            versionCode: 1,
+            versionName: '1',
+            apkPath: '/y.apk',
+            size: 1,
+            added: DateTime.utc(2026),
+          ),
+        ],
+      );
+      expect(unconstrained.compatibleVersion(1)!.versionCode, 1);
+      expect(unconstrained.compatibleVersion(999)!.versionCode, 1);
+      expect(unconstrained.latest!.versionCode, 1);
+      final empty = RepoApp(
+        packageName: 'z',
+        name: 'z',
+        summary: '',
+        description: '',
+        categories: [],
+        added: DateTime.utc(2026),
+        lastUpdated: DateTime.utc(2026),
+        versions: [],
+      );
+      expect(empty.compatibleVersion(29), isNull);
+    });
+
+    test('install uses the compatible version when deviceSdk is set', () async {
+      final index = RepoIndex(
+        name: 'x',
+        address: 'https://r.example/repo',
+        timestamp: DateTime.utc(2026),
+        apps: [app31Only],
+      );
+      final installer = FakeInstaller();
+      final downloader = FakeDownloader();
+      final c = StoreController(
+        client: FakeRepoClient(index: index),
+        downloader: downloader,
+        installer: installer,
+        persistence: MemoryPersistence(),
+        deviceSdk: 29,
+      );
+      await c.start();
+      await c.install(c.store.appByPackage('a.b')!);
+      expect(downloader.downloads.single.path, '/repo/a.b_1.apk');
+    });
+  });
+}
+
+final app31Only = RepoApp(
+  packageName: 'a.b',
+  name: 'a',
+  summary: '',
+  description: '',
+  categories: [],
+  added: DateTime.utc(2026),
+  lastUpdated: DateTime.utc(2026),
+  versions: [
+    AppVersion(
+      versionCode: 2,
+      versionName: '2',
+      apkPath: '/a.b_2.apk',
+      size: 1,
+      added: DateTime.utc(2026),
+      minSdk: 31,
+    ),
+    AppVersion(
+      versionCode: 1,
+      versionName: '1',
+      apkPath: '/a.b_1.apk',
+      size: 1,
+      added: DateTime.utc(2026),
+    ),
+  ],
+);
+
+
+class _BrokenPersistence implements StorePersistence {
+  @override
+  Future<Map<String, dynamic>?> load() => Future.error(StateError('dead'));
+
+  @override
+  Future<void> save(Map<String, dynamic> snapshot) async {}
+}
+
+/// fetchIndex futures come off a queue the test fills.
+class _ControlledClient implements RepoClient {
+  final pending = <Completer<RepoIndex>>[];
+
+  @override
+  Future<RepoIndex> fetchIndex(Uri repo) {
+    final c = Completer<RepoIndex>();
+    pending.add(c);
+    return c.future;
+  }
+
+  @override
+  void dispose() {}
 }

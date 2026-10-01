@@ -38,7 +38,6 @@ class AppDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var app = controller.store.selected;
     return Scaffold(
       body: AnimatedBuilder(
         animation: controller.store,
@@ -50,7 +49,6 @@ class AppDetailPage extends StatelessWidget {
               title: AppLocalizations.of(context).selectAppPrompt,
             );
           }
-          app = current;
           return Column(
             children: [
               Align(
@@ -65,7 +63,7 @@ class AppDetailPage extends StatelessWidget {
                 ),
               ),
               Expanded(
-                child: AppDetailBody(app: app!, controller: controller),
+                child: AppDetailBody(app: current, controller: controller),
               ),
             ],
           );
@@ -79,7 +77,7 @@ class AppDetailPage extends StatelessWidget {
 class AppDetailBody extends StatelessWidget {
   const AppDetailBody({super.key, required this.app, required this.controller});
 
-  final StoreApp app;
+  final RepoApp app;
   final StoreController controller;
 
   @override
@@ -140,12 +138,20 @@ class AppDetailBody extends StatelessWidget {
             InstallButton(app: app, controller: controller),
           ],
         ),
-        if (progress.phase == InstallPhase.failed &&
-            progress.error != null) ...[
+        if (progress.phase == InstallPhase.failed) ...[
           const SizedBox(height: 10),
           Text(
-            '${l10n.installFailed}: ${progress.error}',
+            progress.error == null
+                ? l10n.installFailed
+                : '${l10n.installFailed}: ${progress.error}',
             style: const TextStyle(fontSize: 12, color: StoreTheme.danger),
+          ),
+        ],
+        if (progress.phase == InstallPhase.prompted) ...[
+          const SizedBox(height: 10),
+          Text(
+            l10n.installPrompted,
+            style: const TextStyle(fontSize: 12, color: StoreTheme.warn),
           ),
         ],
         const SizedBox(height: 24),

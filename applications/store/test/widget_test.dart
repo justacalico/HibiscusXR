@@ -181,6 +181,42 @@ void main() {
     );
   });
 
+  testWidgets('a prompted install shows the hint and stays retryable',
+      (tester) async {
+    final (c,) = await pumpApp(tester);
+    await tester.tap(find.text('Beta Tool'));
+    await tester.pumpAndSettle();
+    c.store.setInstall(
+      'com.example.beta',
+      const InstallProgress(InstallPhase.prompted),
+    );
+    await tester.pump();
+    expect(
+      find.text('Confirm the install in the system dialog'),
+      findsOneWidget,
+    );
+    // the install button is live again - tapping it re-runs the flow
+    await tester.tap(find.text('Install'));
+    await tester.pump();
+    expect(
+      c.store.progressOf('com.example.beta').phase,
+      InstallPhase.installed,
+    );
+  });
+
+  testWidgets('a failed download surfaces its error text', (tester) async {
+    final downloader = FakeDownloader()..error = StateError('flaky link');
+    await pumpApp(
+      tester,
+      controller: await readyController(downloader: downloader),
+    );
+    await tester.tap(find.text('Beta Tool'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Install'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('flaky link'), findsOneWidget);
+  });
+
   testWidgets('installing and downloading phases render', (tester) async {
     final (c,) = await pumpApp(tester);
     await tester.tap(find.text('Beta Tool'));

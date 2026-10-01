@@ -18,7 +18,7 @@ class AppIconImage extends StatelessWidget {
     this.size = 56,
   });
 
-  final StoreApp app;
+  final RepoApp app;
   final String repoAddress;
   final ImageResolver resolve;
   final double size;
@@ -70,7 +70,7 @@ class AppCard extends StatelessWidget {
     required this.onTap,
   });
 
-  final StoreApp app;
+  final RepoApp app;
   final StoreController controller;
   final bool selected;
   final VoidCallback onTap;
@@ -173,7 +173,7 @@ class _InstalledBadge extends StatelessWidget {
 class InstallButton extends StatelessWidget {
   const InstallButton({super.key, required this.app, required this.controller});
 
-  final StoreApp app;
+  final RepoApp app;
   final StoreController controller;
 
   @override
@@ -224,6 +224,16 @@ class InstallButton extends StatelessWidget {
               style: textStyle.copyWith(color: StoreTheme.textSecondary),
             ),
           ],
+        );
+      case InstallPhase.prompted:
+        return FilledButton.icon(
+          onPressed: () => controller.install(app),
+          icon: const Icon(Icons.download, size: 16),
+          label: Text(l10n.install),
+          style: FilledButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: StoreTheme.accent,
+          ),
         );
       case InstallPhase.installed:
         return FilledButton.tonalIcon(

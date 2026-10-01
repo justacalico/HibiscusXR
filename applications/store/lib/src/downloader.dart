@@ -1,8 +1,9 @@
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
-/// Thrown when an APK download fails partway through.
+/// Thrown when an APK download fails partway through or fails integrity.
 class DownloadException implements Exception {
   const DownloadException(this.message);
 
@@ -20,20 +21,30 @@ class ApkDownloader {
     : _client = client ?? http.Client(),
       _ownsClient = client == null;
 
+  /// A repo that never answers stalls the download phase forever
+  /// otherwise.
+  static const connectTimeout = Duration(seconds: 30);
+
   final http.Client _client;
   final bool _ownsClient;
   final Directory directory;
 
   /// Download [url] to `apks/<fileName>` under [directory], reporting
-  /// bytes received via [onProgress] as the stream lands.
+  /// bytes received via [onProgress] as the stream lands. When
+  /// [expectedSha256] is set (the index ships it per version), the bytes
+  /// are verified before the file is returned - a mismatch deletes the
+  /// file and throws.
   Future<File> download(
     Uri url,
     String fileName, {
+    String? expectedSha256,
     void Function(int received, int total)? onProgress,
   }) async {
     http.StreamedResponse res;
     try {
-      res = await _client.send(http.Request('GET', url));
+      res = await _client
+          .send(http.Request('GET', url))
+          .timeout(connectTimeout);
     } catch (e) {
       throw DownloadException('$url unreachable: $e');
     }
@@ -56,6 +67,13 @@ class ApkDownloader {
       throw DownloadException('$url failed mid-download: $e');
     } finally {
       await sink.close();
+    }
+    if (expectedSha256 != null) {
+      final digest = await sha256.bind(file.openRead()).first;
+      if (digest.toString() != expectedSha256.toLowerCase()) {
+        await file.delete();
+        throw DownloadException('$url checksum mismatch');
+      }
     }
     return file;
   }

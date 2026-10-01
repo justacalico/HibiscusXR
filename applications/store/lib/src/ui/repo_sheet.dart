@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -51,16 +53,17 @@ class _RepoDialogState extends State<_RepoDialog> {
     super.dispose();
   }
 
-  Future<void> _save() async {
+  void _save() {
     final l10n = AppLocalizations.of(context);
     final error = repoUrlError(_url.text, l10n);
     if (error != null) {
       setState(() => _error = error);
       return;
     }
-    final navigator = Navigator.of(context);
-    await widget.controller.setRepoUrl(_url.text.trim());
-    navigator.pop();
+    // Pop first - the refresh that follows can take a while, and the
+    // page's loading state is the right surface for it.
+    Navigator.of(context).pop();
+    unawaited(widget.controller.setRepoUrl(_url.text.trim()));
   }
 
   @override

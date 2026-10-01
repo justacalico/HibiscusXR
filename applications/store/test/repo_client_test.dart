@@ -121,6 +121,31 @@ void main() {
       expect(events, [(9, 9)]);
     });
 
+    test('sha256 verify passes and mismatch deletes the file', () async {
+      final dl = ApkDownloader(
+        client: MockClient(
+          (req) async => http.Response.bytes(utf8.encode('apk'), 200),
+        ),
+        directory: dir,
+      );
+      final file = await dl.download(
+        Uri.parse('https://r.example/a.apk'),
+        'a.apk',
+        expectedSha256:
+            'dd37c2d7274f7ea982cb83390c36918fee9ce8889073c44b68cdc00bdb8c3e04',
+      );
+      expect(await file.exists(), isTrue);
+      final bad = await dl
+          .download(
+            Uri.parse('https://r.example/a.apk'),
+            'b.apk',
+            expectedSha256: '0000',
+          )
+          .then((f) => f.path, onError: (e) => 'err: $e');
+      expect(bad, contains('checksum mismatch'));
+      expect(await File('${dir.path}/apks/b.apk').exists(), isFalse);
+    });
+
     test('non-200 raises DownloadException', () {
       final dl = ApkDownloader(
         client: MockClient((req) async => http.Response('', 404)),

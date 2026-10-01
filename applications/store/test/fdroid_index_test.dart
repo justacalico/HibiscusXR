@@ -227,7 +227,7 @@ void main() {
           },
         },
       });
-      StoreApp app(String pkg) =>
+      RepoApp app(String pkg) =>
           index.apps.firstWhere((a) => a.packageName == pkg);
       expect(app('tv.app').screenshots, ['tv/1.png']);
       expect(app('wear.app').screenshots, ['w/1.png']);

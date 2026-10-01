@@ -16,6 +16,7 @@ class RepoException implements Exception {
 /// tests and the desktop preview substitute canned data.
 abstract class RepoClient {
   Future<RepoIndex> fetchIndex(Uri repo);
+  void dispose();
 }
 
 class HttpRepoClient implements RepoClient {
@@ -48,6 +49,7 @@ class HttpRepoClient implements RepoClient {
     }
   }
 
+  @override
   void dispose() {
     if (_ownsClient) _client.close();
   }

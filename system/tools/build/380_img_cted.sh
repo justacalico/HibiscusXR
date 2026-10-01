@@ -44,7 +44,7 @@ CC="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang
   -o "$PN2_ROOT/cted/cted" \
   "$PN2_ROOT/cted/cted.c" \
   "$PN2_ROOT/vrhome/src/input/ctrl_state.c" \
-  -lpthread || fail=$((fail+1))
+  || fail=$((fail+1))
 ls -la "$PN2_ROOT/cted/cted" 2>/dev/null
 
 echo

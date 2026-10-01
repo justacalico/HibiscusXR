@@ -1,0 +1,36 @@
+#!/system/bin/sh
+# Bridge the home-environment pick to the persist.hibiscus.environment
+# system property.
+#
+# The settings app writes hibiscus_environment into Settings.Global:
+# "passthrough" (the live camera feed), "builtin" (the procedural
+# sky+grid) or an environment id naming <id>.zip inside
+# /data/local/tmp/hibiscus/envs. Apps cannot setprop, and libvrhome
+# cannot reach the settings provider - so a root daemon is the narrow
+# piece that crosses, same shape as pn2-themed. The settings table is
+# polled rather than pushed: `settings get` would spawn a JVM per poll.
+#
+# Missing or malformed means passthrough: the shell's env renderer reads
+# the prop on a slow tick, so an unexpected value must fail safe. The id
+# charset mirrors envIdValid in the settings app and envIdOk in
+# libvrhome: letters, digits, dot, dash, underscore, 1-64 chars, never
+# containing "..".
+
+DB=/data/system/users/0/settings_global.xml
+PROP=persist.hibiscus.environment
+
+cur="__boot__"
+while true; do
+    v=$(grep 'name="hibiscus_environment"' "$DB" 2>/dev/null \
+        | sed -n 's/.*value="\([^"]*\)".*/\1/p' | head -1)
+    case "$v" in
+        ''|*..*|*[!A-Za-z0-9._-]*)  want=passthrough ;;
+        *)                          want=$v ;;
+    esac
+    [ ${#want} -gt 64 ] && want=passthrough
+    if [ "$want" != "$cur" ]; then
+        setprop "$PROP" "$want"
+        cur="$want"
+    fi
+    sleep 0.5
+done

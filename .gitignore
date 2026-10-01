@@ -95,6 +95,7 @@ out/
 output/
 app-xrtest/prebuilt/
 bin/
+!system/overlay/bin/
 obj/
 dist-deps/
 target/

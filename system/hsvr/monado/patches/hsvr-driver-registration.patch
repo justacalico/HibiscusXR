@@ -79,16 +79,16 @@ index 78efb9b..de3a648 100644
  #ifdef XRT_BUILD_DRIVER_ILLIXR
  #include "illixr/illixr_interface.h"
  #endif
-@@ -251,6 +255,12 @@ xrt_auto_prober_create_func_t target_auto_list[] = {
-     android_create_auto_prober,
+@@ -247,6 +255,12 @@ xrt_auto_prober_create_func_t target_auto_list[] = {
+     oh_create_auto_prober,
  #endif
  
 +#ifdef XRT_BUILD_DRIVER_HSVR
-+    // hsvr kit prober - after android so real devices that already work
-+    // upstream keep winning; kit drivers claim the leftovers
++    // Before the generic Android sensors driver - it creates a cardboard
++    // HMD unconditionally, so anything behind it never gets to probe.
 +    hsvr_create_auto_prober,
 +#endif
 +
- #ifdef XRT_BUILD_DRIVER_ILLIXR
-     illixr_create_auto_prober,
+ #ifdef XRT_BUILD_DRIVER_ANDROID
+     android_create_auto_prober,
  #endif

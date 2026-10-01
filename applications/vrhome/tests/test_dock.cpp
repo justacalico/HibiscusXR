@@ -279,4 +279,83 @@ void testDock() {
         CHECK(!dockPinnable(q));
         CHECK(dockPinnable(p) && dockPinnable(r));
     }
+
+    // activate policy: the grid button toggles, a cold pin launches, a
+    // live panel refocuses, a stale panel link launches fresh, a running
+    // immersive item focuses its task so the menu can drop
+    {
+        std::vector<Panel> panels;
+        Panel p; p.pkg = "com.b.busy"; p.taskId = 11; p.displayId = 7;
+        p.minimized = true;
+        panels.push_back(p);
+
+        DockItem grid; grid.kind = DK_GRID;
+        CHECK(dockActivateAction(grid, panels).op == DOP_TOGGLE_GRID);
+
+        DockItem pin; pin.kind = DK_PIN; pin.pkg = "com.a.pin";
+        DockAction a = dockActivateAction(pin, panels);
+        CHECK(a.op == DOP_LAUNCH && a.pkg == "com.a.pin");
+
+        DockItem live; live.kind = DK_PIN; live.pkg = "com.b.busy";
+        live.panelIdx = 0; live.running = true;
+        a = dockActivateAction(live, panels);
+        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 0 && a.taskId == 11);
+
+        DockItem stale = live; stale.pkg = "com.gone";
+        a = dockActivateAction(stale, panels);
+        CHECK(a.op == DOP_LAUNCH && a.pkg == "com.gone");
+
+        DockItem vr; vr.kind = DK_RUN; vr.pkg = "com.d.vr"; vr.vr = true;
+        vr.running = true; vr.taskId = 21;
+        a = dockActivateAction(vr, panels);
+        CHECK(a.op == DOP_FOCUS_XR && a.taskId == 21);
+
+        DockItem quick; quick.kind = DK_QUICK; quick.pkg = kQuickPanelPkg;
+        a = dockActivateAction(quick, panels);
+        CHECK(a.op == DOP_LAUNCH && a.pkg == kQuickPanelPkg);
+        Panel q; q.pkg = kQuickPanelPkg; q.taskId = 33;
+        panels.push_back(q);
+        quick.panelIdx = 1;
+        a = dockActivateAction(quick, panels);
+        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 1 && a.taskId == 33);
+    }
+
+    // close policy: a panel-linked item dies through its display, a bare
+    // taskId goes through removeTask, neither is a no-op
+    {
+        std::vector<Panel> panels;
+        Panel p; p.pkg = "com.b.busy"; p.displayId = 7;
+        panels.push_back(p);
+
+        DockItem panel; panel.pkg = "com.b.busy"; panel.panelIdx = 0;
+        panel.taskId = 99;   // stale; the display binding wins
+        DockAction a = dockCloseAction(panel, panels);
+        CHECK(a.op == DOP_CLOSE_PANEL && a.displayId == 7);
+
+        DockItem xr; xr.vr = true; xr.taskId = 21;
+        a = dockCloseAction(xr, panels);
+        CHECK(a.op == DOP_CLOSE_TASK && a.taskId == 21);
+
+        DockItem dead;
+        CHECK(dockCloseAction(dead, panels).op == DOP_NONE);
+    }
+
+    // shelf policy: only a still-minimized panel that kept its pkg restores
+    {
+        std::vector<Panel> panels;
+        Panel p; p.pkg = "com.b.busy"; p.taskId = 11; p.minimized = true;
+        panels.push_back(p);
+
+        ShelfItem it; it.panelIdx = 0; it.pkg = "com.b.busy";
+        DockAction a = shelfActivateAction(it, panels);
+        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 0 && a.taskId == 11);
+
+        panels[0].minimized = false;
+        CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
+        panels[0].minimized = true;
+        it.pkg = "com.other";
+        CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
+        it.panelIdx = 9; it.pkg = "com.b.busy";
+        CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
+    }
 }

@@ -201,66 +201,52 @@ void syncDock(HudEngine* e) {
 
 // ------------------------------------------------------------- actions
 
+static void focusTask(HudEngine* e, JNIEnv* env, int taskId) {
+    env->CallVoidMethod(e->bridge, e->mFocusTask, taskId);
+    if (env->ExceptionCheck()) env->ExceptionClear();
+}
+
 void dockActivate(HudEngine* e, int idx) {
     if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
-    const DockItem it = e->dock[idx];
-    JNIEnv* env = threadEnv(e->vm);
-    if (it.kind == DK_GRID) {
+    const DockAction act = dockActivateAction(e->dock[idx], e->panels);
+    switch (act.op) {
+    case DOP_TOGGLE_GRID:
         e->grid.shown = !e->grid.shown;
         return;
-    }
-    if (it.kind == DK_QUICK) {
-        // a live quick panel gets focused like any other running item
-        if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size() &&
-                e->panels[it.panelIdx].pkg == it.pkg) {
-            Panel& p = e->panels[it.panelIdx];
-            p.minimized = false;
-            if (p.taskId >= 0) {
-                env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
-                if (env->ExceptionCheck()) env->ExceptionClear();
-            }
-            return;
-        }
-        queueLaunch(kQuickPanelPkg);
+    case DOP_LAUNCH:
+        queueLaunch(act.pkg.c_str());
         return;
-    }
-    if (it.vr && it.running) {
+    case DOP_FOCUS_XR: {
         // an immersive app owns the display: focus its task and drop the
         // menu so the user lands inside it
-        if (it.taskId >= 0) {
-            env->CallVoidMethod(e->bridge, e->mFocusTask, it.taskId);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-        }
+        JNIEnv* env = threadEnv(e->vm);
+        if (act.taskId >= 0) focusTask(e, env, act.taskId);
         if (e->mDismiss) {
             env->CallVoidMethod(e->bridge, e->mDismiss);
             if (env->ExceptionCheck()) env->ExceptionClear();
         }
         return;
     }
-    if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size()) {
-        Panel& p = e->panels[it.panelIdx];
-        if (p.pkg != it.pkg) { queueLaunch(it.pkg.c_str()); return; }
+    case DOP_FOCUS_PANEL: {
+        Panel& p = e->panels[act.panelIdx];
         p.minimized = false;
-        if (p.taskId >= 0) {
-            env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-        }
+        if (act.taskId >= 0)
+            focusTask(e, threadEnv(e->vm), act.taskId);
         return;
     }
-    queueLaunch(it.pkg.c_str());
+    default:
+        return;
+    }
 }
 
 void dockClose(HudEngine* e, int idx) {
     if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
-    const DockItem& it = e->dock[idx];
+    const DockAction act = dockCloseAction(e->dock[idx], e->panels);
     JNIEnv* env = threadEnv(e->vm);
-    // a panel's task closes through its display - the cached taskId can be
-    // stale - while an immersive task only has its id to go on
-    if (it.panelIdx >= 0 && it.panelIdx < (int)e->panels.size()) {
-        env->CallVoidMethod(e->bridge, e->mRemoveDisp,
-                            e->panels[it.panelIdx].displayId);
-    } else if (it.taskId >= 0) {
-        env->CallVoidMethod(e->bridge, e->mRemoveTask, it.taskId);
+    if (act.op == DOP_CLOSE_PANEL) {
+        env->CallVoidMethod(e->bridge, e->mRemoveDisp, act.displayId);
+    } else if (act.op == DOP_CLOSE_TASK) {
+        env->CallVoidMethod(e->bridge, e->mRemoveTask, act.taskId);
     } else {
         return;
     }
@@ -269,15 +255,13 @@ void dockClose(HudEngine* e, int idx) {
 
 void shelfActivate(HudEngine* e, int idx) {
     if (idx < 0 || idx >= (int)e->shelf.size()) return;
-    const int pi = e->shelf[idx].panelIdx;
-    if (pi < 0 || pi >= (int)e->panels.size()) return;
-    Panel& p = e->panels[pi];
-    if (!p.minimized || p.pkg != e->shelf[idx].pkg) return;
+    const DockAction act = shelfActivateAction(e->shelf[idx], e->panels);
+    if (act.op != DOP_FOCUS_PANEL) return;
+    Panel& p = e->panels[act.panelIdx];
     p.minimized = false;
-    if (e->bridge && p.taskId >= 0) {
+    if (e->bridge && act.taskId >= 0) {
         JNIEnv* env = threadEnv(e->vm);
-        env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
-        if (env->ExceptionCheck()) env->ExceptionClear();
+        focusTask(e, env, act.taskId);
     }
 }
 

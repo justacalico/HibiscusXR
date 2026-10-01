@@ -9,6 +9,7 @@
 // owns the sensor queue; all GL and bridge calls happen on it.
 
 #include "engine.h"
+#include "debug_hooks.h"
 #include "status.h"
 
 #include "../anim/anim.h"
@@ -65,129 +66,6 @@ static long long epochNowMs() {
 static HudEngine gHud;
 static pthread_t gThread;
 static bool gStarted = false;
-
-// test hook: setprop debug.vrhome.launch <pkg> queues a panel launch
-static void debugLaunchHook(HudEngine* e) {
-    static bool testFired = false;
-    char tb[PROP_VALUE_MAX];
-    if (!testFired && __system_property_get("debug.vrhome.launch", tb) > 0
-            && e->frames > 30) {
-        testFired = true;
-        queueLaunch(tb);
-    }
-}
-
-// test hook: setprop debug.vrhome.tap "disp,x,y" injects a tap there.
-// Fires once per new value; the prop may not be clearable from this uid.
-static void debugTapHook(HudEngine* e) {
-    static char lastTap[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.tap", tb) > 0 &&
-            strcmp(tb, lastTap) != 0) {
-        strncpy(lastTap, tb, sizeof(lastTap) - 1);
-        int d, x, y;
-        if (sscanf(tb, "%d,%d,%d", &d, &x, &y) == 3 && e->bridge) {
-            JNIEnv* env = threadEnv(e->vm);
-            env->CallVoidMethod(e->bridge, e->mInjectTap, d,
-                                (float)x, (float)y);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-        }
-    }
-}
-
-// test hook: setprop debug.vrhome.summon <n> toggles the dash over the
-// covered app, same as a short summon press. Each new value refires, so
-// the prop doubles as an adb-driven summon for testing
-static void debugSummonHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.summon", tb) > 0 &&
-            strcmp(tb, last) != 0 && e->ctx) {
-        strncpy(last, tb, sizeof(last) - 1);
-        JNIEnv* env = threadEnv(e->vm);
-        jclass c = env->GetObjectClass(e->ctx);
-        jmethodID m = env->GetMethodID(c, "debugSummon", "()V");
-        if (m) env->CallVoidMethod(e->ctx, m);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-    }
-}
-
-// test hook: setprop debug.vrhome.hold 1|0 feeds a summon-key down/up
-// through the real onSummon path, so the hold ring and long-press recenter
-// are drivable from adb - injected keyevents never reach the key filter
-static void debugHoldHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.hold", tb) > 0 &&
-            strcmp(tb, last) != 0 && e->ctx) {
-        strncpy(last, tb, sizeof(last) - 1);
-        JNIEnv* env = threadEnv(e->vm);
-        jclass c = env->GetObjectClass(e->ctx);
-        jmethodID m = env->GetMethodID(c, "debugSummonKey", "(I)V");
-        if (m) env->CallVoidMethod(e->ctx, m, tb[0] == '1' ? 0 : 1);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-    }
-}
-
-// test hook: setprop debug.vrhome.docktap <n> activates dock item n, same
-// as a gaze tap landing on it. Fires once per new value
-static void debugDockTapHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.docktap", tb) > 0 &&
-            strcmp(tb, last) != 0) {
-        strncpy(last, tb, sizeof(last) - 1);
-        dockActivate(e, atoi(tb));
-    }
-}
-
-// test hook: setprop debug.vrhome.dockclose <n> hits the close badge on
-// dock item n. Fires once per new value
-static void debugDockCloseHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.dockclose", tb) > 0 &&
-            strcmp(tb, last) != 0) {
-        strncpy(last, tb, sizeof(last) - 1);
-        dockClose(e, atoi(tb));
-    }
-}
-
-// test hook: setprop debug.vrhome.dockpin <pkg> runs the pin toggle the
-// confirm-hold gesture ends in. Fires once per new value
-static void debugDockPinHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.dockpin", tb) > 0 &&
-            strcmp(tb, last) != 0) {
-        strncpy(last, tb, sizeof(last) - 1);
-        dockTogglePin(e, tb);
-    }
-}
-
-// test hook: setprop debug.vrhome.notifclose <n> hits the dismiss badge on
-// card n. Fires once per new value
-static void debugNotifCloseHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.notifclose", tb) > 0 &&
-            strcmp(tb, last) != 0) {
-        strncpy(last, tb, sizeof(last) - 1);
-        notifDismiss(e, atoi(tb));
-    }
-}
-
-// test hook: setprop debug.vrhome.sysmsg <n> clicks button n on the front
-// system-message card (0 = Close, 1 = Restart). Fires once per new value
-static void debugSysMsgHook(HudEngine* e) {
-    static char last[PROP_VALUE_MAX] = "";
-    char tb[PROP_VALUE_MAX];
-    if (__system_property_get("debug.vrhome.sysmsg", tb) > 0 &&
-            strcmp(tb, last) != 0) {
-        strncpy(last, tb, sizeof(last) - 1);
-        sysMsgBtnClick(e, atoi(tb));
-    }
-}
 
 // the dash's first anchor: once tracking is live the dock claims the head's
 // heading as its centre yaw, so the window slots and the app grid open dead
@@ -340,15 +218,7 @@ static void hudFrame(HudEngine* e) {
     ctrlTick(e, head, sensRoll, worldX, propF("debug.vrhome.roll", kRoll),
              now);
 
-    debugLaunchHook(e);
-    debugTapHook(e);
-    debugSummonHook(e);
-    debugHoldHook(e);
-    debugDockTapHook(e);
-    debugDockCloseHook(e);
-    debugDockPinHook(e);
-    debugNotifCloseHook(e);
-    debugSysMsgHook(e);
+    runDebugHooks(e);
     anchorDash(e, head);
 
     // hold-to-recenter fill: the java side owns the threshold and fires the

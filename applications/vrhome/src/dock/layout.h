@@ -142,3 +142,40 @@ ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
 ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
                     float yaw, float pitch, float drop, const Mat4& head,
                     const float origin[3], const float o[3]);
+
+// what an activate/close resolves to, computed off plain data so the
+// focus-vs-launch policy is host-testable; dock.cpp turns the answer
+// into bridge calls
+enum DockOp {
+    DOP_NONE = 0,     // dead item or inconsistent state: do nothing
+    DOP_TOGGLE_GRID,  // the grid button flips the app-grid overlay
+    DOP_LAUNCH,       // cold start pkg through the bridge
+    DOP_FOCUS_PANEL,  // unminimize + focus the panel's task when it has one
+    DOP_FOCUS_XR,     // immersive running item: focus the task, drop the menu
+    DOP_CLOSE_PANEL,  // kill through the panel's display
+    DOP_CLOSE_TASK,   // kill the immersive task directly
+};
+
+struct DockAction {
+    DockOp op = DOP_NONE;
+    int panelIdx = -1;  // FOCUS_PANEL / CLOSE_PANEL: index into panels
+    int taskId = -1;    // task to focus/kill when one is known
+    int displayId = -1; // CLOSE_PANEL: the panel's display
+    std::string pkg;    // LAUNCH: package to start
+};
+
+// release on a strip item: the grid button toggles, a live item refocuses,
+// a cold pin launches. A stale panel link (the panel's pkg moved on)
+// launches fresh instead of focusing the wrong window
+DockAction dockActivateAction(const DockItem& it,
+                              const std::vector<Panel>& panels);
+
+// the close badge: a panel's task dies through its display - the cached
+// taskId can be stale - while an immersive task only has its id to go on
+DockAction dockCloseAction(const DockItem& it,
+                           const std::vector<Panel>& panels);
+
+// release on a shelf icon: only a still-minimized panel that kept its pkg
+// restores
+DockAction shelfActivateAction(const ShelfItem& it,
+                               const std::vector<Panel>& panels);

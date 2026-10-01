@@ -47,7 +47,8 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
 ENV_SRCS := src/env/main.cpp src/env/cam.cpp src/render/scene.cpp \
             src/render/pt_geo.cpp src/env/homeenv.cpp \
             src/env/envmap.cpp src/env/zipfile.cpp
-HUD_SRCS := src/hud/hud_main.cpp src/render/chrome.cpp \
+HUD_SRCS := src/hud/hud_main.cpp src/hud/debug_hooks.cpp \
+            src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
             src/render/mesh.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \

@@ -170,9 +170,9 @@ class _DesktopBar extends StatelessWidget {
         const _LanguageMenu(),
         const SizedBox(width: 12),
         PillButton(
-          label: l10n.navDownload,
+          label: l10n.navGuide,
           small: true,
-          onPressed: () => context.go(Routes.download),
+          onPressed: () => context.go(Routes.flashdocs),
         ),
       ],
     );
@@ -222,7 +222,6 @@ class _MobileMenu extends StatelessWidget {
       Destination(Routes.home, (l) => l.appTitle),
       ..._destinations(l10n),
       Destination(Routes.flashdocs, (l) => l.navFlashdocs),
-      Destination(Routes.download, (l) => l.navDownload),
       Destination(Routes.cte, (l) => l.navCte),
       Destination(Routes.hbsupDownload, (l) => l.navHbsup),
     ];

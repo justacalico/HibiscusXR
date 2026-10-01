@@ -19,6 +19,8 @@ class FlashDocDevice {
     required this.name,
     required this.specs,
     required this.systems,
+    required this.fullImageAssets,
+    required this.cleanImageAssets,
   });
 
   /// URL segment, e.g. pico-neo-2.
@@ -28,6 +30,12 @@ class FlashDocDevice {
   /// Codename, SoC and panel in one short line, same as the device grid.
   final String Function(AppLocalizations l10n) specs;
   final List<FlashDocSystem> systems;
+
+  /// Asset names the dist pipeline publishes this device's images under,
+  /// preferred spelling first - older releases may still carry a
+  /// pre-rename name further down the list.
+  final List<String> fullImageAssets;
+  final List<String> cleanImageAssets;
 
   /// In-site path of the device's overview page.
   String get path => Routes.flashdocsDevice(slug);
@@ -45,6 +53,14 @@ final flashDocDevices = <FlashDocDevice>[
     specs: (l) => l.deviceNeo2Specs,
     systems: const [
       FlashDocSystem(slug: 'linux', name: _linuxName),
+    ],
+    fullImageAssets: const [
+      'system-hibiscus-full.img.xz',
+      'system-pn2-full.img.xz',
+    ],
+    cleanImageAssets: const [
+      'system-hibiscus.img.xz',
+      'system-pn2.img.xz',
     ],
   ),
 ];

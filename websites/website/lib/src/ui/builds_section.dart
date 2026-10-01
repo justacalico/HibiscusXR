@@ -8,15 +8,19 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import '../builds.dart';
+import '../flashdocs.dart';
 import '../links.dart';
 import '../theme.dart';
 import 'widgets.dart';
 
-/// Section on the download page that lists dist pipeline releases by channel.
-/// Fetches from the GitLab releases API at runtime, so every new build the CI
-/// publishes shows up without anyone touching the site.
+/// Section on a flashing guide that lists dist pipeline releases by
+/// channel, filtered to [device]'s image assets. Fetches from the GitLab
+/// releases API at runtime, so every new build the CI publishes shows up
+/// without anyone touching the site.
 class BuildsSection extends StatefulWidget {
-  const BuildsSection({super.key});
+  const BuildsSection({super.key, required this.device});
+
+  final FlashDocDevice device;
 
   @override
   State<BuildsSection> createState() => _BuildsSectionState();
@@ -68,7 +72,8 @@ class _BuildsSectionState extends State<BuildsSection> {
             }
             return Column(
               children: [
-                for (final b in builds.take(5)) _BuildCard(release: b),
+                for (final b in builds.take(5))
+                  _BuildCard(release: b, device: widget.device),
               ],
             );
           },
@@ -113,9 +118,10 @@ class _ChannelSelector extends StatelessWidget {
 }
 
 class _BuildCard extends StatelessWidget {
-  const _BuildCard({required this.release});
+  const _BuildCard({required this.release, required this.device});
 
   final BuildRelease release;
+  final FlashDocDevice device;
 
   @override
   Widget build(BuildContext context) {
@@ -149,16 +155,16 @@ class _BuildCard extends StatelessWidget {
             spacing: 12,
             runSpacing: 10,
             children: [
-              if (release.fullImage!.url.isNotEmpty)
+              if (release.fullImageFor(device)!.url.isNotEmpty)
                 AssetChip(
                   label: l10n.buildsFullImage,
-                  url: release.fullImage!.url,
+                  url: release.fullImageFor(device)!.url,
                   prominent: true,
                 ),
-              if (release.cleanImage!.url.isNotEmpty)
+              if (release.cleanImageFor(device)!.url.isNotEmpty)
                 AssetChip(
                   label: l10n.buildsCleanImage,
-                  url: release.cleanImage!.url,
+                  url: release.cleanImageFor(device)!.url,
                 ),
               for (final a in release.assets)
                 if (a.name == 'build-logs.tar.xz')

@@ -110,17 +110,17 @@ abstract class AppLocalizations {
   /// **'Repos'**
   String get navRepos;
 
+  /// No description provided for @navGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get navGuide;
+
   /// No description provided for @navScreenshots.
   ///
   /// In en, this message translates to:
   /// **'Screenshots'**
   String get navScreenshots;
-
-  /// No description provided for @navDownload.
-  ///
-  /// In en, this message translates to:
-  /// **'Download'**
-  String get navDownload;
 
   /// No description provided for @navAbout.
   ///
@@ -830,167 +830,11 @@ abstract class AppLocalizations {
   /// **'The app grid inside vrhome.'**
   String get shotGridCaption;
 
-  /// No description provided for @downloadTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Download'**
-  String get downloadTitle;
-
-  /// No description provided for @downloadSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Flash it yourself - but read the warning first.'**
-  String get downloadSubtitle;
-
-  /// No description provided for @downloadAlphaTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Alpha software'**
-  String get downloadAlphaTitle;
-
-  /// No description provided for @downloadAlphaBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This is very early alpha. These are testing builds, not production releases. Things will break and features are missing. Only flash if you know what you\'re doing and want to help test.'**
-  String get downloadAlphaBody;
-
-  /// No description provided for @downloadWarnTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Flashing risk'**
-  String get downloadWarnTitle;
-
-  /// No description provided for @downloadWarnBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.'**
-  String get downloadWarnBody;
-
-  /// No description provided for @downloadBackupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Back up first'**
-  String get downloadBackupTitle;
-
-  /// No description provided for @downloadBackupBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Flashing replaces your system partition for good. Before anything else, take a full backup of the stock system - if something goes wrong, that dump is your only way back.'**
-  String get downloadBackupBody;
-
-  /// No description provided for @downloadBackupStep1.
-  ///
-  /// In en, this message translates to:
-  /// **'Boot stock and get rooted adb: adb root'**
-  String get downloadBackupStep1;
-
-  /// No description provided for @downloadBackupStep2.
-  ///
-  /// In en, this message translates to:
-  /// **'Back up with HBSUP - it dumps every partition and checks disk space first. By hand: dd over adb shell, the tools repo has a backup script that does it end to end'**
-  String get downloadBackupStep2;
-
   /// No description provided for @downloadBackupCta.
   ///
   /// In en, this message translates to:
   /// **'Get HBSUP'**
   String get downloadBackupCta;
-
-  /// No description provided for @downloadBackupStep3.
-  ///
-  /// In en, this message translates to:
-  /// **'Pull the dump to your computer and keep it somewhere safe'**
-  String get downloadBackupStep3;
-
-  /// No description provided for @downloadBackupConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'I created a full backup of my headset'**
-  String get downloadBackupConfirm;
-
-  /// No description provided for @downloadLockedHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm your backup above to reveal'**
-  String get downloadLockedHint;
-
-  /// No description provided for @downloadImageTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The full system image'**
-  String get downloadImageTitle;
-
-  /// No description provided for @downloadImageBody.
-  ///
-  /// In en, this message translates to:
-  /// **'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash onto the Neo 2.'**
-  String get downloadImageBody;
-
-  /// No description provided for @downloadImageCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Open the out repo'**
-  String get downloadImageCta;
-
-  /// No description provided for @downloadStepsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Flashing'**
-  String get downloadStepsTitle;
-
-  /// No description provided for @downloadStep1.
-  ///
-  /// In en, this message translates to:
-  /// **'adb reboot bootloader'**
-  String get downloadStep1;
-
-  /// No description provided for @downloadStep2.
-  ///
-  /// In en, this message translates to:
-  /// **'fastboot oem pico unlock'**
-  String get downloadStep2;
-
-  /// No description provided for @downloadStep3.
-  ///
-  /// In en, this message translates to:
-  /// **'fastboot -S 128M flash system system-hibiscus-full.img'**
-  String get downloadStep3;
-
-  /// No description provided for @downloadStep4.
-  ///
-  /// In en, this message translates to:
-  /// **'fastboot reboot'**
-  String get downloadStep4;
-
-  /// No description provided for @downloadStepsNote.
-  ///
-  /// In en, this message translates to:
-  /// **'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash. The tools repo has a script that handles both quirks for you.'**
-  String get downloadStepsNote;
-
-  /// No description provided for @downloadReqTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'What you need'**
-  String get downloadReqTitle;
-
-  /// No description provided for @downloadReq1.
-  ///
-  /// In en, this message translates to:
-  /// **'A Pico Neo 2 (A7B10) - the only supported headset for now; Eye and non-Eye SKUs both work'**
-  String get downloadReq1;
-
-  /// No description provided for @downloadReq2.
-  ///
-  /// In en, this message translates to:
-  /// **'Rooted stock firmware and an unlockable bootloader'**
-  String get downloadReq2;
-
-  /// No description provided for @downloadReq3.
-  ///
-  /// In en, this message translates to:
-  /// **'A Linux host with adb and fastboot'**
-  String get downloadReq3;
 
   /// No description provided for @issuesButton.
   ///
@@ -1471,24 +1315,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Flashing'**
   String get navFlashdocs;
-
-  /// No description provided for @downloadGuideTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Flashing guide'**
-  String get downloadGuideTitle;
-
-  /// No description provided for @downloadGuideBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Step-by-step docs for each supported headset, per host OS.'**
-  String get downloadGuideBody;
-
-  /// No description provided for @downloadGuideCta.
-  ///
-  /// In en, this message translates to:
-  /// **'Open the guide'**
-  String get downloadGuideCta;
 
   /// No description provided for @flashdocsTitle.
   ///

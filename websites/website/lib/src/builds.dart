@@ -1,3 +1,5 @@
+import 'flashdocs.dart';
+
 /// Release channel for a dist build.
 enum BuildChannel { release, beta, alpha }
 
@@ -27,16 +29,16 @@ class BuildRelease {
   final BuildChannel channel;
   final List<BuildAsset> assets;
 
-  /// The main full-stack image asset, if present.
-  BuildAsset? get fullImage =>
-      _named(const ['system-hibiscus-full.img.xz', 'system-pn2-full.img.xz']);
+  /// The main full-stack image asset for [device], if present.
+  BuildAsset? fullImageFor(FlashDocDevice device) =>
+      _named(device.fullImageAssets);
 
-  /// The clean GSI-only image asset, if present.
-  BuildAsset? get cleanImage =>
-      _named(const ['system-hibiscus.img.xz', 'system-pn2.img.xz']);
+  /// The clean GSI-only image asset for [device], if present.
+  BuildAsset? cleanImageFor(FlashDocDevice device) =>
+      _named(device.cleanImageAssets);
 
-  /// First asset matching one of [names], in preference order. The second
-  /// entry is the pre-rename spelling older releases still carry.
+  /// First asset matching one of [names], in preference order - later
+  /// entries are spellings older releases still carry.
   BuildAsset _named(List<String> names) {
     for (final n in names) {
       for (final a in assets) {

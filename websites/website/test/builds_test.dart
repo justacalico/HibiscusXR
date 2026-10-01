@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:hibiscusxr_website/src/builds.dart';
+import 'package:hibiscusxr_website/src/flashdocs.dart';
 
 void main() {
   group('channelOfTag', () {
@@ -84,22 +85,28 @@ void main() {
       expect(releases[0].assets[2].isImage, isFalse);
     });
 
-    test('fullImage and cleanImage find the right assets', () {
+    test('fullImageFor and cleanImageFor find the right assets', () {
+      final neo2 = flashDocDevice('pico-neo-2')!;
       final releases = parseReleases(json);
-      expect(releases[0].fullImage!.name, 'system-hibiscus-full.img.xz');
-      expect(releases[0].cleanImage!.name, 'system-hibiscus.img.xz');
+      expect(releases[0].fullImageFor(neo2)!.name,
+          'system-hibiscus-full.img.xz');
+      expect(
+          releases[0].cleanImageFor(neo2)!.name, 'system-hibiscus.img.xz');
     });
 
     test('new name wins over pre-rename system-pn2 assets', () {
+      final neo2 = flashDocDevice('pico-neo-2')!;
       final releases = parseReleases(json);
-      expect(releases[1].fullImage!.name, 'system-hibiscus-full.img.xz');
-      expect(releases[1].cleanImage!.name, 'system-pn2.img.xz');
+      expect(releases[1].fullImageFor(neo2)!.name,
+          'system-hibiscus-full.img.xz');
+      expect(releases[1].cleanImageFor(neo2)!.name, 'system-pn2.img.xz');
     });
 
     test('empty assets list is fine', () {
+      final neo2 = flashDocDevice('pico-neo-2')!;
       final releases = parseReleases(json);
       expect(releases[2].assets, isEmpty);
-      expect(releases[2].fullImage!.name, '');
+      expect(releases[2].fullImageFor(neo2)!.name, '');
     });
   });
 

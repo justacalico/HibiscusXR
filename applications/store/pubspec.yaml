@@ -1,0 +1,30 @@
+name: pn2_store
+description: "F-Droid compatible app store for the Pico Neo 2 LineageOS port."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+  http: ^1.5.0
+  shared_preferences: ^2.5.5
+  flutter_svg: ^2.2.3
+  crypto: ^3.0.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/store_icon.svg

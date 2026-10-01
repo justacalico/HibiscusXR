@@ -76,7 +76,7 @@ const kItemKinds = <ItemId, ItemKind>{
   ItemId.homeEnv: ItemKind.info,
   ItemId.volume: ItemKind.slider,
   ItemId.micMute: ItemKind.toggle,
-  ItemId.languagePicker: ItemKind.action,
+  ItemId.languagePicker: ItemKind.language,
   ItemId.timeZone: ItemKind.action,
   ItemId.imeList: ItemKind.imeList,
   ItemId.adbToggle: ItemKind.toggle,
@@ -108,6 +108,29 @@ const kUnimplemented = <ItemId>{
 const kRequiresReboot = <ItemId>{
   ItemId.deviceMode,
 };
+
+/// Locale tags the language dropdown offers, in display order. The row
+/// rides the text channel: the wire value is the BCP 47 tag the platform
+/// writes through LocalePicker.
+const kLanguageOptions = <String>['en', 'zh-CN'];
+
+/// Map a platform-reported locale tag onto a dropdown option. English
+/// dialects land on English; only unambiguous Simplified tags land on
+/// zh-CN, so a Traditional locale (zh-TW, zh-Hant) shows its raw tag
+/// instead of a wrong pick.
+String? languageOptionFor(String? tag) {
+  if (tag == null || tag.isEmpty) return null;
+  final t = tag.toLowerCase();
+  if (t.startsWith('en')) return 'en';
+  if (t == 'zh' ||
+      t.startsWith('zh-hans') ||
+      t.startsWith('zh-cn') ||
+      t.startsWith('zh-sg') ||
+      t.startsWith('zh-my')) {
+    return 'zh-CN';
+  }
+  return null;
+}
 
 SectionDef sectionDef(SectionId id) => kSections.firstWhere((s) => s.id == id);
 

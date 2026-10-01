@@ -70,6 +70,8 @@
   "itemMicMuteDesc": "Allow apps to use the microphone",
   "itemLanguagePicker": "Language",
   "itemLanguagePickerDesc": "Change the system language",
+  "languageEnglish": "English",
+  "languageChineseSimplified": "简体中文",
   "itemTimeZone": "Date and time",
   "itemTimeZoneDesc": "Set the time zone and clock format",
   "itemImeList": "On-screen keyboard",

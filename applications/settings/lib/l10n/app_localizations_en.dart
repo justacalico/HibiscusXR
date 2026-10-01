@@ -207,6 +207,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemLanguagePickerDesc => 'Change the system language';
 
   @override
+  String get languageEnglish => 'English';
+
+  @override
+  String get languageChineseSimplified => '简体中文';
+
+  @override
   String get itemTimeZone => 'Date and time';
 
   @override

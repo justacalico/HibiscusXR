@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pn2_settings/l10n/app_localizations.dart';
+import 'package:pn2_settings/src/catalog.dart';
 import 'package:pn2_settings/src/labels.dart';
 import 'package:pn2_settings/src/models.dart';
 import 'package:panel_theme/panel_theme.dart';
@@ -60,5 +61,16 @@ void main() {
     await tester.pump();
     expect(scanStatusLabel(l10n, true), 'Scanning for controllers…');
     expect(scanStatusLabel(l10n, false), 'Not scanning');
+  });
+
+  testWidgets('language option labels cover every option', (tester) async {
+    final l10n = await l10nOf(tester);
+    await tester.pump();
+    for (final tag in kLanguageOptions) {
+      expect(languageOptionLabel(l10n, tag), isNotEmpty, reason: tag);
+    }
+    // names stay in their own language so a lost user finds theirs
+    expect(languageOptionLabel(l10n, 'en'), 'English');
+    expect(languageOptionLabel(l10n, 'zh-CN'), '简体中文');
   });
 }

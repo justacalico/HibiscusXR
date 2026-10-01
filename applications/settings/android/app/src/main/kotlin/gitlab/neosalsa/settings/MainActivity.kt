@@ -8,11 +8,13 @@ import android.content.Context
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.database.ContentObserver
 import android.media.AudioManager
 import android.os.Handler
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.os.LocaleList
 import android.os.PowerManager
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
@@ -20,6 +22,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
+import java.util.Locale
 
 // android.media.AudioManager.VOLUME_CHANGED_ACTION is @hide
 private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
@@ -51,6 +54,10 @@ private const val THEME_DEFAULT = "dark"
 // vrhome env process. Absent means passthrough.
 private const val HOME_ENV = "hibiscus_environment"
 private const val HOME_ENV_DEFAULT = "passthrough"
+// framework key the ActivityManager persists the device locale list
+// under in the System table; only written as a fallback when the real
+// setter is blocked
+private const val SYSTEM_LOCALES = "system_locales"
 private const val TAG = "SettingsMain"
 
 class MainActivity : FlutterActivity() {
@@ -383,6 +390,7 @@ class MainActivity : FlutterActivity() {
                 "wifiSsid" to (wifiSsid() ?: ""),
                 "themeMode" to theme(),
                 "homeEnv" to homeEnv(),
+                "languagePicker" to localeTag(),
                 "modelName" to Build.MODEL,
                 "androidVersion" to Build.VERSION.RELEASE,
                 "hibiscusVersion" to hibiscusVersion(),
@@ -484,7 +492,46 @@ class MainActivity : FlutterActivity() {
         when (id) {
             "themeMode" -> putGlobalString(THEME, v)
             "homeEnv" -> putGlobalString(HOME_ENV, v)
+            "languagePicker" -> setSystemLocale(v)
         }
+    }
+
+    // The dropdown shows the primary device locale as its BCP 47 tag.
+    private fun localeTag(): String =
+        resources.configuration.locales.get(0).toLanguageTag()
+
+    // The framework's own locale setter: LocalePicker.updateLocales goes
+    // through ActivityManager.updatePersistentConfiguration, so running
+    // apps get the new Configuration immediately and the list survives
+    // reboots. It's a non-SDK class, hence reflection; the app is
+    // platform-signed so the CHANGE_CONFIGURATION grant covers it. A
+    // denied call leaves the raw key write so the pick at least takes
+    // effect on the next boot.
+    private fun setSystemLocale(tag: String) {
+        val locales = LocaleList(Locale.forLanguageTag(tag))
+        try {
+            val picker = Class.forName("com.android.internal.app.LocalePicker")
+            picker.getMethod("updateLocales", LocaleList::class.java)
+                .invoke(null, locales)
+        } catch (e: Exception) {
+            android.util.Log.w(TAG, "locale switch blocked", e)
+            try {
+                Settings.System.putString(
+                    contentResolver, SYSTEM_LOCALES,
+                    locales.toLanguageTags(),
+                )
+            } catch (_: SecurityException) {}
+        }
+    }
+
+    // The manifest keeps the activity alive across a locale switch
+    // (configChanges="locale"), so an external change - adb or another
+    // shell - only needs the row re-synced.
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        eventSink?.success(
+            mapOf("texts" to mapOf("languagePicker" to localeTag())),
+        )
     }
 
     private fun setSlider(id: String, v: Double) {
@@ -601,8 +648,6 @@ class MainActivity : FlutterActivity() {
 
     private fun performAction(id: String) {
         when (id) {
-            "languagePicker" ->
-                safeLaunch(Intent(Settings.ACTION_LOCALE_SETTINGS))
             "timeZone" ->
                 safeLaunch(Intent(Settings.ACTION_DATE_SETTINGS))
             "controllerPair" -> {

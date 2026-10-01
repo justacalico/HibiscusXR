@@ -236,6 +236,62 @@ void main() {
     expect(PanelTheme.background, kLightPalette.background);
   });
 
+  testWidgets('language dropdown forwards the pick and resyncs', (
+    tester,
+  ) async {
+    final (c, source) = await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        texts: {ItemId.languagePicker: 'en-US'},
+      ),
+    );
+    await tester.tap(find.text('Language and Region'));
+    await tester.pump();
+
+    final dropdown = find.byType(DropdownButton<String>);
+    expect(
+      tester.widget<DropdownButton<String>>(dropdown).value,
+      'en',
+    );
+
+    await tester.tap(dropdown);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('简体中文').last);
+    await tester.pump();
+    expect(source.textsSet, [(ItemId.languagePicker, 'zh-CN')]);
+
+    // a locale switch elsewhere (adb, another shell) reselects the row
+    source.emit(
+      const SettingsSnapshot(texts: {ItemId.languagePicker: 'zh-CN'}),
+    );
+    await tester.pump();
+    expect(c.store.textOf(ItemId.languagePicker), 'zh-CN');
+    expect(
+      tester.widget<DropdownButton<String>>(dropdown).value,
+      'zh-CN',
+    );
+  });
+
+  testWidgets('language dropdown shows an unknown tag as-is', (
+    tester,
+  ) async {
+    await pumpApp(
+      tester,
+      initial: const SettingsSnapshot(
+        texts: {ItemId.languagePicker: 'fr-FR'},
+      ),
+    );
+    await tester.tap(find.text('Language and Region'));
+    await tester.pump();
+    expect(
+      tester.widget<DropdownButton<String>>(
+        find.byType(DropdownButton<String>),
+      ).value,
+      isNull,
+    );
+    expect(find.text('fr-FR'), findsOneWidget);
+  });
+
   testWidgets('info rows show platform text and empty fallback', (
     tester,
   ) async {

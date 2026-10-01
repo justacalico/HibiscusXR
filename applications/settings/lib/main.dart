@@ -28,7 +28,10 @@ Future<void> main() async {
                 ItemId.bluetoothToggle: true,
               },
               sliders: {ItemId.volume: 0.6, ItemId.brightness: 0.8},
-              texts: {ItemId.wifiSsid: 'dev-preview'},
+              texts: {
+                ItemId.wifiSsid: 'dev-preview',
+                ItemId.languagePicker: 'en',
+              },
               wifi: [
                 WifiNetwork(
                   ssid: 'dev-preview',

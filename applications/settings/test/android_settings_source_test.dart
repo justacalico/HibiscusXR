@@ -51,7 +51,7 @@ void main() {
     final src = AndroidSettingsSource();
     await src.setSlider(ItemId.volume, 0.3);
     await src.requestToggle(ItemId.wifiToggle, false);
-    await src.performAction(ItemId.languagePicker);
+    await src.performAction(ItemId.timeZone);
     await src.reboot();
     expect(calls.map((c) => c.method), [
       'setSlider',
@@ -61,7 +61,7 @@ void main() {
     ]);
     expect(calls[0].arguments, {'id': 'volume', 'value': 0.3});
     expect(calls[1].arguments, {'id': 'wifiToggle', 'on': false});
-    expect(calls[2].arguments, {'id': 'languagePicker'});
+    expect(calls[2].arguments, {'id': 'timeZone'});
   });
 
   test('radio intents forward with arguments', () async {

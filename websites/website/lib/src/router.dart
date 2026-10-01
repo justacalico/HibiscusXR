@@ -7,7 +7,6 @@ import 'apps.dart';
 import 'ui/pages/about_page.dart';
 import 'ui/pages/app_downloads_page.dart';
 import 'ui/pages/cte_page.dart';
-import 'ui/pages/downloads_page.dart';
 import 'ui/pages/faq_page.dart';
 import 'ui/pages/flashdocs/device_page.dart';
 import 'ui/pages/flashdocs/guide_page.dart';
@@ -45,7 +44,7 @@ GoRouter buildRouter() => GoRouter(
             ),
             GoRoute(
               path: Routes.download,
-              pageBuilder: _fade(const DownloadsPage()),
+              redirect: (context, state) => Routes.flashdocs,
             ),
             GoRoute(
               path: Routes.cte,

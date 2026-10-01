@@ -81,8 +81,8 @@ class _Hero extends StatelessWidget {
               crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 PillButton(
-                  label: l10n.navDownload,
-                  onPressed: () => context.go(Routes.download),
+                  label: l10n.navGuide,
+                  onPressed: () => context.go(Routes.flashdocs),
                 ),
                 ChevronLink(
                   label: l10n.heroSecondary,
@@ -323,7 +323,7 @@ class _DownloadBand extends StatelessWidget {
           Reveal(
             child: ChevronLink(
               label: l10n.homeDownloadCta,
-              onPressed: () => context.go(Routes.download),
+              onPressed: () => context.go(Routes.flashdocs),
             ),
           ),
         ],

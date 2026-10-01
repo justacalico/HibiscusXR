@@ -15,10 +15,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navRepos => '仓库';
 
   @override
-  String get navScreenshots => '截图';
+  String get navGuide => '刷机指南';
 
   @override
-  String get navDownload => '下载';
+  String get navScreenshots => '截图';
 
   @override
   String get navAbout => '关于';
@@ -387,92 +387,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get shotGridCaption => 'vrhome 里的应用网格。';
 
   @override
-  String get downloadTitle => '下载';
-
-  @override
-  String get downloadSubtitle => '自己动手刷——但先读完警告。';
-
-  @override
-  String get downloadAlphaTitle => 'Alpha 阶段';
-
-  @override
-  String get downloadAlphaBody =>
-      '这是非常早期的 alpha。这些是测试构建,不是正式发布版。东西会坏,功能也不全。只有你知道自己在干什么、愿意帮忙测试的时候才刷。';
-
-  @override
-  String get downloadWarnTitle => '刷机风险';
-
-  @override
-  String get downloadWarnBody =>
-      '只刷 system 分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。';
-
-  @override
-  String get downloadBackupTitle => '先备份';
-
-  @override
-  String get downloadBackupBody =>
-      '刷机会彻底替换 system 分区。动手之前先把原厂系统完整备份下来——出了问题,这份转储是你唯一的退路。';
-
-  @override
-  String get downloadBackupStep1 => '进原厂系统,拿到 root 过的 adb:adb root';
-
-  @override
-  String get downloadBackupStep2 =>
-      '用 HBSUP 备份——它会转储所有分区,还会先检查磁盘空间。手动的话:adb shell 里 dd,tools 仓库有一条龙脚本';
-
-  @override
   String get downloadBackupCta => '获取 HBSUP';
-
-  @override
-  String get downloadBackupStep3 => '把转储拉到电脑上,妥善保存';
-
-  @override
-  String get downloadBackupConfirm => '我已经完整备份了我的头显';
-
-  @override
-  String get downloadLockedHint => '在上方确认备份后才会显示';
-
-  @override
-  String get downloadImageTitle => '完整系统镜像';
-
-  @override
-  String get downloadImageBody =>
-      'system-hibiscus-full.img——3.6 GB,ext4,fsck 检查干净。LineageOS GSI 加我们的修复加整套 Pico 栈,可直接刷上 Neo 2。';
-
-  @override
-  String get downloadImageCta => '打开 out 仓库';
-
-  @override
-  String get downloadStepsTitle => '刷机步骤';
-
-  @override
-  String get downloadStep1 => 'adb reboot bootloader';
-
-  @override
-  String get downloadStep2 => 'fastboot oem pico unlock';
-
-  @override
-  String get downloadStep3 =>
-      'fastboot -S 128M flash system system-hibiscus-full.img';
-
-  @override
-  String get downloadStep4 => 'fastboot reboot';
-
-  @override
-  String get downloadStepsNote =>
-      '-S 128M 分块是硬性要求:更大的块会在刷到一半时弄断 USB 连接。tools 仓库里有脚本帮你处理这两个坑。';
-
-  @override
-  String get downloadReqTitle => '你需要准备';
-
-  @override
-  String get downloadReq1 => '一台 Pico Neo 2(A7B10)——目前唯一支持的头显,Eye 和非 Eye 版本都可以';
-
-  @override
-  String get downloadReq2 => '已 root 的原厂固件和可解锁的 bootloader';
-
-  @override
-  String get downloadReq3 => '一台装了 adb 和 fastboot 的 Linux 主机';
 
   @override
   String get issuesButton => '提交 issue';
@@ -734,15 +649,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get navFlashdocs => '刷机指南';
-
-  @override
-  String get downloadGuideTitle => '刷机指南';
-
-  @override
-  String get downloadGuideBody => '按头显和电脑系统分类的逐步刷机文档。';
-
-  @override
-  String get downloadGuideCta => '打开指南';
 
   @override
   String get flashdocsTitle => '刷机文档';

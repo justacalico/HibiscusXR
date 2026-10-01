@@ -27,7 +27,7 @@ void main() {
 
     expect(find.text('HibiscusXR'), findsWidgets);
     expect(find.text('Repos'), findsWidgets);
-    expect(find.text('Download'), findsWidgets);
+    expect(find.text('Guide'), findsWidgets);
     expect(find.text('Read the docs'), findsOneWidget);
   });
 
@@ -80,21 +80,20 @@ void main() {
     expect(find.text('Planned'), findsNWidgets(2));
   });
 
-  testWidgets('navigates to download page', (tester) async {
+  testWidgets('nav guide button opens the flashing docs', (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Download').first);
+    await tester.tap(find.text('Guide').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Flashing risk'), findsOneWidget);
-    expect(find.text('Alpha software'), findsOneWidget);
+    expect(find.text('Which headset do you have?'), findsOneWidget);
   });
 
-  testWidgets('download page unlocks steps after backup confirm',
+  testWidgets('the old download path redirects to the flashing docs',
       (tester) async {
     tester.view.physicalSize = const Size(1440, 900);
     tester.view.devicePixelRatio = 1.0;
@@ -105,20 +104,7 @@ void main() {
     _routerOf(tester).go('/download');
     await tester.pumpAndSettle();
 
-    expect(find.text('Back up first'), findsOneWidget);
-    expect(
-        find.text('Confirm your backup above to reveal'), findsNWidgets(2));
-    expect(find.byType(ImageFiltered), findsNWidgets(2));
-
-    final confirm = find.text('I created a full backup of my headset');
-    await Scrollable.ensureVisible(tester.element(confirm),
-        alignment: 0.5);
-    await tester.pumpAndSettle();
-    await tester.tap(confirm);
-    await tester.pumpAndSettle();
-
-    expect(find.text('Confirm your backup above to reveal'), findsNothing);
-    expect(find.byType(ImageFiltered), findsNothing);
+    expect(find.text('Which headset do you have?'), findsOneWidget);
   });
 
   testWidgets('app download pages render and show source links',
@@ -148,7 +134,7 @@ void main() {
     await tester.pumpWidget(await _app());
     await tester.pumpAndSettle();
 
-    _routerOf(tester).go('/download');
+    _routerOf(tester).go('/flashdocs/pico-neo-2/linux');
     await tester.pumpAndSettle();
 
     final cta = find.text('Get HBSUP');
@@ -201,6 +187,7 @@ void main() {
         find.text('fastboot flash boot magisk_patched_pico_neo_2_boot.img'),
         findsOneWidget);
     expect(find.text('Download the patched boot image'), findsOneWidget);
+    expect(find.text('Available builds'), findsOneWidget);
   });
 
   testWidgets('flashdocs rejects unknown device and OS slugs',
@@ -218,27 +205,6 @@ void main() {
     _routerOf(tester).go('/flashdocs/pico-neo-2/windows');
     await tester.pumpAndSettle();
     expect(find.text('Page not found'), findsOneWidget);
-  });
-
-  testWidgets('download page links to the flashing guide', (tester) async {
-    tester.view.physicalSize = const Size(1440, 900);
-    tester.view.devicePixelRatio = 1.0;
-    addTearDown(tester.view.reset);
-    await tester.pumpWidget(await _app());
-    await tester.pumpAndSettle();
-
-    _routerOf(tester).go('/download');
-    await tester.pumpAndSettle();
-
-    final link = find.text('Open the guide');
-    expect(link, findsOneWidget);
-    await Scrollable.ensureVisible(tester.element(link),
-        alignment: 0.5);
-    await tester.pumpAndSettle();
-    await tester.tap(link);
-    await tester.pumpAndSettle();
-
-    expect(find.text('Which headset do you have?'), findsOneWidget);
   });
 
   testWidgets('repositories page lists all groups', (tester) async {
@@ -294,7 +260,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('HibiscusXR'), findsWidgets);
-    expect(find.text('下载'), findsWidgets);
+    expect(find.text('刷机指南'), findsWidgets);
     expect(find.text('阅读文档'), findsOneWidget);
   });
 

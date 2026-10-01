@@ -15,10 +15,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navRepos => 'Repos';
 
   @override
-  String get navScreenshots => 'Screenshots';
+  String get navGuide => 'Guide';
 
   @override
-  String get navDownload => 'Download';
+  String get navScreenshots => 'Screenshots';
 
   @override
   String get navAbout => 'About';
@@ -419,96 +419,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shotGridCaption => 'The app grid inside vrhome.';
 
   @override
-  String get downloadTitle => 'Download';
-
-  @override
-  String get downloadSubtitle =>
-      'Flash it yourself - but read the warning first.';
-
-  @override
-  String get downloadAlphaTitle => 'Alpha software';
-
-  @override
-  String get downloadAlphaBody =>
-      'This is very early alpha. These are testing builds, not production releases. Things will break and features are missing. Only flash if you know what you\'re doing and want to help test.';
-
-  @override
-  String get downloadWarnTitle => 'Flashing risk';
-
-  @override
-  String get downloadWarnBody =>
-      'Only ever flash the system partition. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.';
-
-  @override
-  String get downloadBackupTitle => 'Back up first';
-
-  @override
-  String get downloadBackupBody =>
-      'Flashing replaces your system partition for good. Before anything else, take a full backup of the stock system - if something goes wrong, that dump is your only way back.';
-
-  @override
-  String get downloadBackupStep1 => 'Boot stock and get rooted adb: adb root';
-
-  @override
-  String get downloadBackupStep2 =>
-      'Back up with HBSUP - it dumps every partition and checks disk space first. By hand: dd over adb shell, the tools repo has a backup script that does it end to end';
-
-  @override
   String get downloadBackupCta => 'Get HBSUP';
-
-  @override
-  String get downloadBackupStep3 =>
-      'Pull the dump to your computer and keep it somewhere safe';
-
-  @override
-  String get downloadBackupConfirm => 'I created a full backup of my headset';
-
-  @override
-  String get downloadLockedHint => 'Confirm your backup above to reveal';
-
-  @override
-  String get downloadImageTitle => 'The full system image';
-
-  @override
-  String get downloadImageBody =>
-      'system-hibiscus-full.img - 3.6 GB, ext4, fsck-clean. The LineageOS GSI plus our fixes plus the complete Pico stack, ready to flash onto the Neo 2.';
-
-  @override
-  String get downloadImageCta => 'Open the out repo';
-
-  @override
-  String get downloadStepsTitle => 'Flashing';
-
-  @override
-  String get downloadStep1 => 'adb reboot bootloader';
-
-  @override
-  String get downloadStep2 => 'fastboot oem pico unlock';
-
-  @override
-  String get downloadStep3 =>
-      'fastboot -S 128M flash system system-hibiscus-full.img';
-
-  @override
-  String get downloadStep4 => 'fastboot reboot';
-
-  @override
-  String get downloadStepsNote =>
-      'The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash. The tools repo has a script that handles both quirks for you.';
-
-  @override
-  String get downloadReqTitle => 'What you need';
-
-  @override
-  String get downloadReq1 =>
-      'A Pico Neo 2 (A7B10) - the only supported headset for now; Eye and non-Eye SKUs both work';
-
-  @override
-  String get downloadReq2 =>
-      'Rooted stock firmware and an unlockable bootloader';
-
-  @override
-  String get downloadReq3 => 'A Linux host with adb and fastboot';
 
   @override
   String get issuesButton => 'Report an issue';
@@ -777,16 +688,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get navFlashdocs => 'Flashing';
-
-  @override
-  String get downloadGuideTitle => 'Flashing guide';
-
-  @override
-  String get downloadGuideBody =>
-      'Step-by-step docs for each supported headset, per host OS.';
-
-  @override
-  String get downloadGuideCta => 'Open the guide';
 
   @override
   String get flashdocsTitle => 'Flashing docs';

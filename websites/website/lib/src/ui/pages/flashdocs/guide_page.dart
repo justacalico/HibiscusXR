@@ -8,6 +8,7 @@ import '../../../flashdocs.dart';
 import '../../../links.dart';
 import '../../../routes.dart';
 import '../../../theme.dart';
+import '../../builds_section.dart';
 import '../../widgets.dart';
 import 'flashdocs_layout.dart';
 
@@ -86,6 +87,8 @@ class FlashDocsGuidePage extends StatelessWidget {
             body: l10n.flashdocsNeo2FlashBody,
             l10n: l10n,
           ),
+          const SizedBox(height: 24),
+          BuildsSection(device: device),
           const SizedBox(height: 20),
           _Commands(lines: [
             l10n.flashdocsNeo2FlashCmd1,

@@ -18,6 +18,8 @@ void main() {
         );
         expect(d.guidePath(s.slug).startsWith(d.path), isTrue);
       }
+      expect(d.fullImageAssets, isNotEmpty);
+      expect(d.cleanImageAssets, isNotEmpty);
     }
   });
 

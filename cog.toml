@@ -28,3 +28,14 @@ pre_bump_hooks = [
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]
+
+# OS image versioning. The tag (os-v*) is cut inside the manual dist
+# pipeline by system/dist/scripts/os-bump.sh - pushes to main never bump
+# on their own. The changelog is generated from merge requests by
+# system/dist/scripts/os_changelog.py, not from commits, so a 20-commit
+# MR is still one entry. include=["**"] makes every commit count as in
+# scope for the package; without it a release with no system/ commit
+# errors out inside cog's changelog pass, which we run but discard.
+[monorepo.packages.os]
+path = "system"
+include = ["**"]

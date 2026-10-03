@@ -32,9 +32,22 @@ if [ -n "$PKG_ID" ] && [ "$PKG_ID" != "null" ]; then
   glab api --method DELETE "projects/$CI_PROJECT_ID/packages/$PKG_ID" 2>/dev/null || true
 fi
 
+# pull the matching changelog section (MR titles, one per MR) into the
+# release notes - for os-v* tags the section lives on main after os-bump
+NOTES="Mirrored from the GitHub release."
+git fetch -q origin main 2>/dev/null || true
+REF_SHA=$(git rev-parse FETCH_HEAD 2>/dev/null || echo "$CI_COMMIT_SHA")
+SECTION=$(git show FETCH_HEAD:CHANGELOG.md 2>/dev/null | awk -v t="$RELEASE_TAG" '
+  /^## / { if (f) exit; if (index($0, t)) f=1 }
+  f')
+[ -n "$SECTION" ] && NOTES="$NOTES
+
+$SECTION"
+echo "$NOTES" > notes.md
+
 glab release create "$RELEASE_TAG" \
   --name "Hibiscus system images $RELEASE_TAG" \
-  --notes "Mirrored from the GitHub release." \
-  --ref "$CI_COMMIT_SHA" \
+  --notes-file notes.md \
+  --ref "$REF_SHA" \
   --use-package-registry \
   "$PWD/release-assets"/*

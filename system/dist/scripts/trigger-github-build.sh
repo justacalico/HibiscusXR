@@ -20,7 +20,11 @@ fi
 
 TS=$(( $(date +%s) - 60 ))
 echo "Triggering $WORKFLOW @ $REF (channel: $CHANNEL)"
-gh workflow run "$WORKFLOW" -R "$REPO" --ref "$REF" -f channel="$CHANNEL"
+INPUTS=(-f channel="$CHANNEL")
+# a cog-tagged release pins the version so the GitHub release tag, the
+# image's ro.hibiscus.version and the changelog section all agree
+[ -n "${RELEASE_VERSION:-}" ] && INPUTS+=(-f version="$RELEASE_VERSION")
+gh workflow run "$WORKFLOW" -R "$REPO" --ref "$REF" "${INPUTS[@]}"
 
 echo "Looking for run ID..."
 RUN_ID=""

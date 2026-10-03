@@ -1,14 +1,18 @@
 # Monorepo CI, gated by folder group - a push only runs the CI for the group
-# that changed:
+# that changed, plus the os-changelog housekeeping job which always runs:
 #
 #   applications/  -> apps-test (flutter analyze/test + vrhome make test)
 #   websites/      -> website-test, pages
 #   system/dist/   -> manual pipelines only, never runs on a git push
-#   anything else  -> no pipeline at all (root files, dumps/, research/, ...)
+#   every push     -> os-changelog (refreshes CHANGELOG.md Unreleased)
 #
-# The dist lane: "Run pipeline" (web/api) pushes HEAD to the GitHub mirror,
+# The dist lane: "Run pipeline" (web/api) pushes main to the GitHub mirror,
 # dispatches the image build there, and pulls the release back through the
-# package registry.
+# package registry. With CHANNEL=release it also versions the OS first:
+# os-bump writes the changelog from merged MRs (never commits), cuts the
+# os-v* tag and pushes both back; the build then stamps and releases that
+# tag. os-changelog is the only cog job allowed to run unattended - it
+# refreshes the Unreleased block on main pushes.
 #
 # Secrets only exist as protected CI variables and GitHub secrets - forked MR
 # pipelines get neither.
@@ -47,10 +51,10 @@ workflow:
     # MRs only when a CI'd folder changed
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes: *ci-paths
-    # pushes to main only when a CI'd folder changed - root README and
-    # friends just land quietly
+    # every push to main gets a pipeline: the os-changelog cog job has to
+    # see merges outside the CI'd folders too. It is the only ungated job,
+    # so pushes that touch nothing CI'd still stay cheap
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes: *ci-paths
 
 # Default to alpha so test runs don't pollute the release/beta channels.
 # Override CHANNEL when running a pipeline manually to "release" or "beta".
@@ -58,6 +62,45 @@ variables:
   CHANNEL: "alpha"
 
 # ------------------------------------------------------- dist (manual) -----
+
+# Manual-only version bump. A CHANNEL=release dist pipeline first lands
+# this job: it writes the MR-based changelog section, tags main os-v*,
+# pushes both back, and hands the tag to github-dispatch via the dotenv
+# artifact. Anything else (alpha/beta, non-dist pipelines) never bumps -
+# the image keeps the date-run tag.
+os-bump:
+  stage: build
+  image: alpine:3.20
+  resource_group: os-release
+  timeout: 15m
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && $CHANNEL == "release" && $RELEASE_TAG !~ /^(cte|hbsup)-/
+  variables:
+    COCOGITTO_VERSION: "7.0.0"
+    GLAB_VERSION: "1.113.0"
+  artifacts:
+    reports:
+      dotenv: os-release.env
+  before_script:
+    - apk add --no-cache bash curl git openssh-client python3
+    - bash system/dist/scripts/install-glab.sh
+    - |
+      if [ -n "${CI_SERVER_FQDN:-}" ]; then
+        glab auth login --job-token "$CI_JOB_TOKEN" --hostname "$CI_SERVER_FQDN" --api-protocol "https" --insecure-storage || true
+      fi
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - cp "$GITLAB_RELEASE_SSH_KEY" ~/.ssh/id_ed25519
+    - echo "" >> ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -t ed25519 gitlab.com > ~/.ssh/known_hosts
+    - git remote set-url origin "git@gitlab.com:${CI_PROJECT_PATH}.git"
+    - curl -fsSL --retry 3 -o /tmp/cog.tar.gz "https://github.com/cocogitto/cocogitto/releases/download/${COCOGITTO_VERSION}/cocogitto-${COCOGITTO_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+    - mkdir -p /tmp/cog && tar -xzf /tmp/cog.tar.gz -C /tmp/cog
+    - install -m 755 /tmp/cog/x86_64-unknown-linux-musl/cog /usr/local/bin/cog
+    - git config user.name "GitLab CI"
+    - git config user.email "ci@gitlab.com"
+  script:
+    - bash system/dist/scripts/os-bump.sh
 
 github-dispatch:
   stage: build
@@ -67,6 +110,12 @@ github-dispatch:
   # negotiation ("did not receive expected object").
   variables:
     GIT_DEPTH: "0"
+  needs:
+    # when os-bump ran this waits for it and picks up os-release.env;
+    # on alpha/beta runs the job does not exist and this starts at once
+    - job: os-bump
+      optional: true
+      artifacts: true
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
     # cte tag triggers carry RELEASE_TAG=cte-v* - not for the dist lane
@@ -80,7 +129,10 @@ github-dispatch:
     - chmod 600 ~/.ssh/id_ed25519
     - ssh-keyscan -t ed25519 github.com > ~/.ssh/known_hosts
   script:
-    - CHANNEL="${CHANNEL:-release}" bash system/dist/scripts/trigger-github-build.sh main HEAD
+    # ship main's tip, not the pipeline sha: a release run builds the
+    # tree os-bump just pushed (same content plus the changelog commit)
+    - git fetch origin main "+refs/tags/*:refs/tags/*"
+    - CHANNEL="${CHANNEL:-release}" RELEASE_VERSION="${OS_TAG:-}" bash system/dist/scripts/trigger-github-build.sh main FETCH_HEAD
 
 github-release-sync:
   stage: release
@@ -101,6 +153,36 @@ github-release-sync:
       fi
   script:
     - bash system/dist/scripts/sync-from-github.sh
+
+# The one automatic cog job: every push to main refreshes the Unreleased
+# block of CHANGELOG.md from the MRs merged since the last os-v* tag.
+# Commits back only when something changed, with ci.skip - version bumps
+# and releases never run unattended.
+os-changelog:
+  stage: test
+  image: alpine:3.20
+  timeout: 10m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  variables:
+    GLAB_VERSION: "1.113.0"
+  before_script:
+    - apk add --no-cache bash curl git openssh-client python3
+    - bash system/dist/scripts/install-glab.sh
+    - |
+      if [ -n "${CI_SERVER_FQDN:-}" ]; then
+        glab auth login --job-token "$CI_JOB_TOKEN" --hostname "$CI_SERVER_FQDN" --api-protocol "https" --insecure-storage || true
+      fi
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - cp "$GITLAB_RELEASE_SSH_KEY" ~/.ssh/id_ed25519
+    - echo "" >> ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -t ed25519 gitlab.com > ~/.ssh/known_hosts
+    - git remote set-url origin "git@gitlab.com:${CI_PROJECT_PATH}.git"
+    - git config user.name "GitLab CI"
+    - git config user.email "ci@gitlab.com"
+  script:
+    - bash system/dist/scripts/update-os-changelog.sh
 
 # -------------------------------------------------------------- apps -------
 

@@ -12,6 +12,11 @@ on:
           - beta
           - alpha
         default: alpha
+      version:
+        description: 'cog release tag (os-v*) - empty uses the date-run scheme'
+        required: false
+        type: string
+        default: ""
 
 env:
   PN2_ROOT: /home/runner/pn2
@@ -112,13 +117,19 @@ jobs:
           # One version string feeds both the image stamp
           # (write-version.sh -> ro.hibiscus.version, /etc/hibiscus-release)
           # and the release tag below, so they can never drift apart.
-          CHANNEL="${{ github.event.inputs.channel }}"
-          case "$CHANNEL" in
-            alpha|beta) PREFIX="$CHANNEL-" ;;
-            *)          PREFIX="" ;;
-          esac
-          echo "HIBISCUS_VERSION=${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}" \
-            >> "$GITHUB_ENV"
+          # A cog release run passes the os-v* tag explicitly; test
+          # channels stay on the date-run scheme.
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "HIBISCUS_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+          else
+            CHANNEL="${{ github.event.inputs.channel }}"
+            case "$CHANNEL" in
+              alpha|beta) PREFIX="$CHANNEL-" ;;
+              *)          PREFIX="" ;;
+            esac
+            echo "HIBISCUS_VERSION=${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}" \
+              >> "$GITHUB_ENV"
+          fi
           tail -1 "$GITHUB_ENV"
 
       - name: build images

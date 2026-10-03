@@ -33,6 +33,34 @@ Run a pipeline on `main` (web UI "Run pipeline", or `glab ci run`). The
 `github-dispatch` job triggers the workflow and streams the GitHub log into
 the job trace; `github-release-sync` publishes the assets when it succeeds.
 
+## OS releases and versioning
+
+The OS versions with cocogitto as the `os` monorepo package - tags look
+like `os-v0.2.0`. Two hard rules:
+
+- **Nothing versions automatically.** A push to main never bumps and never
+  builds images. The only unattended job is `os-changelog`, which refreshes
+  the `## Unreleased` block of `CHANGELOG.md` on each push.
+- **A manual `CHANNEL=release` pipeline is the release.** Its `os-bump` job
+  writes a changelog section named for the new tag (entries are merge
+  request titles, one linked line per MR - never commits), commits it, cuts
+  the `os-v*` tag, and pushes both back. The build then stamps that tag
+  into the image, the GitHub release takes the same tag, and the GitLab
+  release embeds the changelog section.
+
+Manual pipelines on the default `alpha` (or `beta`) channel skip `os-bump`
+entirely - test builds keep the `alpha-v<date>-r<run>` tag and leave the
+changelog alone.
+
+Overrides for `os-bump` (set as pipeline variables):
+
+- `OS_VERSION=0.3.0` - exact version, beats `OS_BUMP`
+- `OS_BUMP=major|minor|patch` - increment kind, default `minor`
+
+`os-bump` is rerun-safe: when the pipeline is retried after a failed build
+and main has not moved, the existing `os-v*` tag on HEAD is reused instead
+of burning another version.
+
 ## Running locally
 
 The same `build-image.sh` runs without CI. Point `PN2_ROOT` at a build root

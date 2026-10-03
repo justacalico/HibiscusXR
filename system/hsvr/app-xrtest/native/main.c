@@ -200,6 +200,7 @@ void android_main(struct android_app *app) {
         if (mts.tv_sec != fps_t0.tv_sec) {
             fps = fps_frames / (float)(mts.tv_sec - fps_t0.tv_sec +
                                        (mts.tv_nsec - fps_t0.tv_nsec) / 1e9f);
+            LOGI("fps %.1f frames=%ld", fps, frames);
             fps_frames = 0;
             fps_t0 = mts;
         }

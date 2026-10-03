@@ -117,4 +117,32 @@ void testSysMsg() {
         CHECK(pk.zone == MZONE_BODY || pk.zone == MZONE_BTN ||
               pk.zone == MZONE_NONE);
     }
+
+    // modal rule: any live card blanks the dash; covered-only mode is
+    // modal even while the item list hasn't synced yet
+    {
+        std::vector<SysMsgItem> none;
+        std::vector<SysMsgItem> one = {mkMsg("a keeps stopping", 1)};
+        CHECK(!sysMsgModal(false, none));
+        CHECK(sysMsgModal(false, one));
+        CHECK(sysMsgModal(true, none));
+        CHECK(sysMsgModal(true, one));
+    }
+
+    // anchor: covered-only floats the card on its own yaw at card pitch
+    // with no lift; the dash anchor rides the dock yaw/pitch at the
+    // card's eye-level lift
+    {
+        float yaw = -1.0f, pitch = -1.0f, lift = -1.0f;
+        sysMsgAnchor(true, 0.7f, 0.2f, kDockPitchRest,
+                     &yaw, &pitch, &lift);
+        CHECK(fabsf(yaw - 0.7f) < 1e-6f);
+        CHECK(fabsf(pitch - kSysMsgPitch) < 1e-6f);
+        CHECK(fabsf(lift) < 1e-6f);
+        sysMsgAnchor(false, 0.7f, 0.2f, kDockPitchRest,
+                     &yaw, &pitch, &lift);
+        CHECK(fabsf(yaw - 0.2f) < 1e-6f);
+        CHECK(fabsf(pitch - kDockPitchRest) < 1e-6f);
+        CHECK(fabsf(lift - kSysMsgLift) < 1e-6f);
+    }
 }

@@ -14,6 +14,17 @@
 void sysMsgCenter(float yaw, float pitch, float lift, const float origin[3],
                   float c[3], float r[3], float up[3]);
 
+// modal rule: while a card is live the rest of the dash stays hidden and
+// untouchable until it's clicked away. coveredOnly (the window up over an
+// app just for the dialog) is modal even between syncs, so the dash
+// chrome can't flash through on an empty frame
+bool sysMsgModal(bool coveredOnly, const std::vector<SysMsgItem>& items);
+
+// the front card's anchor: coveredOnly floats it on its own yaw at card
+// pitch; in the dash it rides the dock anchor lifted to eye level
+void sysMsgAnchor(bool coveredOnly, float ownYaw, float dashYaw,
+                  float dashPitch, float* yaw, float* pitch, float* lift);
+
 // button row geometry in card-local metres: n buttons share the inner
 // width evenly, row centre sysMsgBtnY() below the card centre
 float sysMsgBtnHW(int n);

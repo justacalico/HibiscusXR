@@ -84,12 +84,16 @@ static void anchorDash(HudEngine* e, const Mat4& head) {
 // whatever surface sits underneath (env scenery or a running app)
 static void hudScene(Engine* e, const Mat4& vp) {
     HudEngine* h = (HudEngine*)e;
-    if (h->sysMsgOnly) {
-        // a crash/ANR card over a covered app is modal: the dialog draws
-        // alone (plus the toast stack when one's up) - no dash chrome
+    float mYaw, mPitch, mLift;
+    sysMsgAnchor(h->sysMsgOnly, h->sysMsgYaw, h->dockYaw, h->dockPitch,
+                 &mYaw, &mPitch, &mLift);
+    if (sysMsgModal(h->sysMsgOnly, h->sysMsgs)) {
+        // a crash/ANR card is modal wherever the window is up: the dialog
+        // draws alone (plus the toast stack when one's up over a covered
+        // app) until it's clicked away - the whole dash sits out
         if (h->toastOnly)
             drawNotifStack(h, vp, h->toastYaw, kNotifToastPitch, 0.0f);
-        drawSysMsg(h, vp, h->sysMsgYaw, kSysMsgPitch, 0.0f);
+        drawSysMsg(h, vp, mYaw, mPitch, mLift);
         drawCursor(h, vp);
         drawHoldRing(h);
         return;
@@ -129,8 +133,6 @@ static void hudScene(Engine* e, const Mat4& vp) {
                    notifLiftAbove((int)h->notifs.size(),
                                   h->shelf.empty() ? kDockBarH * 0.5f
                                                    : shelfTop()));
-    // the system message is modal: it draws over the whole dash
-    drawSysMsg(h, vp, h->dockYaw, h->dockPitch, kSysMsgLift);
     drawControllers(h, vp);
     drawCursor(h, vp);
     // the hold ring is a flat overlay: it draws on top of the live scene and
@@ -269,9 +271,10 @@ static void hudFrame(HudEngine* e) {
 
     // the system message mirrors the stack's anchor rule: its own yaw
     // over a covered app, the dash's centre in home space
-    const float mYaw = e->sysMsgOnly ? e->sysMsgYaw : e->dockYaw;
-    const float mPitch = e->sysMsgOnly ? kSysMsgPitch : e->dockPitch;
-    const float mLift = e->sysMsgOnly ? 0.0f : kSysMsgLift;
+    float mYaw, mPitch, mLift;
+    sysMsgAnchor(e->sysMsgOnly, e->sysMsgYaw, e->dockYaw, e->dockPitch,
+                 &mYaw, &mPitch, &mLift);
+    const bool msgModal = sysMsgModal(e->sysMsgOnly, e->sysMsgs);
 
     // aim pick: the card stack floats in front of the dock plane so it
     // wins by distance; the dock wins ties against a panel edge so its
@@ -320,7 +323,21 @@ static void hudFrame(HudEngine* e) {
         : GridPick{};
     e->grid.hover = -1;
     e->grid.zone = GZONE_NONE;
-    if (mp.hit) {
+    if (msgModal) {
+        // the card owns the scene until it's dismissed: nothing hidden
+        // can hover or take a press, the pick only lights its own zones
+        e->sysMsgHover = mp.hit ? 0 : -1;
+        e->sysMsgZone = mp.zone;
+        e->sysMsgBtn = mp.btn;
+        e->notifHover = -1;
+        e->notifZone = NZONE_NONE;
+        e->shelfHover = -1;
+        e->dockHover = -1;
+        e->dockZone = DZONE_NONE;
+        e->hover = -1;
+        e->hoverZone = ZONE_NONE;
+        e->aimHitT = mp.hit ? mp.t : -1.0f;
+    } else if (mp.hit) {
         e->sysMsgHover = 0;
         e->sysMsgZone = mp.zone;
         e->sysMsgBtn = mp.btn;

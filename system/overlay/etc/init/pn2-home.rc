@@ -3,8 +3,17 @@
 #
 # The HOME role holder lives in /data, not /system, so it cannot be baked into
 # the image. Running `cmd role add-role-holder` at boot_completed covers a fresh
-# /data (first flash, factory reset); the marker file keeps this from stomping
-# a launcher the user picked afterwards.
+# /data (first flash, factory reset).
+#
+# The role write alone is a regular preference, and the framework clears
+# regular home prefs the moment another launcher installs - that is what makes
+# the "switch home app" chooser appear. pn2_homelock therefore runs on every
+# boot and pins HOME with `cmd package set-home-activity`, which writes a
+# persistent preferred activity: the one preference class installs can never
+# clear, so the chooser has no state in which it can come up. At runtime the
+# HUD's HomeLock re-pins the same way whenever the resolved home drifts (the
+# Settings > Default apps role path rewrites the pref), so switching home is
+# impossible for anything short of root.
 #
 # The same first-boot pass disables the stock Pico homes (PVRLauncher, PVRHome,
 # VRShell) so nothing else can claim display 0, plus Provision - the setup
@@ -32,6 +41,13 @@ service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v7 
     oneshot
     disabled
 
+service pn2_homelock /system/bin/cmd package set-home-activity gitlab.neosalsa.home/.PanelActivity
+    user root
+    group root
+    seclabel u:r:shell:s0
+    oneshot
+    disabled
+
 service pn2_hud /system/bin/am startservice -n gitlab.neosalsa.hud/.HudService
     user root
     group root
@@ -41,4 +57,5 @@ service pn2_hud /system/bin/am startservice -n gitlab.neosalsa.hud/.HudService
 
 on property:sys.boot_completed=1
     start pn2_panels
+    start pn2_homelock
     start pn2_hud

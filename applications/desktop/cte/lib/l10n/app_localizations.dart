@@ -329,8 +329,14 @@ abstract class AppLocalizations {
   /// No description provided for @displayHint.
   ///
   /// In en, this message translates to:
-  /// **'Screen frames stream at a few frames per second - enough for debugging, not for play.'**
+  /// **'The mirror streams as fast as the headset can capture the screen.'**
   String get displayHint;
+
+  /// No description provided for @displayStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} fps · {count} frames'**
+  String displayStats(Object count, Object rate);
 
   /// No description provided for @displayNoFrame.
   ///

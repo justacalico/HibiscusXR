@@ -125,7 +125,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get displayStop => '停止';
 
   @override
-  String get displayHint => '画面每秒只有几帧,够调试用的,不适合玩。';
+  String get displayHint => '画面按头显截图的速度持续推流。';
+
+  @override
+  String displayStats(Object count, Object rate) {
+    return '$rate 帧/秒 · 共 $count 帧';
+  }
 
   @override
   String get displayNoFrame => '还没有画面';

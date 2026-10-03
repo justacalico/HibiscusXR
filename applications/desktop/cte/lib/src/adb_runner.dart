@@ -27,19 +27,29 @@ class AdbRunner {
   }
 
   /// `adb exec-out` byte stream - screencap, file reads, dd.
+  /// Kills the adb child when the consumer walks away, which drops the
+  /// device-side command too.
   Stream<Uint8List> execOut(String serial, List<String> command) async* {
     final p = await spawn(['-s', serial, 'exec-out', ...command]);
-    yield* p.stdout.map((c) => c is Uint8List ? c : Uint8List.fromList(c));
-    await p.exitCode;
+    try {
+      yield* p.stdout.map((c) => c is Uint8List ? c : Uint8List.fromList(c));
+      await p.exitCode;
+    } finally {
+      p.kill();
+    }
   }
 
   /// Long-running stdout line stream (logcat).
   Stream<String> streamLines(String serial, List<String> command) async* {
     final p = await spawn(['-s', serial, ...command]);
-    yield* p.stdout
-        .transform(utf8.decoder)
-        .transform(const LineSplitter());
-    await p.exitCode;
+    try {
+      yield* p.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter());
+      await p.exitCode;
+    } finally {
+      p.kill();
+    }
   }
 
   /// `adb devices -l` rows.

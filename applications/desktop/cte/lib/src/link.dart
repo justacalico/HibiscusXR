@@ -17,7 +17,8 @@ abstract class HeadsetLink {
   /// Install an apk already on disk. Yields the installer output lines.
   Stream<String> installApk(String path, {Uint8List? bytes});
 
-  /// PNG screen frames, ~1-2 per second.
+  /// PNG screen frames, streamed back to back as fast as the headset
+  /// can screencap them.
   Stream<Uint8List> frames();
 
   /// logcat lines (all tags).

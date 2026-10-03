@@ -32,6 +32,8 @@ AdbRunner fakeAdb({
   String battery = 'level: 80',
   List<int>? shareMem,
   List<int>? screencap,
+  int screencapRepeats = 1,
+  bool screencapFails = false,
   List<String> logcatLines = const [],
   List<String> installOut = const ['Success'],
 }) {
@@ -50,7 +52,17 @@ AdbRunner fakeAdb({
     spawn: (args) async {
       final cmd = args.join(' ');
       if (cmd.contains('exec-out') && cmd.contains('screencap')) {
-        return FakeProcess(screencap ?? [1, 2, 3]);
+        if (screencapFails) {
+          return FakeProcess(utf8.encode('+ERR screencap failed\n'));
+        }
+        // the device-side loop speaks the FRAME wire format
+        final png = screencap ?? [1, 2, 3];
+        return FakeProcess([
+          for (var i = 0; i < screencapRepeats; i++) ...[
+            ...utf8.encode('FRAME ${png.length}\n'),
+            ...png,
+          ],
+        ]);
       }
       if (cmd.contains('exec-out') && cmd.contains('CtrlShareMem')) {
         return FakeProcess(shareMem ?? List.filled(1024, 0));
@@ -96,11 +108,25 @@ void main() {
 
   test('frames yields screencap bytes', () async {
     final link = AdbLink(fakeAdb(screencap: [9, 9, 9]), 'ABC');
-    final frame = await link
-        .frames(interval: const Duration(milliseconds: 1))
-        .first
-        .timeout(const Duration(seconds: 2));
+    final frame =
+        await link.frames().first.timeout(const Duration(seconds: 2));
     expect(frame, [9, 9, 9]);
+  });
+
+  test('frames streams back-to-back blobs off one exec-out', () async {
+    final link =
+        AdbLink(fakeAdb(screencap: [7, 8], screencapRepeats: 3), 'ABC');
+    final frames =
+        await link.frames().take(3).toList().timeout(const Duration(seconds: 2));
+    expect(frames.length, 3);
+    expect(frames.last, [7, 8]);
+  });
+
+  test('frames surfaces a device-side screencap error', () async {
+    final link = AdbLink(fakeAdb(screencapFails: true), 'ABC');
+    await expectLater(
+        link.frames().first.timeout(const Duration(seconds: 2)),
+        throwsA(anything));
   });
 
   test('controllers decodes a CtrlShareMem snapshot', () async {

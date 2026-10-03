@@ -43,6 +43,7 @@ class AppState extends ChangeNotifier {
   final Queue<String> logBuf = ListQueue(400);
   Uint8List? frame;
   int framesSeen = 0;
+  double frameRate = 0;
   double poseRate = 0;
   bool mirrorOn = true;
   StreamSubscription<dynamic>? _frameSub;
@@ -56,6 +57,8 @@ class AppState extends ChangeNotifier {
   final _subs = <StreamSubscription<dynamic>>[];
   int _poseStamp = 0;
   int _poseWindowStart = 0;
+  int _frameStamp = 0;
+  int _frameWindowStart = 0;
 
   bool get connected => connState == ConnState.connected && link != null;
 
@@ -168,6 +171,16 @@ class AppState extends ChangeNotifier {
   void _onFrame(Uint8List png) {
     frame = png;
     framesSeen++;
+    // rolling 2s rate window, same as poseRate
+    final now = DateTime.now().millisecondsSinceEpoch;
+    _frameStamp++;
+    if (_frameWindowStart == 0) _frameWindowStart = now;
+    final span = now - _frameWindowStart;
+    if (span >= 2000) {
+      frameRate = _frameStamp * 1000.0 / span;
+      _frameStamp = 0;
+      _frameWindowStart = now;
+    }
     notifyListeners();
   }
 
@@ -239,6 +252,9 @@ class AppState extends ChangeNotifier {
     props = null;
     frame = null;
     framesSeen = 0;
+    frameRate = 0;
+    _frameStamp = 0;
+    _frameWindowStart = 0;
     poseBuf.clear();
     logBuf.clear();
     ctrls[0] = const CtrlState(index: 0);

@@ -128,7 +128,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get displayHint =>
-      'Screen frames stream at a few frames per second - enough for debugging, not for play.';
+      'The mirror streams as fast as the headset can capture the screen.';
+
+  @override
+  String displayStats(Object count, Object rate) {
+    return '$rate fps · $count frames';
+  }
 
   @override
   String get displayNoFrame => 'No frames yet';

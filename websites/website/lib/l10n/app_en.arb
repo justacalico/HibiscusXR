@@ -99,7 +99,6 @@
   },
 
   "repoVrhome": "Open VR home: 2D apps as floating windows, stock VR apps fullscreen.",
-  "repoLibrary": "Flutter app grid inside vrhome - search, pin, group, launch.",
   "repoVrdemo": "Minimal native VR test app (pn2vr) used for compositor bring-up.",
   "repoWebsite": "This site.",
   "repoTools": "Every script for the port, sorted by job: recon, build, flash.",

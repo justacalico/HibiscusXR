@@ -2,7 +2,6 @@
 abstract final class Links {
   static const repo = 'https://gitlab.com/neosalsa/HibiscusXR';
   static const vrhome = '$repo/-/tree/main/applications/vrhome';
-  static const library = '$repo/-/tree/main/applications/library';
   static const out = '$repo/-/tree/main/system/out';
   static const notes = '$repo/-/tree/main/research/notes';
   static const issues = '$repo/-/issues';

@@ -29,7 +29,6 @@ void main() {
     for (final url in [
       Links.repo,
       Links.vrhome,
-      Links.library,
       Links.out,
       Links.notes,
       Links.issues,

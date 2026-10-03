@@ -106,7 +106,7 @@ github-release-sync:
 
 apps-test:
   stage: test
-  # No pinned cirruslabs image is new enough (pn2_library wants Dart
+  # No pinned cirruslabs image is new enough (the apps want Dart
   # ^3.12.2 -> Flutter 3.44.6+). Keep the tarball version in sync with
   # FLUTTER_VERSION in system/dist/manifest.env.
   image: ubuntu:24.04

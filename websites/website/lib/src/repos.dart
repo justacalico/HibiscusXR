@@ -30,7 +30,6 @@ class RepoEntry {
 final repositories = <RepoEntry>[
   // Software - things people run or read.
   RepoEntry('applications/vrhome', RepoGroup.software, (l) => l.repoVrhome),
-  RepoEntry('applications/library', RepoGroup.software, (l) => l.repoLibrary),
   RepoEntry('applications/vrdemo', RepoGroup.software, (l) => l.repoVrdemo),
   RepoEntry('websites/website', RepoGroup.software, (l) => l.repoWebsite),
 

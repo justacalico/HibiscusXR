@@ -86,7 +86,6 @@
   "reposCount": "{count} 个目录",
 
   "repoVrhome": "开源 VR 桌面:2D 应用悬浮成窗,原厂 VR 应用全屏运行。",
-  "repoLibrary": "vrhome 里的 Flutter 应用网格——搜索、置顶、分组、启动。",
   "repoVrdemo": "最小原生 VR 测试应用(pn2vr),用于合成器通路调试。",
   "repoWebsite": "就是本站。",
   "repoTools": "移植用的全部脚本,按用途分类:侦查、构建、刷机。",

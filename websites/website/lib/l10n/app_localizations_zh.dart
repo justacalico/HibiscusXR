@@ -237,9 +237,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repoVrhome => '开源 VR 桌面:2D 应用悬浮成窗,原厂 VR 应用全屏运行。';
 
   @override
-  String get repoLibrary => 'vrhome 里的 Flutter 应用网格——搜索、置顶、分组、启动。';
-
-  @override
   String get repoVrdemo => '最小原生 VR 测试应用(pn2vr),用于合成器通路调试。';
 
   @override

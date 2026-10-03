@@ -183,8 +183,13 @@ echo "=== repair pass ==="
 # debugfs write/rm cycles leave the free block and inode accounting
 # inconsistent - the pristine GSI fscks clean, an image we have written to does
 # not. Repair, then verify the repair actually took. Shipping an image that
-# needs a repair on first mount is not acceptable.
-e2fsck -fy "$IMG" 2>&1 | tail -6
+# needs a repair on first mount is not acceptable. One pass can surface a
+# second problem (an orphaned dir lands in lost+found on pass one, its '..'
+# fixup only happens on the next), so keep repairing until clean, bounded.
+for i in 1 2 3; do
+  e2fsck -fy "$IMG" 2>&1 | tail -6
+  e2fsck -fn "$IMG" >/dev/null 2>&1 && break
+done
 
 echo
 echo "=== fsck after repair (must be clean) ==="

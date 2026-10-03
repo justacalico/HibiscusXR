@@ -66,8 +66,8 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
                                 const std::vector<XrTask>& xr) {
     std::vector<DockItem> out;
     for (auto& pkg : pins) {
-        // the quick-panel app has its own permanent slot on the end; a pin
-        // for it would draw the same icon twice
+        // the quick panel opens off the status pill; a pin for it would
+        // hand the strip a second trigger
         if (pkg == kQuickPanelPkg) continue;
         DockItem it;
         it.kind = DK_PIN;
@@ -89,7 +89,7 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
     }
     // live tasks that aren't pinned fill the running section; a pkg shows
     // once - a running pin carries the dot instead of a duplicate icon,
-    // and the quick-panel app lights its permanent slot instead
+    // and the quick panel stays off the strip entirely
     bool runSep = false;
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
@@ -118,29 +118,14 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
         runSep = true;
         out.push_back(it);
     }
-    // the app-grid button: the library lives inside the dash, its icon is a
-    // permanent slot beside quick settings. It carries no pkg so it never
+    // the app-grid button: the library lives inside the dash, its icon is
+    // the strip's only permanent slot. It carries no pkg so it never
     // resolves through the icon cache
     DockItem g;
     g.kind = DK_GRID;
     g.label = "Library";
     g.sep = !out.empty();
     out.push_back(g);
-
-    DockItem q;
-    q.kind = DK_QUICK;
-    q.pkg = kQuickPanelPkg;
-    q.sep = false;
-    // a running quick-panel task rides its own button rather than adding a
-    // second icon to the strip
-    const int qi = findPanel(panels, kQuickPanelPkg);
-    if (qi >= 0) {
-        q.running = true;
-        q.panelIdx = qi;
-        q.taskId = panels[qi].taskId;
-        q.minimized = panels[qi].minimized;
-    }
-    out.push_back(q);
     return out;
 }
 
@@ -194,8 +179,8 @@ static void badgeAt(float itemX, float* bx, float* by) {
 // the move handle hangs under the strip: the shared pill, sized off the
 // bar's own half-height
 
-int dockItemAt(const std::vector<DockItem>& items, float halfW,
-               float u, float v, int* zone) {
+int dockItemAt(const std::vector<DockItem>& items, const DockStatus& st,
+               float halfW, float u, float v, int* zone) {
     *zone = DZONE_NONE;
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return -1;
     const float x = u * halfW, y = v * (kDockBarH * 0.5f);
@@ -217,6 +202,10 @@ int dockItemAt(const std::vector<DockItem>& items, float halfW,
             return i;
         }
     }
+    // the status pill answers to its own bounds: it sits left of every
+    // item, centred on the bar like the strip draws it
+    if (x >= st.pillAL && x <= st.pillAR && fabsf(y) <= kSysPillHH)
+        *zone = DZONE_SYS;
     return -1;
 }
 
@@ -229,7 +218,8 @@ bool rayDock(float yaw, float pitch, float drop, const float origin[3],
                    u, v, t);
 }
 
-DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
+DockPick pickDockRay(const std::vector<DockItem>& items,
+                     const DockStatus& st, float halfW,
                      float yaw, float pitch, float drop,
                      const float origin[3], const float o[3],
                      const float d[3]) {
@@ -249,16 +239,17 @@ DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.bar = true;
     pk.u = u; pk.v = v; pk.t = t;
-    pk.idx = dockItemAt(items, halfW, u, v, &pk.zone);
+    pk.idx = dockItemAt(items, st, halfW, u, v, &pk.zone);
     return pk;
 }
 
-DockPick pickDock(const std::vector<DockItem>& items, float halfW,
-                  float yaw, float pitch, float drop, const Mat4& head,
-                  const float origin[3], const float o[3]) {
+DockPick pickDock(const std::vector<DockItem>& items, const DockStatus& st,
+                  float halfW, float yaw, float pitch, float drop,
+                  const Mat4& head, const float origin[3],
+                  const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickDockRay(items, halfW, yaw, pitch, drop, origin, o, d);
+    return pickDockRay(items, st, halfW, yaw, pitch, drop, origin, o, d);
 }
 
 bool dockPinnable(const DockItem& it) {
@@ -408,27 +399,11 @@ ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
     return pickShelfRay(items, halfW, yaw, pitch, drop, origin, o, d);
 }
 
-static bool panelLinkOk(int panelIdx, const char* pkg,
-                        const std::vector<Panel>& panels) {
-    return panelIdx >= 0 && panelIdx < (int)panels.size() &&
-           panels[panelIdx].pkg == pkg;
-}
-
 DockAction dockActivateAction(const DockItem& it,
                               const std::vector<Panel>& panels) {
     DockAction a;
     if (it.kind == DK_GRID) {
         a.op = DOP_TOGGLE_GRID;
-    } else if (it.kind == DK_QUICK) {
-        // a live quick panel gets focused like any other running item
-        if (panelLinkOk(it.panelIdx, it.pkg.c_str(), panels)) {
-            a.op = DOP_FOCUS_PANEL;
-            a.panelIdx = it.panelIdx;
-            a.taskId = panels[it.panelIdx].taskId;
-        } else {
-            a.op = DOP_LAUNCH;
-            a.pkg = kQuickPanelPkg;
-        }
     } else if (it.vr && it.running) {
         a.op = DOP_FOCUS_XR;
         a.taskId = it.taskId;
@@ -444,6 +419,20 @@ DockAction dockActivateAction(const DockItem& it,
     } else {
         a.op = DOP_LAUNCH;
         a.pkg = it.pkg;
+    }
+    return a;
+}
+
+DockAction quickPanelAction(const std::vector<Panel>& panels) {
+    DockAction a;
+    const int qi = findPanel(panels, kQuickPanelPkg);
+    if (qi >= 0) {
+        a.op = DOP_FOCUS_PANEL;
+        a.panelIdx = qi;
+        a.taskId = panels[qi].taskId;
+    } else {
+        a.op = DOP_LAUNCH;
+        a.pkg = kQuickPanelPkg;
     }
     return a;
 }

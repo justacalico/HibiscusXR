@@ -38,6 +38,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->dockPressZone = DZONE_NONE;
             e->dockPinP = 0.0f;
             e->dockPinDone = false;
+            e->sysPress = false;
             e->notifPress = -1;
             e->notifPressZone = NZONE_NONE;
             e->shelfPress = -1;
@@ -108,6 +109,10 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->ringGrabPitch = ringPitch(e->panels);
                 grabRing(e->panels);
                 LOGI("ring drag grab @ yaw %.2f", e->aimYaw);
+            } else if (e->dockZone == DZONE_SYS) {
+                // the status pill: the quick panel fires on a release that
+                // lands back on the pill
+                e->sysPress = true;
             }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 Panel& p = e->panels[e->hover];
@@ -250,6 +255,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 if (same) shelfActivate(e, e->shelfPress);
                 e->shelfPress = -1;
                 e->shelfPressDisp = -1;
+            } else if (e->sysPress) {
+                // a release still on the status pill opens the quick
+                // panel; drifting off drops the press like the items do
+                if (e->dockZone == DZONE_SYS) dockSysActivate(e);
+                e->sysPress = false;
             } else if (e->dockPress >= 0) {
                 // release over the same dock item (and zone) fires its
                 // action; a completed pin-hold suppresses the tap

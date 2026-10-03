@@ -26,6 +26,10 @@ void dockTick(HudEngine* e);
 // release on an item: focus/restore a running app, launch a cold one
 void dockActivate(HudEngine* e, int idx);
 
+// release on the status pill: open the quick panel, focusing its window
+// when one's already up
+void dockSysActivate(HudEngine* e);
+
 // the close badge on a live immersive item: kill its task
 void dockClose(HudEngine* e, int idx);
 

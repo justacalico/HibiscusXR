@@ -113,8 +113,9 @@ constexpr float kHandleT = 0.0085f;   // visible line half-thickness
 constexpr float kHandleGap = 0.026f;  // gap between bar bottom and line top
 constexpr float kHandlePad = 0.014f;  // extra hit slack around the line
 
-// the dock: a persistent strip hanging under the panel ring - pinned apps
-// left, running tasks right, quick-panel button on the end. It rides the
+// the dock: a persistent strip hanging under the panel ring - the status
+// cluster on the left (its pill opens the quick panel), pinned apps and
+// running tasks after it, the app-grid button on the end. It rides the
 // same anchor cylinder as the windows, slightly closer so it reads as the
 // dash's foreground edge
 constexpr float kDockDist = 1.35f;    // metres; panels sit at 1.5

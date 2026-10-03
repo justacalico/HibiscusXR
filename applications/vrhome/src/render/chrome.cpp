@@ -421,11 +421,12 @@ void drawHoldRing(HudEngine* e) {
 
 void drawCursor(HudEngine* e, const Mat4& viewProj) {
     float c[3], r[3], up[3], pos[3];
-    if (e->dockHover >= 0 || e->dockZone == DZONE_HANDLE) {
+    if (e->dockHover >= 0 || e->dockZone == DZONE_HANDLE ||
+            e->dockZone == DZONE_SYS) {
         // on the dock the cursor sits on the strip's own plane - a handle
-        // hit has no item index but still carries u,v, so it lands on the
-        // line under the bar. The summon slide counts: the dot rides the
-        // strip while it settles
+        // or status-pill hit has no item index but still carries u,v, so
+        // it lands right where the gaze did. The summon slide counts: the
+        // dot rides the strip while it settles
         dockCenterDrop(e->dockYaw, e->dockPitch,
                        dashDrop(progT(e->summonMs, e->frameMs, kDashMs)),
                        e->ringPos, c, r, up);

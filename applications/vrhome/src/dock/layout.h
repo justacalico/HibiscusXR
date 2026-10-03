@@ -42,7 +42,8 @@ float dockDragPitch(float grabPitch, float ringGrabPitch, float ringPitch);
 
 // ordered items for the strip: pins first (marked running when a live task
 // owns the pkg), then unpinned 2D panels, then unpinned XR tasks, then the
-// quick button. `sep` marks the group boundaries that draw separator gaps
+// app-grid button. The quick panel never lists: the status pill opens it.
+// `sep` marks the group boundaries that draw separator gaps
 std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
                                 const std::vector<Panel>& panels,
                                 const std::vector<XrTask>& xr);
@@ -53,9 +54,10 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
 float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 
 // which item a bar-local point hits (u -1..1 across the bar, v -1..1 across
-// its height); *zone gets DZONE_CLOSE on a live immersive item's badge
-int dockItemAt(const std::vector<DockItem>& items, float halfW,
-               float u, float v, int* zone);
+// its height); *zone gets DZONE_CLOSE on a live immersive item's badge, or
+// DZONE_SYS on the status pill with no item index
+int dockItemAt(const std::vector<DockItem>& items, const DockStatus& st,
+               float halfW, float u, float v, int* zone);
 
 // gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1.
 // drop is the strip's summon-slide offset (see dockCenterDrop)
@@ -65,17 +67,19 @@ bool rayDock(float yaw, float pitch, float drop, const float origin[3],
 
 // the dock item under an arbitrary ray; pk.bar is set even when the ray
 // lands on the strip between icons, so the bar body still blocks clicks
-DockPick pickDockRay(const std::vector<DockItem>& items, float halfW,
+DockPick pickDockRay(const std::vector<DockItem>& items,
+                     const DockStatus& st, float halfW,
                      float yaw, float pitch, float drop,
                      const float origin[3], const float o[3],
                      const float d[3]);
 
 // the dock item under the gaze ray
-DockPick pickDock(const std::vector<DockItem>& items, float halfW,
-                  float yaw, float pitch, float drop, const Mat4& head,
-                  const float origin[3], const float o[3]);
+DockPick pickDock(const std::vector<DockItem>& items, const DockStatus& st,
+                  float halfW, float yaw, float pitch, float drop,
+                  const Mat4& head, const float origin[3],
+                  const float o[3]);
 
-// can a long-press pin this item: the quick button isn't pinnable
+// can a long-press pin this item: only real app entries qualify
 bool dockPinnable(const DockItem& it);
 
 // add pkg to the end of the pin list or remove it; returns the new list
@@ -169,6 +173,10 @@ struct DockAction {
 // launches fresh instead of focusing the wrong window
 DockAction dockActivateAction(const DockItem& it,
                               const std::vector<Panel>& panels);
+
+// release on the status pill: a live quick panel refocuses like any
+// running item, a cold one launches through the bridge
+DockAction quickPanelAction(const std::vector<Panel>& panels);
 
 // the close badge: a panel's task dies through its display - the cached
 // taskId can be stale - while an immersive task only has its id to go on

@@ -308,9 +308,9 @@ static void hudFrame(HudEngine* e) {
     // runs the plane sits `dDrop` lower, and the aim must land on what's
     // drawn, not where the strip will rest
     const float dDrop = dashDrop(progT(e->summonMs, now, kDashMs));
-    const DockPick dp = pickDockRay(e->dock, e->dockHW, e->dockYaw,
-                                    e->dockPitch, dDrop, e->ringPos,
-                                    e->aimO, e->aimD);
+    const DockPick dp = pickDockRay(e->dock, e->dockSys, e->dockHW,
+                                    e->dockYaw, e->dockPitch, dDrop,
+                                    e->ringPos, e->aimO, e->aimD);
     const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
                                       e->dockPitch, dDrop, e->ringPos,
                                       e->aimO, e->aimD);

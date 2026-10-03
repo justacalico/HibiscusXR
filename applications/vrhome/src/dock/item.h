@@ -3,21 +3,21 @@
 #include <string>
 #include <vector>
 
-// where on a dock item a gaze hit lands
+// where on the dock a gaze hit lands
 enum DockZone {
     DZONE_NONE = -1,
-    DZONE_ICON = 0,    // the icon body: activate the app
+    DZONE_ICON = 0,    // an item's icon body: activate the app
     DZONE_CLOSE,       // the close badge on a live immersive item
     DZONE_HANDLE,      // the drag line under the strip: moves the whole dash
+    DZONE_SYS,         // the status pill: opens the quick panel
 };
 
 // item kinds in left-to-right group order: pinned favourites, live tasks,
-// the app-grid and quick-panel buttons on the end
+// the app-grid button on the end
 enum DockKind {
     DK_PIN = 0,
     DK_RUN,            // a live task: a 2D panel app or an immersive XR app
     DK_GRID,           // opens the app-grid overlay over the windows
-    DK_QUICK,
 };
 
 // one immersive task on the physical display, as reported by the java
@@ -78,9 +78,10 @@ struct ShelfPick {
 };
 
 // status cluster pinned to the strip's left end: clock, battery and wifi
-// grouped in one pill, the notification bell alone in a second, then a
-// separator before the app icons. clockW goes in measured; the rest come
-// back positioned by dockLayout
+// grouped in one pill - a tap there opens the quick panel - then the
+// notification bell alone in a second, then a separator before the app
+// icons. clockW goes in measured; the rest come back positioned by
+// dockLayout
 struct DockStatus {
     float clockW = 0;   // measured width of the time text
     float clockX = 0;   // text's left edge in bar coords

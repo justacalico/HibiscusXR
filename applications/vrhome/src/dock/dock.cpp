@@ -246,6 +246,19 @@ void dockActivate(HudEngine* e, int idx) {
     }
 }
 
+void dockSysActivate(HudEngine* e) {
+    if (!e->bridge) return;
+    const DockAction act = quickPanelAction(e->panels);
+    if (act.op == DOP_LAUNCH) {
+        queueLaunch(act.pkg.c_str());
+    } else if (act.op == DOP_FOCUS_PANEL) {
+        Panel& p = e->panels[act.panelIdx];
+        p.minimized = false;
+        if (act.taskId >= 0)
+            focusTask(e, threadEnv(e->vm), act.taskId);
+    }
+}
+
 void dockClose(HudEngine* e, int idx) {
     if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockAction act = dockCloseAction(e->dock[idx], e->panels);
@@ -458,6 +471,11 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // splits them off the app icons. Positions came out of dockLayout,
     // state out of the last bridge pull
     const DockStatus& st = e->dockSys;
+    // the clock pill doubles as the quick-panel button: it brightens
+    // under the gaze like the move handle does
+    const float* pc = e->dockZone == DZONE_SYS ? kPalSurfaceHigh
+                                             : kPalSurface;
+    const float pillACol[4] = {pc[0], pc[1], pc[2], 0.90f * a};
     const float pillCol[4] = {kPalSurface[0], kPalSurface[1],
                               kPalSurface[2], 0.90f * a};
     {
@@ -466,7 +484,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         const float ac[3] = {c[0] + r[0] * ax, c[1] + r[1] * ax,
                              c[2] + r[2] * ax};
         shapeQuad(e, vp, ac, r, up, 0.006f, 0.0f, aw, kSysPillHH,
-                  aw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+                  aw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f,
+                  pillACol);
         const float bx = (st.pillBL + st.pillBR) * 0.5f;
         const float bw = (st.pillBR - st.pillBL) * 0.5f;
         const float bc[3] = {c[0] + r[0] * bx, c[1] + r[1] * bx,

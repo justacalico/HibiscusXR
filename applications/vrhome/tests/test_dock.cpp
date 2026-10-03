@@ -15,15 +15,16 @@ static Panel mkPanel(const char* pkg, int taskId = -1) {
 static const float o0[3] = {0.0f, 0.0f, 0.0f};
 
 void testDock() {
-    // ordering: pins first, then unpinned running tasks, quick last; the
-    // pinned running app carries its panel instead of duplicating
+    // ordering: pins first, then unpinned running tasks, the grid button
+    // last; the pinned running app carries its panel instead of
+    // duplicating
     {
         std::vector<std::string> pins = {"com.a.pin", "com.b.busy"};
         std::vector<Panel> panels = {mkPanel("com.b.busy", 11),
                                      mkPanel("com.c.free", 12)};
         std::vector<XrTask> xr = {{21, "com.d.vr"}};
         auto items = buildDock(pins, panels, xr);
-        CHECK(items.size() == 6);
+        CHECK(items.size() == 5);
         CHECK(items[0].kind == DK_PIN && items[0].pkg == "com.a.pin");
         CHECK(!items[0].running && items[0].panelIdx < 0);
         CHECK(items[1].kind == DK_PIN && items[1].pkg == "com.b.busy");
@@ -33,12 +34,10 @@ void testDock() {
         CHECK(items[2].sep);               // pin -> running boundary
         CHECK(items[3].kind == DK_RUN && items[3].pkg == "com.d.vr");
         CHECK(items[3].vr && items[3].taskId == 21 && !items[3].sep);
-        // the grid button owns the tail: separator before it, quick rides
-        // in its group on the very end
+        // the grid button owns the tail alone: the quick panel has no
+        // icon, the status pill opens it
         CHECK(items[4].kind == DK_GRID && items[4].sep);
         CHECK(items[4].pkg.empty());
-        CHECK(items[5].kind == DK_QUICK && !items[5].sep);
-        CHECK(items[5].pkg == kQuickPanelPkg);
     }
 
     // a pinned XR app shows once, marked immersive + running
@@ -46,33 +45,28 @@ void testDock() {
         std::vector<std::string> pins = {"com.d.vr"};
         std::vector<XrTask> xr = {{7, "com.d.vr"}};
         auto items = buildDock(pins, {}, xr);
-        CHECK(items.size() == 3);
+        CHECK(items.size() == 2);
         CHECK(items[0].kind == DK_PIN && items[0].vr && items[0].running &&
               items[0].taskId == 7);
         CHECK(items[1].kind == DK_GRID);
-        CHECK(items[2].kind == DK_QUICK);
     }
 
-    // a pin for the quick-panel app is dropped: its slot already exists
+    // a pin for the quick-panel app is dropped: the status pill is its
+    // only trigger
     {
         std::vector<std::string> pins = {kQuickPanelPkg, "com.a.pin"};
         auto items = buildDock(pins, {}, {});
-        CHECK(items.size() == 3);
+        CHECK(items.size() == 2);
         CHECK(items[0].pkg == "com.a.pin");
         CHECK(items[1].kind == DK_GRID);
-        CHECK(items[2].kind == DK_QUICK);
     }
 
-    // a running quick-panel task rides its own button: no duplicate icon,
-    // the button carries the running dot and the task
+    // a running quick-panel task never lists on the strip either
     {
         std::vector<Panel> panels = {mkPanel(kQuickPanelPkg, 9)};
         auto items = buildDock({}, panels, {});
-        CHECK(items.size() == 2);
-        CHECK(items[0].kind == DK_GRID);
-        CHECK(items[1].kind == DK_QUICK && items[1].running);
-        CHECK(items[1].taskId == 9 && items[1].panelIdx == 0);
-        CHECK(!items[1].sep);              // rides the grid button's group
+        CHECK(items.size() == 1);
+        CHECK(items[0].kind == DK_GRID && !items[0].sep);
     }
 
     // minimized panels stay listed as running, marked minimized
@@ -80,7 +74,7 @@ void testDock() {
         std::vector<Panel> panels = {mkPanel("com.c.free", 5)};
         panels[0].minimized = true;
         auto items = buildDock({}, panels, {});
-        CHECK(items.size() == 3);
+        CHECK(items.size() == 2);
         CHECK(items[0].kind == DK_RUN && items[0].minimized &&
               !items[0].sep);              // nothing before it to split off
         CHECK(items[1].kind == DK_GRID && items[1].sep);
@@ -91,7 +85,7 @@ void testDock() {
         std::vector<DockItem> items;
         DockItem a; a.pkg = "a"; a.kind = DK_PIN;
         DockItem b; b.pkg = "b"; b.kind = DK_RUN; b.sep = true;
-        DockItem c; c.pkg = "c"; c.kind = DK_QUICK; c.sep = true;
+        DockItem c; c.pkg = "c"; c.kind = DK_RUN; c.sep = true;
         items = {a, b, c};
         DockStatus st;
         st.clockW = 0.06f;
@@ -114,7 +108,7 @@ void testDock() {
     // bell alone, separator lands before the icons
     {
         std::vector<DockItem> items;
-        DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
+        DockItem a; a.pkg = "a"; a.kind = DK_RUN;
         items = {a};
         DockStatus st;
         st.clockW = 0.06f;
@@ -159,28 +153,62 @@ void testDock() {
         int zone = DZONE_NONE;
         const float ua = items[0].x / hw, ub = items[1].x / hw;
         const float uy = kDockIconY / (kDockBarH * 0.5f);
-        CHECK(dockItemAt(items, hw, ua, uy, &zone) == 0);
+        CHECK(dockItemAt(items, st, hw, ua, uy, &zone) == 0);
         CHECK(zone == DZONE_ICON);
-        CHECK(dockItemAt(items, hw, ub, uy, &zone) == 1);
+        CHECK(dockItemAt(items, st, hw, ub, uy, &zone) == 1);
         CHECK(zone == DZONE_ICON);
         // midway between the two icons: bar body, no item
-        CHECK(dockItemAt(items, hw, (ua + ub) * 0.5f, uy, &zone) == -1);
+        CHECK(dockItemAt(items, st, hw, (ua + ub) * 0.5f, uy, &zone) == -1);
         CHECK(zone == DZONE_NONE);
-        CHECK(dockItemAt(items, hw, 1.2f, 0.0f, &zone) == -1);
-        CHECK(dockItemAt(items, hw, 0.0f, 1.2f, &zone) == -1);
+        CHECK(dockItemAt(items, st, hw, 1.2f, 0.0f, &zone) == -1);
+        CHECK(dockItemAt(items, st, hw, 0.0f, 1.2f, &zone) == -1);
         // the badge: top-right corner of the XR icon
         float bx, by;
         // recompute badge spot: x + iconHW*0.72, y = iconY + iconHW*0.72
         bx = items[1].x + kDockIconHW * 0.72f;
         by = kDockIconY + kDockIconHW * 0.72f;
-        CHECK(dockItemAt(items, hw, bx / hw, by / (kDockBarH * 0.5f),
+        CHECK(dockItemAt(items, st, hw, bx / hw, by / (kDockBarH * 0.5f),
                          &zone) == 1);
         CHECK(zone == DZONE_CLOSE);
         // a non-VR item has no badge there
         bx = items[0].x + kDockIconHW * 0.72f;
-        CHECK(dockItemAt(items, hw, bx / hw, by / (kDockBarH * 0.5f),
+        CHECK(dockItemAt(items, st, hw, bx / hw, by / (kDockBarH * 0.5f),
                          &zone) == 0);
         CHECK(zone == DZONE_ICON);
+    }
+
+    // the status pill is its own zone: the clock-battery-wifi pill hits
+    // with no item index, the bell pill and the gaps between pills stay
+    // bar body
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_PIN;
+        items = {a};
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        int zone = DZONE_NONE;
+        const float px = (st.pillAL + st.pillAR) * 0.5f;
+        CHECK(dockItemAt(items, st, hw, px / hw, 0.0f, &zone) == -1);
+        CHECK(zone == DZONE_SYS);
+        // the pill's edges still count, a point past them doesn't
+        CHECK(dockItemAt(items, st, hw, st.pillAL / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_SYS);
+        CHECK(dockItemAt(items, st, hw, st.pillAR / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_SYS);
+        const float vTop = kSysPillHH / (kDockBarH * 0.5f);
+        CHECK(dockItemAt(items, st, hw, px / hw, vTop + 0.01f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_NONE);
+        // between the two pills and on the bell: plain bar body
+        const float gapX = (st.pillAR + st.pillBL) * 0.5f;
+        CHECK(dockItemAt(items, st, hw, gapX / hw, 0.0f, &zone) == -1);
+        CHECK(zone == DZONE_NONE);
+        CHECK(dockItemAt(items, st, hw, st.bellX / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_NONE);
     }
 
     // dock pitch: level head drops the strip below the horizon; looking up
@@ -252,7 +280,7 @@ void testDock() {
     // before the in-bar bounds reject, with no item index
     {
         std::vector<DockItem> items;
-        DockItem a; a.pkg = "a"; a.kind = DK_QUICK;
+        DockItem a; a.pkg = "a"; a.kind = DK_RUN;
         items = {a};
         DockStatus st; st.clockW = 0.06f;
         const float hw = dockLayout(items, st);
@@ -263,20 +291,21 @@ void testDock() {
         aim.m[2]  = -(c[0] - up[0] * hd);   // -z column aims at the handle
         aim.m[6]  = -(c[1] - up[1] * hd);
         aim.m[10] = -(c[2] - up[2] * hd);
-        DockPick pk = pickDock(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
+        DockPick pk = pickDock(items, st, hw, 0.0f, -0.55f, 0.0f,
+                               aim, o0, o0);
         CHECK(pk.bar && pk.idx == -1 && pk.zone == DZONE_HANDLE);
         // aiming at the bar body still picks the bar, not the handle
         aim.m[2] = -c[0]; aim.m[6] = -c[1]; aim.m[10] = -c[2];
-        pk = pickDock(items, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
+        pk = pickDock(items, st, hw, 0.0f, -0.55f, 0.0f, aim, o0, o0);
         CHECK(pk.bar && pk.zone != DZONE_HANDLE);
     }
 
-    // pinnable: everything but the quick button
+    // pinnable: app entries only, the grid button isn't
     {
-        DockItem q; q.kind = DK_QUICK;
+        DockItem g; g.kind = DK_GRID;
         DockItem p; p.kind = DK_PIN;
         DockItem r; r.kind = DK_RUN;
-        CHECK(!dockPinnable(q));
+        CHECK(!dockPinnable(g));
         CHECK(dockPinnable(p) && dockPinnable(r));
     }
 
@@ -309,15 +338,19 @@ void testDock() {
         vr.running = true; vr.taskId = 21;
         a = dockActivateAction(vr, panels);
         CHECK(a.op == DOP_FOCUS_XR && a.taskId == 21);
+    }
 
-        DockItem quick; quick.kind = DK_QUICK; quick.pkg = kQuickPanelPkg;
-        a = dockActivateAction(quick, panels);
+    // status-pill policy: no quick panel running launches it cold, a live
+    // one refocuses its panel like any running item
+    {
+        std::vector<Panel> panels = {mkPanel("com.b.busy", 11)};
+        DockAction a = quickPanelAction(panels);
         CHECK(a.op == DOP_LAUNCH && a.pkg == kQuickPanelPkg);
         Panel q; q.pkg = kQuickPanelPkg; q.taskId = 33;
         panels.push_back(q);
-        quick.panelIdx = 1;
-        a = dockActivateAction(quick, panels);
-        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 1 && a.taskId == 33);
+        a = quickPanelAction(panels);
+        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 1 &&
+              a.taskId == 33);
     }
 
     // close policy: a panel-linked item dies through its display, a bare

@@ -119,6 +119,7 @@ struct HudEngine : Engine {
     long long dockPressMs = 0;
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
+    bool sysPress = false;         // confirm armed on the status pill
 
     // minimized-window shelf: hidden panels parked on a pill above the
     // dock bar, rebuilt each frame by syncDock. hover/press mirror the

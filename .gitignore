@@ -234,3 +234,6 @@ logcat-*.txt
 
 # Local monado/eigen vendor checkouts used by the pn2 build
 system/pn2xr/
+
+# Personal notes, not for version control
+DNC.md

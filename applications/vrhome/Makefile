@@ -42,7 +42,8 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/text/font.cpp src/text/draw.cpp \
                src/render/egl.cpp src/render/frame.cpp \
                src/render/shaders.cpp src/render/warp.cpp \
-               src/render/scene_geo.cpp src/sensor/sensor.cpp \
+               src/render/scene_geo.cpp src/render/mesh.cpp \
+               src/sensor/sensor.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/env/cam.cpp src/render/scene.cpp \
             src/render/pt_geo.cpp src/env/homeenv.cpp \
@@ -50,7 +51,6 @@ ENV_SRCS := src/env/main.cpp src/env/cam.cpp src/render/scene.cpp \
 HUD_SRCS := src/hud/hud_main.cpp src/hud/debug_hooks.cpp \
             src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
-            src/render/mesh.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/anim/anim.cpp \
             src/pill/pill.cpp \

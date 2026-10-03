@@ -464,10 +464,18 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glUseProgram(e->shapeProg);
+    // a background-shade stroke under each text-shade piece rims the cursor,
+    // so it stays readable over a surface its own colour either theme way
+    const float edgeCol[4] = {kPalBackground[0], kPalBackground[1],
+                              kPalBackground[2], 0.90f};
     const float ringCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.85f};
     const float dotCol[4]  = {kPalText[0], kPalText[1], kPalText[2], 0.90f};
+    shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.0195f, 0.0195f, 0.014f,
+              0.014f, 0.014f, 0.0042f, 0.001f, edgeCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.014f, 0.014f, 0.014f,
               0.014f, 0.014f, 0.0016f, 0.001f, ringCol);
+    shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.009f, 0.009f, 0.0075f,
+              0.0075f, 0.0075f, 0.0f, 0.001f, edgeCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.005f, 0.005f, 0.005f,
               0.005f, 0.005f, 0.0f, 0.001f, dotCol);
     glDisable(GL_BLEND);

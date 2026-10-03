@@ -125,6 +125,13 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     e->moveGrabYaw = e->aimYaw;
                     e->moveGrabPitch = e->aimPitch;
                     LOGI("pill drag grab disp %d", p.displayId);
+                } else if (e->hoverZone == ZONE_LABEL) {
+                    // a docked window's pill body is its drag handle too:
+                    // the same grab snapshot drives moveTick's slot hop,
+                    // and an undragged release still focuses the task
+                    p.grabYaw = p.yaw;
+                    e->moveGrabYaw = e->aimYaw;
+                    LOGI("slot drag grab disp %d", p.displayId);
                 } else if (e->hoverZone == ZONE_RESIZE) {
                     // corner grip: grab the scale and the hit's distance
                     // from centre so the drag's radial gain drives resize.
@@ -321,7 +328,10 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                                                     e->dockPitch);
                         }
                     } else if (e->pressZone == ZONE_LABEL && e->bridge &&
-                               p.taskId >= 0) {
+                               p.taskId >= 0 &&
+                               fabsf(wrapPi(p.yaw - p.grabYaw)) < 0.02f) {
+                        // a still pill release focuses the task; a slot
+                        // drag that moved the window ends here instead
                         env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
                         if (env->ExceptionCheck()) env->ExceptionClear();
                     }
@@ -409,6 +419,17 @@ void moveTick(HudEngine* e) {
             const float np = p.grabPitch + (e->aimPitch - e->moveGrabPitch);
             p.pitch = np > kPitchMax ? kPitchMax
                       : np < -kPitchMax ? -kPitchMax : np;
+            break;
+        }
+    }
+    // a docked window's pill drags it through the ring's three slots: the
+    // aim delta picks the space, whoever sits there trades places with it
+    if (e->pressZone == ZONE_LABEL && e->confirmHeld && e->pressDisp >= 0) {
+        for (int i = 0; i < (int)e->panels.size(); ++i) {
+            Panel& p = e->panels[i];
+            if (p.displayId != e->pressDisp || p.floating) continue;
+            slotDrag(e->panels, i, e->dockYaw,
+                     wrapPi(p.grabYaw + wrapPi(e->aimYaw - e->moveGrabYaw)));
             break;
         }
     }

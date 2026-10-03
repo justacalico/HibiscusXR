@@ -60,6 +60,7 @@ No task ever lives on the keyboard display, so it is deliberately kept out of `v
 | Confirm button (or ENTER / DPAD_CENTER) | Tap at the gaze point |
 | Hold confirm and move your gaze | Drag or scroll the window content |
 | Confirm on a pill button | – minimizes the window onto the shelf above the dock, × closes it |
+| Hold confirm on a window's pill and drag | Moves the window: a docked one hops between the three slots (whoever sits there trades places), a floating one follows freely |
 | BACK | Close the newest window (dismiss the menu when it is over an app) |
 | Headset home key | Summon or dismiss the menu over whatever is running; hold to recenter |
 

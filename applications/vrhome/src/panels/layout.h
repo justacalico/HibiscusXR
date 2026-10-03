@@ -62,6 +62,12 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
 // current yaw, falling back to the first free one
 float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre);
 
+// docked-window pill drag tick: snap the grabbed window onto the ring slot
+// nearest `yaw` around `centre`. A window already on that slot trades
+// places with it, so dragging through the row swaps the two instead of
+// stacking - that's how a docked window moves between the three spaces
+void slotDrag(std::vector<Panel>& panels, int self, float centre, float yaw);
+
 // the strip n button discs reserve on the pill's right end: edge pad, the
 // discs themselves and the gaps between them
 float pillBtnsW(int n);

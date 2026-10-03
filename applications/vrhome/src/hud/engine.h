@@ -44,7 +44,7 @@ struct HudEngine : Engine {
               mSysStatus = nullptr,
               mSysMsgVer = nullptr, mSysMsgs = nullptr,
               mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
-              mSysMsgOnly = nullptr,
+              mSysMsgOnly = nullptr, mCenterLaunch = nullptr,
               mUiStrVer = nullptr, mUiStrings = nullptr,
               mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
               mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr,
@@ -186,6 +186,10 @@ struct HudEngine : Engine {
     // line, so the scene draws nothing but the hold ring
     bool debugHud = false;
     bool debugOnly = false;
+    // quick-settings toggle (hibiscus_center_launch global): new windows
+    // take the middle slot and push the current one aside instead of
+    // filling the ring left to right
+    bool centerLaunch = false;
 
     // controllers: the shared-memory map plus the arbitration state it
     // feeds. ctrlPos/ctrlDir are each live controller's world aim ray;

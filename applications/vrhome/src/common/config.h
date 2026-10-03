@@ -63,6 +63,10 @@ constexpr float kPanelDist = 1.5f;    // metres
 constexpr float kPanelW = 1.30f, kPanelH = 0.73f;
 constexpr float kPanelY = 0.05f;      // metres above horizon
 constexpr int   kMaxPanels = 3;
+// panel records total, parked (minimized) windows included: the ring holds
+// kMaxPanels visible windows but a parked one keeps its task and display
+// alive on the shelf, so the list can outgrow the slot count
+constexpr int   kMaxPanelRecs = kMaxPanels + 3;
 // elevation clamp: panels ride a cylinder around the viewer and tilt to keep
 // facing it, so past ~86 deg the centre panel would sit on your crown
 constexpr float kPitchMax = 1.5f;

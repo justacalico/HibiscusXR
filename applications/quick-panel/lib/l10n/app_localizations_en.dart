@@ -42,6 +42,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tileBatterySaver => 'Battery saver';
 
   @override
+  String get tileCenterLaunch => 'Center new apps';
+
+  @override
   String get actionResetView => 'Reset view';
 
   @override

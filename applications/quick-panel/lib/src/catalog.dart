@@ -63,6 +63,7 @@ const panelTiles = <TileSpec>[
   TileSpec.toggle(ToggleId.doNotDisturb, icon: Icons.dark_mode),
   TileSpec.toggle(ToggleId.airplaneMode, icon: Icons.airplanemode_active),
   TileSpec.toggle(ToggleId.batterySaver, icon: Icons.battery_saver),
+  TileSpec.toggle(ToggleId.centerLaunch, icon: Icons.filter_center_focus),
   TileSpec.action(
     ActionId.reportProblem,
     icon: Icons.flag_outlined,

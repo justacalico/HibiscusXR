@@ -28,20 +28,33 @@ float panelHW(const Panel& p);
 float panelHH(const Panel& p);
 
 // yaw of the next free ring slot around the dash's centre yaw; centre when
-// full
+// full. Parked windows hold no slot - restorePanel re-slots them
 float freeSlotYaw(const std::vector<Panel>& panels, float centre);
+
+// "apps open centred" launch policy: the newcomer always takes the middle
+// slot. The window already there slides to a free side - left first -
+// and when the ring is full the left window parks on the shelf so the
+// middle can take its place. Mutates `panels`; returns the yaw the new
+// panel should take
+float centreSlotYaw(std::vector<Panel>& panels, float centre);
+
+// bring a parked window back onto the ring: the free slot nearest its old
+// yaw, sharing the row's elevation
+void restorePanel(std::vector<Panel>& panels, int self, float centre,
+                  float pitch);
 
 // the ring's current elevation: docked panels share one pitch
 float ringPitch(const std::vector<Panel>& panels);
 
-// index of the oldest evictable panel - a floating window the user placed
-// by hand goes last - or -1 when nothing can go
+// index of the panel to drop when the list is full: a parked window goes
+// first, then a docked one; a floating window the user placed by hand is
+// reclaimed last - or -1 when nothing can go
 int evictIndex(const std::vector<Panel>& panels);
 
 // snap every docked panel to its nearest ring slot around a new centre yaw
-// and pull the whole ring to the given elevation. Floating windows keep
-// their own offsets: they shift by the centre's yaw delta instead of
-// snapping, so a recenter carries them without re-docking them
+// and pull the whole ring to the given elevation. Floating and parked
+// windows keep their own offsets: they shift by the centre's yaw delta
+// instead of snapping, so a recenter carries them without re-docking them
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
                    float prevCentre);
 

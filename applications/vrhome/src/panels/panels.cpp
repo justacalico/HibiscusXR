@@ -14,7 +14,7 @@
 #endif
 
 int openPanel(HudEngine* e, float yaw, float pitch) {
-    if (!e->bridge || (int)e->panels.size() >= kMaxPanels) return -1;
+    if (!e->bridge || (int)e->panels.size() >= kMaxPanelRecs) return -1;
     JNIEnv* env = threadEnv(e->vm);
 
     GLuint tex = 0;

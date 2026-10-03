@@ -29,6 +29,9 @@ private const val VOLUME_CHANGED = "android.media.VOLUME_CHANGED_ACTION"
 // written by the settings app. Absent means dark.
 private const val THEME = "hibiscus_theme"
 private const val THEME_DEFAULT = "dark"
+// Hibiscus-owned global key the HUD reads for the panel placement policy:
+// 1 makes every new 2D window open on the middle slot.
+private const val CENTER_LAUNCH = "hibiscus_center_launch"
 
 class MainActivity : FlutterActivity() {
     private var eventSink: EventChannel.EventSink? = null
@@ -237,6 +240,7 @@ class MainActivity : FlutterActivity() {
             "bluetooth" to bluetoothOn(),
             "airplaneMode" to airplaneOn(),
             "microphone" to !audio().isMicrophoneMute,
+            "centerLaunch" to centerLaunch(),
         ),
         "notifications" to NotifService.lastList,
         "theme" to theme(),
@@ -270,6 +274,10 @@ class MainActivity : FlutterActivity() {
 
     private fun theme(): String =
         Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
+
+    private fun centerLaunch(): Boolean = Settings.Global.getInt(
+        contentResolver, CENTER_LAUNCH, 0,
+    ) == 1
 
     private fun volume(): Double {
         val am = audio()
@@ -322,6 +330,9 @@ class MainActivity : FlutterActivity() {
                 }
             }
             "microphone" -> audio().isMicrophoneMute = !on
+            "centerLaunch" -> Settings.Global.putInt(
+                contentResolver, CENTER_LAUNCH, if (on) 1 else 0,
+            )
             "doNotDisturb" ->
                 startActivity(Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             "batterySaver" ->

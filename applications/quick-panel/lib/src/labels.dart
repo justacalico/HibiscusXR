@@ -24,6 +24,8 @@ String tileLabel(TileSpec spec, AppLocalizations l10n) {
       return l10n.tileAirplaneMode;
     case ToggleId.batterySaver:
       return l10n.tileBatterySaver;
+    case ToggleId.centerLaunch:
+      return l10n.tileCenterLaunch;
     case null:
       break;
   }

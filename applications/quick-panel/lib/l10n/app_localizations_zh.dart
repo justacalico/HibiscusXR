@@ -42,6 +42,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get tileBatterySaver => '省电模式';
 
   @override
+  String get tileCenterLaunch => '新窗口居中';
+
+  @override
   String get actionResetView => '重置视角';
 
   @override

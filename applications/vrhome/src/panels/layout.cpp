@@ -35,25 +35,30 @@ void panelCenter(const Panel& p, const float origin[3], float out[3],
 float panelHW(const Panel& p) { return kPanelW * 0.5f * p.scale; }
 float panelHH(const Panel& p) { return kPanelH * 0.5f * p.scale; }
 
+// the panel occupying `yaw`, or -1: a spot counts as taken when a live
+// panel sits within a window's angular width of it, not only when it
+// sits exactly on it - a floating window left between the slots blocks
+// both rather than being stacked on. Minimized windows are parked on the
+// shelf and block nothing; `skip` excludes one panel from the check
+static int panelOn(const std::vector<Panel>& panels, float yaw, int skip) {
+    for (int i = 0; i < (int)panels.size(); ++i) {
+        if (i == skip || panels[i].minimized) continue;
+        if (fabsf(wrapPi(panels[i].yaw - yaw)) < kPanelMinGap) return i;
+    }
+    return -1;
+}
+
 float freeSlotYaw(const std::vector<Panel>& panels, float centre) {
-    // a slot counts as taken when any panel sits within a window's angular
-    // width of it, not only when it sits exactly on it: a floating window
-    // parked between the slots blocks both rather than being stacked on
     for (int s = 0; s < kMaxPanels; ++s) {
         const float cand = centre + kSlotYaw[s];
-        bool used = false;
-        for (auto& p : panels)
-            if (fabsf(wrapPi(p.yaw - cand)) < kPanelMinGap) {
-                used = true;
-                break;
-            }
-        if (!used) return cand;
+        if (panelOn(panels, cand, -1) < 0) return cand;
     }
     // every slot blocked: drop into the middle of the widest free arc
     // rather than stacking windows
-    float offs[kMaxPanels];
+    float offs[kMaxPanelRecs];
     int n = 0;
-    for (auto& p : panels) offs[n++] = wrapPi(p.yaw - centre);
+    for (auto& p : panels)
+        if (!p.minimized) offs[n++] = wrapPi(p.yaw - centre);
     for (int i = 1; i < n; ++i) {
         const float t = offs[i];
         int j = i - 1;
@@ -69,6 +74,38 @@ float freeSlotYaw(const std::vector<Panel>& panels, float centre) {
     return centre + bestOff;
 }
 
+float centreSlotYaw(std::vector<Panel>& panels, float centre) {
+    const float midYaw = centre + kSlotYaw[0];
+    const float leftYaw = centre + kSlotYaw[1];
+    const float rightYaw = centre + kSlotYaw[2];
+    const int mid = panelOn(panels, midYaw, -1);
+    if (mid < 0) return midYaw;
+    // the middle is taken: slide its window to a free side, left first
+    const int left = panelOn(panels, leftYaw, mid);
+    if (left < 0) {
+        panels[mid].yaw = leftYaw;
+        return midYaw;
+    }
+    if (panelOn(panels, rightYaw, mid) < 0) {
+        panels[mid].yaw = rightYaw;
+        return midYaw;
+    }
+    // all three slots taken: park the left window on the shelf and slide
+    // the middle one into its slot
+    panels[left].minimized = true;
+    panels[mid].yaw = leftYaw;
+    return midYaw;
+}
+
+void restorePanel(std::vector<Panel>& panels, int self, float centre,
+                  float pitch) {
+    if (self < 0 || self >= (int)panels.size()) return;
+    Panel& p = panels[self];
+    p.minimized = false;
+    p.yaw = dockSlotYaw(panels, self, centre);
+    p.pitch = pitch;
+}
+
 float ringPitch(const std::vector<Panel>& panels) {
     for (auto& p : panels)
         if (!p.floating) return p.pitch;
@@ -76,8 +113,11 @@ float ringPitch(const std::vector<Panel>& panels) {
 }
 
 int evictIndex(const std::vector<Panel>& panels) {
-    // a docked window goes first; only once every window floats does a
-    // hand-placed one get reclaimed
+    // a parked window goes first - it is already put away. Then a docked
+    // window; only once every window floats does a hand-placed one get
+    // reclaimed
+    for (int i = 0; i < (int)panels.size(); ++i)
+        if (panels[i].minimized) return i;
     for (int i = 0; i < (int)panels.size(); ++i)
         if (!panels[i].floating) return i;
     return panels.empty() ? -1 : 0;
@@ -90,14 +130,7 @@ float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre) {
     bool found = false;
     for (int s = 0; s < kMaxPanels; ++s) {
         const float cand = centre + kSlotYaw[s];
-        bool used = false;
-        for (int i = 0; i < (int)panels.size(); ++i) {
-            if (i == self) continue;
-            if (fabsf(wrapPi(panels[i].yaw - cand)) < kPanelMinGap) {
-                used = true;
-                break;
-            }
-        }
+        const bool used = panelOn(panels, cand, self) >= 0;
         if (used) continue;
         const float d = fabsf(wrapPi(panels[self].yaw - cand));
         if (!found || d < bestD) { best = cand; bestD = d; found = true; }
@@ -118,8 +151,9 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
     int n = 0;
     for (int i = 0; i < (int)panels.size(); ++i) {
         Panel& p = panels[i];
-        if (p.floating) {
-            // carries with the dash: same yaw shift, own pitch kept
+        // floaters, parked windows and any docked panel past the slot
+        // count all carry with the dash: same yaw shift, own pitch kept
+        if (p.floating || p.minimized || n >= kMaxPanels) {
             p.yaw = wrapPi(p.yaw + dyaw);
             continue;
         }

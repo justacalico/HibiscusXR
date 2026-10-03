@@ -140,23 +140,30 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                           kPillBtnR * sc, kPillBtnR * sc, kPillBtnR * sc,
                           kPillBtnR * sc, kPillBtnR * sc, 0.0f, 0.002f, bg);
                 if (zones[b] == ZONE_FLOAT) {
-                    // four ticks at the diagonals, lit while floating
+                    // two overlapping windows, lit while floating: a
+                    // stroked square behind top-left, a pane-filled one
+                    // in front bottom-right - reads as a free window
+                    // where plain corner ticks read as fullscreen
                     const float* gcp = p.floating ? kPalAccent : kPalText;
                     const float gc[4] = {gcp[0], gcp[1], gcp[2], 0.92f * a};
-                    const float tl = kPillBtnR * 0.34f * sc;
-                    const float to = kPillBtnR * 0.42f * sc;
-                    for (int q = 0; q < 4; ++q) {
-                        const float sx = (q & 1) ? 1.0f : -1.0f;
-                        const float sy = (q & 2) ? 1.0f : -1.0f;
-                        const float tc[3] = {
-                            bc[0] + r[0]*to*sx + up[0]*to*sy,
-                            bc[1] + r[1]*to*sx + up[1]*to*sy,
-                            bc[2] + r[2]*to*sx + up[2]*to*sy};
-                        shapeQuad(e, viewProj, tc, r, up, 0.008f,
-                                  sx * sy * 0.785398f, tl, it * 0.8f,
-                                  tl, it * 0.8f, it * 0.8f, 0.0f,
-                                  0.0015f, gc);
-                    }
+                    const float wo = kPillBtnR * 0.15f * sc;
+                    const float ws = kPillBtnR * 0.32f * sc;
+                    const float wr = ws * 0.28f;
+                    const float wt = it * 0.8f;
+                    const float back[3] = {bc[0] - r[0]*wo + up[0]*wo,
+                                           bc[1] - r[1]*wo + up[1]*wo,
+                                           bc[2] - r[2]*wo + up[2]*wo};
+                    const float fore[3] = {bc[0] + r[0]*wo - up[0]*wo,
+                                           bc[1] + r[1]*wo - up[1]*wo,
+                                           bc[2] + r[2]*wo - up[2]*wo};
+                    shapeQuad(e, viewProj, back, r, up, 0.008f, 0.0f,
+                              ws, ws, ws, ws, wr, wt, 0.0015f, gc);
+                    const float pane[4] = {bcp[0], bcp[1], bcp[2],
+                                           0.95f * a};
+                    shapeQuad(e, viewProj, fore, r, up, 0.009f, 0.0f,
+                              ws, ws, ws, ws, wr, 0.0f, 0.0015f, pane);
+                    shapeQuad(e, viewProj, fore, r, up, 0.010f, 0.0f,
+                              ws, ws, ws, ws, wr, wt, 0.0015f, gc);
                 } else if (zones[b] == ZONE_MIN) {
                     shapeQuad(e, viewProj, bc, r, up, 0.008f, 0.0f, il, it,
                               il, it, it, 0.0f, 0.0015f, icon);

@@ -13,6 +13,17 @@ void sysMsgCenter(float yaw, float pitch, float lift, const float origin[3],
     for (int i = 0; i < 3; ++i) c[i] += up[i] * lift;
 }
 
+bool sysMsgModal(bool coveredOnly, const std::vector<SysMsgItem>& items) {
+    return coveredOnly || !items.empty();
+}
+
+void sysMsgAnchor(bool coveredOnly, float ownYaw, float dashYaw,
+                  float dashPitch, float* yaw, float* pitch, float* lift) {
+    *yaw = coveredOnly ? ownYaw : dashYaw;
+    *pitch = coveredOnly ? kSysMsgPitch : dashPitch;
+    *lift = coveredOnly ? 0.0f : kSysMsgLift;
+}
+
 float sysMsgBtnHW(int n) {
     const float iw = kSysMsgW * 0.5f - kSysMsgPad;
     if (n <= 0) return iw;

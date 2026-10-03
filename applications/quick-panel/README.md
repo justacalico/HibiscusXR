@@ -15,7 +15,8 @@ Quick settings panel for the Pico Neo 2 running the LineageOS 17.1 port.
   Settings.System
 - Large tiles: Wi-Fi (with SSID), Boundary, Bluetooth, Seethrough
 - Small tiles: Microphone, Reset view, Night mode, Do Not Disturb,
-  Airplane mode, Battery saver, Report problem, About device
+  Airplane mode, Battery saver, Center new apps, Report problem,
+  About device
 - Radio toggles that cannot be flipped programmatically on Android 10+
   open the matching system panel instead
 - Pico-side toggles (seethrough, boundary) broadcast a seam intent for

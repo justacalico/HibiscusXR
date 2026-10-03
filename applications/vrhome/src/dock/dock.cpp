@@ -8,6 +8,7 @@
 #include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/palette.h"
+#include "../panels/layout.h"
 #include "../pill/pill.h"
 #include "../render/chrome.h"
 #include "../render/shape.h"
@@ -235,8 +236,8 @@ void dockActivate(HudEngine* e, int idx) {
         return;
     }
     case DOP_FOCUS_PANEL: {
-        Panel& p = e->panels[act.panelIdx];
-        p.minimized = false;
+        restorePanel(e->panels, act.panelIdx, e->dockYaw,
+                     dashRingPitch(e->panels, e->dockPitch));
         if (act.taskId >= 0)
             focusTask(e, threadEnv(e->vm), act.taskId);
         return;
@@ -252,8 +253,8 @@ void dockSysActivate(HudEngine* e) {
     if (act.op == DOP_LAUNCH) {
         queueLaunch(act.pkg.c_str());
     } else if (act.op == DOP_FOCUS_PANEL) {
-        Panel& p = e->panels[act.panelIdx];
-        p.minimized = false;
+        restorePanel(e->panels, act.panelIdx, e->dockYaw,
+                     dashRingPitch(e->panels, e->dockPitch));
         if (act.taskId >= 0)
             focusTask(e, threadEnv(e->vm), act.taskId);
     }
@@ -277,8 +278,8 @@ void shelfActivate(HudEngine* e, int idx) {
     if (idx < 0 || idx >= (int)e->shelf.size()) return;
     const DockAction act = shelfActivateAction(e->shelf[idx], e->panels);
     if (act.op != DOP_FOCUS_PANEL) return;
-    Panel& p = e->panels[act.panelIdx];
-    p.minimized = false;
+    restorePanel(e->panels, act.panelIdx, e->dockYaw,
+                 dashRingPitch(e->panels, e->dockPitch));
     if (e->bridge && act.taskId >= 0) {
         JNIEnv* env = threadEnv(e->vm);
         focusTask(e, env, act.taskId);

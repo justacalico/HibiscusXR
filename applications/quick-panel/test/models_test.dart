@@ -85,7 +85,7 @@ void main() {
       ToggleId.bluetooth,
       ToggleId.seethrough,
     ]);
-    expect(smallTiles, hasLength(8));
+    expect(smallTiles, hasLength(9));
     expect(panelTiles, [...largeTiles, ...smallTiles]);
   });
 

@@ -9,6 +9,7 @@ enum ToggleId {
   doNotDisturb,
   airplaneMode,
   batterySaver,
+  centerLaunch,
 }
 
 enum ActionId { resetView, reportProblem, aboutDevice, openSettings }

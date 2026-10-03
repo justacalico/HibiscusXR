@@ -65,6 +65,8 @@ No task ever lives on the keyboard display, so it is deliberately kept out of `v
 
 At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never evicted automatically. Minimized apps keep running in the background and park as icons on a shelf floating just above the dock; tapping a shelf icon (or the app's icon in the library) brings the same window back.
 
+The quick panel's "Center new apps" tile changes how windows take slots: every new app opens on the middle slot and slides the window already there to a free side, and when all three slots are taken the left window is parked on the shelf instead of evicted so the middle one can take its place. The toggle rides the `hibiscus_center_launch` Settings.Global key, read live by the HUD.
+
 The library's bar carries the × disc only: it can be closed but never minimized, and picking an app from it swaps the grid window out for the app it launched. Its dock pin brings it back.
 
 > [!NOTE]

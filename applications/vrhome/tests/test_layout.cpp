@@ -175,6 +175,97 @@ void testLayout() {
     ps[0].floating = true;
     CHECK_F(freeSlotYaw(ps, 0.0f), kSlotYaw[1], 1e-6f);
 
+    // a parked window holds no slot: a new window can take its old yaw
+    // and restorePanel re-slots it somewhere free
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps[0].minimized = true;
+    CHECK_F(freeSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+
+    // centre launch: an empty ring takes the middle slot
+    ps.clear();
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    // middle taken: the window there slides left and the newcomer still
+    // gets the middle
+    ps.push_back(mkPanel(0.0f));
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    // left also taken: the middle window slides right instead
+    ps.push_back(mkPanel(0.0f));
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
+    // all three slots taken: the left window parks, the middle one takes
+    // its slot, the newcomer gets the middle
+    ps.push_back(mkPanel(0.0f));
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    CHECK(ps[0].minimized);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);   // stale yaw kept for restore
+    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);   // right untouched
+    CHECK_F(ps[2].yaw, kSlotYaw[1], 1e-6f);   // middle slid left
+    // a parked window on the middle slot doesn't count as an occupant:
+    // the newcomer just lands there
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps[0].minimized = true;
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[0].yaw, kSlotYaw[0], 1e-6f);   // parked yaw untouched
+    // a floating window in the middle slides aside like a docked one
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps[0].floating = true;
+    CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK(ps[0].floating);                  // still floated
+    // the policy follows the ring centre
+    ps.clear();
+    ps.push_back(mkPanel(1.2f));
+    CHECK_F(centreSlotYaw(ps, 1.2f), 1.2f + kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[0].yaw, 1.2f + kSlotYaw[1], 1e-6f);
+
+    // restore: a parked window comes back on the free slot nearest its
+    // old yaw - here its own slot is still free, so it lands back on it
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[2]));
+    ps[0].minimized = true;
+    restorePanel(ps, 0, 0.0f, 0.3f);
+    CHECK(!ps[0].minimized);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK_F(ps[0].pitch, 0.3f, 1e-6f);
+    // its slot taken meanwhile: it lands on the next free one
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps[0].minimized = true;
+    restorePanel(ps, 0, 0.0f, 0.0f);
+    CHECK_F(ps[0].yaw, kSlotYaw[0], 1e-6f);
+
+    // eviction prefers a parked window over a live one, whatever the
+    // order in the list
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps[1].minimized = true;
+    CHECK(evictIndex(ps) == 1);
+
+    // more records than ring slots stay safe everywhere: three live
+    // windows plus a parked fourth must not overflow the slot scans
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[0]));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps.push_back(mkPanel(kSlotYaw[2]));
+    ps.push_back(mkPanel(0.4f));
+    ps[3].minimized = true;
+    {
+        const float fy = freeSlotYaw(ps, 0.0f);
+        for (int i = 0; i < 3; ++i)
+            CHECK(fabsf(wrapPi(ps[i].yaw - fy)) >= kPanelMinGap - 1e-4f);
+    }
+    recenterSlots(ps, 0.5f, 0.0f, 0.0f);
+    CHECK(ps[3].minimized);
+    CHECK_F(ps[3].yaw, 0.9f, 1e-5f);   // parked carries, never snaps
+
     // re-docking picks the free slot nearest the floating yaw: a floater
     // parked between centre and left lands on the left slot
     ps.clear();

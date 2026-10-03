@@ -121,6 +121,7 @@ void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
     e->mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
     e->mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
     e->mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
+    e->mCenterLaunch = env->GetMethodID(bc, "centerLaunch", "()Z");
     e->mUiStrVer     = env->GetMethodID(bc, "uiStringsVersion", "()I");
     e->mUiStrings    = env->GetMethodID(bc, "uiStrings",
                         "()[Ljava/lang/String;");
@@ -183,6 +184,24 @@ static float ringPitchNow(HudEngine* e) {
     return dashRingPitch(e->panels, e->dockPitch);
 }
 
+// where a new window lands: the centre-launch toggle takes the middle
+// slot and lets centreSlotYaw push or park whatever sits there; the
+// default fills the ring's free slots in order. Either way the row is
+// the dash's - slots sit around the strip's yaw and the elevation
+// follows it, so a window opens glued to the assembly instead of
+// wherever the gaze happened to be
+static float launchYaw(HudEngine* e) {
+    if (e->centerLaunch) return centreSlotYaw(e->panels, e->dockYaw);
+    return freeSlotYaw(e->panels, e->dockYaw);
+}
+
+// how many panel records may exist before a launch evicts: centre mode
+// parks the overflow on the shelf instead of closing it, so it can spend
+// the extra records
+static int panelCap(const HudEngine* e) {
+    return e->centerLaunch ? kMaxPanelRecs : kMaxPanels;
+}
+
 void pumpBridge(HudEngine* e) {
     if (!e->bridge) return;
     JNIEnv* env = threadEnv(e->vm);
@@ -208,7 +227,7 @@ void pumpBridge(HudEngine* e) {
         // new panel: its task and display are still alive
         const int mi = minimizedIndex(e->panels, pkg);
         if (mi >= 0) {
-            e->panels[mi].minimized = false;
+            restorePanel(e->panels, mi, e->dockYaw, ringPitchNow(e));
             if (e->panels[mi].taskId >= 0) {
                 env->CallVoidMethod(e->bridge, e->mFocusTask,
                                     e->panels[mi].taskId);
@@ -231,15 +250,11 @@ void pumpBridge(HudEngine* e) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        if ((int)e->panels.size() >= kMaxPanels && !evictOldestApp(e)) {
+        if ((int)e->panels.size() >= panelCap(e) && !evictOldestApp(e)) {
             env->DeleteLocalRef(jpkg);
             continue;
         }
-        // the window row is the dash's: slots sit around the strip's yaw
-        // and the elevation follows the strip, so a window opens glued to
-        // the assembly instead of wherever the gaze happened to be
-        const float yaw = freeSlotYaw(e->panels, e->dockYaw);
-        int idx = openPanel(e, yaw, ringPitchNow(e));
+        int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
         if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
         e->panels[idx].pkg = pkg;
         env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
@@ -267,6 +282,9 @@ void pumpBridge(HudEngine* e) {
     if (e->mSysMsgOnly)
         e->sysMsgOnly = env->CallBooleanMethod(e->bridge, e->mSysMsgOnly)
                         == JNI_TRUE;
+    if (e->mCenterLaunch)
+        e->centerLaunch = env->CallBooleanMethod(e->bridge, e->mCenterLaunch)
+                          == JNI_TRUE;
 
     if (!e->pendingCls) return;
 
@@ -284,9 +302,8 @@ void pumpBridge(HudEngine* e) {
         const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
         LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
         if (pc) env->ReleaseStringUTFChars(jpkg, pc);
-        if ((int)e->panels.size() >= kMaxPanels) evictOldestApp(e);
-        int idx = openPanel(e, freeSlotYaw(e->panels, e->dockYaw),
-                            ringPitchNow(e));
+        if ((int)e->panels.size() >= panelCap(e)) evictOldestApp(e);
+        int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
         if (idx >= 0) {
             e->panels[idx].taskId = taskId;
             if (jpkg) {

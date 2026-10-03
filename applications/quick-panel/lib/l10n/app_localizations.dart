@@ -164,6 +164,12 @@ abstract class AppLocalizations {
   /// **'Battery saver'**
   String get tileBatterySaver;
 
+  /// No description provided for @tileCenterLaunch.
+  ///
+  /// In en, this message translates to:
+  /// **'Center new apps'**
+  String get tileCenterLaunch;
+
   /// No description provided for @actionResetView.
   ///
   /// In en, this message translates to:

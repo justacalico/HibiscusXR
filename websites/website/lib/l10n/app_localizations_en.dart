@@ -244,10 +244,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Open VR home: 2D apps as floating windows, stock VR apps fullscreen.';
 
   @override
-  String get repoLibrary =>
-      'Flutter app grid inside vrhome - search, pin, group, launch.';
-
-  @override
   String get repoVrdemo =>
       'Minimal native VR test app (pn2vr) used for compositor bring-up.';
 

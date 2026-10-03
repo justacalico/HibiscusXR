@@ -536,12 +536,6 @@ abstract class AppLocalizations {
   /// **'Open VR home: 2D apps as floating windows, stock VR apps fullscreen.'**
   String get repoVrhome;
 
-  /// No description provided for @repoLibrary.
-  ///
-  /// In en, this message translates to:
-  /// **'Flutter app grid inside vrhome - search, pin, group, launch.'**
-  String get repoLibrary;
-
   /// No description provided for @repoVrdemo.
   ///
   /// In en, this message translates to:

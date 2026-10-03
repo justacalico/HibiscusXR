@@ -28,7 +28,6 @@ PAIRS=(
   # shared by the panel apps through a ../panel_theme path dep - has to
   # sit next to them in the flat layout for the reference to resolve
   "applications/panel_theme:panel_theme"
-  "applications/library:library"
   "applications/quick-panel:quick-panel"
   "applications/settings:settings"
   "applications/store:store"

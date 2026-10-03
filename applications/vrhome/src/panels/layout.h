@@ -49,28 +49,35 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
 // current yaw, falling back to the first free one
 float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre);
 
-// the strip n button discs reserve on the bar's right end: edge pad, the
+// the strip n button discs reserve on the pill's right end: edge pad, the
 // discs themselves and the gaps between them
-float barBtnsW(int n);
+float pillBtnsW(int n);
 
-// widest the label may get before it must shrink to stay inside the top
-// bar: the bar spans the window's full width, so the text region is what
-// the left pad and the button strip leave over. btns is the disc count
-float barTextLimit(float winHW, int btns);
+// the pill's half width for a window of half width hw: a fraction of the
+// window, never narrower than the strip the buttons and a label need
+float pillBarHW(float hw);
 
-// x of the float/minimize/close button centres inside the bar, in world
-// units measured from the bar centre toward its right edge
-float barCloseX(float winHW);
-float barMinX(float winHW);
-float barFloatX(float winHW);
+// how far under the window's centre the pill's centre hangs
+float pillDrop(float hh);
 
-// is (u,v) in panel coords inside the top bar band above the window; hw is
-// the window's scaled half width
-bool onBar(float u, float v, float hw, float hh);
+// widest the label may get before it must shrink to stay inside the pill:
+// the text region is what the left pad and the button strip leave over of
+// the pill's width. btns is the disc count
+float pillTextLimit(float pillHW, int btns);
 
-// which button a point on the bar hits: ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE
-// or ZONE_LABEL; hw/hh are the window's scaled half extents
-int barButtonAt(float u, float v, float hw, float hh);
+// x of the float/minimize/close button centres inside the pill, in world
+// units measured from the pill centre toward its right edge
+float pillCloseX(float pillHW);
+float pillMinX(float pillHW);
+float pillFloatX(float pillHW);
+
+// is (u,v) in panel coords inside the pill under the window; hw/hh are the
+// window's scaled half extents
+bool onPill(float u, float v, float hw, float hh);
+
+// which button a point on the pill hits: ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE
+// or ZONE_LABEL
+int pillButtonAt(float u, float v, float hw, float hh);
 
 // is (u,v) on the resize grip at the window's bottom-right corner
 bool onResizeGrip(float u, float v, float hw, float hh);

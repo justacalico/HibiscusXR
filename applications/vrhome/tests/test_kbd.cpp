@@ -44,7 +44,7 @@ void testKbd() {
         CHECK_F(r[i], pr[i], 1e-6f);
         CHECK_F(up[i], pu[i], 1e-6f);
     }
-    const float drop = kPanelH * 0.5f + kKbdGap + kKbdHH;
+    const float drop = kPanelH * 0.5f + kPillGap + kPillH + kKbdGap + kKbdHH;
     float n[3] = {o0[0] - pc[0], o0[1] - pc[1], o0[2] - pc[2]};
     const float nl = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
     const float pull = nl - kKbdDist;

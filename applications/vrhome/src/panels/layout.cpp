@@ -3,7 +3,6 @@
 #include "../anim/anim.h"
 #include "../common/config.h"
 #include "../math/head.h"
-#include "../pill/pill.h"
 
 #include <cmath>
 
@@ -145,52 +144,62 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
     }
 }
 
-float barBtnsW(int n) {
+float pillBtnsW(int n) {
     return n <= 0 ? 0.0f
-         : kBarBtnPad + n * 2.0f * kBarBtnR + (n - 1) * kBarBtnGap;
+         : kPillBtnPad + n * 2.0f * kPillBtnR + (n - 1) * kPillBtnGap;
 }
 
-float barTextLimit(float winHW, int btns) {
-    return 2.0f * (winHW - kBarPadX - barBtnsW(btns));
+float pillBarHW(float hw) {
+    const float w = hw * kPillWFrac;
+    return w < kPillMinHW ? kPillMinHW : w;
 }
 
-float barCloseX(float winHW) {
-    return winHW - kBarBtnPad - kBarBtnR;
+float pillDrop(float hh) {
+    return hh + kPillGap + kPillH * 0.5f;
 }
 
-float barMinX(float winHW) {
-    return barCloseX(winHW) - kBarBtnGap - 2.0f * kBarBtnR;
+float pillTextLimit(float pillHW, int btns) {
+    return 2.0f * (pillHW - kPillPadX - pillBtnsW(btns));
 }
 
-float barFloatX(float winHW) {
-    return barMinX(winHW) - kBarBtnGap - 2.0f * kBarBtnR;
+float pillCloseX(float pillHW) {
+    return pillHW - kPillBtnPad - kPillBtnR;
 }
 
-// panel-coord point -> world offset from the bar's centre. The bar sits
-// flush on the window's top edge: its bottom edge is v=1 exactly, nothing
-// of it covers the app surface
-static void barLocal(float u, float v, float hw, float hh,
-                     float* x, float* y) {
+float pillMinX(float pillHW) {
+    return pillCloseX(pillHW) - kPillBtnGap - 2.0f * kPillBtnR;
+}
+
+float pillFloatX(float pillHW) {
+    return pillMinX(pillHW) - kPillBtnGap - 2.0f * kPillBtnR;
+}
+
+// panel-coord point -> world offset from the pill's centre. The pill hangs
+// under the window's bottom edge with a gap: nothing of it covers the app
+// surface, and its horizontal extents are its own, not the window's
+static void pillLocal(float u, float v, float hw, float hh,
+                      float* x, float* y) {
     *x = u * hw;
-    *y = v * hh - hh - kBarH * 0.5f;
+    *y = v * hh + pillDrop(hh);
 }
 
-bool onBar(float u, float v, float hw, float hh) {
+bool onPill(float u, float v, float hw, float hh) {
     float x, y;
-    barLocal(u, v, hw, hh, &x, &y);
-    return fabsf(x) <= hw && fabsf(y) <= kBarH * 0.5f;
+    pillLocal(u, v, hw, hh, &x, &y);
+    return fabsf(x) <= pillBarHW(hw) && fabsf(y) <= kPillH * 0.5f;
 }
 
-int barButtonAt(float u, float v, float hw, float hh) {
+int pillButtonAt(float u, float v, float hw, float hh) {
     float x, y;
-    barLocal(u, v, hw, hh, &x, &y);
+    pillLocal(u, v, hw, hh, &x, &y);
+    const float phw = pillBarHW(hw);
     // square hit area a touch bigger than the disc: gaze aim is coarse
-    const float r = kBarBtnR + 0.008f;
-    if (fabsf(x - barCloseX(hw)) <= r && fabsf(y) <= r)
+    const float r = kPillBtnR + 0.008f;
+    if (fabsf(x - pillCloseX(phw)) <= r && fabsf(y) <= r)
         return ZONE_CLOSE;
-    if (fabsf(x - barMinX(hw)) <= r && fabsf(y) <= r)
+    if (fabsf(x - pillMinX(phw)) <= r && fabsf(y) <= r)
         return ZONE_MIN;
-    if (fabsf(x - barFloatX(hw)) <= r && fabsf(y) <= r)
+    if (fabsf(x - pillFloatX(phw)) <= r && fabsf(y) <= r)
         return ZONE_FLOAT;
     return ZONE_LABEL;
 }
@@ -282,16 +291,15 @@ Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
         if (!rayPanel(p, origin, o, d, &u, &v, &t)) continue;
         if (t >= bestT) continue;
         int zone = ZONE_NONE;
-        // the bar's bottom edge is the window's top edge: the bar check
-        // runs first so a ray landing on that shared edge picks chrome,
-        // never a tap on the app surface under it
-        if (onBar(u, v, hw, hh)) {
-            zone = barButtonAt(u, v, hw, hh);
+        // the pill hangs below the window's bottom edge: check chrome
+        // before the app surface so the overlap edge picks the pill. On a
+        // floating window the pill's body doubles as its move handle, on a
+        // docked one it just focuses the task on tap
+        if (onPill(u, v, hw, hh)) {
+            zone = pillButtonAt(u, v, hw, hh);
+            if (zone == ZONE_LABEL && p.floating) zone = ZONE_PILL;
         } else if (onResizeGrip(u, v, hw, hh)) {
             zone = ZONE_RESIZE;
-        } else if (p.floating && onMovePill(u, v, hw, hh)) {
-            // floating windows carry the shared move pill under the quad
-            zone = ZONE_PILL;
         } else if (fabsf(u) <= 1.0f && fabsf(v) <= 1.0f) {
             zone = ZONE_WINDOW;
         }

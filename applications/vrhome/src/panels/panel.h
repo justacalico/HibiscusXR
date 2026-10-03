@@ -6,12 +6,12 @@
 enum Zone {
     ZONE_NONE   = -1,
     ZONE_WINDOW = 0,   // the app surface
-    ZONE_LABEL,        // the top bar, off the buttons
+    ZONE_LABEL,        // the under-window pill, off the buttons
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
     ZONE_FLOAT,        // float button: unpin the window off the slot grid
     ZONE_RESIZE,       // corner grip on the window's bottom-right
-    ZONE_PILL,         // move pill under a floating window
+    ZONE_PILL,         // pill body on a floating window: its move handle
 };
 
 // One floating window: a GL texture fed by a virtual display plus the task

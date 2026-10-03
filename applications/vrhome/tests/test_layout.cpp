@@ -303,54 +303,55 @@ void testLayout() {
     float away[3] = {0, 0, 1};
     CHECK(!rayPanel(ps[0], o0, o0, away, &ru, &rv, &rt));
 
-    // top bar sizing: the text region is the window's width minus the left
-    // pad and whatever the button strip reserves on the right
+    // the pill's sizing: its width is a fraction of the window's, and the
+    // text region is that minus the left pad and the button strip
     const float winHW = kPanelW / 2;
     const float winHH = kPanelH / 2;
-    CHECK_F(barBtnsW(0), 0.0f, 1e-6f);
-    CHECK_F(barBtnsW(3),
-            kBarBtnPad + 6.0f * kBarBtnR + 2.0f * kBarBtnGap, 1e-6f);
-    CHECK_F(barBtnsW(1), kBarBtnPad + 2.0f * kBarBtnR, 1e-6f);
-    CHECK_F(barTextLimit(winHW, 0), 2.0f * (winHW - kBarPadX), 1e-6f);
-    CHECK_F(barTextLimit(winHW, 3),
-            2.0f * (winHW - kBarPadX - barBtnsW(3)), 1e-6f);
-    CHECK(barTextLimit(winHW, 3) < kPanelW);
-    CHECK(barTextLimit(winHW, 3) < barTextLimit(winHW, 2));
-    CHECK(barTextLimit(winHW, 1) < barTextLimit(winHW, 0));
+    const float phw = pillBarHW(winHW);
+    CHECK_F(phw, winHW * kPillWFrac, 1e-6f);
+    CHECK_F(pillBarHW(0.0f), kPillMinHW, 1e-6f);   // shrunken window: floor
+    CHECK(pillBtnsW(3) < 2.0f * phw);              // the strip always fits
+    CHECK_F(pillBtnsW(0), 0.0f, 1e-6f);
+    CHECK_F(pillBtnsW(3),
+            kPillBtnPad + 6.0f * kPillBtnR + 2.0f * kPillBtnGap, 1e-6f);
+    CHECK_F(pillBtnsW(1), kPillBtnPad + 2.0f * kPillBtnR, 1e-6f);
+    CHECK_F(pillTextLimit(phw, 0), 2.0f * (phw - kPillPadX), 1e-6f);
+    CHECK_F(pillTextLimit(phw, 3),
+            2.0f * (phw - kPillPadX - pillBtnsW(3)), 1e-6f);
+    CHECK(pillTextLimit(phw, 3) < kPanelW);
+    CHECK(pillTextLimit(phw, 3) < pillTextLimit(phw, 2));
+    CHECK(pillTextLimit(phw, 1) < pillTextLimit(phw, 0));
 
     // button layout: close hugs the right edge, minimize and float march
     // left from it
-    CHECK_F(barCloseX(winHW), winHW - kBarBtnPad - kBarBtnR, 1e-6f);
-    CHECK_F(barMinX(winHW),
-            winHW - kBarBtnPad - 3.0f * kBarBtnR - kBarBtnGap, 1e-6f);
-    CHECK_F(barFloatX(winHW),
-            winHW - kBarBtnPad - 5.0f * kBarBtnR - 2.0f * kBarBtnGap,
+    CHECK_F(pillCloseX(phw), phw - kPillBtnPad - kPillBtnR, 1e-6f);
+    CHECK_F(pillMinX(phw),
+            phw - kPillBtnPad - 3.0f * kPillBtnR - kPillBtnGap, 1e-6f);
+    CHECK_F(pillFloatX(phw),
+            phw - kPillBtnPad - 5.0f * kPillBtnR - 2.0f * kPillBtnGap,
             1e-6f);
-    CHECK(barFloatX(winHW) < barMinX(winHW) &&
-          barMinX(winHW) < barCloseX(winHW));
+    CHECK(pillFloatX(phw) < pillMinX(phw) &&
+          pillMinX(phw) < pillCloseX(phw));
 
-    // the bar band sits flush on the window's top edge: centred v is on
-    // it, the window's midriff and points above the bar are not
-    const float barVC = (kPanelH * 0.5f + kBarH * 0.5f) / (kPanelH * 0.5f);
-    CHECK(onBar(0.0f, barVC, winHW, winHH));
-    CHECK(!onBar(0.0f, 0.0f, winHW, winHH));
-    CHECK(!onBar(0.0f, barVC + 0.20f, winHW, winHH));
-    CHECK(!onBar(0.0f, barVC - 0.30f, winHW, winHH));
-    CHECK(!onBar(1.05f, barVC, winHW, winHH));
-    // the bar's bottom edge is the window's top edge: the edge itself is
-    // bar, a hair inside the window is not, a hair above it is
-    const float eps = 0.004f / (kPanelH * 0.5f);
-    CHECK(onBar(0.0f, 1.0f, winHW, winHH));
-    CHECK(!onBar(0.0f, 1.0f - eps, winHW, winHH));
-    CHECK(onBar(0.0f, 1.0f + eps, winHW, winHH));
-    // button hits land on their discs, the middle of the bar is label
-    const float uc = barCloseX(winHW) / (kPanelW * 0.5f);
-    const float um = barMinX(winHW) / (kPanelW * 0.5f);
-    const float uf = barFloatX(winHW) / (kPanelW * 0.5f);
-    CHECK(barButtonAt(uc, barVC, winHW, winHH) == ZONE_CLOSE);
-    CHECK(barButtonAt(um, barVC, winHW, winHH) == ZONE_MIN);
-    CHECK(barButtonAt(uf, barVC, winHW, winHH) == ZONE_FLOAT);
-    CHECK(barButtonAt(0.0f, barVC, winHW, winHH) == ZONE_LABEL);
+    // the pill hangs under the window's bottom edge: centred v on it hits,
+    // the window's midriff and points below the pill do not
+    const float pillVC = -(winHH + kPillGap + kPillH * 0.5f) / winHH;
+    CHECK_F(pillDrop(winHH), winHH + kPillGap + kPillH * 0.5f, 1e-6f);
+    CHECK(onPill(0.0f, pillVC, winHW, winHH));
+    CHECK(!onPill(0.0f, 0.0f, winHW, winHH));
+    CHECK(!onPill(0.0f, pillVC + 0.20f, winHW, winHH));
+    CHECK(!onPill(0.0f, pillVC - 0.30f, winHW, winHH));
+    CHECK(!onPill(1.05f, pillVC, winHW, winHH));   // pill is narrower
+    CHECK(onPill(phw * 0.98f / winHW, pillVC, winHW, winHH));
+    CHECK(!onPill(phw * 1.05f / winHW, pillVC, winHW, winHH));
+    // button hits land on their discs, the middle of the pill is label
+    const float uc = pillCloseX(phw) / winHW;
+    const float um = pillMinX(phw) / winHW;
+    const float uf = pillFloatX(phw) / winHW;
+    CHECK(pillButtonAt(uc, pillVC, winHW, winHH) == ZONE_CLOSE);
+    CHECK(pillButtonAt(um, pillVC, winHW, winHH) == ZONE_MIN);
+    CHECK(pillButtonAt(uf, pillVC, winHW, winHH) == ZONE_FLOAT);
+    CHECK(pillButtonAt(0.0f, pillVC, winHW, winHH) == ZONE_LABEL);
 
     // the resize grip rides the bottom-right corner; the opposite corner
     // and the midriff are window
@@ -388,17 +389,17 @@ void testLayout() {
     pk = pickPanel(ps, side, o0, o0);
     CHECK(pk.idx == 0);
     {
-        // the pill spot under a docked window picks nothing; the same spot
-        // under a floating one is ZONE_PILL
+        // the pill body under a docked window is ZONE_LABEL; under a
+        // floating one it becomes the move handle
         Mat4 pam = identity();
         float c0[3], r0[3], u0[3];
         panelCenter(ps[0], o0, c0, r0, u0);
-        const float drop = movePillDrop(panelHH(ps[0]));
+        const float drop = pillDrop(panelHH(ps[0]));
         pam.m[2] = -(c0[0] - u0[0] * drop);
         pam.m[6] = -(c0[1] - u0[1] * drop);
         pam.m[10] = -(c0[2] - u0[2] * drop);
         pk = pickPanel(ps, pam, o0, o0);
-        CHECK(pk.idx == -1);
+        CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
         ps[0].floating = true;
         pk = pickPanel(ps, pam, o0, o0);
         CHECK(pk.idx == 0 && pk.zone == ZONE_PILL);
@@ -409,29 +410,32 @@ void testLayout() {
     // world point (pickPanel only reads the head's -z column)
     ps.clear();
     ps.push_back(mkPanel(0.0f));
-    const float barY = kPanelY + kPanelH * 0.5f + kBarH * 0.5f;
+    const float pillY = kPanelY - pillDrop(kPanelH * 0.5f);
     Mat4 aim = identity();
-    aim.m[2] = -0.0f; aim.m[6] = -barY; aim.m[10] = kPanelDist;
-    pk = pickPanel(ps, aim, o0, o0);   // dead centre of the bar: the label
+    aim.m[2] = -0.0f; aim.m[6] = -pillY; aim.m[10] = kPanelDist;
+    pk = pickPanel(ps, aim, o0, o0);   // dead centre of the pill: the label
     CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
-    aim.m[2] = -barCloseX(winHW);   // right end: the close button
+    aim.m[2] = -pillCloseX(phw);    // right end: the close button
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_CLOSE);
-    aim.m[2] = -barMinX(winHW);     // next to it: minimize
+    aim.m[2] = -pillMinX(phw);      // next to it: minimize
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_MIN);
-    aim.m[2] = -barFloatX(winHW);   // left of that: float
+    aim.m[2] = -pillFloatX(phw);    // left of that: float
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_FLOAT);
-    // just inside the top edge is app content, just above it is the bar
+    // just inside the bottom edge is app content, just below it is the gap
     aim.m[2] = -0.0f;
-    aim.m[6] = -(kPanelY + kPanelH * 0.5f - 0.01f);
+    aim.m[6] = -(kPanelY - kPanelH * 0.5f + 0.01f);
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_WINDOW);
-    aim.m[6] = -(kPanelY + kPanelH * 0.5f + kBarH * 0.25f);
+    aim.m[6] = -(kPanelY - kPanelH * 0.5f - kPillGap * 0.5f);
+    pk = pickPanel(ps, aim, o0, o0);
+    CHECK(pk.idx == -1);
+    aim.m[6] = -(kPanelY - kPanelH * 0.5f - kPillGap - kPillH * 0.25f);
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_LABEL);
-    aim.m[6] = -(barY + 0.30f);     // way above the bar: nothing
+    aim.m[6] = -(pillY - 0.30f);    // way below the pill: nothing
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == -1 && pk.zone == ZONE_NONE);
 
@@ -466,13 +470,13 @@ void testLayout() {
     dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
-    // every window's bar carries all three discs: float, minimize, close
+    // every window's pill carries all three discs: float, minimize, close
     ps.clear();
     ps.push_back(mkPanel(0.0f, "com.x.app"));
-    aim.m[2] = -barCloseX(winHW); aim.m[6] = -barY;
+    aim.m[2] = -pillCloseX(phw); aim.m[6] = -pillY;
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_CLOSE);
-    aim.m[2] = -barFloatX(winHW);
+    aim.m[2] = -pillFloatX(phw);
     pk = pickPanel(ps, aim, o0, o0);
     CHECK(pk.idx == 0 && pk.zone == ZONE_FLOAT);
 

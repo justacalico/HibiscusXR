@@ -88,16 +88,21 @@ constexpr float kKbdHW = 0.56f, kKbdHH = 0.196f;  // world half extents
 constexpr float kKbdDist = 1.15f;   // metres off the eye, in front of dock
 constexpr float kKbdGap = 0.03f;    // view-space dip below the host window
 
-// window chrome: a top bar bound to each panel's top edge, holding the app
-// name. It sits flush on the surface - square bottom corners on a square
-// top edge - so the pair reads as one rounded shape
-constexpr float kBarH = 0.085f;
+// window chrome: a Quest-style pill floating under each panel's bottom
+// edge, holding the app name on the left and the buttons on the right.
+// The window itself keeps all four corners rounded - nothing bound to it
+constexpr float kPillH = 0.085f;      // pill height
+constexpr float kPillGap = 0.026f;    // window bottom edge to pill top
+constexpr float kPillWFrac = 0.62f;   // pill half width vs window half width
+// narrowest the pill gets: the button strip plus a sliver of label must
+// always fit, even on a heavily shrunken window
+constexpr float kPillMinHW = 0.36f;
 constexpr float kDragGain = 1.5f;     // drag point runs ahead of the gaze
-constexpr float kBarPadX = 0.070f;    // label padding inside the bar's left end
-// float + minimize + close circles on the bar's right end
-constexpr float kBarBtnR = 0.028f;    // button disc radius
-constexpr float kBarBtnGap = 0.014f;  // between the discs
-constexpr float kBarBtnPad = 0.014f;  // close disc's margin to the bar edge
+constexpr float kPillPadX = 0.070f;   // label padding inside the pill's left end
+// float + minimize + close circles on the pill's right end
+constexpr float kPillBtnR = 0.028f;   // button disc radius
+constexpr float kPillBtnGap = 0.014f; // between the discs
+constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
 constexpr float kCornerR = 0.028f;
 
 // drag handle: a short white line centred under the dock strip. Holding

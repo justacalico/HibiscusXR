@@ -36,6 +36,9 @@
     <uses-permission android:name="android.permission.START_ACTIVITIES_FROM_BACKGROUND" />
     <!-- lets the service enable its own accessibility key filter -->
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!-- HomeLock's persistent home pin: setHomeActivity and
+         clearPackagePreferredActivities are signature-gated -->
+    <uses-permission android:name="android.permission.SET_PREFERRED_APPLICATIONS" />
     <!-- dropbox crash/ANR entries behind the system-message cards;
          getNextEntry checks PACKAGE_USAGE_STATS on this build -->
     <uses-permission android:name="android.permission.READ_LOGS" />

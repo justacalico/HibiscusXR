@@ -62,6 +62,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private HudView view;
     private WindowManager.LayoutParams lp;
     private ShellBridge bridge;
+    private HomeLock homeLock;
     private static volatile HudService instance;
 
     // start hidden: the first poll decides; a game booting before the
@@ -128,6 +129,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             @Override public void run() { onSysMsgChanged(); }
         });
         SysMsgs.start(this);
+        homeLock = new HomeLock(this);
         instance = this;
         loadDebugHud();
         getContentResolver().registerContentObserver(

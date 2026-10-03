@@ -318,30 +318,58 @@ stream_cmd_lines(int fd, const char *cmd, const char *prefix)
 	return 0;
 }
 
+// pump a child's byte stream straight to the socket - the child already
+// speaks the FRAME wire format, so no framing happens here. poll() lets a
+// quiet child get noticed after the peer disconnects.
+static int
+stream_cmd_bytes(int fd, const char *cmd)
+{
+	FILE *f = popen(cmd, "r");
+	if (f == NULL) {
+		return sendf(fd, "+ERR %s failed\n", cmd);
+	}
+	int pfd = fileno(f);
+	fcntl(pfd, F_SETFL, fcntl(pfd, F_GETFL) | O_NONBLOCK);
+
+	uint8_t buf[1 << 16];
+	for (;;) {
+		struct pollfd p = {.fd = pfd, .events = POLLIN};
+		int pr = poll(&p, 1, 500);
+		if (pr < 0 || (p.revents & (POLLERR | POLLHUP))) {
+			break;
+		}
+		if (!sock_alive(fd)) {
+			break;
+		}
+		if (!(p.revents & POLLIN)) {
+			continue;
+		}
+		ssize_t r = read(pfd, buf, sizeof(buf));
+		if (r <= 0) {
+			break;
+		}
+		if (send_all(fd, buf, (size_t)r) != 0) {
+			break;
+		}
+	}
+	pclose(f);
+	return 0;
+}
+
+// the capture loop emits the FRAME wire format itself, back to back -
+// respawning screencap per request capped the mirror at a couple fps.
+// /data/local/tmp is the usual shell scratch spot: one small png file,
+// rewritten each pass.
 static void
 cmd_frames(int fd)
 {
-	while (sock_alive(fd)) {
-		FILE *f = popen("screencap -p", "r");
-		if (f == NULL) {
-			break;
-		}
-		size_t n = 0;
-		char *png = read_stream(f, &n);
-		pclose(f);
-		if (png == NULL || n == 0) {
-			free(png);
-			send_str(fd, "+ERR screencap failed\n");
-			break;
-		}
-		sendf(fd, "FRAME %zu\n", n);
-		if (send_all(fd, png, (size_t)n) != 0) {
-			free(png);
-			break;
-		}
-		free(png);
-		usleep(400 * 1000);
-	}
+	stream_cmd_bytes(fd,
+	                 "f=/data/local/tmp/.cte-frame.png; "
+	                 "while :; do "
+	                 "if screencap -p $f 2>/dev/null && [ -s $f ]; then "
+	                 "s=$(wc -c <$f); echo FRAME $s; cat $f; "
+	                 "else echo '+ERR screencap failed'; sleep 2; "
+	                 "fi; done");
 }
 
 static void

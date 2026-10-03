@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../l10n/app_localizations.dart';
 import '../src/app_state.dart';
 
-/// Live screen mirror - screencap frames, a couple a second.
+/// Live screen mirror - screencap frames piped back to back.
 class DisplayPage extends StatelessWidget {
   const DisplayPage({super.key, required this.state});
 
@@ -33,7 +33,9 @@ class DisplayPage extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (state.framesSeen > 0)
-                  Text('${state.framesSeen} frames',
+                  Text(
+                      l10n.displayStats('${state.framesSeen}',
+                          state.frameRate.toStringAsFixed(1)),
                       style: Theme.of(context)
                           .textTheme
                           .bodySmall

@@ -21,7 +21,7 @@ a single `+`-prefixed result or a stream until disconnect.
 | `PING` | `+PONG` |
 | `INFO` | `+JSON <len>\n` + JSON: `model`, `device`, `tracking`, `battery`, `props{}` |
 | `PROPS` | `+TEXT <len>\n` + raw `getprop` output |
-| `FRAMES` | repeating `FRAME <len>\n` + PNG bytes (screencap, ~2.5 fps) |
+| `FRAMES` | repeating `FRAME <len>\n` + PNG bytes (persistent screencap loop, back to back) |
 | `POSE` | `POSELOG <line>\n` stream of the pose logcat tags (`pn2pose`, `hibiscuspose`) |
 | `CTRL` | `CTRL <idx> live= batt= px= py= pz= qx= qy= qz= qw= trk= sx= sy= a= b= menu= sys= trig= grip=` lines |
 | `LOG` | `LOG <line>\n` logcat stream |

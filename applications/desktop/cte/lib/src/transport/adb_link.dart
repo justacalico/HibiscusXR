@@ -8,6 +8,7 @@ import '../link.dart';
 import '../models.dart';
 import '../pose_log.dart';
 import '../props.dart';
+import '../proto.dart';
 
 /// HeadsetLink over the `adb` CLI: USB devices and wireless adb both land
 /// here - `adb connect` handles the wireless side.
@@ -64,18 +65,28 @@ class AdbLink extends HeadsetLink {
     }
   }
 
-  /// screencap exits per frame, so poll it. exec-out keeps the PNG bytes
-  /// raw (no PTY mangling).
+  /// The on-device capture loop - emits the same `FRAME <len>` wire
+  /// format cted serves, so CteWireReader parses it unchanged. One
+  /// persistent exec-out keeps frames coming back to back; respawning
+  /// screencap per request capped the mirror at a couple fps.
+  static const frameLoop = 'f=/data/local/tmp/.cte-frame.png; '
+      'while :; do '
+      'if screencap -p \$f 2>/dev/null && [ -s \$f ]; then '
+      's=\$(wc -c <\$f); echo FRAME \$s; cat \$f; '
+      "else echo '+ERR screencap failed'; sleep 2; "
+      'fi; done';
+
+  /// exec-out keeps the stream binary-safe (no PTY mangling).
   @override
-  Stream<Uint8List> frames({Duration interval = const Duration(milliseconds: 400)}) async* {
-    while (true) {
-      final buf = BytesBuilder(copy: false);
-      await for (final chunk in _adb.execOut(serial, ['screencap', '-p'])) {
-        buf.add(chunk);
+  Stream<Uint8List> frames() async* {
+    final reader = CteWireReader(_adb.execOut(serial, [frameLoop]));
+    try {
+      await for (final m in reader.messages) {
+        if (m is CteFrameMsg) yield m.png;
+        if (m is CteErrorMsg) throw Exception(m.message);
       }
-      final png = buf.takeBytes();
-      if (png.isNotEmpty) yield png;
-      await Future<void>.delayed(interval);
+    } finally {
+      await reader.dispose();
     }
   }
 

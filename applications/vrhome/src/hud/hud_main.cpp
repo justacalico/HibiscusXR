@@ -11,6 +11,7 @@
 #include "engine.h"
 #include "debug_hooks.h"
 #include "status.h"
+#include "quiet.h"
 
 #include "../anim/anim.h"
 #include "../bridge/bridge.h"
@@ -138,6 +139,42 @@ static void hudScene(Engine* e, const Mat4& vp) {
     // the hold ring is a flat overlay: it draws on top of the live scene and
     // ignores vp entirely, so it stays put while the world shifts around it
     drawHoldRing(h);
+}
+
+// gathers the live state into the POD the pure rule consumes; pose deltas
+// are read off prevAim, which is refreshed on every call - busy or not
+static void hudQuietSample(HudEngine* e, HudQuietIn* q) {
+    *q = {};
+    q->panels = !e->panels.empty();
+    q->grid = e->grid.openT > 0.0f || e->grid.shown;
+    q->notifs = !e->notifs.empty();
+    q->sysmsgs = !e->sysMsgs.empty();
+    q->toastOnly = e->toastOnly;
+    q->sysMsgOnly = e->sysMsgOnly;
+    q->debugOnly = e->debugOnly;
+    q->kbd = e->kbd.only || e->kbd.shown || e->kbd.pressed || e->kbd.moveHeld;
+    q->holdRing = e->holdStartMs != 0 || e->holdP > 0.0f;
+    q->held = e->confirmHeld || e->moveHeld || e->sysPress;
+    q->presses = e->dockPress >= 0 || e->shelfPress >= 0 ||
+                 e->notifPress >= 0 || e->sysMsgPress >= 0 ||
+                 e->grid.press >= 0 || e->grid.scrollHeld ||
+                 e->pressDisp >= 0 || e->dragDisp >= 0 ||
+                 e->dockPinP > 0.0f;
+    q->recentSummon = e->frameMs - e->summonMs < 1500;
+    {
+        std::lock_guard<std::mutex> lk(e->keyMu);
+        q->inputPending = !e->ctrlEv.empty() || !e->keyQ.empty();
+    }
+    const float dx = e->aimO[0] - e->prevAimO[0];
+    const float dy = e->aimO[1] - e->prevAimO[1];
+    const float dz = e->aimO[2] - e->prevAimO[2];
+    const float ux = e->aimD[0] - e->prevAimD[0];
+    const float uy = e->aimD[1] - e->prevAimD[1];
+    const float uz = e->aimD[2] - e->prevAimD[2];
+    q->aimMoved = dx * dx + dy * dy + dz * dz > 0.0001f ||
+                  ux * ux + uy * uy + uz * uz > 0.0025f;
+    memcpy(e->prevAimO, e->aimO, sizeof(e->prevAimO));
+    memcpy(e->prevAimD, e->aimD, sizeof(e->prevAimD));
 }
 
 static void hudFrame(HudEngine* e) {
@@ -485,6 +522,19 @@ static void hudFrame(HudEngine* e) {
     // what adopts strays and keeps the displays alive - but there is nothing
     // to present and no vsync to pace us
     if (!e->ready) { usleep(33000); return; }
+
+    // covered and quiet: with no panels, cards, keyboard or gestures up the
+    // only thing on screen is a static strip and cursor. A stereo+warp pass
+    // every vsync then only starves the app underneath of GPU, so presents
+    // drop to a low cadence; anything changing flips back on the next tick
+    if (e->covered) {
+        HudQuietIn q;
+        hudQuietSample(e, &q);
+        if (hudQuietBusy(q)) e->lastBusyMs = now;
+        if (hudQuiet(q, now - e->lastBusyMs, 1000) &&
+            ++e->quietDiv < 6) { usleep(8000); return; }
+    }
+    e->quietDiv = 0;
 
     char extra[48];
     snprintf(extra, sizeof(extra), "  PNL %zu%s", e->panels.size(),

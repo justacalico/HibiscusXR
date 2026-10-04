@@ -86,6 +86,15 @@ struct HudEngine : Engine {
     long long animMs = 0;
     long long summonMs = 0;
 
+    // quiet-frame throttle: lastBusyMs stamps the last frame that saw
+    // anything animate or come in; while covered and quiet the draw runs
+    // at a low cadence instead of every vsync. prevAim tracks controller
+    // pose deltas; quietDiv counts draws between idle presents
+    long long lastBusyMs = 0;
+    float prevAimO[3] = {0.0f, 0.0f, 0.0f};
+    float prevAimD[3] = {0.0f, 0.0f, -1.0f};
+    int quietDiv = 0;
+
     int hover = -1;              // panel index under the gaze ray
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit

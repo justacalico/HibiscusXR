@@ -19,6 +19,7 @@ sed -i -E '/^#?(REVERTED )?ro\.surface_flinger\.primary_display_orientation/d' /
 sed -i -E '/^#?(REVERTED )?ro\.sf\.hwrotation/d' /system/build.prop
 sed -i -E '/^ro\.product\.device=/d' /system/build.prop
 sed -i -E '/^ro\.product\.model=/d' /system/build.prop
+sed -i -E '/^ro\.product\.manufacturer=/d' /system/build.prop
 
 # make sure the file ends with a newline before appending, or we glue lines again
 tail -c1 /system/build.prop | od -An -c | grep -q '\\n' || echo "" >> /system/build.prop
@@ -28,6 +29,7 @@ ro.surface_flinger.primary_display_orientation=ORIENTATION_90
 ro.sf.hwrotation=90
 ro.product.device=PICOA7B10
 ro.product.model=Pico Neo 2
+ro.product.manufacturer=Pico
 EOF
 
 sync

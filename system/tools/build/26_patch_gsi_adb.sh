@@ -31,9 +31,11 @@ echo "$PW" | sudo -S sed -i -E '/^(persist\.sys\.usb\.config|ro\.adb\.secure|ro\
 echo "$PW" | sudo -S tee -a "$M/build.prop" >/dev/null <<'EOF'
 
 # --- added for Pico Neo 2 bring-up -------------------------------------------
-# Fresh /data has no persisted USB config, so default the gadget to adb+mtp and
+# Fresh /data has no persisted USB config, so default the gadget to mtp+adb and
 # drop adb auth. Bring-up only; remove for any release build.
-persist.sys.usb.config=adb,mtp
+# Order matters: init only has triggers for "adb" or "X,adb" - "adb,mtp"
+# matches nothing and the gadget never comes up.
+persist.sys.usb.config=mtp,adb
 ro.adb.secure=0
 ro.debuggable=1
 ro.secure=0
@@ -48,7 +50,7 @@ if [ -f "$M/etc/prop.default" ]; then
   echo "=== also patching /etc/prop.default ==="
   echo "$PW" | sudo -S sed -i -E '/^(persist\.sys\.usb\.config|ro\.adb\.secure|ro\.debuggable|ro\.secure)=/d' "$M/etc/prop.default"
   echo "$PW" | sudo -S tee -a "$M/etc/prop.default" >/dev/null <<'EOF'
-persist.sys.usb.config=adb,mtp
+persist.sys.usb.config=mtp,adb
 ro.adb.secure=0
 ro.debuggable=1
 ro.secure=0

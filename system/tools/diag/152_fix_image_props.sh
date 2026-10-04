@@ -55,6 +55,7 @@ ro.sf.hwrotation=90
 # Device identity. pvrservice and friends read these.
 ro.product.device=PICOA7B10
 ro.product.model=Pico Neo 2
+ro.product.manufacturer=Pico
 EOF
 
   sed -i -E 's/^ro\.build\.product=.*/ro.build.product=PICOA7B10/' "$T/bp"

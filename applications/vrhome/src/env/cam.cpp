@@ -26,6 +26,7 @@
 
 #include <sys/system_properties.h>
 #include <cstdio>
+#include <ctime>
 #include <vector>
 #include <cstdint>
 #include <cstring>
@@ -49,6 +50,7 @@ struct PtCam {
     ANativeWindow* anw = nullptr;
     bool perm = false;
     bool opening = false;      // a start is in flight this frame
+    long long retryMs = 0;     // CLOCK_MONOTONIC ms of the last failed start
 };
 
 void onDisconnected(void*, ACameraDevice*) {
@@ -195,10 +197,18 @@ void ptTick(Engine* e) {
             return;
         }
     }
-    if (c->ses || c->dev) teardown(e, c);   // half-dead: rebuild clean
+    if (c->ses || c->dev || c->mgr) teardown(e, c);   // half-dead: rebuild clean
+    // a failed open churns the camera service hard - retry on a slow
+    // backoff, not every frame
+    struct timespec rts;
+    clock_gettime(CLOCK_MONOTONIC, &rts);
+    const long long nowMs =
+        (long long)rts.tv_sec * 1000 + rts.tv_nsec / 1000000;
+    if (nowMs - c->retryMs < 2000) return;
+    c->retryMs = nowMs;
     c->opening = true;
     if (!start(e, c)) {
-        // stay on the sky scene; retry next frame
+        // stay on the sky scene; retry in a couple seconds
         e->ptLive = false;
     }
     c->opening = false;

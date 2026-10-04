@@ -154,6 +154,7 @@ if [ -s "$TMP/build.prop" ]; then
     sed -i 's/^ro\.build\.product=.*/ro.build.product=PICOA7B10/' "$TMP/build.prop"
     grep -q '^ro.product.device=' "$TMP/build.prop" || echo 'ro.product.device=PICOA7B10' >> "$TMP/build.prop"
     grep -q '^ro.product.model='  "$TMP/build.prop" || echo 'ro.product.model=Pico Neo 2' >> "$TMP/build.prop"
+    grep -q '^ro.product.manufacturer=' "$TMP/build.prop" || echo 'ro.product.manufacturer=Pico' >> "$TMP/build.prop"
     put "$TMP/build.prop" "/build.prop" 600
   fi
   echo "  --- our block as it now reads ---"

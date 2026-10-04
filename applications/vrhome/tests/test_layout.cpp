@@ -561,6 +561,58 @@ void testLayout() {
     dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
 
+    // docked-window pill drag: a small pull keeps the window on its own
+    // slot, crossing the midpoint hops it to the next space and the
+    // window sitting there trades places with it
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[0]));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    slotDrag(ps, 0, 0.0f, 0.30f);
+    CHECK_F(ps[0].yaw, kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[1], 1e-6f);
+    slotDrag(ps, 0, 0.0f, -0.50f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[0], 1e-6f);
+    // onward to the empty right space: dragged lands, the other stays put
+    slotDrag(ps, 0, 0.0f, 0.60f);
+    CHECK_F(ps[0].yaw, kSlotYaw[2], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[0], 1e-6f);
+    // dragging back over the middle swaps again - the whole row is
+    // reachable by pulling the pill through it
+    slotDrag(ps, 0, 0.0f, 0.10f);
+    CHECK_F(ps[0].yaw, kSlotYaw[0], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);   // occupant took the right slot
+    // a floating window blocks its slot like a docked one: the dragged
+    // window still takes the space and the floater slides into the old
+    // slot without losing its float
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[0]));
+    Panel fl2 = mkPanel(kSlotYaw[1]);
+    fl2.floating = true;
+    ps.push_back(fl2);
+    slotDrag(ps, 0, 0.0f, -0.60f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[0], 1e-6f);
+    CHECK(ps[1].floating);
+    // a parked window holds no slot: its stale yaw is untouched and the
+    // space is taken as free
+    ps.clear();
+    ps.push_back(mkPanel(kSlotYaw[0]));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps[1].minimized = true;
+    slotDrag(ps, 0, 0.0f, -0.60f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    CHECK_F(ps[1].yaw, kSlotYaw[1], 1e-6f);
+    // out-of-range self is a no-op
+    slotDrag(ps, -1, 0.0f, 0.5f);
+    slotDrag(ps, 9, 0.0f, 0.5f);
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
+    // the spaces follow the ring centre, same as every other slot rule
+    ps.clear();
+    ps.push_back(mkPanel(2.0f));
+    slotDrag(ps, 0, 2.0f, 2.0f + kSlotYaw[2] + 0.05f);
+    CHECK_F(wrapPi(ps[0].yaw - 2.0f - kSlotYaw[2]), 0.0f, 1e-6f);
+
     // every window's pill carries all three discs: float, minimize, close
     ps.clear();
     ps.push_back(mkPanel(0.0f, "com.x.app"));

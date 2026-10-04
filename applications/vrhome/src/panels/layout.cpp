@@ -138,6 +138,25 @@ float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre) {
     return found ? best : freeSlotYaw(panels, centre);
 }
 
+void slotDrag(std::vector<Panel>& panels, int self, float centre, float yaw) {
+    if (self < 0 || self >= (int)panels.size()) return;
+    Panel& p = panels[self];
+    // the space the pill is over: the slot nearest the drag point, taken
+    // or not - the threshold sits halfway between neighbours
+    int best = 0;
+    float bestD = 1e9f;
+    for (int s = 0; s < kMaxPanels; ++s) {
+        const float d = fabsf(wrapPi(yaw - centre - kSlotYaw[s]));
+        if (d < bestD) { bestD = d; best = s; }
+    }
+    const float target = wrapPi(centre + kSlotYaw[best]);
+    // the window already there - floating ones count too, they block the
+    // slot like any other - slides into the slot this drag just left
+    const int occ = panelOn(panels, target, self);
+    if (occ >= 0) panels[occ].yaw = p.yaw;
+    p.yaw = target;
+}
+
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
                    float prevCentre) {
     const float ep = pitch > kPitchMax ? kPitchMax
@@ -326,9 +345,10 @@ Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
         if (t >= bestT) continue;
         int zone = ZONE_NONE;
         // the pill hangs below the window's bottom edge: check chrome
-        // before the app surface so the overlap edge picks the pill. On a
-        // floating window the pill's body doubles as its move handle, on a
-        // docked one it just focuses the task on tap
+        // before the app surface so the overlap edge picks the pill. The
+        // pill body is the window's drag handle: on a floating one it
+        // moves the window freely, on a docked one it hops it between the
+        // ring's slots - a still release there just focuses the task
         if (onPill(u, v, hw, hh)) {
             zone = pillButtonAt(u, v, hw, hh);
             if (zone == ZONE_LABEL && p.floating) zone = ZONE_PILL;

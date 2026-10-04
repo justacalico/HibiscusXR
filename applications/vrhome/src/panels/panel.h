@@ -6,7 +6,9 @@
 enum Zone {
     ZONE_NONE   = -1,
     ZONE_WINDOW = 0,   // the app surface
-    ZONE_LABEL,        // the under-window pill, off the buttons
+    ZONE_LABEL,        // the under-window pill on a docked window, off the
+                       // buttons: drags it between the ring's three slots,
+                       // a still release focuses the task
     ZONE_MIN,          // minimize button
     ZONE_CLOSE,        // close button
     ZONE_FLOAT,        // float button: unpin the window off the slot grid

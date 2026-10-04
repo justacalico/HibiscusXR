@@ -3,8 +3,9 @@
 # as tools/build/26_patch_gsi_adb.sh but without a loop mount (no root needed,
 # matching the debugfs convention the rest of the pipeline uses).
 #
-# Fresh /data has no persisted USB config, so default the gadget to adb+mtp
-# and drop adb auth.
+# Fresh /data has no persisted USB config, so default the gadget to mtp+adb
+# and drop adb auth. Order matters: init only has triggers for "adb" or
+# "X,adb" - "adb,mtp" matches nothing and the gadget never comes up.
 set -euo pipefail
 R="${PN2_ROOT:?}"
 IMG="$R/gsi/gsi_raw.img"
@@ -21,9 +22,9 @@ patch_prop() { # patch_prop <img-path>
   cat >> "$t" <<'EOF'
 
 # --- Pico Neo 2 adb bring-up -----------------------------------------------
-# Fresh /data has no persisted USB config, so default the gadget to adb+mtp and
+# Fresh /data has no persisted USB config, so default the gadget to mtp+adb and
 # drop adb auth. Bring-up only; remove for any release build.
-persist.sys.usb.config=adb,mtp
+persist.sys.usb.config=mtp,adb
 ro.adb.secure=0
 ro.debuggable=1
 ro.secure=0

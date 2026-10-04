@@ -22,5 +22,10 @@ on property:sys.usb.config=charging
 on property:sys.usb.config=none
     setprop sys.usb.config mtp,adb
 
+# Catch the adb-first order too - it matches no trigger in init.usb*.rc, so
+# nothing else will get the gadget up if a build default ever sets it.
+on property:sys.usb.config=adb,mtp
+    setprop sys.usb.config mtp,adb
+
 on property:sys.boot_completed=1
     setprop persist.sys.usb.config mtp,adb

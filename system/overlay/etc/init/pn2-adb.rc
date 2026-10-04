@@ -1,6 +1,6 @@
 # Force adb into the USB composition.
 #
-# persist.sys.usb.config=adb,mtp in prop.default is only a default - whatever
+# persist.sys.usb.config in prop.default is only a default - whatever
 # stock firmware or an earlier boot left persisted under /data/property wins,
 # which is how a reflashed system can still enumerate MTP-only with adbd
 # never started. Take the config back on every non-adb composition and

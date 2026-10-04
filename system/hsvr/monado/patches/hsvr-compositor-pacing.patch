@@ -1,12 +1,93 @@
-diff --git i/src/xrt/auxiliary/util/u_pacing_app.c w/src/xrt/auxiliary/util/u_pacing_app.c
-index d5697ff4..0230ddd4 100644
---- i/src/xrt/auxiliary/util/u_pacing_app.c
+diff --git c/src/xrt/auxiliary/render/render_compute.c w/src/xrt/auxiliary/render/render_compute.c
+index ff9c97c4..121d5d48 100644
+--- c/src/xrt/auxiliary/render/render_compute.c
++++ w/src/xrt/auxiliary/render/render_compute.c
+@@ -419,6 +419,14 @@ render_compute_init(struct render_compute *render, struct render_resources *r)
+ 	struct vk_bundle *vk = r->vk;
+ 	render->r = r;
+ 
++	/*
++	 * Reclaim all descriptor sets here rather than in render_compute_fini:
++	 * with a frame still in flight the previous command buffer may
++	 * reference them, so the reset has to happen where the draw has
++	 * already waited the previous frame's fence - at init.
++	 */
++	vk->vkResetDescriptorPool(vk->device, r->compute.descriptor_pool, 0);
++
+ 	for (uint32_t i = 0; i < RENDER_MAX_LAYER_RUNS_COUNT(r); i++) {
+ 		ret = vk_create_descriptor_set(             //
+ 		    vk,                                     // vk_bundle
+@@ -501,14 +509,12 @@ render_compute_fini(struct render_compute *render)
+ 
+ 	struct vk_bundle *vk = vk_from_render(render);
+ 
+-	// Reclaimed by vkResetDescriptorPool.
++	// Reclaimed by vkResetDescriptorPool at the next render_compute_init.
+ 	render->shared_descriptor_set = VK_NULL_HANDLE;
+ 	for (uint32_t i = 0; i < ARRAY_SIZE(render->layer_descriptor_sets); i++) {
+ 		render->layer_descriptor_sets[i] = VK_NULL_HANDLE;
+ 	}
+ 
+-	vk->vkResetDescriptorPool(vk->device, render->r->compute.descriptor_pool, 0);
+-
+ 	render->r = NULL;
+ }
+ 
+diff --git c/src/xrt/auxiliary/render/render_gfx.c w/src/xrt/auxiliary/render/render_gfx.c
+index 8e1adb39..d9fbdce2 100644
+--- c/src/xrt/auxiliary/render/render_gfx.c
++++ w/src/xrt/auxiliary/render/render_gfx.c
+@@ -963,9 +963,22 @@ render_gfx_target_resources_fini(struct render_gfx_target_resources *rtr)
+ bool
+ render_gfx_init(struct render_gfx *render, struct render_resources *r)
+ {
++	struct vk_bundle *vk = r->vk;
++
+ 	// Init fields.
+ 	render->r = r;
+ 
++	/*
++	 * Reclaim all descriptor sets here rather than in render_gfx_fini:
++	 * with a frame still in flight the previous command buffer may
++	 * reference them, so the reset has to happen where the draw has
++	 * already waited the previous frame's fence - at init.
++	 */
++	vk->vkResetDescriptorPool(              //
++	    vk->device,                         //
++	    r->gfx.ubo_and_src_descriptor_pool, //
++	    0);                                 //
++
+ 	// Used to sub-allocate UBOs from, restart from scratch each frame.
+ 	render_sub_alloc_tracker_init(&render->ubo_tracker, &r->gfx.shared_ubo);
+ 
+@@ -1028,16 +1041,8 @@ render_gfx_end(struct render_gfx *render)
+ void
+ render_gfx_fini(struct render_gfx *render)
+ {
+-	struct vk_bundle *vk = vk_from_render(render);
+-	struct render_resources *r = render->r;
+-
+-	// Reclaim all descriptor sets.
+-	vk->vkResetDescriptorPool(              //
+-	    vk->device,                         //
+-	    r->gfx.ubo_and_src_descriptor_pool, //
+-	    0);                                 //
+-
+-	// This "reclaims" the allocated UBOs.
++	// The descriptor sets are reclaimed in render_gfx_init, this only
++	// "reclaims" the allocated UBOs.
+ 	U_ZERO(render);
+ }
+ 
+diff --git c/src/xrt/auxiliary/util/u_pacing_app.c w/src/xrt/auxiliary/util/u_pacing_app.c
+index d5697ff4..356d0f48 100644
+--- c/src/xrt/auxiliary/util/u_pacing_app.c
 +++ w/src/xrt/auxiliary/util/u_pacing_app.c
 @@ -26,9 +26,16 @@ DEBUG_GET_ONCE_FLOAT_OPTION(min_app_time_ms, "U_PACING_APP_MIN_TIME_MS", 1.0f)
  DEBUG_GET_ONCE_FLOAT_OPTION(min_margin_ms, "U_PACING_APP_MIN_MARGIN_MS", 2.0f)
  DEBUG_GET_ONCE_BOOL_OPTION(use_min_frame_period, "U_PACING_APP_USE_MIN_FRAME_PERIOD", false)
  DEBUG_GET_ONCE_BOOL_OPTION(immediate_wait_frame_return, "U_PACING_APP_IMMEDIATE_WAIT_FRAME_RETURN", false)
-+#ifdef __ANDROID__
++#ifdef XRT_OS_ANDROID
 +// An app that can't hold the refresh rate produces frames faster
 +// unthrottled than locked to an integer fraction of the refresh rate.
 +#define UPA_IMMEDIATE_RETURN_BELOW_REFRESH_DEFAULT true
@@ -20,9 +101,124 @@ index d5697ff4..0230ddd4 100644
  DEBUG_GET_ONCE_BOOL_OPTION(align_predicted_display_time_to_app_period,
                             "U_PACING_APP_ALIGN_PREDICTED_DISPLAY_TIME_TO_APP_PERIOD",
                             false)
-diff --git i/src/xrt/auxiliary/util/u_pacing_compositor_fake.c w/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
+@@ -108,6 +115,7 @@ struct u_pa_frame
+ 		int64_t predicted_ns;
+ 		int64_t wait_woke_ns;
+ 		int64_t begin_ns;
++		int64_t submit_ns;
+ 		int64_t delivered_ns;
+ 		int64_t gpu_done_ns;
+ 	} when;
+@@ -328,11 +336,14 @@ predict_display_time(const struct pacing_app *pa, int64_t now_ns, int64_t displa
+ 	// Start from the last time that the driver displayed something.
+ 	int64_t val = last_sample_displayed(pa);
+ 
+-	// Return a time after the last returned display time. Add half the
+-	// display period to the comparison for robustness when the last display
+-	// time shifts slightly with respect to the last sample.
+-	while (val <= last_return_predicted_display(pa) + (app_period_ns / 2)) {
+-		val += app_period_ns;
++	/*
++	 * Return a time after the last returned display time. Step by the
++	 * display period, not the app period: spacing predictions by the
++	 * measured app period feeds the ratchet - a stretched period then
++	 * spaces deliveries out, which stretches the measurement again.
++	 */
++	while (val <= last_return_predicted_display(pa)) {
++		val += display_period_ns;
+ 	}
+ 
+ 	int64_t period_ns;
+@@ -342,8 +353,22 @@ predict_display_time(const struct pacing_app *pa, int64_t now_ns, int64_t displa
+ 		period_ns = display_period_ns;
+ 	}
+ 
++	/*
++	 * Cap the lead the measured app+compositor time buys us. The measured
++	 * time includes whatever the app spent blocked on buffers held by
++	 * frames we scheduled far in the future - letting it push display
++	 * times arbitrarily deep starves the app's swapchain, which inflates
++	 * the measurement further. Two periods of lead is already generous;
++	 * a slower app just delivers late frames, which timewarp covers.
++	 */
++	int64_t lead_ns = app_and_compositor_time_ns;
++	int64_t lead_max_ns = display_period_ns * 2;
++	if (lead_ns > lead_max_ns) {
++		lead_ns = lead_max_ns;
++	}
++
+ 	// Have to have enough time to perform app work.
+-	while ((val - app_and_compositor_time_ns) <= now_ns) {
++	while ((val - lead_ns) <= now_ns) {
+ 		val += period_ns;
+ 	}
+ 
+@@ -521,7 +546,10 @@ pa_predict(struct u_pacing_app *upa,
+ 
+ 	*out_wake_up_time = wake_up_time_ns;
+ 	*out_predicted_display_time = predict_ns;
+-	*out_predicted_display_period = app_period_ns;
++	// The display's period, not the app's - apps pace their own frame
++	// production off this and an inflated app period reads as a slow
++	// display.
++	*out_predicted_display_period = display_period_ns;
+ 
+ 	size_t index = GET_INDEX_FROM_ID(pa, frame_id);
+ 	struct u_pa_frame *f = &pa->frames[index];
+@@ -534,7 +562,7 @@ pa_predict(struct u_pacing_app *upa,
+ 	f->predicted_wake_up_time_ns = wake_up_time_ns;
+ 	f->predicted_gpu_done_time_ns = gpu_done_time_ns;
+ 	f->predicted_display_time_ns = predict_ns;
+-	f->predicted_display_period_ns = app_period_ns;
++	f->predicted_display_period_ns = display_period_ns;
+ 	f->when.predicted_ns = now_ns;
+ 
+ #ifdef U_TRACE_TRACY // Uses Tracy specific things.
+@@ -552,7 +580,11 @@ pa_mark_point(struct u_pacing_app *upa, int64_t frame_id, enum u_timing_point po
+ 
+ 	DEBUG_PRINT_ID_FRAME_POINT(frame_id, f, point);
+ 
+-	assert(f->frame_id == frame_id);
++	// Real check, not an assert: a mark for a frame this pacer never saw
++	// would land in whatever slot the id maps to and corrupt its timings.
++	if (f->frame_id != frame_id) {
++		return;
++	}
+ 
+ 	switch (point) {
+ 	case U_TIMING_POINT_WAKE_UP:
+@@ -567,8 +599,11 @@ pa_mark_point(struct u_pacing_app *upa, int64_t frame_id, enum u_timing_point po
+ 		f->when.begin_ns = when_ns;
+ 		f->state = U_RT_BEGUN;
+ 		break;
+-	case U_TIMING_POINT_SUBMIT_BEGIN:
+ 	case U_TIMING_POINT_SUBMIT_END:
++
++		f->when.submit_ns = when_ns;
++		break;
++	case U_TIMING_POINT_SUBMIT_BEGIN:
+ 	default: assert(false);
+ 	}
+ }
+@@ -647,7 +682,14 @@ pa_mark_gpu_done(struct u_pacing_app *upa, int64_t frame_id, int64_t when_ns)
+ 	}
+ 
+ 	int64_t diff_cpu_ns = f->when.begin_ns - f->when.wait_woke_ns;
+-	int64_t diff_draw_ns = f->when.delivered_ns - f->when.begin_ns;
++	/*
++	 * The submit mark is the instant the app finished handing us the
++	 * frame; delivered only happens once its display time arrives, so
++	 * spanning to delivered would charge our own pacing latency to the
++	 * app and inflate every period calculation downstream.
++	 */
++	int64_t draw_end_ns = f->when.submit_ns ? f->when.submit_ns : f->when.delivered_ns;
++	int64_t diff_draw_ns = draw_end_ns - f->when.begin_ns;
+ 	int64_t diff_gpu_ns = f->when.gpu_done_ns - f->when.delivered_ns;
+ 
+ 	UPA_LOG_D(
+diff --git c/src/xrt/auxiliary/util/u_pacing_compositor_fake.c w/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
 index f7589a3e..58496435 100644
---- i/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
+--- c/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
 +++ w/src/xrt/auxiliary/util/u_pacing_compositor_fake.c
 @@ -23,6 +23,10 @@
  #include <assert.h>
@@ -53,9 +249,9 @@ index f7589a3e..58496435 100644
  	// Present to display offset, aka vblank to pixel turning into photons.
  	ft->present_to_display_offset_ms = (struct u_var_draggable_f32){
  	    .val = present_to_display_offset_ms,
-diff --git i/src/xrt/compositor/main/comp_compositor.c w/src/xrt/compositor/main/comp_compositor.c
+diff --git c/src/xrt/compositor/main/comp_compositor.c w/src/xrt/compositor/main/comp_compositor.c
 index a8fbd01d..5e88f8c8 100644
---- i/src/xrt/compositor/main/comp_compositor.c
+--- c/src/xrt/compositor/main/comp_compositor.c
 +++ w/src/xrt/compositor/main/comp_compositor.c
 @@ -1136,6 +1136,20 @@ comp_main_create_system_compositor(struct xrt_device *xdev,
  
@@ -78,11 +274,155 @@ index a8fbd01d..5e88f8c8 100644
  	c->last_frame_time_ns = os_monotonic_get_ns();
  
  	double scale = c->settings.viewport_scale;
-diff --git i/src/xrt/compositor/main/comp_renderer.c w/src/xrt/compositor/main/comp_renderer.c
-index 9250e05f..5fc9c090 100644
---- i/src/xrt/compositor/main/comp_renderer.c
+diff --git c/src/xrt/compositor/main/comp_renderer.c w/src/xrt/compositor/main/comp_renderer.c
+index 9250e05f..1e98bb49 100644
+--- c/src/xrt/compositor/main/comp_renderer.c
 +++ w/src/xrt/compositor/main/comp_renderer.c
-@@ -694,6 +694,14 @@ renderer_wait_for_last_fence(struct comp_renderer *r)
+@@ -51,10 +51,37 @@
+ #include <stdio.h>
+ #include <assert.h>
+ #include <math.h>
++#ifdef XRT_OS_ANDROID
++#include <unistd.h>
++#endif
+ 
+ DEBUG_GET_ONCE_LOG_OPTION(comp_frame_lag_level, "XRT_COMP_FRAME_LAG_LOG_AS_LEVEL", U_LOGGING_WARN)
+ #define LOG_FRAME_LAG(...) U_LOG_IFL(debug_get_log_option_comp_frame_lag_level(), u_log_get_global_level(), __VA_ARGS__)
+ 
++/*
++ * Per-second frame stats. On fake-timing targets every blocking phase of
++ * the frame pipeline hides inside the one draw call, so the presented
++ * fps alone cannot tell a frame-locked pipeline from a slow one - the
++ * per-phase averages can.
++ */
++struct fps_stats
++{
++	int64_t window_start_ns;
++	uint32_t frames;
++	uint32_t layers_sum;
++	uint32_t fast_path_frames;
++	uint32_t draw_calls;
++	uint32_t skip_ready;
++	uint32_t skip_acquire;
++	uint32_t skip_dispatch;
++	int64_t acquire_ns;
++	int64_t fence_ns;
++	int64_t render_ns;
++	int64_t wait_ns;
++	int64_t acquire_max_ns;
++	int64_t fence_max_ns;
++};
++
+ /*
+  *
+  * Helper macros for adding semaphores to lists.
+@@ -139,6 +166,10 @@ struct comp_renderer
+ 	//! Which buffer was last submitted and has a fence pending.
+ 	int32_t fenced_buffer;
+ 
++	//! Frame id of the last submitted, timestamped work. Reported to the
++	//! pacer once its fence retires at the top of the next draw.
++	int64_t ts_frame_id;
++
+ 	/*!
+ 	 * The render pass used to render to the target, it depends on the
+ 	 * target's format so will be recreated each time the target changes.
+@@ -157,6 +188,9 @@ struct comp_renderer
+ 	 */
+ 	VkFence *fences;
+ 
++	//! Per-second frame stats, see fps_stats_add.
++	struct fps_stats fps;
++
+ 	/*!
+ 	 * The number of renderings/fences we've created: set from comp_target when we use that data.
+ 	 */
+@@ -179,6 +213,68 @@ struct comp_renderer
+  *
+  */
+ 
++static void
++fps_stats_add(struct comp_renderer *r,
++              bool fast_path,
++              int64_t acquire_ns,
++              int64_t fence_ns,
++              int64_t render_ns,
++              int64_t wait_ns)
++{
++	struct comp_compositor *c = r->c;
++	struct fps_stats *s = &r->fps;
++
++	int64_t now_ns = os_monotonic_get_ns();
++	if (s->window_start_ns == 0) {
++		s->window_start_ns = now_ns;
++	}
++
++	s->frames++;
++	s->layers_sum += c->base.layer_accum.layer_count;
++	if (fast_path) {
++		s->fast_path_frames++;
++	}
++	s->acquire_ns += acquire_ns;
++	s->fence_ns += fence_ns;
++	s->render_ns += render_ns;
++	s->wait_ns += wait_ns;
++	if (acquire_ns > s->acquire_max_ns) {
++		s->acquire_max_ns = acquire_ns;
++	}
++	if (fence_ns > s->fence_max_ns) {
++		s->fence_max_ns = fence_ns;
++	}
++
++	int64_t window_ns = now_ns - s->window_start_ns;
++	if (window_ns < U_TIME_1S_IN_NS) {
++		return;
++	}
++
++	double n = s->frames;
++	int tid = 0;
++#ifdef XRT_OS_ANDROID
++	tid = (int)gettid();
++#endif
++	U_LOG_IFL_I(U_LOGGING_INFO,
++	            "fps %.1f tid %d layers %.1f fast %.0f%% draws %u r%u a%u d%u | avg acquire %.2fms fence %.2fms render %.2fms wait %.2fms | max acquire %.2fms fence %.2fms",
++	        n / time_ns_to_s(window_ns),
++	        tid,
++	        s->layers_sum / n,
++	        100.0 * s->fast_path_frames / n,
++	        s->draw_calls,
++	        s->skip_ready,
++	        s->skip_acquire,
++	        s->skip_dispatch,
++	        time_ns_to_ms_f((int64_t)(s->acquire_ns / n)),  //
++	        time_ns_to_ms_f((int64_t)(s->fence_ns / n)),    //
++	        time_ns_to_ms_f((int64_t)(s->render_ns / n)),   //
++	        time_ns_to_ms_f((int64_t)(s->wait_ns / n)),     //
++	        time_ns_to_ms_f(s->acquire_max_ns),             //
++	        time_ns_to_ms_f(s->fence_max_ns));
++
++	memset(s, 0, sizeof(*s));
++}
++
+ static void
+ renderer_wait_queue_idle(struct comp_renderer *r)
+ {
+@@ -539,6 +635,7 @@ renderer_close_renderings_and_fences(struct comp_renderer *r)
+ 	r->buffer_count = 0;
+ 	r->acquired_buffer = -1;
+ 	r->fenced_buffer = -1;
++	r->ts_frame_id = -1;
+ }
+ 
+ /*!
+@@ -641,6 +738,7 @@ renderer_init(struct comp_renderer *r, struct comp_compositor *c, VkExtent2D scr
+ 
+ 	r->acquired_buffer = -1;
+ 	r->fenced_buffer = -1;
++	r->ts_frame_id = -1;
+ 	r->rtr_array = NULL;
+ 
+ 	// Setup the scratch images.
+@@ -694,6 +792,14 @@ renderer_wait_for_last_fence(struct comp_renderer *r)
  static inline bool
  requires_present_acquire_wait(struct comp_renderer *r)
  {
@@ -97,7 +437,15 @@ index 9250e05f..5fc9c090 100644
  	/*!
  	 * With shared presentable images there is only one image
  	 * shared between the presentation layer and the compositor,
-@@ -803,6 +811,10 @@ renderer_acquire_swapchain_image(struct comp_renderer *r)
+@@ -780,6 +886,7 @@ renderer_submit_queue(struct comp_renderer *r, VkCommandBuffer cmd, VkPipelineSt
+ 
+ 	// This buffer now have a pending fence.
+ 	r->fenced_buffer = r->acquired_buffer;
++	r->ts_frame_id = frame_id;
+ 
+ 	return ret;
+ }
+@@ -803,6 +910,10 @@ renderer_acquire_swapchain_image(struct comp_renderer *r)
  	while ((ret == VK_ERROR_OUT_OF_DATE_KHR) || (ret == VK_SUBOPTIMAL_KHR)) {
  		COMP_DEBUG(r->c, "Received %s.", vk_result_string(ret));
  
@@ -108,7 +456,7 @@ index 9250e05f..5fc9c090 100644
  		if (!renderer_ensure_images_and_renderings(r, true)) {
  			// Failed on force recreate.
  			COMP_ERROR(r->c,
-@@ -817,6 +829,9 @@ renderer_acquire_swapchain_image(struct comp_renderer *r)
+@@ -817,6 +928,9 @@ renderer_acquire_swapchain_image(struct comp_renderer *r)
  
  	if (ret != VK_SUCCESS) {
  		COMP_ERROR(r->c, "comp_target_acquire: %s", vk_result_string(ret));
@@ -118,44 +466,152 @@ index 9250e05f..5fc9c090 100644
  	}
  
  	r->acquired_buffer = buffer_index;
-@@ -1122,6 +1137,18 @@ comp_renderer_draw(struct comp_renderer *r)
+@@ -870,6 +984,15 @@ renderer_wait_for_present(struct comp_renderer *r, uint64_t desired_present_time
+ {
+ 	struct comp_compositor *c = r->c;
+ 
++	/*
++	 * Fake-timing targets get all of their pacing from the acquire at
++	 * the top of the draw; blocking here a second time stacks a vsync
++	 * on top of it and halves the frame rate.
++	 */
++	if (c->target->fake_display_timing) {
++		return;
++	}
++
+ 	if (!comp_target_check_ready(c->target)) {
+ 		return;
+ 	}
+@@ -923,6 +1046,15 @@ renderer_fini(struct comp_renderer *r)
+ {
+ 	struct vk_bundle *vk = &r->c->base.vk;
+ 
++	/*
++	 * The last frame may still be in flight - this used to be covered by
++	 * the drain at the end of every draw. Fences, framebuffers and scratch
++	 * images can all still be referenced by pending work, and presents and
++	 * acquires can still have semaphore signals queued off the main queue,
++	 * so this has to be a device-level drain.
++	 */
++	vk->vkDeviceWaitIdle(vk->device);
++
+ 	// Command buffers
+ 	renderer_close_renderings_and_fences(r);
+ 
+@@ -1101,8 +1233,11 @@ comp_renderer_draw(struct comp_renderer *r)
+ 	// Tell the target we are starting to render, for frame timing.
+ 	comp_target_mark_begin(ct, c->frame.rendering.id, os_monotonic_get_ns());
+ 
++	r->fps.draw_calls++;
++
+ 	// Are we ready to render? No - skip rendering.
+ 	if (!comp_target_check_ready(r->c->target)) {
++		r->fps.skip_ready++;
+ 		// Need to emulate rendering for the timing.
+ 		//! @todo This should be discard.
+ 		comp_target_mark_submit_begin(ct, c->frame.rendering.id, os_monotonic_get_ns());
+@@ -1117,10 +1252,45 @@ comp_renderer_draw(struct comp_renderer *r)
+ 
+ 	comp_target_update_timings(ct);
+ 
++	int64_t t_acquire_ns = os_monotonic_get_ns();
+ 	if (r->acquired_buffer < 0) {
+ 		// Ensures that renderings are created.
  		renderer_acquire_swapchain_image(r);
  	}
- 
++	int64_t t_acquired_ns = os_monotonic_get_ns();
++
++	/*
++	 * The previous frame's GPU work must be done before this frame
++	 * touches the shared command buffer, UBO and descriptor pool that
++	 * are re-recorded and reallocated below. Waiting here - before the
++	 * new work - keeps one frame in flight instead of draining the just
++	 * submitted frame at the end of the draw, which on an in-process
++	 * compositor serialises the app behind the compositor's GPU work.
++	 */
++	renderer_wait_for_last_fence(r);
++	int64_t t_fenced_ns = os_monotonic_get_ns();
++
++	// Previous frame's GPU timestamps are ready once its fence retired.
++	if (r->ts_frame_id >= 0) {
++		uint64_t gpu_start_ns, gpu_end_ns;
++		if (render_resources_get_timestamps(&c->nr, &gpu_start_ns, &gpu_end_ns)) {
++			comp_target_info_gpu(ct, r->ts_frame_id, gpu_start_ns, gpu_end_ns, os_monotonic_get_ns());
++		}
++		r->ts_frame_id = -1;
++	}
++
 +	if (r->acquired_buffer < 0) {
 +		/*
 +		 * Acquire failed: drop the frame instead of rendering into a
 +		 * target image this process does not own. Same timing emulation
 +		 * as the not-ready path so the frame records stay sane.
 +		 */
++		r->fps.skip_acquire++;
 +		comp_target_mark_submit_begin(ct, c->frame.rendering.id, os_monotonic_get_ns());
 +		comp_target_mark_submit_end(ct, c->frame.rendering.id, os_monotonic_get_ns());
 +		comp_frame_clear_locked(&c->frame.rendering);
 +		return XRT_SUCCESS;
 +	}
-+
+ 
  	comp_target_update_timings(ct);
  
- 	// Hardcoded for now.
-@@ -1230,6 +1257,17 @@ comp_renderer_draw(struct comp_renderer *r)
+@@ -1157,6 +1327,7 @@ comp_renderer_draw(struct comp_renderer *r)
+ 		res = dispatch_graphics(r, &render_g, &frame_state, fov_source);
+ 	}
+ 	if (res != VK_SUCCESS) {
++		r->fps.skip_dispatch++;
+ 		return XRT_ERROR_VULKAN;
+ 	}
+ 
+@@ -1230,14 +1401,19 @@ comp_renderer_draw(struct comp_renderer *r)
  		    rect);                     //
  	}
  
-+	/*
-+	 * Wait for a free target image before draining the queue. On targets
-+	 * without present-wait support this blocks until scanout releases an
-+	 * image at the next display flip, so doing it while the submitted
-+	 * work is still in flight lets the GPU drain overlap the wait instead
-+	 * of serialising behind it.
-+	 */
++	int64_t t_presented_ns = os_monotonic_get_ns();
 +	if (present_success) {
 +		renderer_wait_for_present(r, desired_present_time_ns);
 +	}
++	int64_t t_waited_ns = os_monotonic_get_ns();
 +
  	/*
- 	 * This fixes a lot of validation issues as it makes sure that the
- 	 * command buffer has completed and all resources referred by it can
-@@ -1269,10 +1307,6 @@ comp_renderer_draw(struct comp_renderer *r)
+-	 * This fixes a lot of validation issues as it makes sure that the
+-	 * command buffer has completed and all resources referred by it can
+-	 * now be manipulated.
+-	 *
+-	 * This is done after a swap so isn't time critical.
++	 * The frame stays in flight until the next draw waits its fence;
++	 * the scratch and render bookkeeping below only makes the shared
++	 * resources reusable, it does not wait on the GPU.
+ 	 */
+-	renderer_wait_queue_idle(r);
++	fps_stats_add(r, fast_path, t_acquired_ns - t_acquire_ns, t_fenced_ns - t_acquired_ns,
++	              t_presented_ns - t_fenced_ns, t_waited_ns - t_presented_ns);
+ 
+ 	/*
+ 	 * Free any resources and finalize the scratch images,
+@@ -1245,20 +1421,6 @@ comp_renderer_draw(struct comp_renderer *r)
+ 	 */
+ 	chl_frame_state_fini(&frame_state);
+ 
+-	// Check timestamps.
+-	if (xret == XRT_SUCCESS) {
+-		/*
+-		 * Get timestamps of GPU work (if available).
+-		 */
+-
+-		uint64_t gpu_start_ns, gpu_end_ns;
+-		if (render_resources_get_timestamps(&c->nr, &gpu_start_ns, &gpu_end_ns)) {
+-			uint64_t now_ns = os_monotonic_get_ns();
+-			comp_target_info_gpu(ct, frame_id, gpu_start_ns, gpu_end_ns, now_ns);
+-		}
+-	}
+-
+-
+ 	/*
+ 	 * Free resources.
+ 	 */
+@@ -1269,10 +1431,6 @@ comp_renderer_draw(struct comp_renderer *r)
  		render_gfx_fini(&render_g);
  	}
  
@@ -166,27 +622,47 @@ index 9250e05f..5fc9c090 100644
  	comp_target_update_timings(ct);
  
  	return xret;
-diff --git i/src/xrt/compositor/main/comp_settings.c w/src/xrt/compositor/main/comp_settings.c
-index 22e25808..c62ebc89 100644
---- i/src/xrt/compositor/main/comp_settings.c
+diff --git c/src/xrt/compositor/main/comp_settings.c w/src/xrt/compositor/main/comp_settings.c
+index 22e25808..48b950a5 100644
+--- c/src/xrt/compositor/main/comp_settings.c
 +++ w/src/xrt/compositor/main/comp_settings.c
-@@ -31,7 +31,13 @@ DEBUG_GET_ONCE_NUM_OPTION(force_gpu_index, "XRT_COMPOSITOR_FORCE_GPU_INDEX", -1)
+@@ -31,7 +31,15 @@ DEBUG_GET_ONCE_NUM_OPTION(force_gpu_index, "XRT_COMPOSITOR_FORCE_GPU_INDEX", -1)
  DEBUG_GET_ONCE_NUM_OPTION(force_client_gpu_index, "XRT_COMPOSITOR_FORCE_CLIENT_GPU_INDEX", -1)
  DEBUG_GET_ONCE_NUM_OPTION(desired_mode, "XRT_COMPOSITOR_DESIRED_MODE", -1)
  DEBUG_GET_ONCE_OPTION(present_mode, "XRT_COMPOSITOR_PRESENT_MODE", "fifo")
 +#ifdef XRT_OS_ANDROID
 +// 140% asks a mobile GPU to render nearly double the panel's pixel count
-+// per eye: default to native resolution there.
-+DEBUG_GET_ONCE_NUM_OPTION(scale_percentage, "XRT_COMPOSITOR_SCALE_PERCENTAGE", 100)
++// per eye, and full native resolution does not leave enough of the frame
++// budget for the compositor's own distortion pass at 4K - 80% keeps a
++// 72Hz target inside what these panels and GPUs can actually sustain.
++DEBUG_GET_ONCE_NUM_OPTION(scale_percentage, "XRT_COMPOSITOR_SCALE_PERCENTAGE", 80)
 +#else
  DEBUG_GET_ONCE_NUM_OPTION(scale_percentage, "XRT_COMPOSITOR_SCALE_PERCENTAGE", 140)
 +#endif
  DEBUG_GET_ONCE_BOOL_OPTION(xcb_fullscreen, "XRT_COMPOSITOR_XCB_FULLSCREEN", false)
  DEBUG_GET_ONCE_NUM_OPTION(xcb_display, "XRT_COMPOSITOR_XCB_DISPLAY", -1)
  DEBUG_GET_ONCE_NUM_OPTION(default_framerate, "XRT_COMPOSITOR_DEFAULT_FRAMERATE", 60)
-diff --git i/src/xrt/compositor/main/comp_target_swapchain.c w/src/xrt/compositor/main/comp_target_swapchain.c
-index 22fd27cd..6fb13691 100644
---- i/src/xrt/compositor/main/comp_target_swapchain.c
+diff --git c/src/xrt/compositor/main/comp_target.h w/src/xrt/compositor/main/comp_target.h
+index abe2220b..7c7ecbd9 100644
+--- c/src/xrt/compositor/main/comp_target.h
++++ w/src/xrt/compositor/main/comp_target.h
+@@ -163,6 +163,13 @@ struct comp_target
+ 	//! Whether wait_for_present is supported by this comp_target.
+ 	bool wait_for_present_supported;
+ 
++	/*!
++	 * Target paces itself without display feedback: buffer releases are
++	 * the only vsync signal, so the acquire in the frame loop is the one
++	 * real sync point and nothing else may block on timing.
++	 */
++	bool fake_display_timing;
++
+ 	/*
+ 	 *
+ 	 * Vulkan functions.
+diff --git c/src/xrt/compositor/main/comp_target_swapchain.c w/src/xrt/compositor/main/comp_target_swapchain.c
+index 22fd27cd..f17f2e8e 100644
+--- c/src/xrt/compositor/main/comp_target_swapchain.c
 +++ w/src/xrt/compositor/main/comp_target_swapchain.c
 @@ -646,7 +646,20 @@ target_fini_semaphores(struct comp_target_swapchain *cts)
  {
@@ -252,12 +728,12 @@ index 22fd27cd..6fb13691 100644
 +
 +	/*
 +	 * Fake-timing targets get display feedback only through acquire
-+	 * blocking: a third image keeps one free while scanout and the present
-+	 * queue hold one each, so the frame loop doesn't stall waiting for a
-+	 * vsync release.
++	 * blocking: a fourth image keeps one free while scanout, the present
++	 * queue and the in-flight render hold one each, so the frame loop
++	 * doesn't stall waiting for a vsync release.
 +	 */
-+	if (cts->timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING && preferred_at_least_image_count < 3) {
-+		preferred_at_least_image_count = 3;
++	if (cts->timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING && preferred_at_least_image_count < 4) {
++		preferred_at_least_image_count = 4;
 +	}
  
  	// Get the image count.
@@ -290,9 +766,34 @@ index 22fd27cd..6fb13691 100644
  	    VK_NULL_HANDLE,                        // fence
  	    out_index);                            // pImageIndex
  	VK_CHK_AND_RET(ret, "vkAcquireNextImageKHR");
-diff --git i/src/xrt/compositor/main/comp_target_swapchain.h w/src/xrt/compositor/main/comp_target_swapchain.h
+@@ -1164,6 +1215,16 @@ comp_target_swapchain_calc_frame_pacing(struct comp_target *ct,
+ 
+ 	cts->current_frame_id = frame_id;
+ 
++	/*
++	 * Without display feedback the fake grid's wake time is made-up phase:
++	 * sleeping to it while the acquire also waits on a buffer release
++	 * serialises two syncs and pins the loop to every other vsync. Let
++	 * the swapchain backpressure pace the loop instead.
++	 */
++	if (cts->base.fake_display_timing) {
++		wake_up_time_ns = now_ns;
++	}
++
+ 	*out_frame_id = frame_id;
+ 	*out_wake_up_time_ns = wake_up_time_ns;
+ 	*out_desired_present_time_ns = desired_present_time_ns;
+@@ -1307,6 +1368,7 @@ comp_target_swapchain_init_and_set_fnptrs(struct comp_target_swapchain *cts,
+                                           enum comp_target_display_timing_usage timing_usage)
+ {
+ 	cts->timing_usage = timing_usage;
++	cts->base.fake_display_timing = timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING;
+ 	cts->base.check_ready = comp_target_swapchain_check_ready;
+ 	cts->base.is_shared_presentable_image = comp_target_swapchain_is_shared_presentable_image;
+ 	cts->base.create_images = comp_target_swapchain_create_images;
+diff --git c/src/xrt/compositor/main/comp_target_swapchain.h w/src/xrt/compositor/main/comp_target_swapchain.h
 index bc85aa87..eabb5c7e 100644
---- i/src/xrt/compositor/main/comp_target_swapchain.h
+--- c/src/xrt/compositor/main/comp_target_swapchain.h
 +++ w/src/xrt/compositor/main/comp_target_swapchain.h
 @@ -68,6 +68,19 @@ struct comp_target_swapchain
  		VkSwapchainKHR handle;
@@ -314,3 +815,59 @@ index bc85aa87..eabb5c7e 100644
  	struct
  	{
  		VkSurfaceKHR handle;
+diff --git c/src/xrt/compositor/multi/comp_multi_compositor.c w/src/xrt/compositor/multi/comp_multi_compositor.c
+index 33675d43..4320ab81 100644
+--- c/src/xrt/compositor/multi/comp_multi_compositor.c
++++ w/src/xrt/compositor/multi/comp_multi_compositor.c
+@@ -783,6 +783,16 @@ multi_compositor_layer_commit(struct xrt_compositor *xc, xrt_graphics_sync_handl
+ 	struct xrt_compositor_fence *xcf = NULL;
+ 	int64_t frame_id = mc->progress.data.frame_id;
+ 
++	// The app is done producing this frame; everything after this is
++	// scheduling on our side and must not count as app draw time.
++	if (frame_id >= 0) {
++		int64_t now_ns = os_monotonic_get_ns();
++
++		os_mutex_lock(&mc->msc->list_and_timing_lock);
++		u_pa_mark_point(mc->upa, frame_id, U_TIMING_POINT_SUBMIT_END, now_ns);
++		os_mutex_unlock(&mc->msc->list_and_timing_lock);
++	}
++
+ 	do {
+ 		if (!xrt_graphics_sync_handle_is_valid(sync_handle)) {
+ 			break;
+@@ -830,6 +840,14 @@ multi_compositor_layer_commit_with_semaphore(struct xrt_compositor *xc,
+ 	struct multi_compositor *mc = multi_compositor(xc);
+ 	int64_t frame_id = mc->progress.data.frame_id;
+ 
++	if (frame_id >= 0) {
++		int64_t now_ns = os_monotonic_get_ns();
++
++		os_mutex_lock(&mc->msc->list_and_timing_lock);
++		u_pa_mark_point(mc->upa, frame_id, U_TIMING_POINT_SUBMIT_END, now_ns);
++		os_mutex_unlock(&mc->msc->list_and_timing_lock);
++	}
++
+ 	push_semaphore_to_wait_thread(mc, frame_id, xcsem, value);
+ 
+ 	return XRT_SUCCESS;
+diff --git c/src/xrt/compositor/util/comp_swapchain.c w/src/xrt/compositor/util/comp_swapchain.c
+index ff3ed017..9f3e688e 100644
+--- c/src/xrt/compositor/util/comp_swapchain.c
++++ w/src/xrt/compositor/util/comp_swapchain.c
+@@ -700,6 +700,15 @@ comp_swapchain_get_create_properties(const struct xrt_swapchain_create_info *inf
+ 		image_count = 1;
+ 	}
+ 
++	/*
++	 * One image per in-flight slot plus slack: at three images an app
++	 * running right at refresh stalls on acquire whenever a delivered
++	 * frame, an in-flight render and the queued present hold all three.
++	 */
++	if (image_count == 3) {
++		image_count = 4;
++	}
++
+ 	U_ZERO(xsccp);
+ 	xsccp->image_count = image_count;
+ 	xsccp->extra_bits = XRT_SWAPCHAIN_USAGE_SAMPLED;

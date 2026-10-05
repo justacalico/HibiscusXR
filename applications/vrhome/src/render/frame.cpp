@@ -1,6 +1,7 @@
 #include "frame.h"
 
 #include "warp.h"
+#include "present.h"
 #include "../engine.h"
 #include "../common/log.h"
 #include "../common/props.h"
@@ -9,6 +10,7 @@
 #include "../math/head.h"
 #include "../text/draw.h"
 
+#include <EGL/eglext.h>
 #include <cstdio>
 #include <ctime>
 
@@ -84,6 +86,56 @@ void warpPresent(Engine* e) {
     glDisableVertexAttribArray(aPos);
     glEnable(GL_DEPTH_TEST);
     eglSwapBuffers(e->display, e->surface);
+
+    // real flip rate: eglGetFrameTimestampsANDROID resolves each queued
+    // frame's display-present timestamp once SurfaceFlinger flips it, so
+    // resolved stamps/s = flips/s - what Monado's own pacing sees - while
+    // e->fps only counts our submits. The vendor egl doesn't advertise
+    // EGL_ANDROID_get_frame_timestamps and compositor-timing queries just
+    // fail with BAD_PARAMETER on this build, but libgui implements the
+    // per-frame timestamps binder path so it works anyway; if it ever
+    // stops answering the counter stays "-".
+    static const PFNEGLGETNEXTFRAMEIDANDROIDPROC getNextId =
+        (PFNEGLGETNEXTFRAMEIDANDROIDPROC)
+            eglGetProcAddress("eglGetNextFrameIdANDROID");
+    static const PFNEGLGETFRAMETIMESTAMPSANDROIDPROC getFrameTs =
+        (PFNEGLGETFRAMETIMESTAMPSANDROIDPROC)
+            eglGetProcAddress("eglGetFrameTimestampsANDROID");
+    if (getNextId && getFrameTs) {
+        EGLuint64KHR next = 0;
+        if (getNextId(e->display, e->surface, &next) && next > 0) {
+            // next-1 is the frame just queued; waitFrameId is the first
+            // frame whose present stamp we haven't resolved yet
+            if (e->waitFrameId == 0 || e->waitFrameId >= next)
+                e->waitFrameId = next - 1;
+            EGLint name = EGL_DISPLAY_PRESENT_TIME_ANDROID;
+            while (e->waitFrameId < next) {
+                EGLnsecsANDROID ns = 0;
+                if (!getFrameTs(e->display, e->surface, e->waitFrameId,
+                                1, &name, &ns)) {
+                    // untracked frame (aged out of the history): resync
+                    // once far enough behind or the id stalls forever
+                    if (next - e->waitFrameId > 32) e->waitFrameId = next;
+                    break;
+                }
+                if (ns == -1) { // NATIVE_WINDOW_TIMESTAMP_INVALID
+                    // dropped before present: it never flips, don't count
+                    ++e->waitFrameId;
+                    continue;
+                }
+                if (ns > 0) {
+                    e->presentOk = true;
+                    presentTick(&e->lastPresentNs, &e->presents, ns);
+                    ++e->waitFrameId;
+                    continue;
+                }
+                // PENDING: still in flight. If the queue has run 32 frames
+                // ahead of us the tracker lost it - resync to the newest
+                if (next - e->waitFrameId > 32) e->waitFrameId = next;
+                break;
+            }
+        }
+    }
 }
 
 void updateFps(Engine* e) {
@@ -94,9 +146,12 @@ void updateFps(Engine* e) {
     if (e->fpsMark == 0) e->fpsMark = now;
     else if (now - e->fpsMark >= 1000) {
         e->fps = (int)(e->frames * 1000 / (now - e->fpsMark));
+        e->presentFps = e->presentOk
+            ? (int)(e->presents * 1000 / (now - e->fpsMark)) : -1;
         e->sensorHz = (int)(e->sensorEv * 1000 / (now - e->fpsMark));
         e->sensorNewHz = (int)(e->sensorNew * 1000 / (now - e->fpsMark));
         e->frames = 0;
+        e->presents = 0;
         e->sensorEv = 0;
         e->sensorNew = 0;
         e->fpsMark = now;
@@ -111,8 +166,14 @@ void updateHud(Engine* e, const char* extra) {
         fmtPosArrows(e->headPos, pos, sizeof(pos));
     char trk[12];
     fmtTrackState(e->qvrState, trk, sizeof(trk));
+    // MON is the display's own flip rate (what the compositor presents);
+    // FPS is just how fast this loop submits - the two split when the
+    // panel stops keeping up
+    char mon[8];
+    if (e->presentFps >= 0) snprintf(mon, sizeof(mon), "MON %d", e->presentFps);
+    else snprintf(mon, sizeof(mon), "MON -");
     e->hudLen = snprintf(e->hud, sizeof(e->hud),
-        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  SEN %d  TRK %s  %s%s%s",
-        yaw, pitch, roll, e->fps, e->sensorNewHz, trk,
+        "YAW %+4.0f PIT %+4.0f ROL %+4.0f  FPS %d  %s  SEN %d  TRK %s  %s%s%s",
+        yaw, pitch, roll, e->fps, mon, e->sensorNewHz, trk,
         e->qvrState == QVR_TRACKED ? "6DOF" : "3DOF", pos, extra ? extra : "");
 }

@@ -64,8 +64,35 @@ int initEglContext(Engine* e) {
     return 0;
 }
 
+// opt the window's producer into per-frame timestamp recording so
+// eglGetFrameTimestampsANDROID has data to report. The NDK keeps
+// ANativeWindow opaque, but its perform hook is the stable platform ABI -
+// this mirrors android_native_base_t + the head of android_native_window_t
+// from system/window.h, unchanged since API 26.
+static void enableFrameTimestamps(ANativeWindow* win) {
+    struct Nw {
+        int magic, version;
+        void* reserved[4];
+        void (*incRef)(void*);
+        void (*decRef)(void*);
+        uint32_t flags;
+        int minSwapInterval, maxSwapInterval;
+        float xdpi, ydpi;
+        intptr_t oem[4];
+        int (*setSwapInterval)(Nw*, int);
+        int (*dequeueBufferDeprecated)(Nw*, void**);
+        int (*lockBufferDeprecated)(Nw*, void*);
+        int (*queueBufferDeprecated)(Nw*, void*);
+        int (*query)(const Nw*, int, int*);
+        int (*perform)(Nw*, int, ...);
+    };
+    // NATIVE_WINDOW_ENABLE_FRAME_TIMESTAMPS
+    reinterpret_cast<Nw*>(win)->perform(reinterpret_cast<Nw*>(win), 25, 1);
+}
+
 int initWindow(Engine* e, ANativeWindow* win) {
     if (e->display == EGL_NO_DISPLAY && initEglContext(e) != 0) return -1;
+    enableFrameTimestamps(win);
     EGLint format = 0;
     eglGetConfigAttrib(e->display, e->eglConfig, EGL_NATIVE_VISUAL_ID, &format);
     ANativeWindow_setBuffersGeometry(win, 0, 0, format);

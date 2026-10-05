@@ -27,6 +27,7 @@ void testZip();
 void testEnvSel();
 void testEnvMap();
 void testQuiet();
+void testPresent();
 
 int main() {
     testMat4();
@@ -54,6 +55,7 @@ int main() {
     testEnvSel();
     testEnvMap();
     testQuiet();
+    testPresent();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

@@ -92,12 +92,17 @@ struct Engine {
     float gazeYaw = 0.0f;        // world yaw the user currently faces
     float gazePitch = 0.0f;      // world pitch the user currently faces
 
-    char hud[96] = "";
+    char hud[128] = "";
     int  hudLen = 0;
     char hud2[128] = "";        // second debug line: controller poses (HUD)
     int  frames = 0;
     int  fps = 0;
     long long fpsMark = 0;
+    int  presents = 0;          // resolved present stamps in the window
+    int  presentFps = -1;       // real display flip rate, -1 = no probe
+    long long lastPresentNs = -1;
+    long long waitFrameId = 0;  // first unresolved frame id
+    bool presentOk = false;     // eglGetFrameTimestampsANDROID answers
     int  sensorEv = 0;
     int  sensorHz = 0;
     int  sensorNew = 0;

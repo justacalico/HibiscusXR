@@ -7,6 +7,11 @@
 
 #include <GLES2/gl2ext.h>
 
+// packed depth-stencil attachment enum isn't exposed by the GLES2 headers
+#ifndef GL_DEPTH_STENCIL_ATTACHMENT
+#define GL_DEPTH_STENCIL_ATTACHMENT 0x821A
+#endif
+
 #include <jni.h>
 #include <math.h>
 #include <stdio.h>

@@ -5,6 +5,8 @@
 
 #include "xrtest.h"
 
+#include <GLES2/gl2ext.h>
+
 #include <jni.h>
 #include <math.h>
 #include <stdio.h>
@@ -97,7 +99,13 @@ void android_main(struct android_app *app) {
     XrSwapchainImageOpenGLESKHR *imgs[2] = {NULL, NULL};
     uint32_t img_count[2] = {0, 0};
     int64_t fmt = 0;
-    if (!xr_make_swapchains(sess, vcv, sc, imgs, img_count, &fmt)) return;
+    XrSwapchain depth_sc[2] = {XR_NULL_HANDLE, XR_NULL_HANDLE};
+    XrSwapchainImageOpenGLESKHR *depth_imgs[2] = {NULL, NULL};
+    uint32_t depth_img_count[2] = {0, 0};
+    int64_t depth_fmt = 0;
+    if (!xr_make_swapchains(sess, vcv, sc, imgs, img_count, &fmt,
+                            g_have_depth_ext, depth_sc, depth_imgs,
+                            depth_img_count, &depth_fmt)) return;
 
     struct HandAct ha[2];
     XrPath hand[2];
@@ -125,6 +133,29 @@ void android_main(struct android_app *app) {
     struct timespec fps_t0 = {0, 0};
     float fps = 0;
     float yaw_t = 0;
+
+    // Streaming-latency simulation: render the 3D scene with a pose from
+    // N milliseconds in the past while still submitting the current frame
+    // with the runtime's predicted display pose. This reproduces the
+    // positional reprojection judder seen in ALVR/WiVRn, where the world is
+    // rendered on the host with a stale prediction. Toggle with:
+    //   adb shell setprop debug.xrtest.latency_ms 50
+    //   adb shell setprop debug.xrtest.depth 1
+    char latency_prop[32] = {0}, depth_prop[8] = {0};
+    prop_str("debug.xrtest.latency_ms", latency_prop, sizeof(latency_prop));
+    prop_str("debug.xrtest.depth", depth_prop, sizeof(depth_prop));
+    int64_t render_latency_ns = (int64_t)(strtof(latency_prop, NULL) * 1e6f);
+    bool submit_depth = (atoi(depth_prop) != 0) && g_have_depth_ext && depth_fmt != 0;
+    LOGI("streaming sim latency=%lldns depth=%d", (long long)render_latency_ns,
+         submit_depth);
+
+#define VIEW_HISTORY_SIZE 256
+    struct ViewHistory {
+        int64_t display_time;
+        XrView views[2];
+    } view_hist[VIEW_HISTORY_SIZE];
+    int view_hist_wr = 0;
+    int view_hist_count = 0;
 
     while (running && !app->destroyRequested) {
         int events;
@@ -180,6 +211,41 @@ void android_main(struct android_app *app) {
         XrView views[2] = {{XR_TYPE_VIEW}, {XR_TYPE_VIEW}};
         uint32_t found = 0;
         r = pfn_xrLocateViews(sess, &vli, &vstate, 2, &found, views);
+
+        // Save current views in the ring so we can render with a stale pose
+        // when simulating streaming latency (ALVR/WiVRn render on the host
+        // with an older prediction).
+        if (XR_SUCCEEDED(r) && found >= 2) {
+            view_hist[view_hist_wr].display_time = fstate.predictedDisplayTime;
+            view_hist[view_hist_wr].views[0] = views[0];
+            view_hist[view_hist_wr].views[1] = views[1];
+            view_hist_wr = (view_hist_wr + 1) % VIEW_HISTORY_SIZE;
+            if (view_hist_count < VIEW_HISTORY_SIZE) view_hist_count++;
+        }
+
+        // Pick the render pose. With latency simulation we render as if the
+        // scene was produced on the PC at render_latency_ns before display,
+        // which is what makes the world swim when the runtime reprojects the
+        // flat color image without per-pixel depth.
+        XrView render_views[2] = {{XR_TYPE_VIEW}, {XR_TYPE_VIEW}};
+        render_views[0] = views[0];
+        render_views[1] = views[1];
+        int64_t target_time = fstate.predictedDisplayTime - render_latency_ns;
+        if (render_latency_ns > 0 && view_hist_count > 1) {
+            int best = -1;
+            int64_t best_dt = INT64_MAX;
+            for (int i = 0; i < view_hist_count; i++) {
+                int64_t dt = llabs(view_hist[i].display_time - target_time);
+                if (dt < best_dt) {
+                    best_dt = dt;
+                    best = i;
+                }
+            }
+            if (best >= 0) {
+                render_views[0] = view_hist[best].views[0];
+                render_views[1] = view_hist[best].views[1];
+            }
+        }
 
         // sync the action set: this is what runs update_inputs on the
         // controller devices, so button state and poses stay fresh
@@ -277,6 +343,10 @@ void android_main(struct android_app *app) {
         LINE("fps %5.1f   frame %ld   sess %s", fps, frames, sess_state_str(state));
         LINE("predict %+6.1fms  views %u  fmt 0x%llx", pred_ms, found,
              (long long)fmt);
+        LINE("stream sim  latency %3.0fms  depth %s (%s)",
+             render_latency_ns / 1e6f,
+             submit_depth ? "ON" : "off",
+             g_have_depth_ext ? (depth_fmt ? "ext+fmt" : "ext") : "no-ext");
         LINE("viewflags  ori:%s%s  pos:%s%s",
              (vf & XR_VIEW_STATE_ORIENTATION_VALID_BIT) ? "V" : "-",
              (vf & XR_VIEW_STATE_ORIENTATION_TRACKED_BIT) ? "T" : "-",
@@ -333,7 +403,12 @@ void android_main(struct android_app *app) {
 
         XrCompositionLayerProjectionView pviews[2];
         memset(pviews, 0, sizeof(pviews));
+        XrCompositionLayerDepthInfoKHR depth_info[2];
+        memset(depth_info, 0, sizeof(depth_info));
         bool have_views = XR_SUCCEEDED(r) && found >= 2;
+
+        GLenum depth_attachment = GL_DEPTH_ATTACHMENT;
+        if (depth_fmt == 0x88F0) depth_attachment = GL_DEPTH_STENCIL_ATTACHMENT;
 
         if (fstate.shouldRender && have_views) {
             for (int eye = 0; eye < 2; eye++) {
@@ -350,15 +425,31 @@ void android_main(struct android_app *app) {
                 glBindFramebuffer(GL_FRAMEBUFFER, fbo);
                 glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                        GL_TEXTURE_2D, tex, 0);
+
+                // attach per-pixel depth so the compositor can do positional
+                // reprojection/timewarp instead of orientation-only.
+                uint32_t depth_idx = 0;
+                if (submit_depth && depth_sc[eye] != XR_NULL_HANDLE) {
+                    pfn_xrAcquireSwapchainImage(depth_sc[eye], &acq, &depth_idx);
+                    pfn_xrWaitSwapchainImage(depth_sc[eye], &wait);
+                    glFramebufferTexture2D(GL_FRAMEBUFFER, depth_attachment,
+                                           GL_TEXTURE_2D,
+                                           depth_imgs[eye][depth_idx].image, 0);
+                }
+
                 glViewport(0, 0, vcv[eye].recommendedImageRectWidth,
                            vcv[eye].recommendedImageRectHeight);
                 glClearColor(0.05f, 0.07f, 0.12f, 1.0f);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                 glEnable(GL_DEPTH_TEST);
 
+                // render using the (possibly stale) render_views, but submit
+                // the fresh views to the compositor. This is what ALVR/WiVRn
+                // do: the host renders with an old predicted pose, then the
+                // headset reprojects the result to the current pose.
                 float proj[16], view[16], mvp[16];
-                mat4_proj(views[eye].fov, 0.05f, 100.0f, proj);
-                mat4_view_from_pose(views[eye].pose, view);
+                mat4_proj(render_views[eye].fov, 0.05f, 100.0f, proj);
+                mat4_view_from_pose(render_views[eye].pose, view);
                 mat4_mul(mvp, proj, view);
 
                 glUseProgram(prog);
@@ -471,6 +562,8 @@ void android_main(struct android_app *app) {
 
                 XrSwapchainImageReleaseInfo rel = {XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
                 pfn_xrReleaseSwapchainImage(sc[eye], &rel);
+                if (submit_depth && depth_sc[eye] != XR_NULL_HANDLE)
+                    pfn_xrReleaseSwapchainImage(depth_sc[eye], &rel);
 
                 pviews[eye].type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
                 pviews[eye].pose = views[eye].pose;
@@ -478,6 +571,18 @@ void android_main(struct android_app *app) {
                 pviews[eye].subImage.swapchain = sc[eye];
                 pviews[eye].subImage.imageRect.extent.width = vcv[eye].recommendedImageRectWidth;
                 pviews[eye].subImage.imageRect.extent.height = vcv[eye].recommendedImageRectHeight;
+
+                if (submit_depth && depth_sc[eye] != XR_NULL_HANDLE) {
+                    depth_info[eye].type = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
+                    depth_info[eye].next = NULL;
+                    depth_info[eye].subImage.swapchain = depth_sc[eye];
+                    depth_info[eye].subImage.imageRect = pviews[eye].subImage.imageRect;
+                    depth_info[eye].minDepth = 0.0f;
+                    depth_info[eye].maxDepth = 1.0f;
+                    depth_info[eye].nearZ = 0.05f;
+                    depth_info[eye].farZ = 100.0f;
+                    pviews[eye].next = &depth_info[eye];
+                }
             }
         }
 
@@ -503,7 +608,10 @@ void android_main(struct android_app *app) {
     for (int eye = 0; eye < 2; eye++) {
         if (sc[eye] != XR_NULL_HANDLE)
             pfn_xrDestroySwapchain(sc[eye]);
+        if (depth_sc[eye] != XR_NULL_HANDLE)
+            pfn_xrDestroySwapchain(depth_sc[eye]);
         free(imgs[eye]);
+        free(depth_imgs[eye]);
     }
     for (int h = 0; h < 2; h++) {
         if (ha[h].aim_space != XR_NULL_HANDLE)

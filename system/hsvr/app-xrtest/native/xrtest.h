@@ -28,6 +28,7 @@
 // ---------- entry points (xrfns.c) ----------
 
 extern PFN_xrGetInstanceProcAddr xrGetInstanceProcAddr_fn;
+extern bool g_have_depth_ext;
 
 #define XRP(fn) extern PFN_##fn pfn_##fn
 XRP(xrCreateInstance);
@@ -100,11 +101,16 @@ void xr_load_pfns(XrInstance inst);
 void xr_setup_actions(XrInstance inst, XrSession sess, struct HandAct ha[2],
                       XrPath hand[2], XrActionSet *aset_out);
 // one swapchain per eye in the preferred sRGB-ish format; *fmt_out takes
-// the chosen format for the debug line
+// the chosen format for the debug line. if depth_ext_ok is true a matching
+// depth swapchain is also created per eye (for XR_KHR_composition_layer_depth).
 bool xr_make_swapchains(XrSession sess, const XrViewConfigurationView vcv[2],
                         XrSwapchain sc[2],
                         XrSwapchainImageOpenGLESKHR *imgs[2],
-                        uint32_t img_count[2], int64_t *fmt_out);
+                        uint32_t img_count[2], int64_t *fmt_out,
+                        bool depth_ext_ok,
+                        XrSwapchain depth_sc[2],
+                        XrSwapchainImageOpenGLESKHR *depth_imgs[2],
+                        uint32_t depth_img_count[2], int64_t *depth_fmt_out);
 
 // ---------- math3d.c ----------
 

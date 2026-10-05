@@ -13,8 +13,9 @@ cd "$(dirname "$0")"
 
 ANDROID_HOME="${ANDROID_HOME:-$HOME/Android/sdk}"
 # SDK pieces may be split across roots; probe each. Prefer the pinned
-# versions, fall back to the newest installed.
-newest() { ls -d "$1" 2>/dev/null | sort -V | tail -1; }
+# versions, fall back to the newest installed. The glob has to expand in
+# the caller's word, so $1 stays unquoted here.
+newest() { ls -d $1 2>/dev/null | sort -V | tail -1; }
 for root in "$ANDROID_HOME" "$HOME/Android/sdk" /opt/android-sdk; do
     [ -d "$root" ] || continue
     [ -z "$NDK" ] && [ -d "$root/ndk/27.1.12297006" ] && NDK="$root/ndk/27.1.12297006"

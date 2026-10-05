@@ -27,6 +27,11 @@ Replaces the Pico PVR application stack with upstream components:
   panel with live tracking state (head pose, view flags, per-controller
   poses/buttons/stick, fps) plus marker cubes and aim rays, so the whole
   path can be verified on the panel without adb.
+  The debug panel can also reproduce the positional-reprojection judder seen
+  in streaming clients (ALVR/WiVRn): set
+  `adb shell setprop debug.xrtest.latency_ms 50` to render the scene with a
+  stale predicted pose, and `adb shell setprop debug.xrtest.depth 1` to
+  submit per-pixel depth so the compositor can do positional timewarp.
 
 ## Build
 

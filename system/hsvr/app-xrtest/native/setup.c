@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+bool g_have_depth_ext = false;
+
 // ---------- runtime loading ----------
 
 // the bundled runtime's loader/runtime negotiation; shared by the
@@ -83,25 +85,32 @@ XrResult xr_open_instance(struct android_app *app, bool *bundled,
     if (ext_count > 64) ext_count = 64;
     pfn_xrEnumerateInstanceExtensionProperties(NULL, ext_count, &ext_count, exts_avail);
     bool have_bd = false;
+    g_have_depth_ext = false;
     for (uint32_t i = 0; i < ext_count; i++) {
         LOGI("ext: %s", exts_avail[i].extensionName);
         if (!strcmp(exts_avail[i].extensionName, "XR_BD_controller_interaction"))
             have_bd = true;
+        if (!strcmp(exts_avail[i].extensionName, "XR_KHR_composition_layer_depth"))
+            g_have_depth_ext = true;
     }
 
     XrInstanceCreateInfoAndroidKHR andr = {
         XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR, NULL,
         app->activity->vm, app->activity->clazz};
-    const char *exts[] = {"XR_KHR_android_create_instance", "XR_KHR_opengl_es_enable",
-                          "XR_BD_controller_interaction"};
+    const char *exts[4];
+    int ext_n = 0;
+    exts[ext_n++] = "XR_KHR_android_create_instance";
+    exts[ext_n++] = "XR_KHR_opengl_es_enable";
+    if (have_bd) exts[ext_n++] = "XR_BD_controller_interaction";
+    if (g_have_depth_ext) exts[ext_n++] = "XR_KHR_composition_layer_depth";
     XrInstanceCreateInfo ici = {XR_TYPE_INSTANCE_CREATE_INFO};
     ici.next = &andr;
     strcpy(ici.applicationInfo.applicationName, "xrtest");
     ici.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
-    ici.enabledExtensionCount = have_bd ? 3 : 2;
+    ici.enabledExtensionCount = ext_n;
     ici.enabledExtensionNames = exts;
     XrResult r = pfn_xrCreateInstance(&ici, out);
-    LOGI("xrCreateInstance -> %d (bd=%d)", r, have_bd);
+    LOGI("xrCreateInstance -> %d (bd=%d depth=%d)", r, have_bd, g_have_depth_ext);
     if (XR_FAILED(r) && !*bundled) {
         // loader is present but found no usable system runtime - try the
         // bundled copy once before giving up
@@ -159,19 +168,31 @@ void xr_load_pfns(XrInstance inst) {
 bool xr_make_swapchains(XrSession sess, const XrViewConfigurationView vcv[2],
                         XrSwapchain sc[2],
                         XrSwapchainImageOpenGLESKHR *imgs[2],
-                        uint32_t img_count[2], int64_t *fmt_out) {
+                        uint32_t img_count[2], int64_t *fmt_out,
+                        bool depth_ext_ok,
+                        XrSwapchain depth_sc[2],
+                        XrSwapchainImageOpenGLESKHR *depth_imgs[2],
+                        uint32_t depth_img_count[2], int64_t *depth_fmt_out) {
     uint32_t fmt_count = 0;
     pfn_xrEnumerateSwapchainFormats(sess, 0, &fmt_count, NULL);
-    int64_t fmts[32];
-    if (fmt_count > 32) fmt_count = 32;
+    int64_t fmts[64];
+    if (fmt_count > 64) fmt_count = 64;
     pfn_xrEnumerateSwapchainFormats(sess, fmt_count, &fmt_count, fmts);
     int64_t fmt = fmts[0];
+    int64_t depth_fmt = 0;
     for (uint32_t i = 0; i < fmt_count; i++) {
         LOGI("fmt 0x%llx", (long long)fmts[i]);
         if (fmts[i] == 0x8C43 || fmts[i] == 0x8058) fmt = fmts[i];
+        // depth attachment format candidates, preference order: 24, 16, 32
+        if (!depth_fmt &&
+            (fmts[i] == 0x81A6 || fmts[i] == 0x81A5 || fmts[i] == 0x81A7))
+            depth_fmt = fmts[i];
+        if (!depth_fmt && fmts[i] == 0x88F0)
+            depth_fmt = fmts[i]; // depth+stencil fallback
     }
-    LOGI("using fmt 0x%llx", (long long)fmt);
+    LOGI("using fmt 0x%llx depth_fmt 0x%llx", (long long)fmt, (long long)depth_fmt);
     *fmt_out = fmt;
+    *depth_fmt_out = depth_fmt;
 
     for (int eye = 0; eye < 2; eye++) {
         XrSwapchainCreateInfo scci = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
@@ -192,6 +213,33 @@ bool xr_make_swapchains(XrSession sess, const XrViewConfigurationView vcv[2],
             imgs[eye][i].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
         pfn_xrEnumerateSwapchainImages(sc[eye], img_count[eye], &img_count[eye],
                                    (XrSwapchainImageBaseHeader *)imgs[eye]);
+
+        depth_sc[eye] = XR_NULL_HANDLE;
+        depth_img_count[eye] = 0;
+        if (depth_ext_ok && depth_fmt != 0) {
+            XrSwapchainCreateInfo dci = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
+            dci.usageFlags = XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+            dci.format = depth_fmt;
+            dci.sampleCount = scci.sampleCount;
+            dci.width = scci.width;
+            dci.height = scci.height;
+            dci.faceCount = 1;
+            dci.arraySize = 1;
+            dci.mipCount = 1;
+            r = pfn_xrCreateSwapchain(sess, &dci, &depth_sc[eye]);
+            LOGI("depth swapchain eye%d -> %d (%ux%u)", eye, r, dci.width, dci.height);
+            if (XR_FAILED(r)) {
+                depth_sc[eye] = XR_NULL_HANDLE;
+                depth_fmt = 0;
+            } else {
+                pfn_xrEnumerateSwapchainImages(depth_sc[eye], 0, &depth_img_count[eye], NULL);
+                depth_imgs[eye] = malloc(sizeof(XrSwapchainImageOpenGLESKHR) * depth_img_count[eye]);
+                for (uint32_t i = 0; i < depth_img_count[eye]; i++)
+                    depth_imgs[eye][i].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
+                pfn_xrEnumerateSwapchainImages(depth_sc[eye], depth_img_count[eye], &depth_img_count[eye],
+                                          (XrSwapchainImageBaseHeader *)depth_imgs[eye]);
+            }
+        }
     }
     return true;
 }

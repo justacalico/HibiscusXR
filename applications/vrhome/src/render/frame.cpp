@@ -112,8 +112,12 @@ void warpPresent(Engine* e) {
             while (e->waitFrameId < next) {
                 EGLnsecsANDROID ns = 0;
                 if (!getFrameTs(e->display, e->surface, e->waitFrameId,
-                                1, &name, &ns))
+                                1, &name, &ns)) {
+                    // untracked frame (aged out of the history): resync
+                    // once far enough behind or the id stalls forever
+                    if (next - e->waitFrameId > 32) e->waitFrameId = next;
                     break;
+                }
                 if (ns == -1) { // NATIVE_WINDOW_TIMESTAMP_INVALID
                     // dropped before present: it never flips, don't count
                     ++e->waitFrameId;

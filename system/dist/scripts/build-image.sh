@@ -14,6 +14,16 @@ mkdir -p "$N" "$R/out"
 step() { echo; echo "######## $* ########"; }
 fail() { echo "FAILED: $*" >&2; exit 1; }
 
+# The image is built for one device, published as *-$DEVICE.img.xz. The
+# device picks which hsvr drivers the provider activates - neo2 ships the
+# pn2 hardware driver plus vmd so the same image runs under qemu.
+DEVICE="${DEVICE:-neo2}"
+case "$DEVICE" in
+  neo2) export HSVR_DRIVERS="${HSVR_DRIVERS:-pn2 vmd}" ;;
+  *) fail "unknown DEVICE '$DEVICE'" ;;
+esac
+step "device: $DEVICE (drivers: $HSVR_DRIVERS)"
+
 # Every input the chain below reads, in one shot - the steps fail one at a
 # time otherwise, which costs a rebuild cycle per missing dir. The source
 # dirs come from layout-sources.sh --list, the same list the workflow lays

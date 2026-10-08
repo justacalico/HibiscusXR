@@ -4,12 +4,13 @@
 set -euo pipefail
 R="${PN2_ROOT:?}"
 D="${1:-dist-out}"
+DEVICE="${DEVICE:-neo2}"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "$D"
 
-# tools still write out/system-pn2*.img; the published names are
-# system-hibiscus*.img.xz
-for pair in "system-pn2:system-hibiscus" "system-pn2-full:system-hibiscus-full"; do
+# tools still write out/system-pn2*.img; the published names carry the
+# device: system-hibiscus*-$DEVICE.img.xz
+for pair in "system-pn2:system-hibiscus-$DEVICE" "system-pn2-full:system-hibiscus-full-$DEVICE"; do
   src=${pair%%:*}; pub=${pair##*:}
   img2simg "$R/out/$src.img" "$D/$pub.img"
   # GitHub release assets cap at 2G - the full sparse image is ~2.5G, so both
@@ -22,6 +23,7 @@ tar -cJf "$D/build-logs.tar.xz" --exclude='*.so' -C "$R" notes
 
 {
   echo "Hibiscus image build"
+  echo "device:  $DEVICE"
   echo "version: ${HIBISCUS_VERSION:-dev}"
   echo "date:    $(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "commit:  ${GITHUB_SHA:-local}"

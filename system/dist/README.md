@@ -22,16 +22,27 @@ through the package registry, so they never expire.
 3. `scripts/build-image.sh` runs the real `tools/build` chain on the runner:
    GSI xz -> simg2img -> build.prop -> overlay -> staged Pico stack ->
    fixes -> verify.
-4. Outputs land as xz'd sparse `system-hibiscus.img.xz` / `system-hibiscus-full.img.xz`
-   on a GitHub release, then on a same-named GitLab release via the
-   `github-release-sync` job. Release assets are package-registry backed, so
-   they never expire and download without a login.
+4. Outputs land as xz'd sparse `system-hibiscus-<device>.img.xz` /
+   `system-hibiscus-full-<device>.img.xz` on a GitHub release, then on a
+   same-named GitLab release via the `github-release-sync` job. Release
+   assets are package-registry backed, so they never expire and download
+   without a login.
+
+## Devices
+
+Every build targets one device, and the device is part of the published
+file name (`*-neo2.img.xz`). `DEVICE` selects it - today `neo2` (Pico
+Neo 2) is the only target. The device picks which `drivers/` payloads
+the provider activates: `neo2` ships `pn2` plus `vmd`, so the same image
+also runs under qemu for `vmd/`. A new device means a new `drivers/<name>`
+plus a `DEVICE` entry - the pipeline and the site then carry it end to end.
 
 ## Running a build
 
 Run a pipeline on `main` (web UI "Run pipeline", or `glab ci run`). The
 `github-dispatch` job triggers the workflow and streams the GitHub log into
 the job trace; `github-release-sync` publishes the assets when it succeeds.
+`DEVICE=<name>` on the pipeline picks the target (default `neo2`).
 
 ## OS releases and versioning
 
@@ -80,7 +91,8 @@ bash system/dist/scripts/layout-sources.sh
   `notes/{libart-patched.so,vrshell_lib/}` and the GSI xz under `gsi/`).
   `libGLESv2_adreno.so` can also come from `images/vendor.img`
   (`/lib64/egl/`) - `debugfs -R "dump ..."` works offline.
-- run `bash system/dist/scripts/build-image.sh`
+- run `DEVICE=neo2 bash system/dist/scripts/build-image.sh` (`neo2` is the
+  default when `DEVICE` is unset)
 
 The script's preflight step prints every missing input at once before doing
 any work, so an empty root just tells you the whole list.
@@ -101,7 +113,7 @@ separate package so unchanged pieces are not re-uploaded.
 The release images are xz'd Android sparse images - decompress, then flash:
 
 ```
-unxz system-hibiscus-full.img.xz
+unxz system-hibiscus-full-neo2.img.xz
 fastboot oem pico unlock
-fastboot -S 128M flash system system-hibiscus-full.img
+fastboot -S 128M flash system system-hibiscus-full-neo2.img
 ```

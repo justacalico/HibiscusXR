@@ -17,3 +17,4 @@ linked line per MR no matter how many commits it carried.
 - [发行镜像按设备命名（*-neo2.img.xz）](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/117) (!117)
 - [vmd 独立设备目标：system-hibiscus-vmd.img.xz 与虚拟机指南](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/118) (!118)
 - [fix(dist): 推送 GitHub 镜像前先固化 sha，校验远端指向](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/119) (!119)
+- [feat(vmd): bootenv 让 vmd 镜像在通用 PC 上真正启动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/120) (!120)

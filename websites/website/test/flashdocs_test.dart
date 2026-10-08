@@ -19,8 +19,14 @@ void main() {
         expect(d.guidePath(s.slug).startsWith(d.path), isTrue);
       }
       expect(d.fullImageAssets, isNotEmpty);
-      expect(d.cleanImageAssets, isNotEmpty);
     }
+  });
+
+  test('vmd ships one image, no clean/full split', () {
+    final vmd = flashDocDevice('vmd')!;
+    expect(vmd.fullImageAssets, ['system-hibiscus-vmd.img.xz']);
+    expect(vmd.cleanImageAssets, isEmpty);
+    expect(vmd.guidePath('linux'), '/flashdocs/vmd/linux');
   });
 
   test('lookups resolve known slugs and reject unknown ones', () {

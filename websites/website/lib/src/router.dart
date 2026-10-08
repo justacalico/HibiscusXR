@@ -11,6 +11,7 @@ import 'ui/pages/faq_page.dart';
 import 'ui/pages/flashdocs/device_page.dart';
 import 'ui/pages/flashdocs/guide_page.dart';
 import 'ui/pages/flashdocs/home_page.dart';
+import 'ui/pages/flashdocs/vmd_guide_page.dart';
 import 'ui/pages/home_page.dart';
 import 'ui/pages/not_found_page.dart';
 import 'ui/pages/repositories_page.dart';
@@ -106,13 +107,18 @@ CustomTransitionPage<void> Function(BuildContext, GoRouterState)
 }
 
 /// Page builder for /flashdocs/:device/:system - NotFoundPage when either
-/// slug is unknown.
+/// slug is unknown. Each device gets its own guide: vmd boots a VM,
+/// headsets flash over fastboot.
 CustomTransitionPage<void> Function(BuildContext, GoRouterState)
     _flashdocsGuide(String? deviceSlug, String? systemSlug) {
   final device = flashDocDevice(deviceSlug);
   final system =
       device == null ? null : flashDocSystem(device, systemSlug);
-  return _fade(device == null || system == null
-      ? const NotFoundPage()
-      : FlashDocsGuidePage(device: device, system: system));
+  Widget? page;
+  if (device != null && system != null) {
+    page = device.slug == 'vmd'
+        ? VmdGuidePage(device: device, system: system)
+        : FlashDocsGuidePage(device: device, system: system);
+  }
+  return _fade(page ?? const NotFoundPage());
 }

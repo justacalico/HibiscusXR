@@ -43,8 +43,9 @@ class DevicesSection extends StatelessWidget {
           const SizedBox(height: 48),
           LayoutBuilder(
             builder: (context, constraints) {
-              final columns =
-                  constraints.maxWidth >= 760 ? devices.length : 1;
+              final columns = constraints.maxWidth >= 760
+                  ? (devices.length > 3 ? 3 : devices.length)
+                  : 1;
               final width =
                   (constraints.maxWidth - (columns - 1) * 24) / columns;
               return Wrap(
@@ -80,6 +81,7 @@ class _DeviceCard extends StatelessWidget {
     final tint = switch (device.status) {
       DeviceStatus.supported => AppColors.ok,
       DeviceStatus.planned => context.colors.secondary,
+      DeviceStatus.virtual => context.colors.primary,
     };
     return Container(
       padding: const EdgeInsets.all(28),

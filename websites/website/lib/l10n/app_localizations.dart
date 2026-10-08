@@ -428,6 +428,12 @@ abstract class AppLocalizations {
   /// **'Planned'**
   String get deviceStatePlanned;
 
+  /// No description provided for @deviceStateVirtual.
+  ///
+  /// In en, this message translates to:
+  /// **'Virtual device'**
+  String get deviceStateVirtual;
+
   /// No description provided for @deviceNeo2Name.
   ///
   /// In en, this message translates to:
@@ -445,6 +451,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The current port and development target.'**
   String get deviceNeo2Body;
+
+  /// No description provided for @deviceVmdName.
+  ///
+  /// In en, this message translates to:
+  /// **'Hibiscus VMD'**
+  String get deviceVmdName;
+
+  /// No description provided for @deviceVmdSpecs.
+  ///
+  /// In en, this message translates to:
+  /// **'qemu virt · aarch64 · virtio'**
+  String get deviceVmdSpecs;
+
+  /// No description provided for @deviceVmdBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a headset - the same OS image booted under qemu on a PC, for testing changes without hardware.'**
+  String get deviceVmdBody;
 
   /// No description provided for @deviceQuest1Name.
   ///
@@ -1385,7 +1409,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsPickDeviceBody.
   ///
   /// In en, this message translates to:
-  /// **'Pick your headset to get its flashing guide. More devices land here as ports do.'**
+  /// **'Pick your headset to get its flashing guide - or the VMD target to run Hibiscus in qemu on a PC. More devices land here as ports do.'**
   String get flashdocsPickDeviceBody;
 
   /// No description provided for @flashdocsPickOsTitle.
@@ -1411,6 +1435,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'adb and fastboot from your distro\'s repos.'**
   String get flashdocsOsCardBody;
+
+  /// No description provided for @flashdocsOsCardBodyVmd.
+  ///
+  /// In en, this message translates to:
+  /// **'qemu and the vmd host tool from this repo.'**
+  String get flashdocsOsCardBodyVmd;
 
   /// No description provided for @flashdocsNeo2Title.
   ///
@@ -1573,6 +1603,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The headset restarts into Hibiscus. First boot takes a couple of minutes while the Pico stack settles.'**
   String get flashdocsNeo2DoneBody;
+
+  /// No description provided for @flashdocsVmdTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Hibiscus in a VM'**
+  String get flashdocsVmdTitle;
+
+  /// No description provided for @flashdocsVmdIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'vmd is Hibiscus as a virtual device: the same system image, booted under qemu on a Linux PC. Test OS and app changes without a headset.'**
+  String get flashdocsVmdIntro;
+
+  /// No description provided for @flashdocsVmdReq1.
+  ///
+  /// In en, this message translates to:
+  /// **'A Linux PC with qemu-system-aarch64 plus xz and debugfs'**
+  String get flashdocsVmdReq1;
+
+  /// No description provided for @flashdocsVmdReq2.
+  ///
+  /// In en, this message translates to:
+  /// **'The vmd host tool built from this repo (make -C vmd)'**
+  String get flashdocsVmdReq2;
+
+  /// No description provided for @flashdocsVmdReq3.
+  ///
+  /// In en, this message translates to:
+  /// **'A virtio-capable aarch64 kernel for -kernel if you want the guest to boot all the way - the stock sdm845 kernel cannot run on qemu'**
+  String get flashdocsVmdReq3;
+
+  /// No description provided for @flashdocsVmdGetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Get the vmd image'**
+  String get flashdocsVmdGetTitle;
+
+  /// No description provided for @flashdocsVmdGetBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every OS release ships system-hibiscus-vmd.img.xz next to the headset images. Decompress it and keep it where vmd can reach it.'**
+  String get flashdocsVmdGetBody;
+
+  /// No description provided for @flashdocsVmdGetCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'unxz system-hibiscus-vmd.img.xz'**
+  String get flashdocsVmdGetCmd1;
+
+  /// No description provided for @flashdocsVmdRunTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Boot it'**
+  String get flashdocsVmdRunTitle;
+
+  /// No description provided for @flashdocsVmdRunBody.
+  ///
+  /// In en, this message translates to:
+  /// **'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode.'**
+  String get flashdocsVmdRunBody;
+
+  /// No description provided for @flashdocsVmdRunCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'make -C vmd'**
+  String get flashdocsVmdRunCmd1;
+
+  /// No description provided for @flashdocsVmdRunCmd2.
+  ///
+  /// In en, this message translates to:
+  /// **'vmd/out/vmd -desktopsim -img <image-dir>'**
+  String get flashdocsVmdRunCmd2;
+
+  /// No description provided for @flashdocsVmdRunNote.
+  ///
+  /// In en, this message translates to:
+  /// **'On an aarch64 host vmd enables KVM automatically; on x86_64 the guest runs under TCG - correct, but slow.'**
+  String get flashdocsVmdRunNote;
+
+  /// No description provided for @flashdocsVmdAdbTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'3. Talk to the guest'**
+  String get flashdocsVmdAdbTitle;
+
+  /// No description provided for @flashdocsVmdAdbBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The VM forwards adb and cted to loopback ports, and the vmd image enables wireless adb by default - once it is up, the whole headset toolchain works against it.'**
+  String get flashdocsVmdAdbBody;
+
+  /// No description provided for @flashdocsVmdAdbCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'adb connect localhost:15555'**
+  String get flashdocsVmdAdbCmd1;
+
+  /// No description provided for @flashdocsVmdAdbCmd2.
+  ///
+  /// In en, this message translates to:
+  /// **'adb shell su -c \'setprop persist.hibiscus.cted 1\''**
+  String get flashdocsVmdAdbCmd2;
+
+  /// No description provided for @flashdocsVmdAdbNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it.'**
+  String get flashdocsVmdAdbNote;
 }
 
 class _AppLocalizationsDelegate

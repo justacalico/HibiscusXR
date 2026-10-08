@@ -183,6 +183,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deviceStatePlanned => 'Planned';
 
   @override
+  String get deviceStateVirtual => 'Virtual device';
+
+  @override
   String get deviceNeo2Name => 'Pico Neo 2';
 
   @override
@@ -190,6 +193,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deviceNeo2Body => 'The current port and development target.';
+
+  @override
+  String get deviceVmdName => 'Hibiscus VMD';
+
+  @override
+  String get deviceVmdSpecs => 'qemu virt · aarch64 · virtio';
+
+  @override
+  String get deviceVmdBody =>
+      'Not a headset - the same OS image booted under qemu on a PC, for testing changes without hardware.';
 
   @override
   String get deviceQuest1Name => 'Oculus Quest 1';
@@ -732,7 +745,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashdocsPickDeviceBody =>
-      'Pick your headset to get its flashing guide. More devices land here as ports do.';
+      'Pick your headset to get its flashing guide - or the VMD target to run Hibiscus in qemu on a PC. More devices land here as ports do.';
 
   @override
   String get flashdocsPickOsTitle => 'Which OS is your computer running?';
@@ -747,6 +760,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get flashdocsOsCardBody =>
       'adb and fastboot from your distro\'s repos.';
+
+  @override
+  String get flashdocsOsCardBodyVmd =>
+      'qemu and the vmd host tool from this repo.';
 
   @override
   String get flashdocsNeo2Title => 'Flash Hibiscus on the Pico Neo 2';
@@ -840,4 +857,68 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get flashdocsNeo2DoneBody =>
       'The headset restarts into Hibiscus. First boot takes a couple of minutes while the Pico stack settles.';
+
+  @override
+  String get flashdocsVmdTitle => 'Run Hibiscus in a VM';
+
+  @override
+  String get flashdocsVmdIntro =>
+      'vmd is Hibiscus as a virtual device: the same system image, booted under qemu on a Linux PC. Test OS and app changes without a headset.';
+
+  @override
+  String get flashdocsVmdReq1 =>
+      'A Linux PC with qemu-system-aarch64 plus xz and debugfs';
+
+  @override
+  String get flashdocsVmdReq2 =>
+      'The vmd host tool built from this repo (make -C vmd)';
+
+  @override
+  String get flashdocsVmdReq3 =>
+      'A virtio-capable aarch64 kernel for -kernel if you want the guest to boot all the way - the stock sdm845 kernel cannot run on qemu';
+
+  @override
+  String get flashdocsVmdGetTitle => '1. Get the vmd image';
+
+  @override
+  String get flashdocsVmdGetBody =>
+      'Every OS release ships system-hibiscus-vmd.img.xz next to the headset images. Decompress it and keep it where vmd can reach it.';
+
+  @override
+  String get flashdocsVmdGetCmd1 => 'unxz system-hibiscus-vmd.img.xz';
+
+  @override
+  String get flashdocsVmdRunTitle => '2. Boot it';
+
+  @override
+  String get flashdocsVmdRunBody =>
+      'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode.';
+
+  @override
+  String get flashdocsVmdRunCmd1 => 'make -C vmd';
+
+  @override
+  String get flashdocsVmdRunCmd2 => 'vmd/out/vmd -desktopsim -img <image-dir>';
+
+  @override
+  String get flashdocsVmdRunNote =>
+      'On an aarch64 host vmd enables KVM automatically; on x86_64 the guest runs under TCG - correct, but slow.';
+
+  @override
+  String get flashdocsVmdAdbTitle => '3. Talk to the guest';
+
+  @override
+  String get flashdocsVmdAdbBody =>
+      'The VM forwards adb and cted to loopback ports, and the vmd image enables wireless adb by default - once it is up, the whole headset toolchain works against it.';
+
+  @override
+  String get flashdocsVmdAdbCmd1 => 'adb connect localhost:15555';
+
+  @override
+  String get flashdocsVmdAdbCmd2 =>
+      'adb shell su -c \'setprop persist.hibiscus.cted 1\'';
+
+  @override
+  String get flashdocsVmdAdbNote =>
+      'Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it.';
 }

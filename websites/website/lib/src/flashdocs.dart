@@ -2,13 +2,17 @@ import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 import 'routes.dart';
 
-/// One host OS a flashing guide exists for.
+/// One host OS a guide exists for.
 class FlashDocSystem {
-  const FlashDocSystem({required this.slug, required this.name});
+  const FlashDocSystem({required this.slug, required this.name, this.body});
 
   /// URL segment, e.g. linux.
   final String slug;
   final String Function(AppLocalizations l10n) name;
+
+  /// Card blurb on the device page - null falls back to the adb/fastboot
+  /// line, which is what real flashing guides need.
+  final String Function(AppLocalizations l10n)? body;
 }
 
 /// A headset with flashing docs. Each entry lists the host OSes the
@@ -45,7 +49,7 @@ class FlashDocDevice {
       Routes.flashdocsGuide(slug, systemSlug);
 }
 
-/// Headsets covered by the flashing docs, in display order.
+/// Headsets and targets covered by the setup docs, in display order.
 final flashDocDevices = <FlashDocDevice>[
   FlashDocDevice(
     slug: 'pico-neo-2',
@@ -65,7 +69,23 @@ final flashDocDevices = <FlashDocDevice>[
       'system-pn2.img.xz',
     ],
   ),
+  // vmd is not a headset - it is the qemu target for testing the OS on a
+  // PC. One image, no clean/full split: fullImageAssets carries it.
+  FlashDocDevice(
+    slug: 'vmd',
+    name: (l) => l.deviceVmdName,
+    specs: (l) => l.deviceVmdSpecs,
+    systems: const [
+      FlashDocSystem(slug: 'linux', name: _linuxName, body: _vmdHostBody),
+    ],
+    fullImageAssets: const [
+      'system-hibiscus-vmd.img.xz',
+    ],
+    cleanImageAssets: const [],
+  ),
 ];
+
+String _vmdHostBody(AppLocalizations l10n) => l10n.flashdocsOsCardBodyVmd;
 
 String _linuxName(AppLocalizations l10n) => l10n.flashdocsOsLinux;
 

@@ -172,7 +172,8 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	// -img selects a guest disk set; with a bare -kernel the image is
 	// optional (kernel bring-up testing, arch-agnostic qemu testing)
 	std::string system_img;
-	for (const char *n : {"system-hibiscus-full-neo2.img",
+	for (const char *n : {"system-hibiscus-vmd.img",
+	                      "system-hibiscus-full-neo2.img",
 	                      "system-hibiscus-full.img", "system-pn2-full.img",
 	                      "system.img", "rootfs.img"}) {
 		if (file_exists(opts.imgdir + "/" + n)) {
@@ -204,9 +205,13 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	if (want_kvm && access("/dev/kvm", W_OK) == 0) {
 		args.push_back("-enable-kvm");
 	}
+	// user networking: the guest reaches us at 10.0.2.2 (pose channel,
+	// adb server lookup). hostfwd exposes the guest's own services back:
+	// 15555->adbd once persist.pn2.adbwifi=1, 17340->cted when enabled.
 	args.insert(args.end(), {"-M", opts.machine, "-cpu", "max", "-smp", "4",
 	    "-m", "4096",
-	    "-netdev", "user,id=n0",
+	    "-netdev", "user,id=n0,hostfwd=tcp:127.0.0.1:15555-:5555,"
+	               "hostfwd=tcp:127.0.0.1:17340-:7340",
 	    "-device", "virtio-net" + t + ",netdev=n0",
 	    "-device", "virtio-gpu" + t,
 	    "-display", "none",

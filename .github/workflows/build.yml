@@ -23,6 +23,7 @@ on:
         type: choice
         options:
           - neo2
+          - vmd
         default: neo2
 
 env:
@@ -167,8 +168,16 @@ jobs:
           {
             echo "LineageOS 17.1 system images for ${DEVICE}."
             echo
-            echo "- \`system-hibiscus-${DEVICE}.img.xz\` - clean: GSI + our fixes, no proprietary blobs"
-            echo "- \`system-hibiscus-full-${DEVICE}.img.xz\` - full device stack, ready to flash"
+            # one bullet per published image - the device matrix decides the set
+            for f in dist-out/system-hibiscus-*.img.xz; do
+              n=$(basename "$f")
+              case "$n" in
+                *-vmd.img.xz) d="vmd virtual device - boots under qemu (see vmd/), not for a headset" ;;
+                *full*)       d="full device stack, ready to flash" ;;
+                *)            d="clean: GSI + our fixes, no proprietary blobs" ;;
+              esac
+              echo "- \`$n\` - $d"
+            done
             echo "- \`build-logs.tar.xz\` - every build step's notes/ log"
             echo
             echo "xz'd sparse images - \`unxz <img.xz>\`, then \`fastboot -S 128M flash system <img>\`."

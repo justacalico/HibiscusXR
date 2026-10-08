@@ -291,7 +291,7 @@
   "flashdocsNeo2FlashBody": "With the full system image downloaded, put the headset back into fastboot and run:",
   "flashdocsNeo2FlashCmd1": "adb reboot bootloader",
   "flashdocsNeo2FlashCmd2": "fastboot oem pico unlock",
-  "flashdocsNeo2FlashCmd3": "fastboot -S 128M flash system system-hibiscus-full.img",
+  "flashdocsNeo2FlashCmd3": "fastboot -S 128M flash system system-hibiscus-full-neo2.img",
   "flashdocsNeo2FlashCmd4": "fastboot reboot",
   "flashdocsNeo2FlashNote": "The -S 128M chunk size is mandatory: larger chunks kill the USB link mid-flash.",
   "flashdocsNeo2DoneTitle": "4. Done",

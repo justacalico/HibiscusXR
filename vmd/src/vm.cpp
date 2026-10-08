@@ -3,15 +3,17 @@
 //
 // QEMU launcher + framebuffer reader.
 //
-// The guest gets the same artifacts fastboot flashes: boot.img, vendor.img
-// and system-hibiscus-full-*.img on virtio-blk, user networking (which is
-// what gives the guest its 10.0.2.2 route back to us), and a virtio-gpu
-// whose framebuffer we pull through QMP screendump.
+// The guest gets raw ext4 partitions on virtio-blk (system, vendor,
+// userdata), user networking (which is what gives the guest its
+// 10.0.2.2 route back to us), and a virtio-gpu whose framebuffer we
+// pull through QMP screendump.
 //
-// Reality check: the stock sdm845 kernel only runs on Qualcomm hardware,
-// so until the LineageOS fork produces a generic kernel you pass a
-// virtio-capable one with -kernel/-dtb. The pose channel and desktop sim
-// work without the guest booted all the way.
+// The stock sdm845 kernel only runs on Qualcomm hardware, so a virtio
+// kernel is mandatory: bootenv/make-bootenv.sh fetches the API 29
+// 'ranchu' emulator kernel plus the matching vendor image and packs a
+// bootstrap ramdisk (vmd-boot.img) that mounts the non-SAR system
+// partition and execs its own init. vmd -img picks all of it up
+// automatically; -kernel/-initrd/-append/-cpu still override.
 
 #include "vmd.hpp"
 
@@ -208,7 +210,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	// user networking: the guest reaches us at 10.0.2.2 (pose channel,
 	// adb server lookup). hostfwd exposes the guest's own services back:
 	// 15555->adbd once persist.pn2.adbwifi=1, 17340->cted when enabled.
-	args.insert(args.end(), {"-M", opts.machine, "-cpu", "max", "-smp", "4",
+	args.insert(args.end(), {"-M", opts.machine, "-cpu", opts.cpu, "-smp", "4",
 	    "-m", "4096",
 	    "-netdev", "user,id=n0,hostfwd=tcp:127.0.0.1:15555-:5555,"
 	               "hostfwd=tcp:127.0.0.1:17340-:7340",
@@ -254,28 +256,62 @@ vmd_vm_start(const vmd_vm_opts &opts)
 			args.push_back("-device");
 			args.push_back("virtio-blk" + t + ",drive=vendor");
 		}
+		std::string userdata_img = opts.imgdir + "/userdata.img";
+		if (file_exists(userdata_img)) {
+			args.push_back("-drive");
+			args.push_back("file=" + userdata_img +
+			               ",format=raw,if=none,id=userdata");
+			args.push_back("-device");
+			args.push_back("virtio-blk" + t + ",drive=userdata");
+		}
 	}
 	if (!opts.kernel.empty()) {
 		args.push_back("-kernel");
 		args.push_back(opts.kernel);
 	} else {
-		std::string boot = opts.imgdir + "/boot.img";
-		if (file_exists(boot)) {
-			args.push_back("-kernel");
-			args.push_back(boot);
+		// bootenv/make-bootenv.sh drops kernel-ranchu next to the
+		// system image; boot.img stays the last-resort fallback
+		for (const char *n : {"kernel-ranchu", "kernel", "boot.img"}) {
+			std::string p = opts.imgdir + "/" + n;
+			if (file_exists(p)) {
+				args.push_back("-kernel");
+				args.push_back(p);
+				break;
+			}
 		}
 	}
 	if (!opts.dtb.empty()) {
 		args.push_back("-dtb");
 		args.push_back(opts.dtb);
 	}
-	if (!opts.initrd.empty()) {
-		args.push_back("-initrd");
-		args.push_back(opts.initrd);
+	{
+		std::string initrd = opts.initrd;
+		if (initrd.empty()) {
+			for (const char *n : {"vmd-boot.img", "ramdisk.img"}) {
+				std::string p = opts.imgdir + "/" + n;
+				if (file_exists(p)) {
+					initrd = p;
+					break;
+				}
+			}
+		}
+		if (!initrd.empty()) {
+			args.push_back("-initrd");
+			args.push_back(initrd);
+		}
 	}
-	if (!opts.cmdline.empty()) {
+	std::string cmdline = opts.cmdline;
+	if (cmdline.empty() && !system_img.empty()) {
+		// defaults for the Android tree: serial console (also the
+		// guest shell via androidboot.console), permissive selinux so
+		// HALs started under the emulator vendor image don't wedge
+		cmdline = "console=ttyAMA0 androidboot.console=ttyAMA0 "
+		          "androidboot.hardware=ranchu qemu=1 "
+		          "androidboot.selinux=permissive";
+	}
+	if (!cmdline.empty()) {
 		args.push_back("-append");
-		args.push_back(opts.cmdline);
+		args.push_back(cmdline);
 	}
 
 	std::vector<char *> argv;

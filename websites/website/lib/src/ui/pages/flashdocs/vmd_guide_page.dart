@@ -61,6 +61,7 @@ class VmdGuidePage extends StatelessWidget {
           const SizedBox(height: 20),
           CommandBlock(lines: [
             l10n.flashdocsVmdRunCmd1,
+            l10n.flashdocsVmdRunCmd1b,
             l10n.flashdocsVmdRunCmd2,
           ]),
           const SizedBox(height: 14),

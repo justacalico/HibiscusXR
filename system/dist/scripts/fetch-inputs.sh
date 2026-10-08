@@ -84,4 +84,6 @@ for p in $PINS; do
 done
 
 echo "=== inputs laid out ($DEVICE) ==="
-du -sh "$R"/{pvr_stack,pvr_apps_final,pvr_applibs,oem_final,seethrough,overlay_pvr,airsvc,rfsa,qvr,cdsp,fan,linklibs,build,notes,gsi} 2>/dev/null
+# informational only: du exits nonzero when a device legitimately lacks a dir
+# (vmd has no pvr_*), and this is the last command so it would fail the step
+du -sh "$R"/{pvr_stack,pvr_apps_final,pvr_applibs,oem_final,seethrough,overlay_pvr,airsvc,rfsa,qvr,cdsp,fan,linklibs,build,notes,gsi} 2>/dev/null || true

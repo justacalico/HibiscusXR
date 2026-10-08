@@ -181,6 +181,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deviceStatePlanned => '计划中';
 
   @override
+  String get deviceStateVirtual => '虚拟设备';
+
+  @override
   String get deviceNeo2Name => 'Pico Neo 2';
 
   @override
@@ -188,6 +191,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deviceNeo2Body => '目前的移植和开发目标机。';
+
+  @override
+  String get deviceVmdName => 'Hibiscus VMD';
+
+  @override
+  String get deviceVmdSpecs => 'qemu virt · aarch64 · virtio';
+
+  @override
+  String get deviceVmdBody => '不是头显——同一个系统镜像在 PC 上用 qemu 启动,没有真机也能测试系统改动。';
 
   @override
   String get deviceQuest1Name => 'Oculus Quest 1';
@@ -681,7 +693,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get flashdocsPickDeviceTitle => '你用的是哪个头显?';
 
   @override
-  String get flashdocsPickDeviceBody => '选择你的头显查看对应的刷机指南。后续移植的设备也会出现在这里。';
+  String get flashdocsPickDeviceBody =>
+      '选择你的头显查看刷机指南,或者选 VMD 目标在 PC 上用 qemu 跑 Hibiscus。后续移植的设备也会出现在这里。';
 
   @override
   String get flashdocsPickOsTitle => '你的电脑跑的是什么系统?';
@@ -694,6 +707,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsOsCardBody => '用发行版仓库里的 adb 和 fastboot。';
+
+  @override
+  String get flashdocsOsCardBodyVmd => 'qemu 加仓库里的 vmd 主机工具。';
 
   @override
   String get flashdocsNeo2Title => '在 Pico Neo 2 上刷入 Hibiscus';
@@ -781,4 +797,67 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsNeo2DoneBody => '头显重启后进入 Hibiscus。第一次开机会花几分钟,等 Pico 栈就位。';
+
+  @override
+  String get flashdocsVmdTitle => '在虚拟机里跑 Hibiscus';
+
+  @override
+  String get flashdocsVmdIntro =>
+      'vmd 是把 Hibiscus 当成一台虚拟设备:同一个系统镜像,在 Linux PC 上用 qemu 启动。不碰头显就能测试系统和应用的改动。';
+
+  @override
+  String get flashdocsVmdReq1 =>
+      '一台 Linux PC,装好 qemu-system-aarch64,以及 xz、debugfs 这些镜像工具';
+
+  @override
+  String get flashdocsVmdReq2 => '从本仓库构建的 vmd 主机工具(make -C vmd)';
+
+  @override
+  String get flashdocsVmdReq3 =>
+      '要让 guest 完整启动,需要一个支持 virtio 的 aarch64 内核,用 -kernel 传入 - 自带的 sdm845 内核跑不了 qemu';
+
+  @override
+  String get flashdocsVmdGetTitle => '1. 拿到 vmd 镜像';
+
+  @override
+  String get flashdocsVmdGetBody =>
+      '每次系统发版都会在头显镜像旁边带上 system-hibiscus-vmd.img.xz。解压后放到 vmd 能读到的目录。';
+
+  @override
+  String get flashdocsVmdGetCmd1 => 'unxz system-hibiscus-vmd.img.xz';
+
+  @override
+  String get flashdocsVmdRunTitle => '2. 启动';
+
+  @override
+  String get flashdocsVmdRunBody =>
+      'vmd 拉起 qemu,通过 TCP :7781 给 guest 喂头显位姿,再把 framebuffer 拉回窗口——-openxr 模式下是推给真头显。';
+
+  @override
+  String get flashdocsVmdRunCmd1 => 'make -C vmd';
+
+  @override
+  String get flashdocsVmdRunCmd2 => 'vmd/out/vmd -desktopsim -img <image-dir>';
+
+  @override
+  String get flashdocsVmdRunNote =>
+      'aarch64 主机上 vmd 会自动启用 KVM;x86_64 上走 TCG 纯模拟——行为正确但很慢,适合做冒烟测试。';
+
+  @override
+  String get flashdocsVmdAdbTitle => '3. 连接 guest';
+
+  @override
+  String get flashdocsVmdAdbBody =>
+      'VM 把 adb 和 cted 转发到本机回环端口,vmd 镜像默认开启无线 adb——起来之后整套头显工具链都能直接用。';
+
+  @override
+  String get flashdocsVmdAdbCmd1 => 'adb connect localhost:15555';
+
+  @override
+  String get flashdocsVmdAdbCmd2 =>
+      'adb shell su -c \'setprop persist.hibiscus.cted 1\'';
+
+  @override
+  String get flashdocsVmdAdbNote =>
+      '局域网里谁也看不到这个 guest——只有 15555(adb)和 17340(cted)两个回环转发口能进去。';
 }

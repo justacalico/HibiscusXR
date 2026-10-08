@@ -1,9 +1,11 @@
 import 'package:hibiscusxr_website/l10n/app_localizations.dart';
 
 /// Where a headset stands, matching the README compatibility table.
-enum DeviceStatus { supported, planned }
+/// virtual is the qemu target - not hardware, its own thing.
+enum DeviceStatus { supported, planned, virtual }
 
-/// One headset the OS runs on today or is planned to run on.
+/// One target the OS runs on today or is planned to run on - headsets
+/// plus the vmd virtual device.
 /// Name, specs and the blurb all resolve through l10n like every
 /// other string on the site.
 class DeviceEntry {
@@ -29,10 +31,11 @@ class DeviceEntry {
   String statusLabel(AppLocalizations l10n) => switch (status) {
         DeviceStatus.supported => l10n.deviceStateSupported,
         DeviceStatus.planned => l10n.deviceStatePlanned,
+        DeviceStatus.virtual => l10n.deviceStateVirtual,
       };
 }
 
-/// Headsets from the README's compatibility table, in display order.
+/// Targets from the README's compatibility table, in display order.
 final devices = <DeviceEntry>[
   DeviceEntry(
     status: DeviceStatus.supported,
@@ -51,5 +54,11 @@ final devices = <DeviceEntry>[
     name: (l) => l.deviceNeo3Name,
     specs: (l) => l.deviceNeo3Specs,
     describe: (l) => l.devicePlannedBody,
+  ),
+  DeviceEntry(
+    status: DeviceStatus.virtual,
+    name: (l) => l.deviceVmdName,
+    specs: (l) => l.deviceVmdSpecs,
+    describe: (l) => l.deviceVmdBody,
   ),
 ];

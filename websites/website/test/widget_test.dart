@@ -79,8 +79,10 @@ void main() {
 
     expect(find.text('Oculus Quest 1'), findsOneWidget);
     expect(find.text('Pico Neo 3'), findsOneWidget);
+    expect(find.text('Hibiscus VMD'), findsOneWidget);
     expect(find.text('Supported, in development'), findsOneWidget);
     expect(find.text('Planned'), findsNWidgets(2));
+    expect(find.text('Virtual device'), findsOneWidget);
   });
 
   testWidgets('nav guide button opens the flashing docs', (tester) async {
@@ -193,6 +195,26 @@ void main() {
         find.text('fastboot flash boot magisk_patched_pico_neo_2_boot.img'),
         findsOneWidget);
     expect(find.text('Download the patched boot image'), findsOneWidget);
+    expect(find.text('Available builds'), findsOneWidget);
+  });
+
+  testWidgets('flashdocs vmd route shows the VM guide', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/flashdocs/vmd');
+    await tester.pumpAndSettle();
+    expect(find.text('Which OS is your computer running?'),
+        findsOneWidget);
+
+    _routerOf(tester).go('/flashdocs/vmd/linux');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Run Hibiscus in a VM'), findsOneWidget);
+    expect(find.text('adb connect localhost:15555'), findsOneWidget);
     expect(find.text('Available builds'), findsOneWidget);
   });
 

@@ -104,6 +104,27 @@ void main() {
       expect(releases[1].cleanImageFor(neo2)!.name, 'system-pn2.img.xz');
     });
 
+    test('vmd resolves its single image, no clean variant', () {
+      final vmd = flashDocDevice('vmd')!;
+      final releases = parseReleases([
+        {
+          'tag_name': 'alpha-v2026.10.08-r1',
+          'name': 'r1',
+          'created_at': '2026-10-08T10:00:00.000Z',
+          'assets': {
+            'links': [
+              {'name': 'system-hibiscus-vmd.img.xz', 'url': 'u/vmd'},
+              {'name': 'system-hibiscus-full-neo2.img.xz', 'url': 'u/n2'},
+            ],
+          },
+        },
+      ]);
+      expect(releases[0].fullImageFor(vmd)!.name,
+          'system-hibiscus-vmd.img.xz');
+      expect(releases[0].fullImageFor(vmd)!.url, 'u/vmd');
+      expect(releases[0].cleanImageFor(vmd)!.url, isEmpty);
+    });
+
     test('empty assets list is fine', () {
       final neo2 = flashDocDevice('pico-neo-2')!;
       final releases = parseReleases(json);

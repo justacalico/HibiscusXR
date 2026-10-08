@@ -37,7 +37,7 @@ class FlashDocsDevicePage extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 16),
               child: FlashDocsPickCard(
                 title: s.name(l10n),
-                subtitle: l10n.flashdocsOsCardBody,
+                subtitle: s.body?.call(l10n) ?? l10n.flashdocsOsCardBody,
                 path: device.guidePath(s.slug),
               ),
             ),

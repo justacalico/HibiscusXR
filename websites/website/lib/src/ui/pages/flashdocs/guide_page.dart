@@ -11,6 +11,7 @@ import '../../../theme.dart';
 import '../../builds_section.dart';
 import '../../widgets.dart';
 import 'flashdocs_layout.dart';
+import 'guide_parts.dart';
 
 /// The per-OS flashing guide. Today only the Neo 2 / Linux pair exists,
 /// so this page is that guide - new device or OS guides get their own
@@ -49,7 +50,7 @@ class FlashDocsGuidePage extends StatelessWidget {
           const SizedBox(height: 40),
           _Requirements(l10n: l10n),
           const SizedBox(height: 40),
-          _StepSection(
+          GuideStep(
             title: l10n.flashdocsNeo2RootTitle,
             body: l10n.flashdocsNeo2RootBody,
             l10n: l10n,
@@ -61,16 +62,16 @@ class FlashDocsGuidePage extends StatelessWidget {
             onPressed: () => launchUrl(Uri.parse(Links.neo2RootBoot)),
           ),
           const SizedBox(height: 20),
-          _Commands(lines: [
+          CommandBlock(lines: [
             l10n.flashdocsNeo2RootCmd1,
             l10n.flashdocsNeo2RootCmd2,
             l10n.flashdocsNeo2RootCmd3,
             l10n.flashdocsNeo2RootCmd4,
           ]),
           const SizedBox(height: 14),
-          _Note(text: l10n.flashdocsNeo2RootNote),
+          GuideNote(text: l10n.flashdocsNeo2RootNote),
           const SizedBox(height: 40),
-          _StepSection(
+          GuideStep(
             title: l10n.flashdocsNeo2BackupTitle,
             body: l10n.flashdocsNeo2BackupBody,
             l10n: l10n,
@@ -82,7 +83,7 @@ class FlashDocsGuidePage extends StatelessWidget {
             onPressed: () => context.go(Routes.hbsupDownload),
           ),
           const SizedBox(height: 40),
-          _StepSection(
+          GuideStep(
             title: l10n.flashdocsNeo2FlashTitle,
             body: l10n.flashdocsNeo2FlashBody,
             l10n: l10n,
@@ -90,16 +91,16 @@ class FlashDocsGuidePage extends StatelessWidget {
           const SizedBox(height: 24),
           BuildsSection(device: device),
           const SizedBox(height: 20),
-          _Commands(lines: [
+          CommandBlock(lines: [
             l10n.flashdocsNeo2FlashCmd1,
             l10n.flashdocsNeo2FlashCmd2,
             l10n.flashdocsNeo2FlashCmd3,
             l10n.flashdocsNeo2FlashCmd4,
           ]),
           const SizedBox(height: 14),
-          _Note(text: l10n.flashdocsNeo2FlashNote),
+          GuideNote(text: l10n.flashdocsNeo2FlashNote),
           const SizedBox(height: 40),
-          _StepSection(
+          GuideStep(
             title: l10n.flashdocsNeo2DoneTitle,
             body: l10n.flashdocsNeo2DoneBody,
             l10n: l10n,
@@ -186,73 +187,6 @@ class _Requirements extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _StepSection extends StatelessWidget {
-  const _StepSection({
-    required this.title,
-    required this.body,
-    required this.l10n,
-  });
-
-  final String title;
-  final String body;
-  final AppLocalizations l10n;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title, style: context.text.titleLarge),
-        const SizedBox(height: 10),
-        Text(
-          body,
-          style: context.text.bodyMedium!.copyWith(fontSize: 17),
-        ),
-      ],
-    );
-  }
-}
-
-/// A block of shell commands, one per line, in the site mono style.
-class _Commands extends StatelessWidget {
-  const _Commands({required this.lines});
-
-  final List<String> lines;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: context.colors.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: context.colors.outline, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final line in lines) Text(line, style: context.mono),
-        ],
-      ),
-    );
-  }
-}
-
-class _Note extends StatelessWidget {
-  const _Note({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: context.text.labelSmall!.copyWith(fontSize: 13, height: 1.5),
     );
   }
 }

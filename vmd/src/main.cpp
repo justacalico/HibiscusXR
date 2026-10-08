@@ -107,9 +107,10 @@ main(int argc, char **argv)
 		else if (a == "-disk" && i + 1 < argc) opts.disk = argv[++i];
 		else if (a == "-serial" && i + 1 < argc) opts.serial = argv[++i];
 		else if (a == "-machine" && i + 1 < argc) opts.machine = argv[++i];
+		else if (a == "-cpu" && i + 1 < argc) opts.cpu = argv[++i];
 		else {
 			fprintf(stderr, "usage: vmd [-openxr|-desktopsim|-novr|-pc|-selftest] "
-			        "[-img dir] [-novm] [-qemu bin] [-machine m] "
+			        "[-img dir] [-novm] [-qemu bin] [-machine m] [-cpu c] "
 			        "[-kernel k] [-dtb d] [-initrd r] [-disk f] "
 			        "[-serial s] [-append c]\n");
 			return a == "-h" || a == "--help" ? 0 : 2;

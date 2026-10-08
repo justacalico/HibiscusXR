@@ -36,6 +36,7 @@ struct vmd_vm_opts
 	std::string imgdir;              // dir holding the image set
 	std::string qemu = "qemu-system-aarch64"; // VMD_QEMU or -qemu overrides
 	std::string machine = "virt";    // -machine
+	std::string cpu = "cortex-a53";  // -cpu: ranchu kernels hang on 'max'
 	std::string kernel, dtb, cmdline;
 	std::string initrd;              // -initrd: guest ramdisk image
 	std::string disk;                // -disk: single GPT disk image

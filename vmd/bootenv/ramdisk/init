@@ -1,0 +1,35 @@
+#!/bin/busybox sh
+/bin/busybox --install -s /bin
+export PATH=/bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t tmpfs tmpfs /dev
+mknod /dev/console c 5 1; mknod /dev/null c 1 3; mknod /dev/zero c 1 5
+mknod /dev/urandom c 1 9; mknod /dev/random c 1 8; mknod /dev/ttyAMA0 c 204 64
+mkdir -p /dev/block /probe
+for m in /modules/*.ko; do [ -e "$m" ] && insmod "$m" 2>/dev/null; done
+i=0
+while [ ! -d /sys/class/block/vda ] && [ $i -lt 30 ]; do sleep 0.3; i=$((i+1)); done
+for d in /sys/class/block/vd*; do
+  [ -e "$d" ] || continue
+  n=$(basename "$d"); mm=$(cat "$d/dev"); mknod "/dev/block/$n" b "${mm%:*}" "${mm#*:}"
+done
+SYS=""; VEN=""; DAT=""
+for n in $(ls /dev/block/); do
+  echo "vmd-boot: probing $n"
+  mount -t ext4 -o ro /dev/block/$n /probe 2>/dev/null || { echo "  $n: mount failed"; continue; }
+  echo "  $n contents: $(ls /probe | head -6 | tr '\n' ' ')"
+  if [ -f /probe/bin/init ]; then SYS=$n
+  elif [ -f /probe/manifest.xml ]; then VEN=$n
+  fi
+  umount /probe 2>/dev/null
+done
+for n in $(ls /dev/block/); do
+  [ "$n" = "$SYS" ] || [ "$n" = "$VEN" ] || DAT=$n
+done
+echo "vmd-boot: system=$SYS vendor=$VEN data=$DAT"
+mount -t ext4 -o ro,barrier=1 /dev/block/$SYS /system || { echo "vmd-boot: system mount failed"; exec sh; }
+[ -n "$VEN" ] && mount -t ext4 -o ro,barrier=1 /dev/block/$VEN /vendor
+[ -n "$DAT" ] && mount -t ext4 -o rw,noatime,nosuid,nodev /dev/block/$DAT /data || true
+umount /proc; umount /sys
+exec /system/bin/init

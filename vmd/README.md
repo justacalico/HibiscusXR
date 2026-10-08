@@ -17,8 +17,8 @@ out/vmd -selftest          # pose channel smoke test
 ```
 
 Options: `-img <dir>` (default `$PN2_ROOT/out`), `-novm`,
-`-kernel/-dtb/-append` for a virtio-capable kernel when the guest's own
-cannot run on qemu's virt machine.
+`-kernel/-dtb/-initrd/-append/-cpu` to override what vmd picks up from
+the image dir.
 
 The guest is aarch64 like every shipped image. On an aarch64 host KVM
 accelerates it; on x86_64 it runs under TCG - correct but slow, usable
@@ -47,9 +47,28 @@ DEVICE=vmd bash system/dist/scripts/build-image.sh
 same inputs as usual minus the Pico stack (`gsi` + `blobs` only). The
 GitHub workflow takes `device: vmd` from the dispatch form.
 
-## Known limit
+## Booting the guest all the way
 
-The stock sdm845 kernel cannot boot on qemu's virt machine. Until the
-LineageOS source build produces a generic kernel, point `-kernel` at a
-virtio-capable aarch64 build; the system image and pose path are
-unchanged.
+The stock sdm845 kernel cannot run on qemu's virt machine, and the vmd
+system image is a bare non-SAR partition with no init of its own.
+`bootenv/make-bootenv.sh` assembles what a generic PC boot needs next
+to the image:
+
+    vmd/bootenv/make-bootenv.sh -o <image-dir>
+    # writes kernel-ranchu, vendor.img, vmd-boot.img, userdata.img
+
+It fetches the API 29 emulator 'ranchu' kernel (aarch64, virtio
+built-in) and its vendor partition - with the dynamic-partition fstab
+stripped, since a virtio disk has no `super` - and packs
+`bootenv/ramdisk/` into `vmd-boot.img`: a busybox bootstrap that finds
+the disks by content, mounts system/vendor/data, then execs the
+image's own `/system/bin/init`. `vmd -img` picks all four files up
+automatically.
+
+Verified path: kernel + vmd-boot.img + the three virtio-blk disks gets
+the real vmd image through first-stage init, SELinux, apex activation
+and userspace services; adbd listens on guest :5555 and answers
+`adb connect localhost:15555`. Under TCG on x86_64 full boot takes a
+few minutes. SurfaceFlinger still crash-loops - the kernel has no
+virtio-gpu, so the UI compositor cannot start; everything above the
+kernel+init layer works.

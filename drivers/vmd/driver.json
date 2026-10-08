@@ -6,10 +6,16 @@
   },
   "monado": "vmd",
   "image": {
-    "inputs": [],
+    "inputs": ["BLOBS"],
     "steps": {
       "stage": [],
-      "inject": []
+      "inject": [
+        {
+          "run": "scripts/img-payload.sh",
+          "log": "500_vmd.txt",
+          "marker": "VMD IMG OK"
+        }
+      ]
     }
   }
 }

@@ -31,11 +31,26 @@ through the package registry, so they never expire.
 ## Devices
 
 Every build targets one device, and the device is part of the published
-file name (`*-neo2.img.xz`). `DEVICE` selects it - today `neo2` (Pico
-Neo 2) is the only target. The device picks which `drivers/` payloads
-the provider activates: `neo2` ships `pn2` plus `vmd`, so the same image
-also runs under qemu for `vmd/`. A new device means a new `drivers/<name>`
-plus a `DEVICE` entry - the pipeline and the site then carry it end to end.
+file name (`*-neo2.img.xz`). `DEVICE` selects it; `devices.env` is the
+matrix - which hsvr drivers the provider activates (which in turn decides
+the fetched inputs and the image steps) and which raw outputs map to
+which published names.
+
+- `neo2` - Pico Neo 2 (PICOA7B10, sdm845). Ships `pn2` + `vmd` drivers,
+  publishes `system-hibiscus-neo2.img.xz` (clean) and
+  `system-hibiscus-full-neo2.img.xz` (full Pico stack).
+- `vmd` - the virtual device (`vmd/`, qemu on a Linux PC). Same clean
+  base, then the shared shell stack (270) straight onto it - no Pico
+  payload. Publishes `system-hibiscus-vmd.img.xz`, fetched inputs are just
+  `gsi` + `blobs` (signing keys, shim link targets).
+
+Every device runs the identical userspace - `tools/build/270_shell_stack.sh`
+is the one place the shell, panel apps, keyboard, Monado runtime and the
+platform re-sign live; device scripts only carry the hardware payload.
+
+A new device means a `drivers/<name>` manifest (payload steps + input
+pins), a `devices.env` entry, and one more option in the workflow's
+`device` input - the pipeline and the site then carry it end to end.
 
 ## Running a build
 
@@ -84,11 +99,13 @@ bash system/dist/scripts/layout-sources.sh
 ```
 
 - supply the input packages - either run `fetch-inputs.sh` (needs the
-  deploy-token secrets) or link the extracted dirs from an existing
-  `~/PN2Lineage` workspace (`pvr_stack`, `pvr_apps_final`, `pvr_applibs`,
-  `oem_final`, `overlay_pvr`, `airsvc`, `rfsa`, `qvr`, `cdsp`, `fan`,
-  `seethrough`, `linklibs`, `build`, `overlay/lib64`,
+  deploy-token secrets, fetches only what the device's drivers declare)
+  or link the extracted dirs from an existing `~/PN2Lineage` workspace
+  (`pvr_stack`, `pvr_apps_final`, `pvr_applibs`, `oem_final`,
+  `overlay_pvr`, `airsvc`, `rfsa`, `qvr`, `cdsp`, `fan`, `seethrough`,
+  `linklibs`, `build`, `overlay/lib64`,
   `notes/{libart-patched.so,vrshell_lib/}` and the GSI xz under `gsi/`).
+  `DEVICE=vmd` only needs `gsi`, `linklibs`, `build` and `overlay/lib64`.
   `libGLESv2_adreno.so` can also come from `images/vendor.img`
   (`/lib64/egl/`) - `debugfs -R "dump ..."` works offline.
 - run `DEVICE=neo2 bash system/dist/scripts/build-image.sh` (`neo2` is the

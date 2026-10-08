@@ -6,12 +6,14 @@ R="${PN2_ROOT:?}"
 D="${1:-dist-out}"
 DEVICE="${DEVICE:-neo2}"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"
+. "$SELF/devices.env"
 mkdir -p "$D"
 
-# tools still write out/system-pn2*.img; the published names carry the
-# device: system-hibiscus*-$DEVICE.img.xz
-for pair in "system-pn2:system-hibiscus-$DEVICE" "system-pn2-full:system-hibiscus-full-$DEVICE"; do
+# tools still write out/system-<codename>*.img; devices.env maps each raw
+# name to its published device-suffixed stem (system-hibiscus*-$DEVICE).
+for pair in $(device_outputs "$DEVICE"); do
   src=${pair%%:*}; pub=${pair##*:}
+  [ -f "$R/out/$src.img" ] || { echo "missing $R/out/$src.img" >&2; exit 1; }
   img2simg "$R/out/$src.img" "$D/$pub.img"
   # GitHub release assets cap at 2G - the full sparse image is ~2.5G, so both
   # ship xz'd (the usual GSI convention: unxz, then fastboot flash)

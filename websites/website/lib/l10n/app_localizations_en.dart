@@ -875,7 +875,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashdocsVmdReq3 =>
-      'A virtio-capable aarch64 kernel for -kernel if you want the guest to boot all the way - the stock sdm845 kernel cannot run on qemu';
+      'Nothing else to source - the bootenv helper fetches the virtio kernel, vendor image and bootstrap ramdisk for you';
 
   @override
   String get flashdocsVmdGetTitle => '1. Get the vmd image';
@@ -892,17 +892,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get flashdocsVmdRunBody =>
-      'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode.';
+      'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode. make-bootenv drops kernel, vendor, ramdisk and userdata next to the image so vmd picks them up.';
 
   @override
   String get flashdocsVmdRunCmd1 => 'make -C vmd';
+
+  @override
+  String get flashdocsVmdRunCmd1b =>
+      'vmd/bootenv/make-bootenv.sh -o <image-dir>';
 
   @override
   String get flashdocsVmdRunCmd2 => 'vmd/out/vmd -desktopsim -img <image-dir>';
 
   @override
   String get flashdocsVmdRunNote =>
-      'On an aarch64 host vmd enables KVM automatically; on x86_64 the guest runs under TCG - correct, but slow.';
+      'Booting to a shell takes a few minutes under TCG; aarch64 hosts get KVM automatically. The serial console lands on /dev/ttyAMA0.';
 
   @override
   String get flashdocsVmdAdbTitle => '3. Talk to the guest';

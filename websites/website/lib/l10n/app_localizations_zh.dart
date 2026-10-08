@@ -814,7 +814,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsVmdReq3 =>
-      '要让 guest 完整启动,需要一个支持 virtio 的 aarch64 内核,用 -kernel 传入 - 自带的 sdm845 内核跑不了 qemu';
+      '不用再找别的东西——bootenv 脚本会自动下载 virtio 内核、vendor 镜像和引导 ramdisk';
 
   @override
   String get flashdocsVmdGetTitle => '1. 拿到 vmd 镜像';
@@ -831,17 +831,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsVmdRunBody =>
-      'vmd 拉起 qemu,通过 TCP :7781 给 guest 喂头显位姿,再把 framebuffer 拉回窗口——-openxr 模式下是推给真头显。';
+      'vmd 拉起 qemu,通过 TCP :7781 给 guest 喂头显位姿,再把 framebuffer 拉回窗口——-openxr 模式下推给真头显。make-bootenv 会把内核、vendor、ramdisk、userdata 放到镜像旁边,vmd 会自动识别。';
 
   @override
   String get flashdocsVmdRunCmd1 => 'make -C vmd';
+
+  @override
+  String get flashdocsVmdRunCmd1b =>
+      'vmd/bootenv/make-bootenv.sh -o <image-dir>';
 
   @override
   String get flashdocsVmdRunCmd2 => 'vmd/out/vmd -desktopsim -img <image-dir>';
 
   @override
   String get flashdocsVmdRunNote =>
-      'aarch64 主机上 vmd 会自动启用 KVM;x86_64 上走 TCG 纯模拟——行为正确但很慢,适合做冒烟测试。';
+      'TCG 下 guest 启动到 shell 要几分钟;aarch64 主机会自动启用 KVM。串口控制台在 /dev/ttyAMA0。';
 
   @override
   String get flashdocsVmdAdbTitle => '3. 连接 guest';

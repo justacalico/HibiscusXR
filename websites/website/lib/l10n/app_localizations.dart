@@ -1631,7 +1631,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsVmdReq3.
   ///
   /// In en, this message translates to:
-  /// **'A virtio-capable aarch64 kernel for -kernel if you want the guest to boot all the way - the stock sdm845 kernel cannot run on qemu'**
+  /// **'Nothing else to source - the bootenv helper fetches the virtio kernel, vendor image and bootstrap ramdisk for you'**
   String get flashdocsVmdReq3;
 
   /// No description provided for @flashdocsVmdGetTitle.
@@ -1661,7 +1661,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsVmdRunBody.
   ///
   /// In en, this message translates to:
-  /// **'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode.'**
+  /// **'vmd launches qemu, feeds the guest head poses over TCP :7781 and pulls the framebuffer back into a window - or onto a real HMD in -openxr mode. make-bootenv drops kernel, vendor, ramdisk and userdata next to the image so vmd picks them up.'**
   String get flashdocsVmdRunBody;
 
   /// No description provided for @flashdocsVmdRunCmd1.
@@ -1669,6 +1669,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'make -C vmd'**
   String get flashdocsVmdRunCmd1;
+
+  /// No description provided for @flashdocsVmdRunCmd1b.
+  ///
+  /// In en, this message translates to:
+  /// **'vmd/bootenv/make-bootenv.sh -o <image-dir>'**
+  String get flashdocsVmdRunCmd1b;
 
   /// No description provided for @flashdocsVmdRunCmd2.
   ///
@@ -1679,7 +1685,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsVmdRunNote.
   ///
   /// In en, this message translates to:
-  /// **'On an aarch64 host vmd enables KVM automatically; on x86_64 the guest runs under TCG - correct, but slow.'**
+  /// **'Booting to a shell takes a few minutes under TCG; aarch64 hosts get KVM automatically. The serial console lands on /dev/ttyAMA0.'**
   String get flashdocsVmdRunNote;
 
   /// No description provided for @flashdocsVmdAdbTitle.

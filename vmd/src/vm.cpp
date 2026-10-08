@@ -4,7 +4,7 @@
 // QEMU launcher + framebuffer reader.
 //
 // The guest gets the same artifacts fastboot flashes: boot.img, vendor.img
-// and system-hibiscus-full.img on virtio-blk, user networking (which is
+// and system-hibiscus-full-*.img on virtio-blk, user networking (which is
 // what gives the guest its 10.0.2.2 route back to us), and a virtio-gpu
 // whose framebuffer we pull through QMP screendump.
 //
@@ -172,7 +172,8 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	// -img selects a guest disk set; with a bare -kernel the image is
 	// optional (kernel bring-up testing, arch-agnostic qemu testing)
 	std::string system_img;
-	for (const char *n : {"system-hibiscus-full.img", "system-pn2-full.img",
+	for (const char *n : {"system-hibiscus-full-neo2.img",
+	                      "system-hibiscus-full.img", "system-pn2-full.img",
 	                      "system.img", "rootfs.img"}) {
 		if (file_exists(opts.imgdir + "/" + n)) {
 			system_img = opts.imgdir + "/" + n;

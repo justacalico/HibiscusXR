@@ -14,9 +14,18 @@ DEVICE="${DEVICE:-neo2}"
 
 if [ -n "$PUSH_REF" ]; then
   echo "Pushing $PUSH_REF to GitHub branch $REF..."
+  # resolve to a sha now: `git remote update` below rewrites FETCH_HEAD, so
+  # pushing the symbolic ref afterwards would push the mirror's own stale
+  # main back to it and silently no-op
+  PUSH_SHA=$(git rev-parse "$PUSH_REF")
   git remote add github "git@github.com:$REPO.git" 2>/dev/null || true
   git remote update github
-  git push -f github "$PUSH_REF:refs/heads/$REF"
+  git push -f github "$PUSH_SHA:refs/heads/$REF"
+  REMOTE_SHA=$(git ls-remote github "refs/heads/$REF" | cut -f1)
+  [ "$REMOTE_SHA" = "$PUSH_SHA" ] || {
+    echo "ERROR: github mirror $REF is at $REMOTE_SHA, expected $PUSH_SHA"
+    exit 1
+  }
 fi
 
 TS=$(( $(date +%s) - 60 ))

@@ -14,3 +14,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: 修复 Monado 应用帧率持续下跌](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/114) (!114)
 - [feat(xrtest): 支持深度提交与流式延迟模拟以复现 ALVR/WiVRn 抖动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/115) (!115)
 - [feat(vrhome): 调试信息增加真实画面呈现帧率（MON）](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/116) (!116)
+- [发行镜像按设备命名（*-neo2.img.xz）](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/117) (!117)

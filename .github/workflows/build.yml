@@ -17,9 +17,17 @@ on:
         required: false
         type: string
         default: ""
+      device:
+        description: 'Target device - images publish as *-<device>.img.xz'
+        required: true
+        type: choice
+        options:
+          - neo2
+        default: neo2
 
 env:
   PN2_ROOT: /home/runner/pn2
+  DEVICE: ${{ github.event.inputs.device || 'neo2' }}
 
 jobs:
   image:
@@ -157,10 +165,10 @@ jobs:
           esac
           TAG="${HIBISCUS_VERSION:?}"
           {
-            echo "LineageOS 17.1 system images for the Pico Neo 2 (A7B10)."
+            echo "LineageOS 17.1 system images for ${DEVICE}."
             echo
-            echo "- \`system-hibiscus.img.xz\` - clean: GSI + our fixes, no proprietary blobs"
-            echo "- \`system-hibiscus-full.img.xz\` - full Pico stack, ready to flash"
+            echo "- \`system-hibiscus-${DEVICE}.img.xz\` - clean: GSI + our fixes, no proprietary blobs"
+            echo "- \`system-hibiscus-full-${DEVICE}.img.xz\` - full device stack, ready to flash"
             echo "- \`build-logs.tar.xz\` - every build step's notes/ log"
             echo
             echo "xz'd sparse images - \`unxz <img.xz>\`, then \`fastboot -S 128M flash system <img>\`."

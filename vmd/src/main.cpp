@@ -7,7 +7,7 @@
 //   vmd -openxr                    OpenXR app mode (WiVRn/Monado runtime)
 //   vmd -selftest                  pose channel smoke test, no window
 //
-//   -img <dir>     image set dir (system-hibiscus-full.img, vendor.img,
+//   -img <dir>     image set dir (system-hibiscus-full-neo2.img, vendor.img,
 //                  boot.img) - default $PN2_ROOT/out
 //   -novm          skip qemu, pose channel + UI only
 //   -kernel/-dtb/-append   kernel overrides for the guest

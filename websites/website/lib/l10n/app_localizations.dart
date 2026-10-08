@@ -1547,7 +1547,7 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsNeo2FlashCmd3.
   ///
   /// In en, this message translates to:
-  /// **'fastboot -S 128M flash system system-hibiscus-full.img'**
+  /// **'fastboot -S 128M flash system system-hibiscus-full-neo2.img'**
   String get flashdocsNeo2FlashCmd3;
 
   /// No description provided for @flashdocsNeo2FlashCmd4.

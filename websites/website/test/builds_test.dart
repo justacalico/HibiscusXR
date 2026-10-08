@@ -28,8 +28,10 @@ void main() {
           'links': [
             {'name': 'system-hibiscus-full.img.xz',
              'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus-full.img.xz'},
-            {'name': 'system-hibiscus.img.xz',
-             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus.img.xz'},
+            {'name': 'system-hibiscus-full-neo2.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus-full-neo2.img.xz'},
+            {'name': 'system-hibiscus-neo2.img.xz',
+             'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/system-hibiscus-neo2.img.xz'},
             {'name': 'SHA256SUMS.txt',
              'url': 'https://gitlab.com/api/v4/projects/86728484/packages/generic/release-assets/v2026.09.15-r6/SHA256SUMS.txt'},
           ],
@@ -78,20 +80,20 @@ void main() {
 
     test('parses asset links', () {
       final releases = parseReleases(json);
-      expect(releases[0].assets.length, 3);
+      expect(releases[0].assets.length, 4);
       expect(releases[0].assets[0].name, 'system-hibiscus-full.img.xz');
       expect(releases[0].assets[0].isImage, isTrue);
-      expect(releases[0].assets[2].name, 'SHA256SUMS.txt');
-      expect(releases[0].assets[2].isImage, isFalse);
+      expect(releases[0].assets[3].name, 'SHA256SUMS.txt');
+      expect(releases[0].assets[3].isImage, isFalse);
     });
 
     test('fullImageFor and cleanImageFor find the right assets', () {
       final neo2 = flashDocDevice('pico-neo-2')!;
       final releases = parseReleases(json);
       expect(releases[0].fullImageFor(neo2)!.name,
-          'system-hibiscus-full.img.xz');
-      expect(
-          releases[0].cleanImageFor(neo2)!.name, 'system-hibiscus.img.xz');
+          'system-hibiscus-full-neo2.img.xz');
+      expect(releases[0].cleanImageFor(neo2)!.name,
+          'system-hibiscus-neo2.img.xz');
     });
 
     test('new name wins over pre-rename system-pn2 assets', () {

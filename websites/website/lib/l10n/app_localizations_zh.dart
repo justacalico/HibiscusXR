@@ -768,7 +768,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flashdocsNeo2FlashCmd3 =>
-      'fastboot -S 128M flash system system-hibiscus-full.img';
+      'fastboot -S 128M flash system system-hibiscus-full-neo2.img';
 
   @override
   String get flashdocsNeo2FlashCmd4 => 'fastboot reboot';

@@ -55,10 +55,12 @@ final flashDocDevices = <FlashDocDevice>[
       FlashDocSystem(slug: 'linux', name: _linuxName),
     ],
     fullImageAssets: const [
+      'system-hibiscus-full-neo2.img.xz',
       'system-hibiscus-full.img.xz',
       'system-pn2-full.img.xz',
     ],
     cleanImageAssets: const [
+      'system-hibiscus-neo2.img.xz',
       'system-hibiscus.img.xz',
       'system-pn2.img.xz',
     ],

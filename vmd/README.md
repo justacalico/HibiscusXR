@@ -83,3 +83,9 @@ SurfaceFlinger itself still needs the Android emulator's qemu_pipe
 host bridge, which stock QEMU does not provide, so the compositor
 restarts and the boot animation does not appear. Applications and
 services that only need a DRM node work.
+
+`bootenv/tools/drmpaint.c` is a freestanding guest-side test: build it
+with `aarch64-linux-gnu-gcc -static -nostdlib -ffreestanding`, `adb
+push` it in, and it modesets card0 and paints a Hibiscus pattern. If
+the QEMU window (or a vmd framebuffer pull) shows the pattern, the
+display path is verified end to end.

@@ -9,11 +9,12 @@
 // pull through QMP screendump.
 //
 // The stock sdm845 kernel only runs on Qualcomm hardware, so a virtio
-// kernel is mandatory: bootenv/make-bootenv.sh fetches the API 29
-// 'ranchu' emulator kernel plus the matching vendor image and packs a
-// bootstrap ramdisk (vmd-boot.img) that mounts the non-SAR system
-// partition and execs its own init. vmd -img picks all of it up
-// automatically; -kernel/-initrd/-append/-cpu still override.
+// kernel is mandatory: bootenv/make-bootenv.sh fetches the GKI 5.4
+// arm64 kernel + virtual-device module set plus the API 29 vendor
+// image and packs a bootstrap ramdisk (vmd-boot.img) that loads the
+// modules, mounts the non-SAR system partition, and execs its own
+// init. vmd -img picks all of it up automatically;
+// -kernel/-initrd/-append/-cpu still override.
 
 #include "vmd.hpp"
 
@@ -215,7 +216,10 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	    "-netdev", "user,id=n0,hostfwd=tcp:127.0.0.1:15555-:5555,"
 	               "hostfwd=tcp:127.0.0.1:17340-:7340",
 	    "-device", "virtio-net" + t + ",netdev=n0",
-	    "-device", "virtio-gpu" + t,
+	    // GPU goes on PCI even on virt: the GKI virtio_gpu module won't
+	    // bind an mmio transport (probe fails with no error), while the
+	    // pci variant registers /dev/dri/card0 correctly on both.
+	    "-device", "virtio-gpu-pci",
 	    "-display", "none",
 	    "-qmp", "unix:" + vm->qmp + ",server=on,wait=off",
 	});
@@ -269,9 +273,10 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		args.push_back("-kernel");
 		args.push_back(opts.kernel);
 	} else {
-		// bootenv/make-bootenv.sh drops kernel-ranchu next to the
+		// bootenv/make-bootenv.sh drops the GKI kernel next to the
 		// system image; boot.img stays the last-resort fallback
-		for (const char *n : {"kernel-ranchu", "kernel", "boot.img"}) {
+		for (const char *n : {"kernel-gki", "kernel-ranchu", "kernel",
+		                      "boot.img"}) {
 			std::string p = opts.imgdir + "/" + n;
 			if (file_exists(p)) {
 				args.push_back("-kernel");

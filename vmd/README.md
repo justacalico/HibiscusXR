@@ -55,20 +55,37 @@ system image is a bare non-SAR partition with no init of its own.
 to the image:
 
     vmd/bootenv/make-bootenv.sh -o <image-dir>
-    # writes kernel-ranchu, vendor.img, vmd-boot.img, userdata.img
+    # writes kernel-gki, vendor.img, vmd-boot.img, userdata.img
 
-It fetches the API 29 emulator 'ranchu' kernel (aarch64, virtio
-built-in) and its vendor partition - with the dynamic-partition fstab
-stripped, since a virtio disk has no `super` - and packs
-`bootenv/ramdisk/` into `vmd-boot.img`: a busybox bootstrap that finds
-the disks by content, mounts system/vendor/data, then execs the
-image's own `/system/bin/init`. `vmd -img` picks all four files up
-automatically.
+It fetches the GKI 5.4 arm64 kernel + the virtual-device module set
+(virtio blk/net/gpu/pci/...) and the API 29 vendor partition - with
+the dynamic-partition fstab stripped, since a virtio disk has no
+`super` - and packs `bootenv/ramdisk/` into `vmd-boot.img`: a busybox
+bootstrap that loads the modules, finds the disks by content, mounts
+system/vendor/data, then execs the image's own `/system/bin/init`.
+`vmd -img` picks all four files up automatically.
 
 Verified path: kernel + vmd-boot.img + the three virtio-blk disks gets
-the real vmd image through first-stage init, SELinux, apex activation
-and userspace services; adbd listens on guest :5555 and answers
-`adb connect localhost:15555`. Under TCG on x86_64 full boot takes a
-few minutes. SurfaceFlinger still crash-loops - the kernel has no
-virtio-gpu, so the UI compositor cannot start; everything above the
-kernel+init layer works.
+the real vmd image through first-stage init, SELinux, binderfs, apex
+activation and userspace services; adbd listens on guest :5555 and
+answers `adb connect localhost:15555` with a root shell. Under TCG on
+x86_64 full boot takes a few minutes.
+
+## Display
+
+The guest drives QEMU's virtio-gpu through `/dev/dri/card0`
+(`virtio-gpu-pci`, since the GKI module will not bind the mmio
+transport). A DRM modeset flips the scanout to the guest framebuffer
+and vmd pulls it through QMP screendump - guest-drawn pixels reach the
+host window.
+
+SurfaceFlinger itself still needs the Android emulator's qemu_pipe
+host bridge, which stock QEMU does not provide, so the compositor
+restarts and the boot animation does not appear. Applications and
+services that only need a DRM node work.
+
+`bootenv/tools/drmpaint.c` is a freestanding guest-side test: build it
+with `aarch64-linux-gnu-gcc -static -nostdlib -ffreestanding`, `adb
+push` it in, and it modesets card0 and paints a Hibiscus pattern. If
+the QEMU window (or a vmd framebuffer pull) shows the pattern, the
+display path is verified end to end.

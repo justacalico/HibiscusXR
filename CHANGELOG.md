@@ -19,3 +19,4 @@ linked line per MR no matter how many commits it carried.
 - [fix(dist): 推送 GitHub 镜像前先固化 sha，校验远端指向](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/119) (!119)
 - [feat(vmd): bootenv 让 vmd 镜像在通用 PC 上真正启动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/120) (!120)
 - [feat(vmd): GKI 内核 + virtio-gpu 显示链路](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/121) (!121)
+- [Auto-grant CVService runtime permissions](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/122) (!122)

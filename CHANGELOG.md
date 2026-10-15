@@ -21,3 +21,4 @@ linked line per MR no matter how many commits it carried.
 - [feat(vmd): GKI 内核 + virtio-gpu 显示链路](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/121) (!121)
 - [Auto-grant CVService runtime permissions](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/122) (!122)
 - [feat: 添加调试转储 Dump Debug SSD](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/123) (!123)
+- [ci: 修 bump 任务浅克隆看不到旧 tag](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/124) (!124)

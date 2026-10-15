@@ -51,6 +51,8 @@ echo
 echo "=== inject ==="
 put "$PN2_ROOT/cted/cted" /bin/cted 755
 put "$PN2_ROOT/cted/hibiscus-cted.rc" /etc/init/hibiscus-cted.rc 644
+# the debug-dump collector, also runnable by hand over adb
+put "$PN2_ROOT/cted/cte-dump.sh" /bin/cte-dump 755
 
 echo
 echo "=== repair + verify ==="

@@ -6,19 +6,24 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_cte/src/proto.dart';
 import 'package:hibiscus_cte/src/transport/cte_link.dart';
 
+import 'tar_fixture.dart';
+
 /// Loopback cted: speaks the wire protocol so CteLink is exercised end to
 /// end - banner, per-command sockets, framed blobs, install round-trip.
+/// `dumpBlob` set = a new cted that answers DUMP; null = old build that
+/// replies +ERR, exercising the partial-dump fallback.
 class FakeCted {
-  FakeCted._(this.server);
+  FakeCted._(this.server, this.dumpBlob);
 
   final ServerSocket server;
+  final Uint8List? dumpBlob;
   final List<String> commands = [];
 
   int get port => server.port;
 
-  static Future<FakeCted> start() async {
+  static Future<FakeCted> start({Uint8List? dumpBlob}) async {
     final server = await ServerSocket.bind('127.0.0.1', 0);
-    final fake = FakeCted._(server);
+    final fake = FakeCted._(server, dumpBlob);
     server.listen(fake._handle);
     return fake;
   }
@@ -30,6 +35,7 @@ class FakeCted {
         .transform(const LineSplitter())
         .listen((line) {
       commands.add(line);
+      try {
       if (line == 'PING') {
         client.write('+PONG\n');
       } else if (line == 'INFO') {
@@ -65,10 +71,25 @@ class FakeCted {
       } else if (line.startsWith('INSTALL ')) {
         // consume the blob asynchronously; reply ok
         client.write('LOG reading apk\n+OK Success\n');
-      } else {
+      } else if (line == 'DUMP' && dumpBlob != null) {
+        client.write('+BLOB ${dumpBlob!.length}\n');
+        client.add(dumpBlob!);
+      } else if (!line.startsWith('INSTALL')) {
         client.write('+ERR unknown command\n');
       }
-      client.flush();
+      // one-shot commands get closed like real cted; FRAMES/POSE/CTRL/LOG
+      // keep streaming until the client walks away, and INSTALL still has
+      // an incoming blob to swallow (decoded as stray lines - guarded so a
+      // write to a half-closed socket never crashes the fake)
+      const streaming = ['FRAMES', 'POSE', 'CTRL', 'LOG', 'INSTALL'];
+      if (!streaming.contains(line.split(' ').first)) {
+        Future<void>.delayed(Duration.zero)
+            .then((_) => client.flush().then((_) => client.close()));
+      }
+      } catch (_) {
+        // socket went away mid-reply - the blob bytes keep decoding as
+        // junk lines, ignore writes to the dead socket
+      }
     });
   }
 
@@ -138,5 +159,35 @@ void main() {
     final out = await link.installApk(f.path).toList();
     expect(out, contains('reading apk'));
     expect(out.last, 'Success');
+  });
+
+  test('debugDump decodes the DUMP blob on new cted', () async {
+    final blob = tarArchive({
+      'meta.txt': utf8.encode('model=Pico Neo 2\n'),
+      'getprop.txt': utf8.encode('[ro.x]: [y]\n'),
+    });
+    final cted2 = await FakeCted.start(dumpBlob: blob);
+    addTearDown(cted2.close);
+    final link2 = CteLink('127.0.0.1', port: cted2.port);
+
+    final sections = await link2.debugDump().toList();
+    expect(cted2.commands, contains('DUMP'));
+    expect(sections.map((s) => s.name),
+        containsAll(['meta.txt', 'getprop.txt']));
+    expect(utf8.decode(sections.first.bytes), contains('Pico Neo 2'));
+  });
+
+  test('debugDump falls back to a partial bundle on old cted', () async {
+    final sections = await link.debugDump().toList();
+    expect(cted.commands, contains('DUMP'));
+    final names = sections.map((s) => s.name).toList();
+    expect(names, contains('PARTIAL.txt'));
+    expect(names, contains('getprop.txt'));
+    expect(names, contains('logcat.txt'));
+    // the fake serves one frame too
+    expect(names, contains('screenshot.png'));
+    expect(utf8.decode(sections
+        .firstWhere((s) => s.name == 'getprop.txt')
+        .bytes), contains('Pico Neo 2'));
   });
 }

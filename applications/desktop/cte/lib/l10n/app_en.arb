@@ -60,5 +60,11 @@
   "debugFilter": "Filter",
   "debugLogcat": "Logcat",
   "debugEmpty": "Connect a headset to read its state.",
+  "dumpButton": "Dump Debug SSD",
+  "dumpHint": "Pulls every log and state dump off the headset into one .zip you can send back.",
+  "dumpRunning": "Dumping... {count} sections",
+  "dumpSaved": "Saved: {path}",
+  "dumpFailed": "Dump failed: {error}",
+  "dumpSaveTitle": "Save debug dump",
   "valueUnknown": "unknown"
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import '../adb_runner.dart';
 import '../ctrl_share.dart';
+import '../debug_dump.dart';
 import '../link.dart';
 import '../models.dart';
 import '../pose_log.dart';
@@ -130,6 +131,29 @@ class AdbLink extends HeadsetLink {
         ];
       }
       await Future<void>.delayed(interval);
+    }
+  }
+
+  /// `sh /system/bin/cte-dump` streams the whole bundle as one tar.gz;
+  /// images from before the collector existed fall back to pulling the
+  /// core sections one command each.
+  @override
+  Stream<DumpSection> debugDump() async* {
+    final blob = BytesBuilder(copy: false);
+    await for (final c in _adb.execOut(serial, ['sh /system/bin/cte-dump'])) {
+      blob.add(c);
+    }
+    final data = blob.takeBytes();
+    if (data.length >= 2 && data[0] == 0x1f && data[1] == 0x8b) {
+      yield* Stream.fromIterable(decodeTarGz(data));
+      return;
+    }
+    for (final (name, cmd) in legacyDumpSections) {
+      final buf = BytesBuilder(copy: false);
+      await for (final c in _adb.execOut(serial, ['$cmd 2>&1'])) {
+        buf.add(c);
+      }
+      yield DumpSection(name, buf.takeBytes());
     }
   }
 

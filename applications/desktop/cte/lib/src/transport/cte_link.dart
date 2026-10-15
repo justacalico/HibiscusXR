@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import '../debug_dump.dart';
 import '../link.dart';
 import '../models.dart';
 import '../pose_log.dart';
@@ -158,6 +159,125 @@ class CteLink extends HeadsetLink {
       await ch.sock.close();
     }
   }
+
+  /// New cted builds run the on-device collector and hand back one tar.gz
+  /// blob. An older cted answers +ERR unknown command - the partial dump
+  /// then pulls whatever the fixed command set already serves.
+  @override
+  Stream<DumpSection> debugDump() async* {
+    Uint8List? blob;
+    try {
+      final ch = await _open(CteProto.cmdDump,
+          timeout: const Duration(seconds: 60));
+      try {
+        await for (final m in ch.messages) {
+          if (m is CteBlobMsg) blob = m.bytes;
+        }
+      } finally {
+        await ch.sock.close();
+      }
+    } on SocketException {
+      rethrow;
+    }
+    if (blob != null) {
+      final sections = decodeTarGz(blob);
+      if (sections.isNotEmpty) {
+        yield* Stream.fromIterable(sections);
+        return;
+      }
+    }
+    yield* _partialDump();
+  }
+
+  /// What an old cted can still produce: identity, props, a logcat tail,
+  /// controller snapshots and a screenshot.
+  Stream<DumpSection> _partialDump() async* {
+    yield DumpSection(
+        'PARTIAL.txt', Uint8List.fromList(_partialNote.codeUnits));
+    try {
+      final info = await fetchInfo();
+      yield DumpSection(
+          'info.json',
+          Uint8List.fromList(utf8.encode(const JsonEncoder.withIndent('  ')
+              .convert({
+                'model': info.model,
+                'device': info.device,
+                'brand': info.brand,
+                'android': info.androidRelease,
+                'sdk': info.sdkInt,
+                'build': info.buildId,
+                'hibiscus': info.hibiscusVersion,
+                'tracking': info.trackingMode.name,
+                'battery': info.batteryLevel,
+              }))));
+    } on SocketException {
+      // info is optional; keep collecting what still answers
+    }
+    final props = await fetchProps();
+    if (props.isNotEmpty) {
+      yield DumpSection(
+          'getprop.txt',
+          Uint8List.fromList(utf8.encode(
+              props.entries.map((e) => '[${e.key}]: [${e.value}]\n').join())));
+    }
+    // bounded capture: ~4s of silence ends the tail, busy logcat ends at
+    // 800 lines
+    final log = StringBuffer();
+    final ch = await _open(CteProto.cmdLog);
+    try {
+      await for (final m in ch.messages.take(800).timeout(
+          const Duration(seconds: 4),
+          onTimeout: (s) => s.close())) {
+        if (m is CteLogMsg) log.writeln(m.line);
+      }
+    } finally {
+      await ch.sock.close();
+    }
+    if (log.isNotEmpty) {
+      yield DumpSection('logcat.txt',
+          Uint8List.fromList(utf8.encode(log.toString())));
+    }
+    final ctrls = StringBuffer();
+    try {
+      final cch = await _open(CteProto.cmdCtrl);
+      try {
+        await for (final m in cch.messages.timeout(
+            const Duration(seconds: 3),
+            onTimeout: (s) => s.close())) {
+          if (m is CteCtrlMsg) {
+            final c = m.state;
+            ctrls.writeln(
+                'ctrl ${c.index} live=${c.connected} batt=${c.battery} '
+                'trk=${c.tracked} pos=(${c.pose.x},${c.pose.y},${c.pose.z}) '
+                'quat=(${c.pose.qx},${c.pose.qy},${c.pose.qz},${c.pose.qw}) '
+                'stick=(${c.stickX},${c.stickY}) a=${c.buttonA} b=${c.buttonB} '
+                'trig=${c.trigger} grip=${c.grip}');
+          }
+        }
+      } finally {
+        await cch.sock.close();
+      }
+    } on SocketException {
+      // no controller channel on this build
+    }
+    if (ctrls.isNotEmpty) {
+      yield DumpSection('controllers.txt',
+          Uint8List.fromList(utf8.encode(ctrls.toString())));
+    }
+    try {
+      await for (final f in frames()) {
+        yield DumpSection('screenshot.png', f);
+        break;
+      }
+    } catch (_) {
+      // screencap is best effort
+    }
+  }
+
+  static const _partialNote =
+      'This headset runs an older cted without the DUMP command, so this\n'
+      'is a partial bundle collected over the fixed commands. Flash an\n'
+      'image with cte-dump for the full dump.\n';
 
   @override
   Stream<String> installApk(String path, {Uint8List? bytes}) async* {

@@ -206,5 +206,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get debugEmpty => 'Connect a headset to read its state.';
 
   @override
+  String get dumpButton => 'Dump Debug SSD';
+
+  @override
+  String get dumpHint =>
+      'Pulls every log and state dump off the headset into one .zip you can send back.';
+
+  @override
+  String dumpRunning(Object count) {
+    return 'Dumping... $count sections';
+  }
+
+  @override
+  String dumpSaved(Object path) {
+    return 'Saved: $path';
+  }
+
+  @override
+  String dumpFailed(Object error) {
+    return 'Dump failed: $error';
+  }
+
+  @override
+  String get dumpSaveTitle => 'Save debug dump';
+
+  @override
   String get valueUnknown => 'unknown';
 }

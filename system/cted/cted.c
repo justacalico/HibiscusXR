@@ -16,6 +16,7 @@
  *   CTRL           -> CTRL <idx> k=v ...\n    decoded CtrlShareMem stream
  *   LOG            -> LOG <line>\n            full logcat
  *   INSTALL <len>  -> reads <len> apk bytes, pm install -r, then +OK/+ERR
+ *   DUMP           -> +BLOB <len>\n<tar.gz>   full debug dump (cte-dump)
  *
  * Compiles for Android (NDK, aarch64) and for a desktop host, where the
  * Android-facing commands just report empty/failed. CTE_CTRL_PATH and
@@ -508,6 +509,64 @@ cmd_install(int fd, size_t len)
 	send_str(fd, ok ? "+OK\n" : "+ERR install rejected\n");
 }
 
+// DUMP runs the collector script (cte-dump) into a temp file, then ships
+// the tar.gz back as one length-prefixed blob. CTE_DUMP overrides the
+// script path so host builds can exercise the command.
+static void
+cmd_dump(int fd)
+{
+	const char *script = getenv("CTE_DUMP");
+	if (script == NULL || !*script) {
+		script = "/system/bin/cte-dump";
+	}
+	const char *tmp = getenv("CTE_TMPDIR");
+	if (tmp == NULL || !*tmp) {
+		tmp = getenv("TMPDIR");
+	}
+	if (tmp == NULL || !*tmp) {
+		tmp = "/data/local/tmp";
+	}
+	char out_path[256], err_path[256];
+	snprintf(out_path, sizeof(out_path), "%s/.cte-dump.tgz", tmp);
+	snprintf(err_path, sizeof(err_path), "%s/.cte-dump.err", tmp);
+
+	char cmd[768];
+	snprintf(cmd, sizeof(cmd), "%s > %s 2>%s", script, out_path, err_path);
+	int rc = system(cmd);
+	FILE *f = fopen(out_path, "rb");
+	if (rc != 0 || f == NULL) {
+		char *err = NULL;
+		FILE *ef = fopen(err_path, "rb");
+		if (ef != NULL) {
+			err = read_stream(ef, NULL);
+			fclose(ef);
+		}
+		sendf(fd, "+ERR dump failed: %s\n",
+		      err != NULL && err[0] ? err : "collector did not run");
+		free(err);
+		if (f != NULL) {
+			fclose(f);
+		}
+		unlink(out_path);
+		unlink(err_path);
+		return;
+	}
+	fseek(f, 0, SEEK_END);
+	long n = ftell(f);
+	fseek(f, 0, SEEK_SET);
+	sendf(fd, "+BLOB %ld\n", n);
+	uint8_t buf[1 << 16];
+	size_t r;
+	while ((r = fread(buf, 1, sizeof(buf), f)) > 0) {
+		if (send_all(fd, buf, r) != 0) {
+			break;
+		}
+	}
+	fclose(f);
+	unlink(out_path);
+	unlink(err_path);
+}
+
 static void *
 client_main(void *arg)
 {
@@ -549,6 +608,8 @@ client_main(void *arg)
 		cmd_log(fd);
 	} else if (!strncmp(cmd, "INSTALL ", 8)) {
 		cmd_install(fd, (size_t)strtoull(cmd + 8, NULL, 10));
+	} else if (!strcmp(cmd, "DUMP")) {
+		cmd_dump(fd);
 	} else if (n) {
 		sendf(fd, "+ERR unknown command\n");
 	}

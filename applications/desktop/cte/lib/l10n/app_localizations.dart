@@ -458,6 +458,42 @@ abstract class AppLocalizations {
   /// **'Connect a headset to read its state.'**
   String get debugEmpty;
 
+  /// No description provided for @dumpButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Dump Debug SSD'**
+  String get dumpButton;
+
+  /// No description provided for @dumpHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pulls every log and state dump off the headset into one .zip you can send back.'**
+  String get dumpHint;
+
+  /// No description provided for @dumpRunning.
+  ///
+  /// In en, this message translates to:
+  /// **'Dumping... {count} sections'**
+  String dumpRunning(Object count);
+
+  /// No description provided for @dumpSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved: {path}'**
+  String dumpSaved(Object path);
+
+  /// No description provided for @dumpFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dump failed: {error}'**
+  String dumpFailed(Object error);
+
+  /// No description provided for @dumpSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save debug dump'**
+  String get dumpSaveTitle;
+
   /// No description provided for @valueUnknown.
   ///
   /// In en, this message translates to:

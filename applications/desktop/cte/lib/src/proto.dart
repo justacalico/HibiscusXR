@@ -25,6 +25,7 @@ abstract final class CteProto {
   static const cmdCtrl = 'CTRL';
   static const cmdLog = 'LOG';
   static const cmdInstall = 'INSTALL';
+  static const cmdDump = 'DUMP';
 }
 
 /// A parsed stream message coming back from cted.
@@ -62,6 +63,12 @@ class CteInfoMsg extends CteMsg {
 class CteTextMsg extends CteMsg {
   const CteTextMsg(this.text);
   final String text;
+}
+
+/// `+BLOB` payload - opaque bytes (DUMP's tar.gz archive).
+class CteBlobMsg extends CteMsg {
+  const CteBlobMsg(this.bytes);
+  final Uint8List bytes;
 }
 
 /// `+OK`/`+PONG` style acknowledgements.
@@ -167,7 +174,7 @@ class CteWireReader {
 
   /// Lines that are followed by a raw blob.
   static int? _blobLen(String line) {
-    for (final prefix in const ['FRAME ', '+JSON ', '+TEXT ']) {
+    for (final prefix in const ['FRAME ', '+JSON ', '+TEXT ', '+BLOB ']) {
       if (line.startsWith(prefix)) {
         return int.tryParse(line.substring(prefix.length).trim());
       }
@@ -191,6 +198,8 @@ class CteWireReader {
       if (blob != null) {
         _out.add(CteTextMsg(utf8.decode(blob, allowMalformed: true)));
       }
+    } else if (line.startsWith('+BLOB')) {
+      if (blob != null) _out.add(CteBlobMsg(blob));
     } else if (line.startsWith('CTRL ')) {
       final s = parseCtrlLine(line);
       if (s != null) _out.add(CteCtrlMsg(s));

@@ -26,6 +26,7 @@ a single `+`-prefixed result or a stream until disconnect.
 | `CTRL` | `CTRL <idx> live= batt= px= py= pz= qx= qy= qz= qw= trk= sx= sy= a= b= menu= sys= trig= grip=` lines |
 | `LOG` | `LOG <line>\n` logcat stream |
 | `INSTALL <len>` | `<len>` raw apk bytes, then `LOG` progress lines and `+OK`/`+ERR` |
+| `DUMP` | `+BLOB <len>\n` + tar.gz from `cte-dump` (the full debug bundle HCTE saves as a .zip) |
 | anything else | `+ERR unknown command` |
 
 `POSE` also enables the dump switches before tailing:

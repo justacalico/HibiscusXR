@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'debug_dump.dart';
 import 'models.dart';
 
 /// One open channel to a headset - either the adb CLI or the on-device
@@ -30,6 +31,12 @@ abstract class HeadsetLink {
   /// Controller snapshots - index 0 left, 1 right; absent entries when a
   /// transport can't read them.
   Stream<List<CtrlState>> controllers();
+
+  /// The full debug bundle ("Dump Debug SSD"): yields each collected
+  /// section as it lands so the UI can show progress. Transports degrade
+  /// to a smaller section set on headsets whose image predates the
+  /// on-device collector.
+  Stream<DumpSection> debugDump();
 
   Future<void> dispose();
 }

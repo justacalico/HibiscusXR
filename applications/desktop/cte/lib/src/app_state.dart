@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 
 import 'adb_runner.dart';
+import 'debug_dump.dart';
 import 'link.dart';
 import 'models.dart';
 import 'transport/adb_link.dart';
@@ -51,6 +52,12 @@ class AppState extends ChangeNotifier {
   // install
   bool installing = false;
   final List<String> installLog = [];
+
+  // debug dump
+  bool dumping = false;
+  int dumpCount = 0;
+  String? dumpError;
+  String dumpSuggestedName = '';
 
   Map<String, String>? props;
 
@@ -213,6 +220,40 @@ class AppState extends ChangeNotifier {
     }
     installing = false;
     notifyListeners();
+  }
+
+  /// Collect the debug bundle over the live link and return it zipped.
+  /// Progress shows through dumpCount; failures land in dumpError.
+  Future<Uint8List?> dumpDebug() async {
+    final l = link;
+    if (l == null || dumping) return null;
+    dumping = true;
+    dumpCount = 0;
+    dumpError = null;
+    dumpSuggestedName = '';
+    notifyListeners();
+    final sections = <DumpSection>[];
+    try {
+      await for (final s in l.debugDump()) {
+        sections.add(s);
+        dumpCount++;
+        notifyListeners();
+      }
+      if (sections.isEmpty) {
+        throw StateError('headset sent back an empty dump');
+      }
+      final tag = deviceInfo?.serial.isNotEmpty == true
+          ? deviceInfo!.serial
+          : deviceInfo?.device ?? 'headset';
+      dumpSuggestedName = dumpFileName(tag, DateTime.now());
+      return zipDump(sections);
+    } catch (e) {
+      dumpError = '$e';
+      return null;
+    } finally {
+      dumping = false;
+      notifyListeners();
+    }
   }
 
   /// Mirror is a paid stream (screencap churn) - let the user park it.

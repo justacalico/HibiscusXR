@@ -60,5 +60,11 @@
   "debugFilter": "过滤",
   "debugLogcat": "日志",
   "debugEmpty": "连上头显才能读状态。",
+  "dumpButton": "Dump Debug SSD",
+  "dumpHint": "把头显上的全部日志和状态导出成一个 .zip,可直接发回来。",
+  "dumpRunning": "正在导出... {count} 项",
+  "dumpSaved": "已保存:{path}",
+  "dumpFailed": "导出失败:{error}",
+  "dumpSaveTitle": "保存调试转储",
   "valueUnknown": "未知"
 }

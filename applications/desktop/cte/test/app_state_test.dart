@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_cte/src/adb_runner.dart';
 import 'package:hibiscus_cte/src/app_state.dart';
+import 'package:hibiscus_cte/src/debug_dump.dart';
 import 'package:hibiscus_cte/src/models.dart';
 
 import 'fakes.dart';
@@ -136,5 +137,43 @@ void main() {
     fake.frameFeed.add(Uint8List.fromList([7]));
     await pumpEventQueue();
     expect(state.frame, [7]);
+  });
+
+  test('dumpDebug collects sections and returns a zip', () async {
+    final fake = FakeLink(
+      description: 'adb:F',
+      dump: () => Stream.fromIterable([
+        DumpSection('meta.txt',
+            Uint8List.fromList('model=Pico Neo 2\n'.codeUnits)),
+        DumpSection('logcat.txt', Uint8List.fromList('I/x: hi\n'.codeUnits)),
+      ]),
+    );
+    final state = AppState(
+      adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
+      adbLinkFactory: (_) => fake,
+      socketFactory: (_) async => null,
+    );
+    await state.connectAdb('F');
+    final zip = await state.dumpDebug();
+    expect(state.dumping, isFalse);
+    expect(state.dumpCount, 2);
+    expect(state.dumpError, isNull);
+    expect(state.dumpSuggestedName, startsWith('hibiscus-dump-SER9-'));
+    expect(zip, isNotNull);
+    expect(zip!.sublist(0, 4), [0x50, 0x4B, 0x03, 0x04]);
+  });
+
+  test('dumpDebug surfaces an empty bundle as an error', () async {
+    final fake = FakeLink(description: 'adb:F');
+    final state = AppState(
+      adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
+      adbLinkFactory: (_) => fake,
+      socketFactory: (_) async => null,
+    );
+    await state.connectAdb('F');
+    final zip = await state.dumpDebug();
+    expect(zip, isNull);
+    expect(state.dumpError, isNotNull);
+    expect(state.dumping, isFalse);
   });
 }

@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:hibiscus_cte/src/adb_runner.dart';
 import 'package:hibiscus_cte/src/app_state.dart';
+import 'package:hibiscus_cte/src/debug_dump.dart';
 import 'package:hibiscus_cte/src/link.dart';
 import 'package:hibiscus_cte/src/models.dart';
 
@@ -38,6 +39,7 @@ class FakeLink extends HeadsetLink {
     this.info = fakeInfo,
     this.props = fakeProps,
     this.install,
+    this.dump,
   });
 
   @override
@@ -45,6 +47,7 @@ class FakeLink extends HeadsetLink {
   final DeviceInfo info;
   final Map<String, String> props;
   final Stream<String> Function(String path)? install;
+  final Stream<DumpSection> Function()? dump;
   var disposed = false;
 
   // broadcast so setMirror's cancel/re-listen works; sync delivery keeps
@@ -70,6 +73,8 @@ class FakeLink extends HeadsetLink {
   Stream<PoseSample> poses() => poseFeed.stream;
   @override
   Stream<List<CtrlState>> controllers() => ctrlFeed.stream;
+  @override
+  Stream<DumpSection> debugDump() => dump?.call() ?? const Stream.empty();
   @override
   Future<void> dispose() async {
     disposed = true;

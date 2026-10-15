@@ -4,9 +4,11 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_cte/src/adb_runner.dart';
+import 'package:hibiscus_cte/src/debug_dump.dart';
 import 'package:hibiscus_cte/src/transport/adb_link.dart';
 
 import 'ctrl_share_test.dart' show makeShareMem;
+import 'tar_fixture.dart';
 
 class FakeProcess implements Process {
   FakeProcess(this._stdout, [this._exitCode = 0]);
@@ -36,6 +38,7 @@ AdbRunner fakeAdb({
   bool screencapFails = false,
   List<String> logcatLines = const [],
   List<String> installOut = const ['Success'],
+  List<int>? dumpBlob,
 }) {
   ProcessResult res(String out) =>
       ProcessResult(0, 0, out, '');
@@ -51,6 +54,10 @@ AdbRunner fakeAdb({
     },
     spawn: (args) async {
       final cmd = args.join(' ');
+      // the on-device collector: present = tar.gz blob, absent = empty
+      if (cmd.contains('exec-out') && cmd.contains('cte-dump')) {
+        return FakeProcess(dumpBlob ?? const []);
+      }
       if (cmd.contains('exec-out') && cmd.contains('screencap')) {
         if (screencapFails) {
           return FakeProcess(utf8.encode('+ERR screencap failed\n'));
@@ -69,6 +76,10 @@ AdbRunner fakeAdb({
       }
       if (cmd.contains('install')) {
         return FakeProcess(utf8.encode(installOut.join('\n')));
+      }
+      // legacy dump sections land here: any exec-out not claimed above
+      if (cmd.contains('exec-out')) {
+        return FakeProcess(utf8.encode('sec:$cmd'));
       }
       if (cmd.contains('logcat')) {
         return FakeProcess(utf8.encode(logcatLines.join('\n')));
@@ -158,5 +169,28 @@ void main() {
     final link = AdbLink(fakeAdb(installOut: ['Performing Streamed Install', 'Success']), 'ABC');
     final out = await link.installApk('/tmp/x.apk').toList();
     expect(out, contains('Success'));
+  });
+
+  test('debugDump decodes the cte-dump tar.gz', () async {
+    final blob = tarArchive({
+      'meta.txt': utf8.encode('model=Pico Neo 2\n'),
+      'logcat.txt': utf8.encode('I/x: hi\n'),
+    });
+    final link = AdbLink(fakeAdb(dumpBlob: blob), 'ABC');
+    final sections = await link.debugDump().toList();
+    expect(sections.map((s) => s.name), ['meta.txt', 'logcat.txt']);
+    expect(utf8.decode(sections.first.bytes), contains('Pico Neo 2'));
+  });
+
+  test('debugDump runs per-section commands when no collector exists',
+      () async {
+    final link = AdbLink(fakeAdb(), 'ABC'); // no dumpBlob = old image
+    final sections = await link.debugDump().toList();
+    expect(sections.map((s) => s.name).toList(),
+        legacyDumpSections.map((s) => s.$1).toList());
+    expect(
+        utf8.decode(
+            sections.firstWhere((s) => s.name == 'getprop.txt').bytes),
+        contains('getprop'));
   });
 }

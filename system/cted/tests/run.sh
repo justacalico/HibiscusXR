@@ -28,7 +28,34 @@ for w in (0, 1):
 open(sys.argv[1], "wb").write(buf)
 PY
 
-CTE_PORT=$PORT CTE_CTRL_PATH="$OUT/sharemem" "$OUT/cted" &
+# deterministic tiny tar.gz regardless of host tar quirks
+python3 - "$OUT/blob.tgz" <<'PY'
+import gzip, sys
+def hdr(name, size):
+    h = bytearray(512)
+    h[0:len(name)] = name.encode()
+    h[100:108] = b"0000644\0"
+    h[124:136] = ("%011o\0" % size).encode()
+    h[136:148] = b"00000000000\0"
+    h[156:157] = b"0"
+    h[257:265] = b"ustar\0000"
+    c = sum(h[:156]) + sum(b"        ") + sum(h[165:])
+    h[148:156] = ("%06o\0 " % c).encode()
+    return h
+body = b"fake dump body\n"
+t = bytes(hdr("meta.txt", len(body))) + body
+t += bytes(512 - len(body) % 512)
+t += bytes(1024)
+open(sys.argv[1], "wb").write(gzip.compress(t))
+PY
+cat >"$OUT/fake-dump.sh" <<SH
+#!/bin/sh
+cat "$OUT/blob.tgz"
+SH
+chmod +x "$OUT/fake-dump.sh"
+
+CTE_PORT=$PORT CTE_CTRL_PATH="$OUT/sharemem" CTE_DUMP="$OUT/fake-dump.sh" \
+  CTE_TMPDIR="$OUT" "$OUT/cted" &
 sleep 0.4
 
 req() {
@@ -56,6 +83,8 @@ echo "--- INFO ---"
 req "INFO" | head -3
 echo "--- CTRL ---"
 req "CTRL" | head -3
+echo "--- DUMP ---"
+req "DUMP" | head -1 | grep -q '^+BLOB ' && echo "dump blob ok"
 echo "--- unknown ---"
 req "WAT" | head -2
 echo "PASS"

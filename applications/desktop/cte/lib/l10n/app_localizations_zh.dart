@@ -202,5 +202,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get debugEmpty => '连上头显才能读状态。';
 
   @override
+  String get dumpButton => 'Dump Debug SSD';
+
+  @override
+  String get dumpHint => '把头显上的全部日志和状态导出成一个 .zip,可直接发回来。';
+
+  @override
+  String dumpRunning(Object count) {
+    return '正在导出... $count 项';
+  }
+
+  @override
+  String dumpSaved(Object path) {
+    return '已保存:$path';
+  }
+
+  @override
+  String dumpFailed(Object error) {
+    return '导出失败:$error';
+  }
+
+  @override
+  String get dumpSaveTitle => '保存调试转储';
+
+  @override
   String get valueUnknown => '未知';
 }

@@ -74,6 +74,7 @@ check /product/etc/openxr/1/active_runtime.json    "$XR/android/active_runtime.j
 check /etc/init/pn2-openxr.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-openxr.rc
 check /etc/init/pn2-vulkan.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-vulkan.rc
 check /etc/permissions/pn2-xr-features.xml         ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
+check /etc/default-permissions/pn2-cvservice.xml  ${PN2_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml
 check /lib64/hw/vulkan.sdm845.so                   "$XR/turnip/out/libvulkan_freedreno.so"
 check /lib64/libc++_shared.so                      "$XR/turnip/out/libc++_shared.so"
 # turnip loads inside the sphal namespace (anything under /vendor/lib64);

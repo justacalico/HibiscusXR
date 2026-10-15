@@ -143,6 +143,16 @@ put "$INIT/pn2-theme.rc"      /etc/init/pn2-theme.rc      644
 put "$INIT/pn2-env.rc"        /etc/init/pn2-env.rc        644
 
 echo
+echo "=== CVService runtime permission pregrant ==="
+# CVService's MainActivity requestPermissions()s its dangerous permissions
+# (location + storage) and stock grants them silently; our base pops the
+# grant dialog inside VR instead. Pre-granting as system-fixed kills the
+# dialog for every boot.
+mkd /etc/default-permissions
+put ${PN2_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml \
+    /etc/default-permissions/pn2-cvservice.xml 644
+
+echo
 echo "=== settings bridge daemons ==="
 # settings.Global -> persist props; the props are the channel every native
 # renderer can read live without a settings-provider round trip

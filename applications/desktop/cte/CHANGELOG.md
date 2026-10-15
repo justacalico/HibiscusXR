@@ -2,6 +2,18 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## cte-v0.2.0 - 2026-10-15
+#### Features
+- 添加调试转储 Dump Debug SSD - (cdfebef) - HttpAnimations
+#### Performance Improvements
+- 屏幕镜像改持续推流提高帧率 - (16407ff) - HttpAnimations
+#### Continuous Integration
+- 修 bump 脚本没有可发版本时误报失败 - (e53ecf5) - HttpAnimations
+#### Miscellaneous Chores
+- 桌面应用移到 applications/desktop - (fa51678) - HttpAnimations
+
+- - -
+
 ## cte-v0.1.0 - 2026-09-28
 #### Features
 - 新增 HCTE 桌面伴侣应用,adb/cted 双通道管理头显 - (b4d2c5e) - HttpAnimations

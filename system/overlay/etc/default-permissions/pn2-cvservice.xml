@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+CVService (com.picovr.picovrlib.cvcontroller) is a system-uid priv-app whose
+MainActivity calls requestPermissions for the dangerous permissions in its
+manifest. On stock PUI these are granted silently; on our Android 10 base the
+grant dialog pops up inside VR. Pre-grant all four as system-fixed so the
+controller daemon never has to ask.
+-->
+<exceptions>
+    <exception package="com.picovr.picovrlib.cvcontroller">
+        <permission name="android.permission.ACCESS_FINE_LOCATION" fixed="true" />
+        <permission name="android.permission.ACCESS_COARSE_LOCATION" fixed="true" />
+        <permission name="android.permission.READ_EXTERNAL_STORAGE" fixed="true" />
+        <permission name="android.permission.WRITE_EXTERNAL_STORAGE" fixed="true" />
+    </exception>
+</exceptions>

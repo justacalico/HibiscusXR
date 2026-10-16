@@ -12,9 +12,15 @@
 #
 # libCVController.so
 #   0x3b800  blx r0 -> nop            dead call through g_IMUsetEnable
+#   0x3d1f0  blx r3 -> nop            enableRX calls provider obj fn0, null
+#                                     without pvrservice; SIGSEGV on every
+#                                     ACTION_ENABLE_RX broadcast
 #   0x3ee36  ldrb r7,[r7] -> movs r7,#0   per-packet sensor read always
 #                                     takes the built-in access_eeprom path;
 #                                     the g_EP* provider pointers stay null
+#   0x3ee54  blx r3 -> nop            RX provider call in emSpiSensorThreadMain;
+#                                     unreachable once 0x3ee36 is applied,
+#                                     nop'd anyway for the unpatched case
 #   0x3f200  ldrb.w -> mov.w r8,#1    skip spawning emSLPIThreadMain, which
 #                                     calls g_setEnable unguarded
 #   0x3f856  blx r3 -> nop            ~SpiSensor g_EPsetEnable(0)
@@ -50,7 +56,9 @@ patch() { # file offset hex-expected hex-new
 patch libPvr_UnitySDKCV.so 493526 "03 46" "02 23"
 patch libPvr_UnitySDKCV.so 493974 "ff f7 0b ff" "00 20 00 bf"
 patch libCVController.so 243712 "98 47" "00 bf"
+patch libCVController.so 250352 "98 47" "00 bf"
 patch libCVController.so 257590 "1f 78" "00 27"
+patch libCVController.so 257620 "98 47" "00 bf"
 patch libCVController.so 258560 "97 f8 00 80" "f0 4f 08 01"
 patch libCVController.so 260182 "98 47" "00 bf"
 patch libCVController.so 260192 "98 47" "00 bf"

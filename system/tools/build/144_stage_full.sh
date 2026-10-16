@@ -83,6 +83,13 @@ for d in "$OEM"/*/; do
 done
 
 echo
+echo "=== cvservice lib patches ==="
+# libCVController calls pvrservice provider pointers that stay null on this
+# stack - unpatched libs crash-loop RemoteService on every controller
+# connect. Patch the staged copy so the shipped image is always fixed.
+"$(dirname "$0")/patch_cvservice_libs.sh" "$STAGE/priv-app/CVService/lib/arm"
+
+echo
 echo "=== /media/LoadingRes (VRShell boot animation) ==="
 debugfs -R "rdump /media/LoadingRes $STAGE/media" "$IMG" 2>/dev/null
 if [ -d "$STAGE/media/LoadingRes" ]; then

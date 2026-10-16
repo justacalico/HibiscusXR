@@ -51,6 +51,7 @@ struct Engine {
     float headPos[3] = {0, 0, 0};
     bool headPosValid = false;
     bool quatFromQvr = false;   // rot-vec dead: e->quat carries the QVR quat
+    float headAv[3] = {0, 0, 0}; // qvr angular velocity, feeds pose prediction
     int  qvrState = -1;         // raw service state: 3 tracked, other degraded, -1 gone
     void* qvrClient = nullptr;
 

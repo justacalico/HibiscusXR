@@ -57,11 +57,29 @@ void fmtTrackState(int state, char* out, size_t outSize) {
     else snprintf(out, outSize, "%d", state);
 }
 
-void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
-                 const float qvrQuat[4], const float qvrPos[3]) {
+void qvrFoldPose(float quat[4], float headPos[3], float headAv[3],
+                 bool* quatFromQvr, const float qvrQuat[4],
+                 const float qvrPos[3], const float qvrAv[3]) {
     *quatFromQvr = true;
     memcpy(quat, qvrQuat, 4 * sizeof(float));
     memcpy(headPos, qvrPos, 3 * sizeof(float));
+    memcpy(headAv, qvrAv, 3 * sizeof(float));
+}
+
+void predictQuat(const float q[4], const float av[3], float dtSec,
+                 float out[4]) {
+    const float hx = av[0] * 0.5f * dtSec;
+    const float hy = av[1] * 0.5f * dtSec;
+    const float hz = av[2] * 0.5f * dtSec;
+    const float dq[4] = {hx, hy, hz, 1.0f};
+    out[0] = q[3]*dq[0] + q[0]*dq[3] + q[1]*dq[2] - q[2]*dq[1];
+    out[1] = q[3]*dq[1] - q[0]*dq[2] + q[1]*dq[3] + q[2]*dq[0];
+    out[2] = q[3]*dq[2] + q[0]*dq[1] - q[1]*dq[0] + q[2]*dq[3];
+    out[3] = q[3]*dq[3] - q[0]*dq[0] - q[1]*dq[1] - q[2]*dq[2];
+    float n = 0.0f;
+    for (int i = 0; i < 4; ++i) n += out[i] * out[i];
+    n = sqrtf(n);
+    if (n > 0.0f) for (int i = 0; i < 4; ++i) out[i] /= n;
 }
 
 void sensorPosToWorld(const float pos[3], float sensRoll, float worldX,

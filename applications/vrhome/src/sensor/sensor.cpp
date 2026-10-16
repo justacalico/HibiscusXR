@@ -1,6 +1,7 @@
 #include "sensor.h"
 
 #include "../engine.h"
+#include "../common/config.h"
 #include "../common/props.h"
 #include "../math/head.h"
 
@@ -50,6 +51,14 @@ void smoothPose(Engine* e, bool useSensor) {
     poseFiltTick(&e->viewPose, e->quat,
                  e->headPosValid ? e->headPos : nullptr, dt);
     memcpy(e->quat, e->viewPose.quat, sizeof(e->quat));
+    if (e->quatFromQvr) {
+        // the sampled pose reaches photons a frame or two late: roll it
+        // forward by the live angular velocity so the displayed view
+        // matches where the head actually is. Tunable lead for on-device
+        // verification; 0 disables.
+        const float lead = propF("debug.vrhome.predms", kPredMs) / 1000.0f;
+        if (lead != 0.0f) predictQuat(e->quat, e->headAv, lead, e->quat);
+    }
     if (e->headPosValid)
         memcpy(e->headPos, e->viewPose.pos, sizeof(e->headPos));
 }

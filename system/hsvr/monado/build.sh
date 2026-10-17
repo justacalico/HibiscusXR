@@ -69,6 +69,7 @@ git apply "$ROOT/patches/hsvr-compositor-pacing.patch"
 git apply "$ROOT/patches/hsvr-android-vsync.patch"
 git apply "$ROOT/patches/hsvr-android-create-instance.patch"
 git apply "$ROOT/patches/hsvr-swapchain-max-samples.patch"
+git apply "$ROOT/patches/hsvr-session-synchronized-on-begin.patch"
 
 # drv_hsvr builds from one directory: the kit, the hsvr prober shim, every
 # device driver under drivers/<name>/monado/ and every shared controller

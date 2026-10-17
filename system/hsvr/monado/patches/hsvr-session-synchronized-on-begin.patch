@@ -1,0 +1,23 @@
+diff --git a/src/xrt/state_trackers/oxr/oxr_session.c b/src/xrt/state_trackers/oxr/oxr_session.c
+index 2d8e2fa7..86d15b00 100644
+--- a/src/xrt/state_trackers/oxr/oxr_session.c
++++ b/src/xrt/state_trackers/oxr/oxr_session.c
+@@ -466,6 +466,18 @@ oxr_session_begin(struct oxr_logger *log, struct oxr_session *sess, const XrSess
+ 
+ 		xrt_result_t xret = xrt_comp_begin_session(xc, &begin_session_info);
+ 		OXR_CHECK_XRET(log, sess, xret, xrt_comp_begin_session);
++
++		int64_t now_sync = os_monotonic_get_ns();
++		XrTime now_xr_sync = time_state_monotonic_to_ts_ns(sess->sys->inst->timekeeping, now_sync);
++		if (now_xr_sync <= 0) {
++			U_LOG_W("Time keeping oddity: XR_SESSION_STATE_SYNCHRONIZED state reached at XrTime %" PRIi64,
++			        now_xr_sync);
++		}
++		oxr_session_change_state(log, sess, XR_SESSION_STATE_SYNCHRONIZED, now_xr_sync);
++		sess->compositor_visible = true;
++		sess->compositor_focused = true;
++		oxr_session_change_state(log, sess, XR_SESSION_STATE_VISIBLE, now_xr_sync);
++		oxr_session_change_state(log, sess, XR_SESSION_STATE_FOCUSED, now_xr_sync);
+ 	} else {
+ 		// Headless, pretend we got event from the compositor.
+ 		sess->compositor_visible = true;

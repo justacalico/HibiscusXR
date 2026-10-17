@@ -1,0 +1,13 @@
+diff --git a/src/xrt/compositor/main/comp_compositor.c b/src/xrt/compositor/main/comp_compositor.c
+--- a/src/xrt/compositor/main/comp_compositor.c
++++ b/src/xrt/compositor/main/comp_compositor.c
+@@ -1245,6 +1245,8 @@
+ 		c->view_configs[0].views[i].recommended.sample_count  = 1;
+ 		c->view_configs[0].views[i].max.width_pixels          = w_2;
+ 		c->view_configs[0].views[i].max.height_pixels         = h_2;
+-		c->view_configs[0].views[i].max.sample_count          = 1;
++		// sample_count is validated only; image allocators ignore it, so
++		// 4x MSAA swapchains (as Quest advertises) are accepted as-is.
++		c->view_configs[0].views[i].max.sample_count          = 4;
+ 	}
+ 	// clang-format on

@@ -195,14 +195,14 @@ void testLayout() {
     ps.push_back(mkPanel(0.0f));
     CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
     CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);
-    // all three slots taken: the left window parks, the middle one takes
-    // its slot, the newcomer gets the middle
+    // all three slots taken: the middle window parks so the newcomer takes
+    // its place; left and right keep their spots
     ps.push_back(mkPanel(0.0f));
     CHECK_F(centreSlotYaw(ps, 0.0f), kSlotYaw[0], 1e-6f);
-    CHECK(ps[0].minimized);
-    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);   // stale yaw kept for restore
+    CHECK(ps[2].minimized);
+    CHECK_F(ps[2].yaw, kSlotYaw[0], 1e-6f);   // stale yaw kept for restore
+    CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);   // left untouched
     CHECK_F(ps[1].yaw, kSlotYaw[2], 1e-6f);   // right untouched
-    CHECK_F(ps[2].yaw, kSlotYaw[1], 1e-6f);   // middle slid left
     // a parked window on the middle slot doesn't count as an occupant:
     // the newcomer just lands there
     ps.clear();

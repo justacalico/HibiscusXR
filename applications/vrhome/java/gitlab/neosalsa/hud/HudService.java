@@ -261,7 +261,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
 
     private void loadCenterLaunch() {
         centerLaunch = Settings.Global.getInt(getContentResolver(),
-                CENTER_LAUNCH, 0) == 1;
+                CENTER_LAUNCH, 1) == 1;
         updateWindow();
     }
 

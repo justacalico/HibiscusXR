@@ -90,10 +90,9 @@ float centreSlotYaw(std::vector<Panel>& panels, float centre) {
         panels[mid].yaw = rightYaw;
         return midYaw;
     }
-    // all three slots taken: park the left window on the shelf and slide
-    // the middle one into its slot
-    panels[left].minimized = true;
-    panels[mid].yaw = leftYaw;
+    // all three slots taken: park the middle window on the shelf so the
+    // newcomer takes its place; left and right keep their spots
+    panels[mid].minimized = true;
     return midYaw;
 }
 

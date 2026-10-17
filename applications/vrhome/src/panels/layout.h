@@ -33,9 +33,9 @@ float freeSlotYaw(const std::vector<Panel>& panels, float centre);
 
 // "apps open centred" launch policy: the newcomer always takes the middle
 // slot. The window already there slides to a free side - left first -
-// and when the ring is full the left window parks on the shelf so the
-// middle can take its place. Mutates `panels`; returns the yaw the new
-// panel should take
+// and when the ring is full the middle window itself parks on the shelf
+// so the newcomer can take its place. Mutates `panels`; returns the yaw
+// the new panel should take
 float centreSlotYaw(std::vector<Panel>& panels, float centre);
 
 // bring a parked window back onto the ring: the free slot nearest its old

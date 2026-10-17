@@ -276,7 +276,7 @@ class MainActivity : FlutterActivity() {
         Settings.Global.getString(contentResolver, THEME) ?: THEME_DEFAULT
 
     private fun centerLaunch(): Boolean = Settings.Global.getInt(
-        contentResolver, CENTER_LAUNCH, 0,
+        contentResolver, CENTER_LAUNCH, 1,
     ) == 1
 
     private fun volume(): Double {

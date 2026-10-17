@@ -11,6 +11,7 @@ import android.inputmethodservice.InputMethodService;
 import android.inputmethodservice.Keyboard;
 import android.inputmethodservice.KeyboardView;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
@@ -263,7 +264,7 @@ public class KeyboardService extends InputMethodService
                 kv.setKeyboard(kv.getKeyboard() == letters ? symbols : letters);
                 break;
             case Keyboard.KEYCODE_DONE:
-                sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
+                pressEnter(ic);
                 break;
             case Keyboard.KEYCODE_CANCEL:
                 requestHideSelf(0);
@@ -274,6 +275,33 @@ public class KeyboardService extends InputMethodService
                     ch = Character.toUpperCase(ch);
                 if (ic != null) ic.commitText(String.valueOf(ch), 1);
                 break;
+        }
+    }
+
+    // A bare KEYCODE_ENTER never reaches the submit handler in apps that
+    // only listen for the IME action (Flutter's text input plugin is one):
+    // honor the field's declared action first, drop a literal newline into
+    // multiline fields, and keep the raw key event as the last resort.
+    private void pressEnter(InputConnection ic) {
+        if (ic == null) return;
+        EditorInfo info = getCurrentInputEditorInfo();
+        int action = EditorInfo.IME_ACTION_NONE;
+        boolean multiline = false;
+        if (info != null) {
+            action = info.actionId != 0
+                    ? info.actionId
+                    : info.imeOptions & EditorInfo.IME_MASK_ACTION;
+            if ((info.imeOptions & EditorInfo.IME_FLAG_NO_ENTER_ACTION) != 0)
+                action = EditorInfo.IME_ACTION_NONE;
+            multiline = (info.inputType
+                    & InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0;
+        }
+        if (action != EditorInfo.IME_ACTION_NONE) {
+            ic.performEditorAction(action);
+        } else if (multiline) {
+            ic.commitText("\n", 1);
+        } else {
+            sendDownUpKeyEvents(KeyEvent.KEYCODE_ENTER);
         }
     }
 

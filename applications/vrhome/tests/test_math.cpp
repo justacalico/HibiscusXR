@@ -184,17 +184,21 @@ void testHead() {
     {
         float fq[4] = {0, 0, 0, 1}, fp[3] = {9, 9, 9};
         bool fqvr = false;
-        qvrFoldPose(fq, fp, &fqvr,
+        float fa[3] = {0, 0, 0};
+        qvrFoldPose(fq, fp, fa, &fqvr,
                     (const float[]){0.1f, 0.2f, 0.3f, 0.9f},
-                    (const float[]){0.4f, 0.5f, 0.6f});
+                    (const float[]){0.4f, 0.5f, 0.6f},
+                    (const float[]){0.7f, 0.8f, 0.9f});
         CHECK(fqvr);
         CHECK_F(fq[0], 0.1f, 1e-5f); CHECK_F(fq[1], 0.2f, 1e-5f);
         CHECK_F(fq[3], 0.9f, 1e-5f);
         CHECK_F(fp[0], 0.4f, 1e-5f); CHECK_F(fp[1], 0.5f, 1e-5f);
         CHECK_F(fp[2], 0.6f, 1e-5f);
+        CHECK_F(fa[0], 0.7f, 1e-5f); CHECK_F(fa[2], 0.9f, 1e-5f);
         // every later frame keeps refreshing, never latches
-        qvrFoldPose(fq, fp, &fqvr,
+        qvrFoldPose(fq, fp, fa, &fqvr,
                     (const float[]){0.0f, 0.0f, 0.0f, 1.0f},
+                    (const float[]){0.0f, 0.0f, 0.0f},
                     (const float[]){0.0f, 0.0f, 0.0f});
         CHECK(fqvr); CHECK_F(fq[0], 0.0f, 1e-5f); CHECK_F(fq[3], 1.0f, 1e-5f);
     }
@@ -405,4 +409,34 @@ void testPoseFilt() {
     poseFiltTick(&f, qi, p0, dt);
     poseFiltTick(&f, qi, nullptr, dt);
     CHECK_F(f.pos[0], p0[0], 1e-6f);
+}
+
+void testPredict() {
+    const float qi[4] = {0, 0, 0, 1};
+    const float zero[3] = {0, 0, 0};
+    float out[4];
+
+    // zero velocity leaves the pose alone
+    predictQuat(qi, zero, 0.021f, out);
+    CHECK_F(out[3], 1.0f, 1e-6f);
+
+    // a yaw-rate of 1 rad/s for 21 ms turns by ~0.021 rad about y:
+    // quat y = sin(a/2) = ~0.0105
+    const float yaw1[3] = {0, 1.0f, 0};
+    predictQuat(qi, yaw1, 0.021f, out);
+    CHECK_F(out[1], 0.0105f, 1e-4f);
+    CHECK_F(out[3], 0.9999f, 1e-3f);
+
+    // result stays unit length under large velocity
+    const float fast[3] = {3.0f, -4.0f, 12.0f};
+    predictQuat(qi, fast, 0.021f, out);
+    float n = 0.0f;
+    for (int i = 0; i < 4; ++i) n += out[i] * out[i];
+    CHECK_F(sqrtf(n), 1.0f, 1e-5f);
+
+    // predicting a rotated pose composes on top of it
+    float q90[4] = {0, (float)(0.7071068f), 0, (float)(0.7071068f)};
+    predictQuat(q90, yaw1, 0.021f, out);
+    // ~90 deg + ~1.2 deg yaw -> angle vs q90 is ~0.021 rad
+    CHECK_F(quatAngle(out, q90), 0.021f, 2e-3f);
 }

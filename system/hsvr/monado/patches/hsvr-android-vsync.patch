@@ -1,0 +1,97 @@
+--- a/src/xrt/compositor/main/comp_target_swapchain.c
++++ b/src/xrt/compositor/main/comp_target_swapchain.c
+@@ -25,6 +25,11 @@
+ #include <assert.h>
+ #include <stdlib.h>
+ 
++#ifdef XRT_OS_ANDROID
++#include <android/choreographer.h>
++#include <android/looper.h>
++#endif
++
+ 
+ /*
+  *
+@@ -431,6 +436,7 @@
+ 
+ 	os_thread_helper_lock(&cts->vblank.event_thread);
+ 	last_vblank_ns = cts->vblank.last_vblank_ns;
++	cts->vblank.vsync_seen |= last_vblank_ns != 0;
+ 	cts->vblank.last_vblank_ns = 0;
+ 	os_thread_helper_unlock(&cts->vblank.event_thread);
+ 
+@@ -713,6 +719,42 @@
+ }
+ 
+ 
++#ifdef XRT_OS_ANDROID
++static void
++android_vsync_cb(int64_t frame_time_ns, void *data)
++{
++	struct comp_target_swapchain *cts = data;
++
++	os_thread_helper_lock(&cts->vblank.event_thread);
++	cts->vblank.last_vblank_ns = frame_time_ns;
++	os_thread_helper_unlock(&cts->vblank.event_thread);
++
++	AChoreographer_postFrameCallback(AChoreographer_getInstance(), android_vsync_cb, cts);
++}
++
++static void *
++run_android_vsync_thread(void *ptr)
++{
++	struct comp_target_swapchain *cts = ptr;
++
++	os_thread_helper_name(&cts->vblank.event_thread, "Android VSync");
++	ALooper_prepare(ALOOPER_PREPARE_ALLOW_NON_CALLBACKS);
++
++	os_thread_helper_lock(&cts->vblank.event_thread);
++	cts->vblank.thread_running = true;
++	cts->vblank.should_wait = true;
++	cts->vblank.event_active = true;
++	os_thread_helper_unlock(&cts->vblank.event_thread);
++
++	AChoreographer_postFrameCallback(AChoreographer_getInstance(), android_vsync_cb, cts);
++	while (os_thread_helper_is_running(&cts->vblank.event_thread)) {
++		ALooper_pollOnce(200, NULL, NULL, NULL);
++	}
++
++	return NULL;
++}
++#endif
++
+ /*
+  *
+  * Member functions.
+@@ -1221,7 +1263,7 @@
+ 	 * serialises two syncs and pins the loop to every other vsync. Let
+ 	 * the swapchain backpressure pace the loop instead.
+ 	 */
+-	if (cts->base.fake_display_timing) {
++	if (cts->base.fake_display_timing && !cts->vblank.vsync_seen) {
+ 		wake_up_time_ns = now_ns;
+ 	}
+ 
+@@ -1383,4 +1425,10 @@
+ 	cts->base.queue_supports_present = comp_target_swapchain_queue_supports_present;
+ 
+ 	os_thread_helper_init(&cts->vblank.event_thread);
++#ifdef XRT_OS_ANDROID
++	if (timing_usage == COMP_TARGET_FORCE_FAKE_DISPLAY_TIMING &&
++	    !cts->vblank.thread_running) {
++		os_thread_helper_start(&cts->vblank.event_thread, run_android_vsync_thread, cts);
++	}
++#endif
+ }
+--- a/src/xrt/compositor/main/comp_target_swapchain.h
++++ b/src/xrt/compositor/main/comp_target_swapchain.h
+@@ -124,6 +124,9 @@
+ 
+ 		//! Skipping the event on the first vblank avoids a spurious VK_ERROR_OUT_OF_HOST_MEMORY error.
+ 		bool event_active;
++
++		//! A real vsync stamp has been delivered at least once (Android feed).
++		bool vsync_seen;
+ 	} vblank;
+ 
+ 	/*!

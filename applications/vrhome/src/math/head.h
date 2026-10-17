@@ -47,8 +47,16 @@ void fmtTrackState(int state, char* out, size_t outSize);
 // frame so both are taken raw, and rot-vec stays a pure fallback. mapping
 // the position through a live quat delta was tried and dropped - the two
 // trackers' yaws drift independently so no fixed delta exists
-void qvrFoldPose(float quat[4], float headPos[3], bool* quatFromQvr,
-                 const float qvrQuat[4], const float qvrPos[3]);
+void qvrFoldPose(float quat[4], float headPos[3], float headAv[3],
+                 bool* quatFromQvr, const float qvrQuat[4],
+                 const float qvrPos[3], const float qvrAv[3]);
+
+// small-angle extrapolation: out = q * dq where dq is the rotation the
+// head makes in dtSec at angular velocity av (rad/s, body frame). Used to
+// predict the pose forward to photon time; |av|*dt stays tiny so the
+// linearized form is safe.
+void predictQuat(const float q[4], const float av[3], float dtSec,
+                 float out[4]);
 
 // undo the mount corrections on a sensor-world position. headMatrix builds
 // R = rotZ(roll)*Q*rotZ(sensRoll)*rotX(worldX) where the last two map GL

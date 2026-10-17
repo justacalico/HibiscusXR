@@ -20,7 +20,9 @@ struct QvrPose {
     float pos[3];           // 16
     uint32_t _p0;           // 28
     uint64_t timestamp;     // 32
-    uint8_t _data[68];      // 40: velocities etc, unused
+    uint8_t _d0[8];         // 40
+    float av[3];            // 48: angular velocity, rad/s body frame
+    uint8_t _d1[48];        // 60: linear velocity etc, unused
     uint32_t state;         // 108: 0 none, 3 tracking
     uint32_t warn;          // 112
     float poseQ, sensorQ, camQ; // 116..127
@@ -161,7 +163,8 @@ void qvrPoll(Engine* e) {
     e->qvrState = (int)p->state;
     switch (qvrClassify(p->state)) {
     case QVR_TRACKED:
-        qvrFoldPose(e->quat, e->headPos, &e->quatFromQvr, p->quat, p->pos);
+        qvrFoldPose(e->quat, e->headPos, e->headAv, &e->quatFromQvr,
+                    p->quat, p->pos, p->av);
         e->haveQuat = true;
         e->headPosValid = true;
         break;

@@ -39,6 +39,11 @@ constexpr float kFiltMoveRad = 0.10f;   // ~6 deg lead: a real turn, max rate
 constexpr float kFiltStillM = 0.004f;   // same band for position, metres
 constexpr float kFiltMoveM = 0.10f;
 
+// forward prediction of the rendered pose (sensor/sensor.cpp smoothPose):
+// the sampled quat reaches photons ~1.5 frames late on this pipeline, so
+// the last qvr pose is rolled ahead by its angular velocity. 0 disables.
+constexpr float kPredMs = 21.0f;
+
 constexpr int kSensorIdent = 3;
 constexpr int kInputIdent  = 4;
 

@@ -5,6 +5,7 @@ int gChecks = 0, gFails = 0;
 void testMat4();
 void testHead();
 void testPoseFilt();
+void testPredict();
 void testLayout();
 void testText();
 void testSceneGeo();
@@ -33,6 +34,7 @@ int main() {
     testMat4();
     testHead();
     testPoseFilt();
+    testPredict();
     testLayout();
     testText();
     testSceneGeo();

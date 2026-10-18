@@ -18,3 +18,4 @@ linked line per MR no matter how many commits it carried.
 - [dash-wayland: library shows real application icons](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/141) (!141)
 - [让应用库网格支持按住拖动与滚轮滚动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/142) (!142)
 - [修应用库图标滚动时溢出卡片边缘](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/143) (!143)
+- [加大快捷面板磁贴标题和值的间距](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/144) (!144)

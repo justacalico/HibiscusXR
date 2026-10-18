@@ -195,6 +195,7 @@ constexpr float kQuickCloseR = 0.024f; // close disc radius on the title row
 constexpr float kQuickGearR = 0.024f;  // settings gear disc radius, matches close
 constexpr float kQuickMs = 200.0f;     // card open/close
 constexpr float kQuickScale0 = 0.94f;  // card's open-from size share
+constexpr float kQuickHoverScale = 1.04f; // tile grow on hover, stays inside the cell gaps
 
 // minimized-window shelf: hidden panels park as a row of small icons on a
 // pill floating just above the dock bar, so a minimized app stays visible

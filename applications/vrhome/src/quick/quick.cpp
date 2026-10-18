@@ -162,7 +162,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     quickTileRect(i, &tx, &ty, &hw, &hh);
     const bool on = s.toggle && quickToggleOn(e->quick.st, s.id);
     const float hs = e->quick.hs[i];
-    const float hp = hoverP(hs, kGridHoverScale);
+    const float hp = hoverP(hs, kQuickHoverScale);
     const float tcx = tx * gs, tcy = ty * gs;
     const float thw = hw * gs * hs, thh = hh * gs * hs;
     const float tc[3] = {c[0] + r[0]*tcx + up[0]*tcy,

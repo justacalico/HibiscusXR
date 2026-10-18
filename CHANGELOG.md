@@ -10,3 +10,4 @@ linked line per MR no matter how many commits it carried.
 - [命名统一为 Hibiscus](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/133) (!133)
 - [docs: update vrhome README for desktop mode](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/134) (!134)
 - [Simplify ovrport-compat README](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/135) (!135)
+- [ovrport-compat: 保留 streaming assets 不压缩](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/136) (!136)

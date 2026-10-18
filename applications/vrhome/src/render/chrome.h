@@ -4,7 +4,7 @@
 
 struct HudEngine;
 
-// window chrome: shadow + bottom bar + app surface + border + label
+// window chrome: bottom bar + app surface + border + label
 void drawPanels(HudEngine* e, const Mat4& viewProj);
 
 // the shared move pill: a short line centred under a quad, drawn in the

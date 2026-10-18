@@ -49,7 +49,7 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // shadow + card, same recipe the windows wear
+    // shadow + card
     const float shc[3] = {c[0] - up[0] * 0.02f * gs, c[1] - up[1] * 0.02f * gs,
                           c[2] - up[2] * 0.02f * gs};
     const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};

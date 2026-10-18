@@ -56,27 +56,6 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     float shc[3], shr[3], shu[3];
     shelfCenter(e->dockYaw, e->dockPitch, e->ringPos, shc, shr, shu);
 
-    // shadows first: they sit behind the panels and must not cover a
-    // neighbouring window
-    glUseProgram(e->shapeProg);
-    for (int i = 0; i < (int)e->panels.size(); ++i) {
-        Panel& p = e->panels[i];
-        float c[3], r[3], up[3], sc, a;
-        if (!panelVis(e, i, shc, shr, c, r, up, &sc, &a)) continue;
-        const float hw = panelHW(p) * sc, hh = panelHH(p) * sc;
-        // chrome hangs below: the pill under the window adds to the
-        // silhouette's bottom, so the shadow centre dips halfway to it
-        const float drp = pillDrop(hh);
-        const float shw = hw + 0.10f * sc, shh = hh + drp + 0.10f * sc;
-        const float sc2[3] = {c[0] - up[0] * drp * 0.5f,
-                              c[1] - up[1] * drp * 0.5f,
-                              c[2] - up[2] * drp * 0.5f};
-        const float col[4] = {0.0f, 0.0f, 0.0f, 0.36f * a};
-        shapeQuad(e, viewProj, sc2, r, up, -0.03f * sc, 0.0f, shw, shh,
-                  shw - 0.10f * sc, shh - 0.10f * sc, 0.10f * sc, -1.0f,
-                  0.10f * sc, col);
-    }
-
     for (int i = 0; i < (int)e->panels.size(); ++i) {
         Panel& p = e->panels[i];
         float c[3], r[3], up[3], sc, a;
@@ -298,12 +277,6 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
-
-    // shadow, same recipe the windows use
-    glUseProgram(e->shapeProg);
-    const float scol[4] = {0.0f, 0.0f, 0.0f, 0.36f};
-    shapeQuad(e, viewProj, c, r, up, -0.03f, 0.0f, hw + 0.10f, hh + 0.10f,
-              hw, hh, 0.10f, -1.0f, 0.10f, scol);
 
     // the IME's surface, rounded on all corners
     glUseProgram(e->floatProg);

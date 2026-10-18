@@ -12,3 +12,4 @@ linked line per MR no matter how many commits it carried.
 - [Simplify ovrport-compat README](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/135) (!135)
 - [ovrport-compat: 保留 streaming assets 不压缩](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/136) (!136)
 - [修复抬高的窗口遮住 dash](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/137) (!137)
+- [去掉窗口背后的黑色阴影](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/138) (!138)

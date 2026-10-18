@@ -22,6 +22,7 @@ void testPalette();
 void testPaletteThemes();
 void testKbd();
 void testGrid();
+void testQuick();
 void testPt();
 void testAnim();
 void testZip();
@@ -53,6 +54,7 @@ int main() {
     testPaletteThemes();
     testKbd();
     testGrid();
+    testQuick();
     testPt();
     testAnim();
     testZip();

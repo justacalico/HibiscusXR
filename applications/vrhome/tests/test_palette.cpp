@@ -3,7 +3,7 @@
 #include "common/palette.h"
 
 // pins the mirror: each constant must equal the hex the Flutter themes
-// declare in applications/{library,settings,quick-panel}/lib/src/ui/
+// declare in applications/{library,settings,panel_theme}/lib/src/ui/
 // theme.dart - if one side drifts, a channel check here goes red
 static void hexEq(const float* c, int r, int g, int b) {
     CHECK_F(c[0] * 255.0f, (float)r, 0.01f);
@@ -31,7 +31,7 @@ void testPalette() {
         CHECK(kPalSurfaceHigh[ch] > kPalSurface[ch]);
     }
 
-    // batteryTint mirrors batteryTintFor in quick-panel's battery.dart:
+    // batteryTint mirrors batteryTintFor in the panel apps' battery bands:
     // >=80 good, >=60 text, >=20 warn, under that danger
     CHECK(batteryTint(100, false) == kPalGood);
     CHECK(batteryTint(80, false) == kPalGood);

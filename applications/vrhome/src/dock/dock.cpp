@@ -118,6 +118,7 @@ void dockActivate(HudEngine* e, int idx) {
     switch (act.op) {
     case DOP_TOGGLE_GRID:
         e->grid.shown = !e->grid.shown;
+        if (e->grid.shown) e->quick.shown = false;
         return;
     case DOP_LAUNCH:
         queueLaunch(act.pkg.c_str());
@@ -137,15 +138,10 @@ void dockActivate(HudEngine* e, int idx) {
 }
 
 void dockSysActivate(HudEngine* e) {
-    if (!e->backend) return;
-    const DockAction act = quickPanelAction(e->panels);
-    if (act.op == DOP_LAUNCH) {
-        queueLaunch(act.pkg.c_str());
-    } else if (act.op == DOP_FOCUS_PANEL) {
-        restorePanel(e->panels, act.panelIdx, e->dockYaw,
-                     dashRingPitch(e->panels, e->dockPitch));
-        if (act.taskId >= 0) focusTask(e, act.taskId);
-    }
+    // the status pill flips the quick-panel card - an overlay inside the
+    // dash, not a windowed app. Only one card overlay is up at a time
+    e->quick.shown = !e->quick.shown;
+    if (e->quick.shown) e->grid.shown = false;
 }
 
 void dockClose(HudEngine* e, int idx) {

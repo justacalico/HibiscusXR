@@ -6,6 +6,7 @@
 #include "../dock/item.h"
 #include "../grid/item.h"
 #include "../notif/item.h"
+#include "../quick/item.h"
 #include "../sysmsg/item.h"
 
 struct Kbd;
@@ -76,6 +77,12 @@ public:
     virtual void sysMsgDismiss(long long id) {}
     virtual int uiStringsVersion() { return 0; }
     virtual void uiStrings(std::vector<std::string>* out) { out->clear(); }
+
+    // the quick panel's platform side: a fresh snapshot while the card is
+    // up, toggle writes keyed by QsId, slider writes keyed by QsSlider
+    virtual void quickStatus(QsStatus* out) {}
+    virtual void quickToggle(int id, bool on) {}
+    virtual void quickSetSlider(int slider, float v) {}
 
     virtual void launchPackageOn(const std::string& pkg, int displayId) {}
     virtual void launchVrApp(const std::string& pkg) {}

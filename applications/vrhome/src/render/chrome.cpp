@@ -6,6 +6,7 @@
 #include "../common/palette.h"
 #include "../dock/layout.h"
 #include "../grid/layout.h"
+#include "../quick/layout.h"
 #include "../kbd/kbd.h"
 #include "../panels/layout.h"
 #include "../pill/pill.h"
@@ -409,6 +410,16 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
         pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
+    } else if (e->quick.zone != QZONE_NONE) {
+        // on the quick-panel card the dot lands on the card's own plane
+        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                    c, r, up);
+        pos[0] = c[0] + r[0]*e->quick.u*kQuickHW +
+                 up[0]*e->quick.v*kQuickHH;
+        pos[1] = c[1] + r[1]*e->quick.u*kQuickHW +
+                 up[1]*e->quick.v*kQuickHH;
+        pos[2] = c[2] + r[2]*e->quick.u*kQuickHW +
+                 up[2]*e->quick.v*kQuickHH;
     } else if (e->grid.zone != GZONE_NONE) {
         // on the app-grid card the dot lands on the card's own plane
         gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,

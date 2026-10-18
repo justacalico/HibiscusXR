@@ -99,6 +99,21 @@ public:
         out->assign(1, "Library");
     }
     void sysStatus(int out[3]) override { out[0] = 1; out[1] = 87; out[2] = 0; }
+    void quickStatus(QsStatus* out) override {
+        out->toggles = qsMask | (1u << QS_MIC) | (1u << QS_CENTER);
+        out->batt = 87;
+        out->volume = qsVol;
+        out->brightness = qsBri;
+        if (out->toggles & (1u << QS_WIFI)) out->ssid = "PreviewNet";
+        if (out->toggles & (1u << QS_BLUETOOTH)) out->btName = "Preview Pods";
+    }
+    void quickToggle(int id, bool on) override {
+        if (on) qsMask |= (1u << id); else qsMask &= ~(1u << id);
+        LOGI("preview qs toggle %d -> %d", id, on ? 1 : 0);
+    }
+    void quickSetSlider(int slider, float v) override {
+        if (slider == 0) qsBri = v; else qsVol = v;
+    }
     std::string appLabel(const std::string& pkg) override {
         const size_t dot = pkg.rfind('.');
         return dot == std::string::npos ? pkg : pkg.substr(dot + 1);
@@ -136,6 +151,8 @@ private:
     int nextDisp = 100;
     bool pinsSent = false;
     bool kbdShown = false;
+    unsigned qsMask = 1u << QS_WIFI;
+    float qsVol = 0.6f, qsBri = 0.8f;
 
     static void texParams(unsigned tex) {
         glBindTexture(GL_TEXTURE_2D, tex);
@@ -246,6 +263,7 @@ static void keyCb(GLFWwindow*, int key, int, int action, int) {
     if (action != GLFW_PRESS) return;
     if (key == GLFW_KEY_ESCAPE) hudKey(gHud, kKeyBack, kKeyUp, 0);
     else if (key == GLFW_KEY_G) gHud->grid.shown = !gHud->grid.shown;
+    else if (key == GLFW_KEY_P) gHud->quick.shown = !gHud->quick.shown;
     else if (key == GLFW_KEY_K) gBackend->toggleKbd();
     else if (key == GLFW_KEY_R) wantRecenter();
 }

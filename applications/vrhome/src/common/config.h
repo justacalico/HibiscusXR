@@ -171,6 +171,28 @@ constexpr float kGridIconHW = 0.055f; // icon half-width
 constexpr float kGridSidePad = 0.04f; // inner left/right padding
 constexpr float kGridCloseR = 0.024f; // close disc radius on the title row
 
+// the quick panel: the dock's status pill opens this card - sliders for
+// volume and brightness up top, then a row of large radio tiles and the
+// small tile grid. It hangs in front of the window slots on the same
+// anchor plane as the app grid, and shares the grid's open animation
+constexpr float kQuickDist = 1.38f;    // metres; matches the grid card
+constexpr float kQuickHW = 0.70f, kQuickHH = 0.33f;
+constexpr float kQuickHeadH = 0.095f;  // title band height
+constexpr float kQuickPad = 0.040f;    // inner side padding
+constexpr float kQuickSliderH = 0.052f;  // one slider row's band height
+constexpr float kQuickSliderGap = 0.012f;  // between the two slider rows
+constexpr float kQuickIconS = 0.015f;  // slider-row icon half-width
+constexpr float kQuickKnobR = 0.016f;  // slider knob disc radius
+constexpr float kQuickTrackHH = 0.005f;// slider track half-height
+constexpr int   kQuickLargeCols = 4;   // the wide toggle row
+constexpr float kQuickLargeH = 0.125f; // large tile height
+constexpr int   kQuickCols = 5;        // small tile columns
+constexpr float kQuickCellH = 0.115f;  // small tile row pitch
+constexpr float kQuickCloseR = 0.024f; // close disc radius on the title row
+constexpr float kQuickGearR = 0.019f;  // settings gear disc radius
+constexpr float kQuickMs = 200.0f;     // card open/close
+constexpr float kQuickScale0 = 0.94f;  // card's open-from size share
+
 // minimized-window shelf: hidden panels park as a row of small icons on a
 // pill floating just above the dock bar, so a minimized app stays visible
 // instead of vanishing. It rides the dock's anchor plane, lifted along its
@@ -231,9 +253,7 @@ constexpr float kSysMsgPitch = 0.05f;  // over an app: just above eye level
 constexpr int   kSysMsgMaxLines = 2;   // body lines drawn per card
 constexpr int   kSysMsgMaxBtn = 4;
 
-// package the dock's quick-panel button launches
-constexpr const char* kQuickPanelPkg = "gitlab.neosalsa.quicksettings";
-// the full settings app - dock's default pin
+// the full settings app - the quick panel's gear and About tile open it
 constexpr const char* kSettingsPkg = "gitlab.neosalsa.settings";
 
 // Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.

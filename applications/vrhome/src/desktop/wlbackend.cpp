@@ -300,7 +300,9 @@ bool WlBackend::iconPixels(const std::string& pkg, IconPixels* out) {
                                           std::end(kThemes));
     const std::string p = findIconFile(iconSearchRoots(), themes,
                                        icon, 96);
-    if (p.empty()) return false;
+    // libpng only: svg/xpm icons fall through to the generated look
+    if (p.size() < 4 || p.compare(p.size() - 4, 4, ".png") != 0)
+        return false;
     return decodePng(p, out);
 }
 

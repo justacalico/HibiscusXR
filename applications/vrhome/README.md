@@ -131,6 +131,41 @@ The preview links the same layout, input, animation and draw code the headset
 uses. Android services sit behind `src/shell/backend.h`; the desktop backend is
 only fixture data and textures, so dash changes do not need a second UI port.
 
+### Wayland mode
+
+`make dash-wayland` builds `out/dash-wayland`, a third backend next to the
+fixture preview: the process itself is a small Wayland compositor (SHM
+surfaces and xdg-shell on `wayland-server`, no wlroots) presented in the
+same GLFW window. Apps launch onto its socket as real clients - the app grid
+reads the host's `.desktop` files, icons come from the freedesktop icon
+theme, and window content is live, not fixtures.
+
+```bash
+make out/dash-wayland
+./out/dash-wayland          # prints WAYLAND_DISPLAY=wayland-N for clients
+```
+
+Panels are toplevels the compositor spawns per launch (matched to their
+display by pid or app_id; stray toplevels adopt onto their own panels).
+Confirm presses become `wl_pointer` input at the panel-local point, focus
+drives `xdg_toplevel` activation and `wl_keyboard` enter, and keys the dash
+doesn't own are forwarded to the focused app. The quick panel talks to the
+host's tools: `nmcli` for the Wi-Fi tile, `bluetoothctl` for Bluetooth,
+`wpctl` for the volume slider and `brightnessctl` for brightness. Dock pins
+persist to `$XDG_CONFIG_HOME/hibiscus/dash-pins`.
+
+Host deps beyond the preview's: `wayland-server`, `wayland-protocols` (for
+the xdg-shell xml `wayland-scanner` compiles at build time), `xkbcommon` and
+`libpng`. Clients must render into shared memory - no dmabuf global is
+advertised, so every toolkit falls back to `wl_shm`. The `-mcp` flag serves
+the same MCP tools as the preview, so a headless shell can launch apps and
+grab screenshots for testing.
+
+Known gaps for later work: popups clip to the window edge instead of
+sliding, clipboard/DnD are stubs, scroll arrives as a drag rather than an
+axis, and presentation is the GLFW window - an OpenXR presenter can hang off
+the same backend when an HMD is in the loop.
+
 Pass `-mcp` (`./out/dash-preview -mcp`) and the window also serves MCP on
 stdio: one JSON-RPC message per line, tools to drive the dash.
 

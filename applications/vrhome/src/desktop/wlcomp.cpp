@@ -882,10 +882,13 @@ WlComp* WlComp::create() {
         return nullptr;
     }
     c->sock = name;
-    // libwayland serves wl_shm/pool/buffer internally; the formats we
-    // support are ARGB/XRGB only, which forces every client onto shm
-    wl_display_add_shm_format(c->dpy, WL_SHM_FORMAT_ARGB8888);
-    wl_display_add_shm_format(c->dpy, WL_SHM_FORMAT_XRGB8888);
+    // libwayland serves wl_shm/pool/buffer internally; only the two
+    // base formats are advertised, so every client lands on shm
+    if (wl_display_init_shm(c->dpy) != 0) {
+        wl_display_destroy(c->dpy);
+        delete c->in; delete c;
+        return nullptr;
+    }
     wl_global_create(c->dpy, &wl_compositor_interface, 4, c, bindComp);
     wl_global_create(c->dpy, &wl_seat_interface, 5, c, bindSeat);
     wl_global_create(c->dpy, &wl_output_interface, 2, c, bindOut);

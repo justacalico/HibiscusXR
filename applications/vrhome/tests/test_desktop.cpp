@@ -268,6 +268,28 @@ static void testSysinfo() {
             0.01f);
 }
 
+static void testTaskMatch() {
+    CHECK(deskIdBase("org.telegram.desktop.desktop") ==
+          "org.telegram.desktop");
+    CHECK(deskIdBase("noext") == "noext");
+    CHECK(deskIdBase("a.desktop.desktop") == "a.desktop");
+
+    CHECK(appIdMatch("org.telegram.desktop", "TelegramDesktop",
+                     "org.telegram.desktop"));
+    CHECK(appIdMatch("firefox", "", "firefox"));
+    CHECK(appIdMatch("org.foo.Bar.Sub", "", "org.foo.Bar"));
+    CHECK(appIdMatch("org.foo", "", "org.foo.Bar"));
+    CHECK(!appIdMatch("org.foo.Bar2", "", "org.foo.Bar"));
+    CHECK(!appIdMatch("", "TelegramDesktop", "org.telegram.desktop"));
+    CHECK(!appIdMatch("org.telegram.desktop", "TelegramDesktop", ""));
+
+    CHECK(spawnPidMatch(123, 122, 123));
+    CHECK(spawnPidMatch(456, 123, 123));
+    CHECK(!spawnPidMatch(456, 789, 123));
+    CHECK(!spawnPidMatch(0, 123, 123));
+    CHECK(!spawnPidMatch(456, 123, -1));
+}
+
 void testDesktop() {
     testDesktopFile();
     testExecArgv();
@@ -279,4 +301,5 @@ void testDesktop() {
     testPopupPos();
     testPixconv();
     testSysinfo();
+    testTaskMatch();
 }

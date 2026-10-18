@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <sys/types.h>
 
 // One launchable app read from a freedesktop .desktop file. argv is the
 // Exec line already tokenised and field-code expanded.
@@ -27,3 +28,17 @@ std::vector<std::string> desktopAppDirs();
 // Entries with Hidden/NoDisplay or no Exec are skipped.
 std::vector<DeskEntry> scanDesktopFiles(
     const std::vector<std::string>& dirs);
+
+// strips the ".desktop" suffix off a desktop file id
+std::string deskIdBase(const std::string& id);
+
+// an xdg app_id vs a launch slot's candidates - StartupWMClass and the
+// bare desktop id (what sandboxed toolkits report). Exact match, or a
+// whole-segment prefix either way.
+bool appIdMatch(const std::string& appId, const std::string& wmClass,
+                const std::string& deskId);
+
+// wl client pid vs the spawn pid: direct hit, or the client sits in the
+// launcher's process group - spawn() setsid()s, so wrappers like
+// flatpak keep the group through their fork/exec chain
+bool spawnPidMatch(pid_t clientPid, pid_t clientPgid, pid_t spawnPid);

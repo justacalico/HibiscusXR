@@ -173,3 +173,27 @@ std::vector<DeskEntry> scanDesktopFiles(
     }
     return out;
 }
+
+std::string deskIdBase(const std::string& id) {
+    const size_t dot = id.rfind(".desktop");
+    return dot == std::string::npos ? id : id.substr(0, dot);
+}
+
+// "org.foo.Bar" matches "org.foo" and "org.foo.Bar.Baz", only on whole
+// dot segments so sibling ids can't cross-bind
+static bool segMatch(const std::string& a, const std::string& b) {
+    if (a.empty() || b.empty()) return false;
+    if (a == b) return true;
+    return a.find(b + ".") == 0 || b.find(a + ".") == 0;
+}
+
+bool appIdMatch(const std::string& appId, const std::string& wmClass,
+                const std::string& deskId) {
+    return !appId.empty() &&
+        (segMatch(appId, wmClass) || segMatch(appId, deskId));
+}
+
+bool spawnPidMatch(pid_t clientPid, pid_t clientPgid, pid_t spawnPid) {
+    if (clientPid <= 0 || spawnPid <= 0) return false;
+    return clientPid == spawnPid || clientPgid == spawnPid;
+}

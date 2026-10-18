@@ -179,7 +179,7 @@ constexpr float kGridWheelStep = 0.20f; // card-local metres one wheel detent sc
 // small tile grid. It hangs in front of the window slots on the same
 // anchor plane as the app grid, and shares the grid's open animation
 constexpr float kQuickDist = 1.38f;    // metres; matches the grid card
-constexpr float kQuickHW = 0.70f, kQuickHH = 0.33f;
+constexpr float kQuickHW = 0.70f, kQuickHH = 0.36f;
 constexpr float kQuickHeadH = 0.095f;  // title band height
 constexpr float kQuickPad = 0.040f;    // inner side padding
 constexpr float kQuickSliderH = 0.052f;  // one slider row's band height

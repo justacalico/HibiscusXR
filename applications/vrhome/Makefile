@@ -143,12 +143,20 @@ WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
            src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
            src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
            src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
-           src/desktop/proctrack.cpp \
+           src/desktop/proctrack.cpp src/desktop/wldmabuf.cpp \
+           src/desktop/wlegl.cpp \
            $(filter-out src/desktop/preview.cpp \
              src/desktop/harness.cpp,$(DESKTOP_SRCS))
 WL_BIN := $(OUT)/dash-wayland
 XDG_XML := /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml
-XDG_GEN := $(OUT)/gen/xdg-shell-server-protocol.h $(OUT)/gen/xdg-shell-protocol.c
+ACT_XML := /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml
+DMA_XML := /usr/share/wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml
+WL_GEN := $(OUT)/gen/xdg-shell-server-protocol.h \
+          $(OUT)/gen/xdg-activation-v1-server-protocol.h \
+          $(OUT)/gen/linux-dmabuf-v1-server-protocol.h \
+          $(OUT)/gen/xdg-shell-protocol.o \
+          $(OUT)/gen/xdg-activation-v1-protocol.o \
+          $(OUT)/gen/linux-dmabuf-v1-protocol.o
 
 .PHONY: all apk test preview dash-wayland install clean toolcheck
 
@@ -296,13 +304,38 @@ $(OUT)/gen/xdg-shell-protocol.c: $(XDG_XML)
 $(OUT)/gen/xdg-shell-protocol.o: $(OUT)/gen/xdg-shell-protocol.c
 	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
 
-$(WL_BIN): $(WL_SRCS) $(OUT)/gen/xdg-shell-protocol.o \
+$(OUT)/gen/xdg-activation-v1-server-protocol.h: $(ACT_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner server-header $< $@
+
+$(OUT)/gen/xdg-activation-v1-protocol.c: $(ACT_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner private-code $< $@
+
+$(OUT)/gen/xdg-activation-v1-protocol.o: $(OUT)/gen/xdg-activation-v1-protocol.c
+	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+
+$(OUT)/gen/linux-dmabuf-v1-server-protocol.h: $(DMA_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner server-header $< $@
+
+$(OUT)/gen/linux-dmabuf-v1-protocol.c: $(DMA_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner private-code $< $@
+
+$(OUT)/gen/linux-dmabuf-v1-protocol.o: $(OUT)/gen/linux-dmabuf-v1-protocol.c
+	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+
+$(WL_BIN): $(WL_SRCS) $(WL_GEN) \
            $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	@mkdir -p $(dir $@)
 	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
 	    $(WL_SRCS) $(OUT)/gen/xdg-shell-protocol.o \
-	    $$(pkg-config --libs --cflags wayland-server xkbcommon libpng) \
-	    -lglfw -lGLESv2 -lz -lm
+	    $(OUT)/gen/xdg-activation-v1-protocol.o \
+	    $(OUT)/gen/linux-dmabuf-v1-protocol.o \
+	    $$(pkg-config --libs --cflags wayland-server xkbcommon libpng \
+	            libdrm) \
+	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 dash-wayland: $(WL_BIN)
 	./$(WL_BIN)

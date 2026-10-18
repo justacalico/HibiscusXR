@@ -112,7 +112,14 @@ GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    // EGL over GLX so dmabuf imports can land in an EGLImage
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_EGL_CONTEXT_API);
     GLFWwindow* win = glfwCreateWindow(w, h, title, nullptr, nullptr);
+    if (!win) {
+        glfwWindowHint(GLFW_CONTEXT_CREATION_API,
+                       GLFW_NATIVE_CONTEXT_API);
+        win = glfwCreateWindow(w, h, title, nullptr, nullptr);
+    }
     if (!win) { glfwTerminate(); return nullptr; }
     glfwMakeContextCurrent(win);
     glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);

@@ -255,6 +255,7 @@ void WlBackend::updatePanel(Panel* p) {
         return;
     }
     if (!t->mapped) return;
+    if (t->dirty && c->taskGpuBind(t, p->tex)) t->dirty = false;
     if (!t->dirty || t->img.rgba.empty()) return;
     glBindTexture(GL_TEXTURE_2D, p->tex);
     if (t->img.w != t->bufW || t->img.h != t->bufH ||

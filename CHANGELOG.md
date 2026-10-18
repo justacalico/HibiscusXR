@@ -8,3 +8,4 @@ linked line per MR no matter how many commits it carried.
 - [Dash desktop preview](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/131) (!131)
 - [dash-preview: MCP server via -mcp](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/132) (!132)
 - [命名统一为 Hibiscus](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/133) (!133)
+- [docs: update vrhome README for desktop mode](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/134) (!134)

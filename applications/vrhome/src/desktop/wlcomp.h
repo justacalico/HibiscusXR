@@ -50,6 +50,11 @@ struct WlComp {
     WlSurf* pointerFocus = nullptr;
     WlSurf* kbdFocus = nullptr;
     WlTask* active = nullptr;
+    // input grab: while set every key and pointer event goes straight
+    // to this task's toplevel; grabX/grabY is the synthetic cursor in
+    // buffer coords
+    WlTask* grabTask = nullptr;
+    float grabX = 0.0f, grabY = 0.0f;
     WlCompIn* in = nullptr;
 
     static WlComp* create();
@@ -64,6 +69,10 @@ struct WlComp {
     void pointerEvent(WlTask* t, float x, float y, int action);
     void keyEvent(uint32_t evdev, bool down);
     void setActive(WlTask* t, bool on);
+    void setGrab(WlTask* t);
+    void grabMotion(float dx, float dy);
+    void grabButton(uint32_t evdevBtn, bool down);
+    void grabAxis(float yoff);
     void requestClose(WlTask* t);
     void taskDirtyRect(WlTask* t, int x, int y, int w, int h);
     void recompose(WlTask* t);

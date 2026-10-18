@@ -28,12 +28,20 @@ long long dashNowMs();
 // one running desktop dash window: GLFW state plus the hooks each backend
 // needs to differ on. extraKey gets keys the core table doesn't own (K in
 // the preview); kbdSet drives MCP's setKbd for backends with a real quad.
+// While an app holds the input grab the grab* hooks own every event -
+// they return true when the dash should stay out of it, and the backend
+// wires its own toggle key inside grabKey
 struct DashApp {
     GLFWwindow* win = nullptr;
     HudEngine* hud = nullptr;
     DashCam cam;
     std::function<void(int key, int scancode, int action)> extraKey;
     std::function<void(bool)> kbdSet;
+    std::function<bool(int key, int scancode, int action, int mods)> grabKey;
+    std::function<bool(double dx, double dy)> grabMotion;
+    std::function<bool(int button, int action)> grabBtn;
+    std::function<bool(double yoff)> grabScroll;
+    std::function<bool()> grabbed;
     std::thread mcpTh;
 };
 

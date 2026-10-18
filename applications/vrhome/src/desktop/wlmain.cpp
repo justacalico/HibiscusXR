@@ -16,6 +16,7 @@
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
 #include <wayland-server.h>
+#include <linux/input-event-codes.h>
 
 #include <cstring>
 #include <poll.h>
@@ -54,6 +55,56 @@ int main(int argc, char** argv) {
         if (action == GLFW_PRESS || action == GLFW_RELEASE)
             backend.sendKey((uint32_t)scancode,
                             action == GLFW_PRESS);
+    };
+    // ` toggles the input grab on the window under the gaze (the focused
+    // one as a fallback): while it holds, every key and the mouse go
+    // straight to the app, which is what games want. shift+` always
+    // releases.
+    app.grabbed = [comp] { return comp->grabTask != nullptr; };
+    app.grabKey = [comp, &backend, &hud](int key, int scancode, int action,
+                                         int mods) {
+        if (key == GLFW_KEY_GRAVE_ACCENT) {
+            if (action != GLFW_PRESS) return true;
+            if (grabAction((mods & GLFW_MOD_SHIFT) != 0) == kGrabOff ||
+                    comp->grabTask) {
+                comp->setGrab(nullptr);
+                return true;
+            }
+            if (hud.hover >= 0 && hud.hover < (int)hud.panels.size() &&
+                    hud.panels[hud.hover].taskId >= 0)
+                backend.focusTask(hud.panels[hud.hover].taskId);
+            comp->setGrab(comp->active);
+            if (comp->grabTask) hudKey(&hud, kKeyEnter, kKeyUp, 0);
+            return true;
+        }
+        if (!comp->grabTask) return false;
+        if (action == GLFW_PRESS || action == GLFW_REPEAT)
+            backend.sendKey((uint32_t)scancode, true);
+        else if (action == GLFW_RELEASE)
+            backend.sendKey((uint32_t)scancode, false);
+        return true;
+    };
+    app.grabMotion = [comp](double dx, double dy) {
+        if (!comp->grabTask) return false;
+        comp->grabMotion((float)dx, (float)dy);
+        return true;
+    };
+    app.grabBtn = [comp](int button, int action) {
+        if (!comp->grabTask) return false;
+        uint32_t ev = 0;
+        if (button == GLFW_MOUSE_BUTTON_LEFT) ev = BTN_LEFT;
+        else if (button == GLFW_MOUSE_BUTTON_RIGHT) ev = BTN_RIGHT;
+        else if (button == GLFW_MOUSE_BUTTON_MIDDLE) ev = BTN_MIDDLE;
+        else if (button == GLFW_MOUSE_BUTTON_4) ev = BTN_SIDE;
+        else if (button == GLFW_MOUSE_BUTTON_5) ev = BTN_EXTRA;
+        if (ev && action != GLFW_REPEAT)
+            comp->grabButton(ev, action == GLFW_PRESS);
+        return true;
+    };
+    app.grabScroll = [comp](double yoff) {
+        if (!comp->grabTask) return false;
+        comp->grabAxis((float)yoff);
+        return true;
     };
     hud.backend = &backend;
     hud.haveQuat = true;

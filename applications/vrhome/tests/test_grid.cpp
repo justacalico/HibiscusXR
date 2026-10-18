@@ -53,6 +53,26 @@ void testGrid() {
         CHECK_F(gridClampScroll(mx * 0.5f, n), mx * 0.5f, 1e-6f);
     }
 
+    // the draw cull: a cell shows while any of its row can land inside the
+    // band (plus the fade margin); a row scrolled fully past either edge is
+    // skipped, at any open scale
+    {
+        float lo, hi;
+        gridClipBand(&lo, &hi);
+        const float half = kGridCellH * 0.5f;
+        CHECK(gridCellShown(0.0f, 1.0f));
+        CHECK(gridCellShown(hi, 1.0f));
+        CHECK(gridCellShown(lo, 1.0f));
+        CHECK(gridCellShown(hi + half + 0.01f, 1.0f));
+        CHECK(gridCellShown(lo - half - 0.01f, 1.0f));
+        CHECK(!gridCellShown(hi + half + 0.03f, 1.0f));
+        CHECK(!gridCellShown(lo - half - 0.03f, 1.0f));
+        // iy arrives already scaled by the open animation: a mid-open cell
+        // at the scaled band edge still shows
+        CHECK(gridCellShown(hi * 0.5f, 0.5f));
+        CHECK(!gridCellShown((hi + half) * 0.5f + 0.03f, 0.5f));
+    }
+
     // tap slop: a held press counts as a scroll drag once the aim's
     // card-local v has travelled kGridDragSlop metres, either way
     {

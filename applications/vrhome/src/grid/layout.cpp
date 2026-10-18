@@ -39,6 +39,13 @@ void gridClipBand(float* lo, float* hi) {
     *hi = kGridHH - kGridHeadH;
 }
 
+bool gridCellShown(float iy, float gs) {
+    float lo, hi;
+    gridClipBand(&lo, &hi);
+    const float half = kGridCellH * 0.5f * gs;
+    return iy + half >= lo * gs - 0.02f && iy - half <= hi * gs + 0.02f;
+}
+
 float gridScrollMax(int n) {
     const int rows = (n + kGridCols - 1) / kGridCols;
     const float content = rows * kGridCellH;

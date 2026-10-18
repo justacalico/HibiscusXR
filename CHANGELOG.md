@@ -16,3 +16,4 @@ linked line per MR no matter how many commits it carried.
 - [快捷面板改为 dash 内置卡片](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/139) (!139)
 - [Dash on desktop Linux as a Wayland compositor backend](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/140) (!140)
 - [dash-wayland: library shows real application icons](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/141) (!141)
+- [让应用库网格支持按住拖动与滚轮滚动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/142) (!142)

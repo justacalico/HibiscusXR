@@ -305,6 +305,7 @@ static void taskTeardown(WlSurf* s) {
         s->c->kbdFocus = nullptr;
         s->c->active = nullptr;
     }
+    if (s->c->grabTask == s->task) s->c->grabTask = nullptr;
     if (s->c->onTaskDead) s->c->onTaskDead(s->task);
     for (size_t i = 0; i < s->c->tasks.size(); ++i)
         if (s->c->tasks[i] == s->task) {
@@ -1121,24 +1122,24 @@ static void ptrTo(WlComp* c, WlSurf* s, uint32_t serial,
                               wl_fixed_from_double(y));
 }
 
+static void ptrLeave(WlComp* c, WlSurf* s) {
+    wl_client* cl = wl_resource_get_client(s->res);
+    const uint32_t ser = c->nextSerial();
+    for (wl_resource* p : c->in->seats[cl].pointers)
+        wl_pointer_send_leave(p, ser, s->res);
+}
+
 void WlComp::pointerEvent(WlTask* t, float x, float y, int action) {
+    if (grabTask) t = grabTask;
     float sx = 0, sy = 0;
     WlSurf* hit = in->ptrGrab ? in->ptrGrab
                               : pickSurf(t, x, y, &sx, &sy);
     if (hit && hit != pointerFocus && !in->ptrGrab) {
-        if (pointerFocus) {
-            wl_client* cl = wl_resource_get_client(pointerFocus->res);
-            const uint32_t ser = nextSerial();
-            for (wl_resource* p : in->seats[cl].pointers)
-                wl_pointer_send_leave(p, ser, pointerFocus->res);
-        }
+        if (pointerFocus) ptrLeave(this, pointerFocus);
         ptrTo(this, hit, nextSerial(), sx, sy);
         pointerFocus = hit;
     } else if (!hit && pointerFocus && !in->ptrGrab) {
-        wl_client* cl = wl_resource_get_client(pointerFocus->res);
-        const uint32_t ser = nextSerial();
-        for (wl_resource* p : in->seats[cl].pointers)
-            wl_pointer_send_leave(p, ser, pointerFocus->res);
+        ptrLeave(this, pointerFocus);
         pointerFocus = nullptr;
     }
     WlSurf* tgt = in->ptrGrab ? in->ptrGrab : hit;
@@ -1202,6 +1203,67 @@ void WlComp::setActive(WlTask* t, bool on) {
         kbdFocus = nullptr;
     }
     if (active == t) active = nullptr;
+}
+
+// the input grab parks the pointer on the grabbed task's toplevel: the
+// synthetic cursor lands at buffer centre and every event aims there
+// until the grab drops
+void WlComp::setGrab(WlTask* t) {
+    if (grabTask == t) return;
+    if (pointerFocus) {
+        ptrLeave(this, pointerFocus);
+        pointerFocus = nullptr;
+    }
+    grabTask = t;
+    if (!t || !t->surf) return;
+    grabX = t->bufW * 0.5f;
+    grabY = t->bufH * 0.5f;
+    ptrTo(this, t->surf, nextSerial(), grabX, grabY);
+    pointerFocus = t->surf;
+    setActive(t, true);
+}
+
+void WlComp::grabMotion(float dx, float dy) {
+    if (!grabTask || !grabTask->surf) return;
+    grabX += dx;
+    grabY += dy;
+    if (grabX < 0.0f) grabX = 0.0f;
+    if (grabY < 0.0f) grabY = 0.0f;
+    if (grabX > grabTask->bufW) grabX = grabTask->bufW;
+    if (grabY > grabTask->bufH) grabY = grabTask->bufH;
+    wl_client* cl = wl_resource_get_client(grabTask->surf->res);
+    const uint32_t ms = nowMs();
+    for (wl_resource* p : in->seats[cl].pointers) {
+        wl_pointer_send_motion(p, ms, wl_fixed_from_double(grabX),
+                               wl_fixed_from_double(grabY));
+        if (wl_resource_get_version(p) >= 5) wl_pointer_send_frame(p);
+    }
+}
+
+void WlComp::grabButton(uint32_t evdevBtn, bool down) {
+    if (!grabTask || !grabTask->surf) return;
+    wl_client* cl = wl_resource_get_client(grabTask->surf->res);
+    for (wl_resource* p : in->seats[cl].pointers) {
+        wl_pointer_send_button(p, nextSerial(), nowMs(), evdevBtn,
+            down ? WL_POINTER_BUTTON_STATE_PRESSED
+                 : WL_POINTER_BUTTON_STATE_RELEASED);
+        if (wl_resource_get_version(p) >= 5) wl_pointer_send_frame(p);
+    }
+}
+
+void WlComp::grabAxis(float yoff) {
+    if (!grabTask || !grabTask->surf) return;
+    wl_client* cl = wl_resource_get_client(grabTask->surf->res);
+    const uint32_t ms = nowMs();
+    // wheel-up arrives positive from the host; wayland counts that as
+    // negative scroll, one detent reading 15 surface units
+    const wl_fixed_t v = wl_fixed_from_double(-yoff * 15.0);
+    for (wl_resource* p : in->seats[cl].pointers) {
+        if (wl_resource_get_version(p) >= 5)
+            wl_pointer_send_axis_source(p, WL_POINTER_AXIS_SOURCE_WHEEL);
+        wl_pointer_send_axis(p, ms, WL_POINTER_AXIS_VERTICAL_SCROLL, v);
+        if (wl_resource_get_version(p) >= 5) wl_pointer_send_frame(p);
+    }
 }
 
 void WlComp::keyEvent(uint32_t evdev, bool down) {

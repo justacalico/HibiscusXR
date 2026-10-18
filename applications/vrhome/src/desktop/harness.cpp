@@ -68,25 +68,31 @@ static DashApp* gApp;
 static void mouseMove(GLFWwindow*, double x, double y) {
     DashCam& c = gApp->cam;
     if (c.first) { c.lastX = x; c.lastY = y; c.first = false; }
-    c.yaw += (float)(x - c.lastX) * 0.0022f;
-    c.pitch -= (float)(y - c.lastY) * 0.0022f;
-    c.pitch = fmaxf(-1.45f, fminf(1.45f, c.pitch));
+    const double dx = x - c.lastX, dy = y - c.lastY;
     c.lastX = x; c.lastY = y;
+    if (gApp->grabMotion && gApp->grabMotion(dx, dy)) return;
+    c.yaw += (float)dx * 0.0022f;
+    c.pitch -= (float)dy * 0.0022f;
+    c.pitch = fmaxf(-1.45f, fminf(1.45f, c.pitch));
 }
 
 static void mouseBtn(GLFWwindow*, int button, int action, int) {
+    if (gApp->grabBtn && gApp->grabBtn(button, action)) return;
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
     hudKey(gApp->hud, kKeyEnter,
            action == GLFW_PRESS ? kKeyDown : kKeyUp, 0);
 }
 
 static void scrollCb(GLFWwindow*, double, double yoff) {
+    if (gApp->grabScroll && gApp->grabScroll(yoff)) return;
     // glfw's +y is wheel-up; hudScroll's positive delta goes down the list
     hudScroll(gApp->hud, (float)-yoff);
 }
 
 static void keyCb(GLFWwindow*, int key, int scancode, int action,
                   int mods) {
+    if (gApp->grabKey && gApp->grabKey(key, scancode, action, mods))
+        return;
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ESCAPE) {
             hudKey(gApp->hud, escAction(mods & GLFW_MOD_SHIFT),
@@ -139,16 +145,20 @@ void dashCamTick(DashApp* app, float dt) {
     const float speed = (glfwGetKey(app->win, GLFW_KEY_LEFT_SHIFT)
                          == GLFW_PRESS) ? 2.4f : 0.8f;
     const float mv = speed * dt;
-    if (glfwGetKey(app->win, GLFW_KEY_W) == GLFW_PRESS)
+    // while an app holds the input grab the fly keys belong to it
+    const bool flying = !app->grabbed || !app->grabbed();
+    if (flying && glfwGetKey(app->win, GLFW_KEY_W) == GLFW_PRESS)
         for (int i = 0; i < 3; ++i) c.pos[i] += f[i] * mv;
-    if (glfwGetKey(app->win, GLFW_KEY_S) == GLFW_PRESS)
+    if (flying && glfwGetKey(app->win, GLFW_KEY_S) == GLFW_PRESS)
         for (int i = 0; i < 3; ++i) c.pos[i] -= f[i] * mv;
-    if (glfwGetKey(app->win, GLFW_KEY_D) == GLFW_PRESS)
+    if (flying && glfwGetKey(app->win, GLFW_KEY_D) == GLFW_PRESS)
         for (int i = 0; i < 3; ++i) c.pos[i] += r[i] * mv;
-    if (glfwGetKey(app->win, GLFW_KEY_A) == GLFW_PRESS)
+    if (flying && glfwGetKey(app->win, GLFW_KEY_A) == GLFW_PRESS)
         for (int i = 0; i < 3; ++i) c.pos[i] -= r[i] * mv;
-    if (glfwGetKey(app->win, GLFW_KEY_E) == GLFW_PRESS) c.pos[1] += mv;
-    if (glfwGetKey(app->win, GLFW_KEY_Q) == GLFW_PRESS) c.pos[1] -= mv;
+    if (flying && glfwGetKey(app->win, GLFW_KEY_E) == GLFW_PRESS)
+        c.pos[1] += mv;
+    if (flying && glfwGetKey(app->win, GLFW_KEY_Q) == GLFW_PRESS)
+        c.pos[1] -= mv;
 
     HudEngine* hud = app->hud;
     memcpy(hud->eyePos, c.pos, sizeof(c.pos));

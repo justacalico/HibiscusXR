@@ -213,4 +213,9 @@ void testInput() {
     // plain ESC parks the window, shift+ESC closes it
     CHECK(escAction(false) == kKeyMinimize);
     CHECK(escAction(true) == kKeyBack);
+
+    // --- desktop ` routing --------------------------------------------
+    // plain ` toggles the input grab, shift+` always releases it
+    CHECK(grabAction(false) == kGrabToggle);
+    CHECK(grabAction(true) == kGrabOff);
 }

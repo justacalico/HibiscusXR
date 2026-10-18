@@ -149,7 +149,11 @@ Panels are toplevels the compositor spawns per launch (matched to their
 display by pid or app_id; stray toplevels adopt onto their own panels).
 Confirm presses become `wl_pointer` input at the panel-local point, focus
 drives `xdg_toplevel` activation and `wl_keyboard` enter, and keys the dash
-doesn't own are forwarded to the focused app. The quick panel talks to the
+doesn't own are forwarded to the focused app. `` ` `` grabs the focused
+app outright: while it holds every key and the mouse go straight to the
+client (camera fly keys included), which is what games and other
+raw-input apps need. Shift+` always releases the grab. The quick panel
+talks to the
 host's tools: `nmcli` for the Wi-Fi tile, `bluetoothctl` for Bluetooth,
 `wpctl` for the volume slider and `brightnessctl` for brightness. Dock pins
 persist to `$XDG_CONFIG_HOME/hibiscus/dash-pins`.

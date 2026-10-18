@@ -10,3 +10,7 @@ bool isConfirm(int code) {
 int escAction(bool shiftHeld) {
     return shiftHeld ? kKeyBack : kKeyMinimize;
 }
+
+int grabAction(bool shiftHeld) {
+    return shiftHeld ? kGrabOff : kGrabToggle;
+}

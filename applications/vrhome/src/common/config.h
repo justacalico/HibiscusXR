@@ -148,6 +148,7 @@ constexpr float kSysPillPad = 0.014f; // pill inset around its slots
 constexpr float kSysPillGap = 0.022f; // between the two pills
 constexpr float kSysPillHH = 0.056f;  // pill half-height
 constexpr float kDockBadgeR = 0.024f; // XR close badge radius
+constexpr float kDockDotR = 0.007f;   // running-dot radius under an icon
 constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 // dock elevation: scaled with the recenter pitch but clamped so the strip
 // always lands below eye level - never over the windows, never overhead

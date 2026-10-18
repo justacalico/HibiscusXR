@@ -53,6 +53,11 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
 // positions come out
 float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 
+// running-dot offset below the icon centre, in bar space: hangs off the
+// icon's bottom edge while it can, but the magnified icon can't push the
+// dot past the bar's bottom edge
+float dockDotOff(float iconHalf);
+
 // which item a bar-local point hits (u -1..1 across the bar, v -1..1 across
 // its height); *zone gets DZONE_CLOSE on a live immersive item's badge, or
 // DZONE_SYS on the status pill with no item index

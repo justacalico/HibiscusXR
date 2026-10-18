@@ -543,11 +543,13 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                       0.0018f, 0.0015f, vc);
         }
 
-        // running dot under the icon
+        // running dot under the icon: clamped inside the bar so a
+        // magnified icon can't push it past the bottom edge
         if (it.running) {
-            const float dc[3] = {ic[0] - up[0] * (kDockIconHW + 0.026f),
-                                 ic[1] - up[1] * (kDockIconHW + 0.026f),
-                                 ic[2] - up[2] * (kDockIconHW + 0.026f)};
+            const float doff = dockDotOff(s);
+            const float dc[3] = {ic[0] - up[0] * doff,
+                                 ic[1] - up[1] * doff,
+                                 ic[2] - up[2] * doff};
             const float* dc2 = it.vr ? kPalWarn : kPalText;
             const float dcol[4] = {dc2[0], dc2[1], dc2[2],
                                    (it.minimized ? 0.4f : 0.85f) * a};

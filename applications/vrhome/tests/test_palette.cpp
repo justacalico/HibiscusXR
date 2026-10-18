@@ -12,16 +12,16 @@ static void hexEq(const float* c, int r, int g, int b) {
 }
 
 void testPalette() {
-    hexEq(kPalBackground,  0x14, 0x1A, 0x21);
-    hexEq(kPalPanel,       0x1B, 0x23, 0x2D);
-    hexEq(kPalSurface,     0x23, 0x2D, 0x38);
-    hexEq(kPalSurfaceHigh, 0x2E, 0x3A, 0x47);
-    hexEq(kPalAccent,      0x4E, 0x9C, 0xFF);
-    hexEq(kPalDanger,      0xFF, 0x5E, 0x5E);
-    hexEq(kPalWarn,        0xF5, 0xC5, 0x42);
-    hexEq(kPalGood,        0x3D, 0xD6, 0x8C);
-    hexEq(kPalText,        0xF2, 0xF5, 0xF8);
-    hexEq(kPalTextDim,     0x9A, 0xA7, 0xB4);
+    hexEq(kPalBackground,  0x13, 0x13, 0x18);
+    hexEq(kPalPanel,       0x38, 0x38, 0x3F);
+    hexEq(kPalSurface,     0x4A, 0x4A, 0x52);
+    hexEq(kPalSurfaceHigh, 0x5D, 0x5D, 0x66);
+    hexEq(kPalAccent,      0x0A, 0x84, 0xFF);
+    hexEq(kPalDanger,      0xFF, 0x45, 0x3A);
+    hexEq(kPalWarn,        0xFF, 0x9F, 0x0A);
+    hexEq(kPalGood,        0x30, 0xD1, 0x58);
+    hexEq(kPalText,        0xF5, 0xF5, 0xF7);
+    hexEq(kPalTextDim,     0x98, 0x98, 0xA0);
 
     // the ramp only climbs: every role sits darker than the one above it
     // so chrome never inverts against the cards floating over it
@@ -65,11 +65,11 @@ void testPaletteThemes() {
 
     setPaletteForName("light");
     CHECK(kPalPanel == kPalLight.panel);
-    hexEq(kPalBackground, 0xDD, 0xE3, 0xEA);
+    hexEq(kPalBackground, 0xD8, 0xD8, 0xDE);
     hexEq(kPalSurface,    0xFF, 0xFF, 0xFF);
-    hexEq(kPalAccent,     0x1C, 0x6D, 0xD9);
-    hexEq(kPalText,       0x14, 0x1A, 0x21);
-    hexEq(kPalTextDim,    0x4E, 0x5A, 0x66);
+    hexEq(kPalAccent,     0x00, 0x7A, 0xFF);
+    hexEq(kPalText,       0x1C, 0x1C, 0x1E);
+    hexEq(kPalTextDim,    0x6E, 0x6E, 0x73);
 
     // light inverts the ramp: cards sit lighter than the void behind them
     for (int ch = 0; ch < 3; ++ch) {

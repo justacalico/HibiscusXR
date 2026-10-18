@@ -35,19 +35,18 @@ class PanelPalette {
 
 /// The dark ramp's raw values. The palette composes them; code in const
 /// contexts (const TextStyle and friends) reads them directly.
-const kPanelDarkBackground = Color(0xFF141A21);
-const kPanelDarkPanel = Color(0xFF1B232D);
-const kPanelDarkSurface = Color(0xFF232D38);
-const kPanelDarkSurfaceHigh = Color(0xFF2E3A47);
-const kPanelDarkAccent = Color(0xFF4E9CFF);
-const kPanelDarkDanger = Color(0xFFFF5E5E);
-const kPanelDarkWarn = Color(0xFFF5C542);
-const kPanelDarkGood = Color(0xFF3DD68C);
-const kPanelDarkTextPrimary = Color(0xFFF2F5F8);
-const kPanelDarkTextSecondary = Color(0xFF9AA7B4);
+const kPanelDarkBackground = Color(0xFF131318);
+const kPanelDarkPanel = Color(0xFF38383F);
+const kPanelDarkSurface = Color(0xFF4A4A52);
+const kPanelDarkSurfaceHigh = Color(0xFF5D5D66);
+const kPanelDarkAccent = Color(0xFF0A84FF);
+const kPanelDarkDanger = Color(0xFFFF453A);
+const kPanelDarkWarn = Color(0xFFFF9F0A);
+const kPanelDarkGood = Color(0xFF30D158);
+const kPanelDarkTextPrimary = Color(0xFFF5F5F7);
+const kPanelDarkTextSecondary = Color(0xFF9898A0);
 
-/// The long-standing panel look: deep blue-grey surfaces, one cool
-/// accent.
+/// The panel look: neutral graphite surfaces under one system blue.
 const kDarkPalette = PanelPalette(
   brightness: Brightness.dark,
   background: kPanelDarkBackground,
@@ -66,15 +65,15 @@ const kDarkPalette = PanelPalette(
 const kOledPalette = PanelPalette(
   brightness: Brightness.dark,
   background: Color(0xFF000000),
-  panel: Color(0xFF0B0F13),
-  surface: Color(0xFF151A20),
-  surfaceHigh: Color(0xFF212A33),
-  accent: Color(0xFF4E9CFF),
-  danger: Color(0xFFFF5E5E),
-  warn: Color(0xFFF5C542),
-  good: Color(0xFF3DD68C),
-  textPrimary: Color(0xFFF2F5F8),
-  textSecondary: Color(0xFF9AA7B4),
+  panel: Color(0xFF1E1E22),
+  surface: Color(0xFF2B2B31),
+  surfaceHigh: Color(0xFF3D3D44),
+  accent: Color(0xFF0A84FF),
+  danger: Color(0xFFFF453A),
+  warn: Color(0xFFFF9F0A),
+  good: Color(0xFF30D158),
+  textPrimary: Color(0xFFF5F5F7),
+  textSecondary: Color(0xFF9898A0),
 );
 
 /// Light theme: the ramp inverts, so the void sits a shade under the
@@ -82,16 +81,16 @@ const kOledPalette = PanelPalette(
 /// their contrast on white.
 const kLightPalette = PanelPalette(
   brightness: Brightness.light,
-  background: Color(0xFFDDE3EA),
-  panel: Color(0xFFE9EEF4),
+  background: Color(0xFFD8D8DE),
+  panel: Color(0xFFF4F4F6),
   surface: Color(0xFFFFFFFF),
-  surfaceHigh: Color(0xFFC7D0DB),
-  accent: Color(0xFF1C6DD9),
-  danger: Color(0xFFD93636),
-  warn: Color(0xFF8F6400),
-  good: Color(0xFF1E9E5A),
-  textPrimary: Color(0xFF141A21),
-  textSecondary: Color(0xFF4E5A66),
+  surfaceHigh: Color(0xFFC9C9CF),
+  accent: Color(0xFF007AFF),
+  danger: Color(0xFFFF3B30),
+  warn: Color(0xFFFF9500),
+  good: Color(0xFF34C759),
+  textPrimary: Color(0xFF1C1C1E),
+  textSecondary: Color(0xFF6E6E73),
 );
 
 /// The palette for one picker option.

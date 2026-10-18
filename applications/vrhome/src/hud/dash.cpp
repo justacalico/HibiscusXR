@@ -250,7 +250,7 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
         e->grid.openT = stepT(e->grid.openT, e->grid.shown, dtMs, kGridMs);
         for (int i = 0; i < QS_COUNT; ++i)
             e->quick.hs[i] = dampMs(e->quick.hs[i],
-                i == e->quick.hover ? kGridHoverScale : 1.0f,
+                i == e->quick.hover ? kQuickHoverScale : 1.0f,
                 dtMs, kHoverTauMs);
         e->quick.openT = stepT(e->quick.openT, e->quick.shown, dtMs,
                                kQuickMs);

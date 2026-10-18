@@ -60,6 +60,7 @@ Json stateJson(const McpState& s) {
     j.set("grid", Json::boolean(s.grid));
     j.set("keyboard", Json::boolean(s.kbd));
     j.set("hover", Json::num(s.hover));
+    j.set("hoverZone", Json::num(s.hoverZone));
     Json ps = Json::arr();
     for (const McpPanelInfo& p : s.panels) {
         Json pj = Json::obj();
@@ -175,6 +176,13 @@ Json mcpToolList() {
             "Show or hide the floating keyboard quad.", p, {"shown"}));
     }
 
+    {
+        Json p = Json::obj();
+        p.set("shown", prop("boolean", "true to show, false to hide"));
+        tools.push(toolDef("dash_quick",
+            "Show or hide the quick-settings card.", p, {"shown"}));
+    }
+
     tools.push(toolDef("dash_screenshot",
         "Capture the dash window; returns a PNG image.", Json::obj()));
 
@@ -274,13 +282,15 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
         *result = textRes("scrolled");
         return true;
     }
-    if (name == "dash_grid" || name == "dash_keyboard") {
+    if (name == "dash_grid" || name == "dash_keyboard" ||
+            name == "dash_quick") {
         const Json* v = a.get("shown");
         if (!v || !v->isBool()) {
             *errMsg = "shown is required";
             return false;
         }
         if (name == "dash_grid") d->setGrid(v->b);
+        else if (name == "dash_quick") d->setQuick(v->b);
         else d->setKbd(v->b);
         *result = textRes(v->b ? "shown" : "hidden");
         return true;

@@ -165,6 +165,13 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
     return halfW;
 }
 
+float dockDotOff(float iconHalf) {
+    const float off = iconHalf + kDockDotR + 0.005f;
+    const float maxOff =
+        kDockIconY + kDockBarH * 0.5f - kDockDotR - 0.002f;
+    return off < maxOff ? off : maxOff;
+}
+
 // the close badge hangs off a live immersive icon's top-right corner
 static void badgeAt(float itemX, float* bx, float* by) {
     *bx = itemX + kDockIconHW * 0.72f;

@@ -49,27 +49,26 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // shadow + card
-    const float shc[3] = {c[0] - up[0] * 0.02f * gs, c[1] - up[1] * 0.02f * gs,
-                          c[2] - up[2] * 0.02f * gs};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
-    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
-              hw, hh, 0.05f, -1.0f, 0.05f, shCol);
+    // shadow + card: frosted glass, lit from its top edge
+    const float shc[3] = {c[0] - up[0] * 0.024f * gs,
+                          c[1] - up[1] * 0.024f * gs,
+                          c[2] - up[2] * 0.024f * gs};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f * ga};
+    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
+              hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.86f * ga};
-    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.05f,
-              0.0f, 0.003f, cardCol);
+                              0.66f * ga};
+    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
+              0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.14f);
+    const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                             0.14f * ga};
+    shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, hh, hw, hh, 0.06f,
+              0.0016f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.30f);
 
     // title band: label left, close disc on the right end
     const float hy = hh - kGridHeadH * 0.5f * gs;
-    {
-        const float tcol[4] = {kPalSurface[0], kPalSurface[1],
-                               kPalSurface[2], 0.60f * ga};
-        const float hc[3] = {c[0] + up[0]*hy, c[1] + up[1]*hy,
-                             c[2] + up[2]*hy};
-        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, hw, kGridHeadH * 0.5f * gs,
-                  hw, kGridHeadH * 0.5f * gs, 0.0f, 0.0f, 0.002f, tcol);
-    }
     {
         const bool bhov = e->grid.zone == GZONE_CLOSE;
         const float bx = gridCloseX() * gs;
@@ -124,7 +123,6 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         const GridItem& it = e->grid.items[i];
         const float iy = (it.y + e->grid.scroll) * gs;
         if (!gridCellShown(iy, gs)) continue;
-        const bool hov = e->grid.hover == i;
         const float hp = hoverP(it.hs, kGridHoverScale);
         const float s = kGridIconHW * gs * it.hs;
         const float ic[3] = {c[0] + r[0]*it.x*gs + up[0]*iy,
@@ -137,7 +135,9 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
                                  0.10f * hp * ga};
-            const float hx = s + 0.024f;
+            // hugs the icon: any bigger and the lift clips into the
+            // label drawn under the cell
+            const float hx = s + 0.008f;
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, hx, hx, hx, hx,
                       hx * kIconRad, 0.0f, 0.002f, hl,
                       -1.0f, 0.0f, iy, clipC, clipH);

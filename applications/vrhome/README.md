@@ -180,7 +180,7 @@ stdio: one JSON-RPC message per line, tools to drive the dash.
 | `dash_move` | move the camera (`x` / `y` / `z` in metres) |
 | `dash_key` | send a key: `confirm`, `enter`, `back`, `dpad_center` or `button_a`; `action` is `tap` (default), `down` or `up` |
 | `dash_launch` | open a `package` on a new panel |
-| `dash_grid` / `dash_keyboard` | show or hide the app grid / keyboard quad (`shown`) |
+| `dash_grid` / `dash_keyboard` / `dash_quick` | show or hide the app grid / keyboard quad / quick-settings card (`shown`) |
 | `dash_recenter` | re-anchor the dash ring in front of the camera |
 | `dash_screenshot` | return the rendered frame as a PNG image |
 

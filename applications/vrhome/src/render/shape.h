@@ -16,10 +16,12 @@ struct HudEngine;
 // the value is tan(half-angle), 0 disables it - the wifi fan's arcs use it.
 // clipY shifts the quad's local y into a parent's frame and clipC/clipH
 // fade the shape out past a band centred there - the app grid's scroll band
-// uses it; clipH=0 disables the clip
+// uses it; clipH=0 disables the clip. sheen adds luminance toward the box's
+// top edge - the frosted-glass highlight every floating surface carries
 void shapeQuad(HudEngine* e, const Mat4& vp, const float c[3],
                const float r[3], const float up[3],
                float toward, float ang, float qw, float qh,
                float bw, float bh, float radius, float border, float soft,
                const float col[4], float radB = -1.0f, float arc = 0.0f,
-               float clipY = 0.0f, float clipC = 0.0f, float clipH = 0.0f);
+               float clipY = 0.0f, float clipC = 0.0f, float clipH = 0.0f,
+               float sheen = 0.0f);

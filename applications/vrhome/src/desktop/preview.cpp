@@ -159,10 +159,10 @@ private:
         for (int y = 0; y < h; ++y)
             for (int x = 0; x < w; ++x) {
                 unsigned char* p = px.data() + (y * w + x) * 4;
-                const bool line = x % 64 < 2 || y % 64 < 2;
-                p[0] = line ? 64 : (unsigned char)(24 + x / 12);
-                p[1] = line ? 88 : (unsigned char)(42 + y / 8);
-                p[2] = line ? 110 : 72;
+                const bool line = x % 64 < 1 || y % 64 < 1;
+                p[0] = line ? 52 : (unsigned char)(30 + x / 14);
+                p[1] = line ? 62 : (unsigned char)(50 + y / 9);
+                p[2] = line ? 78 : 84;
                 p[3] = 255;
             }
         texParams(tex);
@@ -213,8 +213,9 @@ int main(int argc, char** argv) {
     if (mcp) dashStartMcp(&app);
 
     long long last = dashNowMs();
+    long long lastDraw = 0;
     while (!glfwWindowShouldClose(app.win)) {
-        glfwPollEvents();
+        glfwWaitEventsTimeout(0.012);
         dashDrainPre();
         const long long now = dashNowMs();
         const float dt = (now - last) / 1000.0f;
@@ -223,18 +224,20 @@ int main(int argc, char** argv) {
         const Mat4 view = camView(app.cam);
         tickDash(&hud, view, now);
 
-        glfwGetFramebufferSize(app.win, &hud.width, &hud.height);
-        glViewport(0, 0, hud.width, hud.height);
-        glClearColor(0.02f, 0.025f, 0.035f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        const Mat4 proj = perspective(70.0f,
-            hud.height ? (float)hud.width / hud.height : 1.0f,
-            0.05f, 100.0f);
-        const Mat4 vp = multiply(proj, view);
-        drawBackdrop(&hud, vp);
-        drawDashScene(&hud, vp);
-        dashDrainPost();
-        glfwSwapBuffers(app.win);
+        if (dashDrawDue(now, &lastDraw, 14)) {
+            glfwGetFramebufferSize(app.win, &hud.width, &hud.height);
+            glViewport(0, 0, hud.width, hud.height);
+            glClearColor(0.02f, 0.025f, 0.035f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            const Mat4 proj = perspective(70.0f,
+                hud.height ? (float)hud.width / hud.height : 1.0f,
+                0.05f, 100.0f);
+            const Mat4 vp = multiply(proj, view);
+            drawBackdrop(&hud, vp);
+            drawDashScene(&hud, vp);
+            dashDrainPost();
+            glfwSwapBuffers(app.win);
+        }
     }
     dashStop(&app);
     return 0;

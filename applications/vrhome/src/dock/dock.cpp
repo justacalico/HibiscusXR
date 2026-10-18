@@ -195,15 +195,15 @@ void drawLetterTile(HudEngine* e, const Mat4& vp, const float ic[3],
                     const char* label,
                     float clipY, float clipC, float clipH, float alpha) {
     static const float pal[][3] = {
-        {0.30f, 0.36f, 0.52f}, {0.36f, 0.30f, 0.50f}, {0.22f, 0.42f, 0.48f},
-        {0.40f, 0.30f, 0.34f}, {0.26f, 0.44f, 0.36f}, {0.44f, 0.38f, 0.26f},
+        {0.20f, 0.40f, 0.72f}, {0.48f, 0.32f, 0.68f}, {0.16f, 0.52f, 0.56f},
+        {0.66f, 0.30f, 0.34f}, {0.22f, 0.56f, 0.36f}, {0.72f, 0.52f, 0.22f},
     };
     unsigned h = 0;
     for (const char* q = label; *q; ++q) h = h * 31 + (unsigned char)*q;
     const float* pc = pal[h % 6];
     const float col[4] = {pc[0], pc[1], pc[2], alpha};
     shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s, s * kIconRad,
-              0.0f, 0.002f, col, -1.0f, 0.0f, clipY, clipC, clipH);
+              0.0f, 0.002f, col, -1.0f, 0.0f, clipY, clipC, clipH, 0.06f);
     // text has no clip hook: inside a scroll band the letter only draws
     // while the whole tile fits the band
     const bool clipped = clipH > 0.0f &&
@@ -310,19 +310,25 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     glUseProgram(e->shapeProg);
     // shadow under the strip: the box is the bar's own silhouette so only
     // the soft falloff reaches past it - a padded box reads as a dark slab
-    const float shc[3] = {c[0] - up[0] * 0.02f, c[1] - up[1] * 0.02f,
-                          c[2] - up[2] * 0.02f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * a};
-    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
-              hw, hh, hh, -1.0f, 0.05f, shCol);
-    // the bar itself
+    const float shc[3] = {c[0] - up[0] * 0.024f, c[1] - up[1] * 0.024f,
+                          c[2] - up[2] * 0.024f};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f * a};
+    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
+              hw, hh, hh, -1.0f, 0.06f, shCol);
+    // the bar itself: frosted glass, top-lit, the scene bleeding through
     const float barCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                             0.82f * a};
+                             0.55f * a};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, hh, 0.0f,
-              0.003f, barCol);
+              0.003f, barCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.16f);
+    // hairline rim so the glass edge reads crisp at every pitch
+    const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                             0.14f * a};
+    shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, hh, hw, hh, hh,
+              0.0016f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.30f);
     // group separators
-    const float sepCol[4] = {kPalSurfaceHigh[0], kPalSurfaceHigh[1],
-                             kPalSurfaceHigh[2], 0.22f * a};
+    const float sepCol[4] = {kPalText[0], kPalText[1],
+                             kPalText[2], 0.10f * a};
     for (auto& it : e->dock) {
         if (!it.sep) continue;
         const float sx = it.x - kDockIconHW - (kDockGap + kDockSepW) * 0.5f;
@@ -341,9 +347,9 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     // under the gaze like the move handle does
     const float* pc = e->dockZone == DZONE_SYS ? kPalSurfaceHigh
                                              : kPalSurface;
-    const float pillACol[4] = {pc[0], pc[1], pc[2], 0.90f * a};
+    const float pillACol[4] = {pc[0], pc[1], pc[2], 0.55f * a};
     const float pillCol[4] = {kPalSurface[0], kPalSurface[1],
-                              kPalSurface[2], 0.90f * a};
+                              kPalSurface[2], 0.55f * a};
     {
         const float ax = (st.pillAL + st.pillAR) * 0.5f;
         const float aw = (st.pillAR - st.pillAL) * 0.5f;
@@ -351,13 +357,14 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                              c[2] + r[2] * ax};
         shapeQuad(e, vp, ac, r, up, 0.006f, 0.0f, aw, kSysPillHH,
                   aw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f,
-                  pillACol);
+                  pillACol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.10f);
         const float bx = (st.pillBL + st.pillBR) * 0.5f;
         const float bw = (st.pillBR - st.pillBL) * 0.5f;
         const float bc[3] = {c[0] + r[0] * bx, c[1] + r[1] * bx,
                              c[2] + r[2] * bx};
         shapeQuad(e, vp, bc, r, up, 0.006f, 0.0f, bw, kSysPillHH,
-                  bw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol);
+                  bw, kSysPillHH, kSysPillHH * 0.42f, 0.0f, 0.002f, pillCol,
+                  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.10f);
     }
     if (!e->dock.empty()) {
         const float sc[3] = {c[0] + r[0] * st.sepX, c[1] + r[1] * st.sepX,
@@ -398,10 +405,10 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                              c[1] + r[1]*st.wifiX + up[1]*wy,
                              c[2] + r[2]*st.wifiX + up[2]*wy};
         const float wr[3] = {0.014f, 0.027f, 0.040f};
-        for (int a = 0; a < 3; ++a)
+        for (int k = 0; k < 3; ++k)
             shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f,
-                      wr[a] + 0.008f, wr[a] + 0.008f, wr[a], wr[a],
-                      wr[a], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
+                      wr[k] + 0.008f, wr[k] + 0.008f, wr[k], wr[k],
+                      wr[k], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
         shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f, 0.006f, 0.006f,
                   0.0045f, 0.0045f, 0.0045f, 0.0f, 0.0015f, wcol);
     }
@@ -485,7 +492,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
 
         if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f * hp * a};
+                                 0.16f * hp * a};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.018f,
                       s + 0.018f, s + 0.018f, s + 0.018f,
                       (s + 0.018f) * kIconRad, 0.0f, 0.002f, hl);
@@ -536,11 +543,13 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                       0.0018f, 0.0015f, vc);
         }
 
-        // running dot under the icon
+        // running dot under the icon: clamped inside the bar so a
+        // magnified icon can't push it past the bottom edge
         if (it.running) {
-            const float dc[3] = {ic[0] - up[0] * (kDockIconHW + 0.026f),
-                                 ic[1] - up[1] * (kDockIconHW + 0.026f),
-                                 ic[2] - up[2] * (kDockIconHW + 0.026f)};
+            const float doff = dockDotOff(s);
+            const float dc[3] = {ic[0] - up[0] * doff,
+                                 ic[1] - up[1] * doff,
+                                 ic[2] - up[2] * doff};
             const float* dc2 = it.vr ? kPalWarn : kPalText;
             const float dcol[4] = {dc2[0], dc2[1], dc2[2],
                                    (it.minimized ? 0.4f : 0.85f) * a};
@@ -628,14 +637,19 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
     // shadow + pill: the strip's recipe shrunk to a one-row tray
     const float shc[3] = {c[0] - up[0] * 0.016f, c[1] - up[1] * 0.016f,
                           c[2] - up[2] * 0.016f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * a};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f * a};
     shapeQuad(e, vp, shc, r, up, -0.024f, 0.0f, hw + 0.04f,
               kShelfHH + 0.04f, hw, kShelfHH, kShelfHH, -1.0f, 0.04f,
               shCol);
     const float pillCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.78f * a};
+                              0.62f * a};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, kShelfHH, hw, kShelfHH,
-              kShelfHH, 0.0f, 0.003f, pillCol);
+              kShelfHH, 0.0f, 0.003f, pillCol, -1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 0.07f);
+    const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                             0.14f * a};
+    shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, kShelfHH, hw, kShelfHH,
+              kShelfHH, 0.0016f, 0.0012f, rimCol);
 
     for (int i = 0; i < (int)e->shelf.size(); ++i) {
         const ShelfItem& it = e->shelf[i];
@@ -657,7 +671,7 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
 
         if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f * hp * a};
+                                 0.16f * hp * a};
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, s + 0.014f,
                       s + 0.014f, s + 0.014f, s + 0.014f,
                       (s + 0.014f) * kIconRad, 0.0f, 0.002f, hl);

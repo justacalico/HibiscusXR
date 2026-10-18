@@ -44,6 +44,7 @@ uniform vec2 uHalf;
 uniform float uRadius;
 uniform float uRadiusB;
 uniform float uAlpha;
+uniform float uSheen;
 void main() {
     vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
     vec4 c = texture2D(uTex, uv);
@@ -52,6 +53,7 @@ void main() {
     vec2 q = abs(p) - uHalf + vec2(r);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0)));
     gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
 }
 )";
@@ -65,6 +67,7 @@ uniform vec2 uHalf;
 uniform float uRadius;
 uniform float uRadiusB;
 uniform float uAlpha;
+uniform float uSheen;
 void main() {
     vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
     vec4 c = texture2D(uTex, uv);
@@ -73,6 +76,7 @@ void main() {
     vec2 q = abs(p) - uHalf + vec2(r);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0)));
     gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
 }
 )";
@@ -99,6 +103,9 @@ uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
 uniform float uArc;      // >0 clips to an upward wedge: tan(half-angle)
+uniform float uSheen;    // >0 lifts luminance toward the top edge: the
+                         // light-from-above term that makes a flat quad
+                         // read as frosted glass instead of a slab
 uniform vec3 uClip;      // y-offset into a parent plane + band centre and
                          // half-height; z<=0 disables it (grid scroll band)
 void main() {
@@ -119,7 +126,19 @@ void main() {
         a *= 1.0 - smoothstep(uClip.z - 0.01, uClip.z,
                               abs(p.y + uClip.x - uClip.y));
     if (a < 0.01) discard;
-    gl_FragColor = vec4(uColor.rgb, uColor.a * a);
+    vec3 rgb = uColor.rgb;
+    if (uSheen > 0.0) {
+        // authored lift, alpha-normalized so a 0.5-alpha sheet gets the
+        // same highlight an opaque one would
+        float lift = uSheen / max(uColor.a, 0.35);
+        float ty = clamp((p.y + uBox.y) / max(2.0 * uBox.y, 0.0001),
+                         0.0, 1.0);
+        rgb += vec3(lift * (0.30 * ty + 0.70 * pow(ty, 8.0)));
+        float rim = smoothstep(-0.008, -0.002, d);
+        rgb += vec3(lift * 0.5 * rim * ty);
+        rgb *= 1.0 - lift * 0.35 * pow(1.0 - ty, 3.0);
+    }
+    gl_FragColor = vec4(rgb, uColor.a * a);
 }
 )";
 

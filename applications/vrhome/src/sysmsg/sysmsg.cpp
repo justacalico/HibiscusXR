@@ -71,15 +71,20 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
 
     // drop shadow behind the card, then the body - same recipe as the
     // notification cards, tuned a touch darker since this one is modal
-    const float shc[3] = {cc[0] - up[0] * 0.014f, cc[1] - up[1] * 0.014f,
-                          cc[2] - up[2] * 0.014f};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f};
-    shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.03f, hh + 0.03f,
-              hw, hh, 0.026f, -1.0f, 0.03f, shCol);
+    const float shc[3] = {cc[0] - up[0] * 0.016f, cc[1] - up[1] * 0.016f,
+                          cc[2] - up[2] * 0.016f};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.38f};
+    shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.04f, hh + 0.04f,
+              hw, hh, 0.034f, -1.0f, 0.04f, shCol);
     const float body[4] = {kPalSurface[0], kPalSurface[1], kPalSurface[2],
-                           0.94f};
+                           0.80f};
     shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
-              0.024f, 0.0f, 0.0025f, body);
+              0.034f, 0.0f, 0.0025f, body, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.14f);
+    const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.16f};
+    shapeQuad(e, vp, cc, r, up, 0.005f, 0.0f, hw, hh, hw, hh,
+              0.034f, 0.0015f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 0.30f);
     // red accent down the card's left edge: this is an alert, not a post
     const float ax = -hw + 0.006f;
     const float ac[3] = {cc[0] + r[0] * ax, cc[1] + r[1] * ax,

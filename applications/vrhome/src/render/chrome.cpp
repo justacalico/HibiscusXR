@@ -89,11 +89,18 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                              c[2] - up[2] * drp};
         const float* bcp = hov ? kPalSurfaceHigh : kPalPanel;
         const float pillCol[4] = {bcp[0], bcp[1], bcp[2],
-                                  (hov ? 0.95f : 0.88f) * a};
+                                  (hov ? 0.72f : 0.58f) * a};
         glUseProgram(e->shapeProg);
         shapeQuad(e, viewProj, pc, r, up, 0.004f, 0.0f, phw,
                   kPillH * 0.5f * sc, phw, kPillH * 0.5f * sc,
-                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol);
+                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol,
+                  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.14f);
+        const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 0.14f * a};
+        shapeQuad(e, viewProj, pc, r, up, 0.005f, 0.0f, phw,
+                  kPillH * 0.5f * sc, phw, kPillH * 0.5f * sc,
+                  kPillH * 0.5f * sc, 0.0016f, 0.0012f, rimCol,
+                  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.30f);
 
         // float + minimize + close discs on the pill's right end; glyphs
         // are small capsules, the close pair rotated into an x, the float
@@ -166,6 +173,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"),
                     kCornerR * sc);
         glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), a);
+        glUniform1f(glGetUniformLocation(e->floatProg, "uSheen"), 0.05f);
         const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
         const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
         const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -202,30 +210,49 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // underneath and needs no outline of its own
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                (hov ? 0.55f : 0.14f) * a};
+                                (hov ? 0.60f : 0.15f) * a};
         shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
                   hh + 0.006f, hw + 0.006f, hh + 0.006f,
-                  kCornerR * sc + 0.006f, 0.0016f, 0.0012f, bdCol);
+                  kCornerR * sc + 0.006f, 0.0016f, 0.0012f, bdCol,
+                  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.30f);
 
-        // the resize grip on the window's bottom-right corner: two short
-        // diagonal ticks tucked inside the corner, lighting while held
+        // resize grip: the corner still takes the drag (ZONE_RESIZE), but
+        // the affordance lives on the pill, not painted over the app -
+        // the pill's right end already carries the window controls, the
+        // drag corner shows as a hairline flare on the border instead
         {
             const bool ghov = hov && e->hoverZone == ZONE_RESIZE;
             const bool gheld = e->pressZone == ZONE_RESIZE &&
                                e->pressDisp == p.displayId;
-            const float* gp = ghov || gheld ? kPalAccent : kPalText;
-            const float gcol[4] = {gp[0], gp[1], gp[2],
-                                   (ghov || gheld ? 0.9f : 0.45f) * a};
-            for (int g = 0; g < 2; ++g) {
-                const float off = (0.030f - g * 0.016f) * sc;
-                const float gc[3] = {
-                    c[0] + r[0]*(hw - off) + up[0]*(-hh + off),
-                    c[1] + r[1]*(hw - off) + up[1]*(-hh + off),
-                    c[2] + r[2]*(hw - off) + up[2]*(-hh + off)};
-                const float gl = 0.011f * sc;
-                shapeQuad(e, viewProj, gc, r, up, 0.008f, 0.785398f,
-                          gl, 0.0022f, gl, 0.0022f, 0.0022f, 0.0f,
-                          0.0015f, gcol);
+            if (ghov || gheld) {
+                const float gc[4] = {kPalAccent[0], kPalAccent[1],
+                                     kPalAccent[2], 0.85f * a};
+                const float hw2 = hw + 0.006f, hh2 = hh + 0.006f;
+                const float cr = kCornerR * sc + 0.006f;
+                const float t = 0.0028f * sc;
+                const float ccx = hw2 - cr, ccy = -(hh2 - cr);
+                const float arm = fminf(hw2 * 0.45f, hh2 * 0.7f);
+                const float bp[3] = {
+                    c[0] + r[0]*(ccx - arm*0.5f) - up[0]*hh2,
+                    c[1] + r[1]*(ccx - arm*0.5f) - up[1]*hh2,
+                    c[2] + r[2]*(ccx - arm*0.5f) - up[2]*hh2};
+                shapeQuad(e, viewProj, bp, r, up, 0.008f, 0.0f,
+                          arm*0.5f + t, t + 0.002f, arm*0.5f, t, t,
+                          0.0f, 0.0015f, gc);
+                const float rp[3] = {
+                    c[0] + r[0]*hw2 + up[0]*(ccy + arm*0.5f),
+                    c[1] + r[1]*hw2 + up[1]*(ccy + arm*0.5f),
+                    c[2] + r[2]*hw2 + up[2]*(ccy + arm*0.5f)};
+                shapeQuad(e, viewProj, rp, r, up, 0.008f, 0.0f,
+                          t + 0.002f, arm*0.5f + t, t, arm*0.5f, t,
+                          0.0f, 0.0015f, gc);
+                const float ap[3] = {
+                    c[0] + r[0]*ccx + up[0]*ccy,
+                    c[1] + r[1]*ccx + up[1]*ccy,
+                    c[2] + r[2]*ccx + up[2]*ccy};
+                shapeQuad(e, viewProj, ap, r, up, 0.008f, -2.3562f,
+                          cr + t + 0.002f, cr + t + 0.002f, cr, cr, cr,
+                          t, 0.0015f, gc, -1.0f, 1.0f);
             }
         }
 
@@ -288,6 +315,7 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     // the panel loop leaves its transition fade on the program - the quad
     // doesn't animate, so it draws opaque
     glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), 1.0f);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uSheen"), 0.04f);
     const GLint uMVP = glGetUniformLocation(e->floatProg, "uMVP");
     const GLint uST  = glGetUniformLocation(e->floatProg, "uST");
     const GLint aPos = glGetAttribLocation(e->floatProg, "aPos");
@@ -323,10 +351,10 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     // hairline border, brightened under the aim like the window frames
     glUseProgram(e->shapeProg);
     const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                           hov ? 0.55f : 0.14f};
+                           hov ? 0.60f : 0.15f};
     shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
               hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
-              0.0016f, 0.0012f, bcol);
+              0.0016f, 0.0012f, bcol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.30f);
 
     // the move pill under the quad: holding it drags the keyboard alone
     drawMovePill(e, viewProj, c, r, up, movePillDrop(kKbdHH),
@@ -457,6 +485,9 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
                               kPalBackground[2], 0.90f};
     const float ringCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.85f};
     const float dotCol[4]  = {kPalText[0], kPalText[1], kPalText[2], 0.90f};
+    const float glowCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.10f};
+    shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.030f, 0.030f, 0.014f,
+              0.014f, 0.014f, -1.0f, 0.016f, glowCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.0195f, 0.0195f, 0.014f,
               0.014f, 0.014f, 0.0042f, 0.001f, edgeCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.014f, 0.014f, 0.014f,

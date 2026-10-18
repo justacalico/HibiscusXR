@@ -100,7 +100,7 @@ constexpr float kKbdGap = 0.03f;    // view-space dip below the host window
 // window chrome: a Quest-style pill floating under each panel's bottom
 // edge, holding the app name on the left and the buttons on the right.
 // The window itself keeps all four corners rounded - nothing bound to it
-constexpr float kPillH = 0.085f;      // pill height
+constexpr float kPillH = 0.078f;      // pill height
 constexpr float kPillGap = 0.026f;    // window bottom edge to pill top
 constexpr float kPillWFrac = 0.62f;   // pill half width vs window half width
 // narrowest the pill gets: the button strip plus a sliver of label must
@@ -112,7 +112,7 @@ constexpr float kPillPadX = 0.070f;   // label padding inside the pill's left en
 constexpr float kPillBtnR = 0.028f;   // button disc radius
 constexpr float kPillBtnGap = 0.014f; // between the discs
 constexpr float kPillBtnPad = 0.014f; // close disc's margin to the pill edge
-constexpr float kCornerR = 0.028f;
+constexpr float kCornerR = 0.034f;
 
 // drag handle: a short white line centred under the dock strip. Holding
 // confirm on it drags the whole dash - every window keeps its slot offset
@@ -134,8 +134,8 @@ constexpr float kDockIconY = 0.006f;  // icon centre above bar centre
 // icon corner radius as a fraction of the icon's half-width: 0.44 is about
 // 22% of the edge - the macOS squircle, squarer than a circle crop
 constexpr float kIconRad = 0.44f;
-constexpr float kDockGap = 0.030f;    // between icons
-constexpr float kDockPad = 0.045f;    // bar end padding
+constexpr float kDockGap = 0.034f;    // between icons
+constexpr float kDockPad = 0.050f;    // bar end padding
 constexpr float kDockSepW = 0.035f;   // extra gap at a group separator
 constexpr float kDockBarH = 0.16f;    // strip height: icon + running dot
 // status cluster pinned to the strip's left end: clock, battery and wifi
@@ -148,6 +148,7 @@ constexpr float kSysPillPad = 0.014f; // pill inset around its slots
 constexpr float kSysPillGap = 0.022f; // between the two pills
 constexpr float kSysPillHH = 0.056f;  // pill half-height
 constexpr float kDockBadgeR = 0.024f; // XR close badge radius
+constexpr float kDockDotR = 0.007f;   // running-dot radius under an icon
 constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 // dock elevation: scaled with the recenter pitch but clamped so the strip
 // always lands below eye level - never over the windows, never overhead
@@ -178,22 +179,23 @@ constexpr float kGridWheelStep = 0.20f; // card-local metres one wheel detent sc
 // small tile grid. It hangs in front of the window slots on the same
 // anchor plane as the app grid, and shares the grid's open animation
 constexpr float kQuickDist = 1.38f;    // metres; matches the grid card
-constexpr float kQuickHW = 0.70f, kQuickHH = 0.33f;
+constexpr float kQuickHW = 0.70f, kQuickHH = 0.36f;
 constexpr float kQuickHeadH = 0.095f;  // title band height
 constexpr float kQuickPad = 0.040f;    // inner side padding
 constexpr float kQuickSliderH = 0.052f;  // one slider row's band height
 constexpr float kQuickSliderGap = 0.012f;  // between the two slider rows
 constexpr float kQuickIconS = 0.015f;  // slider-row icon half-width
-constexpr float kQuickKnobR = 0.016f;  // slider knob disc radius
-constexpr float kQuickTrackHH = 0.005f;// slider track half-height
+constexpr float kQuickKnobR = 0.020f;  // slider knob disc radius
+constexpr float kQuickTrackHH = 0.010f;// slider track half-height
 constexpr int   kQuickLargeCols = 4;   // the wide toggle row
 constexpr float kQuickLargeH = 0.125f; // large tile height
 constexpr int   kQuickCols = 5;        // small tile columns
 constexpr float kQuickCellH = 0.115f;  // small tile row pitch
 constexpr float kQuickCloseR = 0.024f; // close disc radius on the title row
-constexpr float kQuickGearR = 0.019f;  // settings gear disc radius
+constexpr float kQuickGearR = 0.024f;  // settings gear disc radius, matches close
 constexpr float kQuickMs = 200.0f;     // card open/close
 constexpr float kQuickScale0 = 0.94f;  // card's open-from size share
+constexpr float kQuickHoverScale = 1.04f; // tile grow on hover, stays inside the cell gaps
 
 // minimized-window shelf: hidden panels park as a row of small icons on a
 // pill floating just above the dock bar, so a minimized app stays visible
@@ -223,12 +225,12 @@ constexpr float kGridHoverScale = 1.12f; // cell icon magnification
 // minimized shelf when one is up) while the dash is up; over a covered app
 // the toast window draws it alone for kNotifToastMs. The stack rides the
 // same anchor cylinder as the strip
-constexpr float kNotifCardW = 0.56f;    // card width
-constexpr float kNotifCardH = 0.115f;   // card height
+constexpr float kNotifCardW = 0.62f;    // card width
+constexpr float kNotifCardH = 0.125f;   // card height
 constexpr float kNotifGap = 0.014f;     // between stacked cards, and the
                                         // lift between the bar and stack
 constexpr float kNotifPad = 0.022f;     // card inner side padding
-constexpr float kNotifIconHW = 0.030f;  // app icon half-width on a card
+constexpr float kNotifIconHW = 0.026f;  // app icon half-width on a card
 constexpr float kNotifBadgeR = 0.020f;  // dismiss badge radius
 constexpr int   kNotifMax = 1;          // cards shown at once
 constexpr int   kNotifToastMs = 5000;   // heads-up duration over an app

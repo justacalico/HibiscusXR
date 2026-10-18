@@ -10,9 +10,10 @@ int buildGrid(std::vector<float>& out) {
     const float e = kGridHalf * kGridStep;
     for (int i = -kGridHalf; i <= kGridHalf; ++i) {
         const float t = i * kGridStep;
-        const bool axis = (i == 0);
-        const float r = axis ? 0.45f : 0.10f, g = axis ? 0.50f : 0.13f,
-                    b = axis ? 0.55f : 0.18f;
+        // lines dim toward the ring's far edge so the floor reads as a
+        // soft depth cue, not a wireframe cage
+        const float fade = 1.0f - fabsf(t) / e * 0.55f;
+        const float r = 0.055f * fade, g = 0.065f * fade, b = 0.085f * fade;
         const float pts[4][3] = {{t, -1.2f, -e}, {t, -1.2f, e},
                                  {-e, -1.2f, t}, {e, -1.2f, t}};
         for (int k = 0; k < 4; ++k) {
@@ -30,10 +31,10 @@ int buildSky(std::vector<float>& out) {
     out.clear();
     const float R = 30.0f;
     const float rings[4][4] = {  // y, r, g, b
-        {-6.0f, 0.012f, 0.016f, 0.026f},
-        { 0.0f, 0.085f, 0.105f, 0.150f},
-        { 8.0f, 0.040f, 0.050f, 0.075f},
-        {26.0f, 0.012f, 0.016f, 0.030f},
+        {-6.0f, 0.010f, 0.011f, 0.016f},
+        { 0.0f, 0.070f, 0.082f, 0.115f},
+        { 8.0f, 0.026f, 0.032f, 0.048f},
+        {26.0f, 0.008f, 0.010f, 0.016f},
     };
     for (int s = 0; s < kSkySeg; ++s) {
         const float a0 = s * 2.0f * (float)M_PI / kSkySeg;

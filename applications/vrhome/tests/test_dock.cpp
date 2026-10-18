@@ -359,4 +359,14 @@ void testDock() {
         it.panelIdx = 9; it.pkg = "com.b.busy";
         CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
     }
+
+    // running dot stays inside the bar at rest and under magnification
+    {
+        const float edge = kDockBarH * 0.5f;
+        const float rest = dockDotOff(kDockIconHW);
+        CHECK(rest > kDockIconHW);
+        CHECK(kDockIconY - rest - kDockDotR > -edge);
+        const float hov = dockDotOff(kDockIconHW * kHoverScale);
+        CHECK(kDockIconY - hov - kDockDotR > -edge);
+    }
 }

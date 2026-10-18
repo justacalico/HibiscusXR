@@ -162,7 +162,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     quickTileRect(i, &tx, &ty, &hw, &hh);
     const bool on = s.toggle && quickToggleOn(e->quick.st, s.id);
     const float hs = e->quick.hs[i];
-    const float hp = hoverP(hs, kGridHoverScale);
+    const float hp = hoverP(hs, kQuickHoverScale);
     const float tcx = tx * gs, tcy = ty * gs;
     const float thw = hw * gs * hs, thh = hh * gs * hs;
     const float tc[3] = {c[0] + r[0]*tcx + up[0]*tcy,
@@ -170,17 +170,18 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
                          c[2] + r[2]*tcx + up[2]*tcy};
     float bgA;
     const float* bg;
-    if (!s.implemented) { bg = kPalSurface; bgA = 0.34f; }
-    else if (on)      { bg = kPalAccent;  bgA = 0.30f + 0.08f * hp; }
-    else              { bg = kPalSurface; bgA = 0.85f + 0.15f * hp; }
+    if (!s.implemented) { bg = kPalSurface; bgA = 0.22f; }
+    else if (on)      { bg = kPalAccent;  bgA = 0.88f + 0.12f * hp; }
+    else              { bg = kPalSurface; bgA = 0.55f + 0.20f * hp; }
     const float bgc[4] = {bg[0], bg[1], bg[2], bgA * ga};
     shapeQuad(e, vp, tc, r, up, 0.006f, 0.0f, thw, thh, thw, thh,
-              thh * 0.28f, 0.0f, 0.002f, bgc);
+              thh * 0.34f, 0.0f, 0.002f, bgc, -1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 0.06f);
     const float dead = s.implemented ? 1.0f : 0.45f;
-    const float* icp = on ? kPalAccent : kPalText;
+    const float* icp = on ? kPalText : kPalTextDim;
     const float icol[4] = {icp[0], icp[1], icp[2],
                            (0.92f + 0.08f * hp) * dead * ga};
-    const float* bcp = kPalSurface;
+    const float* bcp = on ? kPalAccent : kPalSurface;
     const float bgc2[4] = {bcp[0], bcp[1], bcp[2], dead * ga};
     const float is = (s.large ? 0.031f : 0.026f) * gs;
     // icon sits in the tile's upper half for large tiles, above the label
@@ -223,29 +224,26 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // shadow + card, same recipe the grid card uses
-    const float shc[3] = {c[0] - up[0] * 0.02f * gs,
-                          c[1] - up[1] * 0.02f * gs,
-                          c[2] - up[2] * 0.02f * gs};
-    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
-    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.05f, hh + 0.05f,
-              hw, hh, 0.05f, -1.0f, 0.05f, shCol);
+    // shadow + card, same glass recipe the grid card uses
+    const float shc[3] = {c[0] - up[0] * 0.024f * gs,
+                          c[1] - up[1] * 0.024f * gs,
+                          c[2] - up[2] * 0.024f * gs};
+    const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f * ga};
+    shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
+              hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.88f * ga};
-    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.05f,
-              0.0f, 0.003f, cardCol);
+                              0.66f * ga};
+    shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
+              0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.14f);
+    const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                             0.14f * ga};
+    shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, hh, hw, hh, 0.06f,
+              0.0016f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.30f);
 
     // title band
     const float hy = quickTitleY() * gs;
-    {
-        const float tcol[4] = {kPalSurface[0], kPalSurface[1],
-                               kPalSurface[2], 0.60f * ga};
-        const float hc[3] = {c[0] + up[0]*hy, c[1] + up[1]*hy,
-                             c[2] + up[2]*hy};
-        shapeQuad(e, vp, hc, r, up, 0.006f, 0.0f, hw,
-                  kQuickHeadH * 0.5f * gs, hw, kQuickHeadH * 0.5f * gs,
-                  0.0f, 0.0f, 0.002f, tcol);
-    }
     // gear disc + glyph, close disc + x
     {
         const bool ghov = e->quick.zone == QZONE_GEAR;

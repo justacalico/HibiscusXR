@@ -1,0 +1,33 @@
+diff --git a/src/xrt/state_trackers/oxr/oxr_api_instance.c b/src/xrt/state_trackers/oxr/oxr_api_instance.c
+index 712344bd..7550fc0b 100644
+--- a/src/xrt/state_trackers/oxr/oxr_api_instance.c
++++ b/src/xrt/state_trackers/oxr/oxr_api_instance.c
+@@ -95,8 +95,17 @@ oxr_xrInitializeLoaderKHR(const XrLoaderInitInfoBaseHeaderKHR *loaderInitInfo)
+ static XrResult
+ oxr_check_android_extensions(struct oxr_logger *log,
+                              const XrInstanceCreateInfo *createInfo,
+-                             const struct oxr_extension_status *extensions)
++                             struct oxr_extension_status *extensions)
+ {
++	// VrApi-era apps (OVRPlugin) chain XrInstanceCreateInfoAndroidKHR without
++	// enabling the extension; the stock runtimes accept that, so the struct
++	// counts as enabling it.
++	XrInstanceCreateInfoAndroidKHR const *createInfoAndroid = OXR_GET_INPUT_FROM_CHAIN(
++	    createInfo, XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR, XrInstanceCreateInfoAndroidKHR);
++	if (createInfoAndroid != NULL) {
++		extensions->KHR_android_create_instance = true;
++	}
++
+ 	// We need the XR_KHR_android_create_instance extension.
+ 	if (!extensions->KHR_android_create_instance) {
+ 		return oxr_error(log, XR_ERROR_INITIALIZATION_FAILED,
+@@ -106,9 +115,6 @@ oxr_check_android_extensions(struct oxr_logger *log,
+ 	}
+ 
+ 	{
+-		// Verify that it exists and is populated.
+-		XrInstanceCreateInfoAndroidKHR const *createInfoAndroid = OXR_GET_INPUT_FROM_CHAIN(
+-		    createInfo, XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR, XrInstanceCreateInfoAndroidKHR);
+ 		if (createInfoAndroid == NULL) {
+ 			return oxr_error(log, XR_ERROR_VALIDATION_FAILURE,
+ 			                 "(createInfo->next...) "

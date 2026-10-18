@@ -101,7 +101,10 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/input/pick.cpp src/quick/layout.cpp \
              src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp \
              src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
-             src/mcp/tools.cpp
+             src/mcp/tools.cpp \
+             src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
+             src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
+             src/desktop/sysinfo.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 

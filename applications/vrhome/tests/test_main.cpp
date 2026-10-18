@@ -32,6 +32,7 @@ void testQuiet();
 void testPresent();
 void testMcp();
 void testPick();
+void testDesktop();
 
 int main() {
     testMat4();
@@ -64,6 +65,7 @@ int main() {
     testPresent();
     testMcp();
     testPick();
+    testDesktop();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

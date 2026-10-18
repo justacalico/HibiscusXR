@@ -228,13 +228,31 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                 const float gc[4] = {kPalAccent[0], kPalAccent[1],
                                      kPalAccent[2], 0.85f * a};
                 const float hw2 = hw + 0.006f, hh2 = hh + 0.006f;
-                const float gcPos[3] = {
-                    c[0] + r[0]*hw2*0.55f - up[0]*hh2,
-                    c[1] + r[1]*hw2*0.55f - up[1]*hh2,
-                    c[2] + r[2]*hw2*0.55f - up[2]*hh2};
-                shapeQuad(e, viewProj, gcPos, r, up, 0.008f, 0.0f,
-                          hw2*0.45f, 0.0028f*sc, hw2*0.45f, 0.0028f*sc,
-                          0.0028f*sc, 0.0f, 0.0015f, gc);
+                const float cr = kCornerR * sc + 0.006f;
+                const float t = 0.0028f * sc;
+                const float ccx = hw2 - cr, ccy = -(hh2 - cr);
+                const float arm = fminf(hw2 * 0.45f, hh2 * 0.7f);
+                const float bp[3] = {
+                    c[0] + r[0]*(ccx - arm*0.5f) - up[0]*hh2,
+                    c[1] + r[1]*(ccx - arm*0.5f) - up[1]*hh2,
+                    c[2] + r[2]*(ccx - arm*0.5f) - up[2]*hh2};
+                shapeQuad(e, viewProj, bp, r, up, 0.008f, 0.0f,
+                          arm*0.5f + t, t + 0.002f, arm*0.5f, t, t,
+                          0.0f, 0.0015f, gc);
+                const float rp[3] = {
+                    c[0] + r[0]*hw2 + up[0]*(ccy + arm*0.5f),
+                    c[1] + r[1]*hw2 + up[1]*(ccy + arm*0.5f),
+                    c[2] + r[2]*hw2 + up[2]*(ccy + arm*0.5f)};
+                shapeQuad(e, viewProj, rp, r, up, 0.008f, 0.0f,
+                          t + 0.002f, arm*0.5f + t, t, arm*0.5f, t,
+                          0.0f, 0.0015f, gc);
+                const float ap[3] = {
+                    c[0] + r[0]*ccx + up[0]*ccy,
+                    c[1] + r[1]*ccx + up[1]*ccy,
+                    c[2] + r[2]*ccx + up[2]*ccy};
+                shapeQuad(e, viewProj, ap, r, up, 0.008f, -2.3562f,
+                          cr + t + 0.002f, cr + t + 0.002f, cr, cr, cr,
+                          t, 0.0015f, gc, -1.0f, 1.0f);
             }
         }
 

@@ -16,6 +16,7 @@ struct McpState {
     float pos[3] = {0.0f, 0.0f, 0.0f};
     float yawDeg = 0.0f, pitchDeg = 0.0f;
     int hover = -1;
+    int hoverZone = 0;
     bool grid = false, kbd = false;
     std::vector<McpPanelInfo> panels;
 };

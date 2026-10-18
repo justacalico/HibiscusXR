@@ -272,6 +272,7 @@ public:
             out->yawDeg = app->cam.yaw * 180.0f / (float)M_PI;
             out->pitchDeg = app->cam.pitch * 180.0f / (float)M_PI;
             out->hover = hud->hover;
+            out->hoverZone = hud->hoverZone;
             out->grid = hud->grid.shown;
             out->kbd = hud->kbd.shown;
             out->panels.clear();

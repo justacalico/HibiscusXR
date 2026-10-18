@@ -60,6 +60,7 @@ Json stateJson(const McpState& s) {
     j.set("grid", Json::boolean(s.grid));
     j.set("keyboard", Json::boolean(s.kbd));
     j.set("hover", Json::num(s.hover));
+    j.set("hoverZone", Json::num(s.hoverZone));
     Json ps = Json::arr();
     for (const McpPanelInfo& p : s.panels) {
         Json pj = Json::obj();

@@ -159,10 +159,10 @@ private:
         for (int y = 0; y < h; ++y)
             for (int x = 0; x < w; ++x) {
                 unsigned char* p = px.data() + (y * w + x) * 4;
-                const bool line = x % 64 < 2 || y % 64 < 2;
-                p[0] = line ? 64 : (unsigned char)(24 + x / 12);
-                p[1] = line ? 88 : (unsigned char)(42 + y / 8);
-                p[2] = line ? 110 : 72;
+                const bool line = x % 64 < 1 || y % 64 < 1;
+                p[0] = line ? 52 : (unsigned char)(30 + x / 14);
+                p[1] = line ? 62 : (unsigned char)(50 + y / 9);
+                p[2] = line ? 78 : 84;
                 p[3] = 255;
             }
         texParams(tex);

@@ -16,13 +16,16 @@ void testSceneGeo() {
     for (size_t i = 1; i < v.size(); i += 6)
         CHECK_F(v[i], -1.2f, 1e-6f);
 
-    // axis lines are brighter than regular lines
-    bool sawBright = false, sawDim = false;
-    for (size_t i = 0; i + 5 < v.size(); i += 6) {
-        if (v[i+3] > 0.4f) sawBright = true;
-        if (v[i+3] < 0.2f) sawDim = true;
+    // lines dim toward the far edge: the brightest vertex sits under the
+    // centre line, the dimmest at the ring's edge, and none of them is
+    // bright enough to fight the chrome
+    float hi = 0.0f, lo = 1.0f;
+    for (size_t i = 3; i + 2 < v.size(); i += 6) {
+        if (v[i] > hi) hi = v[i];
+        if (v[i] < lo) lo = v[i];
     }
-    CHECK(sawBright && sawDim);
+    CHECK(hi < 0.10f);
+    CHECK(lo < hi * 0.6f);
 
     // sky: 64 segments x 3 ring quads x 6 verts
     n = buildSky(v);

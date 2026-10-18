@@ -1,5 +1,6 @@
 #include "wlcomp.h"
 
+#include "cmdline.h"
 #include "pixconv.h"
 #include "popuppos.h"
 #include "../common/config.h"
@@ -15,6 +16,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <fcntl.h>
 #include <cstdlib>
 #include <cstring>
@@ -938,6 +940,8 @@ void WlComp::destroy() {
 
 void WlComp::dispatch(int timeoutMs) {
     if (!dpy) return;
+    int st;
+    while (waitpid(-1, &st, WNOHANG) > 0) {}
     wl_event_loop_dispatch(loop, timeoutMs);
     wl_display_flush_clients(dpy);
 }
@@ -961,6 +965,9 @@ pid_t WlComp::spawn(const std::vector<std::string>& argv,
     const pid_t pid = fork();
     if (pid != 0) return pid;
     setsid();
+    sigset_t set;
+    sigemptyset(&set);
+    sigprocmask(SIG_SETMASK, &set, nullptr);
     setenv("WAYLAND_DISPLAY", sock.c_str(), 1);
     unsetenv("DISPLAY");
     setenv("GDK_BACKEND", "wayland", 0);
@@ -973,10 +980,15 @@ pid_t WlComp::spawn(const std::vector<std::string>& argv,
         if (eq != std::string::npos)
             setenv(e.substr(0, eq).c_str(), e.substr(eq + 1).c_str(), 1);
     }
-    std::vector<char*> args;
-    for (const std::string& a : argv) args.push_back((char*)a.c_str());
-    args.push_back(nullptr);
-    execvp(args[0], args.data());
+    const int dn = open("/dev/null", O_RDWR);
+    if (dn != -1) {
+        dup2(dn, STDIN_FILENO);
+        dup2(dn, STDOUT_FILENO);
+        dup2(dn, STDERR_FILENO);
+        if (dn > STDERR_FILENO) close(dn);
+    }
+    const std::string cmd = shellJoin(argv);
+    execl("/bin/sh", "sh", "-c", cmd.c_str(), (char*)nullptr);
     _exit(127);
 }
 

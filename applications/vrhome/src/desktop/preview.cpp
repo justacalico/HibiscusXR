@@ -1,5 +1,7 @@
 #define VRHOME_DESKTOP 1
 
+#include "harness.h"
+
 #include "../anim/anim.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
@@ -8,8 +10,6 @@
 #include "../hud/engine.h"
 #include "../input/input.h"
 #include "../input/keys.h"
-#include "../mcp/server.h"
-#include "../mcp/tools.h"
 #include "../panels/panel.h"
 #include "../render/resources.h"
 #include "../shell/backend.h"
@@ -17,17 +17,9 @@
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
 
-#include <cmath>
-#include <condition_variable>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
-#include <deque>
-#include <functional>
-#include <iostream>
-#include <mutex>
 #include <string>
-#include <thread>
 #include <vector>
 
 class PreviewBackend : public DashBackend {
@@ -58,7 +50,6 @@ public:
         return {kbdShown, kbdShown ? 9000 : -1, false};
     }
     void sendKbdHide() override { kbdShown = false; }
-    void toggleKbd() { kbdShown = !kbdShown; }
     void kbdShow(bool on) { kbdShown = on; }
 
     bool takePins(std::vector<std::string>* out) override {
@@ -194,281 +185,45 @@ private:
     }
 };
 
-struct Cam {
-    float pos[3] = {0.0f, 0.0f, 0.0f};
-    float yaw = 0.0f;
-    float pitch = 0.0f;
-    double lastX = 0.0f, lastY = 0.0f;
-    bool first = true;
-};
-
-static void fwd(const Cam& c, float out[3]) {
-    const float cp = cosf(c.pitch);
-    out[0] = sinf(c.yaw) * cp;
-    out[1] = sinf(c.pitch);
-    out[2] = -cosf(c.yaw) * cp;
-}
-
-static Mat4 camView(const Cam& c) {
-    Mat4 v = multiply(rotX(-c.pitch * 180.0f / (float)M_PI),
-                      rotY(c.yaw * 180.0f / (float)M_PI));
-    v.m[12] = -(v.m[0]*c.pos[0] + v.m[4]*c.pos[1] + v.m[8]*c.pos[2]);
-    v.m[13] = -(v.m[1]*c.pos[0] + v.m[5]*c.pos[1] + v.m[9]*c.pos[2]);
-    v.m[14] = -(v.m[2]*c.pos[0] + v.m[6]*c.pos[1] + v.m[10]*c.pos[2]);
-    return v;
-}
-
-static void drawBackdrop(HudEngine* e, const Mat4& vp) {
-    glUseProgram(e->sceneProg);
-    const GLint uMVP = glGetUniformLocation(e->sceneProg, "uMVP");
-    const GLint aPos = glGetAttribLocation(e->sceneProg, "aPos");
-    const GLint aCol = glGetAttribLocation(e->sceneProg, "aCol");
-    glEnableVertexAttribArray(aPos);
-    glEnableVertexAttribArray(aCol);
-    glUniformMatrix4fv(uMVP, 1, GL_FALSE, vp.m);
-    glDepthMask(GL_FALSE);
-    glBindBuffer(GL_ARRAY_BUFFER, e->skyVbo);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-    glDrawArrays(GL_TRIANGLES, 0, e->skyVerts);
-    glDepthMask(GL_TRUE);
-    glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
-    glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-    glVertexAttribPointer(aCol, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-    glDrawArrays(GL_LINES, 0, e->gridVerts);
-    glDisableVertexAttribArray(aPos);
-    glDisableVertexAttribArray(aCol);
-}
-
-static PreviewBackend* gBackend;
-static HudEngine* gHud;
-static Cam gCam;
-static bool gConfirm = false;
-
-static void mouseMove(GLFWwindow*, double x, double y) {
-    if (gCam.first) { gCam.lastX = x; gCam.lastY = y; gCam.first = false; }
-    gCam.yaw += (float)(x - gCam.lastX) * 0.0022f;
-    gCam.pitch -= (float)(y - gCam.lastY) * 0.0022f;
-    gCam.pitch = fmaxf(-1.45f, fminf(1.45f, gCam.pitch));
-    gCam.lastX = x; gCam.lastY = y;
-}
-
-static void mouseBtn(GLFWwindow*, int button, int action, int) {
-    if (button != GLFW_MOUSE_BUTTON_LEFT) return;
-    gConfirm = action == GLFW_PRESS;
-    hudKey(gHud, kKeyEnter, gConfirm ? kKeyDown : kKeyUp, 0);
-}
-
-static void keyCb(GLFWwindow*, int key, int, int action, int) {
-    if (action != GLFW_PRESS) return;
-    if (key == GLFW_KEY_ESCAPE) hudKey(gHud, kKeyBack, kKeyUp, 0);
-    else if (key == GLFW_KEY_G) gHud->grid.shown = !gHud->grid.shown;
-    else if (key == GLFW_KEY_P) gHud->quick.shown = !gHud->quick.shown;
-    else if (key == GLFW_KEY_K) gBackend->toggleKbd();
-    else if (key == GLFW_KEY_R) wantRecenter();
-}
-
-static long long nowMs() {
-    timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-    return (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-}
-
-// MCP jobs queue onto the render thread: mutations run before the tick,
-// reads (state, screenshot) after the draw while the back buffer is still
-// valid. Stack-allocated jobs stay alive because the caller always waits.
-struct McpJob {
-    std::function<void()> fn;
-    std::mutex mu;
-    std::condition_variable cv;
-    bool done = false;
-};
-
-static std::mutex gJobMu;
-static std::deque<McpJob*> gPreJobs, gPostJobs;
-static bool gLive = true;
-
-static bool runJob(bool postDraw, const std::function<void()>& fn) {
-    McpJob j;
-    j.fn = fn;
-    {
-        std::lock_guard<std::mutex> l(gJobMu);
-        if (!gLive) return false;
-        (postDraw ? gPostJobs : gPreJobs).push_back(&j);
-    }
-    std::unique_lock<std::mutex> l(j.mu);
-    j.cv.wait(l, [&] { return j.done; });
-    return true;
-}
-
-static void drainJobs(std::deque<McpJob*>& q, bool run) {
-    std::deque<McpJob*> batch;
-    {
-        std::lock_guard<std::mutex> l(gJobMu);
-        batch.swap(q);
-    }
-    for (McpJob* j : batch) {
-        if (run) j->fn();
-        {
-            std::lock_guard<std::mutex> lj(j->mu);
-            j->done = true;
-        }
-        j->cv.notify_one();
-    }
-}
-
-class PreviewMcp : public McpDash {
-public:
-    void launch(const std::string& pkg) override {
-        queueLaunch(pkg.c_str());
-    }
-    void key(int code, int action) override {
-        runJob(false, [=] { hudKey(gHud, code, action, 0); });
-    }
-    void look(float yawDeg, float pitchDeg) override {
-        runJob(false, [=] {
-            gCam.yaw = yawDeg * (float)M_PI / 180.0f;
-            const float p = pitchDeg * (float)M_PI / 180.0f;
-            gCam.pitch = fmaxf(-1.45f, fminf(1.45f, p));
-        });
-    }
-    void move(float x, float y, float z) override {
-        runJob(false, [=] {
-            gCam.pos[0] = x; gCam.pos[1] = y; gCam.pos[2] = z;
-        });
-    }
-    void recenter() override { wantRecenter(); }
-    void setGrid(bool shown) override {
-        runJob(false, [=] { gHud->grid.shown = shown; });
-    }
-    void setKbd(bool shown) override {
-        runJob(false, [=] { gBackend->kbdShow(shown); });
-    }
-    bool state(McpState* out) override {
-        return runJob(true, [=] {
-            memcpy(out->pos, gCam.pos, sizeof(gCam.pos));
-            out->yawDeg = gCam.yaw * 180.0f / (float)M_PI;
-            out->pitchDeg = gCam.pitch * 180.0f / (float)M_PI;
-            out->hover = gHud->hover;
-            out->grid = gHud->grid.shown;
-            out->kbd = gBackend->kbdState().shown;
-            out->panels.clear();
-            for (const Panel& p : gHud->panels) {
-                McpPanelInfo pi;
-                pi.displayId = p.displayId;
-                pi.taskId = p.taskId;
-                pi.pkg = p.pkg;
-                pi.label = p.label;
-                pi.minimized = p.minimized;
-                pi.floating = p.floating;
-                pi.yawDeg = p.yaw * 180.0f / (float)M_PI;
-                pi.pitchDeg = p.pitch * 180.0f / (float)M_PI;
-                pi.scale = p.scale;
-                out->panels.push_back(pi);
-            }
-        });
-    }
-    bool screenshot(std::vector<unsigned char>* rgba,
-                    int* w, int* h) override {
-        return runJob(true, [=] {
-            *w = gHud->width; *h = gHud->height;
-            if (*w <= 0 || *h <= 0) return;
-            std::vector<unsigned char> px((size_t)*w * *h * 4);
-            glReadPixels(0, 0, *w, *h, GL_RGBA, GL_UNSIGNED_BYTE,
-                         px.data());
-            const size_t row = (size_t)*w * 4;
-            rgba->resize(px.size());
-            for (int y = 0; y < *h; ++y)
-                memcpy(rgba->data() + (size_t)y * row,
-                       px.data() + (size_t)(*h - 1 - y) * row, row);
-        });
-    }
-};
-
-// stdin carries one JSON-RPC message per line; EOF means the MCP client
-// went away, so the window closes with it
-static void mcpStdinLoop(McpServer* srv, GLFWwindow* win) {
-    std::string line;
-    while (std::getline(std::cin, line)) {
-        const std::string out = srv->handleLine(line);
-        if (out.empty()) continue;
-        fwrite(out.data(), 1, out.size(), stdout);
-        fputc('\n', stdout);
-        fflush(stdout);
-    }
-    glfwSetWindowShouldClose(win, GLFW_TRUE);
-}
-
 int main(int argc, char** argv) {
     bool mcp = false;
     for (int i = 1; i < argc; ++i)
         mcp |= !strcmp(argv[i], "-mcp");
-    if (!glfwInit()) return 1;
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    GLFWwindow* win = glfwCreateWindow(1440, 810, "Hibiscus dash preview",
-                                       nullptr, nullptr);
-    if (!win) { glfwTerminate(); return 1; }
-    glfwMakeContextCurrent(win);
-    glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    glfwSetCursorPosCallback(win, mouseMove);
-    glfwSetMouseButtonCallback(win, mouseBtn);
-    glfwSetKeyCallback(win, keyCb);
+
+    DashApp app;
+    if (!dashWindow(&app, "Hibiscus dash preview", 1440, 810)) return 1;
 
     HudEngine hud;
     PreviewBackend backend;
-    gHud = &hud; gBackend = &backend;
+    app.hud = &hud;
+    app.kbdSet = [&backend](bool on) { backend.kbdShow(on); };
+    app.extraKey = [&backend](int key, int, int action) {
+        if (key == GLFW_KEY_K && action == GLFW_PRESS)
+            backend.kbdShow(!backend.kbdState().shown);
+    };
     hud.backend = &backend;
     hud.haveQuat = true;
     hud.dockAnchored = false;
-    hud.summonMs = nowMs();
+    hud.summonMs = dashNowMs();
     if (initGlResources(&hud) != 0) return 1;
     queueLaunch("preview.browser");
     queueLaunch("preview.files");
     queueLaunch("preview.settings");
 
-    PreviewMcp mcpDash;
-    McpServer mcpSrv(&mcpDash);
-    std::thread mcpTh;
-    if (mcp) {
-        LOGI("mcp server on stdio");
-        mcpTh = std::thread(mcpStdinLoop, &mcpSrv, win);
-    }
+    if (mcp) dashStartMcp(&app);
 
-    long long last = nowMs();
-    while (!glfwWindowShouldClose(win)) {
+    long long last = dashNowMs();
+    while (!glfwWindowShouldClose(app.win)) {
         glfwPollEvents();
-        drainJobs(gPreJobs, true);
-        const long long now = nowMs();
+        dashDrainPre();
+        const long long now = dashNowMs();
         const float dt = (now - last) / 1000.0f;
         last = now;
-        float f[3], r[3];
-        fwd(gCam, f);
-        r[0] = cosf(gCam.yaw); r[1] = 0.0f; r[2] = sinf(gCam.yaw);
-        const float speed = (glfwGetKey(win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-                            ? 2.4f : 0.8f;
-        const float mv = speed * dt;
-        if (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS)
-            for (int i = 0; i < 3; ++i) gCam.pos[i] += f[i] * mv;
-        if (glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS)
-            for (int i = 0; i < 3; ++i) gCam.pos[i] -= f[i] * mv;
-        if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS)
-            for (int i = 0; i < 3; ++i) gCam.pos[i] += r[i] * mv;
-        if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS)
-            for (int i = 0; i < 3; ++i) gCam.pos[i] -= r[i] * mv;
-        if (glfwGetKey(win, GLFW_KEY_E) == GLFW_PRESS) gCam.pos[1] += mv;
-        if (glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS) gCam.pos[1] -= mv;
-
-        memcpy(hud.eyePos, gCam.pos, sizeof(gCam.pos));
-        memcpy(hud.aimO, gCam.pos, sizeof(gCam.pos));
-        memcpy(hud.aimD, f, sizeof(f));
-        hud.aimYaw = gCam.yaw;
-        hud.aimPitch = gCam.pitch;
-        const Mat4 view = camView(gCam);
+        dashCamTick(&app, dt);
+        const Mat4 view = camView(app.cam);
         tickDash(&hud, view, now);
 
-        glfwGetFramebufferSize(win, &hud.width, &hud.height);
+        glfwGetFramebufferSize(app.win, &hud.width, &hud.height);
         glViewport(0, 0, hud.width, hud.height);
         glClearColor(0.02f, 0.025f, 0.035f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -478,17 +233,9 @@ int main(int argc, char** argv) {
         const Mat4 vp = multiply(proj, view);
         drawBackdrop(&hud, vp);
         drawDashScene(&hud, vp);
-        drainJobs(gPostJobs, true);
-        glfwSwapBuffers(win);
+        dashDrainPost();
+        glfwSwapBuffers(app.win);
     }
-    {
-        std::lock_guard<std::mutex> l(gJobMu);
-        gLive = false;
-    }
-    drainJobs(gPreJobs, false);
-    drainJobs(gPostJobs, false);
-    if (mcpTh.joinable()) mcpTh.detach();
-    glfwDestroyWindow(win);
-    glfwTerminate();
+    dashStop(&app);
     return 0;
 }

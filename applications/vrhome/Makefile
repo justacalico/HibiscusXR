@@ -101,11 +101,15 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/input/pick.cpp src/quick/layout.cpp \
              src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp \
              src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
-             src/mcp/tools.cpp
+             src/mcp/tools.cpp \
+             src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
+             src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
+             src/desktop/sysinfo.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
-DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
+DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
+                src/hud/dash.cpp \
                 src/bridge/core.cpp src/common/props.cpp \
                 src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
                 src/text/utf8.cpp src/text/glyphs.cpp src/text/font.cpp \
@@ -130,7 +134,21 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
                 src/mcp/tools.cpp
 PREVIEW_BIN := $(OUT)/dash-preview
 
-.PHONY: all apk test preview install clean toolcheck
+# dash on desktop linux as a real wayland compositor: same shared code as
+# the preview plus the compositor/backend glue. Host needs wayland-server,
+# xkbcommon and libpng on top of the preview's deps.
+WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
+           src/desktop/wlcomp.cpp src/desktop/harness.cpp \
+           src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
+           src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
+           src/desktop/sysinfo.cpp \
+           $(filter-out src/desktop/preview.cpp \
+             src/desktop/harness.cpp,$(DESKTOP_SRCS))
+WL_BIN := $(OUT)/dash-wayland
+XDG_XML := /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml
+XDG_GEN := $(OUT)/gen/xdg-shell-server-protocol.h $(OUT)/gen/xdg-shell-protocol.c
+
+.PHONY: all apk test preview dash-wayland install clean toolcheck
 
 all: apk
 apk: $(APK) $(HUD_APK)
@@ -264,6 +282,28 @@ $(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 
 preview: $(PREVIEW_BIN)
 	./$(PREVIEW_BIN)
+
+$(OUT)/gen/xdg-shell-server-protocol.h: $(XDG_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner server-header $< $@
+
+$(OUT)/gen/xdg-shell-protocol.c: $(XDG_XML)
+	@mkdir -p $(OUT)/gen
+	wayland-scanner private-code $< $@
+
+$(OUT)/gen/xdg-shell-protocol.o: $(OUT)/gen/xdg-shell-protocol.c
+	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+
+$(WL_BIN): $(WL_SRCS) $(OUT)/gen/xdg-shell-protocol.o \
+           $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
+	@mkdir -p $(dir $@)
+	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
+	    $(WL_SRCS) $(OUT)/gen/xdg-shell-protocol.o \
+	    $$(pkg-config --libs --cflags wayland-server xkbcommon libpng) \
+	    -lglfw -lGLESv2 -lz -lm
+
+dash-wayland: $(WL_BIN)
+	./$(WL_BIN)
 
 install: $(APK) $(HUD_APK)
 	adb install -r $(APK)

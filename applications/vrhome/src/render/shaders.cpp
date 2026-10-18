@@ -99,6 +99,9 @@ uniform float uRadiusB;  // bottom corners - 0 leaves them square
 uniform float uBorder;   // >0 ring half-thickness, 0 solid, <0 outward fade
 uniform float uSoft;
 uniform float uArc;      // >0 clips to an upward wedge: tan(half-angle)
+uniform float uSheen;    // >0 lifts luminance toward the top edge: the
+                         // light-from-above term that makes a flat quad
+                         // read as frosted glass instead of a slab
 uniform vec3 uClip;      // y-offset into a parent plane + band centre and
                          // half-height; z<=0 disables it (grid scroll band)
 void main() {
@@ -119,7 +122,13 @@ void main() {
         a *= 1.0 - smoothstep(uClip.z - 0.01, uClip.z,
                               abs(p.y + uClip.x - uClip.y));
     if (a < 0.01) discard;
-    gl_FragColor = vec4(uColor.rgb, uColor.a * a);
+    vec3 rgb = uColor.rgb;
+    if (uSheen > 0.0) {
+        float ty = clamp((p.y + uBox.y) / max(2.0 * uBox.y, 0.0001),
+                         0.0, 1.0);
+        rgb += vec3(uSheen * (0.35 * ty + 0.65 * pow(ty, 6.0)));
+    }
+    gl_FragColor = vec4(rgb, uColor.a * a);
 }
 )";
 

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/models.dart';
-import 'package:pn2_settings/src/settings_store.dart';
+import 'package:hibiscus_settings/src/models.dart';
+import 'package:hibiscus_settings/src/settings_store.dart';
 
 void main() {
   test('toggles default off, notify on change only', () {

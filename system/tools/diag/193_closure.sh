@@ -1,22 +1,22 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Which of stock's 22 whitelisted libs can actually link on our system?
 #
 # zygote preloads every entry in public.libraries.txt and aborts the boot if one
 # fails, so a library may only be whitelisted once its ENTIRE DT_NEEDED closure is
 # present. Resolve that closure offline against the device inventory.
 set -u
-LOG=${PN2_ROOT}/notes/193_closure.txt
+LOG=${HIBISCUS_ROOT}/notes/193_closure.txt
 exec >"$LOG" 2>&1
 # the inventory is written by PowerShell, so it has CRLF line endings and a plain
 # `grep -qx libc.so` never matches. Normalise before using it.
 INV=/tmp/pn2_inventory.txt
-tr -d '\r' < ${PN2_ROOT}/notes/192_inventory.txt > "$INV"
+tr -d '\r' < ${HIBISCUS_ROOT}/notes/192_inventory.txt > "$INV"
 echo "inventory: $(wc -l < "$INV") libs"
 
 # candidate libs live in one of these two staging dirs
 find_lib() {
-  for d in ${PN2_ROOT}/notes/lib64 ${PN2_ROOT}/overlay_pvr/lib64; do
+  for d in ${HIBISCUS_ROOT}/notes/lib64 ${HIBISCUS_ROOT}/overlay_pvr/lib64; do
     [ -f "$d/$1" ] && { echo "$d/$1"; return; }
   done
 }

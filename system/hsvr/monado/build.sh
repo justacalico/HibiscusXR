@@ -84,13 +84,13 @@ cp "$ROOT"/../kit/hsvr_kit.c "$ROOT"/../kit/hsvr_kit.h "$HSVR_DST/"
 cp "$ROOT"/driver/hsvr/*.c "$ROOT"/driver/hsvr/*.h "$HSVR_DST/"
 
 # monorepo checkout keeps drivers/ at the root; a standalone hsvr/
-# checkout under $PN2_ROOT finds it copied next to the build root
+# checkout under $HIBISCUS_ROOT finds it copied next to the build root
 if [ -n "${HSVR_DRIVERS_DIR:-}" ]; then
     DRIVERS_DIR="$HSVR_DRIVERS_DIR"
 elif [ -d "$ROOT/../../../drivers" ]; then
     DRIVERS_DIR="$ROOT/../../../drivers"
 else
-    DRIVERS_DIR="${PN2_ROOT:-$ROOT/../..}/drivers"
+    DRIVERS_DIR="${HIBISCUS_ROOT:-${PN2_ROOT:-$ROOT/../..}}/drivers"
 fi
 DRV_NAMES=""
 for d in "$DRIVERS_DIR"/*/monado; do
@@ -111,7 +111,7 @@ if [ -n "${HSVR_CONTROLLERS_DIR:-}" ]; then
 elif [ -d "$ROOT/../../../controllers" ]; then
     CONTROLLERS_DIR="$ROOT/../../../controllers"
 else
-    CONTROLLERS_DIR="${PN2_ROOT:-$ROOT/../..}/controllers"
+    CONTROLLERS_DIR="${HIBISCUS_ROOT:-${PN2_ROOT:-$ROOT/../..}}/controllers"
 fi
 CTRL_NAMES=""
 for d in "$CONTROLLERS_DIR"/*/monado; do

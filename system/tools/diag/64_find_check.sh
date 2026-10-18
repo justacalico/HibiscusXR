@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Locate the fatal CHECK inside libsensorservice.so:
 #   CHECK failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE
 # It lives in convertToSensorEvent(), which is where Pico's non-standard sensor
@@ -7,8 +7,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # to understand the branch well enough to neutralise it.
 NDK=${NDK_BIN}
 OBJDUMP=$NDK/llvm-objdump
-LIB=${PN2_ROOT}/sensorpatch/libsensorservice.so
-OUT=${PN2_ROOT}/notes/64_check.txt
+LIB=${HIBISCUS_ROOT}/sensorpatch/libsensorservice.so
+OUT=${HIBISCUS_ROOT}/notes/64_check.txt
 exec >"$OUT" 2>&1
 
 ls -l "$LIB"

@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Inventory the Pico VR stack inside the STOCK system.img.
 #
 # /vendor kept the QVR/PVR *client* libraries, but the daemons, framework jars,
@@ -7,8 +7,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # This is the list of what a compositor port has to bring back.
 #
 # debugfs, so the image is never mounted and never written.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/notes/63_pvr_inventory.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/notes/63_pvr_inventory.txt
 exec >"$OUT" 2>&1
 
 echo "image: $IMG"

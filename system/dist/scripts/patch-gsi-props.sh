@@ -7,7 +7,7 @@
 # and drop adb auth. Order matters: init only has triggers for "adb" or
 # "X,adb" - "adb,mtp" matches nothing and the gadget never comes up.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 IMG="$R/gsi/gsi_raw.img"
 T=$(mktemp -d)
 trap 'rm -rf "$T"' EXIT

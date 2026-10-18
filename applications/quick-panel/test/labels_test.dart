@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_quicksettings/l10n/app_localizations_en.dart';
-import 'package:pn2_quicksettings/src/catalog.dart';
-import 'package:pn2_quicksettings/src/labels.dart';
-import 'package:pn2_quicksettings/src/models.dart';
+import 'package:hibiscus_quicksettings/l10n/app_localizations_en.dart';
+import 'package:hibiscus_quicksettings/src/catalog.dart';
+import 'package:hibiscus_quicksettings/src/labels.dart';
+import 'package:hibiscus_quicksettings/src/models.dart';
 
 void main() {
   final l10n = AppLocalizationsEn();

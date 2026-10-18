@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # lib6DofReset.so exports updateOffsets and I never extracted it. My lib list was
 # hand-written from a grep of the directory listing, so anything not matching
 # pvr|pxr|qvr|pico was invisible - lib6DofReset.so is exactly that.
@@ -7,9 +7,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Rather than keep discovering these one crash at a time, diff the whole stock
 # /lib{,64} against what we have installed and pull anything Pico-ish that is
 # missing.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_stack
-LOG=${PN2_ROOT}/notes/112_missing.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_stack
+LOG=${HIBISCUS_ROOT}/notes/112_missing.txt
 exec >"$LOG" 2>&1
 
 # libs that exist in the stock image but are NOT part of stock AOSP - anything

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/persistence.dart';
+import 'package:hibiscus_settings/src/persistence.dart';
 
 void main() {
   test('memory persistence stores and counts', () async {

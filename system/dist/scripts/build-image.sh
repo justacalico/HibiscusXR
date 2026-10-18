@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # The whole pipeline, end to end. Assumes fetch-inputs.sh already populated
-# $PN2_ROOT and the source repos (tools, overlay, shim, vrhome) are cloned.
+# $HIBISCUS_ROOT and the source repos (tools, overlay, shim, vrhome) are cloned.
 #
 # The numbered tools/ scripts write their logs into notes/ and mostly don't
 # exit nonzero on failure - each step greps the log for its success marker.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 T="$R/tools/build"
 N="$R/notes"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"

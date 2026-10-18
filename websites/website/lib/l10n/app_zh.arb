@@ -254,7 +254,7 @@
   "flashdocsNeo2Intro": "在 Linux 主机上的完整流程:root 原厂系统、备份、然后刷系统镜像。",
   "flashdocsNeo2WarnTitle": "先读这个",
   "flashdocsNeo2WarnBody": "下面的 boot 和 system 镜像是唯一能安全刷写的分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。",
-  "flashdocsNeo2ReqTitle": "开始之前",
+  "flashdocsReqTitle": "开始之前",
   "flashdocsNeo2Req1": "一台装了 adb 和 fastboot 的 Linux 电脑",
   "flashdocsNeo2Req2": "一台 Pico Neo 2(A7B10),Eye 和非 Eye 版本都可以",
   "flashdocsNeo2Req3": "一根能传数据的 USB 线,不是只能充电的那种",

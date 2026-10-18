@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Recon toolchain setup. Idempotent.
 set -u
-LOG=${PN2_ROOT}/notes/00_setup.log
+LOG=${HIBISCUS_ROOT}/notes/00_setup.log
 exec >"$LOG" 2>&1
 
 echo "=== distro ==="
@@ -35,7 +35,7 @@ for t in python3 brotli dtc readelf simg2img debugfs 7z; do
 done
 echo
 echo "=== workspace ==="
-ls -la ${PN2_ROOT}/
+ls -la ${HIBISCUS_ROOT}/
 echo
-ls -la ${PN2_ROOT}/images/ota_4.1.3/
+ls -la ${HIBISCUS_ROOT}/images/ota_4.1.3/
 echo "SETUP DONE"

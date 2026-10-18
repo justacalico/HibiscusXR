@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Build vdexExtractor.
 #
 # Every Pico vdex is quickened (quickening_info_size != 0), so the embedded dex
@@ -13,7 +13,7 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # fiddly, easy-to-get-subtly-wrong work, for something that already exists.
 set -e
 WORK=/home/justin/vdextools
-LOG=${PN2_ROOT}/notes/93_vdex_build.txt
+LOG=${HIBISCUS_ROOT}/notes/93_vdex_build.txt
 exec >"$LOG" 2>&1
 
 mkdir -p "$WORK"

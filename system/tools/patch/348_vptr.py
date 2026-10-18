@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Find the real vptr offset inside _ZTVN3PVR12BpPvrServiceE.
 
 BpPvrService has a VTT, so it has virtual bases and the vtable begins with
@@ -11,7 +11,7 @@ consistent.
 """
 import subprocess, re
 
-LIB = PN2_ROOT + "/notes/pvrsc32.so"
+LIB = HIBISCUS_ROOT + "/notes/pvrsc32.so"
 OBJDUMP = os.environ.get("OBJDUMP", "llvm-objdump")
 VT, VT_SIZE = 0x194D0, 0x16C
 

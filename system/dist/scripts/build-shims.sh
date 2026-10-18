@@ -6,7 +6,7 @@
 # lld only needs their symbol tables (--allow-shlib-undefined), but they make
 # the output .so record the right DT_NEEDED/SONAME pairs.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 SDK="${ANDROID_SDK_ROOT:-$ANDROID_HOME}"
 NDK=$(ls -d "$SDK"/ndk/* | sort -V | tail -1)
 TC="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin"

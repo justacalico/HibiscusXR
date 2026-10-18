@@ -1,11 +1,11 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Characterise the NDI electromagnetic controller tracking stack.
 set -u
 W=/home/justin/pn2
 V=$W/vendor
-N=${PN2_ROOT}/notes
-SYS=${PN2_ROOT}/images/snapshot_lun0/system.bin
+N=${HIBISCUS_ROOT}/notes
+SYS=${HIBISCUS_ROOT}/images/snapshot_lun0/system.bin
 
 {
 echo "############ NDI / EM / FPGA / controller named files ############"

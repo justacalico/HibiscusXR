@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Pull the app-private lib/ directories that sit NEXT TO each apk.
 #
 # My original extraction took the apk and oat/ and stopped. For system apps the
@@ -8,9 +8,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # libunity.so, libil2cpp.so and even its own libPvr_UnitySDK.so - which is why
 # swapping the SYSTEM libPvr_UnitySDK.so appeared to help. That was a workaround
 # for the real gap and should be reverted.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_applibs
-LOG=${PN2_ROOT}/notes/107_applibs.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_applibs
+LOG=${HIBISCUS_ROOT}/notes/107_applibs.txt
 exec >"$LOG" 2>&1
 
 APPS="VRShell2 VRUserCenter2 pvrdisplay pvr_adapter CVService PVRVerify

@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
 PW="$1"
-R=${PN2_ROOT}/gsi/gsi_raw.img
+R=${HIBISCUS_ROOT}/gsi/gsi_raw.img
 M="${GSI_MNT:-/mnt/gsi_edit}"
-L=${PN2_ROOT}/notes/27_verify_patch.log
+L=${HIBISCUS_ROOT}/notes/27_verify_patch.log
 exec >"$L" 2>&1
 
 echo "$PW" | sudo -S mount -o loop,ro "$R" "$M" 2>/dev/null

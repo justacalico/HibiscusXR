@@ -1,8 +1,8 @@
 # tools
 
-Every script used in the PN2Lineage port, sorted by job. Numbered scripts are
-roughly chronological - they are research notes in executable form, so read the
-comments before running anything.
+Every script used in the Hibiscus port to the Pico Neo 2, sorted by job.
+Numbered scripts are roughly chronological - they are research notes in
+executable form, so read the comments before running anything.
 
 ## Layout
 
@@ -27,8 +27,10 @@ comments before running anything.
 
 - Host scripts are `bash`; scripts meant to run on the headset start with
   `#!/system/bin/sh`.
-- `PN2_ROOT` points at the workspace root (default `~/PN2Lineage`).
-- `PN2_SERIAL` selects the adb/fastboot device when more than one is attached.
+- `HIBISCUS_ROOT` points at the workspace root (default `~/PN2Lineage`,
+  legacy `PN2_ROOT` still honoured).
+- `HIBISCUS_SERIAL` selects the adb/fastboot device when more than one is
+  attached (legacy `PN2_SERIAL` still honoured).
 - `PICO_FW_DIR`, `NDK_BIN`, `GSI_MNT`, `NDI_OUT`, `OBJDUMP` override the
   remaining optional paths.
 

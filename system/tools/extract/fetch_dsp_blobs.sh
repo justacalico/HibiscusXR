@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Populate the gitignored DSP/tracking blobs from the stock dump so the display
 # fix (300_img_dsp.sh + 301_mdsp_img.sh) can be re-run from a fresh checkout.
 #
@@ -13,9 +13,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 #   cdsp/vendor/libqvr_cdsp_driver_stub.so <- system.img /lib/
 #   cdsp/lib{,64}/*_system.so            <- system.img /lib{,64}/
 set -u
-SYSIMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-VENIMG=${PN2_ROOT}/images/vendor.img
-LOG=${PN2_ROOT}/notes/fetch_dsp_blobs.txt
+SYSIMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+VENIMG=${HIBISCUS_ROOT}/images/vendor.img
+LOG=${HIBISCUS_ROOT}/notes/fetch_dsp_blobs.txt
 exec >"$LOG" 2>&1
 
 fail=0
@@ -35,32 +35,32 @@ pull() {
 }
 
 echo "=== rfsa skels (system.img /lib/rfsa/adsp) ==="
-rm -rf "$PN2_ROOT/rfsa/adsp_tmp"; mkdir -p "$PN2_ROOT/rfsa/adsp_tmp"
-rdump "$SYSIMG" /lib/rfsa/adsp "$PN2_ROOT/rfsa/adsp_tmp"
+rm -rf "$HIBISCUS_ROOT/rfsa/adsp_tmp"; mkdir -p "$HIBISCUS_ROOT/rfsa/adsp_tmp"
+rdump "$SYSIMG" /lib/rfsa/adsp "$HIBISCUS_ROOT/rfsa/adsp_tmp"
 # rdump lands files under adsp_tmp/adsp/ - move the .so up into rfsa/
-find "$PN2_ROOT/rfsa/adsp_tmp" -name '*.so' -exec mv -t "$PN2_ROOT/rfsa/" {} +
-rm -rf "$PN2_ROOT/rfsa/adsp_tmp"
-n=$(ls "$PN2_ROOT"/rfsa/*.so 2>/dev/null | wc -l)
+find "$HIBISCUS_ROOT/rfsa/adsp_tmp" -name '*.so' -exec mv -t "$HIBISCUS_ROOT/rfsa/" {} +
+rm -rf "$HIBISCUS_ROOT/rfsa/adsp_tmp"
+n=$(ls "$HIBISCUS_ROOT"/rfsa/*.so 2>/dev/null | wc -l)
 echo "  rfsa: $n skels"
 [ "$n" -ge 15 ] || { echo "  FAIL rfsa: expected >=15 got $n"; fail=$((fail+1)); }
 
 echo "=== cdsp/vendor (vendor.img /lib) ==="
-pull "$VENIMG" /lib/libcdsprpc.so "$PN2_ROOT/cdsp/vendor/libcdsprpc.so"
-pull "$VENIMG" /lib/libmdsprpc.so "$PN2_ROOT/cdsp/vendor/libmdsprpc.so"
+pull "$VENIMG" /lib/libcdsprpc.so "$HIBISCUS_ROOT/cdsp/vendor/libcdsprpc.so"
+pull "$VENIMG" /lib/libmdsprpc.so "$HIBISCUS_ROOT/cdsp/vendor/libmdsprpc.so"
 
 echo "=== cdsp/vendor stub (system.img /lib) ==="
-pull "$SYSIMG" /lib/libqvr_cdsp_driver_stub.so "$PN2_ROOT/cdsp/vendor/libqvr_cdsp_driver_stub.so"
+pull "$SYSIMG" /lib/libqvr_cdsp_driver_stub.so "$HIBISCUS_ROOT/cdsp/vendor/libqvr_cdsp_driver_stub.so"
 
 echo "=== cdsp _system variants (system.img /lib + /lib64) ==="
 for a in lib lib64; do
   for n in libadsprpc_system libcdsprpc_system libsdsprpc_system; do
-    pull "$SYSIMG" /$a/$n.so "$PN2_ROOT/cdsp/$a/$n.so"
+    pull "$SYSIMG" /$a/$n.so "$HIBISCUS_ROOT/cdsp/$a/$n.so"
   done
 done
 
 echo
 echo "=== result ==="
-for d in "$PN2_ROOT/rfsa" "$PN2_ROOT/cdsp/vendor" "$PN2_ROOT/cdsp/lib" "$PN2_ROOT/cdsp/lib64"; do
-  echo "  $(ls "$d"/*.so 2>/dev/null | wc -l) .so in ${d#$PN2_ROOT/}"
+for d in "$HIBISCUS_ROOT/rfsa" "$HIBISCUS_ROOT/cdsp/vendor" "$HIBISCUS_ROOT/cdsp/lib" "$HIBISCUS_ROOT/cdsp/lib64"; do
+  echo "  $(ls "$d"/*.so 2>/dev/null | wc -l) .so in ${d#$HIBISCUS_ROOT/}"
 done
 [ "$fail" -eq 0 ] && echo "DSP BLOBS OK" || echo "HAD $fail FAILURES"

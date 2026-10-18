@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Disassemble the Pico SDK functions that every VR app dies inside.
 
 The crash is SIGSEGV with fault addr 0x10. That is a load at offset 0x10 from a
@@ -16,7 +16,7 @@ pull fields off the result. Print their disassembly and flag every load at #0x10
 import struct, subprocess, sys, re
 from capstone import Cs, CS_ARCH_ARM, CS_MODE_THUMB, CS_MODE_ARM, CS_MODE_LITTLE_ENDIAN
 
-SO = PN2_ROOT + "/ref/alvr-pico-legacy/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so"
+SO = HIBISCUS_ROOT + "/ref/alvr-pico-legacy/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so"
 
 data = open(SO, "rb").read()
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Add Pico's fan daemon to system-pn2-full.img.
 #
 # The GSI ships no fan control at all. The gpio-fan cooling device exists and
@@ -11,8 +11,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # libraries are already present. Its init rc needs an explicit seclabel because
 # our build has no fancontrol domain (stock's policy defines fancontrol_exec).
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
-LOG=${PN2_ROOT}/notes/373_img_fan.txt
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
+LOG=${HIBISCUS_ROOT}/notes/373_img_fan.txt
 exec >"$LOG" 2>&1
 
 fail=0
@@ -36,8 +36,8 @@ dumpe2fs -h "$IMG" 2>/dev/null | grep 'Free blocks'
 
 echo
 echo "=== fan daemon ==="
-put ${PN2_ROOT}/fan/fancontrol /bin/fancontrol 755
-put ${PN2_ROOT}/overlay/etc/init/pn2-fanservice.rc /etc/init/pn2-fanservice.rc 644
+put ${HIBISCUS_ROOT}/fan/fancontrol /bin/fancontrol 755
+put ${HIBISCUS_ROOT}/overlay/etc/init/pn2-fanservice.rc /etc/init/pn2-fanservice.rc 644
 
 echo
 echo "=== repair + verify ==="

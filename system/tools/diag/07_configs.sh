@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
 V=/home/justin/pn2/vendor
-N=${PN2_ROOT}/notes
+N=${HIBISCUS_ROOT}/notes
 
 {
 echo "################ /vendor/etc/qvr/6dof_config.xml ################"

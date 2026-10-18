@@ -78,7 +78,7 @@ class NotifService : NotificationListenerService() {
     }
 
     companion object {
-        private const val TAG = "pn2qs.notif"
+        private const val TAG = "hqs.notif"
 
         // Panel-visible copy of the shade. Written on the listener
         // thread, read on the platform thread.

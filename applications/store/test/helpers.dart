@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/widgets.dart';
-import 'package:pn2_store/src/fdroid_index.dart';
-import 'package:pn2_store/src/store_controller.dart';
-import 'package:pn2_store/src/platform/fakes.dart';
-import 'package:pn2_store/src/persistence.dart';
-import 'package:pn2_store/src/downloader.dart';
+import 'package:hibiscus_store/src/fdroid_index.dart';
+import 'package:hibiscus_store/src/store_controller.dart';
+import 'package:hibiscus_store/src/platform/fakes.dart';
+import 'package:hibiscus_store/src/persistence.dart';
+import 'package:hibiscus_store/src/downloader.dart';
 
 /// A flat blue tile, small enough to inline. Every network image in the
 /// catalog resolves to this in tests so goldens stay deterministic.

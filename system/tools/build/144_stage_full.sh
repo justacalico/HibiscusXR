@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Assemble a staging tree that mirrors /system, containing every Pico component
 # we have. This feeds the "full" image - the one that ships with the blobs in.
 #
@@ -10,13 +10,13 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 #   oem_final       the 5 deodexed + signed /oem apps
 #   stock image     /media/LoadingRes, which VRShell loads its boot animation from
 set -u
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-STAGE=${PN2_ROOT}/fullstage
-APPS=${PN2_ROOT}/pvr_apps_final
-APPLIBS=${PN2_ROOT}/pvr_applibs
-OEM=${PN2_ROOT}/oem_final
-STACK=${PN2_ROOT}/pvr_stack
-LOG=${PN2_ROOT}/notes/144_stage.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+STAGE=${HIBISCUS_ROOT}/fullstage
+APPS=${HIBISCUS_ROOT}/pvr_apps_final
+APPLIBS=${HIBISCUS_ROOT}/pvr_applibs
+OEM=${HIBISCUS_ROOT}/oem_final
+STACK=${HIBISCUS_ROOT}/pvr_stack
+LOG=${HIBISCUS_ROOT}/notes/144_stage.txt
 exec >"$LOG" 2>&1
 
 rm -rf "$STAGE"

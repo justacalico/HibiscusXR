@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Add the DSP tracking stack to system-pn2-full.img.
 #
 # This is the session's biggest find. Android 8.1 let /system processes load from
@@ -17,8 +17,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Verified: qvrservicetest64 now prints "starting VR mode" with live gyro/accel,
 # matching stock, where it previously said "VR not supported".
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
-LOG=${PN2_ROOT}/notes/300_img_dsp.txt
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
+LOG=${HIBISCUS_ROOT}/notes/300_img_dsp.txt
 exec >"$LOG" 2>&1
 
 fail=0
@@ -48,13 +48,13 @@ dumpe2fs -h "$IMG" 2>/dev/null | grep 'Free blocks'
 
 echo
 echo "=== DSP RPC libraries (vendor copies - correct SONAME for the verneed) ==="
-put ${PN2_ROOT}/cdsp/vendor/libcdsprpc.so /lib/libcdsprpc.so 644
+put ${HIBISCUS_ROOT}/cdsp/vendor/libcdsprpc.so /lib/libcdsprpc.so 644
 
 echo
 echo "=== DSP-side skel libraries ==="
 mkd /lib/rfsa
 mkd /lib/rfsa/adsp
-for f in ${PN2_ROOT}/rfsa/*.so; do
+for f in ${HIBISCUS_ROOT}/rfsa/*.so; do
   put "$f" "/lib/rfsa/adsp/$(basename "$f")" 644
 done
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Find every 16-bit store at offset 0x570/0x572, whatever base register is used.
 
 getTrackingState reads:
@@ -16,7 +16,7 @@ where imm12 = byteoffset / 2. 0x570/2 = 0x2b8, 0x572/2 = 0x2b9.
 import struct
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-L = PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+L = HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
 data = open(L, "rb").read()
 
 e_phoff, = struct.unpack_from("<Q", data, 0x20)

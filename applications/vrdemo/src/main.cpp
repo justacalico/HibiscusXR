@@ -1,4 +1,4 @@
-// Minimal stereo VR renderer for the Pico Neo 2 running a plain Android 10 GSI.
+// Minimal stereo VR renderer for Hibiscus headsets running a plain Android 10 GSI.
 //
 // Deliberately does NOT use the Pico/Qualcomm VR stack. This is the "does the
 // open path work at all" test: standard EGL + GLES2 on a normal fullscreen

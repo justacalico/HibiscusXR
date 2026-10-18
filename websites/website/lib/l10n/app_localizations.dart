@@ -1466,11 +1466,11 @@ abstract class AppLocalizations {
   /// **'Only the boot and system images below are safe to flash. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.'**
   String get flashdocsNeo2WarnBody;
 
-  /// No description provided for @flashdocsNeo2ReqTitle.
+  /// No description provided for @flashdocsReqTitle.
   ///
   /// In en, this message translates to:
   /// **'Before you start'**
-  String get flashdocsNeo2ReqTitle;
+  String get flashdocsReqTitle;
 
   /// No description provided for @flashdocsNeo2Req1.
   ///

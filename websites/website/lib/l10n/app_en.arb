@@ -278,7 +278,7 @@
   "flashdocsNeo2Intro": "The full flow on a Linux host: root stock, back it up, then flash the system image.",
   "flashdocsNeo2WarnTitle": "Read this first",
   "flashdocsNeo2WarnBody": "Only the boot and system images below are safe to flash. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.",
-  "flashdocsNeo2ReqTitle": "Before you start",
+  "flashdocsReqTitle": "Before you start",
   "flashdocsNeo2Req1": "A Linux PC with adb and fastboot",
   "flashdocsNeo2Req2": "A Pico Neo 2 (A7B10) - Eye and non-Eye SKUs both work",
   "flashdocsNeo2Req3": "A USB cable that carries data, not charge-only",

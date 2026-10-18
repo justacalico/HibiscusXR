@@ -1,11 +1,11 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # THE DECISIVE TEST.
 # Find Pico's VR runtime binaries in /system and determine what they link against.
 # If they only need vendor + NDK/VNDK-stable libs -> portable.
 # If they pull libgui/libui/libsurfaceflinger/private libbinder -> welded to this exact system image.
 set -u
-B=${PN2_ROOT}
+B=${HIBISCUS_ROOT}
 SYS=$B/images/snapshot_lun0/system.bin
 EX=$B/extracted
 LOG=$B/notes/05_vrhunt.log

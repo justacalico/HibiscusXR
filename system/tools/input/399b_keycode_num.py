@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Same goal, but the table stores its pointers in place: scan the file for an
 8-byte little-endian word equal to each label's string vaddr, then read the
 int32 that follows it."""
 import struct, re
 
-LIB = PN2_ROOT + "/notes/stock_system_lib64_libinput.so"
+LIB = HIBISCUS_ROOT + "/notes/stock_system_lib64_libinput.so"
 WANTED = ["HOME", "BACK", "ALL_APPS", "DC_IN", "HALL_OPEN", "HALL_CLOSE",
           "DEFINE_CONFIRM", "DEFINE_CONTROLLER_CONFIRM", "CAMERA", "FOCUS"]
 

@@ -123,7 +123,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get itemIpd => '瞳距 (IPD)';
 
   @override
-  String get itemIpdDesc => '将双眼间距调整到与你瞳孔的距离一致。Neo 2 的镜片是固定的,所以这里移动的是渲染画面';
+  String get itemIpdDesc => '将双眼间距调整到与你瞳孔的距离一致。头显的镜片是固定的,所以这里移动的是渲染画面';
 
   @override
   String get itemDeviceMode => '设备模式';

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_quicksettings/src/persistence.dart';
-import 'package:pn2_quicksettings/src/platform/prefs_persistence.dart';
+import 'package:hibiscus_quicksettings/src/persistence.dart';
+import 'package:hibiscus_quicksettings/src/platform/prefs_persistence.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {

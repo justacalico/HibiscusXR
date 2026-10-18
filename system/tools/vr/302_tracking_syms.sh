@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # The getter at 0x5b418 returns the cached tracking state (global 0x2049b0 +0x570).
 # Which exported function is that, and which one SETS the field?
 set -u
-L=${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.so
-LOG=${PN2_ROOT}/notes/302_tracking_syms.txt
+L=${HIBISCUS_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.so
+LOG=${HIBISCUS_ROOT}/notes/302_tracking_syms.txt
 exec >"$LOG" 2>&1
 
 echo "=== symbols covering / near 0x5b418 ==="

@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Build system-pn2-full.img: the clean image plus every Pico component.
 #
 # Two images are maintained:
@@ -9,10 +9,10 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # The GSI has ~57MB free and the Pico stack is ~313MB, so the filesystem has to
 # be grown first. The system partition is 3943694336 bytes; stay under that.
 set -u
-CLEAN=${PN2_ROOT}/out/system-pn2.img
-FULL=${PN2_ROOT}/out/system-pn2-full.img
-STAGE=${PN2_ROOT}/fullstage
-LOG=${PN2_ROOT}/notes/145_full.txt
+CLEAN=${HIBISCUS_ROOT}/out/system-pn2.img
+FULL=${HIBISCUS_ROOT}/out/system-pn2-full.img
+STAGE=${HIBISCUS_ROOT}/fullstage
+LOG=${HIBISCUS_ROOT}/notes/145_full.txt
 PART_BYTES=3943694336
 exec >"$LOG" 2>&1
 

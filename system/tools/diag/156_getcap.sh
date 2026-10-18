@@ -1,9 +1,9 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Get an ARM disassembler in WSL. Debian's Python is PEP668-managed, so use a venv
 # rather than --break-system-packages.
 set -u
-LOG=${PN2_ROOT}/notes/156_getcap.txt
+LOG=${HIBISCUS_ROOT}/notes/156_getcap.txt
 exec >"$LOG" 2>&1
 VENV=$HOME/.pn2venv
 if [ ! -x "$VENV/bin/python" ]; then

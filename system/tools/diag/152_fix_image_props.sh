@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Repair build.prop inside BOTH images.
 #
 # The image builder appended to build.prop without guaranteeing a trailing
@@ -11,7 +11,7 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Rewrite the block properly: strip every key we manage, then append them each on
 # their own line, after making sure the file ends with a newline.
 set -u
-LOG=${PN2_ROOT}/notes/152_props.txt
+LOG=${HIBISCUS_ROOT}/notes/152_props.txt
 exec >"$LOG" 2>&1
 
 fix_image() {
@@ -84,6 +84,6 @@ EOF
   echo
 }
 
-fix_image ${PN2_ROOT}/out/system-pn2.img
-fix_image ${PN2_ROOT}/out/system-pn2-full.img
+fix_image ${HIBISCUS_ROOT}/out/system-pn2.img
+fix_image ${HIBISCUS_ROOT}/out/system-pn2-full.img
 echo DONE

@@ -12,7 +12,7 @@ through the package registry, so they never expire.
 ## What a build does
 
 1. `scripts/layout-sources.sh` copies the monorepo source dirs into
-   `$PN2_ROOT` (`system/{tools,overlay,shim,hsvr,cted}`, `drivers/`,
+   `$HIBISCUS_ROOT` (`system/{tools,overlay,shim,hsvr,cted}`, `drivers/`,
    `controllers/`, `applications/{vrhome,quick-panel,settings,
    store,keyboard}`) - the sources are the monorepo checkout itself, nothing
    gets cloned.
@@ -89,12 +89,12 @@ of burning another version.
 
 ## Running locally
 
-The same `build-image.sh` runs without CI. Point `PN2_ROOT` at a build root
+The same `build-image.sh` runs without CI. Point `HIBISCUS_ROOT` at a build root
 and lay out the sources exactly like the workflow does - one script, one
 list, so a local image ships the same content a GitHub run would:
 
 ```
-export PN2_ROOT=/path/to/build-root
+export HIBISCUS_ROOT=/path/to/build-root
 bash system/dist/scripts/layout-sources.sh
 ```
 

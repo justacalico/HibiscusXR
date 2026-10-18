@@ -1,11 +1,11 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Generate proprietary-files.txt from the actual extracted vendor tree rather
 # than by hand. Groups by subsystem so the list stays reviewable.
 set -u
 V=/home/justin/pn2/vendor
-OUT=${PN2_ROOT}/android/device/pico/A7B10/proprietary-files.txt
-N=${PN2_ROOT}/notes/20_proprietary.log
+OUT=${HIBISCUS_ROOT}/android/device/pico/A7B10/proprietary-files.txt
+N=${HIBISCUS_ROOT}/notes/20_proprietary.log
 mkdir -p "$(dirname "$OUT")"
 exec 2>"$N"
 

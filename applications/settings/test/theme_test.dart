@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:panel_theme/panel_theme.dart';
-import 'package:pn2_settings/src/ui/theme.dart';
+import 'package:hibiscus_settings/src/ui/theme.dart';
 
 void main() {
   test('themeChoiceFromName parses the wire values, dark by default', () {

@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-D=${PN2_ROOT}/gsi
+D=${HIBISCUS_ROOT}/gsi
 G=$D/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img
 R=$D/gsi_raw.img
-L=${PN2_ROOT}/notes/23_gsi_raw.log
+L=${HIBISCUS_ROOT}/notes/23_gsi_raw.log
 exec >"$L" 2>&1
 
 if [ ! -f "$R" ]; then

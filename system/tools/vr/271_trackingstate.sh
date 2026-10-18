@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # "VrApi: trackingstate = 0x0,0x0" is logged by the app's SDK while pvrservice is
 # publishing perfectly good rotation. Find the code that emits it and what it reads.
 set -u
-L=${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.so
-LOG=${PN2_ROOT}/notes/271_trackingstate.txt
+L=${HIBISCUS_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.so
+LOG=${HIBISCUS_ROOT}/notes/271_trackingstate.txt
 exec >"$LOG" 2>&1
 
 echo "=== the format string ==="

@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @itemIpdDesc.
   ///
   /// In en, this message translates to:
-  /// **'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views'**
+  /// **'Match the stereo eye separation to the distance between your pupils. The headset lenses are fixed, so this shifts the rendered views'**
   String get itemIpdDesc;
 
   /// No description provided for @itemDeviceMode.

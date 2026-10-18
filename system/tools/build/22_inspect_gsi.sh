@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-G=${PN2_ROOT}/gsi/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img
-L=${PN2_ROOT}/notes/22_gsi.log
+G=${HIBISCUS_ROOT}/gsi/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img
+L=${HIBISCUS_ROOT}/notes/22_gsi.log
 exec >"$L" 2>&1
 
 echo "=== identity ==="

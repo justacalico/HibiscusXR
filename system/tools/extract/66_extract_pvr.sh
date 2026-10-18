@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Extract the Pico VR runtime from the stock system.img.
 #
 # /vendor still has the QVR/PVR *client* libs, but everything that actually runs
@@ -9,9 +9,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 #
 # Skipping libPvr_UnitySDK*.so for now: ~60MB of app-side SDK runtime that
 # pvrservice itself does not load. Add later if an app needs it.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_stack
-LOG=${PN2_ROOT}/notes/66_extract.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_stack
+LOG=${HIBISCUS_ROOT}/notes/66_extract.txt
 exec >"$LOG" 2>&1
 
 rm -rf "$OUT"

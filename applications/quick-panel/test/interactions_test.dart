@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_quicksettings/main.dart';
-import 'package:pn2_quicksettings/src/models.dart';
-import 'package:pn2_quicksettings/src/persistence.dart';
-import 'package:pn2_quicksettings/src/platform/fake_settings_source.dart';
-import 'package:pn2_quicksettings/src/settings_controller.dart';
-import 'package:pn2_quicksettings/src/ui/panel_slider.dart';
+import 'package:hibiscus_quicksettings/main.dart';
+import 'package:hibiscus_quicksettings/src/models.dart';
+import 'package:hibiscus_quicksettings/src/persistence.dart';
+import 'package:hibiscus_quicksettings/src/platform/fake_settings_source.dart';
+import 'package:hibiscus_quicksettings/src/settings_controller.dart';
+import 'package:hibiscus_quicksettings/src/ui/panel_slider.dart';
 
 void main() {
   testWidgets('tapping a toggle tile flips it and notifies the source',

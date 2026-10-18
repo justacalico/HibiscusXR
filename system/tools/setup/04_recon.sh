@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Build vendor.img from the OTA and pull the key identity files out of system/vendor/oem.
 set -u
-B=${PN2_ROOT}
+B=${HIBISCUS_ROOT}
 IMG=$B/images
 OTA=$IMG/ota_4.1.3
 EX=$B/extracted

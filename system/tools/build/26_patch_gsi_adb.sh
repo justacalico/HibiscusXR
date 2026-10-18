@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Force adb on at first boot in the GSI.
 #
 # With a freshly wiped /data there is no persisted USB config, so the gadget
@@ -10,10 +10,10 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # Verity is disabled on this device, so editing the system image is safe.
 set -u
 PW="$1"
-D=${PN2_ROOT}/gsi
+D=${HIBISCUS_ROOT}/gsi
 R=$D/gsi_raw.img
 M="${GSI_MNT:-/mnt/gsi_edit}"
-L=${PN2_ROOT}/notes/26_patch_gsi.log
+L=${HIBISCUS_ROOT}/notes/26_patch_gsi.log
 exec >"$L" 2>&1
 
 echo "$PW" | sudo -S mkdir -p "$M" 2>/dev/null

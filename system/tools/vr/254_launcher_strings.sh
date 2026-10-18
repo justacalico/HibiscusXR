@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # What condition makes PVRLauncher start Provision? Pull the candidate strings out
 # of its dex - settings keys, property names and flags it might consult.
 set -u
-D=${PN2_ROOT}/notes/plx
-LOG=${PN2_ROOT}/notes/254_launcher_strings.txt
+D=${HIBISCUS_ROOT}/notes/plx
+LOG=${HIBISCUS_ROOT}/notes/254_launcher_strings.txt
 exec >"$LOG" 2>&1
 
 echo "=== provision-related strings ==="

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """dc_detect.kl now resolves, so the patched libinput is live. gpio-keys.kl still
 falls back, so one of ITS labels is unknown. Check each one, NUL-delimited so
 substrings like CAMERA_FOCUS do not give a false positive."""
 import re
 
-LIB = PN2_ROOT + "/notes/ourinput64.patched.so"
-KL = PN2_ROOT + "/keylayout/gpio-keys.kl"
+LIB = HIBISCUS_ROOT + "/notes/ourinput64.patched.so"
+KL = HIBISCUS_ROOT + "/keylayout/gpio-keys.kl"
 
 data = open(LIB, "rb").read()
 

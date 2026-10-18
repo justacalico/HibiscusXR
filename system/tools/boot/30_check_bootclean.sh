@@ -1,9 +1,9 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-S=${PN2_ROOT}/extracted/bootclean/rd
-M=${PN2_ROOT}/extracted/bootpatch/rd
-L=${PN2_ROOT}/notes/30_bootclean.log
+S=${HIBISCUS_ROOT}/extracted/bootclean/rd
+M=${HIBISCUS_ROOT}/extracted/bootpatch/rd
+L=${HIBISCUS_ROOT}/notes/30_bootclean.log
 exec >"$L" 2>&1
 
 echo "=== OTA (stock) boot ramdisk ==="

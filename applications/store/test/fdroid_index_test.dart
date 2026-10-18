@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_store/src/fdroid_index.dart';
-import 'package:pn2_store/src/units.dart';
+import 'package:hibiscus_store/src/fdroid_index.dart';
+import 'package:hibiscus_store/src/units.dart';
 
 import 'helpers.dart';
 

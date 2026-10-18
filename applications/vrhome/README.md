@@ -2,16 +2,16 @@
 
 # vrhome
 
-**An open VR home environment for the Pico Neo 2**
+**An open VR home environment for Hibiscus**
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-![Platform](https://img.shields.io/badge/platform-Pico%20Neo%202%20%C2%B7%20Android%2010-3DDC84)
+![Platform](https://img.shields.io/badge/platform-Hibiscus%20%C2%B7%20Android%2010-3DDC84)
 
 [Features](#features) • [Getting started](#getting-started) • [Controls](#controls) • [How it works](#how-it-works) • [Development](#development)
 
 </div>
 
-vrhome replaces the stock Pico shell on the LineageOS 17.1 port: no Pico compositor, no closed runtime, just two small APKs on the plain Android EGL path. `vrhome.apk` is the home environment (scenery, head tracking, lens warp); `vrhud.apk` is a persistent overlay service that renders the window menu. Regular 2D apps run on virtual displays owned by the HUD and appear as floating panels - over the home scene, or summoned on top of a running VR app.
+vrhome replaces the stock vendor shell on Hibiscus: no closed compositor, no closed runtime, just two small APKs on the plain Android EGL path. `vrhome.apk` is the home environment (scenery, head tracking, lens warp); `vrhud.apk` is a persistent overlay service that renders the window menu. Regular 2D apps run on virtual displays owned by the HUD and appear as floating panels - over the home scene, or summoned on top of a running VR app.
 
 ## Features
 
@@ -20,13 +20,13 @@ vrhome replaces the stock Pico shell on the LineageOS 17.1 port: no Pico composi
 - **Gaze and click input.** Look at a window to focus it, press the headset confirm button to tap at the gaze point, hold and move your head to scroll or drag.
 - **A library that is just an app.** The app grid is a regular Android activity on its own panel, so there is no separate launcher UI to maintain.
 - **VR apps stay VR.** Packages declaring `pvr.app.type=vr` launch straight to fullscreen on the physical display and hand the headset back to the shell when they exit.
-- **3DoF head tracking** from the game rotation vector, with barrel-distorted eye buffers matched to the Neo 2's panel.
+- **3DoF head tracking** from the game rotation vector, with barrel-distorted eye buffers matched to the headset's panel.
 - **No Gradle.** Both APKs build from a Makefile: clang, javac, d8, aapt2, zipalign, apksigner.
 - **Host-testable core.** Layout, math, text and input policy are pure C++ modules exercised by `make test`.
 
 ## Requirements
 
-- A Pico Neo 2 running the LineageOS 17.1 port (Android 10)
+- A headset running Hibiscus (Android 10)
 - Android SDK and NDK
 - Platform signing keys for full functionality (see below)
 

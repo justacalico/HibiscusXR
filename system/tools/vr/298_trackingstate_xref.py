@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Find the code that logs "trackingstate = 0x%x,0x%x" and what it reads.
 
 I assumed this came from QVR because the SDK contains QVRServiceClient strings.
@@ -11,7 +11,7 @@ disassemble around it.
 import struct, sys
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-L = PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+L = HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
 data = open(L, "rb").read()
 
 NEEDLE = b"trackingstate = 0x%x,0x%x"

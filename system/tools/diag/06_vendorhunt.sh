@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Extract vendor + system/etc/init to WSL-native storage and inventory the VR stack.
 set -u
-B=${PN2_ROOT}
+B=${HIBISCUS_ROOT}
 SYS=$B/images/snapshot_lun0/system.bin
 VEN=$B/images/vendor.img
 W=/home/justin/pn2

@@ -725,7 +725,7 @@ class AppLocalizationsZh extends AppLocalizations {
       '下面的 boot 和 system 镜像是唯一能安全刷写的分区。往 bootloader 链里写低于防回滚熔丝版本的任何镜像,都会在 sdm845 上造成永久硬砖。';
 
   @override
-  String get flashdocsNeo2ReqTitle => '开始之前';
+  String get flashdocsReqTitle => '开始之前';
 
   @override
   String get flashdocsNeo2Req1 => '一台装了 adb 和 fastboot 的 Linux 电脑';

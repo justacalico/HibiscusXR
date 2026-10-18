@@ -9,7 +9,7 @@
 #
 # Active drivers come from HSVR_DRIVERS (space separated names); unset means
 # every drivers/<name>/driver.json in the tree. Step paths under tools/ are
-# emitted relative to $PN2_ROOT, everything else inside its driver dir.
+# emitted relative to $HIBISCUS_ROOT, everything else inside its driver dir.
 
 import glob
 import json
@@ -40,9 +40,9 @@ def resolve(m, path):
     if path.startswith("/"):
         return path
     if path.startswith("tools/"):
-        root = os.environ.get("PN2_ROOT")
+        root = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT")
         if not root:
-            sys.exit("provider: PN2_ROOT unset, cannot resolve %s" % path)
+            sys.exit("provider: HIBISCUS_ROOT unset, cannot resolve %s" % path)
         return os.path.join(root, path)
     return os.path.join(m["_dir"], path)
 

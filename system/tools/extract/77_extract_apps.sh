@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Pull the Pico VR apps out of the stock system image.
 #
 # Inspect before installing. Pico's apps are signed with Pico's platform key; the
@@ -7,9 +7,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # cannot be granted that uid here - the signatures do not match and PackageManager
 # will refuse it. Knowing which apps are in that category decides the whole
 # approach, so find out first.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_apps
-LOG=${PN2_ROOT}/notes/77_apps.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_apps
+LOG=${HIBISCUS_ROOT}/notes/77_apps.txt
 exec >"$LOG" 2>&1
 
 rm -rf "$OUT"; mkdir -p "$OUT/priv-app" "$OUT/app" "$OUT/etc/permissions"

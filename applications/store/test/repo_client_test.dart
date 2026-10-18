@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
-import 'package:pn2_store/src/downloader.dart';
-import 'package:pn2_store/src/installer.dart';
-import 'package:pn2_store/src/repo_client.dart';
+import 'package:hibiscus_store/src/downloader.dart';
+import 'package:hibiscus_store/src/installer.dart';
+import 'package:hibiscus_store/src/repo_client.dart';
 
 import 'helpers.dart';
 

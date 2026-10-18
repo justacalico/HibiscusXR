@@ -7,12 +7,12 @@
 # live in an image we build ourselves.
 #
 # Usage: install_oem_apps.sh [oem_final-dir]
-#   PN2_SERIAL  device serial if more than one is connected
+#   HIBISCUS_SERIAL  device serial if more than one is connected
 set -euo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-FIN="${1:-$PN2_ROOT/oem_final}"
-ADB=(adb ${PN2_SERIAL:+-s "$PN2_SERIAL"})
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+FIN="${1:-$HIBISCUS_ROOT/oem_final}"
+ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 
 command -v adb >/dev/null || { echo "adb not in PATH" >&2; exit 1; }
 [ -d "$FIN" ] || { echo "no such dir: $FIN" >&2; exit 1; }

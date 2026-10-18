@@ -2,14 +2,14 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_store/main.dart' as app;
-import 'package:pn2_store/src/installer.dart';
-import 'package:pn2_store/src/platform/fakes.dart';
-import 'package:pn2_store/src/store_controller.dart';
-import 'package:pn2_store/src/persistence.dart';
-import 'package:pn2_store/src/store_state.dart';
-import 'package:pn2_store/src/ui/theme.dart';
-import 'package:pn2_store/src/ui/widgets.dart';
+import 'package:hibiscus_store/main.dart' as app;
+import 'package:hibiscus_store/src/installer.dart';
+import 'package:hibiscus_store/src/platform/fakes.dart';
+import 'package:hibiscus_store/src/store_controller.dart';
+import 'package:hibiscus_store/src/persistence.dart';
+import 'package:hibiscus_store/src/store_state.dart';
+import 'package:hibiscus_store/src/ui/theme.dart';
+import 'package:hibiscus_store/src/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'helpers.dart';

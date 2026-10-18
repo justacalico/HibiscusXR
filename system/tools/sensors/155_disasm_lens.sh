@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Confirm the null-deref theory by reading the actual code.
 #
 # fault addr 0x10 = a load at offset 0x10 from a null base. The suspicion is that
@@ -10,10 +10,10 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # from? If they are not on the app's classpath the AIDL reply cannot be
 # unmarshalled and null is exactly what the Java side would hand back.
 set -u
-REF=${PN2_ROOT}/ref/alvr-pico-legacy
+REF=${HIBISCUS_ROOT}/ref/alvr-pico-legacy
 SO=$REF/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so
 JAR=$REF/app/libs/pvr_classes.jar
-LOG=${PN2_ROOT}/notes/155_disasm.txt
+LOG=${HIBISCUS_ROOT}/notes/155_disasm.txt
 exec >"$LOG" 2>&1
 
 echo "=== what pvr_classes.jar provides (compile-time stubs) ==="

@@ -232,7 +232,7 @@ define repack
 	    [ -f debug.keystore ] || keytool -genkeypair -v \
 	        -keystore debug.keystore -alias vrhome -keyalg RSA -keysize 2048 \
 	        -validity 10000 -storepass android -keypass android \
-	        -dname "CN=vrhome,O=pn2,C=CN"; \
+	        -dname "CN=vrhome,O=hibiscus,C=CN"; \
 	    $(APKSIGNER) sign --ks debug.keystore --ks-pass pass:android $(6); \
 	    echo "$(6): signed with debug key (system perms will NOT be granted)"; \
 	fi

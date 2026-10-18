@@ -6,18 +6,18 @@
 # unquicken -> inject -> re-sign treatment afterwards.
 #
 # Usage: pull_oem_apps.sh [output-dir] [app ...]
-#   PN2_SERIAL  device serial if more than one is connected
+#   HIBISCUS_SERIAL  device serial if more than one is connected
 set -uo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-OUT="${1:-$PN2_ROOT/oem_apps}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+OUT="${1:-$HIBISCUS_ROOT/oem_apps}"
 shift 2>/dev/null || true
 
 # launcher and home first; the media players are large and not on the path to VR
 APPS=("$@")
 [ "${#APPS[@]}" -gt 0 ] || APPS=(PVRLauncher PVRHome store2d provision2d ToBToolService)
 
-ADB=(adb ${PN2_SERIAL:+-s "$PN2_SERIAL"})
+ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 command -v adb >/dev/null || { echo "adb not in PATH" >&2; exit 1; }
 adb devices | awk '$2=="device"' | grep -q . || { echo "no device connected" >&2; exit 1; }
 

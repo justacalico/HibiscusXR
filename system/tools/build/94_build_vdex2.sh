@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # vdexExtractor builds with -Werror, and GCC 11+ added -Wvla-parameter, which
 # fires on a harmless declaration mismatch in dex_instruction.c:
 #   header:     void dexInstr_getVarArgs(u2 *, u4[]);
@@ -8,7 +8,7 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # wholesale or editing the source.
 set -e
 WORK=/home/justin/vdextools/vdexExtractor
-LOG=${PN2_ROOT}/notes/94_vdex_build.txt
+LOG=${HIBISCUS_ROOT}/notes/94_vdex_build.txt
 exec >"$LOG" 2>&1
 
 cd "$WORK"

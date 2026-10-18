@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """List our libinput's keycode label table so I can pick safe donor entries.
 
 KeyLayoutMap::parseKey looks the label up in this table; an unknown label fails
@@ -11,7 +11,7 @@ and the int beside it.
 """
 import struct, re, sys
 
-LIB = sys.argv[1] if len(sys.argv) > 1 else PN2_ROOT + "/notes/ourinput64.so"
+LIB = sys.argv[1] if len(sys.argv) > 1 else HIBISCUS_ROOT + "/notes/ourinput64.so"
 data = open(LIB, "rb").read()
 
 # find .rodata so we can convert file offset -> vaddr

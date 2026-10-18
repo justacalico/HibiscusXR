@@ -125,7 +125,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get itemIpdDesc =>
-      'Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views';
+      'Match the stereo eye separation to the distance between your pupils. The headset lenses are fixed, so this shifts the rendered views';
 
   @override
   String get itemDeviceMode => 'Device mode';

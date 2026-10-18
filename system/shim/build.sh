@@ -10,8 +10,8 @@
 # records and the forward targets). They are not ours; if notes/qlibs is empty
 # they are pulled off the connected device (which runs the GSI) first.
 set -euo pipefail
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-Q="${Q:-$PN2_ROOT/notes/qlibs}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+Q="${Q:-$HIBISCUS_ROOT/notes/qlibs}"
 mkdir -p "$Q"
 
 # NDK clang: honour NDK/ANDROID_NDK, else newest ndk under the SDK.

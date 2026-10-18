@@ -1,12 +1,12 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Two jobs:
 #  1. find the pvr modules I failed to extract the first time
 #  2. find out how many of the PVR blobs reference framework symbols that
 #     Android 10 removed - getBuiltInDisplay is one, there may be more.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_stack
-LOG=${PN2_ROOT}/notes/71_missing.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_stack
+LOG=${HIBISCUS_ROOT}/notes/71_missing.txt
 exec >"$LOG" 2>&1
 
 echo "=== every libpvrmodule_* / calibrate / shim-ish lib in the stock image ==="

@@ -43,7 +43,7 @@ import android.view.Surface;
 public class KeyboardService extends InputMethodService
         implements KeyboardView.OnKeyboardActionListener {
 
-    private static final String TAG = "pn2kbd";
+    private static final String TAG = "hbkbd";
     private static final String HUD_PKG = "gitlab.neosalsa.hud";
     // we -> HUD: the quad is visible, touches should land on this display
     private static final String ACTION_STATE = "gitlab.neosalsa.hud.action.KBD";
@@ -170,7 +170,7 @@ public class KeyboardService extends InputMethodService
             if (vd == null) {
                 DisplayManager dm =
                         (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
-                vd = dm.createVirtualDisplay("pn2kbd", kbdW, kbdH, kbdDpi,
+                vd = dm.createVirtualDisplay("hbkbd", kbdW, kbdH, kbdDpi,
                         surf, DisplayManager.VIRTUAL_DISPLAY_FLAG_PRESENTATION);
             }
             if (panel == null)

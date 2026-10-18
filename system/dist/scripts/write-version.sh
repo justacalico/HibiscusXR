@@ -11,7 +11,7 @@
 # HIBISCUS_VERSION is the release tag the GitHub workflow computed
 # (e.g. alpha-v2026.09.22-r7); local runs fall back to dev-<date>.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 IMG="$R/gsi/gsi_raw.img"
 VERSION="${HIBISCUS_VERSION:-dev-$(date -u +%Y%m%d)}"
 T=$(mktemp -d)

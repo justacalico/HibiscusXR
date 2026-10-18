@@ -1,9 +1,9 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # The flasher binary is the authoritative answer for how to reach the FPGA's SPI flash.
 set -u
-T=${PN2_ROOT}/ndi_firmware/EYE_pui4.1.3_firehose/w25q_write_bin
-L=${PN2_ROOT}/notes/12_w25q.log
+T=${HIBISCUS_ROOT}/ndi_firmware/EYE_pui4.1.3_firehose/w25q_write_bin
+L=${HIBISCUS_ROOT}/notes/12_w25q.log
 exec >"$L" 2>&1
 
 echo "=== identity ==="

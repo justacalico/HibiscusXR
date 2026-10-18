@@ -1,4 +1,4 @@
-// The home environment for the Pico Neo 2: a NativeActivity that owns the
+// The Hibiscus home environment: a NativeActivity that owns the
 // physical display and renders only the scenery. All UI chrome - panels,
 // the app library, the summonable menu - lives in the HUD service
 // (gitlab.neosalsa.hud), a system overlay that draws over this window or

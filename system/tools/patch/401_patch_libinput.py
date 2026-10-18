@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Teach our libinput.so the keycode labels the headset layouts need.
 
 KeyLayoutMap::parseKey resolves each label through libinput's keycode table; one
@@ -100,6 +100,6 @@ def patch(src, dst):
 
 if len(sys.argv) == 3:
     sys.exit(0 if patch(sys.argv[1], sys.argv[2]) else 1)
-a = patch(PN2_ROOT + "/notes/ourinput64.so", PN2_ROOT + "/notes/ourinput64.patched.so")
-b = patch(PN2_ROOT + "/notes/ourinput32.so", PN2_ROOT + "/notes/ourinput32.patched.so")
+a = patch(HIBISCUS_ROOT + "/notes/ourinput64.so", HIBISCUS_ROOT + "/notes/ourinput64.patched.so")
+b = patch(HIBISCUS_ROOT + "/notes/ourinput32.so", HIBISCUS_ROOT + "/notes/ourinput32.patched.so")
 sys.exit(0 if (a and b) else 1)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Disassemble art_quick_generic_jni_trampoline around the faulting offset.
 
 Tombstone:
@@ -17,7 +17,7 @@ at +176 and which register it trusts.
 import struct, subprocess, sys
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-SO = sys.argv[1] if len(sys.argv) > 1 else PN2_ROOT + "/notes/libart.so"
+SO = sys.argv[1] if len(sys.argv) > 1 else HIBISCUS_ROOT + "/notes/libart.so"
 data = open(SO, "rb").read()
 
 assert data[:4] == b"\x7fELF" and data[4] == 2, "expected ELF64"

@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-R=${PN2_ROOT}/gsi/gsi_raw.img
-L=${PN2_ROOT}/notes/24_vndk.log
+R=${HIBISCUS_ROOT}/gsi/gsi_raw.img
+L=${HIBISCUS_ROOT}/notes/24_vndk.log
 exec >"$L" 2>&1
 
 echo "NOTE: this GSI's root IS /system content, so VNDK lives at /lib64/vndk-NN"

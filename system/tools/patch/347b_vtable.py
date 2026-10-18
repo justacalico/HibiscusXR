@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Name the BpPvrService vtable slots, reading .data.rel.ro by VMA."""
 import subprocess, re
 
-LIB = PN2_ROOT + "/notes/pvrsc32.so"
+LIB = HIBISCUS_ROOT + "/notes/pvrsc32.so"
 OBJDUMP = os.environ.get("OBJDUMP", "llvm-objdump")
 VPTR = 0x194D0 + 8
 

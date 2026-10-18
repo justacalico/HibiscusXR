@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Who writes the tracking-state fields the SDK reports?
 
 The logger just reads two u16s from a global (base 0x2049b0, +0x570/+0x572) - it
@@ -10,7 +10,7 @@ can see what is meant to populate it.
 import struct
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-L = PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+L = HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
 BASE = 0x2049b0
 data = open(L, "rb").read()
 

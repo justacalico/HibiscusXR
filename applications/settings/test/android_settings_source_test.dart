@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/models.dart';
-import 'package:pn2_settings/src/platform/android_settings_source.dart';
+import 'package:hibiscus_settings/src/models.dart';
+import 'package:hibiscus_settings/src/platform/android_settings_source.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

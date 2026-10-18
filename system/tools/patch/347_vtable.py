@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Map BpPvrService vtable slots to method names.
 
 getPvrService calls vtable[+0x104] (registerClient, which we see succeed) and
@@ -9,7 +9,7 @@ the caller's r4 comes back as 0. Naming that slot tells us what actually runs.
 """
 import subprocess, struct, sys, re
 
-LIB = PN2_ROOT + "/notes/pvrsc32.so"
+LIB = HIBISCUS_ROOT + "/notes/pvrsc32.so"
 OBJDUMP = os.environ.get("OBJDUMP", "llvm-objdump")
 VT = 0x194D0
 VT_SIZE = 0x16C

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Find where x28 (the format string for the crashing log call) is assigned.
 
 At +0xd0cc the code does `mov x2, x28` and calls __android_log_print, so x28 IS
@@ -15,7 +15,7 @@ resolve any string literal it is loaded with.
 import struct
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-path = PN2_ROOT + "/notes/lib64/libpvrservice.so"
+path = HIBISCUS_ROOT + "/notes/lib64/libpvrservice.so"
 CALL  = 0xd0d4
 START = 0xcae0          # well before the call; covers the whole function
 data = open(path, "rb").read()

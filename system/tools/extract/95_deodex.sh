@@ -1,14 +1,14 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Unquicken every Pico vdex and write plain dex out.
 #
 # vdexExtractor --unquicken walks each code item and reverts the *-quick opcodes
 # back to normal ones using the quickening info stream, which is the part we
 # could not do by just lifting bytes out of the vdex.
 VDEX=/home/justin/vdextools/vdexExtractor/bin/vdexExtractor
-SRC=${PN2_ROOT}/pvr_apps
-OUT=${PN2_ROOT}/pvr_dex
-LOG=${PN2_ROOT}/notes/95_deodex.txt
+SRC=${HIBISCUS_ROOT}/pvr_apps
+OUT=${HIBISCUS_ROOT}/pvr_dex
+LOG=${HIBISCUS_ROOT}/notes/95_deodex.txt
 exec >"$LOG" 2>&1
 
 echo "=== usage ==="

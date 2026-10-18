@@ -1,6 +1,6 @@
 # quick-panel
 
-Quick settings panel for the Pico Neo 2 running the LineageOS 17.1 port.
+Quick settings panel for Hibiscus.
 
 ## Screenshots
 

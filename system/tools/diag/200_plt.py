@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Resolve a PLT stub address to the symbol it imports.
 
 pvr_EnterVrMode crashes at `bl #0xf6ec0`. If that PLT entry belongs to a library
@@ -9,7 +9,7 @@ we are still missing (or a symbol that resolved to null), that is the next gap.
 import struct, subprocess, sys
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-path = PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+path = HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
 targets = [int(x, 16) for x in (sys.argv[1:] or ["0xf6ec0", "0xf7248", "0x6c818"])]
 data = open(path, "rb").read()
 

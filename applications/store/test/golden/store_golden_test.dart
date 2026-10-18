@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_store/l10n/app_localizations.dart';
-import 'package:pn2_store/src/store_controller.dart';
-import 'package:pn2_store/src/ui/store_page.dart';
-import 'package:pn2_store/src/ui/theme.dart';
+import 'package:hibiscus_store/l10n/app_localizations.dart';
+import 'package:hibiscus_store/src/store_controller.dart';
+import 'package:hibiscus_store/src/ui/store_page.dart';
+import 'package:hibiscus_store/src/ui/theme.dart';
 
 import '../helpers.dart';
 

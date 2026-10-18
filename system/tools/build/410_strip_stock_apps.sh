@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Strip the stock GSI packages a WiFi-only headset will never use:
 # telephony, contacts/mail, 2D media apps, printing/backup leftovers,
 # NFC, Lineage extras, the launcher and its provisioning fallback,
@@ -15,8 +15,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # /priv-app/Dialer), so the script walks the image's app roots, reads
 # each APK's package name with aapt and kills the ones on the list.
 set -u
-IMG=${PN2_ROOT}/out/system-pn2.img
-LOG=${PN2_ROOT}/notes/410_strip.txt
+IMG=${HIBISCUS_ROOT}/out/system-pn2.img
+LOG=${HIBISCUS_ROOT}/notes/410_strip.txt
 exec >"$LOG" 2>&1
 
 fail=0

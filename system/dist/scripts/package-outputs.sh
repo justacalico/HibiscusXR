@@ -2,7 +2,7 @@
 # Turn the raw ext4 outputs into sparse images (what fastboot actually wants)
 # and lay out the release directory.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 D="${1:-dist-out}"
 DEVICE="${DEVICE:-neo2}"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"

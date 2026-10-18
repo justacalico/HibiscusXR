@@ -10,12 +10,12 @@
 #   restore_stock.sh --all      # also restore vendor, oem, persist
 #   restore_stock.sh --dry-run  # print the commands, flash nothing
 #
-#   PN2_SERIAL  fastboot/adb device serial if more than one is connected
+#   HIBISCUS_SERIAL  fastboot/adb device serial if more than one is connected
 set -euo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-BK="$PN2_ROOT/backup_nonEye"
-OTA="$PN2_ROOT/images/ota_4.1.3"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+BK="$HIBISCUS_ROOT/backup_nonEye"
+OTA="$HIBISCUS_ROOT/images/ota_4.1.3"
 ALL=0; DRY=0
 for a in "$@"; do
   case "$a" in

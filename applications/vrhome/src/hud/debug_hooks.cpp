@@ -50,12 +50,8 @@ static void debugTapHook(HudEngine* e) {
     char tb[PROP_VALUE_MAX];
     if (propChanged("debug.vrhome.tap", last, tb)) {
         int d, x, y;
-        if (sscanf(tb, "%d,%d,%d", &d, &x, &y) == 3 && e->bridge) {
-            JNIEnv* env = threadEnv(e->vm);
-            env->CallVoidMethod(e->bridge, e->mInjectTap, d,
-                                (float)x, (float)y);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-        }
+        if (sscanf(tb, "%d,%d,%d", &d, &x, &y) == 3 && e->backend)
+            e->backend->injectTap(d, (float)x, (float)y);
     }
 }
 

@@ -192,7 +192,7 @@ constexpr float kQuickLargeH = 0.125f; // large tile height
 constexpr int   kQuickCols = 5;        // small tile columns
 constexpr float kQuickCellH = 0.115f;  // small tile row pitch
 constexpr float kQuickCloseR = 0.024f; // close disc radius on the title row
-constexpr float kQuickGearR = 0.019f;  // settings gear disc radius
+constexpr float kQuickGearR = 0.024f;  // settings gear disc radius, matches close
 constexpr float kQuickMs = 200.0f;     // card open/close
 constexpr float kQuickScale0 = 0.94f;  // card's open-from size share
 

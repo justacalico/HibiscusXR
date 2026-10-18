@@ -113,7 +113,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glUseProgram(e->shapeProg);
         shapeQuad(e, viewProj, pc, r, up, 0.004f, 0.0f, phw,
                   kPillH * 0.5f * sc, phw, kPillH * 0.5f * sc,
-                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol, 0.0f);
+                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol);
 
         // float + minimize + close discs on the pill's right end; glyphs
         // are small capsules, the close pair rotated into an x, the float

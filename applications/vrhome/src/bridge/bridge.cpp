@@ -36,6 +36,7 @@ public:
         bridge = env->NewGlobalRef(br);
         jclass bc = env->GetObjectClass(br);
         mCreatePanel  = env->GetMethodID(bc, "createPanel", "(IIII)I");
+        mResizePanel  = env->GetMethodID(bc, "resizePanel", "(IIII)Z");
         mPanelTex     = env->GetMethodID(bc, "panelTexture",
                             "(I)Landroid/graphics/SurfaceTexture;");
         mLaunchPkg    = env->GetMethodID(bc, "launchPackageOn",
@@ -156,6 +157,14 @@ public:
         p->stArr = e->NewGlobalRef(e->NewFloatArray(16));
         e->DeleteLocalRef(st);
         return id;
+    }
+
+    bool resizePanel(Panel* p, int w, int h, int dpi) override {
+        JNIEnv* e = env();
+        const bool ok = e->CallBooleanMethod(bridge, mResizePanel,
+                p->displayId, w, h, dpi) == JNI_TRUE;
+        fail(e);
+        return ok;
     }
 
     void releasePanel(Panel* p) override {
@@ -506,7 +515,7 @@ public:
 private:
     JavaVM* vm;
     jobject ctx, bridge;
-    jmethodID mCreatePanel, mPanelTex, mLaunchPkg, mAdopt, mReleasePanel,
+    jmethodID mCreatePanel, mResizePanel, mPanelTex, mLaunchPkg, mAdopt, mReleasePanel,
         mTakeAdopt, mTakeRelease, mInjectTap, mInjectTouch, mRemoveTask,
         mRemoveDisp, mFocusTask, mAppLabel, mIsVr, mLaunchVr, mIsCovered,
         mTakePins, mSetPins, mAppIcon, mVrVer, mRunningVr, mDismiss,

@@ -44,6 +44,11 @@ public:
     virtual bool externalPanelTextures() { return true; }
     virtual int createPanel(Panel* p, unsigned tex, int w, int h,
                             int dpi) { return -1; }
+    // relayout the app at a new display size; false = the display kept
+    // its px size and the panel's dispW/dispH must not move
+    virtual bool resizePanel(Panel* p, int w, int h, int dpi) {
+        return false;
+    }
     virtual void releasePanel(Panel* p) {}
     virtual void updatePanel(Panel* p) {}
 

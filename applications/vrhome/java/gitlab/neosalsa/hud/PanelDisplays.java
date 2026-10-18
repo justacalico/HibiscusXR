@@ -89,6 +89,22 @@ class PanelDisplays {
         return v != null ? v.st : null;
     }
 
+    // Called on the render thread: resize the live display. vd.resize
+    // re-lays every task on it out at the new px size; the buffer dims on
+    // the SurfaceTexture follow so the next frame lands at full size
+    boolean resize(int displayId, int w, int h, int dpi) {
+        Vd v = vds.get(displayId);
+        if (v == null) return false;
+        try {
+            v.vd.resize(w, h, dpi);
+            v.st.setDefaultBufferSize(w, h);
+            return true;
+        } catch (Throwable t) {
+            Log.e(TAG, "resizePanel", t);
+            return false;
+        }
+    }
+
     void release(int displayId) {
         Vd v = vds.remove(displayId);
         launching.remove(displayId);

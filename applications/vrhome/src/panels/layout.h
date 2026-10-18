@@ -105,6 +105,11 @@ bool onResizeGrip(float u, float v, float hw, float hh);
 // centre moved from grabR to r metres, clamped to the scale limits
 float resizeScale(float grabScale, float grabR, float r);
 
+// display px a window scale wants: px per world metre holds constant, so a
+// resized window re-lays the app out at the new size instead of stretching
+// the default-size frame
+void resizeDispSize(float scale, int* w, int* h);
+
 // arm a ring drag: snapshot every panel's yaw so dragRing can reapply them
 // offset by the gaze delta
 void grabRing(std::vector<Panel>& panels);

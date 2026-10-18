@@ -269,6 +269,11 @@ float resizeScale(float grabScale, float grabR, float r) {
     return s < kScaleMin ? kScaleMin : s > kScaleMax ? kScaleMax : s;
 }
 
+void resizeDispSize(float scale, int* w, int* h) {
+    *w = (int)lroundf(kVdW * scale);
+    *h = (int)lroundf(kVdH * scale);
+}
+
 void tickPanels(std::vector<Panel>& panels, float dtMs) {
     for (auto& p : panels)
         p.minT = stepT(p.minT, p.minimized, dtMs, kMinMs);
@@ -379,8 +384,8 @@ bool dragPointRay(const Panel& p, const float origin[3], const float o[3],
     // a held drag follows the aim even past the window's edge
     u = u < -1.0f ? -1.0f : u > 1.0f ? 1.0f : u;
     v = v < -1.0f ? -1.0f : v > 1.0f ? 1.0f : v;
-    *px = (u * 0.5f + 0.5f) * kVdW;
-    *py = (0.5f - v * 0.5f) * kVdH;
+    *px = (u * 0.5f + 0.5f) * p.dispW;
+    *py = (0.5f - v * 0.5f) * p.dispH;
     return true;
 }
 

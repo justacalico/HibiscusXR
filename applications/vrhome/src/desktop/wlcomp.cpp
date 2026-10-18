@@ -757,6 +757,8 @@ static void reqGetTop(wl_client* cl, wl_resource* res, uint32_t id) {
     s->task = new WlTask;
     s->task->taskId = s->c->in->nextTaskId++;
     s->task->surf = s;
+    s->task->cfgW = kVdW;
+    s->task->cfgH = kVdH;
     pid_t pid = -1;
     wl_client_get_credentials(cl, &pid, nullptr, nullptr);
     s->task->pid = pid;
@@ -1187,17 +1189,25 @@ static void kbdTo(WlComp* c, WlSurf* s, bool enter) {
     }
 }
 
+void WlComp::configureTask(WlTask* t, int w, int h) {
+    if (!t || !t->surf || !t->surf->roleRes) return;
+    if (t->cfgW == w && t->cfgH == h) return;
+    t->cfgW = w;
+    t->cfgH = h;
+    sendTopCfg(t->surf, w, h, active == t);
+}
+
 void WlComp::setActive(WlTask* t, bool on) {
     if (on) {
         if (active == t) return;
         if (active) setActive(active, false);
         active = t;
-        sendTopCfg(t->surf, kVdW, kVdH, true);
+        sendTopCfg(t->surf, t->cfgW, t->cfgH, true);
         kbdFocus = t->surf;
         kbdTo(this, kbdFocus, true);
         return;
     }
-    if (t && t->surf) sendTopCfg(t->surf, kVdW, kVdH, false);
+    if (t && t->surf) sendTopCfg(t->surf, t->cfgW, t->cfgH, false);
     if (kbdFocus) {
         kbdTo(this, kbdFocus, false);
         kbdFocus = nullptr;

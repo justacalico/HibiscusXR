@@ -42,3 +42,29 @@ or pass signing straight through:
     ./inject_apk.py in.apk out.apk --ks ks.jks --ks-pass pass:...
 
 Logs appear under the `hsvrovrp` logcat tag.
+
+## Full pipeline (fresh game)
+
+1. Patch the stock apk with OVRPort (overportcli) - produces the apk with
+   libOVRPlugin + generic OpenXR loader bundled.
+2. `./build.sh` to produce `libhsvrovrp.so` (needs `ANDROID_NDK_HOME` or
+   `~/android-sdk/ndk/27.*`).
+3. `./inject_apk.py ovrport-out.apk final.apk --zipalign <zipalign>` - adds
+   the shim under `lib/arm64-v8a/` and a `DT_NEEDED` on libOVRPlugin.so.
+4. Sign with the platform key and `adb install -r final.apk`.
+
+## Iterate on-device (no reinstall)
+
+    ./build.sh
+    adb push libhsvrovrp.so /data/local/tmp/l.new
+    adb shell "cat /data/local/tmp/l.new > <app lib dir>/libhsvrovrp.so && chmod 644 <app lib dir>/libhsvrovrp.so"
+    adb shell "am force-stop <pkg> && am start -n <pkg>/<activity>"
+
+## Runtime dependency
+
+The shim drives the frame loop through whatever runtime the generic loader
+binds (manifest at /product/etc/openxr/1/active_runtime.json, staged to
+/data/local/tmp/xr by pn2-openxr.rc at boot). Any conformant runtime that
+exposes XR_KHR_opengl_es_enable works; the hsvr Monado build is what we test
+against. The frame cycle (wait/begin/locate/submit/end) is fully driven by
+the shim inside EndEye2, so no game-side XR sequencing is required.

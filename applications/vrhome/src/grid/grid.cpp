@@ -141,7 +141,9 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
                                  0.10f * hp * ga};
-            const float hx = s + 0.024f;
+            // hugs the icon: any bigger and the lift clips into the
+            // label drawn under the cell
+            const float hx = s + 0.008f;
             shapeQuad(e, vp, ic, r, up, 0.006f, 0.0f, hx, hx, hx, hx,
                       hx * kIconRad, 0.0f, 0.002f, hl,
                       -1.0f, 0.0f, iy, clipC, clipH);

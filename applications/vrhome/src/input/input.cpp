@@ -7,6 +7,8 @@
 #include "../grid/layout.h"
 #include "../kbd/kbd.h"
 #include "../notif/notif.h"
+#include "../quick/layout.h"
+#include "../quick/quick.h"
 #include "../sysmsg/sysmsg.h"
 #include "../hud/engine.h"
 #include "../common/log.h"
@@ -49,6 +51,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->grid.press = -1;
             e->grid.pressZone = GZONE_NONE;
             e->grid.scrollHeld = false;
+            e->quick.press = -1;
+            e->quick.pressZone = QZONE_NONE;
+            e->quick.slideHeld = -1;
             if (e->sysMsgHover >= 0 && !e->sysMsgs.empty()) {
                 e->sysMsgPress = e->sysMsgHover;
                 e->sysMsgPressZone = e->sysMsgZone;
@@ -85,6 +90,19 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->grid.scrollHeld = true;
                 e->grid.grabV = e->grid.v;
                 e->grid.grabScroll = e->grid.scroll;
+            }
+            if (e->quick.zone == QZONE_TILE && e->quick.hover >= 0) {
+                // a tile press: fires on a same-tile release
+                e->quick.press = e->quick.hover;
+                e->quick.pressZone = QZONE_TILE;
+            } else if (e->quick.zone == QZONE_CLOSE ||
+                       e->quick.zone == QZONE_GEAR) {
+                e->quick.pressZone = e->quick.zone;
+            } else if (e->quick.zone == QZONE_SLIDER) {
+                // the track drives while confirm is held - the touched
+                // point applies at once, moveTick keeps tracking the aim
+                e->quick.slideHeld = e->quick.slider;
+                quickSliderTo(e, e->quick.slider, e->quick.u);
             }
             if (e->dockHover >= 0 && e->dockHover < (int)e->dock.size()) {
                 e->dockPress = e->dockHover;
@@ -200,6 +218,23 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->grid.press = -1;
                 e->grid.pressZone = GZONE_NONE;
                 e->grid.pressPkg.clear();
+            } else if (e->quick.pressZone != QZONE_NONE ||
+                       e->quick.slideHeld >= 0) {
+                // a tile or title-disc press fires only when the release
+                // lands back on the same spot; a slider press was already
+                // driving, the release just ends the drag
+                const bool same = e->quick.zone == e->quick.pressZone &&
+                    e->quick.hover == e->quick.press;
+                if (same && e->quick.pressZone == QZONE_TILE &&
+                        e->quick.press >= 0)
+                    quickActivate(e, e->quick.press);
+                else if (same && e->quick.pressZone == QZONE_CLOSE)
+                    e->quick.shown = false;
+                else if (same && e->quick.pressZone == QZONE_GEAR)
+                    quickGear(e);
+                e->quick.press = -1;
+                e->quick.pressZone = QZONE_NONE;
+                e->quick.slideHeld = -1;
             } else if (e->kbd.pressed) {
                 // key tap: the UP lands where the DOWN did - the aim may
                 // have drifted off the key while the button was held
@@ -344,7 +379,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             sysMsgDismiss(e);
             return;
         }
-        // the app grid drops before the windows under it do
+        // the card overlays drop before the windows under them do
+        if (e->quick.shown) {
+            e->quick.shown = false;
+            return;
+        }
         if (e->grid.shown) {
             e->grid.shown = false;
             return;
@@ -443,6 +482,17 @@ void moveTick(HudEngine* e) {
                 e->grid.grabScroll + (v - e->grid.grabV) * kGridHH,
                 (int)e->grid.items.size());
         }
+    }
+    // a held press on a quick-panel slider keeps the value tracking the
+    // aim's card-local u until the release
+    if (e->quick.slideHeld >= 0 && e->confirmHeld && e->quick.shown) {
+        float c[3], r[3], up[3];
+        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                    c, r, up);
+        float u, v, t;
+        if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
+                    kQuickHW, kQuickHH, &u, &v, &t))
+            quickSliderTo(e, e->quick.slideHeld, u);
     }
     if (e->kbd.moveHeld) {
         e->kbd.offYaw = wrapPi(e->kbd.grabOffYaw +

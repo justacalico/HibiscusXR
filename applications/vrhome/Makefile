@@ -57,6 +57,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/grid/grid.cpp src/grid/layout.cpp \
             src/kbd/kbd.cpp src/kbd/glue.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
+            src/quick/quick.cpp src/quick/layout.cpp src/quick/icons.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
             src/bridge/bridge.cpp src/bridge/core.cpp \
@@ -97,7 +98,7 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \
              src/input/input_state.cpp \
              src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c \
-             src/input/pick.cpp \
+             src/input/pick.cpp src/quick/layout.cpp \
              src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp \
              src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
              src/mcp/tools.cpp
@@ -117,6 +118,8 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
                 src/grid/grid.cpp src/grid/layout.cpp \
                 src/kbd/kbd.cpp src/kbd/glue.cpp \
                 src/dock/dock.cpp src/dock/layout.cpp \
+                src/quick/quick.cpp src/quick/layout.cpp \
+                src/quick/icons.cpp \
                 src/notif/notif.cpp src/notif/layout.cpp \
                 src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
                 src/input/input.cpp src/input/keys.cpp \

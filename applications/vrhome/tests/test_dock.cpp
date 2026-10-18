@@ -34,8 +34,7 @@ void testDock() {
         CHECK(items[2].sep);               // pin -> running boundary
         CHECK(items[3].kind == DK_RUN && items[3].pkg == "com.d.vr");
         CHECK(items[3].vr && items[3].taskId == 21 && !items[3].sep);
-        // the grid button owns the tail alone: the quick panel has no
-        // icon, the status pill opens it
+        // the grid button owns the tail alone
         CHECK(items[4].kind == DK_GRID && items[4].sep);
         CHECK(items[4].pkg.empty());
     }
@@ -49,24 +48,6 @@ void testDock() {
         CHECK(items[0].kind == DK_PIN && items[0].vr && items[0].running &&
               items[0].taskId == 7);
         CHECK(items[1].kind == DK_GRID);
-    }
-
-    // a pin for the quick-panel app is dropped: the status pill is its
-    // only trigger
-    {
-        std::vector<std::string> pins = {kQuickPanelPkg, "com.a.pin"};
-        auto items = buildDock(pins, {}, {});
-        CHECK(items.size() == 2);
-        CHECK(items[0].pkg == "com.a.pin");
-        CHECK(items[1].kind == DK_GRID);
-    }
-
-    // a running quick-panel task never lists on the strip either
-    {
-        std::vector<Panel> panels = {mkPanel(kQuickPanelPkg, 9)};
-        auto items = buildDock({}, panels, {});
-        CHECK(items.size() == 1);
-        CHECK(items[0].kind == DK_GRID && !items[0].sep);
     }
 
     // minimized panels stay listed as running, marked minimized
@@ -338,19 +319,6 @@ void testDock() {
         vr.running = true; vr.taskId = 21;
         a = dockActivateAction(vr, panels);
         CHECK(a.op == DOP_FOCUS_XR && a.taskId == 21);
-    }
-
-    // status-pill policy: no quick panel running launches it cold, a live
-    // one refocuses its panel like any running item
-    {
-        std::vector<Panel> panels = {mkPanel("com.b.busy", 11)};
-        DockAction a = quickPanelAction(panels);
-        CHECK(a.op == DOP_LAUNCH && a.pkg == kQuickPanelPkg);
-        Panel q; q.pkg = kQuickPanelPkg; q.taskId = 33;
-        panels.push_back(q);
-        a = quickPanelAction(panels);
-        CHECK(a.op == DOP_FOCUS_PANEL && a.panelIdx == 1 &&
-              a.taskId == 33);
     }
 
     // close policy: a panel-linked item dies through its display, a bare

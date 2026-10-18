@@ -5,12 +5,13 @@
 static const SysMsgPick noMsg{};
 static const NotifPick noNotif{};
 static const GridPick noGrid{};
+static const QsPick noQuick{};
 static const ShelfPick noShelf{};
 static const DockPick noDock{};
 
 void testPick() {
     // nothing on the ray: the window pick stands
-    CHECK(dashSel(false, noMsg, noNotif, noGrid, noShelf, noDock, -1.0f) ==
+    CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, noShelf, noDock, -1.0f) ==
           DSEL_PANEL);
 
     // dock hit: wins with no window distance consulted - the dash overlay
@@ -21,7 +22,7 @@ void testPick() {
         dp.bar = true;
         dp.idx = 2;
         dp.t = 1.35f;
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, noShelf, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, noShelf, dp, -1.0f) ==
               DSEL_DOCK);
     }
 
@@ -34,18 +35,18 @@ void testPick() {
         ShelfPick sp;
         sp.hit = true;
         sp.t = 1.20f;
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, sp, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, sp, dp, -1.0f) ==
               DSEL_SHELF);
         sp.t = 1.50f;
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, sp, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, sp, dp, -1.0f) ==
               DSEL_SHELF);
         GridPick gp;
         gp.hit = true;
         gp.t = 1.30f;
-        CHECK(dashSel(false, noMsg, noNotif, gp, noShelf, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, gp, noQuick, noShelf, dp, -1.0f) ==
               DSEL_GRID);
         gp.t = 1.60f;
-        CHECK(dashSel(false, noMsg, noNotif, gp, noShelf, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, gp, noQuick, noShelf, dp, -1.0f) ==
               DSEL_DOCK);
     }
 
@@ -57,7 +58,7 @@ void testPick() {
         ShelfPick sp;
         sp.hit = true;
         sp.t = 1.30f;
-        CHECK(dashSel(false, noMsg, noNotif, gp, sp, noDock, -1.0f) ==
+        CHECK(dashSel(false, noMsg, noNotif, gp, noQuick, sp, noDock, -1.0f) ==
               DSEL_SHELF);
     }
 
@@ -70,16 +71,16 @@ void testPick() {
         DockPick dp;
         dp.bar = true;
         dp.t = 1.35f;
-        CHECK(dashSel(false, noMsg, np, noGrid, noShelf, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, np, noGrid, noQuick, noShelf, dp, -1.0f) ==
               DSEL_NOTIF);
         np.t = 1.50f;
-        CHECK(dashSel(false, noMsg, np, noGrid, noShelf, dp, -1.0f) ==
+        CHECK(dashSel(false, noMsg, np, noGrid, noQuick, noShelf, dp, -1.0f) ==
               DSEL_DOCK);
         np.t = 1.34f;
         GridPick gp;
         gp.hit = true;
         gp.t = 1.10f;
-        CHECK(dashSel(false, noMsg, np, gp, noShelf, noDock, -1.0f) ==
+        CHECK(dashSel(false, noMsg, np, gp, noQuick, noShelf, noDock, -1.0f) ==
               DSEL_NOTIF);
     }
 
@@ -88,17 +89,17 @@ void testPick() {
         DockPick dp;
         dp.bar = true;
         dp.t = 1.35f;
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, noShelf, dp, 1.15f) ==
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, noShelf, dp, 1.15f) ==
               DSEL_KBD);
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, noShelf, noDock,
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, noShelf, noDock,
                       1.15f) == DSEL_KBD);
         // but a dash element in front of it still wins on real depth
-        CHECK(dashSel(false, noMsg, noNotif, noGrid, noShelf, dp, 1.50f) ==
+        CHECK(dashSel(false, noMsg, noNotif, noGrid, noQuick, noShelf, dp, 1.50f) ==
               DSEL_DOCK);
         NotifPick np;
         np.stack = true;
         np.t = 1.10f;
-        CHECK(dashSel(false, noMsg, np, noGrid, noShelf, noDock, 1.15f) ==
+        CHECK(dashSel(false, noMsg, np, noGrid, noQuick, noShelf, noDock, 1.15f) ==
               DSEL_NOTIF);
     }
 
@@ -110,9 +111,9 @@ void testPick() {
         SysMsgPick mp;
         mp.hit = true;
         mp.t = 2.0f;
-        CHECK(dashSel(false, mp, noNotif, noGrid, noShelf, dp, 1.0f) ==
+        CHECK(dashSel(false, mp, noNotif, noGrid, noQuick, noShelf, dp, 1.0f) ==
               DSEL_SYSMSG);
-        CHECK(dashSel(true, noMsg, noNotif, noGrid, noShelf, dp, 1.0f) ==
+        CHECK(dashSel(true, noMsg, noNotif, noGrid, noQuick, noShelf, dp, 1.0f) ==
               DSEL_SYSMSG);
     }
 }

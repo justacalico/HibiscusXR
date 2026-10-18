@@ -8,7 +8,7 @@
 // once a frame so a theme change lands on the next vsync.
 //
 // Every value mirrors a constant in
-// applications/{library,settings,quick-panel}/lib/src/ui/theme.dart -
+// applications/{settings,store}/lib/src/ui/theme.dart -
 // the hex behind each table is that Dart Color(0xAARRGGBB), the floats
 // are its sRGB channels / 255 so a chrome pixel blends to the same code
 // value a panel pixel shows.
@@ -19,7 +19,7 @@
 //   surfaceHigh controls sitting on a card; also the divider colour
 //   accent      the one interactive hue: beam, progress rings, actions
 //   danger      destructive hovers and alert marks
-//   warn, good  status hues shared with the quick-panel battery bands
+//   warn, good  status hues the battery bands share with the panel apps
 //   textDim     secondary labels; primary text is kPalText
 struct Palette {
     float background[3];
@@ -62,7 +62,7 @@ void setPaletteForName(const char* name);
 // Android, so host tests steer the slots with setPaletteForName instead.
 void syncPalette();
 
-// battery fill hue: the quick-panel's bands - >=80 good, >=60 text,
+// battery fill hue: the quick panel's bands - >=80 good, >=60 text,
 // >=20 warn, below that danger - with charging pinned to warn, the
 // amber the dock always showed while plugged in
 inline const float* batteryTint(int level, bool charging) {

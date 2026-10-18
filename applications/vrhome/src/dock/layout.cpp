@@ -66,9 +66,6 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
                                 const std::vector<XrTask>& xr) {
     std::vector<DockItem> out;
     for (auto& pkg : pins) {
-        // the quick panel opens off the status pill; a pin for it would
-        // hand the strip a second trigger
-        if (pkg == kQuickPanelPkg) continue;
         DockItem it;
         it.kind = DK_PIN;
         it.pkg = pkg;
@@ -88,13 +85,11 @@ std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
         out.push_back(it);
     }
     // live tasks that aren't pinned fill the running section; a pkg shows
-    // once - a running pin carries the dot instead of a duplicate icon,
-    // and the quick panel stays off the strip entirely
+    // once - a running pin carries the dot instead of a duplicate icon
     bool runSep = false;
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
-        if (p.pkg.empty() || inPins(pins, p.pkg) ||
-                p.pkg == kQuickPanelPkg) continue;
+        if (p.pkg.empty() || inPins(pins, p.pkg)) continue;
         DockItem it;
         it.kind = DK_RUN;
         it.pkg = p.pkg;
@@ -419,20 +414,6 @@ DockAction dockActivateAction(const DockItem& it,
     } else {
         a.op = DOP_LAUNCH;
         a.pkg = it.pkg;
-    }
-    return a;
-}
-
-DockAction quickPanelAction(const std::vector<Panel>& panels) {
-    DockAction a;
-    const int qi = findPanel(panels, kQuickPanelPkg);
-    if (qi >= 0) {
-        a.op = DOP_FOCUS_PANEL;
-        a.panelIdx = qi;
-        a.taskId = panels[qi].taskId;
-    } else {
-        a.op = DOP_LAUNCH;
-        a.pkg = kQuickPanelPkg;
     }
     return a;
 }

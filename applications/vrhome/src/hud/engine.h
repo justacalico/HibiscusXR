@@ -7,6 +7,7 @@
 #include "../grid/item.h"
 #include "../notif/item.h"
 #include "../sysmsg/item.h"
+#include "../quick/item.h"
 #include "../kbd/kbd.h"
 #include "../common/config.h"
 #include "../input/ctrl_state.h"
@@ -75,6 +76,11 @@ struct HudEngine : Engine {
     // the app-grid overlay: opened from the dock's grid button, closes on
     // BACK, its close disc, a re-tap of the button or a launched app
     GridOverlay grid;
+
+    // the quick-settings overlay: opened from the dock's status pill,
+    // closes on BACK, its close disc, a re-tap or the gear launch. Only
+    // one card overlay is up at a time - opening this drops the grid
+    QuickPanel quick;
 
     // dock: rebuilt each frame by syncDock from the pin list, the live
     // panels and the immersive tasks the java poller sees. dockYaw anchors
@@ -161,6 +167,10 @@ struct HudEngine : Engine {
     // the English text
     int uiStrVer = -1;
     std::string uiLib;
+    // the quick panel's labels: title, on/off/not-connected, then one per
+    // tile in QsId order - the fallback table in quick.cpp covers a pull
+    // that hasn't landed yet
+    std::string uiQs[UIQS_COUNT];
 
     // developer-settings debug line: debugHud is the toggle itself;
     // debugOnly means the window is up over a covered app solely for that

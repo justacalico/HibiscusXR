@@ -1,6 +1,6 @@
 #!/bin/bash
 # Install the shared Hibiscus userspace into a system image: the split
-# shell (env + HUD), the flutter panel apps, the floating keyboard, the
+# shell (env + HUD), the flutter panel apps, the floating keyboard,
 # hsvr OpenXR runtime, then the platform-key re-sign and fsck that make a
 # self-consistent image.
 #
@@ -84,11 +84,11 @@ mkd /app/vrhud
 put "$HIBISCUS_ROOT/vrhome/out/vrhud.apk" /app/vrhud/vrhud.apk 644
 
 echo
-echo "=== shell flutter apps: quick settings + settings + store ==="
+echo "=== shell flutter apps: settings + store ==="
 # Same contract as vrhome: built from source here, platform-signed,
 # non-uninstallable under /system/app. flutter must be on PATH - the dist
 # runner installs the pinned toolchain (manifest.env).
-for app in quick-panel settings store; do
+for app in settings store; do
   command -v flutter >/dev/null 2>&1 || { echo "FAIL flutter not on PATH"; fail=$((fail+1)); break; }
   [ -d "$HIBISCUS_ROOT/$app" ] || { echo "FAIL $HIBISCUS_ROOT/$app not cloned"; fail=$((fail+1)); continue; }
   (cd "$HIBISCUS_ROOT/$app" && flutter build apk --release) \
@@ -100,8 +100,6 @@ for app in quick-panel settings store; do
   "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=PN2" \
       || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
 done
-mkd /app/quicksettings
-put "$HIBISCUS_ROOT/quick-panel/build/app/outputs/flutter-apk/app-release.apk" /app/quicksettings/quicksettings.apk 644
 mkd /app/settings
 put "$HIBISCUS_ROOT/settings/build/app/outputs/flutter-apk/app-release.apk" /app/settings/settings.apk 644
 mkd /app/store

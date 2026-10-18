@@ -93,6 +93,10 @@ public:
         mAppsVer      = env->GetMethodID(bc, "appsVersion", "()I");
         mApps         = env->GetMethodID(bc, "launcherApps",
                             "()[Lgitlab/neosalsa/hud/ShellBridge$LauncherApp;");
+        mQsStatus     = env->GetMethodID(bc, "quickStatus",
+                            "()Lgitlab/neosalsa/hud/QuickState$Snap;");
+        mQsToggle     = env->GetMethodID(bc, "quickToggle", "(IZ)V");
+        mQsSlider     = env->GetMethodID(bc, "quickSetSlider", "(IF)V");
         jclass stc = env->FindClass("android/graphics/SurfaceTexture");
         stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
         stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
@@ -119,6 +123,15 @@ public:
         fMsgTitle = env->GetFieldID(sysMsgCls, "title", "Ljava/lang/String;");
         fMsgText = env->GetFieldID(sysMsgCls, "text", "Ljava/lang/String;");
         fMsgBtns = env->GetFieldID(sysMsgCls, "buttons", "[Ljava/lang/String;");
+        qsSnapCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.QuickState$Snap"));
+        fQsToggles = env->GetFieldID(qsSnapCls, "toggles", "I");
+        fQsBatt = env->GetFieldID(qsSnapCls, "batt", "I");
+        fQsChg = env->GetFieldID(qsSnapCls, "chg", "I");
+        fQsVol = env->GetFieldID(qsSnapCls, "vol", "F");
+        fQsBri = env->GetFieldID(qsSnapCls, "bri", "F");
+        fQsSsid = env->GetFieldID(qsSnapCls, "ssid", "Ljava/lang/String;");
+        fQsBt = env->GetFieldID(qsSnapCls, "bt", "Ljava/lang/String;");
     }
 
     JNIEnv* env() { return threadEnv(vm); }
@@ -408,6 +421,30 @@ public:
         e->DeleteLocalRef(a);
     }
 
+    void quickStatus(QsStatus* out) override {
+        JNIEnv* e = env();
+        jobject s = e->CallObjectMethod(bridge, mQsStatus);
+        if (fail(e) || !s) return;
+        out->toggles = (unsigned)e->GetIntField(s, fQsToggles);
+        out->batt = e->GetIntField(s, fQsBatt);
+        out->chg = e->GetIntField(s, fQsChg);
+        out->volume = e->GetFloatField(s, fQsVol);
+        out->brightness = e->GetFloatField(s, fQsBri);
+        out->ssid = jstr(e, (jstring)e->GetObjectField(s, fQsSsid));
+        out->btName = jstr(e, (jstring)e->GetObjectField(s, fQsBt));
+        e->DeleteLocalRef(s);
+    }
+    void quickToggle(int id, bool on) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mQsToggle, id, on ? JNI_TRUE : JNI_FALSE);
+        fail(e);
+    }
+    void quickSetSlider(int slider, float v) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mQsSlider, slider, v);
+        fail(e);
+    }
+
     void launchPackageOn(const std::string& pkg, int displayId) override {
         JNIEnv* e = env(); jstring p = e->NewStringUTF(pkg.c_str());
         e->CallVoidMethod(bridge, mLaunchPkg, p, displayId); e->DeleteLocalRef(p); fail(e);
@@ -477,11 +514,12 @@ private:
         mDebugOnly, mSysStatus, mSysMsgVer, mSysMsgs, mSysMsgClick,
         mSysMsgDismiss, mSysMsgOnly, mCenterLaunch, mUiStrVer, mUiStrings,
         mKbdCreate, mKbdTex, mKbdTakeQuery, mKbdSend, mKbdHide, mKbdState,
-        mAppsVer, mApps, stUpdate, stMatrix;
-    jclass pendingCls, appCls, notifCls, sysMsgCls;
+        mAppsVer, mApps, mQsStatus, mQsToggle, mQsSlider, stUpdate, stMatrix;
+    jclass pendingCls, appCls, notifCls, sysMsgCls, qsSnapCls;
     jfieldID fPendTask, fPendPkg, fAppPkg, fAppLabel, fNotifKey, fNotifPkg,
         fNotifTitle, fNotifText, fNotifMs, fNotifClear, fMsgId, fMsgPkg,
-        fMsgTitle, fMsgText, fMsgBtns;
+        fMsgTitle, fMsgText, fMsgBtns, fQsToggles, fQsBatt, fQsChg, fQsVol,
+        fQsBri, fQsSsid, fQsBt;
 };
 
 extern "C" JNIEXPORT void JNICALL

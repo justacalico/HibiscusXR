@@ -42,8 +42,8 @@ float dockDragPitch(float grabPitch, float ringGrabPitch, float ringPitch);
 
 // ordered items for the strip: pins first (marked running when a live task
 // owns the pkg), then unpinned 2D panels, then unpinned XR tasks, then the
-// app-grid button. The quick panel never lists: the status pill opens it.
-// `sep` marks the group boundaries that draw separator gaps
+// app-grid button. `sep` marks the group boundaries that draw separator
+// gaps
 std::vector<DockItem> buildDock(const std::vector<std::string>& pins,
                                 const std::vector<Panel>& panels,
                                 const std::vector<XrTask>& xr);
@@ -173,10 +173,6 @@ struct DockAction {
 // launches fresh instead of focusing the wrong window
 DockAction dockActivateAction(const DockItem& it,
                               const std::vector<Panel>& panels);
-
-// release on the status pill: a live quick panel refocuses like any
-// running item, a cold one launches through the bridge
-DockAction quickPanelAction(const std::vector<Panel>& panels);
 
 // the close badge: a panel's task dies through its display - the cached
 // taskId can be stale - while an immersive task only has its id to go on

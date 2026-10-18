@@ -85,6 +85,7 @@ public class ShellBridge {
     private final Taskman taskman;
     private final Injector injector;
     private final KbdLink kbd;
+    private final QuickState qs;
 
     public static class Pending {
         public int taskId;
@@ -124,6 +125,7 @@ public class ShellBridge {
                 adopting, pendingReleases);
         injector = new Injector(input);
         kbd = new KbdLink(c, l);
+        qs = new QuickState(c);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
         IntentFilter pf = new IntentFilter();
@@ -246,6 +248,20 @@ public class ShellBridge {
 
     // render thread: the quick-settings toggle is on
     public boolean centerLaunch() { return centerLaunch; }
+
+    // -------------------------------------------------------- quick panel
+
+    // render thread: the toggles/sliders snapshot - fresh reads, so the
+    // render side only calls it while the card is up
+    public QuickState.Snap quickStatus() { return qs.snap(); }
+
+    // render thread: a tile flip, keyed by QsId
+    public void quickToggle(int id, boolean on) { qs.toggle(id, on); }
+
+    // render thread: a slider write, keyed by QsSlider
+    public void quickSetSlider(int slider, float v) {
+        qs.setSlider(slider, v);
+    }
 
     // render thread: bumped on every post/removal by the listener
     public int notifVersion() { return NotifService.version(); }

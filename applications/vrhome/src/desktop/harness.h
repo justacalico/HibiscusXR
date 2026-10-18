@@ -25,6 +25,14 @@ Mat4 camView(const DashCam& c);
 void drawBackdrop(HudEngine* e, const Mat4& vp);
 long long dashNowMs();
 
+// swap interval is off so swaps never block (see dashWindow); the loops
+// pace draws instead, true at most once per `ms`
+inline bool dashDrawDue(long long now, long long* last, int ms) {
+    if (now - *last < ms) return false;
+    *last = now;
+    return true;
+}
+
 // one running desktop dash window: GLFW state plus the hooks each backend
 // needs to differ on. extraKey gets keys the core table doesn't own (K in
 // the preview); kbdSet drives MCP's setKbd for backends with a real quad.

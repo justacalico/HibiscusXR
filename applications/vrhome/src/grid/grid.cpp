@@ -128,7 +128,6 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         const GridItem& it = e->grid.items[i];
         const float iy = (it.y + e->grid.scroll) * gs;
         if (!gridCellShown(iy, gs)) continue;
-        const bool hov = e->grid.hover == i;
         const float hp = hoverP(it.hs, kGridHoverScale);
         const float s = kGridIconHW * gs * it.hs;
         const float ic[3] = {c[0] + r[0]*it.x*gs + up[0]*iy,

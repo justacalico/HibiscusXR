@@ -128,6 +128,11 @@ GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h) {
     }
     if (!win) { glfwTerminate(); return nullptr; }
     glfwMakeContextCurrent(win);
+    // a vsynced swap waits inside EGL on a frame callback, and compositors
+    // stop sending those while the window is occluded; the loop then
+    // starves event dispatch until the host flags it unresponsive. Draws
+    // pace themselves with dashDrawDue instead.
+    glfwSwapInterval(0);
     glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(win, mouseMove);
     glfwSetMouseButtonCallback(win, mouseBtn);

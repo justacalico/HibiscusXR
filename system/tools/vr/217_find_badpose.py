@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Locate the "Bad Pose.Orientation" check in the Pico SDK and show what it tests.
 
 Every warp frame is rejected with:
@@ -14,7 +14,7 @@ validation and its operand are visible.
 """
 import struct, sys
 
-path = sys.argv[1] if len(sys.argv) > 1 else PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+path = sys.argv[1] if len(sys.argv) > 1 else HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
 NEEDLE = b"Bad Pose.Orientation"
 
 data = open(path, "rb").read()

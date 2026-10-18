@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Unquicken the /oem apps' vdex, same as the /system ones.
 VDEX=/home/justin/vdextools/vdexExtractor/bin/vdexExtractor
-SRC=${PN2_ROOT}/oem_apps
-OUT=${PN2_ROOT}/oem_dex
-LOG=${PN2_ROOT}/notes/132_oem_dex.txt
+SRC=${HIBISCUS_ROOT}/oem_apps
+OUT=${HIBISCUS_ROOT}/oem_dex
+LOG=${HIBISCUS_ROOT}/notes/132_oem_dex.txt
 exec >"$LOG" 2>&1
 
 rm -rf "$OUT"; mkdir -p "$OUT"

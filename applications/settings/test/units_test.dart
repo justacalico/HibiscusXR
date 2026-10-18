@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/units.dart';
+import 'package:hibiscus_settings/src/units.dart';
 
 void main() {
   test('slider endpoints map to the mm range ends', () {

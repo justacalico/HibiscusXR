@@ -4,14 +4,14 @@
 # device storage never holds more than one image.
 #
 # Usage: backup_partitions.sh [output-dir]
-#   PN2_SERIAL  restrict to this device serial (recommended if >1 device)
-#   PN2_ROOT    project root for the default output dir and notes/
+#   HIBISCUS_SERIAL  restrict to this device serial (recommended if >1 device)
+#   HIBISCUS_ROOT    project root for the default output dir and notes/
 set -uo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-DST="${1:-$PN2_ROOT/backup_nonEye}"
-LOG="${LOG:-$PN2_ROOT/notes/backup_$(date +%Y%m%d_%H%M%S).log}"
-ADB=(adb ${PN2_SERIAL:+-s "$PN2_SERIAL"})
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+DST="${1:-$HIBISCUS_ROOT/backup_nonEye}"
+LOG="${LOG:-$HIBISCUS_ROOT/notes/backup_$(date +%Y%m%d_%H%M%S).log}"
+ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 
 log() { local l="[$(date +%H:%M:%S)] $*"; echo "$l"; mkdir -p "$(dirname "$LOG")"; echo "$l" >> "$LOG"; }
 
@@ -21,7 +21,7 @@ mkdir -p "$DST"
 # never back up (or touch) the wrong unit
 mapfile -t devs < <(adb devices | awk '$2=="device"{print $1}')
 [ "${#devs[@]}" -eq 1 ] || { log "ABORT: expected 1 device, found ${#devs[@]}"; exit 1; }
-if [ -n "${PN2_SERIAL:-}" ] && [ "${devs[0]}" != "$PN2_SERIAL" ]; then
+if [ -n "${HIBISCUS_SERIAL:-${PN2_SERIAL:-}}" ] && [ "${devs[0]}" != "$HIBISCUS_SERIAL" ]; then
   log "ABORT: wrong device ${devs[0]}"; exit 1
 fi
 log "device OK: ${devs[0]}"

@@ -1,5 +1,5 @@
 #!/system/bin/sh
-PN2_SERIAL="${PN2_SERIAL:-PA7B40NGE5300009W}"
+HIBISCUS_SERIAL="${HIBISCUS_SERIAL:-${PN2_SERIAL:-PA7B40NGE5300009W}}"
 echo "=========== identity: what does this specific unit call itself ==========="
 for p in ro.serialno ro.boot.serialno ro.product.model ro.product.name \
          persist.pvr.sn persist.pvr.pn persist.pvr.hwversion ro.pvr.model \
@@ -16,7 +16,7 @@ df -h /persist 2>/dev/null | tail -2
 
 echo
 echo "=========== which calibration file belongs to THIS unit ==========="
-echo "adb serial is ${PN2_SERIAL}"
+echo "adb serial is ${HIBISCUS_SERIAL}"
 ls -l /persist/calibration/*.txt 2>/dev/null
 echo "--- head of each, looking for a serial/UID field ---"
 for f in /persist/calibration/PC1610*.txt; do

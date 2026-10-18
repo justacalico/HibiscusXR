@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/catalog.dart';
-import 'package:pn2_settings/src/models.dart';
+import 'package:hibiscus_settings/src/catalog.dart';
+import 'package:hibiscus_settings/src/models.dart';
 
 void main() {
   test('every section has a def in display order', () {

@@ -1,12 +1,12 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Independent verification: extract key files back out of the image and hash them
 # against the sources. The write log said OK, but debugfs has silently refused
 # overwrites before, so confirm content rather than trusting the report.
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
 T=$(mktemp -d)
-LOG=${PN2_ROOT}/notes/268_verify.txt
+LOG=${HIBISCUS_ROOT}/notes/268_verify.txt
 exec >"$LOG" 2>&1
 
 check() {  # check <img-path> <local>
@@ -20,29 +20,29 @@ check() {  # check <img-path> <local>
 }
 
 echo "=== content verification ==="
-check /etc/public.libraries.txt              ${PN2_ROOT}/overlay_pvr/public.libraries.txt
-check /lib64/libvirtualinputclient.so        ${PN2_ROOT}/overlay_pvr/lib64/libvirtualinputclient.so
-check /lib64/libSafetyArea.so                ${PN2_ROOT}/overlay_pvr/lib64/libSafetyArea.so
-check /bin/airservice                        ${PN2_ROOT}/airsvc/bin/airservice
-check /bin/virtual_input                     ${PN2_ROOT}/airsvc/bin/virtual_input
-check /lib64/pvr_air/libshim_air.so          ${PN2_ROOT}/shim/libshim_air.so
-check /lib64/pvr_air/libskia.so              ${PN2_ROOT}/shim/libskia_stub.so
-check /lib64/libshim_pvr.so                  ${PN2_ROOT}/shim/libshim_pvr.so
-check /apex/com.android.runtime.release/lib64/libart.so ${PN2_ROOT}/notes/libart-patched.so
-check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${PN2_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so
-check /etc/init/pn2-qvrd.rc                  ${PN2_ROOT}/overlay/etc/init/pn2-qvrd.rc
-check /etc/init/pn2-ipd.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-ipd.rc
-check /etc/init/pn2-dof.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-dof.rc
-check /etc/init/pn2-env.rc                   ${PN2_ROOT}/overlay/etc/init/pn2-env.rc
-check /bin/pn2-ipdd                          ${PN2_ROOT}/overlay/bin/pn2-ipdd
-check /bin/pn2-dofd                          ${PN2_ROOT}/overlay/bin/pn2-dofd
-check /bin/pn2-envd                          ${PN2_ROOT}/overlay/bin/pn2-envd
-check /media/bootanimation.zip               ${PN2_ROOT}/out/bootanimation.zip
-check /media/LoadingRes/config.txt           ${PN2_ROOT}/.stub/media/LoadingRes/config.txt
+check /etc/public.libraries.txt              ${HIBISCUS_ROOT}/overlay_pvr/public.libraries.txt
+check /lib64/libvirtualinputclient.so        ${HIBISCUS_ROOT}/overlay_pvr/lib64/libvirtualinputclient.so
+check /lib64/libSafetyArea.so                ${HIBISCUS_ROOT}/overlay_pvr/lib64/libSafetyArea.so
+check /bin/airservice                        ${HIBISCUS_ROOT}/airsvc/bin/airservice
+check /bin/virtual_input                     ${HIBISCUS_ROOT}/airsvc/bin/virtual_input
+check /lib64/pvr_air/libshim_air.so          ${HIBISCUS_ROOT}/shim/libshim_air.so
+check /lib64/pvr_air/libskia.so              ${HIBISCUS_ROOT}/shim/libskia_stub.so
+check /lib64/libshim_pvr.so                  ${HIBISCUS_ROOT}/shim/libshim_pvr.so
+check /apex/com.android.runtime.release/lib64/libart.so ${HIBISCUS_ROOT}/notes/libart-patched.so
+check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${HIBISCUS_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so
+check /etc/init/pn2-qvrd.rc                  ${HIBISCUS_ROOT}/overlay/etc/init/pn2-qvrd.rc
+check /etc/init/pn2-ipd.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-ipd.rc
+check /etc/init/pn2-dof.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-dof.rc
+check /etc/init/pn2-env.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-env.rc
+check /bin/pn2-ipdd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-ipdd
+check /bin/pn2-dofd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-dofd
+check /bin/pn2-envd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-envd
+check /media/bootanimation.zip               ${HIBISCUS_ROOT}/out/bootanimation.zip
+check /media/LoadingRes/config.txt           ${HIBISCUS_ROOT}/.stub/media/LoadingRes/config.txt
 check /media/LoadingRes/inside_background_img.png \
-    ${PN2_ROOT}/.stub/media/LoadingRes/inside_background_img.png
+    ${HIBISCUS_ROOT}/.stub/media/LoadingRes/inside_background_img.png
 check /media/LoadingRes/img/loading_animation_00012.png \
-    ${PN2_ROOT}/.stub/media/LoadingRes/img/loading_animation_00012.png
+    ${HIBISCUS_ROOT}/.stub/media/LoadingRes/img/loading_animation_00012.png
 # apks get re-signed with the platform key in 267, so the image copy never
 # md5-matches the staged source - verify the signature instead
 debugfs -R "dump /priv-app/seethroughsetting/seethroughsetting.apk $T/st.apk" "$IMG" >/dev/null 2>&1
@@ -68,13 +68,13 @@ echo
 echo "=== OpenXR chain ==="
 # the whole path wivrn/hello_xr takes: manifest -> staged runtime -> turnip.
 # presence-only checks for the apk (re-signed); content checks for the rest
-XR=${PN2_ROOT}/hsvr
+XR=${HIBISCUS_ROOT}/hsvr
 check /etc/openxr/1/active_runtime.json            "$XR/android/active_runtime.json"
 check /product/etc/openxr/1/active_runtime.json    "$XR/android/active_runtime.json"
-check /etc/init/pn2-openxr.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-openxr.rc
-check /etc/init/pn2-vulkan.rc                      ${PN2_ROOT}/overlay/etc/init/pn2-vulkan.rc
-check /etc/permissions/pn2-xr-features.xml         ${PN2_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
-check /etc/default-permissions/pn2-cvservice.xml  ${PN2_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml
+check /etc/init/pn2-openxr.rc                      ${HIBISCUS_ROOT}/overlay/etc/init/pn2-openxr.rc
+check /etc/init/pn2-vulkan.rc                      ${HIBISCUS_ROOT}/overlay/etc/init/pn2-vulkan.rc
+check /etc/permissions/pn2-xr-features.xml         ${HIBISCUS_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
+check /etc/default-permissions/pn2-cvservice.xml  ${HIBISCUS_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml
 check /lib64/hw/vulkan.sdm845.so                   "$XR/turnip/out/libvulkan_freedreno.so"
 check /lib64/libc++_shared.so                      "$XR/turnip/out/libc++_shared.so"
 # turnip loads inside the sphal namespace (anything under /vendor/lib64);

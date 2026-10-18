@@ -1,11 +1,11 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # rdump quietly did nothing when the destination arch dir already existed, so
 # enumerate and dump each .so individually instead. Slower, but it reports
 # per-file and cannot fail silently.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_applibs
-LOG=${PN2_ROOT}/notes/108_applibs.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_applibs
+LOG=${HIBISCUS_ROOT}/notes/108_applibs.txt
 exec >"$LOG" 2>&1
 
 PRIV="VRShell2 VRUserCenter2 pvrdisplay pvr_adapter CVService PVRVerify

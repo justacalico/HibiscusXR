@@ -1,12 +1,12 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # VRShell needs libmain.so (Unity core) but VRShell2.apk contains no .so at all.
 # For system apps the native libs are commonly laid down in a lib/ directory NEXT
 # TO the apk rather than inside it. I only extracted the apk and oat/, so if that
 # is the layout here, I missed every app-private native lib.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-OUT=${PN2_ROOT}/pvr_applibs
-LOG=${PN2_ROOT}/notes/106_applibs.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+OUT=${HIBISCUS_ROOT}/pvr_applibs
+LOG=${HIBISCUS_ROOT}/notes/106_applibs.txt
 exec >"$LOG" 2>&1
 
 echo "=== what is actually inside /priv-app/VRShell2 ==="

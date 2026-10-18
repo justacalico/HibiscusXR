@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-F=${PN2_ROOT}/eyeunit/eye_262144.bin
-L=${PN2_ROOT}/notes/14_eye_dump.log
+F=${HIBISCUS_ROOT}/eyeunit/eye_262144.bin
+L=${HIBISCUS_ROOT}/notes/14_eye_dump.log
 exec >"$L" 2>&1
 
 echo "=== file ==="

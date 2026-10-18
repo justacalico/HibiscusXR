@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Compile and inject cted, the CTE daemon HCTE talks to.
 #
 # Generic OS feature - not tied to a headset vendor: the protocol only leans
@@ -11,8 +11,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # system/cted is ours. ctrl_state.c comes from vrhome - one decoder, no
 # duplicated layouts.
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
-LOG=${PN2_ROOT}/notes/380_img_cted.txt
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
+LOG=${HIBISCUS_ROOT}/notes/380_img_cted.txt
 exec >"$LOG" 2>&1
 
 fail=0
@@ -40,19 +40,19 @@ NDK="${ANDROID_NDK_LATEST_HOME:-$(ls -d "$ANDROID_HOME"/ndk/* 2>/dev/null | sort
 CC="$NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android29-clang"
 [ -x "$CC" ] || { echo "  MISSING NDK clang: $CC"; exit 1; }
 "$CC" -O2 -DANDROID \
-  -I"$PN2_ROOT/vrhome/src/input" \
-  -o "$PN2_ROOT/cted/cted" \
-  "$PN2_ROOT/cted/cted.c" \
-  "$PN2_ROOT/vrhome/src/input/ctrl_state.c" \
+  -I"$HIBISCUS_ROOT/vrhome/src/input" \
+  -o "$HIBISCUS_ROOT/cted/cted" \
+  "$HIBISCUS_ROOT/cted/cted.c" \
+  "$HIBISCUS_ROOT/vrhome/src/input/ctrl_state.c" \
   || fail=$((fail+1))
-ls -la "$PN2_ROOT/cted/cted" 2>/dev/null
+ls -la "$HIBISCUS_ROOT/cted/cted" 2>/dev/null
 
 echo
 echo "=== inject ==="
-put "$PN2_ROOT/cted/cted" /bin/cted 755
-put "$PN2_ROOT/cted/hibiscus-cted.rc" /etc/init/hibiscus-cted.rc 644
+put "$HIBISCUS_ROOT/cted/cted" /bin/cted 755
+put "$HIBISCUS_ROOT/cted/hibiscus-cted.rc" /etc/init/hibiscus-cted.rc 644
 # the debug-dump collector, also runnable by hand over adb
-put "$PN2_ROOT/cted/cte-dump.sh" /bin/cte-dump 755
+put "$HIBISCUS_ROOT/cted/cte-dump.sh" /bin/cte-dump 755
 
 echo
 echo "=== repair + verify ==="

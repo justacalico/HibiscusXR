@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-E=${PN2_ROOT}/eyeunit
-L=${PN2_ROOT}/notes/15_bitstream.log
+E=${HIBISCUS_ROOT}/eyeunit
+L=${HIBISCUS_ROOT}/notes/15_bitstream.log
 exec >"$L" 2>&1
 
 echo "=== reproducibility ==="

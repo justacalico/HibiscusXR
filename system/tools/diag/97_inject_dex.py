@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """
 Inject the unquickened classes.dex into each Pico APK.
 
@@ -18,9 +18,9 @@ import shutil
 import sys
 import zipfile
 
-APPS = PN2_ROOT + "/pvr_apps"
-DEX = PN2_ROOT + "/pvr_dex"
-OUT = PN2_ROOT + "/pvr_apps_injected"
+APPS = HIBISCUS_ROOT + "/pvr_apps"
+DEX = HIBISCUS_ROOT + "/pvr_dex"
+OUT = HIBISCUS_ROOT + "/pvr_apps_injected"
 
 WANT = [
     "PicoSettingsProvider", "configserverservice", "CVService", "pvrdisplay",

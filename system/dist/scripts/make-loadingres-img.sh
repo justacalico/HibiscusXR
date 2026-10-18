@@ -4,7 +4,7 @@
 # need, so fake just that subtree in a small ext4 image - rdump can't tell the
 # difference.
 set -euo pipefail
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 SRC="$R/.stub"
 IMG="$R/images/ota_4.1.3/system.img"
 HERE="$(cd "$(dirname "$0")" && pwd)"

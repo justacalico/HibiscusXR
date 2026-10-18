@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-D=${PN2_ROOT}/extracted/dtb
-N=${PN2_ROOT}/notes
+D=${HIBISCUS_ROOT}/extracted/dtb
+N=${HIBISCUS_ROOT}/notes
 
 # Which DTS carries the 72Hz JDI panel definition (not just a pinctrl reference)?
 SRC=$(grep -l 'mdss_dsi_jdi_4k_55uhd_72_new_video {' "$D"/*.dts 2>/dev/null | head -1)

@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-cd ${PN2_ROOT}/deadunit
-L=${PN2_ROOT}/notes/13_deadunit.log
+cd ${HIBISCUS_ROOT}/deadunit
+L=${HIBISCUS_ROOT}/notes/13_deadunit.log
 exec >"$L" 2>&1
 
 for f in d8k.bin rb.bin dfull.bin; do

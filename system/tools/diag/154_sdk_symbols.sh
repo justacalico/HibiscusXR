@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Read the crashing code path out of the real libPvr_UnitySDK.so that ALVR ships.
 #
 # Every Pico VR app dies at:
@@ -10,8 +10,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # but never resolved. So the question is: which Java class/method does the SDK
 # reach for at that point, and is it present on our build?
 set -u
-SO=${PN2_ROOT}/ref/alvr-pico-legacy/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so
-LOG=${PN2_ROOT}/notes/154_sdk_symbols.txt
+SO=${HIBISCUS_ROOT}/ref/alvr-pico-legacy/app/src/main/jniLibs/armeabi-v7a/libPvr_UnitySDK.so
+LOG=${HIBISCUS_ROOT}/notes/154_sdk_symbols.txt
 exec >"$LOG" 2>&1
 
 ls -l "$SO"

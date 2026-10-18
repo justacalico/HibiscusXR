@@ -33,8 +33,8 @@
 #   copies into fullstage. Run once after re-pulling stock libs.
 set -euo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-DIR="${1:-$PN2_ROOT/pvr_applibs/CVService/lib/arm}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+DIR="${1:-$HIBISCUS_ROOT/pvr_applibs/CVService/lib/arm}"
 
 patch() { # file offset hex-expected hex-new
   local f="$DIR/$1" off=$2 want=$3 new=$4

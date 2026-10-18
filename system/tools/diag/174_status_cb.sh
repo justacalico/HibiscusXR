@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Disassemble PVR::serviceStatusCallback around the crashing log call.
 #
 # pvrservice dies at __android_log_print <- serviceStatusCallback+472 with a null
@@ -7,9 +7,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # null. 8.1's bionic tolerated it; Q's does not. Find the call site, the format
 # string it passes, and where the null operand comes from.
 set -u
-L=${PN2_ROOT}/notes/lib64/libpvrservice.so
+L=${HIBISCUS_ROOT}/notes/lib64/libpvrservice.so
 PY=$HOME/.pn2venv/bin/python
-LOG=${PN2_ROOT}/notes/174_status_cb.txt
+LOG=${HIBISCUS_ROOT}/notes/174_status_cb.txt
 exec >"$LOG" 2>&1
 
 ls -l "$L" 2>/dev/null || { echo "libpvrservice.so not pulled"; exit 1; }

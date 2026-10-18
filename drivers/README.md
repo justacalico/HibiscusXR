@@ -26,7 +26,7 @@ See `controllers/README.md`.
 - `image.inputs` - fetch-inputs pin names this device needs
 - `image.steps.stage` / `image.steps.inject` - ordered `{run,log,marker}`
   entries the build pipeline runs; paths under `tools/` resolve inside
-  `$PN2_ROOT`, anything else resolves inside the driver dir
+  `$HIBISCUS_ROOT`, anything else resolves inside the driver dir
 
 `tools/provider.py` is the resolver the pipeline calls. `HSVR_DRIVERS`
 limits which drivers are active (space separated); unset means all.

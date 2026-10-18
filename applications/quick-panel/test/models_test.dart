@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_quicksettings/src/catalog.dart';
-import 'package:pn2_quicksettings/src/models.dart';
+import 'package:hibiscus_quicksettings/src/catalog.dart';
+import 'package:hibiscus_quicksettings/src/models.dart';
 
 void main() {
   test('snapshot json roundtrips', () {

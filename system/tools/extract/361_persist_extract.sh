@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Our own headset's original persist partition, from the pre-conversion backup.
 # The live device has lost 9 of the 10 files in /pvr/camera - only
 # device_calibration.xml survived - and with no hwcalibration.merge the 6DoF
@@ -8,9 +8,9 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # backup, not from the stock reference headset (which is a different unit, and an
 # Eye model at that).
 set -u
-IMG=${PN2_ROOT}/backup_nonEye/persist.img
+IMG=${HIBISCUS_ROOT}/backup_nonEye/persist.img
 WORK=/tmp/persist_ours.img
-OUT=${PN2_ROOT}/persist_calib
+OUT=${HIBISCUS_ROOT}/persist_calib
 
 cp -f "$IMG" "$WORK"
 # the backup was taken from a live device, so the journal is dirty

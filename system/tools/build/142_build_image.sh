@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Fold the overlay into a flashable system.img.
 #
 # Deliberately ships NO proprietary Pico content. The image is the GSI plus our
@@ -11,11 +11,11 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # debugfs, not a loop mount: no root needed, and the host cannot be affected.
 # The image root IS /system, so paths inside are /etc/... not /system/etc/...
 set -u
-GSI=${PN2_ROOT}/gsi/gsi_raw.img
-OV=${PN2_ROOT}/overlay
-OUT=${PN2_ROOT}/out
+GSI=${HIBISCUS_ROOT}/gsi/gsi_raw.img
+OV=${HIBISCUS_ROOT}/overlay
+OUT=${HIBISCUS_ROOT}/out
 IMG=$OUT/system-pn2.img
-LOG=${PN2_ROOT}/notes/142_build.txt
+LOG=${HIBISCUS_ROOT}/notes/142_build.txt
 exec >"$LOG" 2>&1
 
 mkdir -p "$OUT"
@@ -75,7 +75,7 @@ echo "=== headset buttons: libinput keycode labels ==="
 TMP=$(mktemp -d)
 for lib in lib64 lib; do
   debugfs -R "dump /$lib/libinput.so $TMP/libinput.so" "$IMG" 2>/dev/null
-  if [ -s "$TMP/libinput.so" ] && python3 "$PN2_ROOT/tools/patch/401_patch_libinput.py" \
+  if [ -s "$TMP/libinput.so" ] && python3 "$HIBISCUS_ROOT/tools/patch/401_patch_libinput.py" \
       "$TMP/libinput.so" "$TMP/libinput.patched.so" >/dev/null 2>&1; then
     put "$TMP/libinput.patched.so" "/$lib/libinput.so" 644
   else

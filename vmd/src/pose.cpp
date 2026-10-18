@@ -1,4 +1,4 @@
-// Copyright 2025, PN2Lineage
+// Copyright 2025, Hibiscus
 // SPDX-License-Identifier: BSL-1.0
 //
 // Pose channel server: the guest's vmd driver connects here (qemu user

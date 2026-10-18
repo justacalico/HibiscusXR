@@ -1,4 +1,4 @@
-// Copyright 2025, PN2Lineage
+// Copyright 2025, Hibiscus
 // SPDX-License-Identifier: BSL-1.0
 //
 // Desktop sim: a window that shows the VM's framebuffer while the mouse

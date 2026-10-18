@@ -16,7 +16,7 @@ out/vmd -openxr            # OpenXR app mode - a WiVRn/Monado runtime
 out/vmd -selftest          # pose channel smoke test
 ```
 
-Options: `-img <dir>` (default `$PN2_ROOT/out`), `-novm`,
+Options: `-img <dir>` (default `$HIBISCUS_ROOT/out`), `-novm`,
 `-kernel/-dtb/-initrd/-append/-cpu` to override what vmd picks up from
 the image dir.
 

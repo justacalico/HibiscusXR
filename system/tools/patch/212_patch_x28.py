@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Preserve x28 across the SetClientStatusCallback call in pvr_EnterVrMode.
 
 pvr_EnterVrMode does:
@@ -26,8 +26,8 @@ the register - it is deliberately narrow so it can be reverted on its own.
 """
 import struct, sys, shutil
 
-SRC = sys.argv[1] if len(sys.argv) > 1 else PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
-DST = sys.argv[2] if len(sys.argv) > 2 else PN2_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.patched.so"
+SRC = sys.argv[1] if len(sys.argv) > 1 else HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.so"
+DST = sys.argv[2] if len(sys.argv) > 2 else HIBISCUS_ROOT + "/notes/vrshell_lib/libPvr_UnitySDK.patched.so"
 
 CALL_SITE = 0x5ff54     # the bl we redirect
 TARGET    = 0xf6ec0     # SetClientStatusCallback

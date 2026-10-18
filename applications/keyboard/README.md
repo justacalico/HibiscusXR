@@ -4,7 +4,7 @@ The system input method, and the only one in the image - LatinIME is
 stripped by `tools/build/410_strip_stock_apps.sh`, and `pn2-settings.rc`
 bakes this service in as `default_input_method`.
 
-Plain Java, no Gradle: `make apk` produces `out/pn2keyboard.apk`
+Plain Java, no Gradle: `make apk` produces `out/keyboard.apk`
 (javac -> d8 -> aapt2 -> zipalign -> apksigner, same pipeline as vrhome).
 
 ## Why it doesn't dock
@@ -15,7 +15,7 @@ window itself can do. To float Quest-style, the keyboard renders
 somewhere else entirely: the HUD owns a `Surface`/`SurfaceTexture` pair,
 hands the `Surface` over on request
 (`gitlab.neosalsa.keyboard.action.QUERY` -> `...action.SURFACE`), and this
-service wraps it in a private virtual display (`pn2kbd`) hosting the keys
+service wraps it in a private virtual display (`hbkbd`) hosting the keys
 as a `Presentation`. Private + same-uid owner is the only combination
 window manager accepts for presentation windows, which is why the display
 splits that way: HUD keeps the texture, this app keeps the display.

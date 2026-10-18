@@ -1,8 +1,8 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
 V=/home/justin/pn2/vendor
-L=${PN2_ROOT}/notes/31_fstab.log
+L=${HIBISCUS_ROOT}/notes/31_fstab.log
 exec >"$L" 2>&1
 
 echo "=== vendor fstab files ==="

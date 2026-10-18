@@ -1,5 +1,5 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Patch the Adreno context-attrib parser and shadow the blob into
 # system-pn2-full.img.
 #
@@ -22,8 +22,8 @@ PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
 # content. 64-bit only: every wgpu client seen so far is arm64; the 32-bit
 # vendor blob keeps the same bug for now.
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
-LOG=${PN2_ROOT}/notes/406_glespatch.txt
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
+LOG=${HIBISCUS_ROOT}/notes/406_glespatch.txt
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
 exec >"$LOG" 2>&1
@@ -46,8 +46,8 @@ put() {
 
 echo "=== stock blob source ==="
 SRC=""
-for c in "$PN2_ROOT/linklibs/libGLESv2_adreno.so" \
-         "$PN2_ROOT/notes/qlibs/libGLESv2_adreno.so"; do
+for c in "$HIBISCUS_ROOT/linklibs/libGLESv2_adreno.so" \
+         "$HIBISCUS_ROOT/notes/qlibs/libGLESv2_adreno.so"; do
   [ -s "$c" ] && SRC="$c" && break
 done
 if [ -z "$SRC" ]; then
@@ -59,7 +59,7 @@ ls -l "$SRC"
 
 echo
 echo "=== patch ==="
-if python3 "$PN2_ROOT/tools/patch/405_patch_gles_robust.py" \
+if python3 "$HIBISCUS_ROOT/tools/patch/405_patch_gles_robust.py" \
      "$SRC" "$TMP/libGLESv2_adreno.so"; then
   ls -l "$TMP/libGLESv2_adreno.so"
 else
@@ -73,7 +73,7 @@ echo "=== inject into full image ==="
 debugfs -w -R "mkdir /etc/pn2" "$IMG" >/dev/null 2>&1
 debugfs -w -R "sif /etc/pn2 mode 040755" "$IMG" >/dev/null 2>&1
 put "$TMP/libGLESv2_adreno.so"              "/etc/pn2/libGLESv2_adreno.so" 644
-put "$PN2_ROOT/overlay/etc/init/pn2-egl.rc" "/etc/init/pn2-egl.rc"          644
+put "$HIBISCUS_ROOT/overlay/etc/init/pn2-egl.rc" "/etc/init/pn2-egl.rc"          644
 
 echo
 echo "=== repair + verify ==="

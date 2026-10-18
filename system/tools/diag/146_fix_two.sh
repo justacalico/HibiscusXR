@@ -1,11 +1,11 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # /bin/vr and /framework/vr.jar exist in the GSI already, and debugfs `write`
 # does not overwrite - it fails and leaves the original. Remove then write.
 set -u
-FULL=${PN2_ROOT}/out/system-pn2-full.img
-STAGE=${PN2_ROOT}/fullstage
-LOG=${PN2_ROOT}/notes/146_fix.txt
+FULL=${HIBISCUS_ROOT}/out/system-pn2-full.img
+STAGE=${HIBISCUS_ROOT}/fullstage
+LOG=${HIBISCUS_ROOT}/notes/146_fix.txt
 exec >"$LOG" 2>&1
 
 fix() {  # fix <img-path> <mode>

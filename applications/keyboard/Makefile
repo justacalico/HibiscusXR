@@ -1,6 +1,6 @@
 # One APK without Gradle: javac -> d8 -> aapt2 -> zipalign -> apksigner.
 #
-#   out/pn2keyboard.apk  gitlab.neosalsa.keyboard - the floating IME
+#   out/keyboard.apk  gitlab.neosalsa.keyboard - the floating IME
 #
 # Env overrides match vrhome's Makefile:
 #   ANDROID_SDK_ROOT  Android SDK dir   (default /opt/android-sdk)
@@ -16,7 +16,7 @@ JAR  ?= $(SDK)/platforms/android-29/android.jar
 KEYS ?= $(CURDIR)/../build/keys
 
 OUT := out
-APK := $(OUT)/pn2keyboard.apk
+APK := $(OUT)/keyboard.apk
 
 AAPT2    := $(BT)/aapt2
 D8       := $(BT)/d8
@@ -76,7 +76,7 @@ $(APK): $(UNALIGNED) $(DEX) | toolcheck
 	    [ -f debug.keystore ] || keytool -genkeypair -v \
 	        -keystore debug.keystore -alias keyboard -keyalg RSA -keysize 2048 \
 	        -validity 10000 -storepass android -keypass android \
-	        -dname "CN=keyboard,O=pn2,C=CN"; \
+	        -dname "CN=keyboard,O=hibiscus,C=CN"; \
 	    $(APKSIGNER) sign --ks debug.keystore --ks-pass pass:android $@; \
 	    echo "$@: signed with debug key"; \
 	fi

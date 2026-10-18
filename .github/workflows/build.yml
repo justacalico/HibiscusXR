@@ -27,7 +27,7 @@ on:
         default: neo2
 
 env:
-  PN2_ROOT: /home/runner/pn2
+  HIBISCUS_ROOT: /home/runner/hibiscus
   DEVICE: ${{ github.event.inputs.device || 'neo2' }}
 
 jobs:
@@ -108,7 +108,7 @@ jobs:
       - name: layout sources
         run: |
           # The monorepo checkout is the source - the script copies (not
-          # symlinks) the dirs the tools/ scripts expect under $PN2_ROOT.
+          # symlinks) the dirs the tools/ scripts expect under $HIBISCUS_ROOT.
           # Input packages extract into overlay/ and tar refuses to write
           # through symlinked dirs, so real directories are required. Local
           # builds run the same script, so both lay out an identical set.

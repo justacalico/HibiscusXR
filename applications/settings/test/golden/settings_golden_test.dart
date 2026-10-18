@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/l10n/app_localizations.dart';
-import 'package:pn2_settings/src/envs/env_info.dart';
-import 'package:pn2_settings/src/envs/env_source.dart';
-import 'package:pn2_settings/src/models.dart';
+import 'package:hibiscus_settings/l10n/app_localizations.dart';
+import 'package:hibiscus_settings/src/envs/env_info.dart';
+import 'package:hibiscus_settings/src/envs/env_source.dart';
+import 'package:hibiscus_settings/src/models.dart';
 import 'package:panel_theme/panel_theme.dart';
-import 'package:pn2_settings/src/persistence.dart';
-import 'package:pn2_settings/src/platform/fake_settings_source.dart';
-import 'package:pn2_settings/src/settings_controller.dart';
-import 'package:pn2_settings/src/settings_store.dart';
-import 'package:pn2_settings/src/ui/settings_page.dart';
-import 'package:pn2_settings/src/ui/theme.dart';
+import 'package:hibiscus_settings/src/persistence.dart';
+import 'package:hibiscus_settings/src/platform/fake_settings_source.dart';
+import 'package:hibiscus_settings/src/settings_controller.dart';
+import 'package:hibiscus_settings/src/settings_store.dart';
+import 'package:hibiscus_settings/src/ui/settings_page.dart';
+import 'package:hibiscus_settings/src/ui/theme.dart';
 
 class _StubEnvs implements EnvSource {
   const _StubEnvs(this.options);

@@ -1,16 +1,16 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Reconstruct stock system.img from the OTA so restore_stock.ps1 has something
 # to flash. Without this the restore path is broken.
 set -u
-B=${PN2_ROOT}
+B=${HIBISCUS_ROOT}
 OTA=$B/images/ota_4.1.3
 ZIP='${PICO_FW_DIR}/Neo_2/update_PicoNeo2_pui4.1.3_20210409_b346-user-jdi4k72_new.zip'
 L=$B/notes/21_system_img.log
 exec >"$L" 2>&1
 
 echo "=== free space before ==="
-df -h "${PN2_ROOT:-$HOME/PN2Lineage}" | tail -1
+df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
 
 if [ -f "$OTA/system.img" ]; then
   echo "system.img already present:"
@@ -44,5 +44,5 @@ grep -E 'ro.build.fingerprint|ro.pvr.internal.version|ro.build.version.release' 
 
 echo
 echo "=== free space after ==="
-df -h "${PN2_ROOT:-$HOME/PN2Lineage}" | tail -1
+df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
 echo DONE

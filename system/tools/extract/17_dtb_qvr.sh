@@ -1,7 +1,7 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 set -u
-B=${PN2_ROOT}
+B=${HIBISCUS_ROOT}
 EX=$B/extracted
 N=$B/notes
 V=/home/justin/pn2/vendor

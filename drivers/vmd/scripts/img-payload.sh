@@ -9,7 +9,7 @@
 # There is no clean/full split for vmd and no device partition cap: qemu
 # takes the raw image on virtio-blk as-is.
 set -u
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 IMG="$R/out/system-vmd.img"
 LOG="$R/notes/500_vmd.txt"
 exec >"$LOG" 2>&1
@@ -60,7 +60,7 @@ bash "$R/tools/build/270_shell_stack.sh" "$IMG" \
 
 echo
 echo "=== self-check ==="
-for p in /app/PN2Panels/PN2Panels.apk /app/PN2Hud/PN2Hud.apk \
+for p in /app/vrhome/vrhome.apk /app/vrhud/vrhud.apk \
          /app/MonadoOpenXR/MonadoOpenXR.apk \
          /app/MonadoOpenXR/lib/arm64/libopenxr_monado.so \
          /etc/init/pn2-home.rc /etc/init/pn2-openxr.rc \

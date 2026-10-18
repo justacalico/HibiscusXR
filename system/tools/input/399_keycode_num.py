@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Read the numeric value of Pico's extra keycode labels from stock's libinput.so.
 
 The KEYCODES table is an array of { const char* literal; int32_t value; }. On
@@ -10,7 +10,7 @@ from .rela.dyn rather than read straight out of the file.
 """
 import struct, sys
 
-LIB = PN2_ROOT + "/notes/stock_system_lib64_libinput.so"
+LIB = HIBISCUS_ROOT + "/notes/stock_system_lib64_libinput.so"
 WANTED = [b"DEFINE_CONFIRM", b"DEFINE_CONTROLLER_CONFIRM", b"DC_IN",
           b"HALL_OPEN", b"HALL_CLOSE", b"ALL_APPS", b"BACK", b"HOME"]
 

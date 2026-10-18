@@ -1,10 +1,10 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Add libmdsprpc.so (modem DSP RPC, needed by the QVR mapper wrapper) to the image.
 # The /vendor copy is the one to use - its SONAME matches the stub's verneed.
 set -u
-IMG=${PN2_ROOT}/out/system-pn2-full.img
-S=${PN2_ROOT}/cdsp/vendor/libmdsprpc.so
+IMG=${HIBISCUS_ROOT}/out/system-pn2-full.img
+S=${HIBISCUS_ROOT}/cdsp/vendor/libmdsprpc.so
 D=/lib/libmdsprpc.so
 
 [ -f "$S" ] || { echo "source missing"; exit 1; }

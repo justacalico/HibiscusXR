@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """
 Read the vdex headers before committing to a tool.
 
@@ -58,7 +58,7 @@ def probe(path):
 
 
 def main():
-    root = sys.argv[1] if len(sys.argv) > 1 else PN2_ROOT + "/pvr_apps"
+    root = sys.argv[1] if len(sys.argv) > 1 else HIBISCUS_ROOT + "/pvr_apps"
     files = sorted(glob.glob(os.path.join(root, "**", "*.vdex"), recursive=True))
     if not files:
         print("no vdex files found under", root)

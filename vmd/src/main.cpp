@@ -1,4 +1,4 @@
-// Copyright 2025, PN2Lineage
+// Copyright 2025, Hibiscus
 // SPDX-License-Identifier: BSL-1.0
 //
 // vmd - Hibiscus virtual machine driver, host side.
@@ -8,7 +8,7 @@
 //   vmd -selftest                  pose channel smoke test, no window
 //
 //   -img <dir>     image set dir (system-hibiscus-full-neo2.img, vendor.img,
-//                  boot.img) - default $PN2_ROOT/out
+//                  boot.img) - default $HIBISCUS_ROOT/out
 //   -novm          skip qemu, pose channel + UI only
 //   -kernel/-dtb/-append   kernel overrides for the guest
 
@@ -86,7 +86,8 @@ main(int argc, char **argv)
 	vmd_vm_opts opts;
 	bool novm = false;
 
-	const char *env_root = getenv("PN2_ROOT");
+	const char *env_root = getenv("HIBISCUS_ROOT");
+	if (!env_root) env_root = getenv("PN2_ROOT");
 	opts.imgdir = env_root ? std::string(env_root) + "/out" : "out";
 	if (getenv("VMD_QEMU") != nullptr)
 		opts.qemu = getenv("VMD_QEMU");

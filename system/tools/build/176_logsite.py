@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """Show the __android_log_print call site in libpvrservice.so that crashes.
 
 Tombstone frame #04 is  libpvrservice.so + 0xd0d4  -- the return address, so the
@@ -11,7 +11,7 @@ which registers are still live from a null source.
 import struct, sys
 from capstone import Cs, CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN
 
-path = PN2_ROOT + "/notes/lib64/libpvrservice.so"
+path = HIBISCUS_ROOT + "/notes/lib64/libpvrservice.so"
 RET  = 0xd0d4
 START = RET - 0x150
 data = open(path, "rb").read()

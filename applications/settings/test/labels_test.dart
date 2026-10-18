@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/l10n/app_localizations.dart';
-import 'package:pn2_settings/src/catalog.dart';
-import 'package:pn2_settings/src/labels.dart';
-import 'package:pn2_settings/src/models.dart';
+import 'package:hibiscus_settings/l10n/app_localizations.dart';
+import 'package:hibiscus_settings/src/catalog.dart';
+import 'package:hibiscus_settings/src/labels.dart';
+import 'package:hibiscus_settings/src/models.dart';
 import 'package:panel_theme/panel_theme.dart';
 
 Future<AppLocalizations> l10nOf(WidgetTester tester) async {

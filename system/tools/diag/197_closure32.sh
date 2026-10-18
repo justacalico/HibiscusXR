@@ -1,13 +1,13 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # 32-bit dependency closure for the whitelist. zygote (32-bit) preloads the same
 # list, so a missing 32-bit dependency aborts boot exactly like the 64-bit case.
 set -u
-LOG=${PN2_ROOT}/notes/197_closure32.txt
+LOG=${HIBISCUS_ROOT}/notes/197_closure32.txt
 exec >"$LOG" 2>&1
 INV=/tmp/pn2_inventory.txt
-tr -d '\r' < ${PN2_ROOT}/notes/192_inventory.txt > "$INV"
-D=${PN2_ROOT}/notes/lib32
+tr -d '\r' < ${HIBISCUS_ROOT}/notes/192_inventory.txt > "$INV"
+D=${HIBISCUS_ROOT}/notes/lib32
 needed() { readelf -dW "$1" 2>/dev/null | awk '/NEEDED/{gsub(/[\[\]]/,"",$5); print $5}'; }
 
 bad=0

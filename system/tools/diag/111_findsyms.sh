@@ -1,14 +1,14 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # VRShell dlopens libpxr_6dof_optimization.so then dlsyms updateOffsets and
 # getResetPos, and both fail. Find which library really exports them - across the
 # whole stock system image, not just what we happened to extract.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-LOG=${PN2_ROOT}/notes/111_syms.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+LOG=${HIBISCUS_ROOT}/notes/111_syms.txt
 exec >"$LOG" 2>&1
 
 echo "=== in what we already extracted ==="
-for d in ${PN2_ROOT}/pvr_stack ${PN2_ROOT}/pvr_applibs; do
+for d in ${HIBISCUS_ROOT}/pvr_stack ${HIBISCUS_ROOT}/pvr_applibs; do
   find "$d" -name '*.so' 2>/dev/null | while read -r f; do
     if nm -D --defined-only "$f" 2>/dev/null | grep -qE ' (updateOffsets|getResetPos)$'; then
       echo "  HIT $f"
@@ -19,8 +19,8 @@ done
 echo
 
 echo "=== does OUR copy of libpxr_6dof_optimization.so have them at all? ==="
-for f in ${PN2_ROOT}/pvr_stack/lib64/libpxr_6dof_optimization.so \
-         ${PN2_ROOT}/pvr_stack/lib/libpxr_6dof_optimization.so; do
+for f in ${HIBISCUS_ROOT}/pvr_stack/lib64/libpxr_6dof_optimization.so \
+         ${HIBISCUS_ROOT}/pvr_stack/lib/libpxr_6dof_optimization.so; do
   [ -f "$f" ] || continue
   echo "--- $f ---"
   echo "    total dynamic symbols: $(nm -D "$f" 2>/dev/null | wc -l)"

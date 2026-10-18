@@ -9,14 +9,14 @@
 #     ("Write to device failed (no link)") and leave system half-written.
 #
 # Usage: flash_full.sh [image]
-#   PN2_SERIAL  device serial if more than one is connected
+#   HIBISCUS_SERIAL  device serial if more than one is connected
 set -euo pipefail
 
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-IMG="${1:-$PN2_ROOT/out/system-pn2-full.img}"
-LOG="${LOG:-$PN2_ROOT/notes/flash_$(date +%Y%m%d_%H%M%S).log}"
-ADB=(adb ${PN2_SERIAL:+-s "$PN2_SERIAL"})
-FB=(fastboot ${PN2_SERIAL:+-s "$PN2_SERIAL"})
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+IMG="${1:-$HIBISCUS_ROOT/out/system-pn2-full.img}"
+LOG="${LOG:-$HIBISCUS_ROOT/notes/flash_$(date +%Y%m%d_%H%M%S).log}"
+ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
+FB=(fastboot ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 
 log() { local l="[$(date +%H:%M:%S)] $*"; echo "$l"; mkdir -p "$(dirname "$LOG")"; echo "$l" >> "$LOG"; }
 

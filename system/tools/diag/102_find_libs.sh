@@ -1,12 +1,12 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # CVService wants libCVController.so, which is not the same file as the
 # libCVControllerClient.pxr.so I already pulled. My extraction list was written
 # from the directory listing rather than from what the apps actually load, so
 # there may be more gaps. Find every non-AOSP-looking lib in the stock image so
 # we can match against what the Pico apps ask for.
-IMG=${PN2_ROOT}/images/ota_4.1.3/system.img
-LOG=${PN2_ROOT}/notes/102_libs.txt
+IMG=${HIBISCUS_ROOT}/images/ota_4.1.3/system.img
+LOG=${HIBISCUS_ROOT}/notes/102_libs.txt
 exec >"$LOG" 2>&1
 
 echo "=== anything matching CVController ==="
@@ -27,7 +27,7 @@ echo
 
 echo "=== what native libs do the installed apks reference? ==="
 # JNI libs the apps System.loadLibrary() - grep the dex we extracted for names
-for d in ${PN2_ROOT}/pvr_dex/*/; do
+for d in ${HIBISCUS_ROOT}/pvr_dex/*/; do
   n=$(basename "$d")
   f=$(ls "$d"/*.dex 2>/dev/null | head -1)
   [ -f "$f" ] || continue

@@ -3,14 +3,14 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pn2_settings/src/envs/env_info.dart';
-import 'package:pn2_settings/src/envs/env_source.dart';
-import 'package:pn2_settings/src/envs/env_zip.dart';
-import 'package:pn2_settings/src/models.dart';
-import 'package:pn2_settings/src/persistence.dart';
-import 'package:pn2_settings/src/platform/fake_settings_source.dart';
-import 'package:pn2_settings/src/settings_controller.dart';
-import 'package:pn2_settings/src/settings_store.dart';
+import 'package:hibiscus_settings/src/envs/env_info.dart';
+import 'package:hibiscus_settings/src/envs/env_source.dart';
+import 'package:hibiscus_settings/src/envs/env_zip.dart';
+import 'package:hibiscus_settings/src/models.dart';
+import 'package:hibiscus_settings/src/persistence.dart';
+import 'package:hibiscus_settings/src/platform/fake_settings_source.dart';
+import 'package:hibiscus_settings/src/settings_controller.dart';
+import 'package:hibiscus_settings/src/settings_store.dart';
 
 // smallest legal zip: local headers + data, central dir, EOCD.
 // method 0 stores, 8 carries raw deflate.

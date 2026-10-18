@@ -1,7 +1,7 @@
 #!/bin/bash
-PN2_ROOT="${PN2_ROOT:-$HOME/PN2Lineage}"
-F=${PN2_ROOT}/notes/lib64/libpvrservice.so
-LOG=${PN2_ROOT}/notes/175_inspect.txt
+HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+F=${HIBISCUS_ROOT}/notes/lib64/libpvrservice.so
+LOG=${HIBISCUS_ROOT}/notes/175_inspect.txt
 exec >"$LOG" 2>&1
 ls -l "$F"
 echo "=== file type ==="

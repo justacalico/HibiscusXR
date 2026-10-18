@@ -4,7 +4,7 @@
 # vendor partition, a bootstrap ramdisk, and a scratch userdata image.
 #
 # usage: vmd/bootenv/make-bootenv.sh [-o OUTDIR] [-h]
-#   OUTDIR defaults to $PN2_ROOT/out (or ./out). Drops in:
+#   OUTDIR defaults to $HIBISCUS_ROOT/out (or ./out). Drops in:
 #     kernel-gki      raw aarch64 kernel Image (GKI 5.4, virtio via modules)
 #     vendor.img      API 29 emulator vendor partition (ext4, raw)
 #     vmd-boot.img    cpio.gz bootstrap ramdisk (ramdisk/ sources + modules)
@@ -52,7 +52,7 @@ declare -A VD_SHA=(
   [virtio-rng.ko]=28ca936a0097b9e1018c924530274a99feeb1217bf6e30adba6a87c92447dd44
 )
 
-OUT="${PN2_ROOT:-$PWD/..}/out"
+OUT="${HIBISCUS_ROOT:-${PN2_ROOT:-$PWD/..}}/out"
 while [ $# -gt 0 ]; do
     case "$1" in
         -o) OUT="$2"; shift 2 ;;

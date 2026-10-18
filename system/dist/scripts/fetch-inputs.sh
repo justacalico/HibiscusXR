@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Download the pinned input packages from this project's generic package
-# registry and lay them out under $PN2_ROOT the way the tools/ scripts expect.
+# registry and lay them out under $HIBISCUS_ROOT the way the tools/ scripts expect.
 #
 # What gets fetched depends on DEVICE: the GSI is shared, the rest is the
 # union of the device's drivers' image.inputs (driver.json -> provider.py).
@@ -11,7 +11,7 @@
 # deliberately don't carry it, which is why it travels as packages.
 set -euo pipefail
 
-R="${PN2_ROOT:?}"
+R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
 PID="${GL_PROJECT_ID:?}"
 BASE="https://gitlab.com/api/v4/projects/$PID/packages/generic"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"

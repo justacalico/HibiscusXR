@@ -1,5 +1,5 @@
-name: pn2_store
-description: "F-Droid compatible app store for the Pico Neo 2 LineageOS port."
+name: hibiscus_store
+description: "F-Droid compatible app store for Hibiscus."
 publish_to: 'none'
 version: 1.0.0+1
 

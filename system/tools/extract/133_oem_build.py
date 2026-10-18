@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-PN2_ROOT = os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
 """
 Inject the unquickened dex into the /oem apks (python zipfile append, never
 .NET ZipArchive Update - that corrupted every apk last time).
@@ -10,9 +10,9 @@ import shutil
 import sys
 import zipfile
 
-SRC = PN2_ROOT + "/oem_apps"
-DEX = PN2_ROOT + "/oem_dex"
-OUT = PN2_ROOT + "/oem_injected"
+SRC = HIBISCUS_ROOT + "/oem_apps"
+DEX = HIBISCUS_ROOT + "/oem_dex"
+OUT = HIBISCUS_ROOT + "/oem_injected"
 
 WANT = ["PVRLauncher", "PVRHome", "store2d", "provision2d", "ToBToolService"]
 

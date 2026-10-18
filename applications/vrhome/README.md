@@ -112,25 +112,38 @@ make test
 
 See `AGENTS.md` for the testing and file-size rules this repo follows.
 
-### Desktop preview
+### Desktop mode
 
-`make preview` opens the real dash renderer in a desktop window with fixture
-apps, icons and a notification. The mouse controls the gaze direction, WASD
-moves the free camera, Q/E move vertically, Shift moves faster, left click is
-confirm, Esc is back, G toggles the app grid, K toggles the keyboard, and R
-recenters the dash.
+`make preview` builds `out/dash-preview` and opens the real dash renderer in
+a desktop window. The host only needs a C++ toolchain, Python 3, GLFW 3,
+GLESv2 and zlib; no Android SDK or NDK. Fixture data fills it in - a grid of
+apps with generated icons, dock pins and a notification - so dash changes can
+be tried without a headset.
+
+The mouse controls the gaze direction, WASD moves the free camera, Q/E move
+vertically, Shift moves faster, left click is confirm, Esc is back, G toggles
+the app grid, K toggles the keyboard, and R recenters the dash.
 
 The preview links the same layout, input, animation and draw code the headset
 uses. Android services sit behind `src/shell/backend.h`; the desktop backend is
 only fixture data and textures, so dash changes do not need a second UI port.
 
 Pass `-mcp` (`./out/dash-preview -mcp`) and the window also serves MCP on
-stdio: one JSON-RPC message per line, tools to drive the dash. `dash_state`
-reports the camera and open panels, `dash_look`/`dash_move` steer the camera,
-`dash_key` sends confirm/back, `dash_launch` opens a package, `dash_grid` and
-`dash_keyboard` toggle the overlays, `dash_recenter` re-anchors the ring and
-`dash_screenshot` returns the frame as PNG. Point an MCP client at it the same
-way as any stdio server.
+stdio: one JSON-RPC message per line, tools to drive the dash.
+
+| Tool | Does |
+| ---- | ---- |
+| `dash_state` | camera pose, open panels, grid and keyboard visibility |
+| `dash_look` | point the camera (`yaw` / `pitch` in degrees) |
+| `dash_move` | move the camera (`x` / `y` / `z` in metres) |
+| `dash_key` | send a key: `confirm`, `enter`, `back`, `dpad_center` or `button_a`; `action` is `tap` (default), `down` or `up` |
+| `dash_launch` | open a `package` on a new panel |
+| `dash_grid` / `dash_keyboard` | show or hide the app grid / keyboard quad (`shown`) |
+| `dash_recenter` | re-anchor the dash ring in front of the camera |
+| `dash_screenshot` | return the rendered frame as a PNG image |
+
+Point an MCP client at it the same way as any stdio server; when the client
+closes stdin the window exits with it.
 
 ### Debugging on device
 

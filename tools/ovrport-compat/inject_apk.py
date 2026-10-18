@@ -38,7 +38,9 @@ def repack(root, out):
             for f in files:
                 full = os.path.join(dirpath, f)
                 rel = os.path.relpath(full, root)
-                stored = rel.startswith("lib/") and rel.endswith(".so")
+                stored = ((rel.startswith("lib/") and rel.endswith(".so"))
+                          or (rel.startswith("assets/")
+                              and not rel.startswith("assets/bin/")))
                 z.write(full, rel,
                         compress_type=zipfile.ZIP_STORED if stored
                         else zipfile.ZIP_DEFLATED)

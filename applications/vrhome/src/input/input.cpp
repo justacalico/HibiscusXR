@@ -9,14 +9,11 @@
 #include "../notif/notif.h"
 #include "../sysmsg/sysmsg.h"
 #include "../hud/engine.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 
-#include <android/input.h>
-#include <android/keycodes.h>
 
 #include <cmath>
 #include <ctime>
@@ -25,7 +22,7 @@
 // themselves arrive from the java window, never the NDK input queue
 void hudKey(HudEngine* e, int code, int action, int repeat) {
     if (isConfirm(code)) {
-        const bool down = action == AKEY_EVENT_ACTION_DOWN && repeat == 0;
+        const bool down = action == kKeyDown && repeat == 0;
         if (down) {
             LOGI("confirm down, hover %d zone %d dock %d", e->hover,
                  e->hoverZone, e->dockHover);
@@ -149,8 +146,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 // still lands as a plain tap. a press on the top bar only
                 // arms its chrome action, fired if the release lands on the
                 // same spot
-                if (e->bridge && e->hoverZone == ZONE_WINDOW) {
-                    JNIEnv* env = threadEnv(e->vm);
+                if (e->backend && e->hoverZone == ZONE_WINDOW) {
                     e->dragDisp = p.displayId;
                     e->dragX = e->grabX = e->hitX;
                     e->dragY = e->grabY = e->hitY;
@@ -159,10 +155,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     e->kbd.hostDisp = p.displayId;
                     LOGI("drag start disp %d @ %.0f,%.0f",
                          p.displayId, e->hitX, e->hitY);
-                    env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
+                    e->backend->injectTouch( p.displayId,
                                         e->hitX, e->hitY,
-                                        AMOTION_EVENT_ACTION_DOWN);
-                    if (env->ExceptionCheck()) env->ExceptionClear();
+                                        kTouchDown);
                 }
             }
             if (e->kbd.hover && e->kbd.zone == KZONE_HANDLE) {
@@ -174,23 +169,20 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->kbd.grabOffYaw = e->kbd.offYaw;
                 e->kbd.grabOffY = e->kbd.offY;
                 LOGI("kbd drag grab @ yaw %.2f", e->aimYaw);
-            } else if (e->kbd.hover && e->kbd.displayId >= 0 && e->bridge) {
+            } else if (e->kbd.hover && e->kbd.displayId >= 0 && e->backend) {
                 // a key tap on the floating quad: injected straight onto
                 // the IME's own display, no panel gesture involved
                 e->kbd.pressed = true;
                 kbdHitPx(e->kbd.u, e->kbd.v, &e->kbd.px, &e->kbd.py);
-                JNIEnv* env = threadEnv(e->vm);
-                env->CallVoidMethod(e->bridge, e->mInjectTouch,
+                e->backend->injectTouch(
                                     e->kbd.displayId, e->kbd.px, e->kbd.py,
-                                    AMOTION_EVENT_ACTION_DOWN);
-                if (env->ExceptionCheck()) env->ExceptionClear();
+                                    kTouchDown);
             }
-        } else if (action == AKEY_EVENT_ACTION_UP && e->confirmHeld) {
+        } else if (action == kKeyUp && e->confirmHeld) {
             e->confirmHeld = false;
             e->moveHeld = false;
             e->kbd.moveHeld = false;
             e->grid.scrollHeld = false;
-            JNIEnv* env = threadEnv(e->vm);
             if (e->grid.pressZone == GZONE_ITEM ||
                     e->grid.pressZone == GZONE_CLOSE) {
                 // an app cell or the close disc: fires only when the
@@ -211,12 +203,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             } else if (e->kbd.pressed) {
                 // key tap: the UP lands where the DOWN did - the aim may
                 // have drifted off the key while the button was held
-                if (e->bridge && e->kbd.displayId >= 0) {
-                    env->CallVoidMethod(e->bridge, e->mInjectTouch,
+                if (e->backend && e->kbd.displayId >= 0) {
+                    e->backend->injectTouch(
                                         e->kbd.displayId, e->kbd.px,
                                         e->kbd.py,
-                                        AMOTION_EVENT_ACTION_UP);
-                    if (env->ExceptionCheck()) env->ExceptionClear();
+                                        kTouchUp);
                 }
                 e->kbd.pressed = false;
             } else if (e->sysMsgPress >= 0) {
@@ -285,14 +276,12 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->dockPressPkg.clear();
                 e->dockPinP = 0.0f;
                 e->dockPinDone = false;
-            } else if (e->bridge && e->dragDisp >= 0) {
-                env->CallVoidMethod(e->bridge, e->mInjectTouch, e->dragDisp,
-                                    e->dragX, e->dragY, AMOTION_EVENT_ACTION_UP);
-                if (env->ExceptionCheck()) env->ExceptionClear();
+            } else if (e->backend && e->dragDisp >= 0) {
+                e->backend->injectTouch( e->dragDisp,
+                                    e->dragX, e->dragY, kTouchUp);
                 for (auto& p : e->panels)
                     if (p.displayId == e->dragDisp && p.taskId >= 0) {
-                        env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
-                        if (env->ExceptionCheck()) env->ExceptionClear();
+                        e->backend->focusTask( p.taskId);
                         break;
                     }
             } else if (e->pressDisp >= 0 && e->hoverZone == e->pressZone) {
@@ -304,10 +293,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         continue;
                     if (e->pressZone == ZONE_CLOSE) {
                         LOGI("bar close disp %d", p.displayId);
-                        if (e->bridge && p.displayId >= 0) {
-                            env->CallVoidMethod(e->bridge, e->mRemoveDisp,
+                        if (e->backend && p.displayId >= 0) {
+                            e->backend->removeTasksOnDisplay(
                                                 p.displayId);
-                            if (env->ExceptionCheck()) env->ExceptionClear();
                         }
                         closePanel(e, i);
                     } else if (e->pressZone == ZONE_MIN) {
@@ -327,13 +315,12 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                             p.pitch = dashRingPitch(e->panels,
                                                     e->dockPitch);
                         }
-                    } else if (e->pressZone == ZONE_LABEL && e->bridge &&
+                    } else if (e->pressZone == ZONE_LABEL && e->backend &&
                                p.taskId >= 0 &&
                                fabsf(wrapPi(p.yaw - p.grabYaw)) < 0.02f) {
                         // a still pill release focuses the task; a slot
                         // drag that moved the window ends here instead
-                        env->CallVoidMethod(e->bridge, e->mFocusTask, p.taskId);
-                        if (env->ExceptionCheck()) env->ExceptionClear();
+                        e->backend->focusTask( p.taskId);
                     }
                     break;
                 }
@@ -344,13 +331,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         }
         return;
     }
-    if (code == AKEYCODE_BACK && action == AKEY_EVENT_ACTION_UP) {
+    if (code == kKeyBack && action == kKeyUp) {
         // the floating keyboard owns BACK first: drop the quad, not the
         // window or card behind it
-        if (e->kbd.shown && e->bridge && e->mKbdHide) {
-            JNIEnv* env = threadEnv(e->vm);
-            env->CallVoidMethod(e->bridge, e->mKbdHide);
-            if (env->ExceptionCheck()) env->ExceptionClear();
+        if (e->kbd.shown && e->backend) {
+            e->backend->sendKbdHide();
             return;
         }
         // a live system message is modal: BACK drops the front card, not
@@ -367,12 +352,10 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         // close the newest panel; over a covered app the service consumes
         // BACK itself to dismiss the menu, so this only ever runs in home
         // space
-        if (e->bridge && !e->panels.empty()) {
-            JNIEnv* env = threadEnv(e->vm);
+        if (e->backend && !e->panels.empty()) {
             Panel& p = e->panels.back();
             if (p.displayId >= 0) {
-                env->CallVoidMethod(e->bridge, e->mRemoveDisp, p.displayId);
-                if (env->ExceptionCheck()) env->ExceptionClear();
+                e->backend->removeTasksOnDisplay( p.displayId);
             }
             closePanel(e, (int)e->panels.size() - 1);
         }
@@ -383,7 +366,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 // streams MOVEs to the display a confirm-press started on; the aim point is
 // clamped inside the window so the drag survives the ray leaving the edges
 void dragTick(HudEngine* e, const float o[3], const float d[3]) {
-    if (!e->confirmHeld || e->dragDisp < 0 || !e->bridge) return;
+    if (!e->confirmHeld || e->dragDisp < 0 || !e->backend) return;
     for (auto& p : e->panels) {
         if (p.displayId != e->dragDisp) continue;
         float rx, ry;
@@ -393,10 +376,8 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
             if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)
                 return;
             e->dragX = px; e->dragY = py;
-            JNIEnv* env = threadEnv(e->vm);
-            env->CallVoidMethod(e->bridge, e->mInjectTouch, p.displayId,
-                                px, py, AMOTION_EVENT_ACTION_MOVE);
-            if (env->ExceptionCheck()) env->ExceptionClear();
+            e->backend->injectTouch( p.displayId,
+                                px, py, kTouchMove);
         }
         return;
     }

@@ -5,8 +5,6 @@
 #include "../hud/engine.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
-#include "../common/jni.h"
-#include "../common/log.h"
 #include "../common/palette.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
@@ -14,52 +12,18 @@
 #include "../text/draw.h"
 
 #include <GLES2/gl2.h>
-
 #include <cmath>
 #include <cstring>
 
-// pull the launcher app list when the java side's version moved; rebuild
-// the cells and clamp the scroll so a shrinking list can't strand it
 void syncGrid(HudEngine* e) {
-    if (!e->bridge || !e->mAppsVer || !e->mApps) return;
-    JNIEnv* env = threadEnv(e->vm);
-    const int v = env->CallIntMethod(e->bridge, e->mAppsVer);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    if (!e->backend) return;
+    const int v = e->backend->appsVersion();
     if (v == e->grid.appsVer) return;
     e->grid.appsVer = v;
-    e->grid.items.clear();
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mApps);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (arr) {
-        const int n = env->GetArrayLength(arr);
-        for (int i = 0; i < n; ++i) {
-            jobject a = env->GetObjectArrayElement(arr, i);
-            if (!a) continue;
-            GridItem it;
-            jstring jp = (jstring)env->GetObjectField(a, e->fAppPkg);
-            jstring jl = (jstring)env->GetObjectField(a, e->fAppLabel);
-            if (jp) {
-                const char* c = env->GetStringUTFChars(jp, nullptr);
-                it.pkg = c;
-                env->ReleaseStringUTFChars(jp, c);
-                env->DeleteLocalRef(jp);
-            }
-            if (jl) {
-                const char* c = env->GetStringUTFChars(jl, nullptr);
-                it.label = c;
-                env->ReleaseStringUTFChars(jl, c);
-                env->DeleteLocalRef(jl);
-            }
-            if (!it.pkg.empty()) e->grid.items.push_back(it);
-            env->DeleteLocalRef(a);
-        }
-    }
+    e->backend->launcherApps(&e->grid.items);
     gridLayout(e->grid.items);
-    for (auto& it : e->grid.items)
-        it.vr = iconFor(e, it.pkg).vr;
-    e->grid.scroll = gridClampScroll(e->grid.scroll,
-                                   (int)e->grid.items.size());
+    for (auto& it : e->grid.items) it.vr = iconFor(e, it.pkg).vr;
+    e->grid.scroll = gridClampScroll(e->grid.scroll, (int)e->grid.items.size());
 }
 
 void gridActivate(HudEngine* e, int idx) {

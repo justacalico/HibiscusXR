@@ -1,22 +1,24 @@
 #include "bridge.h"
 
-#include "../hud/engine.h"
 #include "../common/jni.h"
 #include "../common/log.h"
-#include "../common/config.h"
-#include "../dock/layout.h"
+#include "../hud/engine.h"
+#include "../kbd/kbd.h"
+#include "../panels/panel.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
+#include "../common/config.h"
 #include "../common/props.h"
+
+#include <android/bitmap.h>
 
 #include <cstring>
 #include <deque>
+#include <memory>
 #include <mutex>
 
-// launch requests arrive from Java (open-package broadcast, test hook)
 static std::deque<std::string> gLaunchQ;
 static std::mutex gLaunchMu;
-
 static volatile bool gWantRecenter = false;
 
 static std::string jstr(JNIEnv* env, jstring s) {
@@ -28,324 +30,469 @@ static std::string jstr(JNIEnv* env, jstring s) {
     return out;
 }
 
-// localized chrome labels: the java side bumps its version when the
-// configuration changes, then the labels - plus every cached app label -
-// are refetched so a locale switch doesn't leave stale text behind
-void syncUiStrings(HudEngine* e) {
-    if (!e->bridge || !e->mUiStrVer || !e->mUiStrings) return;
-    JNIEnv* env = threadEnv(e->vm);
-    const int v = env->CallIntMethod(e->bridge, e->mUiStrVer);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (v == e->uiStrVer) return;
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mUiStrings);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    e->uiStrVer = v;
-    if (arr) {
-        if (env->GetArrayLength(arr) > 0)
-            e->uiLib =
-                jstr(env, (jstring)env->GetObjectArrayElement(arr, 0));
-        env->DeleteLocalRef(arr);
+class JniBackend : public DashBackend {
+public:
+    JniBackend(HudEngine* e, JNIEnv* env, jobject br) : vm(e->vm), ctx(e->ctx) {
+        bridge = env->NewGlobalRef(br);
+        jclass bc = env->GetObjectClass(br);
+        mCreatePanel  = env->GetMethodID(bc, "createPanel", "(IIII)I");
+        mPanelTex     = env->GetMethodID(bc, "panelTexture",
+                            "(I)Landroid/graphics/SurfaceTexture;");
+        mLaunchPkg    = env->GetMethodID(bc, "launchPackageOn",
+                            "(Ljava/lang/String;I)V");
+        mAdopt        = env->GetMethodID(bc, "adoptTaskOn", "(II)V");
+        mReleasePanel = env->GetMethodID(bc, "releasePanel", "(I)V");
+        mTakeAdopt    = env->GetMethodID(bc, "takePendingAdopt",
+                            "()Lgitlab/neosalsa/hud/ShellBridge$Pending;");
+        mTakeRelease  = env->GetMethodID(bc, "takePendingRelease", "()I");
+        mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
+        mInjectTouch  = env->GetMethodID(bc, "injectTouch", "(IFFI)V");
+        mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
+        mRemoveDisp   = env->GetMethodID(bc, "removeTasksOnDisplay", "(I)V");
+        mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
+        mAppLabel     = env->GetMethodID(bc, "appLabel",
+                            "(Ljava/lang/String;)Ljava/lang/String;");
+        mIsVr         = env->GetMethodID(bc, "isVrApp",
+                            "(Ljava/lang/String;)Z");
+        mLaunchVr     = env->GetMethodID(bc, "launchVrApp",
+                            "(Ljava/lang/String;)V");
+        mIsCovered    = env->GetMethodID(bc, "isCovered", "()Z");
+        mTakePins     = env->GetMethodID(bc, "takePins", "()[Ljava/lang/String;");
+        mSetPins      = env->GetMethodID(bc, "setPins", "([Ljava/lang/String;)V");
+        mAppIcon      = env->GetMethodID(bc, "appIcon",
+                            "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
+        mVrVer        = env->GetMethodID(bc, "vrVersion", "()I");
+        mRunningVr    = env->GetMethodID(bc, "runningVr",
+                            "()[Lgitlab/neosalsa/hud/ShellBridge$Pending;");
+        mDismiss      = env->GetMethodID(bc, "dismissMenu", "()V");
+        mNotifVer     = env->GetMethodID(bc, "notifVersion", "()I");
+        mNotifs       = env->GetMethodID(bc, "notifs",
+                            "()[Lgitlab/neosalsa/hud/NotifService$Info;");
+        mDismissNotif = env->GetMethodID(bc, "dismissNotif",
+                            "(Ljava/lang/String;)V");
+        mToastOnly    = env->GetMethodID(bc, "toastOnly", "()Z");
+        mDebugHud     = env->GetMethodID(bc, "debugHud", "()Z");
+        mDebugOnly    = env->GetMethodID(bc, "debugOnly", "()Z");
+        mSysStatus    = env->GetMethodID(bc, "sysStatus", "()[I");
+        mSysMsgVer    = env->GetMethodID(bc, "sysMsgVersion", "()I");
+        mSysMsgs      = env->GetMethodID(bc, "sysMsgs",
+                            "()[Lgitlab/neosalsa/hud/SysMsgs$Msg;");
+        mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
+        mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
+        mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
+        mCenterLaunch = env->GetMethodID(bc, "centerLaunch", "()Z");
+        mUiStrVer     = env->GetMethodID(bc, "uiStringsVersion", "()I");
+        mUiStrings    = env->GetMethodID(bc, "uiStrings", "()[Ljava/lang/String;");
+        mKbdCreate    = env->GetMethodID(bc, "createKbdSurface", "(IIII)Z");
+        mKbdTex       = env->GetMethodID(bc, "kbdTexture",
+                            "()Landroid/graphics/SurfaceTexture;");
+        mKbdTakeQuery = env->GetMethodID(bc, "takeKbdQuery", "()Z");
+        mKbdSend      = env->GetMethodID(bc, "sendKbdSurface", "()V");
+        mKbdHide      = env->GetMethodID(bc, "sendKbdHide", "()V");
+        mKbdState     = env->GetMethodID(bc, "kbdState", "()[I");
+        mAppsVer      = env->GetMethodID(bc, "appsVersion", "()I");
+        mApps         = env->GetMethodID(bc, "launcherApps",
+                            "()[Lgitlab/neosalsa/hud/ShellBridge$LauncherApp;");
+        jclass stc = env->FindClass("android/graphics/SurfaceTexture");
+        stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
+        stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
+        pendingCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.ShellBridge$Pending"));
+        fPendTask = env->GetFieldID(pendingCls, "taskId", "I");
+        fPendPkg  = env->GetFieldID(pendingCls, "pkg", "Ljava/lang/String;");
+        appCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.ShellBridge$LauncherApp"));
+        fAppPkg = env->GetFieldID(appCls, "pkg", "Ljava/lang/String;");
+        fAppLabel = env->GetFieldID(appCls, "label", "Ljava/lang/String;");
+        notifCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.NotifService$Info"));
+        fNotifKey = env->GetFieldID(notifCls, "key", "Ljava/lang/String;");
+        fNotifPkg = env->GetFieldID(notifCls, "pkg", "Ljava/lang/String;");
+        fNotifTitle = env->GetFieldID(notifCls, "title", "Ljava/lang/String;");
+        fNotifText = env->GetFieldID(notifCls, "text", "Ljava/lang/String;");
+        fNotifMs = env->GetFieldID(notifCls, "postMs", "J");
+        fNotifClear = env->GetFieldID(notifCls, "clearable", "Z");
+        sysMsgCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SysMsgs$Msg"));
+        fMsgId = env->GetFieldID(sysMsgCls, "id", "J");
+        fMsgPkg = env->GetFieldID(sysMsgCls, "pkg", "Ljava/lang/String;");
+        fMsgTitle = env->GetFieldID(sysMsgCls, "title", "Ljava/lang/String;");
+        fMsgText = env->GetFieldID(sysMsgCls, "text", "Ljava/lang/String;");
+        fMsgBtns = env->GetFieldID(sysMsgCls, "buttons", "[Ljava/lang/String;");
     }
-    for (auto& p : e->panels) p.label.clear();
-    for (auto& kv : e->dockIcons) kv.second.label.clear();
-}
+
+    JNIEnv* env() { return threadEnv(vm); }
+    bool fail(JNIEnv* e) {
+        if (!e->ExceptionCheck()) return false;
+        e->ExceptionClear();
+        return true;
+    }
+
+    int createPanel(Panel* p, unsigned tex, int w, int h, int dpi) override {
+        JNIEnv* e = env();
+        int id = e->CallIntMethod(bridge, mCreatePanel, (jint)tex, w, h, dpi);
+        if (fail(e) || id < 0) return -1;
+        jobject st = e->CallObjectMethod(bridge, mPanelTex, id);
+        if (fail(e) || !st) {
+            e->CallVoidMethod(bridge, mReleasePanel, id);
+            fail(e);
+            return -1;
+        }
+        p->displayId = id;
+        p->st = e->NewGlobalRef(st);
+        p->stArr = e->NewGlobalRef(e->NewFloatArray(16));
+        e->DeleteLocalRef(st);
+        return id;
+    }
+
+    void releasePanel(Panel* p) override {
+        JNIEnv* e = env();
+        if (p->displayId >= 0) {
+            e->CallVoidMethod(bridge, mReleasePanel, p->displayId);
+            fail(e);
+        }
+        if (p->st) e->DeleteGlobalRef((jobject)p->st);
+        if (p->stArr) e->DeleteGlobalRef((jobject)p->stArr);
+    }
+
+    void updatePanel(Panel* p) override {
+        if (!p->st) return;
+        JNIEnv* e = env();
+        e->CallVoidMethod((jobject)p->st, stUpdate);
+        e->CallVoidMethod((jobject)p->st, stMatrix, (jfloatArray)p->stArr);
+        e->GetFloatArrayRegion((jfloatArray)p->stArr, 0, 16, p->stMat);
+        fail(e);
+    }
+
+    bool createKbdSurface(Kbd* k, unsigned tex, int w, int h, int dpi) override {
+        JNIEnv* e = env();
+        if (e->CallBooleanMethod(bridge, mKbdCreate, (jint)tex, w, h, dpi)
+                != JNI_TRUE || fail(e)) return false;
+        jobject st = e->CallObjectMethod(bridge, mKbdTex);
+        if (fail(e) || !st) return false;
+        k->st = e->NewGlobalRef(st);
+        k->stArr = e->NewGlobalRef(e->NewFloatArray(16));
+        e->DeleteLocalRef(st);
+        return true;
+    }
+
+    void updateKbd(Kbd* k) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod((jobject)k->st, stUpdate);
+        e->CallVoidMethod((jobject)k->st, stMatrix, (jfloatArray)k->stArr);
+        e->GetFloatArrayRegion((jfloatArray)k->stArr, 0, 16, k->stMat);
+        fail(e);
+    }
+
+    bool takeKbdQuery() override {
+        JNIEnv* e = env();
+        bool r = e->CallBooleanMethod(bridge, mKbdTakeQuery) == JNI_TRUE;
+        fail(e);
+        return r;
+    }
+    void sendKbdSurface() override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mKbdSend); fail(e);
+    }
+    void sendKbdHide() override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mKbdHide); fail(e);
+    }
+    KbdState kbdState() override {
+        JNIEnv* e = env();
+        jintArray a = (jintArray)e->CallObjectMethod(bridge, mKbdState);
+        KbdState s;
+        if (a && e->GetArrayLength(a) >= 3) {
+            jint v[3];
+            e->GetIntArrayRegion(a, 0, 3, v);
+            s.shown = v[0] != 0; s.displayId = v[1]; s.only = v[2] != 0;
+        }
+        if (a) e->DeleteLocalRef(a);
+        fail(e);
+        return s;
+    }
+
+    bool takePins(std::vector<std::string>* out) override {
+        JNIEnv* e = env();
+        jobjectArray arr =
+            (jobjectArray)e->CallObjectMethod(bridge, mTakePins);
+        if (fail(e) || !arr) return false;
+        out->clear();
+        const int n = e->GetArrayLength(arr);
+        for (int i = 0; i < n; ++i)
+            out->push_back(jstr(e, (jstring)e->GetObjectArrayElement(arr, i)));
+        e->DeleteLocalRef(arr);
+        return true;
+    }
+
+    void setPins(const std::vector<std::string>& pins) override {
+        JNIEnv* e = env();
+        jclass sc = e->FindClass("java/lang/String");
+        jobjectArray a = e->NewObjectArray((int)pins.size(), sc, nullptr);
+        for (int i = 0; i < (int)pins.size(); ++i)
+            e->SetObjectArrayElement(a, i, e->NewStringUTF(pins[i].c_str()));
+        e->CallVoidMethod(bridge, mSetPins, a);
+        fail(e);
+        e->DeleteLocalRef(a); e->DeleteLocalRef(sc);
+    }
+
+    int vrVersion() override {
+        JNIEnv* e = env();
+        int v = e->CallIntMethod(bridge, mVrVer);
+        fail(e);
+        return v;
+    }
+
+    void runningVr(std::vector<XrTask>* out) override {
+        out->clear();
+        JNIEnv* e = env();
+        jobjectArray arr =
+            (jobjectArray)e->CallObjectMethod(bridge, mRunningVr);
+        if (fail(e) || !arr) return;
+        const int n = e->GetArrayLength(arr);
+        for (int i = 0; i < n; ++i) {
+            jobject p = e->GetObjectArrayElement(arr, i);
+            XrTask t;
+            t.taskId = e->GetIntField(p, fPendTask);
+            t.pkg = jstr(e, (jstring)e->GetObjectField(p, fPendPkg));
+            out->push_back(t);
+            e->DeleteLocalRef(p);
+        }
+        e->DeleteLocalRef(arr);
+    }
+
+    void sysStatus(int out[3]) override {
+        JNIEnv* e = env();
+        jintArray a = (jintArray)e->CallObjectMethod(bridge, mSysStatus);
+        if (a && e->GetArrayLength(a) >= 3) {
+            jint v[3]; e->GetIntArrayRegion(a, 0, 3, v);
+            out[0] = v[0]; out[1] = v[1]; out[2] = v[2];
+        }
+        if (a) e->DeleteLocalRef(a);
+        fail(e);
+    }
+
+    bool iconPixels(const std::string& pkg, IconPixels* out) override {
+        JNIEnv* e = env();
+        jstring jp = e->NewStringUTF(pkg.c_str());
+        jobject bmp = e->CallObjectMethod(bridge, mAppIcon, jp);
+        e->DeleteLocalRef(jp);
+        if (fail(e) || !bmp) return false;
+        AndroidBitmapInfo info;
+        void* px = nullptr;
+        bool ok = AndroidBitmap_getInfo(e, bmp, &info) ==
+                  ANDROID_BITMAP_RESULT_SUCCESS &&
+                  info.format == ANDROID_BITMAP_FORMAT_RGBA_8888 &&
+                  AndroidBitmap_lockPixels(e, bmp, &px) ==
+                  ANDROID_BITMAP_RESULT_SUCCESS && px;
+        if (ok) {
+            out->w = info.width; out->h = info.height;
+            out->rgba.assign((unsigned char*)px,
+                (unsigned char*)px + info.width * info.height * 4);
+            AndroidBitmap_unlockPixels(e, bmp);
+        }
+        e->DeleteLocalRef(bmp);
+        return ok;
+    }
+
+    std::string appLabel(const std::string& pkg) override {
+        JNIEnv* e = env();
+        jstring jp = e->NewStringUTF(pkg.c_str());
+        std::string out = jstr(e,
+            (jstring)e->CallObjectMethod(bridge, mAppLabel, jp));
+        e->DeleteLocalRef(jp);
+        fail(e);
+        return out.empty() ? pkg : out;
+    }
+
+    bool isVrApp(const std::string& pkg) override {
+        JNIEnv* e = env();
+        jstring jp = e->NewStringUTF(pkg.c_str());
+        bool r = e->CallBooleanMethod(bridge, mIsVr, jp) == JNI_TRUE;
+        e->DeleteLocalRef(jp); fail(e);
+        return r;
+    }
+
+    int appsVersion() override {
+        JNIEnv* e = env(); int v = e->CallIntMethod(bridge, mAppsVer); fail(e); return v;
+    }
+    void launcherApps(std::vector<GridItem>* out) override {
+        out->clear();
+        JNIEnv* e = env();
+        jobjectArray a = (jobjectArray)e->CallObjectMethod(bridge, mApps);
+        if (fail(e) || !a) return;
+        const int n = e->GetArrayLength(a);
+        for (int i = 0; i < n; ++i) {
+            jobject o = e->GetObjectArrayElement(a, i);
+            GridItem it;
+            it.pkg = jstr(e, (jstring)e->GetObjectField(o, fAppPkg));
+            it.label = jstr(e, (jstring)e->GetObjectField(o, fAppLabel));
+            if (!it.pkg.empty()) out->push_back(it);
+            e->DeleteLocalRef(o);
+        }
+        e->DeleteLocalRef(a);
+    }
+
+    int notifVersion() override {
+        JNIEnv* e = env(); int v = e->CallIntMethod(bridge, mNotifVer); fail(e); return v;
+    }
+    void notifs(std::vector<NotifItem>* out) override {
+        out->clear();
+        JNIEnv* e = env();
+        jobjectArray a = (jobjectArray)e->CallObjectMethod(bridge, mNotifs);
+        if (fail(e) || !a) return;
+        const int n = e->GetArrayLength(a);
+        for (int i = 0; i < n; ++i) {
+            jobject o = e->GetObjectArrayElement(a, i);
+            NotifItem it;
+            it.key = jstr(e, (jstring)e->GetObjectField(o, fNotifKey));
+            it.pkg = jstr(e, (jstring)e->GetObjectField(o, fNotifPkg));
+            it.title = jstr(e, (jstring)e->GetObjectField(o, fNotifTitle));
+            it.text = jstr(e, (jstring)e->GetObjectField(o, fNotifText));
+            it.postMs = e->GetLongField(o, fNotifMs);
+            it.clearable = e->GetBooleanField(o, fNotifClear) == JNI_TRUE;
+            if (!it.key.empty()) out->push_back(it);
+            e->DeleteLocalRef(o);
+        }
+        e->DeleteLocalRef(a);
+    }
+    void dismissNotif(const std::string& key) override {
+        JNIEnv* e = env(); jstring k = e->NewStringUTF(key.c_str());
+        e->CallVoidMethod(bridge, mDismissNotif, k); e->DeleteLocalRef(k); fail(e);
+    }
+
+    int sysMsgVersion() override {
+        JNIEnv* e = env(); int v = e->CallIntMethod(bridge, mSysMsgVer); fail(e); return v;
+    }
+    void sysMsgs(std::vector<SysMsgItem>* out) override {
+        out->clear();
+        JNIEnv* e = env();
+        jobjectArray a = (jobjectArray)e->CallObjectMethod(bridge, mSysMsgs);
+        if (fail(e) || !a) return;
+        const int n = e->GetArrayLength(a);
+        for (int i = 0; i < n; ++i) {
+            jobject o = e->GetObjectArrayElement(a, i);
+            SysMsgItem it;
+            it.id = e->GetLongField(o, fMsgId);
+            it.pkg = jstr(e, (jstring)e->GetObjectField(o, fMsgPkg));
+            it.title = jstr(e, (jstring)e->GetObjectField(o, fMsgTitle));
+            it.text = jstr(e, (jstring)e->GetObjectField(o, fMsgText));
+            jobjectArray bs = (jobjectArray)e->GetObjectField(o, fMsgBtns);
+            if (bs) {
+                const int nb = e->GetArrayLength(bs);
+                for (int b = 0; b < nb && b < kSysMsgMaxBtn; ++b)
+                    it.buttons.push_back(jstr(e,
+                        (jstring)e->GetObjectArrayElement(bs, b)));
+                e->DeleteLocalRef(bs);
+            }
+            out->push_back(it); e->DeleteLocalRef(o);
+        }
+        e->DeleteLocalRef(a);
+    }
+    void sysMsgClick(long long id, int btn) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mSysMsgClick, (jlong)id, btn); fail(e);
+    }
+    void sysMsgDismiss(long long id) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mSysMsgDismiss, (jlong)id); fail(e);
+    }
+
+    int uiStringsVersion() override {
+        JNIEnv* e = env(); int v = e->CallIntMethod(bridge, mUiStrVer); fail(e); return v;
+    }
+    void uiStrings(std::vector<std::string>* out) override {
+        out->clear();
+        JNIEnv* e = env();
+        jobjectArray a = (jobjectArray)e->CallObjectMethod(bridge, mUiStrings);
+        if (fail(e) || !a) return;
+        const int n = e->GetArrayLength(a);
+        for (int i = 0; i < n; ++i)
+            out->push_back(jstr(e, (jstring)e->GetObjectArrayElement(a, i)));
+        e->DeleteLocalRef(a);
+    }
+
+    void launchPackageOn(const std::string& pkg, int displayId) override {
+        JNIEnv* e = env(); jstring p = e->NewStringUTF(pkg.c_str());
+        e->CallVoidMethod(bridge, mLaunchPkg, p, displayId); e->DeleteLocalRef(p); fail(e);
+    }
+    void launchVrApp(const std::string& pkg) override {
+        JNIEnv* e = env(); jstring p = e->NewStringUTF(pkg.c_str());
+        e->CallVoidMethod(bridge, mLaunchVr, p); e->DeleteLocalRef(p); fail(e);
+    }
+    void adoptTaskOn(int taskId, int displayId) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mAdopt, taskId, displayId); fail(e);
+    }
+    void focusTask(int taskId) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mFocusTask, taskId); fail(e);
+    }
+    void removeTask(int taskId) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mRemoveTask, taskId); fail(e);
+    }
+    void removeTasksOnDisplay(int displayId) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mRemoveDisp, displayId); fail(e);
+    }
+    void injectTouch(int displayId, float x, float y, int action) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mInjectTouch, displayId, x, y, action); fail(e);
+    }
+    void injectTap(int displayId, float x, float y) override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mInjectTap, displayId, x, y); fail(e);
+    }
+    void dismissMenu() override {
+        JNIEnv* e = env(); e->CallVoidMethod(bridge, mDismiss); fail(e);
+    }
+
+    bool isCovered() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mIsCovered)==JNI_TRUE; fail(e); return r; }
+    bool toastOnly() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mToastOnly)==JNI_TRUE; fail(e); return r; }
+    bool debugHud() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mDebugHud)==JNI_TRUE; fail(e); return r; }
+    bool debugOnly() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mDebugOnly)==JNI_TRUE; fail(e); return r; }
+    bool sysMsgOnly() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mSysMsgOnly)==JNI_TRUE; fail(e); return r; }
+    bool centerLaunch() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mCenterLaunch)==JNI_TRUE; fail(e); return r; }
+
+    bool takePendingAdopt(PendingPanel* out) override {
+        JNIEnv* e = env(); jobject p = e->CallObjectMethod(bridge, mTakeAdopt);
+        if (fail(e) || !p) return false;
+        out->taskId = e->GetIntField(p, fPendTask);
+        out->pkg = jstr(e, (jstring)e->GetObjectField(p, fPendPkg));
+        e->DeleteLocalRef(p); return true;
+    }
+    int takePendingRelease() override {
+        JNIEnv* e = env(); int id=e->CallIntMethod(bridge,mTakeRelease); fail(e); return id;
+    }
+
+    void callCtx(const char* name, const char* sig, jint arg = 0) {
+        if (!ctx) return;
+        JNIEnv* e = env(); jclass c=e->GetObjectClass(ctx);
+        jmethodID m=e->GetMethodID(c,name,sig);
+        if (m) e->CallVoidMethod(ctx,m,arg); fail(e); e->DeleteLocalRef(c);
+    }
+    void pokeCtrlThread() override { callCtx("pokeCtrlThread", "()V"); }
+    void debugSummon() override { callCtx("debugSummon", "()V"); }
+    void debugSummonKey(int action) override { callCtx("debugSummonKey", "(I)V", action); }
+
+private:
+    JavaVM* vm;
+    jobject ctx, bridge;
+    jmethodID mCreatePanel, mPanelTex, mLaunchPkg, mAdopt, mReleasePanel,
+        mTakeAdopt, mTakeRelease, mInjectTap, mInjectTouch, mRemoveTask,
+        mRemoveDisp, mFocusTask, mAppLabel, mIsVr, mLaunchVr, mIsCovered,
+        mTakePins, mSetPins, mAppIcon, mVrVer, mRunningVr, mDismiss,
+        mNotifVer, mNotifs, mDismissNotif, mToastOnly, mDebugHud,
+        mDebugOnly, mSysStatus, mSysMsgVer, mSysMsgs, mSysMsgClick,
+        mSysMsgDismiss, mSysMsgOnly, mCenterLaunch, mUiStrVer, mUiStrings,
+        mKbdCreate, mKbdTex, mKbdTakeQuery, mKbdSend, mKbdHide, mKbdState,
+        mAppsVer, mApps, stUpdate, stMatrix;
+    jclass pendingCls, appCls, notifCls, sysMsgCls;
+    jfieldID fPendTask, fPendPkg, fAppPkg, fAppLabel, fNotifKey, fNotifPkg,
+        fNotifTitle, fNotifText, fNotifMs, fNotifClear, fMsgId, fMsgPkg,
+        fMsgTitle, fMsgText, fMsgBtns;
+};
 
 extern "C" JNIEXPORT void JNICALL
-Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass, jstring pkg) {
+Java_gitlab_neosalsa_hud_ShellBridge_nativeQueueLaunch(JNIEnv* env, jclass,
+                                                      jstring pkg) {
     const char* p = env->GetStringUTFChars(pkg, nullptr);
     queueLaunch(p);
     env->ReleaseStringUTFChars(pkg, p);
 }
 
-void queueLaunch(const char* pkg) {
-    std::lock_guard<std::mutex> l(gLaunchMu);
-    gLaunchQ.push_back(pkg);
-}
-
-void wantRecenter() { gWantRecenter = true; }
-
-bool takeWantRecenter() {
-    const bool r = gWantRecenter;
-    gWantRecenter = false;
-    return r;
-}
-
 void initBridge(HudEngine* e, JNIEnv* env, jobject br) {
-    jclass bc = env->GetObjectClass(br);
-    e->bridge = env->NewGlobalRef(br);
-    e->mCreatePanel  = env->GetMethodID(bc, "createPanel", "(IIII)I");
-    e->mPanelTex     = env->GetMethodID(bc, "panelTexture",
-                        "(I)Landroid/graphics/SurfaceTexture;");
-    e->mLaunchPkg    = env->GetMethodID(bc, "launchPackageOn",
-                        "(Ljava/lang/String;I)V");
-    e->mAdopt        = env->GetMethodID(bc, "adoptTaskOn", "(II)V");
-    e->mReleasePanel = env->GetMethodID(bc, "releasePanel", "(I)V");
-    e->mTakeAdopt    = env->GetMethodID(bc, "takePendingAdopt",
-                        "()Lgitlab/neosalsa/hud/ShellBridge$Pending;");
-    e->mTakeRelease  = env->GetMethodID(bc, "takePendingRelease", "()I");
-    e->mInjectTap    = env->GetMethodID(bc, "injectTap", "(IFF)V");
-    e->mInjectTouch  = env->GetMethodID(bc, "injectTouch", "(IFFI)V");
-    e->mRemoveTask   = env->GetMethodID(bc, "removeTask", "(I)V");
-    e->mRemoveDisp   = env->GetMethodID(bc, "removeTasksOnDisplay", "(I)V");
-    e->mFocusTask    = env->GetMethodID(bc, "focusTask", "(I)V");
-    e->mAppLabel     = env->GetMethodID(bc, "appLabel",
-                        "(Ljava/lang/String;)Ljava/lang/String;");
-    e->mIsVr         = env->GetMethodID(bc, "isVrApp",
-                        "(Ljava/lang/String;)Z");
-    e->mLaunchVr     = env->GetMethodID(bc, "launchVrApp",
-                        "(Ljava/lang/String;)V");
-    e->mIsCovered    = env->GetMethodID(bc, "isCovered", "()Z");
-    e->mTakePins     = env->GetMethodID(bc, "takePins",
-                        "()[Ljava/lang/String;");
-    e->mSetPins      = env->GetMethodID(bc, "setPins",
-                        "([Ljava/lang/String;)V");
-    e->mAppIcon      = env->GetMethodID(bc, "appIcon",
-                        "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
-    e->mVrVer        = env->GetMethodID(bc, "vrVersion", "()I");
-    e->mRunningVr    = env->GetMethodID(bc, "runningVr",
-                        "()[Lgitlab/neosalsa/hud/ShellBridge$Pending;");
-    e->mDismiss      = env->GetMethodID(bc, "dismissMenu", "()V");
-    e->mNotifVer     = env->GetMethodID(bc, "notifVersion", "()I");
-    e->mNotifs       = env->GetMethodID(bc, "notifs",
-                        "()[Lgitlab/neosalsa/hud/NotifService$Info;");
-    e->mDismissNotif = env->GetMethodID(bc, "dismissNotif",
-                        "(Ljava/lang/String;)V");
-    e->mToastOnly    = env->GetMethodID(bc, "toastOnly", "()Z");
-    e->mDebugHud     = env->GetMethodID(bc, "debugHud", "()Z");
-    e->mDebugOnly    = env->GetMethodID(bc, "debugOnly", "()Z");
-    e->mSysStatus    = env->GetMethodID(bc, "sysStatus", "()[I");
-    e->mSysMsgVer    = env->GetMethodID(bc, "sysMsgVersion", "()I");
-    e->mSysMsgs      = env->GetMethodID(bc, "sysMsgs",
-                        "()[Lgitlab/neosalsa/hud/SysMsgs$Msg;");
-    e->mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
-    e->mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
-    e->mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
-    e->mCenterLaunch = env->GetMethodID(bc, "centerLaunch", "()Z");
-    e->mUiStrVer     = env->GetMethodID(bc, "uiStringsVersion", "()I");
-    e->mUiStrings    = env->GetMethodID(bc, "uiStrings",
-                        "()[Ljava/lang/String;");
-    e->mKbdCreate    = env->GetMethodID(bc, "createKbdSurface", "(IIII)Z");
-    e->mKbdTex       = env->GetMethodID(bc, "kbdTexture",
-                        "()Landroid/graphics/SurfaceTexture;");
-    e->mKbdTakeQuery = env->GetMethodID(bc, "takeKbdQuery", "()Z");
-    e->mKbdSend      = env->GetMethodID(bc, "sendKbdSurface", "()V");
-    e->mKbdHide      = env->GetMethodID(bc, "sendKbdHide", "()V");
-    e->mKbdState     = env->GetMethodID(bc, "kbdState", "()[I");
-    e->mAppsVer      = env->GetMethodID(bc, "appsVersion", "()I");
-    e->mApps         = env->GetMethodID(bc, "launcherApps",
-                        "()[Lgitlab/neosalsa/hud/ShellBridge$LauncherApp;");
-
-    jclass stc = env->FindClass("android/graphics/SurfaceTexture");
-    e->stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
-    e->stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
-
-    e->pendingCls = (jclass)env->NewGlobalRef(loadAppClass(env,
-        e->ctx, "gitlab.neosalsa.hud.ShellBridge$Pending"));
-    e->fPendTask = env->GetFieldID(e->pendingCls, "taskId", "I");
-    e->fPendPkg  = env->GetFieldID(e->pendingCls, "pkg", "Ljava/lang/String;");
-    e->notifCls = (jclass)env->NewGlobalRef(loadAppClass(env,
-        e->ctx, "gitlab.neosalsa.hud.NotifService$Info"));
-    e->fNotifKey   = env->GetFieldID(e->notifCls, "key",
-                        "Ljava/lang/String;");
-    e->fNotifPkg   = env->GetFieldID(e->notifCls, "pkg",
-                        "Ljava/lang/String;");
-    e->fNotifTitle = env->GetFieldID(e->notifCls, "title",
-                        "Ljava/lang/String;");
-    e->fNotifText  = env->GetFieldID(e->notifCls, "text",
-                        "Ljava/lang/String;");
-    e->fNotifMs    = env->GetFieldID(e->notifCls, "postMs", "J");
-    e->fNotifClear = env->GetFieldID(e->notifCls, "clearable", "Z");
-    e->sysMsgCls = (jclass)env->NewGlobalRef(loadAppClass(env,
-        e->ctx, "gitlab.neosalsa.hud.SysMsgs$Msg"));
-    e->fMsgId    = env->GetFieldID(e->sysMsgCls, "id", "J");
-    e->fMsgPkg   = env->GetFieldID(e->sysMsgCls, "pkg",
-                        "Ljava/lang/String;");
-    e->fMsgTitle = env->GetFieldID(e->sysMsgCls, "title",
-                        "Ljava/lang/String;");
-    e->fMsgText  = env->GetFieldID(e->sysMsgCls, "text",
-                        "Ljava/lang/String;");
-    e->fMsgBtns  = env->GetFieldID(e->sysMsgCls, "buttons",
-                        "[Ljava/lang/String;");
-    e->appCls = (jclass)env->NewGlobalRef(loadAppClass(env,
-        e->ctx, "gitlab.neosalsa.hud.ShellBridge$LauncherApp"));
-    if (e->appCls) {
-        e->fAppPkg   = env->GetFieldID(e->appCls, "pkg",
-                            "Ljava/lang/String;");
-        e->fAppLabel = env->GetFieldID(e->appCls, "label",
-                            "Ljava/lang/String;");
-    }
+    e->backend = new JniBackend(e, env, br);
     LOGI("bridge ready");
-}
-
-// the elevation a new window joins at: a running row keeps its pitch, an
-// empty (or all-floating) ring derives it off the strip the dash is tied to
-static float ringPitchNow(HudEngine* e) {
-    return dashRingPitch(e->panels, e->dockPitch);
-}
-
-// where a new window lands: the centre-launch toggle takes the middle
-// slot and lets centreSlotYaw push or park whatever sits there; the
-// default fills the ring's free slots in order. Either way the row is
-// the dash's - slots sit around the strip's yaw and the elevation
-// follows it, so a window opens glued to the assembly instead of
-// wherever the gaze happened to be
-static float launchYaw(HudEngine* e) {
-    if (e->centerLaunch) return centreSlotYaw(e->panels, e->dockYaw);
-    return freeSlotYaw(e->panels, e->dockYaw);
-}
-
-// how many panel records may exist before a launch evicts: centre mode
-// parks the overflow on the shelf instead of closing it, so it can spend
-// the extra records
-static int panelCap(const HudEngine* e) {
-    return e->centerLaunch ? kMaxPanelRecs : kMaxPanels;
-}
-
-void pumpBridge(HudEngine* e) {
-    if (!e->bridge) return;
-    JNIEnv* env = threadEnv(e->vm);
-
-    // app launches requested by the app grid / open-package broadcast /
-    // test hook
-    for (;;) {
-        std::string pkg;
-        {
-            std::lock_guard<std::mutex> l(gLaunchMu);
-            if (gLaunchQ.empty()) break;
-            pkg = gLaunchQ.front(); gLaunchQ.pop_front();
-        }
-        jstring jpkg = env->NewStringUTF(pkg.c_str());
-        // Pico VR apps take over the headset; no panel is spent on them
-        if (e->mIsVr && env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)) {
-            env->CallVoidMethod(e->bridge, e->mLaunchVr, jpkg);
-            env->DeleteLocalRef(jpkg);
-            if (env->ExceptionCheck()) { env->ExceptionClear(); }
-            continue;
-        }
-        // a minimized window for this app comes back instead of opening a
-        // new panel: its task and display are still alive
-        const int mi = minimizedIndex(e->panels, pkg);
-        if (mi >= 0) {
-            restorePanel(e->panels, mi, e->dockYaw, ringPitchNow(e));
-            if (e->panels[mi].taskId >= 0) {
-                env->CallVoidMethod(e->bridge, e->mFocusTask,
-                                    e->panels[mi].taskId);
-                if (env->ExceptionCheck()) env->ExceptionClear();
-            }
-            LOGI("unminimized %s on disp %d", pkg.c_str(),
-                 e->panels[mi].displayId);
-            env->DeleteLocalRef(jpkg);
-            continue;
-        }
-        // a running window just refocuses: one panel per package
-        if (panelIndex(e->panels, pkg) >= 0) {
-            for (int i = 0; i < (int)e->panels.size(); ++i)
-                if (e->panels[i].pkg == pkg && e->panels[i].taskId >= 0) {
-                    env->CallVoidMethod(e->bridge, e->mFocusTask,
-                                        e->panels[i].taskId);
-                    if (env->ExceptionCheck()) env->ExceptionClear();
-                    break;
-                }
-            env->DeleteLocalRef(jpkg);
-            continue;
-        }
-        if ((int)e->panels.size() >= panelCap(e) && !evictOldestApp(e)) {
-            env->DeleteLocalRef(jpkg);
-            continue;
-        }
-        int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
-        if (idx < 0) { env->DeleteLocalRef(jpkg); continue; }
-        e->panels[idx].pkg = pkg;
-        env->CallVoidMethod(e->bridge, e->mLaunchPkg, jpkg,
-                            e->panels[idx].displayId);
-        env->DeleteLocalRef(jpkg);
-        if (env->ExceptionCheck()) { env->ExceptionClear(); }
-    }
-
-    // a fullscreen task owns the HMD; when it lets go the panels come back,
-    // so recenter the ring on wherever the user ended up looking
-    if (e->mIsCovered) {
-        const bool was = e->covered;
-        e->covered = env->CallBooleanMethod(e->bridge, e->mIsCovered) == JNI_TRUE;
-        if (was && !e->covered) wantRecenter();
-    }
-    if (e->mToastOnly)
-        e->toastOnly = env->CallBooleanMethod(e->bridge, e->mToastOnly)
-                       == JNI_TRUE;
-    if (e->mDebugHud)
-        e->debugHud = env->CallBooleanMethod(e->bridge, e->mDebugHud)
-                      == JNI_TRUE;
-    if (e->mDebugOnly)
-        e->debugOnly = env->CallBooleanMethod(e->bridge, e->mDebugOnly)
-                       == JNI_TRUE;
-    if (e->mSysMsgOnly)
-        e->sysMsgOnly = env->CallBooleanMethod(e->bridge, e->mSysMsgOnly)
-                        == JNI_TRUE;
-    if (e->mCenterLaunch)
-        e->centerLaunch = env->CallBooleanMethod(e->bridge, e->mCenterLaunch)
-                          == JNI_TRUE;
-
-    if (!e->pendingCls) return;
-
-    // test hook: setprop debug.vrhome.noadopt 1 leaves strays on display 0
-    // so the covered/summon cycle can be exercised without a VR game
-    if (propI("debug.vrhome.noadopt", 0)) return;
-
-    // stray display-0 tasks the poller wants us to take
-    for (;;) {
-        jobject p = env->CallObjectMethod(e->bridge, e->mTakeAdopt);
-        if (env->ExceptionCheck()) { env->ExceptionClear(); break; }
-        if (!p) break;
-        int taskId = env->GetIntField(p, e->fPendTask);
-        jstring jpkg = (jstring)env->GetObjectField(p, e->fPendPkg);
-        const char* pc = jpkg ? env->GetStringUTFChars(jpkg, nullptr) : nullptr;
-        LOGI("adopt pending task %d pkg %s", taskId, pc ? pc : "?");
-        if (pc) env->ReleaseStringUTFChars(jpkg, pc);
-        if ((int)e->panels.size() >= panelCap(e)) evictOldestApp(e);
-        int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
-        if (idx >= 0) {
-            e->panels[idx].taskId = taskId;
-            if (jpkg) {
-                const char* c = env->GetStringUTFChars(jpkg, nullptr);
-                e->panels[idx].pkg = c;
-                env->ReleaseStringUTFChars(jpkg, c);
-            }
-            env->CallVoidMethod(e->bridge, e->mAdopt, taskId,
-                                e->panels[idx].displayId);
-            if (env->ExceptionCheck()) { env->ExceptionClear(); }
-        } else {
-            // no free panel slots: kill the stray rather than leave a mono
-            // app stuck to the physical display retrying forever
-            env->CallVoidMethod(e->bridge, e->mRemoveTask, taskId);
-            if (env->ExceptionCheck()) { env->ExceptionClear(); }
-        }
-        env->DeleteLocalRef(p);
-    }
-
-    // empty displays the poller wants torn down
-    for (;;) {
-        int id = env->CallIntMethod(e->bridge, e->mTakeRelease);
-        if (env->ExceptionCheck()) { env->ExceptionClear(); break; }
-        if (id < 0) break;
-        for (int i = 0; i < (int)e->panels.size(); ++i)
-            if (e->panels[i].displayId == id) { closePanel(e, i); break; }
-    }
-
-    // window-bar labels: resolve once per panel, after pkg is known
-    if (e->mAppLabel) {
-        for (auto& p : e->panels) {
-            if (p.pkg.empty() || !p.label.empty()) continue;
-            jstring jpkg = env->NewStringUTF(p.pkg.c_str());
-            jstring jl = (jstring)env->CallObjectMethod(e->bridge, e->mAppLabel,
-                                                      jpkg);
-            env->DeleteLocalRef(jpkg);
-            if (env->ExceptionCheck()) { env->ExceptionClear(); continue; }
-            if (!jl) continue;
-            const char* c = env->GetStringUTFChars(jl, nullptr);
-            p.label = c;
-            env->ReleaseStringUTFChars(jl, c);
-            env->DeleteLocalRef(jl);
-        }
-    }
 }

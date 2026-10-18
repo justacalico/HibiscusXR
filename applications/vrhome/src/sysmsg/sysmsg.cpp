@@ -2,9 +2,7 @@
 
 #include "layout.h"
 #include "../hud/engine.h"
-#include "../bridge/bridge.h"
 #include "../common/config.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/palette.h"
 #include "../dock/dock.h"
@@ -13,76 +11,29 @@
 #include "../text/glyphs.h"
 
 #include <GLES2/gl2.h>
-
 #include <cstring>
 #include <string>
 #include <vector>
 
-static std::string jstr(JNIEnv* env, jstring s) {
-    if (!s) return "";
-    const char* c = env->GetStringUTFChars(s, nullptr);
-    std::string out = c ? c : "";
-    if (c) env->ReleaseStringUTFChars(s, c);
-    env->DeleteLocalRef(s);
-    return out;
-}
-
 void syncSysMsgs(HudEngine* e) {
-    if (!e->bridge || !e->mSysMsgVer || !e->sysMsgCls) return;
-    JNIEnv* env = threadEnv(e->vm);
-    const int v = env->CallIntMethod(e->bridge, e->mSysMsgVer);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    if (!e->backend) return;
+    const int v = e->backend->sysMsgVersion();
     if (v == e->sysMsgVer) return;
     e->sysMsgVer = v;
-    std::vector<SysMsgItem> raw;
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mSysMsgs);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (arr) {
-        const int n = env->GetArrayLength(arr);
-        for (int i = 0; i < n; ++i) {
-            jobject o = env->GetObjectArrayElement(arr, i);
-            if (!o) continue;
-            SysMsgItem it;
-            it.id    = env->GetLongField(o, e->fMsgId);
-            it.pkg   = jstr(env, (jstring)env->GetObjectField(o, e->fMsgPkg));
-            it.title = jstr(env, (jstring)env->GetObjectField(o, e->fMsgTitle));
-            it.text  = jstr(env, (jstring)env->GetObjectField(o, e->fMsgText));
-            jobjectArray btns = (jobjectArray)env->GetObjectField(o,
-                    e->fMsgBtns);
-            if (btns) {
-                const int nb = env->GetArrayLength(btns);
-                for (int b = 0; b < nb && b < kSysMsgMaxBtn; ++b)
-                    it.buttons.push_back(jstr(env,
-                        (jstring)env->GetObjectArrayElement(btns, b)));
-                env->DeleteLocalRef(btns);
-            }
-            raw.push_back(it);
-            env->DeleteLocalRef(o);
-        }
-    }
-    e->sysMsgs = raw;
-    // icons resolve through the same cache the dock and cards use; an
-    // empty pkg is a system-level crash and keeps the letter tile
+    e->backend->sysMsgs(&e->sysMsgs);
     for (auto& m : e->sysMsgs)
         if (!m.pkg.empty()) iconFor(e, m.pkg);
 }
 
 void sysMsgBtnClick(HudEngine* e, int btn) {
-    if (!e->bridge || !e->mSysMsgClick || e->sysMsgs.empty()) return;
-    JNIEnv* env = threadEnv(e->vm);
-    env->CallVoidMethod(e->bridge, e->mSysMsgClick,
-                        (jlong)e->sysMsgs.front().id, (jint)btn);
-    if (env->ExceptionCheck()) env->ExceptionClear();
+    if (!e->backend || e->sysMsgs.empty()) return;
+    e->backend->sysMsgClick(e->sysMsgs.front().id, btn);
     LOGI("sysmsg click btn %d", btn);
 }
 
 void sysMsgDismiss(HudEngine* e) {
-    if (!e->bridge || !e->mSysMsgDismiss || e->sysMsgs.empty()) return;
-    JNIEnv* env = threadEnv(e->vm);
-    env->CallVoidMethod(e->bridge, e->mSysMsgDismiss,
-                        (jlong)e->sysMsgs.front().id);
-    if (env->ExceptionCheck()) env->ExceptionClear();
+    if (!e->backend || e->sysMsgs.empty()) return;
+    e->backend->sysMsgDismiss(e->sysMsgs.front().id);
     LOGI("sysmsg dismiss");
 }
 

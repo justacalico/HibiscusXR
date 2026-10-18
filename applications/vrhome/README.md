@@ -112,6 +112,18 @@ make test
 
 See `AGENTS.md` for the testing and file-size rules this repo follows.
 
+### Desktop preview
+
+`make preview` opens the real dash renderer in a desktop window with fixture
+apps, icons and a notification. The mouse controls the gaze direction, WASD
+moves the free camera, Q/E move vertically, Shift moves faster, left click is
+confirm, Esc is back, G toggles the app grid, K toggles the keyboard, and R
+recenters the dash.
+
+The preview links the same layout, input, animation and draw code the headset
+uses. Android services sit behind `src/shell/backend.h`; the desktop backend is
+only fixture data and textures, so dash changes do not need a second UI port.
+
 ### Debugging on device
 
 Live-tunable system properties (`setprop` on the headset):

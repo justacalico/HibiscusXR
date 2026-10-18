@@ -1,25 +1,16 @@
 #pragma once
 
+#ifdef __ANDROID__
 #include <jni.h>
+#endif
 
 struct HudEngine;
 
-// cache the method/field ids we call on an already-built ShellBridge; `br` is
-// the java object HudService constructed (it owns the covered-listener wiring)
+#ifdef __ANDROID__
 void initBridge(HudEngine* e, JNIEnv* env, jobject br);
-
-// queue an app launch from any thread (open-package broadcast + test
-// hook)
+#endif
 void queueLaunch(const char* pkg);
-
-// drain everything the bridge has queued; run on the render thread
 void pumpBridge(HudEngine* e);
-
-// pull the localized chrome labels when the java-side version bumps;
-// run on the render thread beside the other sync calls
 void syncUiStrings(HudEngine* e);
-
-// ask the render thread to recenter the ring on the next frame (summon key
-// in home space, plus the automatic recenter when a covered app lets go)
 void wantRecenter();
 bool takeWantRecenter();

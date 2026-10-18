@@ -41,14 +41,14 @@ SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/text/utf8.cpp src/text/glyphs.cpp \
                src/text/font.cpp src/text/draw.cpp \
                src/render/egl.cpp src/render/frame.cpp \
-               src/render/shaders.cpp src/render/warp.cpp \
+               src/render/resources.cpp src/render/shaders.cpp src/render/warp.cpp \
                src/render/scene_geo.cpp src/render/mesh.cpp \
                src/sensor/sensor.cpp \
                src/sensor/qvr.cpp
 ENV_SRCS := src/env/main.cpp src/env/cam.cpp src/render/scene.cpp \
             src/render/pt_geo.cpp src/env/homeenv.cpp \
             src/env/envmap.cpp src/env/zipfile.cpp
-HUD_SRCS := src/hud/hud_main.cpp src/hud/debug_hooks.cpp \
+HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/render/chrome.cpp \
             src/render/shape.cpp src/render/ctrl_render.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
@@ -59,7 +59,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/debug_hooks.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
-            src/bridge/bridge.cpp \
+            src/bridge/bridge.cpp src/bridge/core.cpp \
             src/input/input.cpp src/input/keys.cpp \
             src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp \
             src/input/ctrl_debug.cpp
@@ -101,7 +101,28 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
-.PHONY: all apk test install clean toolcheck
+DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
+                src/bridge/core.cpp src/common/props.cpp \
+                src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
+                src/text/utf8.cpp src/text/glyphs.cpp src/text/font.cpp \
+                src/text/draw.cpp src/render/resources.cpp \
+                src/render/shaders.cpp src/render/shape.cpp \
+                src/render/chrome.cpp src/render/ctrl_render.cpp \
+                src/render/scene_geo.cpp src/render/mesh.cpp \
+                src/panels/panels.cpp src/panels/layout.cpp \
+                src/anim/anim.cpp src/pill/pill.cpp \
+                src/grid/grid.cpp src/grid/layout.cpp \
+                src/kbd/kbd.cpp src/kbd/glue.cpp \
+                src/dock/dock.cpp src/dock/layout.cpp \
+                src/notif/notif.cpp src/notif/layout.cpp \
+                src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
+                src/input/input.cpp src/input/keys.cpp \
+                src/input/input_state.cpp src/input/aim.cpp \
+                src/input/ctrl.cpp src/input/ctrl_debug.cpp \
+                src/input/ctrl_state.c
+PREVIEW_BIN := $(OUT)/dash-preview
+
+.PHONY: all apk test preview install clean toolcheck
 
 all: apk
 apk: $(APK) $(HUD_APK)
@@ -129,11 +150,11 @@ $(OUT)/obj/%.o: src/%.c | toolcheck
 
 # embedded controller meshes: the OBJ text lands as byte arrays under
 # out/gen for ctrl_render.cpp to parse at first draw
-$(OUT)/gen/ctrl_l.inc: models/ctrl_l.obj tools/obj2c.py | toolcheck
+$(OUT)/gen/ctrl_l.inc: models/ctrl_l.obj tools/obj2c.py
 	@mkdir -p $(OUT)/gen
 	python3 tools/obj2c.py $< kObjL $@
 
-$(OUT)/gen/ctrl_r.inc: models/ctrl_r.obj tools/obj2c.py | toolcheck
+$(OUT)/gen/ctrl_r.inc: models/ctrl_r.obj tools/obj2c.py
 	@mkdir -p $(OUT)/gen
 	python3 tools/obj2c.py $< kObjR $@
 
@@ -227,6 +248,14 @@ $(TEST_BIN): $(TEST_SRCS) $(HOST_SRCS) tests/test.h
 
 test: $(TEST_BIN)
 	./$(TEST_BIN)
+
+$(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
+	@mkdir -p $(dir $@)
+	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
+	    $(DESKTOP_SRCS) -lglfw -lGLESv2 -lz -lm
+
+preview: $(PREVIEW_BIN)
+	./$(PREVIEW_BIN)
 
 install: $(APK) $(HUD_APK)
 	adb install -r $(APK)

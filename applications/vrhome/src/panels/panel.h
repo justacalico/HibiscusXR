@@ -24,7 +24,8 @@ struct Panel {
     int displayId = -1;
     int taskId = -1;
     unsigned tex = 0;
-    void* st = nullptr;       // SurfaceTexture global ref (jobject)
+    bool externalTex = true;   // Android virtual-display surfaces use OES
+    void* st = nullptr;       // backend-owned texture handle
     void* stArr = nullptr;    // jfloatArray global ref, 16 floats
     float stMat[16] = {};
     float yaw = 0;            // world yaw of panel centre

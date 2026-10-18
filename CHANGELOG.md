@@ -24,3 +24,4 @@ linked line per MR no matter how many commits it carried.
 - [修 dash-wayland 客户端兼容问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/147) (!147)
 - [dash-wayland: ` 抓取应用输入，Shift+` 释放](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/148) (!148)
 - [vrdash: visionOS 风格磨砂玻璃重设计](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/149) (!149)
+- [修复窗口缩放只拉伸画面不重排应用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/150) (!150)

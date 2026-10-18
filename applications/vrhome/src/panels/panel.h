@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../common/config.h"
+
 #include <string>
 
 // where on a panel's chrome a gaze hit lands
@@ -30,8 +32,10 @@ struct Panel {
     float stMat[16] = {};
     float yaw = 0;            // world yaw of panel centre
     float pitch = 0;          // elevation on the ring; plane tilts to face you
-    float scale = 1.0f;       // quad size multiplier; the display keeps its
-                              // own px size, the window just scales on screen
+    float scale = 1.0f;       // quad size multiplier in world metres
+    int dispW = kVdW;         // display px the app lays out at: on a resize
+    int dispH = kVdH;         // commit these follow the scale so the app
+                              // re-lays out instead of stretching
     bool floating = false;    // off the slot grid: own yaw/pitch + move pill
     std::string pkg;
     std::string label;        // resolved app label for the window bar

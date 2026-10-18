@@ -337,6 +337,23 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->dockPressPkg.clear();
                 e->dockPinP = 0.0f;
                 e->dockPinDone = false;
+            } else if (e->pressZone == ZONE_RESIZE && e->pressDisp >= 0) {
+                // resize release: the drag only stretched the texture -
+                // now re-lay the app's display out at the px size the
+                // scale asks for. A backend that can't resize keeps the
+                // stretch, so dispW/dispH only move on success
+                for (auto& p : e->panels) {
+                    if (p.displayId != e->pressDisp) continue;
+                    int w, h;
+                    resizeDispSize(p.scale, &w, &h);
+                    if ((w != p.dispW || h != p.dispH) && e->backend &&
+                            e->backend->resizePanel(&p, w, h, kVdDpi)) {
+                        LOGI("resize disp %d -> %dx%d", p.displayId, w, h);
+                        p.dispW = w;
+                        p.dispH = h;
+                    }
+                    break;
+                }
             } else if (e->backend && e->dragDisp >= 0) {
                 e->backend->injectTouch( e->dragDisp,
                                     e->dragX, e->dragY, kTouchUp);
@@ -434,8 +451,8 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
         if (p.displayId != e->dragDisp) continue;
         float rx, ry;
         if (dragPointRay(p, e->ringPos, o, d, &rx, &ry)) {
-            const float px = dragBoost(e->grabX, rx, kVdW);
-            const float py = dragBoost(e->grabY, ry, kVdH);
+            const float px = dragBoost(e->grabX, rx, p.dispW);
+            const float py = dragBoost(e->grabY, ry, p.dispH);
             if (fabsf(px - e->dragX) <= 1.0f && fabsf(py - e->dragY) <= 1.0f)
                 return;
             e->dragX = px; e->dragY = py;

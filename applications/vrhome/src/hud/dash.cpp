@@ -191,9 +191,10 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
         e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
         e->aimHitT = pk.idx >= 0 ? pk.t : -1.0f;
         if (pk.idx >= 0) {
+            const Panel& hp = e->panels[pk.idx];
             e->hitU = pk.u; e->hitV = pk.v;
-            e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
-            e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
+            e->hitX = (pk.u * 0.5f + 0.5f) * hp.dispW;
+            e->hitY = (0.5f - pk.v * 0.5f) * hp.dispH;
         }
         break;
     }

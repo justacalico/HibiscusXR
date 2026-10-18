@@ -390,6 +390,13 @@ public class ShellBridge {
 
     public void releasePanel(int displayId) { displays.release(displayId); }
 
+    // render thread: relayout the display at a new px size - the panel's
+    // resize grip commits here so the app redraws at the window's size
+    // instead of stretching its old frame
+    public boolean resizePanel(int displayId, int w, int h, int dpi) {
+        return displays.resize(displayId, w, h, dpi);
+    }
+
     // ---------------------------------------------------------- keyboard
 
     // render thread: create the shared surface; texId is a GL texture in

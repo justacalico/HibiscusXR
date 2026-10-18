@@ -20,6 +20,7 @@ public:
 
     bool externalPanelTextures() override { return false; }
     int createPanel(Panel* p, unsigned tex, int w, int h, int dpi) override;
+    bool resizePanel(Panel* p, int w, int h, int dpi) override;
     void releasePanel(Panel* p) override;
     void updatePanel(Panel* p) override;
 
@@ -55,6 +56,7 @@ private:
     struct Slot {
         int displayId = -1;
         unsigned tex = 0;
+        int w = 0, h = 0;   // px size the panel's display runs at
         WlTask* task = nullptr;
         pid_t pid = -1;
         std::string wmClass;

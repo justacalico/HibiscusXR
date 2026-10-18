@@ -34,6 +34,8 @@ public:
         return p->displayId;
     }
 
+    bool resizePanel(Panel*, int, int, int) override { return true; }
+
     void updatePanel(Panel* p) override {
         p->stMat[0] = p->stMat[5] = p->stMat[10] = p->stMat[15] = 1.0f;
     }

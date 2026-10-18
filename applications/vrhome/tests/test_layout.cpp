@@ -461,6 +461,32 @@ void testLayout() {
     CHECK_F(resizeScale(1.0f, 0.4f, 0.0f), kScaleMin, 1e-6f);
     CHECK_F(resizeScale(1.3f, 0.0f, 0.5f), 1.3f, 1e-6f);  // dead grab: keep
 
+    // the display px follows the scale 1:1 off the base size, so a resized
+    // window re-lays the app out instead of stretching the old frame
+    {
+        int w, h;
+        resizeDispSize(1.0f, &w, &h);
+        CHECK(w == kVdW && h == kVdH);
+        resizeDispSize(1.5f, &w, &h);
+        CHECK(w == kVdW * 3 / 2 && h == kVdH * 3 / 2);
+        resizeDispSize(kScaleMin, &w, &h);
+        CHECK(w == (int)lroundf(kVdW * kScaleMin));
+        CHECK(h == (int)lroundf(kVdH * kScaleMin));
+        resizeDispSize(kScaleMax, &w, &h);
+        CHECK(w == (int)lroundf(kVdW * kScaleMax));
+        CHECK(h == (int)lroundf(kVdH * kScaleMax));
+    }
+
+    // touch coords land in the display's own px: a panel resized bigger
+    // maps its centre to the bigger display's centre
+    {
+        Panel rs = mkPanel(0.0f);
+        rs.dispW = kVdW * 2;
+        rs.dispH = kVdH * 2;
+        CHECK(dragPoint(rs, I, o0, o0, &dx, &dy));
+        CHECK_F(dx, rs.dispW * 0.5f, 1e-3f);
+    }
+
     // window scale folds into the half extents
     {
         Panel sp = mkPanel(0.0f);

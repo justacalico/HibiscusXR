@@ -170,6 +170,7 @@ void WlBackend::onTaskMap(WlTask* t) {
                               kv.second.pid)) {
             kv.second.task = t;
             t->displayId = kv.first;
+            c->configureTask(t, kv.second.w, kv.second.h);
             LOGI("task %d -> disp %d (pid %d)", t->taskId, kv.first,
                  (int)t->pid);
             return;
@@ -180,6 +181,7 @@ void WlBackend::onTaskMap(WlTask* t) {
         if (appIdMatch(t->appId, s.wmClass, s.deskId)) {
             s.task = t;
             t->displayId = kv.first;
+            c->configureTask(t, s.w, s.h);
             LOGI("task %d -> disp %d (appid %s)", t->taskId, kv.first,
                  t->appId.c_str());
             return;
@@ -209,6 +211,8 @@ int WlBackend::createPanel(Panel* p, unsigned tex, int w, int h, int) {
     Slot& s = slots[id];
     s.displayId = id;
     s.tex = tex;
+    s.w = w;
+    s.h = h;
     s.bornMs = dashNowMs();
     p->displayId = id;
     p->st = &slots[id];
@@ -221,6 +225,15 @@ int WlBackend::createPanel(Panel* p, unsigned tex, int w, int h, int) {
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
                  GL_UNSIGNED_BYTE, dark.data());
     return id;
+}
+
+bool WlBackend::resizePanel(Panel* p, int w, int h, int) {
+    Slot* s = slotOf(p->displayId);
+    if (!s) return false;
+    s->w = w;
+    s->h = h;
+    if (s->task) c->configureTask(s->task, w, h);
+    return true;
 }
 
 void WlBackend::releasePanel(Panel* p) {
@@ -443,6 +456,7 @@ void WlBackend::adoptTaskOn(int taskId, int displayId) {
     if (s && t) {
         s->task = t;
         t->displayId = displayId;
+        c->configureTask(t, s->w, s->h);
     }
 }
 
@@ -466,8 +480,8 @@ void WlBackend::injectTouch(int displayId, float x, float y,
     Slot* s = slotOf(displayId);
     if (!s || !s->task) return;
     WlTask* t = s->task;
-    const float sx = t->bufW > 0 ? x * t->bufW / kVdW : x;
-    const float sy = t->bufH > 0 ? y * t->bufH / kVdH : y;
+    const float sx = t->bufW > 0 && s->w > 0 ? x * t->bufW / s->w : x;
+    const float sy = t->bufH > 0 && s->h > 0 ? y * t->bufH / s->h : y;
     c->pointerEvent(t, sx, sy, action);
 }
 

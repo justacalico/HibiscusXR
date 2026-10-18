@@ -32,6 +32,7 @@ struct WlTask {
     bool dirty = false;
     int dx0 = 0, dy0 = 0, dx1 = 0, dy1 = 0;
     int bufW = 0, bufH = 0;    // current toplevel buffer size
+    int cfgW = 0, cfgH = 0;    // size the toplevel was last configured to
 };
 
 // A minimal Wayland compositor: SHM surfaces, xdg-shell toplevels and
@@ -74,6 +75,9 @@ struct WlComp {
     void grabButton(uint32_t evdevBtn, bool down);
     void grabAxis(float yoff);
     void requestClose(WlTask* t);
+    // resize a task's toplevel: keeps its activated state, no-op when the
+    // size already matches
+    void configureTask(WlTask* t, int w, int h);
     void taskDirtyRect(WlTask* t, int x, int y, int w, int h);
     void recompose(WlTask* t);
     // dmabuf task: retarget tex at its buffer's EGLImage. False for shm

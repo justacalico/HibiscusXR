@@ -73,6 +73,7 @@ static bool decodePng(const std::string& path, IconPixels* out) {
     png_set_expand(png);
     png_set_strip_16(png);
     png_set_gray_to_rgb(png);
+    png_set_interlace_handling(png);
     png_set_add_alpha(png, 0xff, PNG_FILLER_AFTER);
     png_set_bgr(png);
     png_read_update_info(png, info);
@@ -298,12 +299,10 @@ bool WlBackend::iconPixels(const std::string& pkg, IconPixels* out) {
     static const char* kThemes[] = {"Papirus", "Adwaita"};
     const std::vector<std::string> themes(std::begin(kThemes),
                                           std::end(kThemes));
-    const std::string p = findIconFile(iconSearchRoots(), themes,
-                                       icon, 96);
     // libpng only: svg/xpm icons fall through to the generated look
-    if (p.size() < 4 || p.compare(p.size() - 4, 4, ".png") != 0)
-        return false;
-    return decodePng(p, out);
+    const std::string p = findIconFile(iconSearchRoots(), themes,
+                                       icon, 96, ".png");
+    return !p.empty() && decodePng(p, out);
 }
 
 std::string WlBackend::appLabel(const std::string& pkg) {

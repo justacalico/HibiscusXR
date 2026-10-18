@@ -1,5 +1,8 @@
 #include "wlbackend.h"
 
+#include "cmdline.h"
+#include "proctrack.h"
+
 #include "harness.h"
 #include "icontheme.h"
 #include "sysinfo.h"
@@ -19,8 +22,9 @@
 
 namespace fs = std::filesystem;
 
-// a pending launch slot gets this long to bind a task before its panel
-// is treated as dead
+// a pending launch slot with no spawn recorded gets this long to bind a
+// task before its panel is treated as dead; spawned slots die with the
+// process instead
 static const long long kSlotStaleMs = 10000;
 
 static std::string runOut(const char* cmd) {
@@ -242,8 +246,11 @@ void WlBackend::updatePanel(Panel* p) {
     if (!s) return;
     WlTask* t = s->task;
     if (!t) {
-        // a pending slot whose app never maps expires so the panel dies
-        if (dashNowMs() - s->bornMs > kSlotStaleMs)
+        // a pending slot dies as soon as its spawn (and its process
+        // group, for wrappers that fork) is gone; slots that never got
+        // a spawn keep a plain timeout
+        if (s->pid > 0 ? spawnGone(s->pid)
+                      : dashNowMs() - s->bornMs > kSlotStaleMs)
             releases.push_back(p->displayId);
         return;
     }
@@ -407,6 +414,14 @@ void WlBackend::launchPackageOn(const std::string& pkg, int displayId) {
         argv = e->argv;
         s->deskId = deskIdBase(e->id);
         s->wmClass = e->wmClass.empty() ? s->deskId : e->wmClass;
+        if (e->terminal) {
+            if (!termSearched) { term = findTerminal();
+                                 termSearched = true; }
+            if (!term.empty()) {
+                argv = terminalWrap(term, argv);
+                s->wmClass = term;
+            }
+        }
     } else {
         argv.push_back(pkg);
         s->deskId = pkg;

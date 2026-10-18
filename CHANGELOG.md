@@ -7,4 +7,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: 键盘回车键改发 IME action](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/126) (!126)
 - [窗口居中打开设为默认，满位时最小化中间窗口](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/127) (!127)
 - [fix: 放宽 OpenXR 实例创建校验,兼容 VrApi 时代游戏](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/128) (!128)
-- [fix: 应用库补全 leanback/immersive 入口,Job Simulator 等游戏正常显示](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/129) (!129)
+- [修复应用库不显示部分 VR 游戏(如 Job Simulator)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/129) (!129)

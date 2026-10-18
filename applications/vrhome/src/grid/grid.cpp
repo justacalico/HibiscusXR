@@ -49,6 +49,11 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
+    // scrim over whatever the card covers: the windows behind go quiet so
+    // the glass and its icons read as the only live surface
+    const float scrimCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
+    shapeQuad(e, vp, c, r, up, -0.002f, 0.0f, hw * 1.8f, hh * 1.8f,
+              hw * 1.8f, hh * 1.8f, 0.10f, 0.0f, 0.03f, scrimCol);
     // shadow + card: frosted glass, lit from its top edge
     const float shc[3] = {c[0] - up[0] * 0.024f * gs,
                           c[1] - up[1] * 0.024f * gs,
@@ -57,14 +62,15 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.72f * ga};
+                              0.66f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-              0.065f * ga);
+              0.14f);
     const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                             0.16f * ga};
+                             0.14f * ga};
     shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, hh, hw, hh, 0.06f,
-              0.0016f, 0.0012f, rimCol);
+              0.0016f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.30f);
 
     // title band: label left, close disc on the right end
     const float hy = hh - kGridHeadH * 0.5f * gs;

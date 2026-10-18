@@ -254,6 +254,9 @@ public:
     void setKbd(bool shown) override {
         if (app->kbdSet) runJob(false, [=] { app->kbdSet(shown); });
     }
+    void setQuick(bool shown) override {
+        runJob(false, [=] { app->hud->quick.shown = shown; });
+    }
     void scroll(float delta) override {
         runJob(false, [=] { hudScroll(app->hud, delta); });
     }

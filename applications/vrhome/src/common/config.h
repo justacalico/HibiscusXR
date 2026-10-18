@@ -228,7 +228,7 @@ constexpr float kNotifCardH = 0.125f;   // card height
 constexpr float kNotifGap = 0.014f;     // between stacked cards, and the
                                         // lift between the bar and stack
 constexpr float kNotifPad = 0.022f;     // card inner side padding
-constexpr float kNotifIconHW = 0.030f;  // app icon half-width on a card
+constexpr float kNotifIconHW = 0.026f;  // app icon half-width on a card
 constexpr float kNotifBadgeR = 0.020f;  // dismiss badge radius
 constexpr int   kNotifMax = 1;          // cards shown at once
 constexpr int   kNotifToastMs = 5000;   // heads-up duration over an app

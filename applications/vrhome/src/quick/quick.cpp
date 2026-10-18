@@ -176,7 +176,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const float bgc[4] = {bg[0], bg[1], bg[2], bgA * ga};
     shapeQuad(e, vp, tc, r, up, 0.006f, 0.0f, thw, thh, thw, thh,
               thh * 0.34f, 0.0f, 0.002f, bgc, -1.0f, 0.0f, 0.0f, 0.0f,
-              0.0f, on ? 0.0f : 0.05f * ga);
+              0.0f, 0.06f);
     const float dead = s.implemented ? 1.0f : 0.45f;
     const float* icp = on ? kPalText : kPalTextDim;
     const float icol[4] = {icp[0], icp[1], icp[2],
@@ -224,7 +224,10 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // shadow + card, same glass recipe the grid card uses
+    // scrim + shadow + card, same glass recipe the grid card uses
+    const float scrimCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
+    shapeQuad(e, vp, c, r, up, -0.002f, 0.0f, hw * 1.8f, hh * 1.8f,
+              hw * 1.8f, hh * 1.8f, 0.10f, 0.0f, 0.03f, scrimCol);
     const float shc[3] = {c[0] - up[0] * 0.024f * gs,
                           c[1] - up[1] * 0.024f * gs,
                           c[2] - up[2] * 0.024f * gs};
@@ -232,14 +235,15 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.72f * ga};
+                              0.66f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-              0.065f * ga);
+              0.14f);
     const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                             0.16f * ga};
+                             0.14f * ga};
     shapeQuad(e, vp, c, r, up, 0.005f, 0.0f, hw, hh, hw, hh, 0.06f,
-              0.0016f, 0.0012f, rimCol);
+              0.0016f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+              0.30f);
 
     // title band
     const float hy = quickTitleY() * gs;

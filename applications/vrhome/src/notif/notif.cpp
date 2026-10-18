@@ -80,14 +80,15 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                   hw, hh, 0.032f, -1.0f, 0.04f, shCol);
         // card body; a hovered card brightens a touch
         const float body[4] = {kPalSurface[0], kPalSurface[1],
-                               kPalSurface[2], hov ? 0.78f : 0.66f};
+                               kPalSurface[2], hov ? 0.72f : 0.60f};
         shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
                   0.032f, 0.0f, 0.0025f, body, -1.0f, 0.0f, 0.0f, 0.0f,
-                  0.0f, 0.07f);
+                  0.0f, 0.14f);
         const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                  hov ? 0.22f : 0.14f};
         shapeQuad(e, vp, cc, r, up, 0.005f, 0.0f, hw, hh, hw, hh,
-                  0.032f, 0.0015f, 0.0012f, rimCol);
+                  0.032f, 0.0015f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f,
+                  0.0f, 0.0f, 0.30f);
         if (hov) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
                                  0.08f};

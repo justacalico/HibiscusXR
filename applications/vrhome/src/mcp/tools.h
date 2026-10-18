@@ -39,6 +39,7 @@ public:
     virtual void recenter() = 0;
     virtual void setGrid(bool shown) = 0;
     virtual void setKbd(bool shown) = 0;
+    virtual void setQuick(bool shown) = 0;
     virtual void scroll(float delta) = 0;
     virtual bool state(McpState* out) = 0;
     virtual bool screenshot(std::vector<unsigned char>* rgba,

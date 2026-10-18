@@ -80,10 +80,11 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                            0.80f};
     shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
               0.034f, 0.0f, 0.0025f, body, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-              0.06f);
+              0.14f);
     const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.16f};
     shapeQuad(e, vp, cc, r, up, 0.005f, 0.0f, hw, hh, hw, hh,
-              0.034f, 0.0015f, 0.0012f, rimCol);
+              0.034f, 0.0015f, 0.0012f, rimCol, -1.0f, 0.0f, 0.0f, 0.0f,
+              0.0f, 0.30f);
     // red accent down the card's left edge: this is an alert, not a post
     const float ax = -hw + 0.006f;
     const float ac[3] = {cc[0] + r[0] * ax, cc[1] + r[1] * ax,

@@ -10,9 +10,15 @@ OVRPort's libOVRPlugin has two gaps for pre-2019 Unity titles:
    the begin slot (45).
 2. `ovrp_SetupEyeTexture2` returns success for `handle=0`. The legacy
    contract requires it to fail so Unity retries with its own GL texture
-   name, which the plugin then gives storage. The game's eye texture is
-   blitted into the acquired OpenXR swapchain image at `EndEye2`, which
-   stock OVRPort leaves as a stub.
+   name, which the plugin then gives storage.
+3. `EndEye2` is a stub, and OVRPort never creates a projection swapchain
+   for this path. Each `xrEndFrame` only carries two quad layers backed
+   by a 1700x512 chain (the splash panel), so eye content never reaches
+   the display. The shim creates its own 1728x1536x2 swapchain via the
+   runtime's real `xrCreateSwapchain`, acquires/waits/blits/releases it
+   inside `EndEye2`, then rewrites `xrEndFrame` to prepend an
+   `XrCompositionLayerProjection` whose view poses/FOVs come from
+   `xrLocateViews` on the quad layer's space.
 
 The shim is a `DT_NEEDED` dependency injected into `libOVRPlugin.so` inside
 the target apk, so no smali changes are needed. It only activates on the

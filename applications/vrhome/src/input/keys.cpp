@@ -6,3 +6,7 @@ bool isConfirm(int code) {
     return code == kKeyEnter || code == kKeyDpadCenter ||
            code == kKeyButtonA || code == kPicoConfirm;
 }
+
+int escAction(bool shiftHeld) {
+    return shiftHeld ? kKeyBack : kKeyMinimize;
+}

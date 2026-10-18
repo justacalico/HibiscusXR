@@ -123,9 +123,9 @@ apps with generated icons, dock pins and a notification - so dash changes can
 be tried without a headset.
 
 The mouse controls the gaze direction, WASD moves the free camera, Q/E move
-vertically, Shift moves faster, left click is confirm, Esc is back, G toggles
-the app grid, P toggles the quick panel, K toggles the keyboard, and R
-recenters the dash.
+vertically, Shift moves faster, left click is confirm, Esc parks the window
+on the shelf, Shift+Esc closes it, G toggles the app grid, P toggles the
+quick panel, K toggles the keyboard, and R recenters the dash.
 
 The preview links the same layout, input, animation and draw code the headset
 uses. Android services sit behind `src/shell/backend.h`; the desktop backend is

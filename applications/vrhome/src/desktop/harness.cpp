@@ -86,10 +86,11 @@ static void scrollCb(GLFWwindow*, double, double yoff) {
 }
 
 static void keyCb(GLFWwindow*, int key, int scancode, int action,
-                  int) {
+                  int mods) {
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_ESCAPE) {
-            hudKey(gApp->hud, kKeyBack, kKeyUp, 0);
+            hudKey(gApp->hud, escAction(mods & GLFW_MOD_SHIFT),
+                   kKeyUp, 0);
             return;
         }
         if (key == GLFW_KEY_G) {

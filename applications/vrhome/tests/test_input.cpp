@@ -208,4 +208,9 @@ void testInput() {
 
     // junk in, empty out
     CHECK(!meshFromObj("not an obj", 11, &m) || m.v.empty());
+
+    // --- desktop ESC routing ------------------------------------------
+    // plain ESC parks the window, shift+ESC closes it
+    CHECK(escAction(false) == kKeyMinimize);
+    CHECK(escAction(true) == kKeyBack);
 }

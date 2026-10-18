@@ -20,6 +20,28 @@
 #include <cmath>
 #include <ctime>
 
+// drop one card-level overlay (keyboard, sysmsg, quick panel, app grid)
+// when any is up; false once home space is clean and a window is reachable
+static bool dropTopOverlay(HudEngine* e) {
+    if (e->kbd.shown && e->backend) {
+        e->backend->sendKbdHide();
+        return true;
+    }
+    if (!e->sysMsgs.empty()) {
+        sysMsgDismiss(e);
+        return true;
+    }
+    if (e->quick.shown) {
+        e->quick.shown = false;
+        return true;
+    }
+    if (e->grid.shown) {
+        e->grid.shown = false;
+        return true;
+    }
+    return false;
+}
+
 // KeyEvent action/motion constants come from android/input.h; the events
 // themselves arrive from the java window, never the NDK input queue
 void hudKey(HudEngine* e, int code, int action, int repeat) {
@@ -371,36 +393,25 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         return;
     }
     if (code == kKeyBack && action == kKeyUp) {
-        // the floating keyboard owns BACK first: drop the quad, not the
-        // window or card behind it
-        if (e->kbd.shown && e->backend) {
-            e->backend->sendKbdHide();
-            return;
-        }
-        // a live system message is modal: BACK drops the front card, not
-        // the window behind it
-        if (!e->sysMsgs.empty()) {
-            sysMsgDismiss(e);
-            return;
-        }
-        // the card overlays drop before the windows under them do
-        if (e->quick.shown) {
-            e->quick.shown = false;
-            return;
-        }
-        if (e->grid.shown) {
-            e->grid.shown = false;
-            return;
-        }
-        // close the newest panel; over a covered app the service consumes
-        // BACK itself to dismiss the menu, so this only ever runs in home
-        // space
+        // over a covered app the service consumes BACK itself to dismiss
+        // the menu, so closing only ever runs in home space
+        if (dropTopOverlay(e)) return;
         if (e->backend && !e->panels.empty()) {
             Panel& p = e->panels.back();
             if (p.displayId >= 0) {
                 e->backend->removeTasksOnDisplay( p.displayId);
             }
             closePanel(e, (int)e->panels.size() - 1);
+        }
+        return;
+    }
+    // minimize parks the newest window on the shelf instead of closing it;
+    // the task keeps running and the panel stays listed for a restore
+    if (code == kKeyMinimize && action == kKeyUp) {
+        if (dropTopOverlay(e)) return;
+        if (!e->panels.empty()) {
+            Panel& p = e->panels.back();
+            if (p.displayId >= 0) p.minimized = true;
         }
         return;
     }

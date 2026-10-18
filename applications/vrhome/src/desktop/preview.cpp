@@ -8,6 +8,8 @@
 #include "../hud/engine.h"
 #include "../input/input.h"
 #include "../input/keys.h"
+#include "../mcp/server.h"
+#include "../mcp/tools.h"
 #include "../panels/panel.h"
 #include "../render/resources.h"
 #include "../shell/backend.h"
@@ -16,9 +18,16 @@
 #include <GLES2/gl2.h>
 
 #include <cmath>
+#include <condition_variable>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <deque>
+#include <functional>
+#include <iostream>
+#include <mutex>
+#include <string>
+#include <thread>
 #include <vector>
 
 class PreviewBackend : public DashBackend {
@@ -50,6 +59,7 @@ public:
     }
     void sendKbdHide() override { kbdShown = false; }
     void toggleKbd() { kbdShown = !kbdShown; }
+    void kbdShow(bool on) { kbdShown = on; }
 
     bool takePins(std::vector<std::string>* out) override {
         if (pinsSent) return false;
@@ -246,7 +256,135 @@ static long long nowMs() {
     return (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-int main() {
+// MCP jobs queue onto the render thread: mutations run before the tick,
+// reads (state, screenshot) after the draw while the back buffer is still
+// valid. Stack-allocated jobs stay alive because the caller always waits.
+struct McpJob {
+    std::function<void()> fn;
+    std::mutex mu;
+    std::condition_variable cv;
+    bool done = false;
+};
+
+static std::mutex gJobMu;
+static std::deque<McpJob*> gPreJobs, gPostJobs;
+static bool gLive = true;
+
+static bool runJob(bool postDraw, const std::function<void()>& fn) {
+    McpJob j;
+    j.fn = fn;
+    {
+        std::lock_guard<std::mutex> l(gJobMu);
+        if (!gLive) return false;
+        (postDraw ? gPostJobs : gPreJobs).push_back(&j);
+    }
+    std::unique_lock<std::mutex> l(j.mu);
+    j.cv.wait(l, [&] { return j.done; });
+    return true;
+}
+
+static void drainJobs(std::deque<McpJob*>& q, bool run) {
+    std::deque<McpJob*> batch;
+    {
+        std::lock_guard<std::mutex> l(gJobMu);
+        batch.swap(q);
+    }
+    for (McpJob* j : batch) {
+        if (run) j->fn();
+        {
+            std::lock_guard<std::mutex> lj(j->mu);
+            j->done = true;
+        }
+        j->cv.notify_one();
+    }
+}
+
+class PreviewMcp : public McpDash {
+public:
+    void launch(const std::string& pkg) override {
+        queueLaunch(pkg.c_str());
+    }
+    void key(int code, int action) override {
+        runJob(false, [=] { hudKey(gHud, code, action, 0); });
+    }
+    void look(float yawDeg, float pitchDeg) override {
+        runJob(false, [=] {
+            gCam.yaw = yawDeg * (float)M_PI / 180.0f;
+            const float p = pitchDeg * (float)M_PI / 180.0f;
+            gCam.pitch = fmaxf(-1.45f, fminf(1.45f, p));
+        });
+    }
+    void move(float x, float y, float z) override {
+        runJob(false, [=] {
+            gCam.pos[0] = x; gCam.pos[1] = y; gCam.pos[2] = z;
+        });
+    }
+    void recenter() override { wantRecenter(); }
+    void setGrid(bool shown) override {
+        runJob(false, [=] { gHud->grid.shown = shown; });
+    }
+    void setKbd(bool shown) override {
+        runJob(false, [=] { gBackend->kbdShow(shown); });
+    }
+    bool state(McpState* out) override {
+        return runJob(true, [=] {
+            memcpy(out->pos, gCam.pos, sizeof(gCam.pos));
+            out->yawDeg = gCam.yaw * 180.0f / (float)M_PI;
+            out->pitchDeg = gCam.pitch * 180.0f / (float)M_PI;
+            out->hover = gHud->hover;
+            out->grid = gHud->grid.shown;
+            out->kbd = gBackend->kbdState().shown;
+            out->panels.clear();
+            for (const Panel& p : gHud->panels) {
+                McpPanelInfo pi;
+                pi.displayId = p.displayId;
+                pi.taskId = p.taskId;
+                pi.pkg = p.pkg;
+                pi.label = p.label;
+                pi.minimized = p.minimized;
+                pi.floating = p.floating;
+                pi.yawDeg = p.yaw * 180.0f / (float)M_PI;
+                pi.pitchDeg = p.pitch * 180.0f / (float)M_PI;
+                pi.scale = p.scale;
+                out->panels.push_back(pi);
+            }
+        });
+    }
+    bool screenshot(std::vector<unsigned char>* rgba,
+                    int* w, int* h) override {
+        return runJob(true, [=] {
+            *w = gHud->width; *h = gHud->height;
+            if (*w <= 0 || *h <= 0) return;
+            std::vector<unsigned char> px((size_t)*w * *h * 4);
+            glReadPixels(0, 0, *w, *h, GL_RGBA, GL_UNSIGNED_BYTE,
+                         px.data());
+            const size_t row = (size_t)*w * 4;
+            rgba->resize(px.size());
+            for (int y = 0; y < *h; ++y)
+                memcpy(rgba->data() + (size_t)y * row,
+                       px.data() + (size_t)(*h - 1 - y) * row, row);
+        });
+    }
+};
+
+// stdin carries one JSON-RPC message per line; EOF means the MCP client
+// went away, so the window closes with it
+static void mcpStdinLoop(McpServer* srv, GLFWwindow* win) {
+    std::string line;
+    while (std::getline(std::cin, line)) {
+        const std::string out = srv->handleLine(line);
+        if (out.empty()) continue;
+        fwrite(out.data(), 1, out.size(), stdout);
+        fputc('\n', stdout);
+        fflush(stdout);
+    }
+    glfwSetWindowShouldClose(win, GLFW_TRUE);
+}
+
+int main(int argc, char** argv) {
+    bool mcp = false;
+    for (int i = 1; i < argc; ++i)
+        mcp |= !strcmp(argv[i], "-mcp");
     if (!glfwInit()) return 1;
     glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
@@ -272,9 +410,18 @@ int main() {
     queueLaunch("preview.files");
     queueLaunch("preview.settings");
 
+    PreviewMcp mcpDash;
+    McpServer mcpSrv(&mcpDash);
+    std::thread mcpTh;
+    if (mcp) {
+        LOGI("mcp server on stdio");
+        mcpTh = std::thread(mcpStdinLoop, &mcpSrv, win);
+    }
+
     long long last = nowMs();
     while (!glfwWindowShouldClose(win)) {
         glfwPollEvents();
+        drainJobs(gPreJobs, true);
         const long long now = nowMs();
         const float dt = (now - last) / 1000.0f;
         last = now;
@@ -313,8 +460,16 @@ int main() {
         const Mat4 vp = multiply(proj, view);
         drawBackdrop(&hud, vp);
         drawDashScene(&hud, vp);
+        drainJobs(gPostJobs, true);
         glfwSwapBuffers(win);
     }
+    {
+        std::lock_guard<std::mutex> l(gJobMu);
+        gLive = false;
+    }
+    drainJobs(gPreJobs, false);
+    drainJobs(gPostJobs, false);
+    if (mcpTh.joinable()) mcpTh.detach();
     glfwDestroyWindow(win);
     glfwTerminate();
     return 0;

@@ -97,7 +97,9 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/notif/layout.cpp src/sysmsg/layout.cpp \
              src/input/input_state.cpp \
              src/input/aim.cpp src/render/mesh.cpp src/input/ctrl_state.c \
-             src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp
+             src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp \
+             src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
+             src/mcp/tools.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -119,7 +121,9 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
                 src/input/input.cpp src/input/keys.cpp \
                 src/input/input_state.cpp src/input/aim.cpp \
                 src/input/ctrl.cpp src/input/ctrl_debug.cpp \
-                src/input/ctrl_state.c
+                src/input/ctrl_state.c \
+                src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
+                src/mcp/tools.cpp
 PREVIEW_BIN := $(OUT)/dash-preview
 
 .PHONY: all apk test preview install clean toolcheck

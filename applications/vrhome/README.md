@@ -124,6 +124,14 @@ The preview links the same layout, input, animation and draw code the headset
 uses. Android services sit behind `src/shell/backend.h`; the desktop backend is
 only fixture data and textures, so dash changes do not need a second UI port.
 
+Pass `-mcp` (`./out/dash-preview -mcp`) and the window also serves MCP on
+stdio: one JSON-RPC message per line, tools to drive the dash. `dash_state`
+reports the camera and open panels, `dash_look`/`dash_move` steer the camera,
+`dash_key` sends confirm/back, `dash_launch` opens a package, `dash_grid` and
+`dash_keyboard` toggle the overlays, `dash_recenter` re-anchors the ring and
+`dash_screenshot` returns the frame as PNG. Point an MCP client at it the same
+way as any stdio server.
+
 ### Debugging on device
 
 Live-tunable system properties (`setprop` on the headset):

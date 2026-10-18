@@ -190,9 +190,10 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
                          c[1] + r[1]*tcx + up[1]*iconY,
                          c[2] + r[2]*tcx + up[2]*iconY};
     quickIcon(e, vp, s.id, ic, r, up, is, icol, bgc2);
+    float labelY, subY;
+    quickTileTextY(s.large, &labelY, &subY);
     const char* label = qsStr(e, UIQS_LABEL0 + s.id);
-    cardText(e, vp, c, r, up, tcx, tcy + (s.large ? -thh * 0.28f
-                                                : -thh * 0.34f),
+    cardText(e, vp, c, r, up, tcx, tcy + labelY * thh,
              label, 0.0010f * gs, dead * ga, true, !on);
     if (s.large) {
         const QsSub sub = quickSubtitle(e->quick.st, s.id);
@@ -200,7 +201,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
                       : sub.kind == QSUB_OFF ? qsStr(e, UIQS_OFF)
                       : sub.kind == QSUB_NOTCONN ? qsStr(e, UIQS_NOTCONN)
                       : sub.text;
-        cardText(e, vp, c, r, up, tcx, tcy - thh * 0.62f, st_,
+        cardText(e, vp, c, r, up, tcx, tcy + subY * thh, st_,
                  0.00085f * gs, dead * ga, true, true);
     }
 }

@@ -216,25 +216,25 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                   kCornerR * sc + 0.006f, 0.0016f, 0.0012f, bdCol,
                   -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.30f);
 
-        // the resize grip on the window's bottom-right corner: two short
-        // diagonal ticks tucked inside the corner, lighting while held
+        // resize grip: the corner still takes the drag (ZONE_RESIZE), but
+        // the affordance lives on the pill, not painted over the app -
+        // the pill's right end already carries the window controls, the
+        // drag corner shows as a hairline flare on the border instead
         {
             const bool ghov = hov && e->hoverZone == ZONE_RESIZE;
             const bool gheld = e->pressZone == ZONE_RESIZE &&
                                e->pressDisp == p.displayId;
-            const float* gp = ghov || gheld ? kPalAccent : kPalText;
-            const float gcol[4] = {gp[0], gp[1], gp[2],
-                                   (ghov || gheld ? 0.9f : 0.28f) * a};
-            for (int g = 0; g < 2; ++g) {
-                const float off = (0.030f - g * 0.016f) * sc;
-                const float gc[3] = {
-                    c[0] + r[0]*(hw - off) + up[0]*(-hh + off),
-                    c[1] + r[1]*(hw - off) + up[1]*(-hh + off),
-                    c[2] + r[2]*(hw - off) + up[2]*(-hh + off)};
-                const float gl = 0.011f * sc;
-                shapeQuad(e, viewProj, gc, r, up, 0.008f, 0.785398f,
-                          gl, 0.0022f, gl, 0.0022f, 0.0022f, 0.0f,
-                          0.0015f, gcol);
+            if (ghov || gheld) {
+                const float gc[4] = {kPalAccent[0], kPalAccent[1],
+                                     kPalAccent[2], 0.85f * a};
+                const float hw2 = hw + 0.006f, hh2 = hh + 0.006f;
+                const float gcPos[3] = {
+                    c[0] + r[0]*hw2*0.55f - up[0]*hh2,
+                    c[1] + r[1]*hw2*0.55f - up[1]*hh2,
+                    c[2] + r[2]*hw2*0.55f - up[2]*hh2};
+                shapeQuad(e, viewProj, gcPos, r, up, 0.008f, 0.0f,
+                          hw2*0.45f, 0.0028f*sc, hw2*0.45f, 0.0028f*sc,
+                          0.0028f*sc, 0.0f, 0.0015f, gc);
             }
         }
 

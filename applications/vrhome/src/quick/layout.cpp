@@ -71,6 +71,11 @@ void quickTileRect(int i, float* x, float* y, float* hw, float* hh) {
     }
 }
 
+void quickTileTextY(bool large, float* labelY, float* subY) {
+    *labelY = large ? -0.28f : -0.34f;
+    *subY = large ? -0.74f : 0.0f;
+}
+
 void quickSliderTrack(float* l, float* r) {
     // the icon owns the left end of the row; the track fills the rest out
     // to the card's inner edge

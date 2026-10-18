@@ -33,6 +33,11 @@ void quickCenter(float yaw, float pitch, const float origin[3],
 // tile i's centre and half extents in card-local metres
 void quickTileRect(int i, float* x, float* y, float* hw, float* hh);
 
+// a tile's text line centres as fractions of its half-height, relative to
+// its centre: the label under the icon, and for large tiles the value a
+// clear gap under the label. Small tiles carry only the label
+void quickTileTextY(bool large, float* labelY, float* subY);
+
 // slider row i's band centre in card-local metres
 float quickSliderY(int i);
 

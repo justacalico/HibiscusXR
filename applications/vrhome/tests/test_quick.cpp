@@ -47,6 +47,22 @@ void testQuick() {
         CHECK_F(y1, y0 - kQuickCellH, 1e-6f);
     }
 
+    // tile text: the label sits under the icon and the value keeps a gap
+    // under it - at the drawn text sizes the two ink boxes need ~0.021m
+    // between centres before they stop touching; both stay in the tile
+    {
+        float ly, sy;
+        quickTileTextY(true, &ly, &sy);
+        CHECK(ly < 0.0f && sy < ly);
+        CHECK(sy > -1.0f);
+        float x, y, hw, hh;
+        quickTileRect(QS_WIFI, &x, &y, &hw, &hh);
+        CHECK((ly - sy) * hh >= 0.024f);
+        CHECK(y + sy * hh - 0.010f > y - hh);
+        quickTileTextY(false, &ly, &sy);
+        CHECK(ly < 0.0f && ly > -1.0f);
+    }
+
     // zones: a tile centre picks the tile, the slider bands resolve their
     // row, the title row answers close/gear, the gaps are body
     {

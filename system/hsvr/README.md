@@ -1,8 +1,10 @@
 # hsvr
 
-Raw OpenXR stack for the Pico Neo 2 (A7B10, sdm845) on LineageOS 17.1.
+Raw OpenXR stack for Hibiscus on LineageOS 17.1. Headset support plugs in
+through `drivers/<name>/`; the Pico Neo 2 (A7B10, sdm845) is the current
+hardware port.
 
-Replaces the Pico PVR application stack with upstream components:
+Replaces the vendor's closed application stack with upstream components:
 
 - **Turnip** (`turnip/`) — Mesa Freedreno Vulkan driver built from source for
   the Adreno 630 over the stock kgsl kernel driver. The vendor `vulkan.sdm845`

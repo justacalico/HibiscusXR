@@ -39,7 +39,7 @@
   "themeLight": "Light",
   "themeOled": "OLED",
   "itemIpd": "Eye spacing (IPD)",
-  "itemIpdDesc": "Match the stereo eye separation to the distance between your pupils. The Neo 2 lenses are fixed, so this shifts the rendered views",
+  "itemIpdDesc": "Match the stereo eye separation to the distance between your pupils. The headset lenses are fixed, so this shifts the rendered views",
   "itemDeviceMode": "Device mode",
   "itemDeviceModeDesc": "3DoF tracks head rotation only. 6DoF also tracks position through the tracking cameras",
   "itemNightMode": "Night mode",

@@ -1,7 +1,7 @@
 #ifndef XRTEST_H
 #define XRTEST_H
 
-// Minimal OpenXR test app for the Pico Neo 2 Monado runtime: shared
+// Minimal OpenXR test app for the hsvr Monado runtime: shared
 // declarations between main.c (EGL + frame loop), setup.c (runtime,
 // instance, swapchains, actions), xrfns.c (dynamically-loaded entry
 // points), render.c (shaders, font, scene geometry) and math3d.c.

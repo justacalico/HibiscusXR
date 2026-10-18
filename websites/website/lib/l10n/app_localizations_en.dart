@@ -780,7 +780,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Only the boot and system images below are safe to flash. Writing anything in the bootloader chain below the anti-rollback fuse is a permanent hard-brick on sdm845.';
 
   @override
-  String get flashdocsNeo2ReqTitle => 'Before you start';
+  String get flashdocsReqTitle => 'Before you start';
 
   @override
   String get flashdocsNeo2Req1 => 'A Linux PC with adb and fastboot';

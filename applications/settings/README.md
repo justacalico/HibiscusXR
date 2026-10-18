@@ -1,6 +1,6 @@
 # settings
 
-System settings app for the Pico Neo 2 running the LineageOS 17.1 port.
+System settings app for Hibiscus.
 
 Two-pane layout modeled on the stock headset settings: a sidebar of
 sections on the left, the selected section's rows on the right.
@@ -42,4 +42,4 @@ flutter build apk --release
 ```
 
 The dist pipeline re-signs the release apk with the platform key and
-installs it under `/system/app` as `PN2Settings`.
+installs it under `/system/app` as `settings`.

@@ -165,7 +165,7 @@ class _Requirements extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.flashdocsNeo2ReqTitle, style: context.text.titleLarge),
+        Text(l10n.flashdocsReqTitle, style: context.text.titleLarge),
         const SizedBox(height: 16),
         for (final req in reqs)
           Padding(

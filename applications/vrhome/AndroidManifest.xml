@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Home environment for the Pico Neo 2: a NativeActivity that owns the
+  Hibiscus home environment: a NativeActivity that owns the
   physical display and renders only the scenery. All UI - panels, the app
   library, the summonable menu - lives in gitlab.neosalsa.hud, a system
   overlay drawn over this window. CoverWatch feeds the covered flag so the

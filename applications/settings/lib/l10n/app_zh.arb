@@ -40,7 +40,7 @@
   "themeLight": "浅色",
   "themeOled": "OLED",
   "itemIpd": "瞳距 (IPD)",
-  "itemIpdDesc": "将双眼间距调整到与你瞳孔的距离一致。Neo 2 的镜片是固定的,所以这里移动的是渲染画面",
+  "itemIpdDesc": "将双眼间距调整到与你瞳孔的距离一致。头显的镜片是固定的,所以这里移动的是渲染画面",
   "itemDeviceMode": "设备模式",
   "itemDeviceModeDesc": "3DoF 只追踪头部转动。6DoF 还通过追踪摄像头追踪位置",
   "itemNightMode": "夜间模式",

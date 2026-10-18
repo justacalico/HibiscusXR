@@ -1,4 +1,4 @@
-// Minimal OpenXR test app for the Pico Neo 2 Monado runtime.
+// Minimal OpenXR test app for the hsvr Monado runtime.
 // Loads libopenxr_monado.so directly (in-process), renders a simple stereo
 // scene with GLES2, and draws a world-locked debug panel with live tracking
 // state: head pose, view flags, per-controller poses/buttons/stick, fps.

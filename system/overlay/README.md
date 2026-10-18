@@ -1,9 +1,12 @@
-# Pico Neo 2 (A7B10) system overlay
+# Hibiscus system overlay
 
 Everything here goes into the shipped `system.img`. `/vendor` is **not** modified:
 verified byte-identical to stock (`/vendor/manifest.xml` = 22604 bytes with the
 boot HAL declaration still in it). That matters for distribution, since the end
 user supplies their own proprietary vendor partition.
+
+The `pn2-*` files are the Pico Neo 2 (A7B10) device payload; another headset
+would carry its own prefix alongside them.
 
 Target: LineageOS 17.1 / Android 10 GSI (`treble_arm64_avS`) on the stock
 Pico 8.1 vendor. VNDK 27, non-A/B, kernel 4.9.65.

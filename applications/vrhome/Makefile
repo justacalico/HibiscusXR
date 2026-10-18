@@ -105,7 +105,8 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
-DESKTOP_SRCS := src/desktop/preview.cpp src/hud/dash.cpp \
+DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
+                src/hud/dash.cpp \
                 src/bridge/core.cpp src/common/props.cpp \
                 src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
                 src/text/utf8.cpp src/text/glyphs.cpp src/text/font.cpp \

@@ -271,14 +271,16 @@ public class ShellBridge {
             if (appsDirty) {
                 appsDirty = false;
                 apps.clear();
-                Intent it = new Intent(Intent.ACTION_MAIN);
-                it.addCategory(Intent.CATEGORY_LAUNCHER);
-                List<ResolveInfo> rs = pm.queryIntentActivities(it, 0);
-                for (ResolveInfo r : rs) {
+                // leanback/immersive-only games (Job Simulator et al.)
+                // never match a plain LAUNCHER query; one tile per package
+                // since launches are package-keyed
+                Set<String> seen = new HashSet<>();
+                for (ResolveInfo r : taskman.launchable()) {
                     if (r.activityInfo == null) continue;
                     String p = r.activityInfo.packageName;
                     if (p == null || p.equals(SELF) || p.equals(ENV_PKG) ||
-                            p.equals(LIB_PKG) || p.equals(KbdLink.PKG))
+                            p.equals(LIB_PKG) || p.equals(KbdLink.PKG) ||
+                            !seen.add(p))
                         continue;
                     LauncherApp a = new LauncherApp();
                     a.pkg = p;

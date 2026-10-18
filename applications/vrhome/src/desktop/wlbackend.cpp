@@ -19,6 +19,10 @@
 
 namespace fs = std::filesystem;
 
+// a pending launch slot gets this long to bind a task before its panel
+// is treated as dead
+static const long long kSlotStaleMs = 10000;
+
 static std::string runOut(const char* cmd) {
     FILE* p = popen(cmd, "r");
     if (!p) return "";
@@ -157,7 +161,9 @@ void WlBackend::onTaskMap(WlTask* t) {
     // prefer the slot whose spawned pid matches, then the slot waiting
     // on this wmClass; anything else adopts onto a fresh panel
     for (auto& kv : slots)
-        if (kv.second.task == nullptr && kv.second.pid == t->pid) {
+        if (kv.second.task == nullptr &&
+                spawnPidMatch(t->pid, getpgid(t->pid),
+                              kv.second.pid)) {
             kv.second.task = t;
             t->displayId = kv.first;
             LOGI("task %d -> disp %d (pid %d)", t->taskId, kv.first,
@@ -166,11 +172,8 @@ void WlBackend::onTaskMap(WlTask* t) {
         }
     for (auto& kv : slots) {
         Slot& s = kv.second;
-        if (s.task || s.wmClass.empty()) continue;
-        const bool cls = !t->appId.empty() &&
-            (t->appId == s.wmClass || t->appId.find(s.wmClass) == 0 ||
-             s.wmClass.find(t->appId) == 0);
-        if (cls) {
+        if (s.task) continue;
+        if (appIdMatch(t->appId, s.wmClass, s.deskId)) {
             s.task = t;
             t->displayId = kv.first;
             LOGI("task %d -> disp %d (appid %s)", t->taskId, kv.first,
@@ -228,11 +231,22 @@ void WlBackend::releasePanel(Panel* p) {
 }
 
 void WlBackend::updatePanel(Panel* p) {
-    p->stMat[0] = p->stMat[5] = p->stMat[10] = p->stMat[15] = 1.0f;
+    // shm rows are top-down but the quad's v runs bottom-up: flip V the
+    // way the android surface transform does for its OES feeds
+    p->stMat[0] = 1.0f;
+    p->stMat[5] = -1.0f;
+    p->stMat[10] = 1.0f;
+    p->stMat[13] = 1.0f;
+    p->stMat[15] = 1.0f;
     Slot* s = (Slot*)p->st;
-    if (!s || !s->task) return;
+    if (!s) return;
     WlTask* t = s->task;
-    // a pending slot whose app never maps expires so the panel dies
+    if (!t) {
+        // a pending slot whose app never maps expires so the panel dies
+        if (dashNowMs() - s->bornMs > kSlotStaleMs)
+            releases.push_back(p->displayId);
+        return;
+    }
     if (!t->mapped) return;
     if (!t->dirty || t->img.rgba.empty()) return;
     glBindTexture(GL_TEXTURE_2D, p->tex);
@@ -391,11 +405,11 @@ void WlBackend::launchPackageOn(const std::string& pkg, int displayId) {
     std::vector<std::string> argv;
     if (e) {
         argv = e->argv;
-        s->wmClass = e->wmClass.empty() ? e->id : e->wmClass;
-        const size_t dot = s->wmClass.rfind(".desktop");
-        if (dot != std::string::npos) s->wmClass.erase(dot);
+        s->deskId = deskIdBase(e->id);
+        s->wmClass = e->wmClass.empty() ? s->deskId : e->wmClass;
     } else {
         argv.push_back(pkg);
+        s->deskId = pkg;
         s->wmClass = pkg;
     }
     if (argv.empty()) return;

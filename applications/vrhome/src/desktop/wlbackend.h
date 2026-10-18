@@ -58,6 +58,7 @@ private:
         WlTask* task = nullptr;
         pid_t pid = -1;
         std::string wmClass;
+        std::string deskId;   // bare desktop id, minus ".desktop"
         long long bornMs = 0;
     };
 

@@ -181,7 +181,12 @@ void WlComp::recompose(WlTask* t) {
 
 static void releaseBuf(WlSurf* s) {
     if (!s->buf) return;
-    if (s->buf->res) wl_buffer_send_release(s->buf->res);
+    if (s->buf->res) {
+        // the buffer resource is still alive, so our destroy listener
+        // is still parked on it: unlink before the WlBuf goes away
+        wl_list_remove(&s->buf->gone.link);
+        wl_buffer_send_release(s->buf->res);
+    }
     delete s->buf;
     s->buf = nullptr;
 }

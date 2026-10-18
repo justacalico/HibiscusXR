@@ -170,6 +170,8 @@ constexpr float kGridCellH = 0.20f;   // row pitch: icon + label
 constexpr float kGridIconHW = 0.055f; // icon half-width
 constexpr float kGridSidePad = 0.04f; // inner left/right padding
 constexpr float kGridCloseR = 0.024f; // close disc radius on the title row
+constexpr float kGridDragSlop = 0.035f; // card-local metres a held press must travel before it counts as a scroll drag
+constexpr float kGridWheelStep = 0.20f; // card-local metres one wheel detent scrolls
 
 // the quick panel: the dock's status pill opens this card - sliders for
 // volume and brightness up top, then a row of large radio tiles and the

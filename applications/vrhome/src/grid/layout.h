@@ -35,6 +35,14 @@ float gridScrollMax(int n);
 // clamp a scroll offset into range
 float gridClampScroll(float scroll, int n);
 
+// true once a held press's aim has moved past the tap slop in card-local
+// v: below it the press still counts as a tap
+bool gridSlopPassed(float grabV, float v);
+
+// apply a wheel detent count to the scroll offset, clamped; positive
+// delta reveals rows further down the list
+float gridScrollBy(float scroll, float delta, int n);
+
 // cell index at a card-local hit, or -1: the title band and the padding
 // aren't cells. v is pre-scroll card coords
 int gridItemAt(int n, float u, float v, float scroll);

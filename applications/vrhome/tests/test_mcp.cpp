@@ -40,6 +40,9 @@ public:
         st.kbd = shown;
         log.push_back("kbd " + std::to_string(shown));
     }
+    void scroll(float delta) override {
+        log.push_back("scroll " + std::to_string(delta));
+    }
     bool state(McpState* out) override {
         if (!stateOk) return false;
         *out = st;
@@ -152,9 +155,9 @@ void testMcp() {
         r = parse(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\"}"));
         const Json* tools = r.get("result")->get("tools");
-        CHECK(tools->a.size() == 9);
+        CHECK(tools->a.size() == 10);
         CHECK(tools->a[0].get("name")->s == "dash_state");
-        CHECK(tools->a[8].get("name")->s == "dash_screenshot");
+        CHECK(tools->a[9].get("name")->s == "dash_screenshot");
 
         CHECK(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/"
@@ -209,6 +212,11 @@ void testMcp() {
         CHECK(!d.st.kbd);
         r = call("\"name\":\"dash_recenter\"");
         CHECK(d.log.back() == "recenter");
+
+        r = call("\"name\":\"dash_scroll\",\"arguments\":{\"delta\":2}");
+        CHECK(d.log.back() == "scroll 2.000000");
+        r = call("\"name\":\"dash_scroll\"");
+        CHECK(r.get("error")->get("code")->n == -32602);
 
         r = call("\"name\":\"dash_state\"");
         const Json* sc = r.get("result")->get("structuredContent");

@@ -7,6 +7,10 @@ struct Mat4;
 // match android.view.KeyEvent values
 void hudKey(HudEngine* e, int code, int action, int repeat);
 
+// a wheel detent count while the app grid is open; positive delta reveals
+// rows further down the list
+void hudScroll(HudEngine* e, float delta);
+
 // per-frame while the confirm button is held: inject drag MOVEs along the
 // aim ray (gaze or controller, the caller picks)
 void dragTick(HudEngine* e, const float o[3], const float d[3]);

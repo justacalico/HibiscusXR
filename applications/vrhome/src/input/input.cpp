@@ -77,10 +77,14 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             }
             if (e->grid.zone == GZONE_ITEM && e->grid.hover >= 0) {
                 // a cell press: arms the launch, fires on a same-cell
-                // release
+                // release - but it also grabs the card like a body press
+                // does, so sliding past the slop turns it into the scroll
+                // drag instead
                 e->grid.press = e->grid.hover;
                 e->grid.pressZone = GZONE_ITEM;
                 e->grid.pressPkg = e->grid.items[e->grid.hover].pkg;
+                e->grid.grabV = e->grid.v;
+                e->grid.grabScroll = e->grid.scroll;
             } else if (e->grid.zone == GZONE_CLOSE) {
                 e->grid.pressZone = GZONE_CLOSE;
             } else if (e->grid.zone == GZONE_BODY) {
@@ -402,6 +406,15 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
     }
 }
 
+// wheel input scrolls the app grid while it's open; the HUD window never
+// sees motion events on-device (NOT_TOUCHABLE), so this arrives from the
+// desktop harness and the debug tools
+void hudScroll(HudEngine* e, float delta) {
+    if (!e->grid.shown) return;
+    e->grid.scroll = gridScrollBy(e->grid.scroll, delta,
+                                  (int)e->grid.items.size());
+}
+
 // streams MOVEs to the display a confirm-press started on; the aim point is
 // clamped inside the window so the drag survives the ray leaving the edges
 void dragTick(HudEngine* e, const float o[3], const float d[3]) {
@@ -467,6 +480,26 @@ void moveTick(HudEngine* e) {
                                       sqrtf(rx * rx + ry * ry));
             }
             break;
+        }
+    }
+    // a cell press that slid past the slop converts to the body drag:
+    // the launch only arms while the aim stays put, and the drag re-grabs
+    // at the point it crossed so the scroll doesn't jump the slop
+    if (e->grid.pressZone == GZONE_ITEM && e->confirmHeld &&
+            e->grid.shown) {
+        float c[3], r[3], up[3];
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                   c, r, up);
+        float u, v, t;
+        if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
+                    kGridHW, kGridHH, &u, &v, &t) &&
+                gridSlopPassed(e->grid.grabV, v)) {
+            e->grid.press = -1;
+            e->grid.pressZone = GZONE_NONE;
+            e->grid.pressPkg.clear();
+            e->grid.scrollHeld = true;
+            e->grid.grabV = v;
+            e->grid.grabScroll = e->grid.scroll;
         }
     }
     // a held drag on the grid's body scrolls it: the card-local v delta

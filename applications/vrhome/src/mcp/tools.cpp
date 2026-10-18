@@ -161,6 +161,15 @@ Json mcpToolList() {
 
     {
         Json p = Json::obj();
+        p.set("delta", prop("number",
+            "wheel detents; positive scrolls further down the list"));
+        tools.push(toolDef("dash_scroll",
+            "Scroll the app-grid overlay, like a wheel turn.", p,
+            {"delta"}));
+    }
+
+    {
+        Json p = Json::obj();
         p.set("shown", prop("boolean", "true to show, false to hide"));
         tools.push(toolDef("dash_keyboard",
             "Show or hide the floating keyboard quad.", p, {"shown"}));
@@ -253,6 +262,16 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
     if (name == "dash_recenter") {
         d->recenter();
         *result = textRes("recentered");
+        return true;
+    }
+    if (name == "dash_scroll") {
+        double delta;
+        if (!reqNum(a, "delta", &delta)) {
+            *errMsg = "delta is required";
+            return false;
+        }
+        d->scroll((float)delta);
+        *result = textRes("scrolled");
         return true;
     }
     if (name == "dash_grid" || name == "dash_keyboard") {

@@ -44,7 +44,7 @@ struct GridOverlay {
     int press = -1;                 // cell a confirm press started on
     int pressZone = GZONE_NONE;
     std::string pressPkg;           // guards against a rebuild mid-press
-    bool scrollHeld = false;        // confirm held on the card body
+    bool scrollHeld = false;        // confirm held and dragging the card
     float grabV = 0.0f;             // card-local v at grab
     float grabScroll = 0.0f;        // scroll offset at grab
 };

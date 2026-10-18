@@ -11,6 +11,7 @@
 #include "../grid/layout.h"
 #include "../input/ctrl.h"
 #include "../input/input.h"
+#include "../input/pick.h"
 #include "../kbd/kbd.h"
 #include "../notif/layout.h"
 #include "../notif/notif.h"
@@ -71,6 +72,10 @@ void drawDashScene(Engine* e, const Mat4& vp) {
         return;
     }
     drawPanels(h, vp);
+    // the dash is an overlay: the windows get their own depth pass, then
+    // everything shell-side draws on top so a window swung in close can't
+    // bury the strip, the shelf, the grid or a notification under itself
+    glClear(GL_DEPTH_BUFFER_BIT);
     drawKbd(h, vp);
     drawGrid(h, vp);
     drawDock(h, vp);
@@ -129,62 +134,52 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
         : GridPick{};
     e->grid.hover = -1;
     e->grid.zone = GZONE_NONE;
-    if (msgModal || mp.hit) {
+    e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
+    e->notifHover = -1; e->notifZone = NZONE_NONE;
+    e->shelfHover = -1;
+    e->dockHover = -1; e->dockZone = DZONE_NONE;
+    e->hover = -1; e->hoverZone = ZONE_NONE;
+    e->aimHitT = -1.0f;
+    switch (dashSel(msgModal, mp, np, gp, sp, dp, kT)) {
+    case DSEL_SYSMSG:
         e->sysMsgHover = mp.hit ? 0 : -1;
         e->sysMsgZone = mp.zone;
         e->sysMsgBtn = mp.btn;
-        e->notifHover = -1; e->notifZone = NZONE_NONE;
-        e->shelfHover = -1;
-        e->dockHover = -1; e->dockZone = DZONE_NONE;
-        e->hover = -1; e->hoverZone = ZONE_NONE;
         e->aimHitT = mp.hit ? mp.t : -1.0f;
-    } else if (np.stack && (!dp.bar || np.t <= dp.t) &&
-            (pk.idx < 0 || np.t <= pk.t) && (kT < 0.0f || np.t <= kT)) {
-        e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
+        break;
+    case DSEL_NOTIF:
         e->notifHover = np.idx; e->notifZone = np.zone;
-        e->shelfHover = -1; e->dockHover = -1; e->dockZone = DZONE_NONE;
-        e->hover = -1; e->hoverZone = ZONE_NONE; e->aimHitT = np.t;
-    } else if (gp.hit && (pk.idx < 0 || gp.t <= pk.t) &&
-            (kT < 0.0f || gp.t <= kT) && (!dp.bar || gp.t <= dp.t) &&
-            (!sp.hit || gp.t <= sp.t)) {
-        e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
-        e->notifHover = -1; e->notifZone = NZONE_NONE;
-        e->shelfHover = -1; e->dockHover = -1; e->dockZone = DZONE_NONE;
-        e->kbd.hover = false;
+        e->aimHitT = np.t;
+        break;
+    case DSEL_GRID:
         e->grid.hover = gp.idx; e->grid.zone = gp.zone;
         e->grid.u = gp.u; e->grid.v = gp.v;
-        e->hover = -1; e->hoverZone = ZONE_NONE; e->aimHitT = gp.t;
-    } else if (sp.hit && (pk.idx < 0 || sp.t <= pk.t) &&
-            (kT < 0.0f || sp.t <= kT)) {
-        e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
-        e->notifHover = -1; e->notifZone = NZONE_NONE;
-        e->shelfHover = sp.idx; e->dockHover = -1; e->dockZone = DZONE_NONE;
-        e->hover = -1; e->hoverZone = ZONE_NONE; e->aimHitT = sp.t;
-    } else if (dp.bar && (pk.idx < 0 || dp.t <= pk.t) &&
-            (kT < 0.0f || dp.t <= kT)) {
-        e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
-        e->notifHover = -1; e->notifZone = NZONE_NONE;
-        e->shelfHover = -1; e->dockHover = dp.idx; e->dockZone = dp.zone;
+        e->aimHitT = gp.t;
+        break;
+    case DSEL_SHELF:
+        e->shelfHover = sp.idx;
+        e->aimHitT = sp.t;
+        break;
+    case DSEL_DOCK:
+        e->dockHover = dp.idx; e->dockZone = dp.zone;
         e->dockU = dp.u; e->dockV = dp.v;
-        e->hover = -1; e->hoverZone = ZONE_NONE; e->aimHitT = dp.t;
-    } else {
-        e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
-        e->notifHover = -1; e->notifZone = NZONE_NONE;
-        e->shelfHover = -1; e->dockHover = -1; e->dockZone = DZONE_NONE;
-        if (kT >= 0.0f && (pk.idx < 0 || kT <= pk.t)) {
-            e->kbd.hover = true; e->kbd.zone = kZone;
-            e->kbd.u = kU; e->kbd.v = kV;
-            e->hover = -1; e->hoverZone = ZONE_NONE; e->aimHitT = kT;
-        } else {
-            e->hover = pk.idx;
-            e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
-            e->aimHitT = pk.idx >= 0 ? pk.t : -1.0f;
-            if (pk.idx >= 0) {
-                e->hitU = pk.u; e->hitV = pk.v;
-                e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
-                e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
-            }
+        e->aimHitT = dp.t;
+        break;
+    case DSEL_KBD:
+        e->kbd.hover = true; e->kbd.zone = kZone;
+        e->kbd.u = kU; e->kbd.v = kV;
+        e->aimHitT = kT;
+        break;
+    default:
+        e->hover = pk.idx;
+        e->hoverZone = pk.idx >= 0 ? pk.zone : ZONE_NONE;
+        e->aimHitT = pk.idx >= 0 ? pk.t : -1.0f;
+        if (pk.idx >= 0) {
+            e->hitU = pk.u; e->hitV = pk.v;
+            e->hitX = (pk.u * 0.5f + 0.5f) * kVdW;
+            e->hitY = (0.5f - pk.v * 0.5f) * kVdH;
         }
+        break;
     }
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;

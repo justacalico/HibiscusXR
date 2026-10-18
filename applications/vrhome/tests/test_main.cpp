@@ -30,6 +30,7 @@ void testEnvMap();
 void testQuiet();
 void testPresent();
 void testMcp();
+void testPick();
 
 int main() {
     testMat4();
@@ -60,6 +61,7 @@ int main() {
     testQuiet();
     testPresent();
     testMcp();
+    testPick();
     printf("%d checks, %d failures\n", gChecks, gFails);
     return gFails ? 1 : 0;
 }

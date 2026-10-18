@@ -80,6 +80,11 @@ static void mouseBtn(GLFWwindow*, int button, int action, int) {
            action == GLFW_PRESS ? kKeyDown : kKeyUp, 0);
 }
 
+static void scrollCb(GLFWwindow*, double, double yoff) {
+    // glfw's +y is wheel-up; hudScroll's positive delta goes down the list
+    hudScroll(gApp->hud, (float)-yoff);
+}
+
 static void keyCb(GLFWwindow*, int key, int scancode, int action,
                   int) {
     if (action == GLFW_PRESS) {
@@ -112,6 +117,7 @@ GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h) {
     glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSetCursorPosCallback(win, mouseMove);
     glfwSetMouseButtonCallback(win, mouseBtn);
+    glfwSetScrollCallback(win, scrollCb);
     glfwSetKeyCallback(win, keyCb);
     app->win = win;
     return win;
@@ -229,6 +235,9 @@ public:
     }
     void setKbd(bool shown) override {
         if (app->kbdSet) runJob(false, [=] { app->kbdSet(shown); });
+    }
+    void scroll(float delta) override {
+        runJob(false, [=] { hudScroll(app->hud, delta); });
     }
     bool state(McpState* out) override {
         return runJob(true, [=] {

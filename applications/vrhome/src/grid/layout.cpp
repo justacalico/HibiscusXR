@@ -53,6 +53,14 @@ float gridClampScroll(float scroll, int n) {
     return scroll < 0.0f ? 0.0f : scroll > mx ? mx : scroll;
 }
 
+bool gridSlopPassed(float grabV, float v) {
+    return fabsf(v - grabV) * kGridHH > kGridDragSlop;
+}
+
+float gridScrollBy(float scroll, float delta, int n) {
+    return gridClampScroll(scroll + delta * kGridWheelStep, n);
+}
+
 int gridItemAt(int n, float u, float v, float scroll) {
     const float x = u * kGridHW, y = v * kGridHH;
     float lo, hi;

@@ -53,6 +53,31 @@ void testGrid() {
         CHECK_F(gridClampScroll(mx * 0.5f, n), mx * 0.5f, 1e-6f);
     }
 
+    // tap slop: a held press counts as a scroll drag once the aim's
+    // card-local v has travelled kGridDragSlop metres, either way
+    {
+        const float slopV = kGridDragSlop / kGridHH;
+        CHECK(!gridSlopPassed(0.0f, 0.0f));
+        CHECK(!gridSlopPassed(0.0f, slopV * 0.9f));
+        CHECK(!gridSlopPassed(0.0f, -slopV * 0.9f));
+        CHECK(gridSlopPassed(0.0f, slopV * 1.1f));
+        CHECK(gridSlopPassed(0.0f, -slopV * 1.1f));
+        CHECK(gridSlopPassed(0.3f, 0.3f + slopV * 1.1f));
+    }
+
+    // wheel scroll: a detent moves kGridWheelStep metres, positive going
+    // further down the list, and the result clamps to the content
+    {
+        const int n = kGridCols * 6;
+        CHECK_F(gridScrollBy(0.0f, 1.0f, n), kGridWheelStep, 1e-6f);
+        CHECK_F(gridScrollBy(kGridWheelStep, -0.5f, n),
+                kGridWheelStep * 0.5f, 1e-6f);
+        CHECK_F(gridScrollBy(0.0f, -1.0f, n), 0.0f, 1e-6f);
+        CHECK_F(gridScrollBy(0.0f, 99.0f, n), gridScrollMax(n), 1e-6f);
+        // a short list takes the deltas but the offset never leaves 0
+        CHECK_F(gridScrollBy(0.0f, 1.0f, kGridCols), 0.0f, 1e-6f);
+    }
+
     // hit test: a cell centre resolves to its index, padding and past-the-
     // list cells are body, the title row is body except the close disc
     {

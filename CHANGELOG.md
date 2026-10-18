@@ -4,7 +4,6 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
-- [vrdash 磨砂玻璃质感重设计](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/149) (!149)
 - [窗口药丸条底部两个角也改成圆角](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/130) (!130)
 - [Dash desktop preview](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/131) (!131)
 - [dash-preview: MCP server via -mcp](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/132) (!132)
@@ -24,3 +23,4 @@ linked line per MR no matter how many commits it carried.
 - [Esc 最小化窗口，Shift+Esc 关闭](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/146) (!146)
 - [修 dash-wayland 客户端兼容问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/147) (!147)
 - [dash-wayland: ` 抓取应用输入，Shift+` 释放](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/148) (!148)
+- [vrdash: visionOS 风格磨砂玻璃重设计](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/149) (!149)

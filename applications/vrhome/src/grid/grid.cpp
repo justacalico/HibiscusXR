@@ -49,11 +49,6 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // scrim over whatever the card covers: the windows behind go quiet so
-    // the glass and its icons read as the only live surface
-    const float scrimCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
-    shapeQuad(e, vp, c, r, up, -0.002f, 0.0f, hw * 1.8f, hh * 1.8f,
-              hw * 1.8f, hh * 1.8f, 0.10f, 0.0f, 0.03f, scrimCol);
     // shadow + card: frosted glass, lit from its top edge
     const float shc[3] = {c[0] - up[0] * 0.024f * gs,
                           c[1] - up[1] * 0.024f * gs,

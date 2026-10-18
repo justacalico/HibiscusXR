@@ -224,10 +224,7 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     glDepthMask(GL_FALSE);
     glUseProgram(e->shapeProg);
 
-    // scrim + shadow + card, same glass recipe the grid card uses
-    const float scrimCol[4] = {0.0f, 0.0f, 0.0f, 0.30f * ga};
-    shapeQuad(e, vp, c, r, up, -0.002f, 0.0f, hw * 1.8f, hh * 1.8f,
-              hw * 1.8f, hh * 1.8f, 0.10f, 0.0f, 0.03f, scrimCol);
+    // shadow + card, same glass recipe the grid card uses
     const float shc[3] = {c[0] - up[0] * 0.024f * gs,
                           c[1] - up[1] * 0.024f * gs,
                           c[2] - up[2] * 0.024f * gs};

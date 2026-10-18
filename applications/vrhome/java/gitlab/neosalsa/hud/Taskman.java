@@ -4,15 +4,19 @@ import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -49,6 +53,23 @@ class Taskman {
                   fBaseIntent, fNumActivities;
 
     private final Map<String, Boolean> vrCache = new HashMap<>();
+
+    // categories an immersive activity marks itself with instead of (or
+    // alongside) a launcher entry - OpenXR runtimes and Oculus store apps
+    static final String[] IMMERSIVE_CATEGORIES = {
+            "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
+            "com.oculus.intent.category.VR"};
+
+    // every category that can mark a user-facing entry point: store apps
+    // declare LAUNCHER, but sideloaded games like Job Simulator ship only
+    // a leanback or immersive entry - a LAUNCHER-only query leaves them
+    // out of the library entirely
+    static final String[] ENTRY_CATEGORIES = {
+            Intent.CATEGORY_LAUNCHER,
+            Intent.CATEGORY_INFO,
+            Intent.CATEGORY_LEANBACK_LAUNCHER,
+            "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
+            "com.oculus.intent.category.VR"};
 
     Taskman(Context c, Handler m, ShellBridge.CoveredListener l,
             PanelDisplays d, Object adoptLock, Set<Integer> adopting,
@@ -140,9 +161,60 @@ class Taskman {
         }
     }
 
-    void launchPackageOn(String pkg, int displayId) {
+    // launchable activities across every entry category, deduped by
+    // component: the later passes re-hit what LAUNCHER found, and the
+    // immersive pass drops ACTION_MAIN so a VR activity that never
+    // declared one still surfaces
+    List<ResolveInfo> launchable() {
+        List<ResolveInfo> out = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (String cat : ENTRY_CATEGORIES) {
+            Intent q = new Intent(Intent.ACTION_MAIN);
+            q.addCategory(cat);
+            addMatches(q, out, seen);
+        }
+        for (String cat : IMMERSIVE_CATEGORIES) {
+            Intent q = new Intent();
+            q.addCategory(cat);
+            addMatches(q, out, seen);
+        }
+        return out;
+    }
+
+    private void addMatches(Intent q, List<ResolveInfo> out,
+                            Set<String> seen) {
+        try {
+            for (ResolveInfo r : pm.queryIntentActivities(q, 0)) {
+                if (r.activityInfo == null) continue;
+                if (seen.add(r.activityInfo.packageName + "/" +
+                        r.activityInfo.name))
+                    out.add(r);
+            }
+        } catch (Throwable ignored) {}
+    }
+
+    // getLaunchIntentForPackage only resolves MAIN+INFO/LAUNCHER; a game
+    // whose sole entry is leanback or immersive needs its component
+    // resolved out of the same scan the grid listed it from
+    Intent launchIntentForPackage(String pkg) {
         try {
             Intent i = pm.getLaunchIntentForPackage(pkg);
+            if (i != null) return i;
+            for (ResolveInfo r : launchable()) {
+                ActivityInfo ai = r.activityInfo;
+                if (ai == null || !pkg.equals(ai.packageName)) continue;
+                Intent e = new Intent(Intent.ACTION_MAIN);
+                e.setComponent(
+                        new ComponentName(ai.packageName, ai.name));
+                return e;
+            }
+        } catch (Throwable ignored) {}
+        return null;
+    }
+
+    void launchPackageOn(String pkg, int displayId) {
+        try {
+            Intent i = launchIntentForPackage(pkg);
             if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             displays.markLaunching(displayId);
@@ -173,9 +245,7 @@ class Taskman {
             // the category ignored - that classified every app as VR and
             // sent all of them to display 0. Package-scoped + category, no
             // action so any activity in the package declaring it counts.
-            for (String cat : new String[]{
-                    "org.khronos.openxr.intent.category.IMMERSIVE_HMD",
-                    "com.oculus.intent.category.VR"}) {
+            for (String cat : IMMERSIVE_CATEGORIES) {
                 Intent i = new Intent();
                 i.addCategory(cat);
                 i.setPackage(pkg);
@@ -222,7 +292,7 @@ class Taskman {
                     return;
                 }
             }
-            Intent i = pm.getLaunchIntentForPackage(pkg);
+            Intent i = launchIntentForPackage(pkg);
             if (i == null) { Log.e(TAG, "no launch intent " + pkg); return; }
             i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             ctx.startActivity(i);
@@ -252,7 +322,7 @@ class Taskman {
                     ComponentName b = (ComponentName) fBaseActivity.get(t);
                     if (b != null) {
                         pkg = b.getPackageName();
-                        i = pm.getLaunchIntentForPackage(pkg);
+                        i = launchIntentForPackage(pkg);
                     }
                 }
                 break;

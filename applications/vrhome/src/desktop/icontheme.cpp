@@ -1,10 +1,18 @@
 #include "icontheme.h"
 
+#include <algorithm>
 #include <cstdlib>
+#include <cstring>
 #include <filesystem>
 #include <map>
 
 namespace fs = std::filesystem;
+
+static bool allDigits(const std::string& s) {
+    if (s.empty()) return false;
+    for (char c : s) if (c < '0' || c > '9') return false;
+    return true;
+}
 
 bool parseIndexTheme(const std::string& text, IconTheme* out) {
     out->parents.clear();
@@ -88,23 +96,88 @@ int iconSizeFit(const IconSubdir& s, int want) {
                                         : abs(s.size - w) + 1000;
 }
 
+bool subdirFromName(const std::string& name, IconSubdir* out) {
+    std::string base = name;
+    out->scale = 1;
+    const size_t at = name.find('@');
+    if (at != std::string::npos) {
+        base = name.substr(0, at);
+        std::string s = name.substr(at + 1);
+        if (!s.empty() && s.back() == 'x') s.pop_back();
+        if (!allDigits(s)) return false;
+        out->scale = atoi(s.c_str());
+        if (out->scale <= 0) return false;
+    }
+    if (base == "scalable") {
+        out->type = 1;
+        out->size = 0;
+        out->minSize = 16;
+        out->maxSize = 1024;
+        return true;
+    }
+    const size_t x = base.find('x');
+    if (x == std::string::npos || !allDigits(base.substr(0, x)) ||
+            !allDigits(base.substr(x + 1))) return false;
+    out->type = 0;
+    out->size = atoi(base.c_str());
+    out->minSize = out->maxSize = out->size;
+    return true;
+}
+
 static const char* kIconExts[] = {".png", ".svg", ".xpm"};
 
-static std::string tryFile(const std::string& dir,
-                           const std::string& name) {
-    for (const char* ext : kIconExts) {
+static std::string tryFile(const std::string& dir, const std::string& name,
+                           const char* ext) {
+    if (ext) {
         const std::string p = dir + "/" + name + ext;
+        std::error_code ec;
+        return fs::is_regular_file(p, ec) ? p : "";
+    }
+    for (const char* e : kIconExts) {
+        const std::string p = dir + "/" + name + e;
         std::error_code ec;
         if (fs::is_regular_file(p, ec)) return p;
     }
     return "";
 }
 
+// a theme dir with no index.theme still counts (Steam fills
+// ~/.local/share/icons/hicolor without one): the "<size>x<size>" and
+// "scalable" directory names carry the same info the index would
+static bool scanThemeDirs(const std::string& dir, IconTheme* out) {
+    out->parents.clear();
+    out->subs.clear();
+    out->valid = false;
+    std::error_code ec;
+    if (!fs::is_directory(dir, ec)) return false;
+    for (const auto& de : fs::directory_iterator(dir, ec)) {
+        if (!de.is_directory(ec)) continue;
+        IconSubdir s;
+        const std::string name = de.path().filename().string();
+        if (!subdirFromName(name, &s)) continue;
+        s.dir = name;
+        out->subs.push_back(s);
+        for (const auto& ch : fs::directory_iterator(de.path(), ec)) {
+            if (!ch.is_directory(ec)) continue;
+            IconSubdir cs = s;
+            cs.dir = name + "/" + ch.path().filename().string();
+            out->subs.push_back(cs);
+        }
+    }
+    // scalable fits any size, so put it last: a sized png in a fixed dir
+    // must win over a same-named svg the dash cannot decode anyway
+    std::stable_partition(out->subs.begin(), out->subs.end(),
+                          [](const IconSubdir& s) { return s.type != 1; });
+    out->valid = !out->subs.empty();
+    return out->valid;
+}
+
 static bool loadTheme(const std::string& root, const std::string& theme,
                       IconTheme* out) {
     const std::string p = root + "/" + theme + "/index.theme";
     std::error_code ec;
-    if (!fs::is_regular_file(p, ec)) return false;
+    if (!fs::is_regular_file(p, ec))
+        return scanThemeDirs(root + "/" + theme, out);
     FILE* f = fopen(p.c_str(), "rb");
     if (!f) return false;
     std::string text;
@@ -117,10 +190,16 @@ static bool loadTheme(const std::string& root, const std::string& theme,
 
 std::string findIconFile(const std::vector<std::string>& roots,
                          const std::vector<std::string>& themesIn,
-                         const std::string& name, int size) {
+                         const std::string& name, int size,
+                         const char* ext) {
     if (name.empty()) return "";
     if (name.front() == '/') {
         std::error_code ec;
+        if (ext) {
+            const size_t n = strlen(ext);
+            if (name.size() < n ||
+                name.compare(name.size() - n, n, ext) != 0) return "";
+        }
         return fs::is_regular_file(name, ec) ? name : "";
     }
     std::vector<std::string> themes = themesIn;
@@ -146,30 +225,34 @@ std::string findIconFile(const std::vector<std::string>& roots,
                 }
                 const IconTheme& t = cache[key];
                 if (!t.valid) continue;
-                int bestFit = -1;
-                std::string bestDir;
+                // exact-fit dirs first, then every other dir in
+                // closest-size order until one actually holds the icon
+                std::vector<std::pair<int, std::string>> near;
                 for (const IconSubdir& s : t.subs) {
                     const int fit = iconSizeFit(s, size);
                     const std::string dir =
                         root + "/" + theme + "/" + s.dir;
                     if (fit == 0) {
-                        const std::string p = tryFile(dir, name);
+                        const std::string p = tryFile(dir, name, ext);
                         if (!p.empty()) return p;
-                    } else if (pass == 1 &&
-                               (bestFit < 0 || fit < bestFit)) {
-                        bestFit = fit;
-                        bestDir = dir;
+                    } else if (pass == 1) {
+                        near.emplace_back(fit, dir);
                     }
                 }
-                if (pass == 1 && !bestDir.empty()) {
-                    const std::string p = tryFile(bestDir, name);
+                std::stable_sort(near.begin(), near.end(),
+                    [](const std::pair<int, std::string>& a,
+                       const std::pair<int, std::string>& b) {
+                        return a.first < b.first;
+                    });
+                for (const auto& cd : near) {
+                    const std::string p = tryFile(cd.second, name, ext);
                     if (!p.empty()) return p;
                 }
             }
         }
     }
     for (const std::string& root : roots) {
-        const std::string p = tryFile(root, name);
+        const std::string p = tryFile(root, name, ext);
         if (!p.empty()) return p;
     }
     return "";

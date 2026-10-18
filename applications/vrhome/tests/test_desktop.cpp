@@ -141,6 +141,54 @@ static void testFindIconFile() {
     fs::remove_all(root);
 }
 
+static void testSubdirFromName() {
+    IconSubdir s;
+    CHECK(subdirFromName("48x48", &s));
+    CHECK(s.type == 0 && s.size == 48 && s.scale == 1);
+    CHECK(subdirFromName("16x16@2x", &s));
+    CHECK(s.type == 0 && s.size == 16 && s.scale == 2);
+    CHECK(subdirFromName("32x32@2", &s));
+    CHECK(s.scale == 2);
+    CHECK(subdirFromName("scalable", &s));
+    CHECK(s.type == 1);
+    CHECK(subdirFromName("scalable@2x", &s));
+    CHECK(s.type == 1 && s.scale == 2);
+    CHECK(!subdirFromName("apps", &s));
+    CHECK(!subdirFromName("cursors", &s));
+    CHECK(!subdirFromName("32x", &s));
+    CHECK(!subdirFromName("x32", &s));
+    CHECK(!subdirFromName("48x48@x", &s));
+}
+
+static void testIndexlessTheme() {
+    const std::string root = "/tmp/dash-test-icons-bare";
+    fs::remove_all(root);
+    // hicolor under ~/.local/share/icons ships no index.theme - Steam
+    // drops game icons straight into its sized dirs
+    putFile(root + "/Bare/32x32/apps/foo.png", "png");
+    putFile(root + "/Bare/48x48@2x/apps/hi.png", "png");
+    putFile(root + "/Bare/scalable/apps/bar.svg", "svg");
+    putFile(root + "/Bare/apps/nope.png", "png");
+
+    // exact size hits pass 0, anything else the distance fallback
+    CHECK(findIconFile({root}, {"Bare"}, "foo", 32) ==
+          root + "/Bare/32x32/apps/foo.png");
+    CHECK(findIconFile({root}, {"Bare"}, "foo", 96) ==
+          root + "/Bare/32x32/apps/foo.png");
+    // 96 at scale 2 wants a 48px asset
+    CHECK(findIconFile({root}, {"Bare"}, "hi", 96) ==
+          root + "/Bare/48x48@2x/apps/hi.png");
+    CHECK(findIconFile({root}, {"Bare"}, "bar", 64) ==
+          root + "/Bare/scalable/apps/bar.svg");
+    // names without size info are not icon dirs
+    CHECK(findIconFile({root}, {"Bare"}, "nope", 48).empty());
+    // still works as the appended hicolor fallback
+    fs::rename(root + "/Bare", root + "/hicolor");
+    CHECK(findIconFile({root}, {"Test"}, "foo", 32) ==
+          root + "/hicolor/32x32/apps/foo.png");
+    fs::remove_all(root);
+}
+
 static void testPopupPos() {
     int x, y;
     // menu under a button: anchor bottom-left corner, popup grows
@@ -226,6 +274,8 @@ void testDesktop() {
     testScanDesktopFiles();
     testIndexTheme();
     testFindIconFile();
+    testSubdirFromName();
+    testIndexlessTheme();
     testPopupPos();
     testPixconv();
     testSysinfo();

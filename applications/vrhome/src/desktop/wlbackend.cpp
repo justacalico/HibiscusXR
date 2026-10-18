@@ -75,7 +75,6 @@ static bool decodePng(const std::string& path, IconPixels* out) {
     png_set_gray_to_rgb(png);
     png_set_interlace_handling(png);
     png_set_add_alpha(png, 0xff, PNG_FILLER_AFTER);
-    png_set_bgr(png);
     png_read_update_info(png, info);
     if (png_get_channels(png, info) != 4) {
         png_destroy_read_struct(&png, &info, nullptr);

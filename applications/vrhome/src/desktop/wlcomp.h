@@ -67,4 +67,7 @@ struct WlComp {
     void requestClose(WlTask* t);
     void taskDirtyRect(WlTask* t, int x, int y, int w, int h);
     void recompose(WlTask* t);
+    // dmabuf task: retarget tex at its buffer's EGLImage. False for shm
+    // tasks - those upload pixels into tex instead
+    bool taskGpuBind(WlTask* t, unsigned tex);
 };

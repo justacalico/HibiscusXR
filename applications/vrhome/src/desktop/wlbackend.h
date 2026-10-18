@@ -78,6 +78,8 @@ private:
     bool centerOn = true;
     bool pinsSent = false;
     unsigned qsMask = 0;
+    std::string term;
+    bool termSearched = false;
 
     Slot* slotOf(int displayId);
     WlTask* taskOf(int taskId);

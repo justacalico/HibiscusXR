@@ -1,5 +1,6 @@
 #define VRHOME_DESKTOP 1
 
+#include "dmabuf.h"
 #include "harness.h"
 #include "wlbackend.h"
 #include "wlcomp.h"
@@ -34,6 +35,9 @@ int main(int argc, char** argv) {
     DashApp app;
     if (!dashWindow(&app, "Hibiscus dash (wayland)", 1440, 810))
         return 1;
+    // needs a current EGL context, so it goes after the window: clients
+    // get zwp_linux_dmabuf_v1 only when the host EGL can import dmabufs
+    dmabufInit(comp);
 
     HudEngine hud;
     WlBackend backend(comp);

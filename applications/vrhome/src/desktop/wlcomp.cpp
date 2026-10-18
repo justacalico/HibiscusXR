@@ -1,7 +1,10 @@
 #include "wlcomp.h"
 
+#include "cmdline.h"
+#include "dmabuf.h"
 #include "pixconv.h"
 #include "popuppos.h"
+#include "wlegl.h"
 #include "../common/config.h"
 #include "../common/log.h"
 
@@ -11,11 +14,14 @@
 #include <linux/input-event-codes.h>
 
 #include "xdg-shell-server-protocol.h"
+#include "xdg-activation-v1-server-protocol.h"
 
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <signal.h>
 #include <fcntl.h>
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
@@ -40,6 +46,7 @@ struct WlBuf {
     void* data = nullptr;
     int w = 0, h = 0, stride = 0;
     uint32_t fmt = 0;
+    void* eglImg = nullptr;      // dmabuf import; texture path, no pixels
     wl_listener gone = {};
 };
 
@@ -82,6 +89,8 @@ struct WlCompIn {
     std::vector<wl_resource*> pendingFrames;
     std::vector<int> pendingFds;
     std::set<wl_client*> kmSent;
+    std::set<std::string> actTokens;
+    int actTokN = 0;
     xkb_context* xctx = nullptr;
     xkb_keymap* keymap = nullptr;
     xkb_state* kstate = nullptr;
@@ -144,6 +153,7 @@ static void paintDfs(WlSurf* n, std::vector<WlSurf*>* out) {
 void WlComp::recompose(WlTask* t) {
     if (!t || !t->surf || !t->surf->buf || !t->dirty) return;
     WlBuf* bb = t->surf->buf;
+    if (!bb->data) return;   // gpu buffer: the texture path owns it
     const int bw = bb->w, bh = bb->h;
     if (bw <= 0 || bh <= 0) return;
     if (t->img.w != bw || t->img.h != bh) {
@@ -181,6 +191,7 @@ void WlComp::recompose(WlTask* t) {
 
 static void releaseBuf(WlSurf* s) {
     if (!s->buf) return;
+    if (s->buf->eglImg) { wlEglFree(s->buf->eglImg); s->buf->eglImg = nullptr; }
     if (s->buf->res) {
         // the buffer resource is still alive, so our destroy listener
         // is still parked on it: unlink before the WlBuf goes away
@@ -226,6 +237,10 @@ static void commitSurf(WlSurf* s) {
                 b->h = wl_shm_buffer_get_height(shm);
                 b->stride = wl_shm_buffer_get_stride(shm);
                 b->fmt = wl_shm_buffer_get_format(shm);
+            } else if (DmaBuf* d = dmabufOf(s->pendBuf)) {
+                b->w = d->w;
+                b->h = d->h;
+                b->eglImg = wlEglImport(d);
             }
             b->gone.notify = bufGone;
             wl_resource_add_destroy_listener(b->res, &b->gone);
@@ -238,7 +253,7 @@ static void commitSurf(WlSurf* s) {
     }
     s->pendDamage.clear();
 
-    if (s->buf && s->buf->data && !s->mapped) {
+    if (s->buf && (s->buf->data || s->buf->eglImg) && !s->mapped) {
         s->mapped = true;
         if (s->task) s->task->mapped = true;
         if (s->role == ROLE_TOP && s->task && s->c->onTaskMap)
@@ -872,6 +887,85 @@ static void bindWm(wl_client* cl, void* data, uint32_t ver,
     wl_resource_set_implementation(r, &wmImpl, data, nullptr);
 }
 
+// ------------------------------------------------- xdg_activation_v1
+// GTK/GApplication "activate the running instance" and friends hand us
+// a token then ask to raise a surface; we just mark its task active
+
+struct ActTok {
+    WlComp* c = nullptr;
+    bool committed = false;
+    wl_listener gone;
+};
+
+static ActTok* tokOf(wl_resource* res) {
+    return (ActTok*)wl_resource_get_user_data(res);
+}
+
+static void actTokGone(wl_listener* lis, void*) {
+    ActTok* t = wl_container_of(lis, t, gone);
+    delete t;
+}
+
+static void reqTokSerial(wl_client*, wl_resource*, uint32_t,
+                         wl_resource*) {}
+static void reqTokAppId(wl_client*, wl_resource*, const char*) {}
+static void reqTokSurface(wl_client*, wl_resource*, wl_resource*) {}
+static void reqTokCommit(wl_client*, wl_resource* res) {
+    ActTok* t = tokOf(res);
+    if (t->committed) {
+        wl_resource_post_error(res,
+            XDG_ACTIVATION_TOKEN_V1_ERROR_ALREADY_USED,
+            "activation token committed twice");
+        return;
+    }
+    t->committed = true;
+    char tok[32];
+    snprintf(tok, sizeof(tok), "hibi%x-%x", (unsigned)nowMs(),
+             (unsigned)t->c->in->actTokN++);
+    t->c->in->actTokens.insert(tok);
+    xdg_activation_token_v1_send_done(res, tok);
+}
+static void reqTokDestroy(wl_client*, wl_resource* res) {
+    wl_resource_destroy(res);
+}
+static const struct xdg_activation_token_v1_interface actTokImpl = {
+    reqTokSerial, reqTokAppId, reqTokSurface, reqTokCommit,
+    reqTokDestroy,
+};
+
+static void reqActDestroy(wl_client*, wl_resource* res) {
+    wl_resource_destroy(res);
+}
+static void reqActToken(wl_client* cl, wl_resource* res, uint32_t id) {
+    ActTok* t = new ActTok;
+    t->c = compOf(res);
+    wl_resource* tr = wl_resource_create(cl,
+        &xdg_activation_token_v1_interface,
+        wl_resource_get_version(res), id);
+    wl_resource_set_implementation(tr, &actTokImpl, t, nullptr);
+    t->gone.notify = actTokGone;
+    wl_resource_add_destroy_listener(tr, &t->gone);
+}
+static void reqActActivate(wl_client*, wl_resource* res,
+                           const char*, wl_resource* surfRes) {
+    WlComp* c = compOf(res);
+    WlSurf* s = surfRes ? surfOf(surfRes) : nullptr;
+    if (!s || !s->task) return;
+    // permissive on unknown/foreign tokens: activate only ever moves
+    // focus to a window the client already owns
+    c->setActive(s->task, true);
+}
+static const struct xdg_activation_v1_interface actImpl = {
+    reqActDestroy, reqActToken, reqActActivate,
+};
+
+static void bindAct(wl_client* cl, void* data, uint32_t ver,
+                    uint32_t id) {
+    wl_resource* r = wl_resource_create(cl, &xdg_activation_v1_interface,
+                                        ver > 1 ? 1 : ver, id);
+    wl_resource_set_implementation(r, &actImpl, data, nullptr);
+}
+
 // -------------------------------------------------------------- WlComp
 
 WlComp* WlComp::create() {
@@ -902,6 +996,8 @@ WlComp* WlComp::create() {
     wl_global_create(c->dpy, &wl_data_device_manager_interface, 3, c,
                      bindDdm);
     wl_global_create(c->dpy, &xdg_wm_base_interface, 3, c, bindWm);
+    wl_global_create(c->dpy, &xdg_activation_v1_interface, 1, c,
+                     bindAct);
 
     c->in->xctx = xkb_context_new(XKB_CONTEXT_NO_FLAGS);
     if (c->in->xctx) {
@@ -936,8 +1032,16 @@ void WlComp::destroy() {
     delete this;
 }
 
+bool WlComp::taskGpuBind(WlTask* t, unsigned tex) {
+    if (!t || !t->surf || !t->surf->buf || !t->surf->buf->eglImg)
+        return false;
+    return wlEglBindTex(tex, t->surf->buf->eglImg);
+}
+
 void WlComp::dispatch(int timeoutMs) {
     if (!dpy) return;
+    int st;
+    while (waitpid(-1, &st, WNOHANG) > 0) {}
     wl_event_loop_dispatch(loop, timeoutMs);
     wl_display_flush_clients(dpy);
 }
@@ -961,6 +1065,9 @@ pid_t WlComp::spawn(const std::vector<std::string>& argv,
     const pid_t pid = fork();
     if (pid != 0) return pid;
     setsid();
+    sigset_t set;
+    sigemptyset(&set);
+    sigprocmask(SIG_SETMASK, &set, nullptr);
     setenv("WAYLAND_DISPLAY", sock.c_str(), 1);
     unsetenv("DISPLAY");
     setenv("GDK_BACKEND", "wayland", 0);
@@ -973,10 +1080,15 @@ pid_t WlComp::spawn(const std::vector<std::string>& argv,
         if (eq != std::string::npos)
             setenv(e.substr(0, eq).c_str(), e.substr(eq + 1).c_str(), 1);
     }
-    std::vector<char*> args;
-    for (const std::string& a : argv) args.push_back((char*)a.c_str());
-    args.push_back(nullptr);
-    execvp(args[0], args.data());
+    const int dn = open("/dev/null", O_RDWR);
+    if (dn != -1) {
+        dup2(dn, STDIN_FILENO);
+        dup2(dn, STDOUT_FILENO);
+        dup2(dn, STDERR_FILENO);
+        if (dn > STDERR_FILENO) close(dn);
+    }
+    const std::string cmd = shellJoin(argv);
+    execl("/bin/sh", "sh", "-c", cmd.c_str(), (char*)nullptr);
     _exit(127);
 }
 

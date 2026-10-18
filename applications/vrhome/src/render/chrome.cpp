@@ -87,13 +87,19 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // right - the Quest window bar, just moved under the surface
         const float pc[3] = {c[0] - up[0] * drp, c[1] - up[1] * drp,
                              c[2] - up[2] * drp};
-        const float* bcp = hov ? kPalSurfaceHigh : kPalPanel;
+        const float* bcp = hov ? kPalSurfaceHigh : kPalSurface;
         const float pillCol[4] = {bcp[0], bcp[1], bcp[2],
-                                  (hov ? 0.95f : 0.88f) * a};
+                                  (hov ? 0.78f : 0.66f) * a};
         glUseProgram(e->shapeProg);
         shapeQuad(e, viewProj, pc, r, up, 0.004f, 0.0f, phw,
                   kPillH * 0.5f * sc, phw, kPillH * 0.5f * sc,
-                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol);
+                  kPillH * 0.5f * sc, 0.0f, 0.002f, pillCol,
+                  -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.055f * a);
+        const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 0.16f * a};
+        shapeQuad(e, viewProj, pc, r, up, 0.005f, 0.0f, phw,
+                  kPillH * 0.5f * sc, phw, kPillH * 0.5f * sc,
+                  kPillH * 0.5f * sc, 0.0016f, 0.0012f, rimCol);
 
         // float + minimize + close discs on the pill's right end; glyphs
         // are small capsules, the close pair rotated into an x, the float
@@ -202,7 +208,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         // underneath and needs no outline of its own
         glUseProgram(e->shapeProg);
         const float bdCol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                (hov ? 0.55f : 0.14f) * a};
+                                (hov ? 0.60f : 0.15f) * a};
         shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
                   hh + 0.006f, hw + 0.006f, hh + 0.006f,
                   kCornerR * sc + 0.006f, 0.0016f, 0.0012f, bdCol);
@@ -323,7 +329,7 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     // hairline border, brightened under the aim like the window frames
     glUseProgram(e->shapeProg);
     const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                           hov ? 0.55f : 0.14f};
+                           hov ? 0.65f : 0.22f};
     shapeQuad(e, viewProj, c, r, up, 0.006f, 0.0f, hw + 0.006f,
               hh + 0.006f, hw + 0.006f, hh + 0.006f, kCornerR + 0.006f,
               0.0016f, 0.0012f, bcol);
@@ -457,6 +463,9 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
                               kPalBackground[2], 0.90f};
     const float ringCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.85f};
     const float dotCol[4]  = {kPalText[0], kPalText[1], kPalText[2], 0.90f};
+    const float glowCol[4] = {kPalText[0], kPalText[1], kPalText[2], 0.10f};
+    shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.030f, 0.030f, 0.014f,
+              0.014f, 0.014f, -1.0f, 0.016f, glowCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.0195f, 0.0195f, 0.014f,
               0.014f, 0.014f, 0.0042f, 0.001f, edgeCol);
     shapeQuad(e, viewProj, pos, r, up, 0.012f, 0.0f, 0.014f, 0.014f, 0.014f,

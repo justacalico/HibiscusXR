@@ -73,21 +73,26 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
 
         // drop shadow behind the card: box is the card silhouette so only
         // the falloff reaches past it
-        const float shc[3] = {cc[0] - up[0] * 0.012f, cc[1] - up[1] * 0.012f,
-                              cc[2] - up[2] * 0.012f};
-        const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.30f};
-        shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.03f, hh + 0.03f,
-                  hw, hh, 0.024f, -1.0f, 0.03f, shCol);
+        const float shc[3] = {cc[0] - up[0] * 0.014f, cc[1] - up[1] * 0.014f,
+                              cc[2] - up[2] * 0.014f};
+        const float shCol[4] = {0.0f, 0.0f, 0.0f, 0.34f};
+        shapeQuad(e, vp, shc, r, up, -0.012f, 0.0f, hw + 0.04f, hh + 0.04f,
+                  hw, hh, 0.032f, -1.0f, 0.04f, shCol);
         // card body; a hovered card brightens a touch
         const float body[4] = {kPalSurface[0], kPalSurface[1],
-                               kPalSurface[2], hov ? 0.95f : 0.88f};
+                               kPalSurface[2], hov ? 0.78f : 0.66f};
         shapeQuad(e, vp, cc, r, up, 0.004f, 0.0f, hw, hh, hw, hh,
-                  0.022f, 0.0f, 0.0025f, body);
+                  0.032f, 0.0f, 0.0025f, body, -1.0f, 0.0f, 0.0f, 0.0f,
+                  0.0f, 0.07f);
+        const float rimCol[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 hov ? 0.22f : 0.14f};
+        shapeQuad(e, vp, cc, r, up, 0.005f, 0.0f, hw, hh, hw, hh,
+                  0.032f, 0.0015f, 0.0012f, rimCol);
         if (hov) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
-                                 0.10f};
+                                 0.08f};
             shapeQuad(e, vp, cc, r, up, 0.006f, 0.0f, hw, hh, hw, hh,
-                      0.022f, 0.0f, 0.002f, hl);
+                      0.032f, 0.0f, 0.002f, hl);
         }
 
         // app icon on the left; the dock's letter-tile fallback for pkgs

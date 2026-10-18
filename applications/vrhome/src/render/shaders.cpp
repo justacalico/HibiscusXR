@@ -167,7 +167,9 @@ uniform sampler2D uTex;
 uniform vec2 uHalf;
 uniform float uRadius;
 uniform float uAlpha;
-uniform vec3 uClip;      // same band-clip convention the shape FS uses
+uniform vec3 uClip;      // same band-clip convention the shape FS uses, but
+                         // v=0 is the bitmap's top row so quad y points down:
+                         // parent-space y is uClip.x - p.y, not uClip.x + p.y
 void main() {
     vec4 c = texture2D(uTex, vUV);
     vec2 p = (vUV - 0.5) * 2.0 * uHalf;
@@ -176,7 +178,7 @@ void main() {
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
     if (uClip.z > 0.0)
         a *= 1.0 - smoothstep(uClip.z - 0.012, uClip.z,
-                              abs(p.y + uClip.x - uClip.y));
+                              abs(uClip.x - p.y - uClip.y));
     gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
 }
 )";

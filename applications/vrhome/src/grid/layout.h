@@ -29,6 +29,11 @@ void tickGridHover(std::vector<GridItem>& items, int hover, float dtMs);
 // lo/hi are card-local metres
 void gridClipBand(float* lo, float* hi);
 
+// true while any of a cell's row can show inside the band; the shader fades
+// the overlap so the margin keeps a fading row from popping. iy is the
+// cell's band-space centre (pre-scaled by the open animation)
+bool gridCellShown(float iy, float gs);
+
 // scroll range for n items: 0 to the content's overflow past the card
 float gridScrollMax(int n);
 

@@ -104,7 +104,8 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/mcp/tools.cpp \
              src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
              src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
-             src/desktop/sysinfo.cpp
+             src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
+             src/desktop/proctrack.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -141,7 +142,8 @@ WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
            src/desktop/wlcomp.cpp src/desktop/harness.cpp \
            src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
            src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
-           src/desktop/sysinfo.cpp \
+           src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
+           src/desktop/proctrack.cpp \
            $(filter-out src/desktop/preview.cpp \
              src/desktop/harness.cpp,$(DESKTOP_SRCS))
 WL_BIN := $(OUT)/dash-wayland

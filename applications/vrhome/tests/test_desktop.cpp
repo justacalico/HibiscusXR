@@ -1,10 +1,17 @@
 #include "test.h"
 
+#include "../src/desktop/cmdline.h"
 #include "../src/desktop/desktopfile.h"
 #include "../src/desktop/icontheme.h"
 #include "../src/desktop/popuppos.h"
 #include "../src/desktop/pixconv.h"
+#include "../src/desktop/proctrack.h"
 #include "../src/desktop/sysinfo.h"
+
+#include <signal.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -290,6 +297,68 @@ static void testTaskMatch() {
     CHECK(!spawnPidMatch(456, 123, -1));
 }
 
+static void testShellJoin() {
+    CHECK(shellJoin({"foo", "--bar", "a b"}) == "'foo' '--bar' 'a b'");
+    CHECK(shellJoin({"it's"}) == "'it'\\''s'");
+    CHECK(shellJoin({}).empty());
+}
+
+static void testTerminalWrap() {
+    std::vector<std::string> w = terminalWrap("foot", {"btop"});
+    CHECK(w.size() == 3);
+    CHECK(w[0] == "foot" && w[1] == "--" && w[2] == "btop");
+    w = terminalWrap("xterm", {"htop", "-n", "t"});
+    CHECK(w.size() == 5 && w[1] == "-e" && w[4] == "t");
+    // an emulator we don't know still wraps, just without a flag
+    w = terminalWrap("oddterm", {"t"});
+    CHECK(w.size() == 2 && w[0] == "oddterm" && w[1] == "t");
+}
+
+static void testFindTerminal() {
+    const std::string dir = "/tmp/dash-test-path";
+    fs::remove_all(dir);
+    putFile(dir + "/foot", "#!/bin/sh\n");
+    chmod((dir + "/foot").c_str(), 0755);
+    putFile(dir + "/notexec.txt", "x");
+    const char* old = getenv("PATH");
+    const std::string oldp = old ? old : "";
+    setenv("PATH", dir.c_str(), 1);
+    CHECK(findTerminal() == "foot");
+    setenv("PATH", "", 1);
+    CHECK(findTerminal().empty());
+    setenv("PATH", oldp.c_str(), 1);
+    fs::remove_all(dir);
+}
+
+static void testSpawnGone() {
+    pid_t p = fork();
+    if (p == 0) _exit(0);
+    usleep(50000);
+    CHECK(spawnGone(p));
+
+    // still running: not gone; after kill + group empty: gone
+    p = fork();
+    if (p == 0) { setsid(); for (;;) usleep(100000); }
+    usleep(50000);
+    CHECK(!spawnGone(p));
+    kill(p, SIGKILL);
+    usleep(50000);
+    CHECK(spawnGone(p));
+
+    // spawn exits but its process group stays through a grandchild:
+    // the slot must wait for the group, not the direct pid
+    p = fork();
+    if (p == 0) {
+        setsid();
+        if (fork() == 0) { usleep(300000); _exit(0); }
+        _exit(0);
+    }
+    usleep(80000);
+    CHECK(!spawnGone(p));
+    usleep(400000);
+    CHECK(spawnGone(p));
+}
+
 void testDesktop() {
     testDesktopFile();
     testExecArgv();
@@ -302,4 +371,8 @@ void testDesktop() {
     testPixconv();
     testSysinfo();
     testTaskMatch();
+    testShellJoin();
+    testTerminalWrap();
+    testFindTerminal();
+    testSpawnGone();
 }

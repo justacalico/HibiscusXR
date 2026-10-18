@@ -67,6 +67,7 @@ static uintptr_t g_ref_space;
 static int g_proj_ok;
 
 static void resolve_monado_endf(void);
+static void ensure_refspace(void);
 static PFNGLBINDTEXTUREPROC p_glBindTexture;
 static PFNGLFRAMEBUFFERTEXTURE2DPROC p_glFramebufferTexture2D;
 static PFNGLTEXSTORAGE3DPROC p_glTexStorage3D;
@@ -130,10 +131,16 @@ static int acquire_hook(uintptr_t swapchain, uintptr_t info, uint32_t *idx_out) 
 }
 
 static int g_fr_log = 6;
+static volatile int64_t g_last_dt;
+static volatile int64_t g_last_dtp;
 
 static int waitf_hook(uintptr_t a0, uintptr_t a1, uintptr_t a2) {
     g_session = a0;
     int r = g_real_waitf(a0, a1, a2);
+    if (r == 0 && a2) {
+        g_last_dt = *(volatile int64_t *)(a2 + 16);
+        g_last_dtp = *(volatile int64_t *)(a2 + 24);
+    }
     if (g_fr_log > 0) { g_fr_log--; LOGI("waitframe r=%d", r); }
     return r;
 }
@@ -239,6 +246,7 @@ static int endf_hook(uintptr_t a0, uintptr_t a1) {
             if (lp0) g_ref_space = *(volatile uintptr_t *)(lp0 + 24);
         }
     }
+    ensure_refspace();
     if (g_proj_ok && g_eye_sc[0] && g_eye_sc[1] && g_real_locate_views
         && g_ref_space) {
         char vli[40], vs[24], views[2 * 64];
@@ -318,6 +326,15 @@ static int endf_hook(uintptr_t a0, uintptr_t a1) {
             if (proj_log > 0) proj_log--;
             LOGI("endframe+proj r=%d nlayers=%u ef=%s", r, n_out,
                  ef == g_monado_endf ? "oxr" : "ldr");
+        }
+        static int pv_hb2;
+        if (++pv_hb2 % 90 == 1) {
+            float *q = (float *)(views + 16);
+            float *p = (float *)(views + 32);
+            LOGE("gpv dt=%lld lr=%d cnt=%u vf=%lx q=%.3f,%.3f,%.3f,%.3f p=%.3f,%.3f,%.3f",
+                 (long long)*(volatile int64_t *)(a1 + 16), lr, vcount,
+                 (unsigned long)*(uint64_t *)(vs + 16),
+                 q[0], q[1], q[2], q[3], p[0], p[1], p[2]);
         }
         return r;
     }
@@ -709,31 +726,16 @@ static void build_proj_views(char *pl, char *pv, int lr, uint32_t vcount,
     }
 }
 
-static void submit_frame(void) {
+static void submit_frame(uintptr_t thisptr, int frame_no) {
     static int sf_log = 30;
-    if (!g_session || !g_real_waitf || !g_real_beginf || !g_eye_sc[0]
-        || !g_eye_sc[1])
-        return;
+    if (!g_session || !g_eye_sc[0] || !g_eye_sc[1] || !thisptr) return;
     ensure_refspace();
     if (!g_ref_space) return;
-    char wi[16], fs[40], bi[16];
-    memset(wi, 0, sizeof wi);
-    memset(fs, 0, sizeof fs);
-    memset(bi, 0, sizeof bi);
-    *(uint32_t *)wi = 33;
-    *(uint32_t *)fs = 44;
-    int r = g_real_waitf(g_session, (uintptr_t)wi, (uintptr_t)fs);
-    if (r != 0) {
-        if (sf_log > 0) { sf_log--; LOGE("self waitf r=%d", r); }
-        return;
-    }
-    *(uint32_t *)bi = 46;
-    r = g_real_beginf(g_session, (uintptr_t)bi);
-    if (r != 0 && r != 9) {
-        if (sf_log > 0) { sf_log--; LOGE("self beginf r=%d", r); }
-        return;
-    }
-    int64_t dt = *(volatile int64_t *)(fs + 16);
+    void **vt = *(void ***)thisptr;
+    if (!vt || !in_exec(vt[VT_WAIT])) return;
+    ((vt_fn_t)vt[VT_WAIT])(thisptr, frame_no, 0, 0, 0);
+    int64_t dt = g_last_dt;
+    if (!dt) return;
     char vli[40], vs[24], views[2 * 64];
     memset(vli, 0, sizeof vli);
     memset(vs, 0, sizeof vs);
@@ -763,10 +765,19 @@ static void submit_frame(void) {
     larr[0] = (uintptr_t)pl;
     resolve_monado_endf();
     xr_fn_t ef = g_monado_endf ? g_monado_endf : g_real_endf;
-    r = ef(g_session, (uintptr_t)fei);
+    int r = ef(g_session, (uintptr_t)fei);
     if (sf_log > 0 || r != 0) {
         if (sf_log > 0) sf_log--;
         LOGE("self endf r=%d", r);
+    }
+    static int pv_hb;
+    if (++pv_hb % 90 == 1) {
+        float *q = (float *)(views + 16);
+        float *p = (float *)(views + 32);
+        LOGE("pv dt=%lld lr=%d cnt=%u vf=%lx q=%.3f,%.3f,%.3f,%.3f p=%.3f,%.3f,%.3f",
+             (long long)dt, lr, vcount,
+             (unsigned long)*(uint64_t *)(vs + 16),
+             q[0], q[1], q[2], q[3], p[0], p[1], p[2]);
     }
 }
 
@@ -869,6 +880,18 @@ static int blit_into_eye_sc(GLuint src) {
             p_glClear(GL_COLOR_BUFFER_BIT);
             p_glColorMask(1, 1, 1, 1);
         }
+        static int probe_n;
+        if (p_glReadPixels && ++probe_n % 120 == 0) {
+            uint8_t px[64];
+            p_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_fbo[0]);
+            ((void (*)(GLenum, GLint))glsym("glPixelStorei"))(
+                GL_PACK_ALIGNMENT, 1);
+            p_glReadPixels(g_eye_w / 2, g_eye_h / 2, 4, 4, GL_RGBA,
+                           GL_UNSIGNED_BYTE, px);
+            uint32_t h = 0;
+            for (int i = 0; i < 64; i++) h = h * 33 + px[i];
+            LOGE("probe eye%d idx=%u src=%u hash=%08x", eye, idx, src, h);
+        }
         static int dump_n;
         if (p_glReadPixels && dump_n < 400 && ++dump_n == 400) {
             uint8_t *buf = malloc((size_t)g_eye_w * g_eye_h * 4);
@@ -936,7 +959,8 @@ static long endeye_hook(uintptr_t thisptr, long a1, long a2, long a3) {
     }
     if (ensure_eye_sc()) {
         blit_into_eye_sc(src);
-        submit_frame();
+        static int eframe;
+        submit_frame(thisptr, ++eframe);
         return 1;
     }
     int sc = -1;

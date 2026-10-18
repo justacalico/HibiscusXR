@@ -21,3 +21,4 @@ linked line per MR no matter how many commits it carried.
 - [加大快捷面板磁贴标题和值的间距](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/144) (!144)
 - [修 dash-wayland 启动应用出双窗口且指针输入崩溃](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/145) (!145)
 - [Esc 最小化窗口，Shift+Esc 关闭](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/146) (!146)
+- [修 dash-wayland 客户端兼容问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/147) (!147)

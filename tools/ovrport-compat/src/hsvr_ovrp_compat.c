@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <android/log.h>
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
@@ -40,8 +42,10 @@ static volatile int g_vt_patched;
 static xr_fn_t g_real_acquire, g_real_enumerate;
 static xr_fn_t g_real_waitf, g_real_beginf, g_real_endf, g_real_release;
 static xr_fn_t g_real_create_sc, g_real_wait_img, g_real_locate_views;
+static xr_fn_t g_real_create_sess;
 static int g_tbl_done;
 static uintptr_t g_session;
+static void *g_egl_dpy, *g_egl_ctx;
 
 static GLuint g_eye_tex[MAX_STAGES];
 static int g_eye_stages;
@@ -55,9 +59,9 @@ static void *g_last_sc;
 static uint32_t g_acq_idx = ~0u;
 static int g_stage_ctr;
 
-static uintptr_t g_eye_sc;
-static GLuint g_eye_sc_img[MAX_IMG];
-static int g_eye_sc_nimg;
+static uintptr_t g_eye_sc[2];
+static GLuint g_eye_sc_img[2][MAX_IMG];
+static int g_eye_sc_nimg[2];
 static int g_eye_sc_tried;
 static uintptr_t g_ref_space;
 static int g_proj_ok;
@@ -76,6 +80,10 @@ static PFNGLCHECKFRAMEBUFFERSTATUSPROC p_glCheckFBStatus;
 static PFNGLISTEXTUREPROC p_glIsTexture;
 static PFNGLGETTEXLEVELPARAMETERIVPROC p_glGetTexLevelParameter;
 static PFNGLREADPIXELSPROC p_glReadPixels;
+static PFNGLFLUSHPROC p_glFlush;
+static PFNGLCOLORMASKPROC p_glColorMask;
+static PFNGLCLEARCOLORPROC p_glClearColor;
+static PFNGLCLEARPROC p_glClear;
 
 static GLuint g_fbo[2];
 static int g_fbo_made;
@@ -102,6 +110,10 @@ static int gl_init(void) {
     p_glIsTexture = glsym("glIsTexture");
     p_glGetTexLevelParameter = glsym("glGetTexLevelParameteriv");
     p_glReadPixels = glsym("glReadPixels");
+    p_glFlush = glsym("glFlush");
+    p_glColorMask = glsym("glColorMask");
+    p_glClearColor = glsym("glClearColor");
+    p_glClear = glsym("glClear");
     return p_glBindFramebuffer && p_glFramebufferTextureLayer && p_glBlitFramebuffer;
 }
 
@@ -148,6 +160,24 @@ static int create_sc_hook(uintptr_t a0, uintptr_t a1, uintptr_t a2) {
 static int wait_img_hook(uintptr_t a0, uintptr_t a1) {
     int r = g_real_wait_img(a0, a1);
     LOGI("waitimg sc=%p r=%d", (void *)a0, r);
+    return r;
+}
+
+static int create_sess_hook(uintptr_t a0, uintptr_t a1, uintptr_t a2) {
+    if (a1) {
+        uintptr_t n = *(volatile uintptr_t *)(a1 + 8);
+        while (n) {
+            if (*(volatile uint32_t *)n == 1000024001) {
+                g_egl_dpy = (void *)*(volatile uintptr_t *)(n + 16);
+                g_egl_ctx = (void *)*(volatile uintptr_t *)(n + 32);
+                LOGI("binding ctx=%p dpy=%p", g_egl_ctx, g_egl_dpy);
+                break;
+            }
+            n = *(volatile uintptr_t *)(n + 8);
+        }
+    }
+    int r = g_real_create_sess(a0, a1, a2);
+    LOGI("create_session r=%d", r);
     return r;
 }
 
@@ -206,7 +236,8 @@ static int endf_hook(uintptr_t a0, uintptr_t a1) {
             if (lp0) g_ref_space = *(volatile uintptr_t *)(lp0 + 24);
         }
     }
-    if (g_proj_ok && g_eye_sc && g_real_locate_views && g_ref_space) {
+    if (g_proj_ok && g_eye_sc[0] && g_eye_sc[1] && g_real_locate_views
+        && g_ref_space) {
         char vli[40], vs[24], views[2 * 64];
         memset(vli, 0, sizeof vli);
         memset(vs, 0, sizeof vs);
@@ -246,23 +277,31 @@ static int endf_hook(uintptr_t a0, uintptr_t a1) {
                 *(float *)(v + 44 + 8) = 0.9f;
                 *(float *)(v + 44 + 12) = -0.9f;
             }
-            *(uint64_t *)(v + 64) = g_eye_sc;
+            *(uint64_t *)(v + 64) = g_eye_sc[i];
             *(int *)(v + 72) = 0;
             *(int *)(v + 76) = 0;
             *(int *)(v + 80) = g_eye_w;
             *(int *)(v + 84) = g_eye_h;
-            *(int *)(v + 88) = i;
+            *(int *)(v + 88) = 0;
         }
         char fei[40];
         uintptr_t larr[8];
         memcpy(fei, (const void *)a1, sizeof fei);
-        uint32_t nl = *(volatile uint32_t *)(a1 + 28);
-        uintptr_t ol = *(volatile uintptr_t *)(a1 + 32);
         uint32_t n_out = 1;
         larr[0] = (uintptr_t)pl;
-        for (uint32_t i = 0; i < nl && i < 7 && ol; i++) {
-            uintptr_t p = *(volatile uintptr_t *)(ol + 8 * i);
-            if (p) larr[n_out++] = p;
+        uint32_t nl = *(volatile uint32_t *)(a1 + 28);
+        uintptr_t ol = *(volatile uintptr_t *)(a1 + 32);
+        for (uint32_t i = 0; i < nl && i < 4 && ol; i++) {
+            uintptr_t lp = *(volatile uintptr_t *)(ol + 8 * i);
+            if (!lp) continue;
+            if (*(volatile uint32_t *)lp == 36) {
+                *(volatile uint64_t *)(lp + 40) = g_eye_sc[i % 2];
+                *(volatile int *)(lp + 48) = 0;
+                *(volatile int *)(lp + 52) = 0;
+                *(volatile int *)(lp + 56) = g_eye_w;
+                *(volatile int *)(lp + 60) = g_eye_h;
+            }
+            larr[n_out++] = lp;
         }
         *(uint32_t *)(fei + 28) = n_out;
         *(uint64_t *)(fei + 32) = (uintptr_t)larr;
@@ -322,8 +361,9 @@ static int is_stub_ret1(const void *p) {
 }
 
 static uintptr_t g_acq_cand[8], g_enu_cand[8], g_wf_cand[8], g_bf_cand[8],
-    g_ef_cand[8], g_rel_cand[8], g_csc_cand[8], g_wi_cand[8];
-static int g_acq_n, g_enu_n, g_wf_n, g_bf_n, g_ef_n, g_rel_n, g_csc_n, g_wi_n;
+    g_ef_cand[8], g_rel_cand[8], g_csc_cand[8], g_wi_cand[8], g_cse_cand[8];
+static int g_acq_n, g_enu_n, g_wf_n, g_bf_n, g_ef_n, g_rel_n, g_csc_n, g_wi_n,
+    g_cse_n;
 
 static void add_cand(uintptr_t *arr, int *n, uintptr_t v) {
     if (!v) return;
@@ -348,6 +388,7 @@ static void tbl_init(void) {
         add_cand(g_rel_cand, &g_rel_n, (uintptr_t)dlsym(lh, "xrReleaseSwapchainImage"));
         add_cand(g_csc_cand, &g_csc_n, (uintptr_t)dlsym(lh, "xrCreateSwapchain"));
         add_cand(g_wi_cand, &g_wi_n, (uintptr_t)dlsym(lh, "xrWaitSwapchainImage"));
+        add_cand(g_cse_cand, &g_cse_n, (uintptr_t)dlsym(lh, "xrCreateSession"));
         if (!g_real_locate_views)
             g_real_locate_views = (xr_fn_t)dlsym(lh, "xrLocateViews");
     }
@@ -404,6 +445,12 @@ static void tbl_init(void) {
                 if (v == g_wi_cand[c]) {
                     g_real_wait_img = (xr_fn_t)v;
                     void *h = wait_img_hook;
+                    patch_write(p, &h, sizeof h);
+                }
+            for (int c = 0; c < g_cse_n; c++)
+                if (v == g_cse_cand[c]) {
+                    g_real_create_sess = (xr_fn_t)v;
+                    void *h = create_sess_hook;
                     patch_write(p, &h, sizeof h);
                 }
         }
@@ -606,81 +653,132 @@ static void diag_once(const char *fmt, ...) {
 }
 
 static int ensure_eye_sc(void) {
-    if (g_eye_sc) return 1;
+    if (g_eye_sc[0] && g_eye_sc[1]) return 1;
     if (g_eye_sc_tried || !g_session || !g_real_create_sc || !g_real_enumerate
         || !g_real_acquire || !g_real_wait_img || !g_real_release)
         return 0;
     g_eye_sc_tried = 1;
-    char ci[64];
-    memset(ci, 0, sizeof ci);
-    *(uint32_t *)(ci + 0) = 9;               /* XR_TYPE_SWAPCHAIN_CREATE_INFO */
-    *(uint64_t *)(ci + 24) = 0x21;           /* COLOR_ATTACHMENT | SAMPLED */
-    *(int64_t *)(ci + 32) = 35907;           /* GL_SRGB8_ALPHA8 */
-    *(uint32_t *)(ci + 40) = 1;
-    *(uint32_t *)(ci + 44) = g_eye_w;
-    *(uint32_t *)(ci + 48) = g_eye_h;
-    *(uint32_t *)(ci + 52) = 1;
-    *(uint32_t *)(ci + 56) = 2;              /* two views in one array */
-    *(uint32_t *)(ci + 60) = 1;
-    uintptr_t sc = 0;
-    int r = g_real_create_sc(g_session, (uintptr_t)ci, (uintptr_t)&sc);
-    LOGI("eye swapchain create r=%d sc=%p %dx%d", r, (void *)sc, g_eye_w, g_eye_h);
-    if (r != 0 || !sc) return 0;
-    char imgs[24 * MAX_IMG];
-    memset(imgs, 0, sizeof imgs);
-    for (int i = 0; i < MAX_IMG; i++)
-        *(uint32_t *)(imgs + 24 * i) = 1000024002;   /* SWAPCHAIN_IMAGE_OPENGL_ES_KHR */
-    uint32_t cnt = 0;
-    r = g_real_enumerate(sc, MAX_IMG, (uintptr_t)&cnt, (uintptr_t)imgs);
-    if (r != 0 || !cnt) { LOGE("eye swapchain enum r=%d cnt=%u", r, cnt); return 0; }
-    g_eye_sc = sc;
-    g_eye_sc_nimg = cnt > MAX_IMG ? MAX_IMG : (int)cnt;
-    for (int i = 0; i < g_eye_sc_nimg; i++) {
-        g_eye_sc_img[i] = *(uint32_t *)(imgs + 16 + 24 * i);
-        LOGI("eye sc img%d tex=%u", i, g_eye_sc_img[i]);
+    for (int eye = 0; eye < 2; eye++) {
+        char ci[64];
+        memset(ci, 0, sizeof ci);
+        *(uint32_t *)(ci + 0) = 9;               /* SWAPCHAIN_CREATE_INFO */
+        *(uint64_t *)(ci + 24) = 0x21;           /* COLOR_ATTACHMENT | SAMPLED */
+        *(int64_t *)(ci + 32) = 35907;           /* GL_SRGB8_ALPHA8 */
+        *(uint32_t *)(ci + 40) = 1;
+        *(uint32_t *)(ci + 44) = g_eye_w;
+        *(uint32_t *)(ci + 48) = g_eye_h;
+        *(uint32_t *)(ci + 52) = 1;
+        *(uint32_t *)(ci + 56) = 1;              /* one layer: plain 2D */
+        *(uint32_t *)(ci + 60) = 1;
+        uintptr_t sc = 0;
+        int r = g_real_create_sc(g_session, (uintptr_t)ci, (uintptr_t)&sc);
+        LOGI("eye%d swapchain create r=%d sc=%p %dx%d", eye, r,
+             (void *)sc, g_eye_w, g_eye_h);
+        if (r != 0 || !sc) return 0;
+        char imgs[24 * MAX_IMG];
+        memset(imgs, 0, sizeof imgs);
+        for (int i = 0; i < MAX_IMG; i++)
+            *(uint32_t *)(imgs + 24 * i) = 1000024002;
+        uint32_t cnt = 0;
+        r = g_real_enumerate(sc, MAX_IMG, (uintptr_t)&cnt, (uintptr_t)imgs);
+        if (r != 0 || !cnt) {
+            LOGE("eye%d swapchain enum r=%d cnt=%u", eye, r, cnt);
+            return 0;
+        }
+        g_eye_sc[eye] = sc;
+        g_eye_sc_nimg[eye] = cnt > MAX_IMG ? MAX_IMG : (int)cnt;
+        for (int i = 0; i < g_eye_sc_nimg[eye]; i++) {
+            g_eye_sc_img[eye][i] = *(uint32_t *)(imgs + 16 + 24 * i);
+            LOGI("eye%d sc img%d tex=%u", eye, i, g_eye_sc_img[eye][i]);
+        }
     }
     return 1;
 }
 
 static int blit_into_eye_sc(GLuint src) {
-    char ai[16], wi[24], ri[16];
-    memset(ai, 0, sizeof ai);
-    memset(wi, 0, sizeof wi);
-    memset(ri, 0, sizeof ri);
-    *(uint32_t *)ai = 55;                    /* SWAPCHAIN_IMAGE_ACQUIRE_INFO */
-    *(uint32_t *)wi = 56;                    /* SWAPCHAIN_IMAGE_WAIT_INFO */
-    *(int64_t *)(wi + 16) = 0x7fffffffffffffffLL;
-    *(uint32_t *)ri = 57;                    /* SWAPCHAIN_IMAGE_RELEASE_INFO */
-    uint32_t idx = ~0u;
-    int r = g_real_acquire(g_eye_sc, (uintptr_t)ai, (uintptr_t)&idx);
-    if (r == 0)
-        r = g_real_wait_img(g_eye_sc, (uintptr_t)wi);
-    if (r != 0 || idx >= (uint32_t)g_eye_sc_nimg) {
-        diag_once("eye sc acquire/wait r=%d idx=%u", r, idx);
-        return 0;
-    }
-    GLuint dst = g_eye_sc_img[idx];
     if (!g_fbo_made) { g_fbo_made = 1; p_glGenFramebuffers(2, g_fbo); }
     GLint prev_r = 0, prev_d = 0;
     p_glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &prev_r);
     p_glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &prev_d);
+    EGLDisplay pd = eglGetCurrentDisplay();
+    EGLContext pc = eglGetCurrentContext();
+    EGLSurface prd = eglGetCurrentSurface(EGL_READ);
+    EGLSurface pwd = eglGetCurrentSurface(EGL_DRAW);
+    int swapped = 0;
+    if (g_egl_dpy && g_egl_ctx && g_egl_ctx != (void *)pc)
+        swapped = eglMakeCurrent(g_egl_dpy, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                                 g_egl_ctx);
     int s1 = tex_target(src) == GL_TEXTURE_2D_ARRAY ? 1 : 0;
-    int ok = blit_layer(src, 0, dst, 0) + blit_layer(src, s1, dst, 1);
-    static int rb = 6;
-    if (rb > 0 && p_glReadPixels) {
-        rb--;
-        uint8_t px[4 * 16];
-        p_glReadPixels(g_eye_w / 2 - 2, g_eye_h / 2 - 2, 4, 4,
-                       GL_RGBA, GL_UNSIGNED_BYTE, px);
-        unsigned long sum = 0;
-        for (int i = 0; i < 64; i++) sum += px[i];
-        LOGE("eye sc readback idx=%u center-sum=%lu", idx, sum);
+    int ok = 0;
+    for (int eye = 0; eye < 2; eye++) {
+        char ai[16], wi[24], ri[16];
+        memset(ai, 0, sizeof ai);
+        memset(wi, 0, sizeof wi);
+        memset(ri, 0, sizeof ri);
+        *(uint32_t *)ai = 55;
+        *(uint32_t *)wi = 56;
+        *(int64_t *)(wi + 16) = 0x7fffffffffffffffLL;
+        *(uint32_t *)ri = 57;
+        uint32_t idx = ~0u;
+        int r = g_real_acquire(g_eye_sc[eye], (uintptr_t)ai, (uintptr_t)&idx);
+        if (r == 0)
+            r = g_real_wait_img(g_eye_sc[eye], (uintptr_t)wi);
+        if (r != 0 || idx >= (uint32_t)g_eye_sc_nimg[eye]) {
+            diag_once("eye%d sc acquire/wait r=%d idx=%u", eye, r, idx);
+            continue;
+        }
+        GLuint dst = g_eye_sc_img[eye][idx];
+        ok += blit_layer(src, eye ? s1 : 0, dst, -1);
+        if (p_glColorMask && p_glClearColor && p_glClear) {
+            p_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_fbo[1]);
+            p_glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
+                GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, dst, 0);
+            p_glColorMask(0, 0, 0, 1);
+            p_glClearColor(0, 0, 0, 1);
+            p_glClear(GL_COLOR_BUFFER_BIT);
+            p_glColorMask(1, 1, 1, 1);
+        }
+        static int dump_n;
+        if (p_glReadPixels && dump_n < 400 && ++dump_n == 400) {
+            uint8_t *buf = malloc((size_t)g_eye_w * g_eye_h * 4);
+            if (buf) {
+                p_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_fbo[1]);
+                p_glFramebufferTexture2D(GL_READ_FRAMEBUFFER,
+                    GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, dst, 0);
+                ((void (*)(GLenum, GLint))glsym("glPixelStorei"))(
+                    GL_PACK_ALIGNMENT, 1);
+                p_glReadPixels(0, 0, g_eye_w, g_eye_h, GL_RGBA,
+                               GL_UNSIGNED_BYTE, buf);
+                int nw = g_eye_w / 4, nh = g_eye_h / 4;
+                FILE *f = fopen(
+                    "/data/data/com.owlchemylabs.jobsimulator/files/eye0.ppm",
+                    "wb");
+                if (f) {
+                    fprintf(f, "P6\n%d %d\n255\n", nw, nh);
+                    for (int y = 0; y < nh; y++)
+                        for (int x = 0; x < nw; x++) {
+                            const uint8_t *p =
+                                buf + 4 * ((size_t)(4 * y) * g_eye_w + 4 * x);
+                            fwrite(p, 1, 3, f);
+                        }
+                    fclose(f);
+                    LOGE("dumped eye0.ppm %dx%d", nw, nh);
+                } else {
+                    LOGE("eye0.ppm fopen failed errno=%d", errno);
+                }
+                free(buf);
+            }
+        }
+        if (p_glFlush) p_glFlush();
+        r = g_real_release(g_eye_sc[eye], (uintptr_t)ri);
+        if (g_diag > 0) {
+            g_diag--;
+            LOGE("eye%d sc blit idx=%u rel=%d", eye, idx, r);
+        }
     }
     p_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, prev_d);
     p_glBindFramebuffer(GL_READ_FRAMEBUFFER, prev_r);
-    r = g_real_release(g_eye_sc, (uintptr_t)ri);
-    if (g_diag > 0) { g_diag--; LOGE("eye sc blit idx=%u ok=%d rel=%d", idx, ok, r); }
-    if (ok) g_proj_ok = 1;
+    if (ok >= 2) g_proj_ok = 1;
     return ok;
 }
 
@@ -690,6 +788,13 @@ static long endeye_hook(uintptr_t thisptr, long a1, long a2, long a3) {
     if (!src) { diag_once("endeye: no src"); return 1; }
     learn_dims(src);
     if (!g_eye_stages) { g_eye_tex[0] = src; g_eye_stages = 1; }
+    static int ctx_logged;
+    if (!ctx_logged) {
+        ctx_logged = 1;
+        LOGE("render ctx=%p dpy=%p (binding=%p/%p)",
+             (void *)eglGetCurrentContext(), (void *)eglGetCurrentDisplay(),
+             g_egl_ctx, g_egl_dpy);
+    }
     if (ensure_eye_sc()) {
         blit_into_eye_sc(src);
         return 1;

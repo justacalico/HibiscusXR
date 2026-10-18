@@ -80,14 +80,24 @@ static void mouseBtn(GLFWwindow*, int button, int action, int) {
            action == GLFW_PRESS ? kKeyDown : kKeyUp, 0);
 }
 
-static void keyCb(GLFWwindow*, int key, int, int action, int) {
-    if (action != GLFW_PRESS) return;
-    if (key == GLFW_KEY_ESCAPE) hudKey(gApp->hud, kKeyBack, kKeyUp, 0);
-    else if (key == GLFW_KEY_G) gApp->hud->grid.shown = !gApp->hud->grid.shown;
-    else if (key == GLFW_KEY_P)
-        gApp->hud->quick.shown = !gApp->hud->quick.shown;
-    else if (key == GLFW_KEY_R) wantRecenter();
-    else if (gApp->extraKey) gApp->extraKey(key);
+static void keyCb(GLFWwindow*, int key, int scancode, int action,
+                  int) {
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_ESCAPE) {
+            hudKey(gApp->hud, kKeyBack, kKeyUp, 0);
+            return;
+        }
+        if (key == GLFW_KEY_G) {
+            gApp->hud->grid.shown = !gApp->hud->grid.shown;
+            return;
+        }
+        if (key == GLFW_KEY_P) {
+            gApp->hud->quick.shown = !gApp->hud->quick.shown;
+            return;
+        }
+        if (key == GLFW_KEY_R) { wantRecenter(); return; }
+    }
+    if (gApp->extraKey) gApp->extraKey(key, scancode, action);
 }
 
 GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h) {

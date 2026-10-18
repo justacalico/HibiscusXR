@@ -23,6 +23,13 @@ void pxBlit(const unsigned char* src, int srcStride, uint32_t fmt,
             unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h);
 
+// same as pxBlit but alpha-composites over dst instead of copying:
+// src is premultiplied wl_shm, dst stays straight-alpha
+void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
+             int sx, int sy,
+             unsigned char* dst, int dstStride, int dstW, int dstH,
+             int dx, int dy, int w, int h);
+
 // fills a rect with a solid RGBA colour, clipped like pxBlit
 void pxFill(unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h,

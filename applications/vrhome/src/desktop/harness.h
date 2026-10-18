@@ -32,7 +32,7 @@ struct DashApp {
     GLFWwindow* win = nullptr;
     HudEngine* hud = nullptr;
     DashCam cam;
-    std::function<void(int key)> extraKey;
+    std::function<void(int key, int scancode, int action)> extraKey;
     std::function<void(bool)> kbdSet;
     std::thread mcpTh;
 };

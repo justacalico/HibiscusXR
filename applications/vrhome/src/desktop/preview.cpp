@@ -197,8 +197,9 @@ int main(int argc, char** argv) {
     PreviewBackend backend;
     app.hud = &hud;
     app.kbdSet = [&backend](bool on) { backend.kbdShow(on); };
-    app.extraKey = [&backend](int key) {
-        if (key == GLFW_KEY_K) backend.kbdShow(!backend.kbdState().shown);
+    app.extraKey = [&backend](int key, int, int action) {
+        if (key == GLFW_KEY_K && action == GLFW_PRESS)
+            backend.kbdShow(!backend.kbdState().shown);
     };
     hud.backend = &backend;
     hud.haveQuat = true;

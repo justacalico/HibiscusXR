@@ -48,6 +48,48 @@ void pxBlit(const unsigned char* src, int srcStride, uint32_t fmt,
     }
 }
 
+void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
+             int sx, int sy,
+             unsigned char* dst, int dstStride, int dstW, int dstH,
+             int dx, int dy, int w, int h) {
+    if (!pxSupported(fmt)) return;
+    if (dx < 0) { sx -= dx; w += dx; dx = 0; }
+    if (dy < 0) { sy -= dy; h += dy; dy = 0; }
+    if (sx < 0) { w += sx; sx = 0; }
+    if (sy < 0) { h += sy; sy = 0; }
+    if (dx + w > dstW) w = dstW - dx;
+    if (dy + h > dstH) h = dstH - dy;
+    if (w <= 0 || h <= 0) return;
+    const bool swapRB = fmt == PX_ABGR8888 || fmt == PX_XBGR8888;
+    const bool hasAlpha = fmt == PX_ARGB8888 || fmt == PX_ABGR8888;
+    for (int y = 0; y < h; ++y) {
+        const unsigned char* s = src + (size_t)(sy + y) * srcStride +
+                                 (size_t)sx * 4;
+        unsigned char* d = dst + (size_t)(dy + y) * dstStride +
+                           (size_t)dx * 4;
+        for (int x = 0; x < w; ++x, s += 4, d += 4) {
+            const unsigned sa = hasAlpha ? s[3] : 255;
+            const unsigned sp0 = s[swapRB ? 0 : 2];
+            const unsigned sp1 = s[1];
+            const unsigned sp2 = s[swapRB ? 2 : 0];
+            const unsigned da = d[3];
+            const unsigned oa = sa + da * (255 - sa) / 255;
+            if (!oa) { d[0] = d[1] = d[2] = d[3] = 0; continue; }
+            // out premult = sp + dp*(1-sa), then divide by out alpha
+            const unsigned i0 = sp0 + (unsigned)d[0] * da * (255 - sa)
+                                    / 255 / 255;
+            const unsigned i1 = sp1 + (unsigned)d[1] * da * (255 - sa)
+                                    / 255 / 255;
+            const unsigned i2 = sp2 + (unsigned)d[2] * da * (255 - sa)
+                                    / 255 / 255;
+            d[0] = (unsigned char)((i0 * 255 + oa / 2) / oa);
+            d[1] = (unsigned char)((i1 * 255 + oa / 2) / oa);
+            d[2] = (unsigned char)((i2 * 255 + oa / 2) / oa);
+            d[3] = (unsigned char)oa;
+        }
+    }
+}
+
 void pxFill(unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h,
             unsigned char r, unsigned char g, unsigned char b,

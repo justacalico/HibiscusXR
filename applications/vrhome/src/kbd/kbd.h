@@ -20,7 +20,8 @@ struct Kbd {
     int displayId = -1;      // the IME's own virtual display, for touches
     int hostDisp = -1;       // panel the quad hangs under
     unsigned tex = 0;
-    void* st = nullptr;      // SurfaceTexture global ref (jobject)
+    bool externalTex = true;  // Android IME surfaces use OES
+    void* st = nullptr;      // backend-owned texture handle
     void* stArr = nullptr;   // jfloatArray global ref, 16 floats
     float stMat[16] = {};
     bool shown = false;      // IME says the quad is live

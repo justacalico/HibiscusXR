@@ -5,16 +5,14 @@
 #include "input_state.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/props.h"
 #include "../hud/engine.h"
 #include "../math/head.h"
 
-#include <android/input.h>
-#include <android/keycodes.h>
 
 #include <errno.h>
+#include <cstring>
 
 // how often to retry the mmap while the service hasn't created the file
 constexpr long long kCtrlRetryMs = 2000;
@@ -25,14 +23,8 @@ constexpr long long kCtrlRetryMs = 2000;
 constexpr long long kCtrlQuietMs = 3000;
 constexpr long long kCtrlPokeMs = 30000;
 
-// asks HudService to (re)start CVService's controller thread
 static void pokeCtrlThread(HudEngine* e) {
-    if (!e->ctx || !e->vm) return;
-    JNIEnv* env = threadEnv(e->vm);
-    jclass c = env->GetObjectClass(e->ctx);
-    jmethodID m = env->GetMethodID(c, "pokeCtrlThread", "()V");
-    if (m) env->CallVoidMethod(e->ctx, m);
-    if (env->ExceptionCheck()) env->ExceptionClear();
+    if (e->backend) e->backend->pokeCtrlThread();
 }
 
 void ctrlTick(HudEngine* e, const Mat4& head, float sensRoll, float worldX,
@@ -146,16 +138,11 @@ void ctrlFlush(HudEngine* e) {
         e->ctrlEv.pop_front();
         switch (ev.code) {
         case kCtrlSummon:
-            if (ev.action == AKEY_EVENT_ACTION_DOWN && e->ctx) {
-                JNIEnv* env = threadEnv(e->vm);
-                jclass c = env->GetObjectClass(e->ctx);
-                jmethodID m = env->GetMethodID(c, "debugSummon", "()V");
-                if (m) env->CallVoidMethod(e->ctx, m);
-                if (env->ExceptionCheck()) env->ExceptionClear();
-            }
+            if (ev.action == kKeyDown && e->backend)
+                e->backend->debugSummon();
             break;
         case kCtrlRecenter:
-            if (ev.action == AKEY_EVENT_ACTION_DOWN) wantRecenter();
+            if (ev.action == kKeyDown) wantRecenter();
             break;
         default:
             hudKey(e, ev.code, ev.action, 0);

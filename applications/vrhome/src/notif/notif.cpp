@@ -2,9 +2,7 @@
 
 #include "layout.h"
 #include "../hud/engine.h"
-#include "../bridge/bridge.h"
 #include "../common/config.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/palette.h"
 #include "../dock/dock.h"
@@ -13,61 +11,25 @@
 #include "../text/glyphs.h"
 
 #include <GLES2/gl2.h>
-
 #include <cmath>
 #include <cstring>
 
-static std::string jstr(JNIEnv* env, jstring s) {
-    if (!s) return "";
-    const char* c = env->GetStringUTFChars(s, nullptr);
-    std::string out = c ? c : "";
-    if (c) env->ReleaseStringUTFChars(s, c);
-    env->DeleteLocalRef(s);
-    return out;
-}
-
 void syncNotifs(HudEngine* e) {
-    if (!e->bridge || !e->mNotifVer || !e->notifCls) return;
-    JNIEnv* env = threadEnv(e->vm);
-    const int v = env->CallIntMethod(e->bridge, e->mNotifVer);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+    if (!e->backend) return;
+    const int v = e->backend->notifVersion();
     if (v == e->notifVer) return;
     e->notifVer = v;
     std::vector<NotifItem> raw;
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mNotifs);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (arr) {
-        const int n = env->GetArrayLength(arr);
-        for (int i = 0; i < n; ++i) {
-            jobject o = env->GetObjectArrayElement(arr, i);
-            if (!o) continue;
-            NotifItem it;
-            it.key   = jstr(env, (jstring)env->GetObjectField(o, e->fNotifKey));
-            it.pkg   = jstr(env, (jstring)env->GetObjectField(o, e->fNotifPkg));
-            it.title = jstr(env, (jstring)env->GetObjectField(o, e->fNotifTitle));
-            it.text  = jstr(env, (jstring)env->GetObjectField(o, e->fNotifText));
-            it.postMs = env->GetLongField(o, e->fNotifMs);
-            it.clearable = env->GetBooleanField(o, e->fNotifClear) == JNI_TRUE;
-            if (!it.key.empty()) raw.push_back(it);
-            env->DeleteLocalRef(o);
-        }
-    }
+    e->backend->notifs(&raw);
     e->notifsAll = buildNotifs(raw);
-    // icons resolve through the same cache the dock uses
     for (auto& n : e->notifsAll) iconFor(e, n.pkg);
 }
 
 void notifDismiss(HudEngine* e, int idx) {
-    if (!e->bridge || !e->mDismissNotif) return;
-    if (idx < 0 || idx >= (int)e->notifs.size()) return;
+    if (!e->backend || idx < 0 || idx >= (int)e->notifs.size()) return;
     const NotifItem& n = e->notifs[idx];
     if (!n.clearable) return;
-    JNIEnv* env = threadEnv(e->vm);
-    jstring jk = env->NewStringUTF(n.key.c_str());
-    env->CallVoidMethod(e->bridge, e->mDismissNotif, jk);
-    env->DeleteLocalRef(jk);
-    if (env->ExceptionCheck()) env->ExceptionClear();
+    e->backend->dismissNotif(n.key);
     LOGI("notif dismiss %s", n.pkg.c_str());
 }
 

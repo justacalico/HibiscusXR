@@ -1,7 +1,7 @@
 #include "egl.h"
 
 #include "shaders.h"
-#include "scene_geo.h"
+#include "resources.h"
 #include "../engine.h"
 #include "../common/log.h"
 #include "../common/config.h"
@@ -105,42 +105,7 @@ int initWindow(Engine* e, ANativeWindow* win) {
     eglQuerySurface(e->display, e->surface, EGL_WIDTH, &e->width);
     eglQuerySurface(e->display, e->surface, EGL_HEIGHT, &e->height);
     LOGI("surface %dx%d", e->width, e->height);
-    if (!e->glInit) {
-        e->glInit = true;
-        LOGI("renderer %s", glGetString(GL_RENDERER));
-
-        e->sceneProg = linkProg(kSceneVS, kSceneFS);
-        e->warpProg  = linkProg(kWarpVS,  kWarpFS);
-        e->textProg  = linkProg(kTextVS,  kTextFS);
-        e->floatProg = linkProg(kFloatVS, kFloatFS);
-        e->shapeProg = linkProg(kShapeVS, kShapeFS);
-        e->holdProg  = linkProg(kShapeVS, kHoldFS);
-        e->iconProg  = linkProg(kFloatVS, kIconFS);
-        if (!e->sceneProg || !e->warpProg || !e->textProg || !e->floatProg ||
-                !e->shapeProg || !e->holdProg || !e->iconProg)
-            return -1;
-
-        if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
-        glGenBuffers(1, &e->textVbo);
-        glGenBuffers(1, &e->panelVbo);
-        glGenBuffers(1, &e->quadVbo);
-        glGenBuffers(1, &e->gridVbo);
-        glGenBuffers(1, &e->skyVbo);
-        const float quad[] = {-1,-1, 1,-1, -1,1,  1,-1, 1,1, -1,1};
-        glBindBuffer(GL_ARRAY_BUFFER, e->quadVbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-        std::vector<float> verts;
-        e->gridVerts = buildGrid(verts);
-        glBindBuffer(GL_ARRAY_BUFFER, e->gridVbo);
-        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float),
-                     verts.data(), GL_STATIC_DRAW);
-        e->skyVerts = buildSky(verts);
-        glBindBuffer(GL_ARRAY_BUFFER, e->skyVbo);
-        glBufferData(GL_ARRAY_BUFFER, verts.size() * sizeof(float),
-                     verts.data(), GL_STATIC_DRAW);
-
-        glEnable(GL_DEPTH_TEST);
-    }
+    if (initGlResources(e) != 0) return -1;
     // a surface can come back at a new size (the window was relaid out
     // after a rotation flap): the eye targets must track it or both eyes
     // keep the old dims and draw squashed into one side of the panel

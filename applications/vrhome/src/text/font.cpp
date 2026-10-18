@@ -14,6 +14,9 @@ bool loadFont(Engine* e) {
         "/system/fonts/NotoSansCJK-Regular.ttc",
         "/system/fonts/DroidSans.ttf",
         "/system/fonts/Roboto-Regular.ttf",
+        "/usr/share/fonts/google-noto/NotoSans-Regular.ttf",
+        "/usr/share/fonts/google-droid-sans-fonts/DroidSans.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
     };
     FILE* f = nullptr;
     for (const char* p : paths) { f = fopen(p, "rb"); if (f) break; }

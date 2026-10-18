@@ -206,7 +206,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
         glUniformMatrix4fv(uST, 1, GL_FALSE, p.stMat);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);
+        glBindTexture(p.externalTex ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,
+                      p.tex);
         glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
         glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);
@@ -333,7 +334,8 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     glUniformMatrix4fv(uMVP, 1, GL_FALSE, viewProj.m);
     glUniformMatrix4fv(uST, 1, GL_FALSE, e->kbd.stMat);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, e->kbd.tex);
+    glBindTexture(e->kbd.externalTex ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D,
+                  e->kbd.tex);
     glBindBuffer(GL_ARRAY_BUFFER, e->panelVbo);
     glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STREAM_DRAW);
     glVertexAttribPointer(aPos, 3, GL_FLOAT, GL_FALSE, 20, (void*)0);

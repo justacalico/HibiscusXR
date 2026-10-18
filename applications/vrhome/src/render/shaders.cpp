@@ -56,6 +56,27 @@ void main() {
 }
 )";
 
+const char* const kFloat2DFS = R"(
+precision mediump float;
+varying vec2 vUV;
+uniform sampler2D uTex;
+uniform mat4 uST;
+uniform vec2 uHalf;
+uniform float uRadius;
+uniform float uRadiusB;
+uniform float uAlpha;
+void main() {
+    vec2 uv = (uST * vec4(vUV, 0.0, 1.0)).xy;
+    vec4 c = texture2D(uTex, uv);
+    vec2 p = (vUV - 0.5) * 2.0 * uHalf;
+    float r = p.y > 0.0 ? uRadius : uRadiusB;
+    vec2 q = abs(p) - uHalf + vec2(r);
+    float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
+    float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
+    gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
+}
+)";
+
 // solid rounded shapes - window chrome, shadows, rings. aUV runs -1..1 across
 // the quad; uQuad is the quad's physical half size, uBox the shape's, so a
 // soft edge can spread past the box into the quad's padding

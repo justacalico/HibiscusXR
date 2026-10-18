@@ -11,8 +11,11 @@
 #include "../common/config.h"
 #include "../input/ctrl_state.h"
 #include "../input/input_state.h"
+#include "../shell/backend.h"
 
+#ifdef __ANDROID__
 #include <android/native_window.h>
+#endif
 
 #include <atomic>
 #include <deque>
@@ -27,41 +30,10 @@ struct KeyIn { int code, action, repeat; };
 // state. The surface arrives and leaves via SurfaceHolder callbacks on the
 // main thread; the render thread picks it up here.
 struct HudEngine : Engine {
-    // ShellBridge java object + cached method ids
-    jobject bridge = nullptr;
-    jmethodID mCreatePanel = nullptr, mPanelTex = nullptr, mLaunchPkg = nullptr,
-              mAdopt = nullptr, mReleasePanel = nullptr,
-              mTakeAdopt = nullptr, mTakeRelease = nullptr, mInjectTap = nullptr,
-              mInjectTouch = nullptr,
-              mRemoveTask = nullptr, mRemoveDisp = nullptr,
-              mFocusTask = nullptr, mAppLabel = nullptr,
-              mIsVr = nullptr, mLaunchVr = nullptr, mIsCovered = nullptr,
-              mTakePins = nullptr, mSetPins = nullptr, mAppIcon = nullptr,
-              mVrVer = nullptr, mRunningVr = nullptr, mDismiss = nullptr,
-              mNotifVer = nullptr, mNotifs = nullptr,
-              mDismissNotif = nullptr, mToastOnly = nullptr,
-              mDebugHud = nullptr, mDebugOnly = nullptr,
-              mSysStatus = nullptr,
-              mSysMsgVer = nullptr, mSysMsgs = nullptr,
-              mSysMsgClick = nullptr, mSysMsgDismiss = nullptr,
-              mSysMsgOnly = nullptr, mCenterLaunch = nullptr,
-              mUiStrVer = nullptr, mUiStrings = nullptr,
-              mKbdCreate = nullptr, mKbdTex = nullptr, mKbdTakeQuery = nullptr,
-              mKbdSend = nullptr, mKbdHide = nullptr, mKbdState = nullptr,
-              mAppsVer = nullptr, mApps = nullptr;
-    jmethodID stUpdate = nullptr, stMatrix = nullptr;
-    jclass pendingCls = nullptr;
-    jfieldID fPendTask = nullptr, fPendPkg = nullptr;
-    jclass appCls = nullptr;             // ShellBridge.LauncherApp
-    jfieldID fAppPkg = nullptr, fAppLabel = nullptr;
-    jclass notifCls = nullptr;
-    jfieldID fNotifKey = nullptr, fNotifPkg = nullptr,
-             fNotifTitle = nullptr, fNotifText = nullptr,
-             fNotifMs = nullptr, fNotifClear = nullptr;
-    jclass sysMsgCls = nullptr;
-    jfieldID fMsgId = nullptr, fMsgPkg = nullptr, fMsgTitle = nullptr,
-             fMsgText = nullptr, fMsgBtns = nullptr;
-    bool bridgeDead = false;
+    // Host-process services behind the dash. Android supplies ShellBridge;
+    // the desktop preview supplies a fixture backend. The dash logic below
+    // never sees which one is attached.
+    DashBackend* backend = nullptr;
 
     std::vector<Panel> panels;
 
@@ -242,11 +214,13 @@ struct HudEngine : Engine {
     // ACTION_KBD contract
     Kbd kbd;
 
+#ifdef __ANDROID__
     // surface handoff: the render thread owns the window end of the
     // SurfaceView. window is a newly-posted ANativeWindow, windowGone a
     // request to tear the EGL window surface down
     std::atomic<ANativeWindow*> window{nullptr};
     std::atomic<bool> windowGone{false};
+#endif
     std::atomic<bool> running{true};
 
     std::mutex keyMu;

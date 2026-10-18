@@ -5,7 +5,6 @@
 #include "../hud/engine.h"
 #include "../bridge/bridge.h"
 #include "../common/config.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/palette.h"
 #include "../panels/layout.h"
@@ -15,7 +14,6 @@
 #include "../text/draw.h"
 #include "../text/utf8.h"
 
-#include <android/bitmap.h>
 #include <GLES2/gl2.h>
 
 #include <cmath>
@@ -28,158 +26,63 @@ static long long nowMs() {
     return (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
 }
 
-// ------------------------------------------------------------- sync
-
-// pull the icon bitmap up into a GL texture; 0 on failure keeps the letter
-// tile fallback
-static unsigned loadIconTex(HudEngine* e, JNIEnv* env, const char* pkg) {
-    if (!e->mAppIcon) return 0;
-    jstring jpkg = env->NewStringUTF(pkg);
-    jobject bmp = env->CallObjectMethod(e->bridge, e->mAppIcon, jpkg);
-    env->DeleteLocalRef(jpkg);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return 0; }
-    if (!bmp) return 0;
-    AndroidBitmapInfo info;
-    unsigned tex = 0;
-    if (AndroidBitmap_getInfo(env, bmp, &info) == ANDROID_BITMAP_RESULT_SUCCESS
-            && info.format == ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        void* px = nullptr;
-        if (AndroidBitmap_lockPixels(env, bmp, &px) ==
-                    ANDROID_BITMAP_RESULT_SUCCESS && px) {
-            GLuint t = 0;
-            glGenTextures(1, &t);
-            glBindTexture(GL_TEXTURE_2D, t);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, info.width, info.height,
-                         0, GL_RGBA, GL_UNSIGNED_BYTE, px);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                            GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                            GL_CLAMP_TO_EDGE);
-            AndroidBitmap_unlockPixels(env, bmp);
-            tex = t;
-        }
-    }
-    env->DeleteLocalRef(bmp);
-    return tex;
+static unsigned loadIconTex(HudEngine* e, const char* pkg) {
+    IconPixels px;
+    if (!e->backend || !e->backend->iconPixels(pkg, &px) ||
+            px.w <= 0 || px.h <= 0) return 0;
+    GLuint t = 0;
+    glGenTextures(1, &t);
+    glBindTexture(GL_TEXTURE_2D, t);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, px.w, px.h, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, px.rgba.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    return t;
 }
 
-static void pullPins(HudEngine* e, JNIEnv* env) {
-    if (!e->mTakePins) return;
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mTakePins);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (!arr) return;
-    e->dockPins.clear();
-    const int n = env->GetArrayLength(arr);
-    for (int i = 0; i < n; ++i) {
-        jstring s = (jstring)env->GetObjectArrayElement(arr, i);
-        if (!s) continue;
-        const char* c = env->GetStringUTFChars(s, nullptr);
-        e->dockPins.push_back(c);
-        env->ReleaseStringUTFChars(s, c);
-        env->DeleteLocalRef(s);
-    }
+static void pullPins(HudEngine* e) {
+    e->backend->takePins(&e->dockPins);
 }
 
-static void pullXr(HudEngine* e, JNIEnv* env) {
-    if (!e->mVrVer || !e->mRunningVr || !e->pendingCls) return;
-    const int v = env->CallIntMethod(e->bridge, e->mVrVer);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
+static void pullXr(HudEngine* e) {
+    const int v = e->backend->vrVersion();
     if (v == e->dockXrVer) return;
     e->dockXrVer = v;
-    e->dockXr.clear();
-    jobjectArray arr =
-        (jobjectArray)env->CallObjectMethod(e->bridge, e->mRunningVr);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (!arr) return;
-    const int n = env->GetArrayLength(arr);
-    for (int i = 0; i < n; ++i) {
-        jobject p = env->GetObjectArrayElement(arr, i);
-        if (!p) continue;
-        XrTask t;
-        t.taskId = env->GetIntField(p, e->fPendTask);
-        jstring s = (jstring)env->GetObjectField(p, e->fPendPkg);
-        if (s) {
-            const char* c = env->GetStringUTFChars(s, nullptr);
-            t.pkg = c;
-            env->ReleaseStringUTFChars(s, c);
-            env->DeleteLocalRef(s);
-        }
-        e->dockXr.push_back(t);
-        env->DeleteLocalRef(p);
-    }
+    e->backend->runningVr(&e->dockXr);
 }
 
-// wifi link, battery level and charging flag for the status cluster;
-// a plain int array keeps the JNI shape trivial
-static void pullSys(HudEngine* e, JNIEnv* env) {
-    if (!e->mSysStatus) return;
-    jintArray arr =
-        (jintArray)env->CallObjectMethod(e->bridge, e->mSysStatus);
-    if (env->ExceptionCheck()) { env->ExceptionClear(); return; }
-    if (!arr) return;
-    if (env->GetArrayLength(arr) >= 3) {
-        jint* v = env->GetIntArrayElements(arr, nullptr);
-        if (v) {
-            e->sysWifi = v[0];
-            e->sysBatt = v[1];
-            e->sysChg = v[2];
-            env->ReleaseIntArrayElements(arr, v, JNI_ABORT);
-        }
-    }
-    env->DeleteLocalRef(arr);
+static void pullSys(HudEngine* e) {
+    int v[3];
+    e->backend->sysStatus(v);
+    e->sysWifi = v[0]; e->sysBatt = v[1]; e->sysChg = v[2];
 }
 
-// icon + label + vr flag for one package, fetched once and kept in
-// e->dockIcons; the notification cards share the same cache
 DockIcon& iconFor(HudEngine* e, const std::string& pkg) {
     DockIcon& ic = e->dockIcons[pkg];
-    JNIEnv* env = threadEnv(e->vm);
     if (!ic.tried) {
         ic.tried = true;
-        ic.tex = loadIconTex(e, env, pkg.c_str());
+        ic.tex = loadIconTex(e, pkg.c_str());
     }
-    if (ic.label.empty() && e->mAppLabel) {
-        jstring jpkg = env->NewStringUTF(pkg.c_str());
-        jstring jl = (jstring)env->CallObjectMethod(e->bridge,
-                        e->mAppLabel, jpkg);
-        env->DeleteLocalRef(jpkg);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-        else if (jl) {
-            const char* c = env->GetStringUTFChars(jl, nullptr);
-            ic.label = c;
-            env->ReleaseStringUTFChars(jl, c);
-            env->DeleteLocalRef(jl);
-        }
-    }
-    if (!ic.vrTried && e->mIsVr) {
+    if (ic.label.empty()) ic.label = e->backend->appLabel(pkg);
+    if (!ic.vrTried) {
         ic.vrTried = true;
-        jstring jpkg = env->NewStringUTF(pkg.c_str());
-        ic.vr = env->CallBooleanMethod(e->bridge, e->mIsVr, jpkg)
-                == JNI_TRUE;
-        env->DeleteLocalRef(jpkg);
-        if (env->ExceptionCheck()) env->ExceptionClear();
+        ic.vr = e->backend->isVrApp(pkg);
     }
     return ic;
 }
 
 void syncDock(HudEngine* e) {
-    JNIEnv* env = threadEnv(e->vm);
-    if (e->bridge) {
-        pullPins(e, env);
-        pullXr(e, env);
-        pullSys(e, env);
+    if (e->backend) {
+        pullPins(e);
+        pullXr(e);
+        pullSys(e);
     }
-    // the clock drives the layout: its measured width is the cluster's
-    // first slot
     std::time_t tt = std::time(nullptr);
     std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
                   std::localtime(&tt));
     e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
-    // the item lists rebuild from scratch, so the smoothed hover scale
-    // needs handing forward or every frame would restart the chase
     std::vector<DockItem> prevDock;
     prevDock.swap(e->dock);
     e->dock = buildDock(e->dockPins, e->panels, e->dockXr);
@@ -190,11 +93,9 @@ void syncDock(HudEngine* e) {
     e->shelf = buildShelf(e->panels);
     carryShelfHover(e->shelf, prevShelf);
     e->shelfHW = shelfLayout(e->shelf);
-    if (!e->bridge) return;
+    if (!e->backend) return;
     for (auto& it : e->dock) {
         if (it.pkg.empty()) {
-            // the grid button carries its label; the localized one rides
-            // the ui-strings feed, the built-in text is the fallback
             if (it.kind == DK_GRID && !e->uiLib.empty())
                 it.label = e->uiLib;
             continue;
@@ -207,15 +108,12 @@ void syncDock(HudEngine* e) {
         it.label = iconFor(e, it.pkg).label;
 }
 
-// ------------------------------------------------------------- actions
-
-static void focusTask(HudEngine* e, JNIEnv* env, int taskId) {
-    env->CallVoidMethod(e->bridge, e->mFocusTask, taskId);
-    if (env->ExceptionCheck()) env->ExceptionClear();
+static void focusTask(HudEngine* e, int taskId) {
+    e->backend->focusTask(taskId);
 }
 
 void dockActivate(HudEngine* e, int idx) {
-    if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
+    if (!e->backend || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockAction act = dockActivateAction(e->dock[idx], e->panels);
     switch (act.op) {
     case DOP_TOGGLE_GRID:
@@ -224,54 +122,39 @@ void dockActivate(HudEngine* e, int idx) {
     case DOP_LAUNCH:
         queueLaunch(act.pkg.c_str());
         return;
-    case DOP_FOCUS_XR: {
-        // an immersive app owns the display: focus its task and drop the
-        // menu so the user lands inside it
-        JNIEnv* env = threadEnv(e->vm);
-        if (act.taskId >= 0) focusTask(e, env, act.taskId);
-        if (e->mDismiss) {
-            env->CallVoidMethod(e->bridge, e->mDismiss);
-            if (env->ExceptionCheck()) env->ExceptionClear();
-        }
+    case DOP_FOCUS_XR:
+        if (act.taskId >= 0) focusTask(e, act.taskId);
+        e->backend->dismissMenu();
         return;
-    }
-    case DOP_FOCUS_PANEL: {
+    case DOP_FOCUS_PANEL:
         restorePanel(e->panels, act.panelIdx, e->dockYaw,
                      dashRingPitch(e->panels, e->dockPitch));
-        if (act.taskId >= 0)
-            focusTask(e, threadEnv(e->vm), act.taskId);
+        if (act.taskId >= 0) focusTask(e, act.taskId);
         return;
-    }
     default:
         return;
     }
 }
 
 void dockSysActivate(HudEngine* e) {
-    if (!e->bridge) return;
+    if (!e->backend) return;
     const DockAction act = quickPanelAction(e->panels);
     if (act.op == DOP_LAUNCH) {
         queueLaunch(act.pkg.c_str());
     } else if (act.op == DOP_FOCUS_PANEL) {
         restorePanel(e->panels, act.panelIdx, e->dockYaw,
                      dashRingPitch(e->panels, e->dockPitch));
-        if (act.taskId >= 0)
-            focusTask(e, threadEnv(e->vm), act.taskId);
+        if (act.taskId >= 0) focusTask(e, act.taskId);
     }
 }
 
 void dockClose(HudEngine* e, int idx) {
-    if (!e->bridge || idx < 0 || idx >= (int)e->dock.size()) return;
+    if (!e->backend || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockAction act = dockCloseAction(e->dock[idx], e->panels);
-    JNIEnv* env = threadEnv(e->vm);
-    if (act.op == DOP_CLOSE_PANEL) {
-        env->CallVoidMethod(e->bridge, e->mRemoveDisp, act.displayId);
-    } else if (act.op == DOP_CLOSE_TASK) {
-        env->CallVoidMethod(e->bridge, e->mRemoveTask, act.taskId);
-    } else {
-        return;
-    }
-    if (env->ExceptionCheck()) env->ExceptionClear();
+    if (act.op == DOP_CLOSE_PANEL)
+        e->backend->removeTasksOnDisplay(act.displayId);
+    else if (act.op == DOP_CLOSE_TASK)
+        e->backend->removeTask(act.taskId);
 }
 
 void shelfActivate(HudEngine* e, int idx) {
@@ -280,25 +163,11 @@ void shelfActivate(HudEngine* e, int idx) {
     if (act.op != DOP_FOCUS_PANEL) return;
     restorePanel(e->panels, act.panelIdx, e->dockYaw,
                  dashRingPitch(e->panels, e->dockPitch));
-    if (e->bridge && act.taskId >= 0) {
-        JNIEnv* env = threadEnv(e->vm);
-        focusTask(e, env, act.taskId);
-    }
+    if (e->backend && act.taskId >= 0) focusTask(e, act.taskId);
 }
 
 void dockPushPins(HudEngine* e) {
-    if (!e->bridge || !e->mSetPins) return;
-    JNIEnv* env = threadEnv(e->vm);
-    jclass scls = env->FindClass("java/lang/String");
-    jobjectArray arr = env->NewObjectArray((int)e->dockPins.size(),
-                                           scls, nullptr);
-    for (int i = 0; i < (int)e->dockPins.size(); ++i)
-        env->SetObjectArrayElement(arr, i,
-                env->NewStringUTF(e->dockPins[i].c_str()));
-    env->CallVoidMethod(e->bridge, e->mSetPins, arr);
-    if (env->ExceptionCheck()) env->ExceptionClear();
-    env->DeleteLocalRef(arr);
-    env->DeleteLocalRef(scls);
+    if (e->backend) e->backend->setPins(e->dockPins);
 }
 
 void dockTogglePin(HudEngine* e, const char* pkg) {

@@ -9,6 +9,7 @@ extern const char* const kWarpVS;
 extern const char* const kWarpFS;
 extern const char* const kFloatVS;
 extern const char* const kFloatFS;
+extern const char* const kFloat2DFS;
 extern const char* const kShapeVS;
 extern const char* const kShapeFS;
 extern const char* const kIconFS;

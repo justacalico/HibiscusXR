@@ -2,10 +2,10 @@
 
 #include "layout.h"
 #include "../hud/engine.h"
-#include "../common/jni.h"
 #include "../common/log.h"
 #include "../common/config.h"
 
+#include <GLES2/gl2.h>
 #include <cstring>
 #include <ctime>
 
@@ -13,55 +13,41 @@
 #define GL_TEXTURE_EXTERNAL_OES 0x8D65
 #endif
 
+static void initTex(unsigned target, unsigned* tex) {
+    glGenTextures(1, tex);
+    glBindTexture(target, *tex);
+    glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
 int openPanel(HudEngine* e, float yaw, float pitch) {
-    if (!e->bridge || (int)e->panels.size() >= kMaxPanelRecs) return -1;
-    JNIEnv* env = threadEnv(e->vm);
-
-    GLuint tex = 0;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_EXTERNAL_OES, tex);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-    int dispId = env->CallIntMethod(e->bridge, e->mCreatePanel,
-                                    (jint)tex, kVdW, kVdH, kVdDpi);
-    if (env->ExceptionCheck()) { env->ExceptionDescribe(); env->ExceptionClear(); }
-    if (dispId < 0) { glDeleteTextures(1, &tex); return -1; }
-
-    jobject st = env->CallObjectMethod(e->bridge, e->mPanelTex, dispId);
-    if (!st) { glDeleteTextures(1, &tex);
-        env->CallVoidMethod(e->bridge, e->mReleasePanel, dispId); return -1; }
-
+    if (!e->backend || (int)e->panels.size() >= kMaxPanelRecs) return -1;
     Panel p;
-    p.displayId = dispId;
-    p.tex = tex;
-    p.st = env->NewGlobalRef(st);
-    p.stArr = env->NewGlobalRef(env->NewFloatArray(16));
+    p.externalTex = e->backend->externalPanelTextures();
+    initTex(p.externalTex ? GL_TEXTURE_EXTERNAL_OES : GL_TEXTURE_2D, &p.tex);
+    if (e->backend->createPanel(&p, p.tex, kVdW, kVdH, kVdDpi) < 0) {
+        glDeleteTextures(1, &p.tex);
+        return -1;
+    }
     memset(p.stMat, 0, sizeof(p.stMat));
     p.yaw = yaw;
     p.pitch = pitch;
     p.grabYaw = yaw;
     p.grabPitch = pitch;
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        p.bornMs = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
-    }
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    p.bornMs = (long long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
     e->panels.push_back(p);
     LOGI("panel %d on display %d yaw %.2f", (int)e->panels.size() - 1,
-         dispId, yaw);
+         p.displayId, yaw);
     return (int)e->panels.size() - 1;
 }
 
 void closePanel(HudEngine* e, int idx) {
     Panel& p = e->panels[idx];
-    JNIEnv* env = threadEnv(e->vm);
-    if (e->bridge && p.displayId >= 0)
-        env->CallVoidMethod(e->bridge, e->mReleasePanel, p.displayId);
-    if (p.st) env->DeleteGlobalRef((jobject)p.st);
-    if (p.stArr) env->DeleteGlobalRef((jobject)p.stArr);
+    if (e->backend) e->backend->releasePanel(&p);
     if (p.tex) { GLuint t = p.tex; glDeleteTextures(1, &t); }
     e->panels.erase(e->panels.begin() + idx);
     if (e->hover == idx) { e->hover = -1; e->hoverZone = ZONE_NONE; }
@@ -72,24 +58,13 @@ bool evictOldestApp(HudEngine* e) {
     const int i = evictIndex(e->panels);
     if (i < 0) return false;
     Panel& p = e->panels[i];
-    if (e->bridge && p.displayId >= 0) {
-        JNIEnv* env = threadEnv(e->vm);
-        env->CallVoidMethod(e->bridge, e->mRemoveDisp, p.displayId);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-    }
+    if (e->backend && p.displayId >= 0)
+        e->backend->removeTasksOnDisplay(p.displayId);
     closePanel(e, i);
     return true;
 }
 
 void updatePanels(HudEngine* e) {
-    if (e->panels.empty()) return;
-    JNIEnv* env = threadEnv(e->vm);
-    for (auto& p : e->panels) {
-        if (!p.st) continue;
-        glBindTexture(GL_TEXTURE_EXTERNAL_OES, p.tex);
-        env->CallVoidMethod((jobject)p.st, e->stUpdate);
-        env->CallVoidMethod((jobject)p.st, e->stMatrix, (jfloatArray)p.stArr);
-        env->GetFloatArrayRegion((jfloatArray)p.stArr, 0, 16, p.stMat);
-        if (env->ExceptionCheck()) env->ExceptionClear();
-    }
+    if (!e->backend) return;
+    for (auto& p : e->panels) e->backend->updatePanel(&p);
 }

@@ -1,34 +1,35 @@
 #pragma once
 
+#include <GLES2/gl2.h>
+
+#ifdef __ANDROID__
 #include <jni.h>
 #include <EGL/egl.h>
-#include <GLES2/gl2.h>
 #include <android/sensor.h>
+#endif
 
 #include "text/font.h"
 #include "math/head.h"
 
 struct Eye { GLuint fbo = 0, tex = 0, depth = 0; int w = 0, h = 0; };
 
-// Render + sensor state shared by the two shell processes:
-//   env (gitlab.neosalsa.home, PanelActivity) - the HOME activity; owns the
-//     physical display surface and draws only the scenery
-//   hud (gitlab.neosalsa.hud, HudService) - a system-overlay service; owns
-//     panels, virtual displays and input, draws chrome over anything
-// HudEngine extends this with everything only the HUD needs.
+// Render + sensor state shared by the shell processes. The GL fields are
+// platform-neutral; the Android process handles (JNI, EGL, sensors) are
+// compiled out for the desktop preview.
 struct Engine {
+#ifdef __ANDROID__
     JavaVM* vm = nullptr;
-    jobject ctx = nullptr;      // activity/service instance; its ClassLoader
-                                // is the only one that sees app classes
+    jobject ctx = nullptr;
 
     EGLDisplay display = EGL_NO_DISPLAY;
     EGLConfig eglConfig = nullptr;
     EGLSurface surface = EGL_NO_SURFACE;
     EGLSurface pbuffer = EGL_NO_SURFACE;
     EGLContext context = EGL_NO_CONTEXT;
+#endif
     int width = 0, height = 0;
-    bool ready = false;    // window surface valid
-    bool glInit = false;   // programs/buffers/targets created once per context
+    bool ready = false;
+    bool glInit = false;
 
     GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0,
            shapeProg = 0, holdProg = 0, iconProg = 0;
@@ -37,73 +38,61 @@ struct Engine {
     Font font;
     Eye eye[2];
 
-    // env feeds this from ASensorEventQueue; the HUD fills it from its java
-    // sensor listener instead (a service has no ALooper queue of its own)
+#ifdef __ANDROID__
     ASensorManager* sensorMgr = nullptr;
     const ASensor* rotSensor = nullptr;
     ASensorEventQueue* sensorQueue = nullptr;
+#endif
     float quat[4] = {0, 0, 0, 1};
     bool haveQuat = false;
     float lastQ[4] = {0, 0, 0, 0};
 
-    // 6DoF head position in the sensor world frame, fed by qvrservice via
-    // sensor/qvr.cpp; opaque client handle lives in qvrClient
     float headPos[3] = {0, 0, 0};
     bool headPosValid = false;
-    bool quatFromQvr = false;   // rot-vec dead: e->quat carries the QVR quat
-    float headAv[3] = {0, 0, 0}; // qvr angular velocity, feeds pose prediction
-    int  qvrState = -1;         // raw service state: 3 tracked, other degraded, -1 gone
+    bool quatFromQvr = false;
+    float headAv[3] = {0, 0, 0};
+    int  qvrState = -1;
     void* qvrClient = nullptr;
 
-    // view-pose filter: smoothPose ticks this once a frame and rewrites
-    // quat/headPos with the smoothed pose, so the whole view chain renders
-    // it. viewPoseMs is the CLOCK_MONOTONIC ms of the last tick
     PoseFilt viewPose;
     long long viewPoseMs = 0;
 
-    bool covered = false;        // a fullscreen app owns the physical display
+    bool covered = false;
 
-    // passthrough camera (env only): the stereo tracking pair streams into
-    // an external texture through a Java-made SurfaceTexture, and each eye
-    // draws a pre-warped fisheye mesh against it. ptCam is the opaque
-    // PtCam* that env/cam.cpp owns
+#ifdef __ANDROID__
     jobject ptSt = nullptr;
-    jobject ptStArr = nullptr;   // float[16] for getTransformMatrix
+    jobject ptStArr = nullptr;
     jmethodID stUpdate = nullptr, stMatrix = nullptr;
+    void* ptCam = nullptr;
+#endif
     GLuint ptTex = 0;
     GLuint ptVbo[2] = {0, 0};
     int ptVerts[2] = {0, 0};
     float ptMat[16] = {};
-    bool ptLive = false;         // session is up and frames have arrived
-    int curEye = 0;              // set by drawEyes for the draw callback
-    void* ptCam = nullptr;
+    bool ptLive = false;
+    int curEye = 0;
 
-    // home environment (env only): envTick polls persist.hibiscus
-    // .environment and parks the loaded mesh in envVbo. envMode is an
-    // EnvMode (env/envmap.h): passthrough, builtin or custom - the scene
-    // picks its backdrop off it and ptTick opens the camera only under
-    // kEnvPassthrough
     int envMode = 0;
-    char envSel[96] = "";        // id currently loaded (or last attempted)
+    char envSel[96] = "";
     GLuint envVbo = 0;
     int envVerts = 0;
     long long envPollAt = 0;
-    long long envRetryAt = 0;    // failed loads back off instead of spinning
+    long long envRetryAt = 0;
 
-    float gazeYaw = 0.0f;        // world yaw the user currently faces
-    float gazePitch = 0.0f;      // world pitch the user currently faces
+    float gazeYaw = 0.0f;
+    float gazePitch = 0.0f;
 
     char hud[128] = "";
     int  hudLen = 0;
-    char hud2[128] = "";        // second debug line: controller poses (HUD)
+    char hud2[128] = "";
     int  frames = 0;
     int  fps = 0;
     long long fpsMark = 0;
-    int  presents = 0;          // resolved present stamps in the window
-    int  presentFps = -1;       // real display flip rate, -1 = no probe
+    int  presents = 0;
+    int  presentFps = -1;
     long long lastPresentNs = -1;
-    long long waitFrameId = 0;  // first unresolved frame id
-    bool presentOk = false;     // eglGetFrameTimestampsANDROID answers
+    long long waitFrameId = 0;
+    bool presentOk = false;
     int  sensorEv = 0;
     int  sensorHz = 0;
     int  sensorNew = 0;

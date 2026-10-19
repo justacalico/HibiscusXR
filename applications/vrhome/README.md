@@ -187,6 +187,12 @@ stdio: one JSON-RPC message per line, tools to drive the dash.
 Point an MCP client at it the same way as any stdio server; when the client
 closes stdin the window exits with it.
 
+Pass `-headless` (`./out/dash-preview -headless`) to run with no window at
+all: it implies `-mcp` and renders into an offscreen FBO over Mesa's
+surfaceless EGL, so `dash_screenshot` still returns frames. Meant for MCP
+clients on machines with no display. `dash-wayland -headless` works the same
+way - its Wayland socket still accepts clients.
+
 ### Debugging on device
 
 Live-tunable system properties (`setprop` on the headset):

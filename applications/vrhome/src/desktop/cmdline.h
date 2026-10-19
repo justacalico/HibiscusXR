@@ -14,3 +14,7 @@ std::vector<std::string> terminalWrap(const std::string& term,
 
 // first terminal emulator found on PATH, "" if none
 std::string findTerminal();
+
+// true when argv carries the flag, e.g. argFlag(argc, argv, "-mcp");
+// argv[0] is skipped
+bool argFlag(int argc, char** argv, const char* name);

@@ -10,6 +10,8 @@
 #include "../set/set.h"
 
 #include <GLFW/glfw3.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #include <GLES2/gl2.h>
 
 #include <cmath>
@@ -143,16 +145,105 @@ GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h) {
     return win;
 }
 
+static EGLDisplay gNoWinDpy = EGL_NO_DISPLAY;
+static EGLContext gNoWinCtx = EGL_NO_CONTEXT;
+static unsigned gFbTex = 0, gFbDepth = 0;
+
+bool dashHeadless(DashApp* app, int w, int h) {
+    gApp = app;
+    PFNEGLGETPLATFORMDISPLAYEXTPROC getPlatformDisplay =
+        (PFNEGLGETPLATFORMDISPLAYEXTPROC)
+            eglGetProcAddress("eglGetPlatformDisplayEXT");
+    if (!getPlatformDisplay)
+        getPlatformDisplay = (PFNEGLGETPLATFORMDISPLAYEXTPROC)
+            eglGetProcAddress("eglGetPlatformDisplay");
+    if (!getPlatformDisplay) {
+        LOGE("headless: eglGetPlatformDisplay missing");
+        return false;
+    }
+    gNoWinDpy = getPlatformDisplay(EGL_PLATFORM_SURFACELESS_MESA,
+                                   EGL_DEFAULT_DISPLAY, nullptr);
+    if (gNoWinDpy == EGL_NO_DISPLAY ||
+            !eglInitialize(gNoWinDpy, nullptr, nullptr)) {
+        LOGE("headless: surfaceless egl unavailable (needs Mesa)");
+        gNoWinDpy = EGL_NO_DISPLAY;
+        return false;
+    }
+    eglBindAPI(EGL_OPENGL_ES_API);
+    // surfaceless displays expose no configs; EGL_MESA_configless_context
+    // covers EGL_NO_CONFIG_KHR
+    const EGLint cfgAttr[] = {EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+                              EGL_NONE};
+    EGLConfig cfg = EGL_NO_CONFIG_KHR;
+    EGLint n = 0;
+    eglChooseConfig(gNoWinDpy, cfgAttr, &cfg, 1, &n);
+    if (n < 1) cfg = EGL_NO_CONFIG_KHR;
+    const EGLint ctxAttr[] = {EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE};
+    gNoWinCtx = eglCreateContext(gNoWinDpy, cfg, EGL_NO_CONTEXT, ctxAttr);
+    if (gNoWinCtx == EGL_NO_CONTEXT ||
+            !eglMakeCurrent(gNoWinDpy, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                            gNoWinCtx)) {
+        LOGE("headless: es2 context failed");
+        return false;
+    }
+    glGenTextures(1, &gFbTex);
+    glBindTexture(GL_TEXTURE_2D, gFbTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
+                 GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glGenRenderbuffers(1, &gFbDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, gFbDepth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+    glGenFramebuffers(1, &app->fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_2D, gFbTex, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                              GL_RENDERBUFFER, gFbDepth);
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
+            GL_FRAMEBUFFER_COMPLETE) {
+        LOGE("headless: framebuffer incomplete");
+        return false;
+    }
+    app->headless = true;
+    app->fbW = w;
+    app->fbH = h;
+    return true;
+}
+
+bool dashAlive(DashApp* app) {
+    if (app->quit) return false;
+    return !app->win || !glfwWindowShouldClose(app->win);
+}
+
+void dashTarget(DashApp* app, HudEngine* hud) {
+    if (app->win) {
+        glfwGetFramebufferSize(app->win, &hud->width, &hud->height);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    } else {
+        hud->width = app->fbW;
+        hud->height = app->fbH;
+        glBindFramebuffer(GL_FRAMEBUFFER, app->fbo);
+    }
+}
+
+void dashPresent(DashApp* app) {
+    if (app->win) glfwSwapBuffers(app->win);
+    else glFlush();
+}
+
 void dashCamTick(DashApp* app, float dt) {
     DashCam& c = app->cam;
     float f[3], r[3];
     camFwd(c, f);
     r[0] = cosf(c.yaw); r[1] = 0.0f; r[2] = sinf(c.yaw);
-    const float speed = (glfwGetKey(app->win, GLFW_KEY_LEFT_SHIFT)
-                         == GLFW_PRESS) ? 2.4f : 0.8f;
+    const bool flying = app->win &&
+                        (!app->grabbed || !app->grabbed());
+    const float speed = (flying && glfwGetKey(app->win,
+                         GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) ?
+                        2.4f : 0.8f;
     const float mv = speed * dt;
-    // while an app holds the input grab the fly keys belong to it
-    const bool flying = !app->grabbed || !app->grabbed();
     if (flying && glfwGetKey(app->win, GLFW_KEY_W) == GLFW_PRESS)
         for (int i = 0; i < 3; ++i) c.pos[i] += f[i] * mv;
     if (flying && glfwGetKey(app->win, GLFW_KEY_S) == GLFW_PRESS)
@@ -230,6 +321,17 @@ void dashStop(DashApp* app) {
         app->win = nullptr;
     }
     glfwTerminate();
+    if (gNoWinDpy != EGL_NO_DISPLAY) {
+        if (app->fbo) glDeleteFramebuffers(1, &app->fbo);
+        if (gFbTex) glDeleteTextures(1, &gFbTex);
+        if (gFbDepth) glDeleteRenderbuffers(1, &gFbDepth);
+        eglMakeCurrent(gNoWinDpy, EGL_NO_SURFACE, EGL_NO_SURFACE,
+                       EGL_NO_CONTEXT);
+        eglDestroyContext(gNoWinDpy, gNoWinCtx);
+        eglTerminate(gNoWinDpy);
+        gNoWinDpy = EGL_NO_DISPLAY;
+        gNoWinCtx = EGL_NO_CONTEXT;
+    }
 }
 
 class DashMcp : public McpDash {
@@ -321,8 +423,8 @@ private:
 };
 
 // stdin carries one JSON-RPC message per line; EOF means the MCP client
-// went away, so the window closes with it
-static void mcpStdinLoop(McpServer* srv, GLFWwindow* win) {
+// went away, so the dash exits with it
+static void mcpStdinLoop(McpServer* srv, DashApp* app) {
     std::string line;
     while (std::getline(std::cin, line)) {
         const std::string out = srv->handleLine(line);
@@ -331,12 +433,12 @@ static void mcpStdinLoop(McpServer* srv, GLFWwindow* win) {
         fputc('\n', stdout);
         fflush(stdout);
     }
-    glfwSetWindowShouldClose(win, GLFW_TRUE);
+    app->quit = true;
 }
 
 void dashStartMcp(DashApp* app) {
     static DashMcp mcpDash(app);   // MCP thread outlives the caller
     static McpServer mcpSrv(&mcpDash);
     LOGI("mcp server on stdio");
-    app->mcpTh = std::thread(mcpStdinLoop, &mcpSrv, app->win);
+    app->mcpTh = std::thread(mcpStdinLoop, &mcpSrv, app);
 }

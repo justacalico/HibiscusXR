@@ -7,6 +7,7 @@
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 #include "../set/item.h"
+#include "../set/set.h"
 
 #include <deque>
 #include <mutex>
@@ -70,6 +71,8 @@ void pumpBridge(HudEngine* e) {
             if (gLaunchQ.empty()) break;
             pkg = gLaunchQ.front(); gLaunchQ.pop_front();
         }
+        // an app coming forward dismisses the settings card
+        if (e->set.shown) setClose(e);
         if (e->backend->isVrApp(pkg)) { e->backend->launchVrApp(pkg); continue; }
         const int mi = minimizedIndex(e->panels, pkg);
         if (mi >= 0) {
@@ -110,6 +113,7 @@ void pumpBridge(HudEngine* e) {
             e->panels[idx].taskId = p.taskId;
             e->panels[idx].pkg = p.pkg;
             e->backend->adoptTaskOn(p.taskId, e->panels[idx].displayId);
+            if (e->set.shown) setClose(e);
         } else {
             e->backend->removeTask(p.taskId);
         }

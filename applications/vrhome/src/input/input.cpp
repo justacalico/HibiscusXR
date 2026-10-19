@@ -370,6 +370,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 for (auto& p : e->panels)
                     if (p.displayId == e->dragDisp && p.taskId >= 0) {
                         e->backend->focusTask( p.taskId);
+                        if (e->set.shown) setClose(e);
                         break;
                     }
             } else if (e->pressDisp >= 0 && e->hoverZone == e->pressZone) {
@@ -409,6 +410,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         // a still pill release focuses the task; a slot
                         // drag that moved the window ends here instead
                         e->backend->focusTask( p.taskId);
+                        if (e->set.shown) setClose(e);
                     }
                     break;
                 }

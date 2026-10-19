@@ -11,6 +11,7 @@
 #include "../pill/pill.h"
 #include "../render/chrome.h"
 #include "../render/shape.h"
+#include "../set/set.h"
 #include "../text/draw.h"
 #include "../text/utf8.h"
 
@@ -118,7 +119,10 @@ void dockActivate(HudEngine* e, int idx) {
     switch (act.op) {
     case DOP_TOGGLE_GRID:
         e->grid.shown = !e->grid.shown;
-        if (e->grid.shown) e->quick.shown = false;
+        if (e->grid.shown) {
+            e->quick.shown = false;
+            if (e->set.shown) setClose(e);
+        }
         return;
     case DOP_LAUNCH:
         queueLaunch(act.pkg.c_str());
@@ -126,11 +130,13 @@ void dockActivate(HudEngine* e, int idx) {
     case DOP_FOCUS_XR:
         if (act.taskId >= 0) focusTask(e, act.taskId);
         e->backend->dismissMenu();
+        if (e->set.shown) setClose(e);
         return;
     case DOP_FOCUS_PANEL:
         restorePanel(e->panels, act.panelIdx, e->dockYaw,
                      dashRingPitch(e->panels, e->dockPitch));
         if (act.taskId >= 0) focusTask(e, act.taskId);
+        if (e->set.shown) setClose(e);
         return;
     default:
         return;
@@ -141,7 +147,10 @@ void dockSysActivate(HudEngine* e) {
     // the status pill flips the quick-panel card - an overlay inside the
     // dash, not a windowed app. Only one card overlay is up at a time
     e->quick.shown = !e->quick.shown;
-    if (e->quick.shown) e->grid.shown = false;
+    if (e->quick.shown) {
+        e->grid.shown = false;
+        if (e->set.shown) setClose(e);
+    }
 }
 
 void dockClose(HudEngine* e, int idx) {
@@ -160,6 +169,7 @@ void shelfActivate(HudEngine* e, int idx) {
     restorePanel(e->panels, act.panelIdx, e->dockYaw,
                  dashRingPitch(e->panels, e->dockPitch));
     if (e->backend && act.taskId >= 0) focusTask(e, act.taskId);
+    if (e->set.shown) setClose(e);
 }
 
 void dockPushPins(HudEngine* e) {

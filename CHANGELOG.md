@@ -26,3 +26,4 @@ linked line per MR no matter how many commits it carried.
 - [vrdash: visionOS 风格磨砂玻璃重设计](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/149) (!149)
 - [修复窗口缩放只拉伸画面不重排应用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/150) (!150)
 - [pvrservice: gate to Pico Neo 2 and ship it again](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/151) (!151)
+- [Fix CVService RemoteService crash loop after pvrservice](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/152) (!152)

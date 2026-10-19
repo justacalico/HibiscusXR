@@ -29,3 +29,4 @@ linked line per MR no matter how many commits it carried.
 - [Fix CVService RemoteService crash loop after pvrservice](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/152) (!152)
 - [设置应用重写进原生 Dash](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/153) (!153)
 - [移除快捷面板的新窗口居中开关](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/154) (!154)
+- [dash 桌面端支持 -headless 无窗口运行](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/155) (!155)

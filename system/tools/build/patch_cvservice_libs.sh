@@ -28,6 +28,26 @@
 #   0x92a69  01 -> 00                 shouldread_rx init byte, belt and
 #                                     suspenders with the 0x3ee36 patch
 #
+# With pvrservice actually running (neo2-gated rc), two more nulls surface in
+# RemoteService: a callee in the service-call chain returns with r4=0, which
+# kills callers at their next GOT/canary load.
+#
+# libPvr_UnitySDKCV.so
+#   0x4ba3e  bl UpdateCustomInfoFromVRService -> nop nop   skip the service
+#                                     config override fetch inside
+#                                     psmvr_InitConfigs; defaults from
+#                                     LoadVariableFile stand
+#
+# libCVController.so
+#   0x3dcca  ldr r3,[r4,r3] -> movs r3,#0    and
+#   0x3dccc  ldrb r3,[r3] -> movs r3,#0      emSpiSensorThreadMain's run-flag
+#                                     read faults on the zeroed r4; forcing
+#                                     the flag to 0 takes the clean
+#                                     pthread_detach/exit path. Harmless -
+#                                     the SPI source it would read
+#                                     (spidev2.0) does not exist in this
+#                                     kernel anyway (notes/375)
+#
 # Usage: patch_cvservice_libs.sh [libdir]
 #   libdir defaults to pvr_applibs/CVService/lib/arm, the dir 144_stage_full.sh
 #   copies into fullstage. Run once after re-pulling stock libs.
@@ -63,5 +83,8 @@ patch libCVController.so 258560 "97 f8 00 80" "f0 4f 08 01"
 patch libCVController.so 260182 "98 47" "00 bf"
 patch libCVController.so 260192 "98 47" "00 bf"
 patch libCVController.so 600745 "01" "00"
+patch libPvr_UnitySDKCV.so 309822 "ff f7 d7 f8" "00 bf 00 bf"
+patch libCVController.so 253642 "e3 58" "00 23"
+patch libCVController.so 253644 "1b 78" "00 23"
 
 echo "done"

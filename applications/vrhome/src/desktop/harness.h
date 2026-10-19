@@ -4,6 +4,7 @@
 #include "../mcp/server.h"
 #include "../mcp/tools.h"
 
+#include <atomic>
 #include <functional>
 #include <string>
 #include <thread>
@@ -43,6 +44,12 @@ struct DashApp {
     GLFWwindow* win = nullptr;
     HudEngine* hud = nullptr;
     DashCam cam;
+    // headless mode: no GLFW window, draws land in fbo at fbWx fbH;
+    // quit ends the loop when the MCP stdin channel closes
+    bool headless = false;
+    unsigned fbo = 0;
+    int fbW = 0, fbH = 0;
+    std::atomic<bool> quit{false};
     std::function<void(int key, int scancode, int action)> extraKey;
     std::function<void(bool)> kbdSet;
     std::function<bool(int key, int scancode, int action, int mods)> grabKey;
@@ -54,6 +61,17 @@ struct DashApp {
 };
 
 GLFWwindow* dashWindow(DashApp* app, const char* title, int w, int h);
+// windowless variant: surfaceless EGL context plus an fbo the frame
+// renders into, so MCP screenshots still work without a display
+bool dashHeadless(DashApp* app, int w, int h);
+// true while the run loop should keep going: window open, or headless
+// until quit is raised
+bool dashAlive(DashApp* app);
+// sizes hud->width/height and binds the frame target: window buffer or
+// the headless fbo
+void dashTarget(DashApp* app, HudEngine* hud);
+// ends the frame: swap on the window, flush when headless
+void dashPresent(DashApp* app);
 void dashCamTick(DashApp* app, float dt);
 void dashStartMcp(DashApp* app);
 void dashStop(DashApp* app);

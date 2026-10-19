@@ -1,6 +1,7 @@
 #define VRHOME_DESKTOP 1
 
 #include "harness.h"
+#include "cmdline.h"
 
 #include "../anim/anim.h"
 #include "../bridge/bridge.h"
@@ -18,9 +19,11 @@
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
 
+#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <string>
+#include <thread>
 #include <vector>
 
 class PreviewBackend : public DashBackend {
@@ -349,12 +352,14 @@ private:
 };
 
 int main(int argc, char** argv) {
-    bool mcp = false;
-    for (int i = 1; i < argc; ++i)
-        mcp |= !strcmp(argv[i], "-mcp");
+    const bool headless = argFlag(argc, argv, "-headless");
+    const bool mcp = headless || argFlag(argc, argv, "-mcp");
 
     DashApp app;
-    if (!dashWindow(&app, "Hibiscus dash preview", 1440, 810)) return 1;
+    if (headless) {
+        if (!dashHeadless(&app, 1440, 810)) return 1;
+    } else if (!dashWindow(&app, "Hibiscus dash preview", 1440, 810))
+        return 1;
 
     HudEngine hud;
     PreviewBackend backend;
@@ -381,8 +386,11 @@ int main(int argc, char** argv) {
 
     long long last = dashNowMs();
     long long lastDraw = 0;
-    while (!glfwWindowShouldClose(app.win)) {
-        glfwWaitEventsTimeout(0.012);
+    while (dashAlive(&app)) {
+        if (app.headless)
+            std::this_thread::sleep_for(std::chrono::milliseconds(4));
+        else
+            glfwWaitEventsTimeout(0.012);
         dashDrainPre();
         const long long now = dashNowMs();
         const float dt = (now - last) / 1000.0f;
@@ -392,7 +400,7 @@ int main(int argc, char** argv) {
         tickDash(&hud, view, now);
 
         if (dashDrawDue(now, &lastDraw, 14)) {
-            glfwGetFramebufferSize(app.win, &hud.width, &hud.height);
+            dashTarget(&app, &hud);
             glViewport(0, 0, hud.width, hud.height);
             glClearColor(0.02f, 0.025f, 0.035f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -403,7 +411,7 @@ int main(int argc, char** argv) {
             drawBackdrop(&hud, vp);
             drawDashScene(&hud, vp);
             dashDrainPost();
-            glfwSwapBuffers(app.win);
+            dashPresent(&app);
         }
     }
     dashStop(&app);

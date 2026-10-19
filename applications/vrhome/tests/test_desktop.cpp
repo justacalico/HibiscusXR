@@ -330,6 +330,17 @@ static void testFindTerminal() {
     fs::remove_all(dir);
 }
 
+static void testArgFlag() {
+    char* a[] = {(char*)"dash", (char*)"-mcp", (char*)"-headless"};
+    CHECK(argFlag(3, a, "-mcp"));
+    CHECK(argFlag(3, a, "-headless"));
+    CHECK(!argFlag(3, a, "-fullscreen"));
+    CHECK(!argFlag(3, a, "-mcp2"));
+    // argv[0] is the program name, never a flag
+    char* b[] = {(char*)"-headless"};
+    CHECK(!argFlag(1, b, "-headless"));
+}
+
 static void testSpawnGone() {
     pid_t p = fork();
     if (p == 0) _exit(0);
@@ -374,5 +385,6 @@ void testDesktop() {
     testShellJoin();
     testTerminalWrap();
     testFindTerminal();
+    testArgFlag();
     testSpawnGone();
 }

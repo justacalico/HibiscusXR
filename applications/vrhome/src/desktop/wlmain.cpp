@@ -1,5 +1,6 @@
 #define VRHOME_DESKTOP 1
 
+#include "cmdline.h"
 #include "dmabuf.h"
 #include "harness.h"
 #include "wlbackend.h"
@@ -22,9 +23,8 @@
 #include <poll.h>
 
 int main(int argc, char** argv) {
-    bool mcp = false;
-    for (int i = 1; i < argc; ++i)
-        mcp |= !strcmp(argv[i], "-mcp");
+    const bool headless = argFlag(argc, argv, "-headless");
+    const bool mcp = headless || argFlag(argc, argv, "-mcp");
 
     WlComp* comp = WlComp::create();
     if (!comp) {
@@ -34,10 +34,13 @@ int main(int argc, char** argv) {
     LOGI("clients connect with WAYLAND_DISPLAY=%s", comp->sock.c_str());
 
     DashApp app;
-    if (!dashWindow(&app, "Hibiscus dash (wayland)", 1440, 810))
+    if (headless) {
+        if (!dashHeadless(&app, 1440, 810)) return 1;
+    } else if (!dashWindow(&app, "Hibiscus dash (wayland)", 1440, 810))
         return 1;
-    // needs a current EGL context, so it goes after the window: clients
-    // get zwp_linux_dmabuf_v1 only when the host EGL can import dmabufs
+    // needs a current EGL context, so it goes after the window/headless
+    // init: clients get zwp_linux_dmabuf_v1 only when the host EGL can
+    // import dmabufs
     dmabufInit(comp);
 
     HudEngine hud;
@@ -119,7 +122,7 @@ int main(int argc, char** argv) {
 
     long long last = dashNowMs();
     long long lastDraw = 0;
-    while (!glfwWindowShouldClose(app.win)) {
+    while (dashAlive(&app)) {
         pollfd pfd{wfd, POLLIN, 0};
         if (comp->tasks.empty())
             poll(&pfd, 1, 8);
@@ -127,7 +130,7 @@ int main(int argc, char** argv) {
             poll(&pfd, 1, 4);
         comp->dispatch(0);
         comp->flush();
-        glfwPollEvents();
+        if (!app.headless) glfwPollEvents();
         dashDrainPre();
         const long long now = dashNowMs();
         const float dt = (now - last) / 1000.0f;
@@ -137,7 +140,7 @@ int main(int argc, char** argv) {
         tickDash(&hud, view, now);
 
         if (dashDrawDue(now, &lastDraw, 14)) {
-            glfwGetFramebufferSize(app.win, &hud.width, &hud.height);
+            dashTarget(&app, &hud);
             glViewport(0, 0, hud.width, hud.height);
             glClearColor(0.02f, 0.025f, 0.035f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -148,7 +151,7 @@ int main(int argc, char** argv) {
             drawBackdrop(&hud, vp);
             drawDashScene(&hud, vp);
             dashDrainPost();
-            glfwSwapBuffers(app.win);
+            dashPresent(&app);
         }
     }
     dashStop(&app);

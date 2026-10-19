@@ -112,6 +112,7 @@ TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
 DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
+                src/desktop/cmdline.cpp \
                 src/hud/dash.cpp \
                 src/bridge/core.cpp src/common/props.cpp \
                 src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
@@ -146,7 +147,7 @@ WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
            src/desktop/wlcomp.cpp src/desktop/harness.cpp \
            src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
            src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
-           src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
+           src/desktop/sysinfo.cpp \
            src/desktop/proctrack.cpp src/desktop/wldmabuf.cpp \
            src/desktop/wlegl.cpp \
            $(filter-out src/desktop/preview.cpp \
@@ -292,7 +293,7 @@ test: $(TEST_BIN)
 $(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	@mkdir -p $(dir $@)
 	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
-	    $(DESKTOP_SRCS) -lglfw -lGLESv2 -lz -lm
+	    $(DESKTOP_SRCS) -lglfw -lGLESv2 -lEGL -lz -lm
 
 preview: $(PREVIEW_BIN)
 	./$(PREVIEW_BIN)

@@ -56,3 +56,9 @@ std::string findTerminal() {
         if (onPath(t.name)) return t.name;
     return "";
 }
+
+bool argFlag(int argc, char** argv, const char* name) {
+    for (int i = 1; i < argc; ++i)
+        if (!strcmp(argv[i], name)) return true;
+    return false;
+}

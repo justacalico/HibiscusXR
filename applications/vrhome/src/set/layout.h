@@ -20,8 +20,10 @@ void setCenter(float yaw, float pitch, const float origin[3],
                float c[3], float r[3], float up[3]);
 
 // the content row list for a section against a snap: list-backed sections
-// expand into one row per platform entry
-void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out);
+// expand into one row per platform entry; android=false drops the rows
+// only an Android host can serve
+void setBuildRows(int sec, bool android, const SetSnap& snap,
+                  std::vector<SetRow>* out);
 
 // row i's band in card-local metres, scroll applied. Caller passes the
 // overlay's row list; rows past the clip band still get rects so the draw
@@ -47,6 +49,13 @@ bool setSlopPassed(float grabV, float v);
 
 // sidebar row i's rect in card-local metres
 void setSecRect(int i, float* x, float* y, float* hw, float* hh);
+
+// the sidebar slots a host serves and the SetSec a slot maps to: the
+// wayland build hides the Android-bound sections so slot and section id
+// diverge there
+int setSecCount(bool android);
+int setSecAt(bool android, int slot);
+int setSecSlot(bool android, int sec);   // -1 when the host hides sec
 
 // sidebar column edges
 float setSideL();

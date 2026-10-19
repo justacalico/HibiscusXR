@@ -32,7 +32,8 @@ void setCenter(float yaw, float pitch, const float origin[3],
 
 // ------------------------------------------------------------- catalog
 
-void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out) {
+void setBuildRows(int sec, bool android, const SetSnap& snap,
+                  std::vector<SetRow>* out) {
     out->clear();
     auto row = [out](int kind, int id, int aux) {
         SetRow r;
@@ -62,6 +63,7 @@ void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out) {
     case SEC_DISP:
         row(RK_SLIDER, SL_BRI, RID_BRI);
         row(RK_SEG, PK_THEME, RID_THEME);
+        if (!android) break;
         row(RK_SLIDER, SL_IPD, RID_IPD);
         row(RK_SEG, PK_DOF, RID_DOF);
         row(RK_TOGGLE, TG_NIGHT, RID_NIGHT);
@@ -98,7 +100,7 @@ void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out) {
     case SEC_ABOUT:
         row(RK_BRAND, -1, RID_BRAND);
         row(RK_INFO, TX_MODEL, RID_MODEL);
-        row(RK_INFO, TX_ANDROID, RID_ANDROID);
+        if (android) row(RK_INFO, TX_ANDROID, RID_ANDROID);
         row(RK_INFO, TX_HBVER, RID_HBVER);
         break;
     default:
@@ -107,6 +109,28 @@ void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out) {
 }
 
 // ------------------------------------------------------------- layout
+
+// sidebar order on the wayland host: the sections bound to Android
+// providers or HMD hardware - the controller link, locale write,
+// timezone intent, input methods and the developer toggles - drop out
+static const int kSecsDesk[] = {SEC_WIFI, SEC_BT, SEC_DISP, SEC_ENV,
+                                SEC_SOUND, SEC_ABOUT};
+
+int setSecCount(bool android) {
+    return android ? SEC_COUNT : (int)(sizeof(kSecsDesk) / sizeof(int));
+}
+
+int setSecAt(bool android, int i) {
+    if (i < 0 || i >= setSecCount(android)) return -1;
+    return android ? i : kSecsDesk[i];
+}
+
+int setSecSlot(bool android, int sec) {
+    const int n = setSecCount(android);
+    for (int i = 0; i < n; ++i)
+        if (setSecAt(android, i) == sec) return i;
+    return -1;
+}
 
 float setSideL() { return -kSetHW + kSetPad; }
 float setSideR() { return setSideL() + kSetSideW; }
@@ -444,14 +468,15 @@ static int rowAt(const SetOverlay& ov, float u, float v) {
     return -1;
 }
 
-static int secAt(float u, float v) {
+static int secAt(const SetOverlay& ov, float u, float v) {
     const float x = u * kSetHW, y = v * kSetHH;
     if (x < setSideL() || x > setSideR()) return -1;
-    for (int i = 0; i < SEC_COUNT; ++i) {
+    const int n = setSecCount(ov.android);
+    for (int i = 0; i < n; ++i) {
         float sx, sy, hw, hh;
         setSecRect(i, &sx, &sy, &hw, &hh);
         if (x >= sx - hw && x <= sx + hw && y >= sy - hh && y <= sy + hh)
-            return i;
+            return setSecAt(ov.android, i);
     }
     return -1;
 }
@@ -548,7 +573,7 @@ int setZoneAt(const SetOverlay& ov, float u, float v, int* idx, int* aux) {
         if (dx * dx + dy * dy <= rr * rr) return SZONE_CLOSE;
         return SZONE_BODY;
     }
-    const int s = secAt(u, v);
+    const int s = secAt(ov, u, v);
     if (s >= 0) { *idx = s; return SZONE_SEC; }
     const int i = rowAt(ov, u, v);
     if (i >= 0) { *idx = i; return rowZone(ov, i, u, v, aux); }

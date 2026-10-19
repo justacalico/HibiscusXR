@@ -21,7 +21,10 @@
 #include <cstdlib>
 
 void setOpen(HudEngine* e, int section) {
-    if (section < 0 || section >= SEC_COUNT) section = SEC_WIFI;
+    e->set.android = kHostAndroid;
+    // a hidden section can't be the landing page
+    if (setSecSlot(e->set.android, section) < 0)
+        section = setSecAt(e->set.android, 0);
     e->set.section = section;
     e->set.shown = true;
     e->set.dlg = DLG_NONE;
@@ -48,7 +51,8 @@ void syncSet(HudEngine* e) {
     if (v == e->set.snapVer && !e->set.rowsDirty) return;
     e->backend->settingsStatus(&e->set.snap);
     e->set.snapVer = v;
-    setBuildRows(e->set.section, e->set.snap, &e->set.rows);
+    setBuildRows(e->set.section, e->set.android, e->set.snap,
+                 &e->set.rows);
     e->set.rowsDirty = false;
 }
 
@@ -1085,11 +1089,12 @@ void drawSet(HudEngine* e, const Mat4& vp) {
           setStr(e, UISET_TITLE), 0.0017f * gs, ga, false, false);
 
     // sidebar
-    for (int i = 0; i < SEC_COUNT; ++i) {
+    for (int i = 0, n = setSecCount(st.android); i < n; ++i) {
+        const int sec = setSecAt(st.android, i);
         float sx, sy, shw, shh;
         setSecRect(i, &sx, &sy, &shw, &shh);
-        const bool sel = i == st.section;
-        const bool shov = st.zone == SZONE_SEC && st.hover == i;
+        const bool sel = sec == st.section;
+        const bool shov = st.zone == SZONE_SEC && st.hover == sec;
         const float scol[4] = {kPalSurface[0], kPalSurface[1],
                                kPalSurface[2],
                                (sel ? 0.75f : shov ? 0.45f : 0.0f) * ga};
@@ -1102,11 +1107,11 @@ void drawSet(HudEngine* e, const Mat4& vp) {
                              c[2] + r[2]*ix + up[2]*sy*gs};
         const float* icp = sel ? kPalText : kPalTextDim;
         const float icol[4] = {icp[0], icp[1], icp[2], ga};
-        setSecIcon(e, vp, i, ic, r, up, 0.018f * gs, icol);
-        const char* name = setStr(e, UISET_SEC0 + i);
+        setSecIcon(e, vp, sec, ic, r, up, 0.018f * gs, icol);
+        const char* name = setStr(e, UISET_SEC0 + sec);
         float ts = 0.0014f * gs;
-        const float maxW = (setSideR() + kSetPad * 0.4f -
-                            (sx - shw + 0.058f) - 0.010f) * gs;
+        const float maxW = (sx + shw - 0.010f -
+                            (sx - shw + 0.058f)) * gs;
         const float tw = measureText(e, name, ts);
         if (tw > maxW && tw > 0.0f) ts *= maxW / tw;
         sText(e, vp, c, r, up, ix + 0.034f * gs, sy * gs, name, ts,

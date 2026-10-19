@@ -13,7 +13,7 @@
 static void rowsFor(int sec, const SetSnap& snap, SetOverlay* ov) {
     ov->section = sec;
     ov->snap = snap;
-    setBuildRows(sec, snap, &ov->rows);
+    setBuildRows(sec, ov->android, snap, &ov->rows);
 }
 
 // ------------------------------------------------------------- catalog
@@ -64,6 +64,24 @@ void testSet() {
 
     rowsFor(SEC_ABOUT, snap, &ov);
     CHECK(ov.rows.size() == 4 && ov.rows[0].kind == RK_BRAND);
+
+    // ---- catalogDesktopDropsAndroidRows
+    ov.android = false;
+    CHECK(setSecCount(true) == SEC_COUNT);
+    CHECK(setSecCount(false) == 6);
+    CHECK(setSecAt(false, 0) == SEC_WIFI &&
+          setSecAt(false, 5) == SEC_ABOUT);
+    CHECK(setSecAt(false, -1) == -1 && setSecAt(false, 6) == -1);
+    CHECK(setSecAt(true, SEC_DEV) == SEC_DEV);
+    CHECK(setSecSlot(false, SEC_ABOUT) == 5);
+    CHECK(setSecSlot(false, SEC_DEV) == -1);
+    CHECK(setSecSlot(true, SEC_DEV) == SEC_DEV);
+    rowsFor(SEC_DISP, snap, &ov);
+    CHECK(ov.rows.size() == 2);   // brightness + theme only: no ipd/dof
+    rowsFor(SEC_ABOUT, snap, &ov);
+    CHECK(ov.rows.size() == 3);   // no android version row
+    CHECK(ov.rows[2].aux == RID_HBVER);
+    ov.android = true;
 }
 
 // ------------------------------------------------------------- geometry    }
@@ -77,6 +95,10 @@ void testSet() {
     CHECK(y0 > y1);                        // stacked downward
     CHECK_F(y0 - y1, kSetSecRowH, 1e-5f);
     CHECK(y1 - hh1 > -kSetHH);             // inside the card
+    // label bound: the pill's right edge stays left of the divider
+    CHECK(x0 + hw0 - 0.010f < setSideR() + kSetPad * 0.4f);
+    // and leaves room for icon + label inside the pill
+    CHECK(x0 - hw0 + 0.058f < x0 + hw0 - 0.010f);
     }
 
     // ---- rowRectScrolls
@@ -338,6 +360,16 @@ void testSet() {
     CHECK(setZoneAt(ov, sx / kSetHW, sy / kSetHH, &idx, &aux) ==
            SZONE_SEC);
     CHECK(idx == 2);
+    // the same slot on a desktop overlay resolves to its visible sec
+    SetOverlay desk;
+    desk.android = false;
+    CHECK(setZoneAt(desk, sx / kSetHW, sy / kSetHH, &idx, &aux) ==
+           SZONE_SEC);
+    CHECK(idx == SEC_DISP);
+    setSecRect(5, &sx, &sy, &hw, &hh);
+    CHECK(setZoneAt(desk, sx / kSetHW, sy / kSetHH, &idx, &aux) ==
+           SZONE_SEC);
+    CHECK(idx == SEC_ABOUT);
     }
 
     // ---- zoneRows

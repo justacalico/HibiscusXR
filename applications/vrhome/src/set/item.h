@@ -181,6 +181,7 @@ struct SetOverlay {
     bool shown = false;
     float openT = 0.0f;          // open progress 0..1: chases `shown`
     int section = SEC_WIFI;
+    bool android = true;         // the catalog the host can serve
     SetSnap snap;
     int snapVer = -1;            // last pulled backend version
     std::vector<SetRow> rows;

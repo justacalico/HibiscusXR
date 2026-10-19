@@ -292,6 +292,16 @@ constexpr float kSetScale0 = 0.94f;    // card's open-from size share
 constexpr float kSetDragSlop = 0.035f; // card-local metres of slop
 constexpr float kSetWheelStep = 0.20f; // metres one wheel detent scrolls
 
+// the build's host: the wayland dash drops the settings rows only an
+// Android system or HMD hardware can serve - developer toggles, the
+// timezone intent, input methods, the locale write, the controller
+// link, ipd and device mode
+#ifdef VRHOME_DESKTOP
+constexpr bool kHostAndroid = false;
+#else
+constexpr bool kHostAndroid = true;
+#endif
+
 // Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
 // 1003 is the headset home button remapped off HOME (system_server eats
 // KEYCODE_HOME before anything else can see it, so the HUD's summon key

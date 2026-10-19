@@ -577,7 +577,8 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         txR = reC - 0.024f - setSegCount(row.id) * kSetSegCellW;
         break;
     case RK_SCANHDR:
-        txR = row.id == SEC_CTRL ? reC - 0.016f : reC - 0.115f;
+        txR = row.id == SEC_CTRL ? reC - 0.016f
+                                 : setScanPillL() - 0.012f;
         break;
     case RK_NET: case RK_ENV: txR = reC - 0.055f; break;
     default: break;
@@ -693,18 +694,20 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
               d.c_str(), 0.0011f * gs, ga, false,
               scanning ? false : true);
         if (row.id != SEC_CTRL) {
-            const float bx = (rx + hw - 0.055f) * gs;
+            const char* rt = setStr(e, UISET_REFRESH);
+            float bx, phw;
+            setScanPill(measureText(e, rt, 0.0011f * gs) / gs, &bx, &phw);
             const bool bhov = st.zone == SZONE_SCAN && st.hover == i;
             const float bcol[4] = {kPalSurfaceHigh[0], kPalSurfaceHigh[1],
                                    kPalSurfaceHigh[2],
                                    (bhov ? 0.85f : 0.6f) * ga};
-            sQuad(e, vp, c, r, up, bx, rcy, 0.045f * gs, 0.026f * gs,
+            sQuad(e, vp, c, r, up, bx * gs, rcy, phw * gs, 0.026f * gs,
                   0.026f * gs, bcol);
-            const std::string pt = fit(setStr(e, UISET_REFRESH),
-                                       0.0011f * gs,
-                                       bx / gs - 0.045f, bx / gs + 0.045f);
-            sText(e, vp, c, r, up, bx, rcy, pt.c_str(), 0.0011f * gs,
-                  ga, true, false);
+            const std::string pt = fit(rt, 0.0011f * gs,
+                                       bx - phw + kSetPillPadX,
+                                       bx + phw - kSetPillPadX);
+            sText(e, vp, c, r, up, bx * gs, rcy, pt.c_str(),
+                  0.0011f * gs, ga, true, false);
         }
         break;
     }

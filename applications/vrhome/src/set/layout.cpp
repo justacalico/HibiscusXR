@@ -216,6 +216,17 @@ const char* setSegValue(int pick, int opt) {
     return "";
 }
 
+void setScanPill(float textW, float* x, float* hw) {
+    const float w = textW * 0.5f + kSetPillPadX;
+    *hw = w < kSetPillHW0 ? kSetPillHW0
+        : w > kSetPillHW1 ? kSetPillHW1 : w;
+    *x = paneR() - kSetPillMR - *hw;
+}
+
+float setScanPillL() {
+    return paneR() - kSetPillMR - kSetPillHW1 * 2.0f;
+}
+
 // language tag -> option index, the same normalization the flutter app
 // applied: English dialects to en, unambiguous Simplified tags to zh-CN
 static int langOpt(const std::string& tag) {
@@ -511,7 +522,7 @@ static int rowZone(const SetOverlay& ov, int i, float u, float v,
         // refresh pill on the right edge (ime's is inert - the platform
         // list needs no scan)
         if (r.id == SEC_CTRL) return SZONE_ROW;
-        if (x > paneR() - 0.11f) return SZONE_SCAN;
+        if (x > setScanPillL()) return SZONE_SCAN;
         return SZONE_ROW;
     case RK_ENV:
         if (r.aux >= 2 && x > paneR() - 0.10f) return SZONE_DEL;

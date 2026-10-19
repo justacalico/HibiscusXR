@@ -72,6 +72,14 @@ int setSegCurrent(int pick, const SetSnap& snap);
 // the wire value a segmented option writes: theme/locale/dof strings
 const char* setSegValue(int pick, int opt);
 
+// the scan header's refresh pill, right-anchored in the row: the half
+// width follows the label's rendered width, clamped so a wide
+// translation clips instead of spilling over the rim. setScanPillL is
+// the widest pill's left edge - the hit zone and the row's text bound
+// hang off it so a narrow label never moves them
+void setScanPill(float textW, float* x, float* hw);
+float setScanPillL();
+
 // rows whose platform side is not trusted yet draw greyed and inert -
 // same convention as the quick panel's unimplemented tiles
 bool setImplemented(int rid);

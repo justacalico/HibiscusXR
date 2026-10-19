@@ -143,6 +143,23 @@ void testSet() {
     CHECK_F(setSliderValue(r / kSetHW), 1.0f, 1e-5f);
     CHECK_F(setSliderValue(2.0f), 1.0f, 1e-5f);   // past the track clamps
     CHECK_F(setSliderValue(-2.0f), 0.0f, 1e-5f);
+
+    // ---- scanPillFitsLabel
+    {
+    float x0, hw0, x1, hw1, x2, hw2;
+    setScanPill(0.0f, &x0, &hw0);
+    CHECK_F(hw0, kSetPillHW0, 1e-5f);        // empty label keeps a tap size
+    const float rowR = (kSetHW - kSetPad);
+    CHECK_F(x0 + hw0, rowR - kSetPillMR, 1e-5f);   // right-anchored
+    setScanPill(0.10f, &x1, &hw1);
+    CHECK_F(hw1, 0.05f + kSetPillPadX, 1e-5f);     // grows with the label
+    CHECK(x1 - hw1 < rowR - 0.10f);            // reaches past the old pill
+    CHECK_F(x1 + hw1, x0 + hw0, 1e-5f);            // same right edge
+    setScanPill(9.0f, &x2, &hw2);
+    CHECK_F(hw2, kSetPillHW1, 1e-5f);              // wide label clamps
+    CHECK_F(setScanPillL(), x2 - hw2, 1e-5f);      // zone edge = widest pill
+    CHECK(x1 - hw1 > setScanPillL());              // any pill stays in zone
+    }
 }
 
 // ------------------------------------------------------------- policy    }
@@ -366,6 +383,25 @@ void testSet() {
     ov.scroll = setScrollMax(ov);
     CHECK(setZoneAt(ov, u, v, &idx, &aux) == SZONE_ROW);
     CHECK(idx > 3);                          // a deeper row slid under
+    }
+
+    // ---- zoneScanPill
+    {
+    SetOverlay ov;
+    SetSnap snap;
+    rowsFor(SEC_BT, snap, &ov);
+    int idx, aux;
+    float rx, ry, hw, hh;
+    setRowRect(ov, 1, &rx, &ry, &hw, &hh);   // row 1 is the scan header
+    // the pill's right edge lands in the scan zone
+    CHECK(setZoneAt(ov, (rx + hw - 0.02f) / kSetHW, ry / kSetHH,
+                   &idx, &aux) == SZONE_SCAN);
+    CHECK(idx == 1);
+    // so does the widest pill's left edge; left of it is the row body
+    CHECK(setZoneAt(ov, (setScanPillL() + 0.005f) / kSetHW, ry / kSetHH,
+                   &idx, &aux) == SZONE_SCAN);
+    CHECK(setZoneAt(ov, (setScanPillL() - 0.005f) / kSetHW, ry / kSetHH,
+                   &idx, &aux) == SZONE_ROW);
     }
 
     // ---- zoneModal

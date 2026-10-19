@@ -27,3 +27,4 @@ linked line per MR no matter how many commits it carried.
 - [修复窗口缩放只拉伸画面不重排应用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/150) (!150)
 - [pvrservice: gate to Pico Neo 2 and ship it again](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/151) (!151)
 - [Fix CVService RemoteService crash loop after pvrservice](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/152) (!152)
+- [设置应用重写进原生 Dash](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/153) (!153)

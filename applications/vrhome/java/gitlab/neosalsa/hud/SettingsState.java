@@ -69,6 +69,8 @@ public class SettingsState {
             "com.picovr.picovrlib.cvcontroller";
     private static final String CTRL_ACTION =
             "com.picovr.picovrlib.cvcontrollerlib.CVControllerAIDLService";
+    private static final String CTRL_IFACE =
+            "com.picovr.picovrlib.cvcontrollerlib.CVControllerAIDLService";
     private static final String CTRL_CB_IFACE =
             "com.picovr.picovrlib.cvcontrollerlib.ICVAIDLServiceCallback";
     private static final int TR_START_THREAD = 7, TR_STOP_THREAD = 8,
@@ -272,9 +274,7 @@ public class SettingsState {
         if (wm != null && wm.isWifiEnabled()) t |= 1 << T_WIFI;
         if (ba != null && ba.isEnabled()) t |= 1 << T_BT;
         if (am != null && !am.isMicrophoneMute()) t |= 1 << T_MIC;
-        if (getInt(Settings.System.getUriFor(SHOW_TOUCHES) != null ?
-                Settings.System.NAME_VALUE_TABLE : null,
-                SHOW_TOUCHES, 0, "system") != 0) t |= 1 << T_TOUCHES;
+        if (getInt(SHOW_TOUCHES, 0, "system") != 0) t |= 1 << T_TOUCHES;
         if (getGlobal(DEBUG_HUD, 0) != 0) t |= 1 << T_DEBUG_HUD;
         if ("6dof".equalsIgnoreCase(getGlobalStr(DOF, "")))
             t |= 1 << T_DOF6;
@@ -328,7 +328,7 @@ public class SettingsState {
         } catch (Throwable t) { return def; }
     }
 
-    private int getInt(String table, String key, int def, String which) {
+    private int getInt(String key, int def, String which) {
         try {
             if ("system".equals(which))
                 return Settings.System.getInt(ctx.getContentResolver(), key, def);
@@ -529,7 +529,8 @@ public class SettingsState {
         if (ba == null) return;
         try {
             BluetoothDevice d = ba.getRemoteDevice(addr);
-            if (d != null) d.removeBond();
+            if (d != null)
+                d.getClass().getMethod("removeBond").invoke(d);
             synchronized (aclLinked) { aclLinked.remove(addr); }
         } catch (Throwable ignored) {}
         bump();

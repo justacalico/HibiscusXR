@@ -257,8 +257,36 @@ constexpr float kSysMsgPitch = 0.05f;  // over an app: just above eye level
 constexpr int   kSysMsgMaxLines = 2;   // body lines drawn per card
 constexpr int   kSysMsgMaxBtn = 4;
 
-// the full settings app - the quick panel's gear and About tile open it
-constexpr const char* kSettingsPkg = "gitlab.neosalsa.settings";
+// the settings card: the full settings surface inside the dash, opened
+// from the quick panel's gear and About tile. Same anchor plane and open
+// animation as the app grid
+constexpr float kSetDist = 1.38f;      // metres; matches the grid card
+constexpr float kSetHW = 0.80f, kSetHH = 0.50f;
+constexpr float kSetHeadH = 0.095f;    // title band height
+constexpr float kSetPad = 0.045f;      // inner padding
+constexpr float kSetSideW = 0.30f;     // sidebar width
+constexpr float kSetSecRowH = 0.066f;  // sidebar row pitch
+constexpr float kSetRowH = 0.092f;     // standard content row height
+constexpr float kSetListH = 0.080f;    // list entry row
+constexpr float kSetSliderH = 0.104f;  // slider row
+constexpr float kSetScanH = 0.110f;    // scan-card header row
+constexpr float kSetBrandH = 0.150f;   // about brand card
+constexpr float kSetRowGap = 0.006f;   // between content rows
+constexpr float kSetCloseR = 0.024f;   // close disc radius
+constexpr float kSetSegCellW = 0.105f; // segmented option cell width
+constexpr float kSetSegHH = 0.034f;    // segmented cell half height
+constexpr float kSetDlgHW = 0.30f;     // dialog card half width
+constexpr float kSetDlgHH = 0.115f;    // plain dialog half height
+constexpr float kSetDlgKbdH = 0.62f;   // wifi dialog height with keyboard
+constexpr float kSetDlgPad = 0.022f;   // dialog inner padding
+constexpr float kSetDlgBtnW = 0.105f;  // dialog button width
+constexpr float kSetDlgBtnH = 0.052f;  // dialog button height
+constexpr float kSetDlgFieldH = 0.052f;// password field height
+constexpr float kSetKeyH = 0.062f;     // mini-keyboard key row pitch
+constexpr float kSetMs = 200.0f;       // card open/close
+constexpr float kSetScale0 = 0.94f;    // card's open-from size share
+constexpr float kSetDragSlop = 0.035f; // card-local metres of slop
+constexpr float kSetWheelStep = 0.20f; // metres one wheel detent scrolls
 
 // Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
 // 1003 is the headset home button remapped off HOME (system_server eats

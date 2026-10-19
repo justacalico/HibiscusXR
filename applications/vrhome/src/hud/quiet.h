@@ -10,6 +10,7 @@
 struct HudQuietIn {
     bool panels = false;        // windows on the ring
     bool grid = false;          // app grid open or animating
+    bool set = false;           // settings card open or animating
     bool notifs = false;        // live notification cards
     bool sysmsgs = false;       // crash/ANR cards
     bool toastOnly = false;     // heads-up over the covered app
@@ -26,7 +27,7 @@ struct HudQuietIn {
 
 // busy means something is on screen that can still change next frame.
 inline bool hudQuietBusy(const HudQuietIn& q) {
-    return q.panels || q.grid || q.notifs || q.sysmsgs || q.toastOnly ||
+    return q.panels || q.grid || q.set || q.notifs || q.sysmsgs || q.toastOnly ||
            q.sysMsgOnly || q.debugOnly || q.kbd || q.holdRing || q.held ||
            q.presses || q.inputPending || q.aimMoved || q.recentSummon;
 }

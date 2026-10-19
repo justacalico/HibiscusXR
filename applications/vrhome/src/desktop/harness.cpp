@@ -7,6 +7,7 @@
 #include "../input/input.h"
 #include "../input/keys.h"
 #include "../shell/backend.h"
+#include "../set/set.h"
 
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
@@ -262,6 +263,12 @@ public:
     void setQuick(bool shown) override {
         runJob(false, [=] { app->hud->quick.shown = shown; });
     }
+    void setSettings(bool shown) override {
+        runJob(false, [=] {
+            if (shown) setOpen(app->hud, SEC_WIFI);
+            else setClose(app->hud);
+        });
+    }
     void scroll(float delta) override {
         runJob(false, [=] { hudScroll(app->hud, delta); });
     }
@@ -275,6 +282,7 @@ public:
             out->hoverZone = hud->hoverZone;
             out->grid = hud->grid.shown;
             out->kbd = hud->kbd.shown;
+            out->settings = hud->set.shown;
             out->panels.clear();
             for (const Panel& p : hud->panels) {
                 McpPanelInfo pi;

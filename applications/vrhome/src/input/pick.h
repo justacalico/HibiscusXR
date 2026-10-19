@@ -4,6 +4,7 @@
 #include "../grid/item.h"
 #include "../notif/item.h"
 #include "../quick/item.h"
+#include "../set/item.h"
 #include "../sysmsg/item.h"
 
 // which layer of the dash the aim ray selects. The dash draws as an
@@ -15,6 +16,7 @@ enum DashSel {
     DSEL_SYSMSG,
     DSEL_NOTIF,
     DSEL_QUICK,
+    DSEL_SET,
     DSEL_GRID,
     DSEL_SHELF,
     DSEL_DOCK,
@@ -25,5 +27,6 @@ enum DashSel {
 // the dash chrome ordered among itself by real ray distance (t). kbdT is
 // the ray distance to the keyboard quad, negative when it missed
 DashSel dashSel(bool sysModal, const SysMsgPick& mp, const NotifPick& np,
-                const GridPick& gp, const QsPick& qp, const ShelfPick& sp,
+                const GridPick& gp, const QsPick& qp,
+                const SetHit& st, const ShelfPick& sp,
                 const DockPick& dp, float kbdT);

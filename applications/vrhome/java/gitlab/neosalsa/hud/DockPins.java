@@ -15,9 +15,6 @@ import java.util.List;
  * app, an uninstall) drop off on load instead of drawing dead icons.
  */
 class DockPins {
-    // the settings app seeds the dock's pin list on first boot
-    private static final String SETTINGS_PKG = "gitlab.neosalsa.settings";
-
     private final Context ctx;
     private final PackageManager pm;
     private final List<String> pins = new ArrayList<>();
@@ -34,7 +31,6 @@ class DockPins {
         String saved = sp.getString("pins", null);
         synchronized (pins) {
             if (saved == null) {
-                pins.add(SETTINGS_PKG);
                 save();
             } else if (!saved.isEmpty()) {
                 for (String p : saved.split(",")) {

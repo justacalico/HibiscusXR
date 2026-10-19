@@ -7,6 +7,7 @@
 #include "../panels/panel.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
+#include "../set/item.h"
 #include "../common/config.h"
 #include "../common/props.h"
 
@@ -98,6 +99,30 @@ public:
                             "()Lgitlab/neosalsa/hud/QuickState$Snap;");
         mQsToggle     = env->GetMethodID(bc, "quickToggle", "(IZ)V");
         mQsSlider     = env->GetMethodID(bc, "quickSetSlider", "(IF)V");
+        mSetVer       = env->GetMethodID(bc, "settingsVersion", "()I");
+        mSetSnap      = env->GetMethodID(bc, "settingsSnap",
+                          "()Lgitlab/neosalsa/hud/SettingsState$Snap;");
+        mSetSection   = env->GetMethodID(bc, "settingsSection", "(I)V");
+        mSetClose     = env->GetMethodID(bc, "settingsClose", "()V");
+        mSetToggle    = env->GetMethodID(bc, "settingsToggle", "(IZ)V");
+        mSetSlider    = env->GetMethodID(bc, "settingsSlider", "(IF)V");
+        mSetText      = env->GetMethodID(bc, "settingsText",
+                          "(ILjava/lang/String;)V");
+        mSetAction    = env->GetMethodID(bc, "settingsAction", "(I)V");
+        mSetScan      = env->GetMethodID(bc, "settingsScan", "(I)V");
+        mSetScanTgl   = env->GetMethodID(bc, "settingsToggleScan", "()V");
+        mWifiJoin     = env->GetMethodID(bc, "wifiJoin",
+                          "(Ljava/lang/String;ILjava/lang/String;)V");
+        mWifiForget   = env->GetMethodID(bc, "wifiForget", "(I)V");
+        mBtPair       = env->GetMethodID(bc, "btPair",
+                          "(Ljava/lang/String;)V");
+        mBtUnpair     = env->GetMethodID(bc, "btUnpair",
+                          "(Ljava/lang/String;)V");
+        mImePick      = env->GetMethodID(bc, "imePick",
+                          "(Ljava/lang/String;)V");
+        mEnvDelete    = env->GetMethodID(bc, "envDelete",
+                          "(Ljava/lang/String;)V");
+        mSetReboot    = env->GetMethodID(bc, "settingsReboot", "()V");
         jclass stc = env->FindClass("android/graphics/SurfaceTexture");
         stUpdate = env->GetMethodID(stc, "updateTexImage", "()V");
         stMatrix = env->GetMethodID(stc, "getTransformMatrix", "([F)V");
@@ -133,6 +158,55 @@ public:
         fQsBri = env->GetFieldID(qsSnapCls, "bri", "F");
         fQsSsid = env->GetFieldID(qsSnapCls, "ssid", "Ljava/lang/String;");
         fQsBt = env->GetFieldID(qsSnapCls, "bt", "Ljava/lang/String;");
+        setSnapCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$Snap"));
+        fSetToggles = env->GetFieldID(setSnapCls, "toggles", "I");
+        fSetFlags = env->GetFieldID(setSnapCls, "flags", "I");
+        fSetVol = env->GetFieldID(setSnapCls, "vol", "F");
+        fSetBri = env->GetFieldID(setSnapCls, "bri", "F");
+        fSetIpd = env->GetFieldID(setSnapCls, "ipd", "F");
+        fSetTexts = env->GetFieldID(setSnapCls, "texts",
+                      "[Ljava/lang/String;");
+        fSetWifi = env->GetFieldID(setSnapCls, "wifi",
+                     "[Lgitlab/neosalsa/hud/SettingsState$WifiNet;");
+        fSetBt = env->GetFieldID(setSnapCls, "bt",
+                   "[Lgitlab/neosalsa/hud/SettingsState$BtDev;");
+        fSetIme = env->GetFieldID(setSnapCls, "imes",
+                    "[Lgitlab/neosalsa/hud/SettingsState$ImeEnt;");
+        fSetEnv = env->GetFieldID(setSnapCls, "envs",
+                    "[Lgitlab/neosalsa/hud/SettingsState$EnvEnt;");
+        fSetCtrl = env->GetFieldID(setSnapCls, "ctrl",
+                     "[Lgitlab/neosalsa/hud/SettingsState$CtrlSlot;");
+        wifiCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$WifiNet"));
+        fWifiSsid = env->GetFieldID(wifiCls, "ssid", "Ljava/lang/String;");
+        fWifiSec = env->GetFieldID(wifiCls, "sec", "I");
+        fWifiLevel = env->GetFieldID(wifiCls, "level", "I");
+        fWifiConn = env->GetFieldID(wifiCls, "conn", "Z");
+        fWifiSaved = env->GetFieldID(wifiCls, "saved", "I");
+        btCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$BtDev"));
+        fBtName = env->GetFieldID(btCls, "name", "Ljava/lang/String;");
+        fBtAddr = env->GetFieldID(btCls, "addr", "Ljava/lang/String;");
+        fBtBonded = env->GetFieldID(btCls, "bonded", "Z");
+        fBtConn = env->GetFieldID(btCls, "conn", "Z");
+        imeCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$ImeEnt"));
+        fImeId = env->GetFieldID(imeCls, "id", "Ljava/lang/String;");
+        fImeLabel = env->GetFieldID(imeCls, "label", "Ljava/lang/String;");
+        fImeActive = env->GetFieldID(imeCls, "active", "Z");
+        envCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$EnvEnt"));
+        fEnvId = env->GetFieldID(envCls, "id", "Ljava/lang/String;");
+        fEnvName = env->GetFieldID(envCls, "name", "Ljava/lang/String;");
+        fEnvSt = env->GetFieldID(envCls, "st", "I");
+        ctrlCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
+            "gitlab.neosalsa.hud.SettingsState$CtrlSlot"));
+        fCtrlState = env->GetFieldID(ctrlCls, "state", "I");
+        fCtrlBatt = env->GetFieldID(ctrlCls, "batt", "I");
+        fCtrlChg = env->GetFieldID(ctrlCls, "chg", "Z");
+        fCtrlMac = env->GetFieldID(ctrlCls, "mac", "Ljava/lang/String;");
+        fCtrlSn = env->GetFieldID(ctrlCls, "serial", "Ljava/lang/String;");
     }
 
     JNIEnv* env() { return threadEnv(vm); }
@@ -454,6 +528,176 @@ public:
         fail(e);
     }
 
+    int settingsVersion() override {
+        JNIEnv* e = env(); int v = e->CallIntMethod(bridge, mSetVer);
+        fail(e); return v;
+    }
+    void settingsStatus(SetSnap* out) override {
+        JNIEnv* e = env();
+        jobject s = e->CallObjectMethod(bridge, mSetSnap);
+        if (fail(e) || !s) return;
+        out->toggles = (unsigned)e->GetIntField(s, fSetToggles);
+        out->flags = e->GetIntField(s, fSetFlags);
+        out->sld[SL_VOL] = e->GetFloatField(s, fSetVol);
+        out->sld[SL_BRI] = e->GetFloatField(s, fSetBri);
+        out->sld[SL_IPD] = e->GetFloatField(s, fSetIpd);
+        jobjectArray tx = (jobjectArray)e->GetObjectField(s, fSetTexts);
+        if (tx) {
+            const int n = e->GetArrayLength(tx);
+            for (int i = 0; i < n && i < TX_COUNT; ++i)
+                out->txt[i] = jstr(e,
+                    (jstring)e->GetObjectArrayElement(tx, i));
+            e->DeleteLocalRef(tx);
+        }
+        jobjectArray wf = (jobjectArray)e->GetObjectField(s, fSetWifi);
+        out->wifi.clear();
+        if (wf) {
+            const int n = e->GetArrayLength(wf);
+            for (int i = 0; i < n; ++i) {
+                jobject o = e->GetObjectArrayElement(wf, i);
+                SetWifi w;
+                w.ssid = jstr(e,(jstring)e->GetObjectField(o, fWifiSsid));
+                w.sec = e->GetIntField(o, fWifiSec);
+                w.level = e->GetIntField(o, fWifiLevel);
+                w.conn = e->GetBooleanField(o, fWifiConn) == JNI_TRUE;
+                w.saved = e->GetIntField(o, fWifiSaved);
+                if (!w.ssid.empty()) out->wifi.push_back(w);
+                e->DeleteLocalRef(o);
+            }
+            e->DeleteLocalRef(wf);
+        }
+        jobjectArray ba = (jobjectArray)e->GetObjectField(s, fSetBt);
+        out->bt.clear();
+        if (ba) {
+            const int n = e->GetArrayLength(ba);
+            for (int i = 0; i < n; ++i) {
+                jobject o = e->GetObjectArrayElement(ba, i);
+                SetBtDev d;
+                d.name = jstr(e,(jstring)e->GetObjectField(o, fBtName));
+                d.addr = jstr(e,(jstring)e->GetObjectField(o, fBtAddr));
+                d.bonded = e->GetBooleanField(o, fBtBonded) == JNI_TRUE;
+                d.conn = e->GetBooleanField(o, fBtConn) == JNI_TRUE;
+                out->bt.push_back(d);
+                e->DeleteLocalRef(o);
+            }
+            e->DeleteLocalRef(ba);
+        }
+        jobjectArray ia = (jobjectArray)e->GetObjectField(s, fSetIme);
+        out->imes.clear();
+        if (ia) {
+            const int n = e->GetArrayLength(ia);
+            for (int i = 0; i < n; ++i) {
+                jobject o = e->GetObjectArrayElement(ia, i);
+                SetImeOpt im;
+                im.id = jstr(e,(jstring)e->GetObjectField(o, fImeId));
+                im.label = jstr(e,(jstring)e->GetObjectField(o, fImeLabel));
+                im.active = e->GetBooleanField(o, fImeActive) == JNI_TRUE;
+                out->imes.push_back(im);
+                e->DeleteLocalRef(o);
+            }
+            e->DeleteLocalRef(ia);
+        }
+        jobjectArray ea = (jobjectArray)e->GetObjectField(s, fSetEnv);
+        out->envs.clear();
+        if (ea) {
+            const int n = e->GetArrayLength(ea);
+            for (int i = 0; i < n; ++i) {
+                jobject o = e->GetObjectArrayElement(ea, i);
+                SetEnvOpt ev;
+                ev.id = jstr(e,(jstring)e->GetObjectField(o, fEnvId));
+                ev.name = jstr(e,(jstring)e->GetObjectField(o, fEnvName));
+                ev.st = e->GetIntField(o, fEnvSt);
+                out->envs.push_back(ev);
+                e->DeleteLocalRef(o);
+            }
+            e->DeleteLocalRef(ea);
+        }
+        jobjectArray ca = (jobjectArray)e->GetObjectField(s, fSetCtrl);
+        if (ca) {
+            const int n = e->GetArrayLength(ca);
+            for (int i = 0; i < n && i < 2; ++i) {
+                jobject o = e->GetObjectArrayElement(ca, i);
+                out->ctrl[i].state = e->GetIntField(o, fCtrlState);
+                out->ctrl[i].batt = e->GetIntField(o, fCtrlBatt);
+                out->ctrl[i].chg =
+                    e->GetBooleanField(o, fCtrlChg) == JNI_TRUE;
+                out->ctrl[i].mac =
+                    jstr(e,(jstring)e->GetObjectField(o, fCtrlMac));
+                out->ctrl[i].serial =
+                    jstr(e,(jstring)e->GetObjectField(o, fCtrlSn));
+                e->DeleteLocalRef(o);
+            }
+            e->DeleteLocalRef(ca);
+        }
+        e->DeleteLocalRef(s);
+    }
+    void settingsSection(int sec) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetSection, sec); fail(e);
+    }
+    void settingsClose() override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetClose); fail(e);
+    }
+    void settingsToggle(int id, bool on) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetToggle, id, on ? JNI_TRUE : JNI_FALSE);
+        fail(e);
+    }
+    void settingsSlider(int id, float v) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetSlider, id, v); fail(e);
+    }
+    void settingsText(int id, const std::string& v) override {
+        JNIEnv* e = env(); jstring s = e->NewStringUTF(v.c_str());
+        e->CallVoidMethod(bridge, mSetText, id, s);
+        e->DeleteLocalRef(s); fail(e);
+    }
+    void settingsAction(int id) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetAction, id); fail(e);
+    }
+    void settingsScan(int sec) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetScan, sec); fail(e);
+    }
+    void settingsToggleScan() override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetScanTgl); fail(e);
+    }
+    void wifiJoin(const std::string& ssid, int sec,
+                  const std::string& pw) override {
+        JNIEnv* e = env();
+        jstring a = e->NewStringUTF(ssid.c_str());
+        jstring b = e->NewStringUTF(pw.c_str());
+        e->CallVoidMethod(bridge, mWifiJoin, a, sec, b);
+        e->DeleteLocalRef(a); e->DeleteLocalRef(b); fail(e);
+    }
+    void wifiForget(int netId) override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mWifiForget, netId); fail(e);
+    }
+    void btPair(const std::string& addr) override {
+        JNIEnv* e = env(); jstring a = e->NewStringUTF(addr.c_str());
+        e->CallVoidMethod(bridge, mBtPair, a); e->DeleteLocalRef(a); fail(e);
+    }
+    void btUnpair(const std::string& addr) override {
+        JNIEnv* e = env(); jstring a = e->NewStringUTF(addr.c_str());
+        e->CallVoidMethod(bridge, mBtUnpair, a); e->DeleteLocalRef(a); fail(e);
+    }
+    void imePick(const std::string& id) override {
+        JNIEnv* e = env(); jstring a = e->NewStringUTF(id.c_str());
+        e->CallVoidMethod(bridge, mImePick, a); e->DeleteLocalRef(a); fail(e);
+    }
+    void envDelete(const std::string& id) override {
+        JNIEnv* e = env(); jstring a = e->NewStringUTF(id.c_str());
+        e->CallVoidMethod(bridge, mEnvDelete, a); e->DeleteLocalRef(a); fail(e);
+    }
+    void settingsReboot() override {
+        JNIEnv* e = env();
+        e->CallVoidMethod(bridge, mSetReboot); fail(e);
+    }
+
     void launchPackageOn(const std::string& pkg, int displayId) override {
         JNIEnv* e = env(); jstring p = e->NewStringUTF(pkg.c_str());
         e->CallVoidMethod(bridge, mLaunchPkg, p, displayId); e->DeleteLocalRef(p); fail(e);
@@ -523,12 +767,23 @@ private:
         mDebugOnly, mSysStatus, mSysMsgVer, mSysMsgs, mSysMsgClick,
         mSysMsgDismiss, mSysMsgOnly, mCenterLaunch, mUiStrVer, mUiStrings,
         mKbdCreate, mKbdTex, mKbdTakeQuery, mKbdSend, mKbdHide, mKbdState,
-        mAppsVer, mApps, mQsStatus, mQsToggle, mQsSlider, stUpdate, stMatrix;
-    jclass pendingCls, appCls, notifCls, sysMsgCls, qsSnapCls;
+        mAppsVer, mApps, mQsStatus, mQsToggle, mQsSlider, stUpdate, stMatrix,
+        mSetVer, mSetSnap, mSetSection, mSetClose, mSetToggle, mSetSlider,
+        mSetText, mSetAction, mSetScan, mSetScanTgl, mWifiJoin,
+        mWifiForget, mBtPair, mBtUnpair, mImePick, mEnvDelete,
+        mSetReboot;
+    jclass pendingCls, appCls, notifCls, sysMsgCls, qsSnapCls, setSnapCls,
+        wifiCls, btCls, imeCls, envCls, ctrlCls;
     jfieldID fPendTask, fPendPkg, fAppPkg, fAppLabel, fNotifKey, fNotifPkg,
         fNotifTitle, fNotifText, fNotifMs, fNotifClear, fMsgId, fMsgPkg,
         fMsgTitle, fMsgText, fMsgBtns, fQsToggles, fQsBatt, fQsChg, fQsVol,
-        fQsBri, fQsSsid, fQsBt;
+        fQsBri, fQsSsid, fQsBt,
+        fSetToggles, fSetFlags, fSetVol, fSetBri, fSetIpd, fSetTexts,
+        fSetWifi, fSetBt, fSetIme, fSetEnv, fSetCtrl,
+        fWifiSsid, fWifiSec, fWifiLevel, fWifiConn, fWifiSaved,
+        fBtName, fBtAddr, fBtBonded, fBtConn,
+        fImeId, fImeLabel, fImeActive, fEnvId, fEnvName, fEnvSt,
+        fCtrlState, fCtrlBatt, fCtrlChg, fCtrlMac, fCtrlSn;
 };
 
 extern "C" JNIEXPORT void JNICALL

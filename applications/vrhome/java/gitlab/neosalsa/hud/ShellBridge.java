@@ -86,6 +86,7 @@ public class ShellBridge {
     private final Injector injector;
     private final KbdLink kbd;
     private final QuickState qs;
+    private final SettingsState st;
 
     public static class Pending {
         public int taskId;
@@ -126,6 +127,7 @@ public class ShellBridge {
         injector = new Injector(input);
         kbd = new KbdLink(c, l);
         qs = new QuickState(c);
+        st = new SettingsState(c);
 
         ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
         IntentFilter pf = new IntentFilter();
@@ -262,6 +264,44 @@ public class ShellBridge {
     public void quickSetSlider(int slider, float v) {
         qs.setSlider(slider, v);
     }
+
+    // -------------------------------------------------------- settings card
+
+    public int settingsVersion() { return st.version(); }
+
+    public SettingsState.Snap settingsSnap() { return st.snap(); }
+
+    public void settingsSection(int sec) { st.section(sec); }
+
+    public void settingsClose() { st.closed(); }
+
+    public void settingsToggle(int id, boolean on) { st.toggle(id, on); }
+
+    public void settingsSlider(int id, float v) { st.slider(id, v); }
+
+    public void settingsText(int id, String v) { st.text(id, v); }
+
+    public void settingsAction(int id) { st.action(id); }
+
+    public void settingsScan(int sec) { st.scan(sec); }
+
+    public void settingsToggleScan() { st.toggleScan(); }
+
+    public void wifiJoin(String ssid, int sec, String pw) {
+        st.wifiJoin(ssid, sec, pw);
+    }
+
+    public void wifiForget(int netId) { st.wifiForget(netId); }
+
+    public void btPair(String addr) { st.btPair(addr); }
+
+    public void btUnpair(String addr) { st.btUnpair(addr); }
+
+    public void imePick(String id) { st.imePick(id); }
+
+    public void envDelete(String id) { st.envDelete(id); }
+
+    public void settingsReboot() { st.reboot(); }
 
     // render thread: bumped on every post/removal by the listener
     public int notifVersion() { return NotifService.version(); }

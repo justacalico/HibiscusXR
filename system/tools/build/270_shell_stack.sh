@@ -84,11 +84,11 @@ mkd /app/vrhud
 put "$HIBISCUS_ROOT/vrhome/out/vrhud.apk" /app/vrhud/vrhud.apk 644
 
 echo
-echo "=== shell flutter apps: settings + store ==="
+echo "=== shell flutter apps: store ==="
 # Same contract as vrhome: built from source here, platform-signed,
 # non-uninstallable under /system/app. flutter must be on PATH - the dist
 # runner installs the pinned toolchain (manifest.env).
-for app in settings store; do
+for app in store; do
   command -v flutter >/dev/null 2>&1 || { echo "FAIL flutter not on PATH"; fail=$((fail+1)); break; }
   [ -d "$HIBISCUS_ROOT/$app" ] || { echo "FAIL $HIBISCUS_ROOT/$app not cloned"; fail=$((fail+1)); continue; }
   (cd "$HIBISCUS_ROOT/$app" && flutter build apk --release) \
@@ -100,8 +100,6 @@ for app in settings store; do
   "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=PN2" \
       || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
 done
-mkd /app/settings
-put "$HIBISCUS_ROOT/settings/build/app/outputs/flutter-apk/app-release.apk" /app/settings/settings.apk 644
 mkd /app/store
 put "$HIBISCUS_ROOT/store/build/app/outputs/flutter-apk/app-release.apk" /app/store/store.apk 644
 

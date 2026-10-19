@@ -17,7 +17,7 @@ struct McpState {
     float yawDeg = 0.0f, pitchDeg = 0.0f;
     int hover = -1;
     int hoverZone = 0;
-    bool grid = false, kbd = false;
+    bool grid = false, kbd = false, settings = false;
     std::vector<McpPanelInfo> panels;
 };
 
@@ -41,6 +41,7 @@ public:
     virtual void setGrid(bool shown) = 0;
     virtual void setKbd(bool shown) = 0;
     virtual void setQuick(bool shown) = 0;
+    virtual void setSettings(bool shown) = 0;
     virtual void scroll(float delta) = 0;
     virtual bool state(McpState* out) = 0;
     virtual bool screenshot(std::vector<unsigned char>* rgba,

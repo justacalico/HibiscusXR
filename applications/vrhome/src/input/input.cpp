@@ -9,6 +9,8 @@
 #include "../notif/notif.h"
 #include "../quick/layout.h"
 #include "../quick/quick.h"
+#include "../set/set.h"
+#include "../set/layout.h"
 #include "../sysmsg/sysmsg.h"
 #include "../hud/engine.h"
 #include "../common/log.h"
@@ -29,6 +31,10 @@ static bool dropTopOverlay(HudEngine* e) {
     }
     if (!e->sysMsgs.empty()) {
         sysMsgDismiss(e);
+        return true;
+    }
+    if (e->set.shown) {
+        setClose(e);
         return true;
     }
     if (e->quick.shown) {
@@ -76,6 +82,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->quick.press = -1;
             e->quick.pressZone = QZONE_NONE;
             e->quick.slideHeld = -1;
+            if (e->set.shown && e->set.zone != SZONE_NONE) setPress(e);
             if (e->sysMsgHover >= 0 && !e->sysMsgs.empty()) {
                 e->sysMsgPress = e->sysMsgHover;
                 e->sysMsgPressZone = e->sysMsgZone;
@@ -244,6 +251,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->grid.press = -1;
                 e->grid.pressZone = GZONE_NONE;
                 e->grid.pressPkg.clear();
+            } else if (e->set.pressZone != SZONE_NONE ||
+                       e->set.slideHeld >= 0) {
+                setRelease(e);
             } else if (e->quick.pressZone != QZONE_NONE ||
                        e->quick.slideHeld >= 0) {
                 // a tile or title-disc press fires only when the release
@@ -438,6 +448,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 // sees motion events on-device (NOT_TOUCHABLE), so this arrives from the
 // desktop harness and the debug tools
 void hudScroll(HudEngine* e, float delta) {
+    if (e->set.shown) { setScroll(e, delta); return; }
     if (!e->grid.shown) return;
     e->grid.scroll = gridScrollBy(e->grid.scroll, delta,
                                   (int)e->grid.items.size());

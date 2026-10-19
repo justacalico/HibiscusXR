@@ -26,6 +26,17 @@ on early-init
     symlink /dev/binderfs/hwbinder /dev/hwbinder
     symlink /dev/binderfs/vndbinder /dev/vndbinder
 
+    # vmd graphics stack: stock QEMU has no /dev/qemu_pipe so the ranchu
+    # gralloc/hwc can never present. Point the HAL loaders at the vmd
+    # modules instead (ro.* first-write wins over vendor init).
+    setprop ro.hardware.gralloc vmd
+    setprop ro.hardware.composer vmd
+    setprop ro.hardware.hwcomposer vmd
+    setprop ro.hardware.egl swiftshader
+
+    # let HAL services write debug lines into the kernel log (serial)
+    chmod 0666 /dev/kmsg
+
     # Disable sysrq from keyboard
     write /proc/sys/kernel/sysrq 0
 

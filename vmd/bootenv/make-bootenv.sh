@@ -98,6 +98,18 @@ read -r START COUNT < <(fdisk -l "$WORK/sdk/arm64-v8a/vendor.img" \
 dd if="$WORK/sdk/arm64-v8a/vendor.img" of="$WORK/vendor.raw" bs=512 \
     skip="$START" count="$COUNT" status=none
 debugfs -w -R 'rm /etc/fstab.ranchu' "$WORK/vendor.raw" >/dev/null 2>&1 || true
+
+# vmd graphics HALs: stock QEMU has no /dev/qemu_pipe so the ranchu
+# gralloc/hwc can never present. The vendor's generic allocator@2.0 /
+# mapper@2.0 / composer@2.1 passthrough services wrap legacy modules
+# (gralloc.<prop>.so, hwcomposer.<prop>.so); the ramdisk init points the
+# prop at 'vmd' and these freestanding modules provide it - ashmem
+# buffers for gralloc, a dumb-buffer KMS scanout for hwcomposer.
+bash ../hal/build-hal.sh "$WORK/hal"
+for m in gralloc hwcomposer; do
+    debugfs -w -R "write $WORK/hal/$m.vmd.so /lib64/hw/$m.vmd.so" "$WORK/vendor.raw" >/dev/null
+    debugfs -w -R "sif /lib64/hw/$m.vmd.so mode 0100755" "$WORK/vendor.raw" >/dev/null
+done
 cp "$WORK/vendor.raw" "$OUT/vendor.img"
 
 # --- bootstrap ramdisk ------------------------------------------------

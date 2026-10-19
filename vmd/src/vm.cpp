@@ -219,7 +219,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	    // GPU goes on PCI even on virt: the GKI virtio_gpu module won't
 	    // bind an mmio transport (probe fails with no error), while the
 	    // pci variant registers /dev/dri/card0 correctly on both.
-	    "-device", "virtio-gpu-pci",
+	    "-device", "virtio-gpu-pci,xres=1280,yres=800,edid=off",
 	    "-display", "none",
 	    "-qmp", "unix:" + vm->qmp + ",server=on,wait=off",
 	});

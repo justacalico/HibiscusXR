@@ -79,10 +79,24 @@ transport). A DRM modeset flips the scanout to the guest framebuffer
 and vmd pulls it through QMP screendump - guest-drawn pixels reach the
 host window.
 
-SurfaceFlinger itself still needs the Android emulator's qemu_pipe
-host bridge, which stock QEMU does not provide, so the compositor
-restarts and the boot animation does not appear. Applications and
-services that only need a DRM node work.
+Stock QEMU has no `/dev/qemu_pipe`, so the ranchu graphics HALs in the
+emulator vendor image can never present. The bootenv instead ships a
+pair of freestanding HALs built from `vmd/hal/`:
+
+- `gralloc.vmd.so` - a gralloc0 module over `/dev/ashmem`. The vendor's
+  generic `allocator@2.0`/`mapper@2.0` passthrough services wrap it
+  (`ro.hardware.gralloc=vmd`).
+- `hwcomposer.vmd.so` - an hwc1 module that modesets one dumb KMS
+  buffer and blits the client-composed framebuffer target into it, the
+  wrapped by the generic `composer@2.1` passthrough
+  (`ro.hardware.composer=vmd`, `ro.hardware.hwcomposer=vmd`).
+
+Both are built libc-free with `aarch64-linux-gnu-gcc -nostdlib`, so
+they dlopen in any process with no dependencies. `make-bootenv.sh`
+builds them and writes them into `vendor.img`'s `/lib64/hw`, and the
+bootstrap ramdisk sets the `ro.hardware.*` props plus
+`ro.hardware.egl=swiftshader` so guest GLES runs on SwiftShader.
+SurfaceFlinger, the boot animation, and the shell render end to end.
 
 `bootenv/tools/drmpaint.c` is a freestanding guest-side test: build it
 with `aarch64-linux-gnu-gcc -static -nostdlib -ffreestanding`, `adb

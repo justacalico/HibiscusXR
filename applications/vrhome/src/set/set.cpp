@@ -1010,33 +1010,27 @@ void drawSet(HudEngine* e, const Mat4& vp) {
         const float* icp = sel ? kPalText : kPalTextDim;
         const float icol[4] = {icp[0], icp[1], icp[2], ga};
         setSecIcon(e, vp, i, ic, r, up, 0.018f * gs, icol);
-        sText(e, vp, c, r, up, ix + 0.034f * gs, sy * gs,
-              setStr(e, UISET_SEC0 + i), 0.0014f * gs, ga, false, !sel);
+        const char* name = setStr(e, UISET_SEC0 + i);
+        float ts = 0.0014f * gs;
+        const float maxW = (setSideR() + kSetPad * 0.4f -
+                            (sx - shw + 0.058f) - 0.010f) * gs;
+        const float tw = measureText(e, name, ts);
+        if (tw > maxW && tw > 0.0f) ts *= maxW / tw;
+        sText(e, vp, c, r, up, ix + 0.034f * gs, sy * gs, name, ts,
+              ga, false, !sel);
     }
-    // sidebar divider
+    // sidebar divider: under the title band down to the pad
     const float dv = setSideR() + kSetPad * 0.4f;
-    const float dvc[3] = {c[0] + r[0]*dv*gs, c[1] + r[1]*dv*gs,
-                          c[2] + r[2]*dv*gs};
+    float dLo, dHi;
+    setClipBand(&dLo, &dHi);
+    const float dvc[3] = {c[0] + r[0]*dv*gs + up[0]*(dHi+dLo)*0.5f*gs,
+                          c[1] + r[1]*dv*gs + up[1]*(dHi+dLo)*0.5f*gs,
+                          c[2] + r[2]*dv*gs + up[2]*(dHi+dLo)*0.5f*gs};
     const float dvCol[4] = {kPalSurfaceHigh[0], kPalSurfaceHigh[1],
                             kPalSurfaceHigh[2], 0.5f * ga};
-    shapeQuad(e, vp, dvc, r, up, 0.006f, 0.0f, 0.0008f,
-              hh - kSetHeadH * gs - 0.010f * gs, 0.0008f,
-              hh - kSetHeadH * gs - 0.010f * gs, 0.0f, 0.0f, 0.001f,
-              dvCol);
-    // shift the divider under the title band
-    const float dvc2[3] = {c[0] + r[0]*dv*gs +
-                           up[0]*(kSetHH - kSetHeadH - (kSetHH - kSetHeadH -
-                                kSetPad) * 0.5f) * gs,
-                           c[1] + r[1]*dv*gs +
-                           up[1]*(kSetHH - kSetHeadH - (kSetHH - kSetHeadH -
-                                kSetPad) * 0.5f) * gs,
-                           c[2] + r[2]*dv*gs +
-                           up[2]*(kSetHH - kSetHeadH - (kSetHH - kSetHeadH -
-                                kSetPad) * 0.5f) * gs};
-    shapeQuad(e, vp, dvc2, r, up, 0.006f, 0.0f, 0.0008f,
-              (kSetHH - kSetHeadH - kSetPad) * 0.5f * gs, 0.0008f,
-              (kSetHH - kSetHeadH - kSetPad) * 0.5f * gs, 0.0f, 0.0f,
-              0.001f, dvCol);
+    const float dhh = (dHi - dLo) * 0.5f * gs;
+    shapeQuad(e, vp, dvc, r, up, 0.006f, 0.0f, 0.0008f, dhh, 0.0008f,
+              dhh, 0.0f, 0.0f, 0.001f, dvCol);
 
     for (int i = 0; i < (int)st.rows.size(); ++i)
         drawRowBody(e, vp, c, r, up, i, gs, ga);

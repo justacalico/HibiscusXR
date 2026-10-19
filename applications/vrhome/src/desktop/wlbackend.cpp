@@ -371,8 +371,7 @@ void WlBackend::uiStrings(std::vector<std::string>* out) {
         "Library", "Quick settings", "On", "Off", "Not connected",
         "Wi-Fi", "Boundary", "Bluetooth", "Seethrough", "Microphone",
         "Reset view", "Night mode", "Do Not Disturb", "Airplane mode",
-        "Battery saver", "Center new apps", "Report problem",
-        "About device",
+        "Battery saver", "Report problem", "About device",
     };
 }
 
@@ -380,7 +379,6 @@ void WlBackend::quickStatus(QsStatus* out) {
     pollSys();
     out->toggles = qsMask;
     if (sysWifi) out->toggles |= (1u << QS_WIFI);
-    if (centerOn) out->toggles |= (1u << QS_CENTER);
     const std::string v =
         runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
     out->volume = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);
@@ -400,8 +398,6 @@ void WlBackend::quickToggle(int id, bool on) {
         runBg(std::string("nmcli radio wifi ") + (on ? "on" : "off"));
     else if (id == QS_BLUETOOTH)
         runBg(std::string("bluetoothctl power ") + (on ? "on" : "off"));
-    else if (id == QS_CENTER)
-        centerOn = on;
 }
 
 void WlBackend::quickSetSlider(int slider, float v) {

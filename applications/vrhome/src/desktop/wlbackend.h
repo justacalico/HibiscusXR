@@ -46,7 +46,6 @@ public:
     void removeTasksOnDisplay(int displayId) override;
     void injectTouch(int displayId, float x, float y, int action) override;
     void injectTap(int displayId, float x, float y) override;
-    bool centerLaunch() override { return centerOn; }
     bool takePendingAdopt(PendingPanel* out) override;
     int takePendingRelease() override;
 
@@ -77,7 +76,6 @@ private:
     long long sysPollAt = 0;
     int sysWifi = 0, sysBatt = -1, sysChg = 0;
     std::string sysSsid;
-    bool centerOn = true;
     bool pinsSent = false;
     unsigned qsMask = 0;
     std::string term;

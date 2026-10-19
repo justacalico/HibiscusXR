@@ -242,15 +242,6 @@ public class ShellBridge {
     // render thread: status-line-only render mode
     public boolean debugOnly() { return debugOnly; }
 
-    // quick-settings "center new apps" toggle: while set the render loop
-    // opens each window on the middle slot instead of filling left first
-    private volatile boolean centerLaunch;
-
-    public void setCenterLaunch(boolean v) { centerLaunch = v; }
-
-    // render thread: the quick-settings toggle is on
-    public boolean centerLaunch() { return centerLaunch; }
-
     // -------------------------------------------------------- quick panel
 
     // render thread: the toggles/sliders snapshot - fresh reads, so the

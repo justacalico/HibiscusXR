@@ -22,7 +22,7 @@ public class UiStrings {
     public static final int QS_LABEL0 = 5;
     // the settings card's block follows the quick panel's; slot order
     // matches src/set/item.h's UiSetStr
-    public static final int SET_TITLE = QS_LABEL0 + 13;
+    public static final int SET_TITLE = QS_LABEL0 + 12;
 
     private static volatile int ver = 0;
 
@@ -47,7 +47,6 @@ public class UiStrings {
             ctx.getString(R.string.qs_dnd),
             ctx.getString(R.string.qs_airplane),
             ctx.getString(R.string.qs_saver),
-            ctx.getString(R.string.qs_center),
             ctx.getString(R.string.qs_report),
             ctx.getString(R.string.qs_about),
             ctx.getString(R.string.set_title),

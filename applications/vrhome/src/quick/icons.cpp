@@ -88,10 +88,6 @@ void quickIcon(HudEngine* e, const Mat4& vp, int id, const float ic[3],
         iconSeg(e, vp, ic, r, up, 0.72f * s, -0.16f * s, 0.72f * s, 0.16f * s,
             w, col);
         break;
-    case QS_CENTER:
-        iconCorners(e, vp, ic, r, up, s * 0.78f, w, col);
-        iconDisc(e, vp, ic, r, up, 0.0f, 0.0f, s * 0.16f, 0.0f, col);
-        break;
     case QS_REPORT:
         iconSeg(e, vp, ic, r, up, -0.42f * s, -0.82f * s, -0.42f * s,
             0.82f * s, w, col);

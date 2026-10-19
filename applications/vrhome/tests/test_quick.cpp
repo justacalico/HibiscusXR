@@ -107,7 +107,6 @@ void testQuick() {
         CHECK(quickActivateOp(QS_REPORT) == QOP_NONE);
         CHECK(quickActivateOp(QS_WIFI) == QOP_TOGGLE);
         CHECK(quickActivateOp(QS_MIC) == QOP_TOGGLE);
-        CHECK(quickActivateOp(QS_CENTER) == QOP_TOGGLE);
         CHECK(quickActivateOp(QS_RESET_VIEW) == QOP_RECENTER);
         CHECK(quickActivateOp(QS_ABOUT) == QOP_SETTINGS);
         CHECK(quickActivateOp(-1) == QOP_NONE);

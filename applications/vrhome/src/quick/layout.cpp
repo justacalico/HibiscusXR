@@ -19,7 +19,6 @@ static const QsSpec kSpecs[QS_COUNT] = {
     {QS_DND,         false, true,  true},
     {QS_AIRPLANE,    false, true,  true},
     {QS_SAVER,       false, true,  true},
-    {QS_CENTER,      false, true,  true},
     {QS_REPORT,      false, false, false},
     {QS_ABOUT,       false, true,  false},
 };

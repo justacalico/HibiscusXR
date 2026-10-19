@@ -128,7 +128,6 @@ public:
     virtual bool debugHud() { return false; }
     virtual bool debugOnly() { return false; }
     virtual bool sysMsgOnly() { return false; }
-    virtual bool centerLaunch() { return false; }
     virtual bool takePendingAdopt(PendingPanel* out) { return false; }
     virtual int takePendingRelease() { return -1; }
 

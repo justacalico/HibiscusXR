@@ -89,12 +89,9 @@ debugfs -R "dump /app/MonadoOpenXR/MonadoOpenXR.apk $T/mx.apk" "$IMG" >/dev/null
 "$BT/apksigner" verify --print-certs "$T/mx.apk" 2>/dev/null | grep -q "CN=PN2" \
   && printf '  MATCH  %s\n' "/app/MonadoOpenXR/MonadoOpenXR.apk (CN=PN2)" \
   || printf '  DIFFER %s\n' "/app/MonadoOpenXR/MonadoOpenXR.apk (missing or not PN2-signed)"
-# pvrservice is the black-display compositor - it must stay out of the image
-if debugfs -R "stat /etc/init/pvrservice.rc" "$IMG" 2>&1 | grep -q ext2_lookup; then
-  printf '  MATCH  %s\n' "/etc/init/pvrservice.rc absent"
-else
-  printf '  DIFFER %s\n' "/etc/init/pvrservice.rc still present"
-fi
+# pvrservice ships again for the controller tracking path - the rc itself
+# gates the service on ro.product.device=PICOA7B10
+check /etc/init/pvrservice.rc ${HIBISCUS_ROOT}/overlay/etc/init/pvrservice.rc
 
 echo
 echo "=== init scripts present ==="

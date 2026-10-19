@@ -16,16 +16,28 @@
 # writes 32 bytes into. libshim_pvr.so supplies the missing symbols and repacks
 # the events. Without it pvrservice loads, then dies with
 # "stack corruption detected (-fstack-protector)" in PVR::receiver().
+#
+# Device gate: this file ships in the device image, but the OS is built for
+# more than one HMD and nothing in the stock definition keeps the service off
+# hardware it was never made for. `disabled` stops class core from starting
+# it; the only starts left are the property triggers below, all of which
+# require ro.product.device=PICOA7B10. Init re-evaluates property triggers
+# once boot props are loaded (queue_property_triggers), so the device match
+# works even though ro.* is set before .rc parsing.
 service pvrservice /system/bin/pvrservice
      class core
+     disabled
      user root
      group root usb system wakelock
      seclabel u:r:shell:s0
      setenv LD_PRELOAD /system/lib64/libshim_pvr.so
 
-on property:sys.pvr.vrservice.state=0
-    stop pvrservice
-on property:sys.pvr.vrservice.state=1
+on property:ro.product.device=PICOA7B10
     start pvrservice
-on property:sys.pvr.vrservice.state=2
+
+on property:sys.pvr.vrservice.state=0 && property:ro.product.device=PICOA7B10
+    stop pvrservice
+on property:sys.pvr.vrservice.state=1 && property:ro.product.device=PICOA7B10
+    start pvrservice
+on property:sys.pvr.vrservice.state=2 && property:ro.product.device=PICOA7B10
     restart pvrservice

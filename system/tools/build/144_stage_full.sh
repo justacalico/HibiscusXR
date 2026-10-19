@@ -90,6 +90,20 @@ echo "=== cvservice lib patches ==="
 "$(dirname "$0")/patch_cvservice_libs.sh" "$STAGE/priv-app/CVService/lib/arm"
 
 echo
+echo "=== libpvrserviceclient BitTube guard ==="
+# RemoteService's 32-bit getPvrService builds a BitTube from a failed
+# transact reply and hands a null source to sp<BitTube>::operator= - SIGSEGV
+# on every respawn, hammering pvrservice until it deadlocks. pvrservice is
+# back in the image now (device-gated in its rc), so the client path really
+# runs and the guard has to ship with it.
+if [ -f "$STAGE/lib/libpvrserviceclient.so" ]; then
+  python3 "$HIBISCUS_ROOT/tools/patch/365_patch_bittube.py" \
+      "$STAGE/lib/libpvrserviceclient.so" "$STAGE/lib/libpvrserviceclient.so"
+else
+  echo "  FAIL $STAGE/lib/libpvrserviceclient.so missing from the staged stack"
+fi
+
+echo
 echo "=== /media/LoadingRes (VRShell boot animation) ==="
 debugfs -R "rdump /media/LoadingRes $STAGE/media" "$IMG" 2>/dev/null
 if [ -d "$STAGE/media/LoadingRes" ]; then

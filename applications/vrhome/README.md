@@ -66,9 +66,9 @@ No task ever lives on the keyboard display, so it is deliberately kept out of `v
 
 At most three windows float at once, including the library. Opening another app evicts the oldest app window; the library itself is never evicted automatically. Minimized apps keep running in the background and park as icons on a shelf floating just above the dock; tapping a shelf icon (or the app's icon in the library) brings the same window back.
 
-New apps open on the middle slot: the window already there slides to a free side, left first, and when all three slots are taken the middle window is parked on the shelf instead of evicted so the newcomer can take its place. The quick panel's "Center new apps" tile switches back to plain ring fill; it rides the `hibiscus_center_launch` Settings.Global key, read live by the HUD.
+New apps open on the middle slot: the window already there slides to a free side, left first, and when all three slots are taken the middle window is parked on the shelf instead of evicted so the newcomer can take its place.
 
-The status pill on the dock's left end opens the quick panel: a card inside the dash itself with the volume and brightness sliders and the toggle tiles (radios, mic, night mode, DND, airplane, battery saver, center-launch). Only one card overlay is up at a time - opening the panel drops the app grid and vice versa.
+The status pill on the dock's left end opens the quick panel: a card inside the dash itself with the volume and brightness sliders and the toggle tiles (radios, mic, night mode, DND, airplane, battery saver). Only one card overlay is up at a time - opening the panel drops the app grid and vice versa.
 
 The library's bar carries the × disc only: it can be closed but never minimized, and picking an app from it swaps the grid window out for the app it launched. Its dock pin brings it back.
 

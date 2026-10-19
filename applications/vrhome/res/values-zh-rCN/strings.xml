@@ -18,7 +18,6 @@
     <string name="qs_dnd">勿扰</string>
     <string name="qs_airplane">飞行模式</string>
     <string name="qs_saver">省电模式</string>
-    <string name="qs_center">新窗口居中</string>
     <string name="qs_report">报告问题</string>
     <string name="qs_about">关于设备</string>
     <string name="sysmsg_keeps_stopping">%1$s 屡次停止运行</string>

@@ -53,15 +53,6 @@ static float ringPitchNow(HudEngine* e) {
     return dashRingPitch(e->panels, e->dockPitch);
 }
 
-static float launchYaw(HudEngine* e) {
-    return e->centerLaunch ? centreSlotYaw(e->panels, e->dockYaw)
-                           : freeSlotYaw(e->panels, e->dockYaw);
-}
-
-static int panelCap(const HudEngine* e) {
-    return e->centerLaunch ? kMaxPanelRecs : kMaxPanels;
-}
-
 void pumpBridge(HudEngine* e) {
     if (!e->backend) return;
     for (;;) {
@@ -88,9 +79,10 @@ void pumpBridge(HudEngine* e) {
                 }
             continue;
         }
-        if ((int)e->panels.size() >= panelCap(e) && !evictOldestApp(e))
+        if ((int)e->panels.size() >= kMaxPanelRecs && !evictOldestApp(e))
             continue;
-        const int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
+        const int idx = openPanel(e, centreSlotYaw(e->panels, e->dockYaw),
+                                  ringPitchNow(e));
         if (idx < 0) continue;
         e->panels[idx].pkg = pkg;
         e->backend->launchPackageOn(pkg, e->panels[idx].displayId);
@@ -102,13 +94,13 @@ void pumpBridge(HudEngine* e) {
     e->debugHud = e->backend->debugHud();
     e->debugOnly = e->backend->debugOnly();
     e->sysMsgOnly = e->backend->sysMsgOnly();
-    e->centerLaunch = e->backend->centerLaunch();
     if (propI("debug.vrhome.noadopt", 0)) return;
     for (;;) {
         PendingPanel p;
         if (!e->backend->takePendingAdopt(&p)) break;
-        if ((int)e->panels.size() >= panelCap(e)) evictOldestApp(e);
-        const int idx = openPanel(e, launchYaw(e), ringPitchNow(e));
+        if ((int)e->panels.size() >= kMaxPanelRecs) evictOldestApp(e);
+        const int idx = openPanel(e, centreSlotYaw(e->panels, e->dockYaw),
+                                  ringPitchNow(e));
         if (idx >= 0) {
             e->panels[idx].taskId = p.taskId;
             e->panels[idx].pkg = p.pkg;

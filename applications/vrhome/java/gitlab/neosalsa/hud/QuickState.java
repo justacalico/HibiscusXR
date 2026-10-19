@@ -35,12 +35,9 @@ public class QuickState {
     // tile ids mirror src/quick/item.h's QsId - keep the switch in step
     static final int WIFI = 0, BOUNDARY = 1, BLUETOOTH = 2,
             SEETHROUGH = 3, MIC = 4, RESET_VIEW = 5, NIGHT = 6, DND = 7,
-            AIRPLANE = 8, SAVER = 9, CENTER = 10, REPORT = 11, ABOUT = 12;
+            AIRPLANE = 8, SAVER = 9, REPORT = 10, ABOUT = 11;
     // slider ids mirror QsSlider
     static final int SLIDER_BRIGHTNESS = 0, SLIDER_VOLUME = 1;
-
-    // shared with HudService: the quick panel's "center new apps" tile
-    private static final String CENTER_LAUNCH = "hibiscus_center_launch";
 
     public static class Snap {
         public int toggles;
@@ -146,10 +143,6 @@ public class QuickState {
             if (pm != null && pm.isPowerSaveMode()) m |= 1 << SAVER;
         } catch (Throwable ignored) {}
         try {
-            if (Settings.Global.getInt(ctx.getContentResolver(),
-                    CENTER_LAUNCH, 1) == 1) m |= 1 << CENTER;
-        } catch (Throwable ignored) {}
-        try {
             Intent b = ctx.registerReceiver(null,
                     new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
             if (b != null) {
@@ -225,10 +218,6 @@ public class QuickState {
                 // mode change itself
                 Settings.Global.putInt(ctx.getContentResolver(),
                         "low_power_mode", on ? 1 : 0);
-                break;
-            case CENTER:
-                Settings.Global.putInt(ctx.getContentResolver(),
-                        CENTER_LAUNCH, on ? 1 : 0);
                 break;
             default:
                 break;

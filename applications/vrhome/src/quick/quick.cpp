@@ -66,8 +66,8 @@ static const char* kQsFallback[UIQS_COUNT] = {
     "Quick settings", "On", "Off", "Not connected",
     "Wi-Fi", "Boundary", "Bluetooth", "Seethrough",
     "Microphone", "Reset view", "Night mode", "Do Not Disturb",
-    "Airplane mode", "Battery saver", "Center new apps",
-    "Report problem", "About device",
+    "Airplane mode", "Battery saver", "Report problem",
+    "About device",
 };
 
 static const char* qsStr(HudEngine* e, int i) {

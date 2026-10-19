@@ -94,7 +94,7 @@ public:
     }
     void sysStatus(int out[3]) override { out[0] = 1; out[1] = 87; out[2] = 0; }
     void quickStatus(QsStatus* out) override {
-        out->toggles = qsMask | (1u << QS_MIC) | (1u << QS_CENTER);
+        out->toggles = qsMask | (1u << QS_MIC);
         out->batt = 87;
         out->volume = qsVol;
         out->brightness = qsBri;

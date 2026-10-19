@@ -55,10 +55,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // window stays up over anything - covered apps included - so the
     // status line is always visible
     private static final String DEBUG_HUD = "hibiscus_debug_hud";
-    // global key the quick panel's "center new apps" tile writes: while
-    // set every new window takes the middle slot instead of filling the
-    // ring left to right
-    private static final String CENTER_LAUNCH = "hibiscus_center_launch";
 
     static { System.loadLibrary("vrhud"); }
 
@@ -113,16 +109,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         }
     };
 
-    // quick-settings center-launch toggle: kept in sync with its global
-    // key so the render loop picks the placement policy per launch
-    private volatile boolean centerLaunch;
-    private final ContentObserver centerObs =
-            new ContentObserver(new Handler(Looper.getMainLooper())) {
-        @Override public void onChange(boolean self) {
-            loadCenterLaunch();
-        }
-    };
-
     // --------------------------------------------------------- lifecycle
 
     @Override public void onCreate() {
@@ -148,9 +134,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         loadDebugHud();
         getContentResolver().registerContentObserver(
                 Settings.Global.getUriFor(DEBUG_HUD), false, debugObs);
-        loadCenterLaunch();
-        getContentResolver().registerContentObserver(
-                Settings.Global.getUriFor(CENTER_LAUNCH), false, centerObs);
         foreground();
         Log.i(TAG, "hud up");
     }
@@ -158,7 +141,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     @Override public void onDestroy() {
         instance = null;
         getContentResolver().unregisterContentObserver(debugObs);
-        getContentResolver().unregisterContentObserver(centerObs);
         nativeShutdown();
         super.onDestroy();
     }
@@ -259,12 +241,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         updateWindow();
     }
 
-    private void loadCenterLaunch() {
-        centerLaunch = Settings.Global.getInt(getContentResolver(),
-                CENTER_LAUNCH, 1) == 1;
-        updateWindow();
-    }
-
     // shown = home space (env is the top task) or summoned over an app,
     // or pinned up for the debug status line. Going GONE tears the
     // surface down, which parks the render loop. The window is always
@@ -288,7 +264,6 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             // app pops just the quad
             bridge.setKbdOnly(covered && kbdOn && !summoned);
             bridge.setDebugHud(debugHud);
-            bridge.setCenterLaunch(centerLaunch);
             // window is up over a covered app only for the status line:
             // the render loop draws nothing else
             bridge.setDebugOnly(covered && !summoned && debugHud);

@@ -82,7 +82,6 @@ public:
         mSysMsgClick  = env->GetMethodID(bc, "sysMsgClick", "(JI)V");
         mSysMsgDismiss= env->GetMethodID(bc, "sysMsgDismiss", "(J)V");
         mSysMsgOnly   = env->GetMethodID(bc, "sysMsgOnly", "()Z");
-        mCenterLaunch = env->GetMethodID(bc, "centerLaunch", "()Z");
         mUiStrVer     = env->GetMethodID(bc, "uiStringsVersion", "()I");
         mUiStrings    = env->GetMethodID(bc, "uiStrings", "()[Ljava/lang/String;");
         mKbdCreate    = env->GetMethodID(bc, "createKbdSurface", "(IIII)Z");
@@ -733,7 +732,6 @@ public:
     bool debugHud() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mDebugHud)==JNI_TRUE; fail(e); return r; }
     bool debugOnly() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mDebugOnly)==JNI_TRUE; fail(e); return r; }
     bool sysMsgOnly() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mSysMsgOnly)==JNI_TRUE; fail(e); return r; }
-    bool centerLaunch() override { JNIEnv* e = env(); bool r=e->CallBooleanMethod(bridge,mCenterLaunch)==JNI_TRUE; fail(e); return r; }
 
     bool takePendingAdopt(PendingPanel* out) override {
         JNIEnv* e = env(); jobject p = e->CallObjectMethod(bridge, mTakeAdopt);
@@ -765,7 +763,7 @@ private:
         mTakePins, mSetPins, mAppIcon, mVrVer, mRunningVr, mDismiss,
         mNotifVer, mNotifs, mDismissNotif, mToastOnly, mDebugHud,
         mDebugOnly, mSysStatus, mSysMsgVer, mSysMsgs, mSysMsgClick,
-        mSysMsgDismiss, mSysMsgOnly, mCenterLaunch, mUiStrVer, mUiStrings,
+        mSysMsgDismiss, mSysMsgOnly, mUiStrVer, mUiStrings,
         mKbdCreate, mKbdTex, mKbdTakeQuery, mKbdSend, mKbdHide, mKbdState,
         mAppsVer, mApps, mQsStatus, mQsToggle, mQsSlider, stUpdate, stMatrix,
         mSetVer, mSetSnap, mSetSection, mSetClose, mSetToggle, mSetSlider,

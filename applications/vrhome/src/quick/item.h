@@ -16,7 +16,6 @@ enum QsId {
     QS_DND,
     QS_AIRPLANE,
     QS_SAVER,
-    QS_CENTER,
     QS_REPORT,
     QS_ABOUT,
     QS_COUNT

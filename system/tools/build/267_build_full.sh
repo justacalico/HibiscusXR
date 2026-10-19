@@ -134,6 +134,7 @@ echo "=== init scripts ==="
 # the generic shell hooks (pn2-home, pn2-openxr, pn2-adbwifi) are in
 # 270_shell_stack.sh - this list is only the pn2 hardware services
 put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
+put "$INIT/pvrservice.rc"     /etc/init/pvrservice.rc     644
 put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
 put "$INIT/pn2-settings.rc"   /etc/init/pn2-settings.rc   644
 put "$INIT/pn2-vulkan.rc"     /etc/init/pn2-vulkan.rc     644
@@ -185,8 +186,11 @@ echo "=== OpenXR stack: Turnip Vulkan driver (sdm845) ==="
 #   - hwvulkan picks /vendor/lib64/hw/vulkan.sdm845.so first; pn2-vulkan.rc
 #     bind-mounts this Turnip over the vendor path at post-fs so the Adreno
 #     module never loads. Works with an untouched stock vendor.img.
-#   - pvrservice is the broken compositor behind the black-display bug; its rc
-#     is removed so nothing starts it. qvrd stays - it owns the tracking cams.
+#   - pvrservice's rc used to be dropped here over the black-display bug, but
+#     nothing else publishes the PvrService shared-memory tracking path the
+#     controllers wait on. It ships again now, gated on
+#     ro.product.device=PICOA7B10 inside the rc itself, so it can only ever
+#     start on the Neo 2. qvrd stays - it owns the tracking cams.
 XR=${HIBISCUS_ROOT}/hsvr
 # Always run the build - it is incremental, and skipping on a stale out/
 # dir once shipped an unpatched Turnip in the image.
@@ -210,8 +214,6 @@ else
   echo "  FAIL  could not read /etc/ld.config.27.txt from image"; fail=$((fail+1))
 fi
 rm -f "$LD27"
-debugfs -w -R "rm /etc/init/pvrservice.rc" "$IMG" >/dev/null 2>&1
-echo "  removed /etc/init/pvrservice.rc"
 
 echo
 echo "=== shell stack (270 - shared with every device) ==="

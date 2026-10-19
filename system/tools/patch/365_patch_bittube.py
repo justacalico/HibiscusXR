@@ -25,7 +25,7 @@ On the null path the destination keeps its existing value and r0 is already the
 destination, so the return value stays correct. Everything from 0x109b8 on is
 untouched.
 """
-import struct, sys, shutil
+import os, struct, sys, shutil
 
 SRC, DST = sys.argv[1], sys.argv[2]
 
@@ -48,7 +48,8 @@ def vaddr_to_off(data, vaddr):
     raise SystemExit(f"vaddr {vaddr:#x} not in any PT_LOAD")
 
 
-shutil.copyfile(SRC, DST)
+if os.path.abspath(SRC) != os.path.abspath(DST):
+    shutil.copyfile(SRC, DST)
 data = bytearray(open(DST, "rb").read())
 
 off = vaddr_to_off(data, VADDR)
@@ -58,7 +59,8 @@ cur = bytes(data[off:off + 8])
 print(f"  found    {cur.hex(' ')}")
 print(f"  expected {ORIG.hex(' ')}")
 if cur == NEW:
-    raise SystemExit("already patched, nothing to do")
+    print("already patched, nothing to do")
+    raise SystemExit(0)
 if cur != ORIG:
     raise SystemExit("FAIL: bytes do not match the sp_report_race check, refusing")
 

@@ -22,6 +22,7 @@ Pico 8.1 vendor. VNDK 27, non-A/B, kernel 4.9.65.
 | `etc/init/pn2-settings.rc` | pins rotation on every boot (survives factory reset) |
 | `etc/init/pn2-env.rc` + `bin/pn2-envd` | home-environment pick: creates `/data/local/tmp/hibiscus/envs` and mirrors `hibiscus_environment` onto `persist.hibiscus.environment` |
 | `etc/default-permissions/pn2-cvservice.xml` | pre-grants CVService's runtime permissions (location, storage) as system-fixed so it never pops a grant dialog in VR |
+| `etc/init/pvrservice.rc` | the stock Pico VR daemon, device-gated: `disabled` plus `ro.product.device=PICOA7B10` triggers, so it can only start on the Neo 2 even if the file ever lands on another HMD's image |
 | `lib64/libsensorservice.so` | one-instruction patch; without it any sensor reboots the device |
 | `props.append` | append verbatim to `/system/build.prop` and `/system/etc/prop.default` |
 | `media/bootanimation/` | unpacked Hibiscus boot animation; `143_build_image2.sh` packs it into `/system/media/bootanimation.zip` (and `/product/media/` when the GSI has one). Frames are a per-eye pair authored for the 3840x2160 panel |

@@ -180,7 +180,7 @@ stdio: one JSON-RPC message per line, tools to drive the dash.
 | `dash_move` | move the camera (`x` / `y` / `z` in metres) |
 | `dash_key` | send a key: `confirm`, `enter`, `back`, `dpad_center` or `button_a`; `action` is `tap` (default), `down` or `up` |
 | `dash_launch` | open a `package` on a new panel |
-| `dash_grid` / `dash_keyboard` / `dash_quick` | show or hide the app grid / keyboard quad / quick-settings card (`shown`) |
+| `dash_grid` / `dash_keyboard` / `dash_quick` / `dash_settings` | show or hide the app grid / keyboard quad / quick-settings card / settings card (`shown`) |
 | `dash_recenter` | re-anchor the dash ring in front of the camera |
 | `dash_screenshot` | return the rendered frame as a PNG image |
 
@@ -198,7 +198,7 @@ Live-tunable system properties (`setprop` on the headset):
 | `debug.vrhome.roll` | static view roll in degrees |
 | `debug.vrhome.sensroll` | sensor-frame roll correction |
 | `debug.vrhome.worldx` | mount tilt correction |
-| `debug.vrhome.hud` | `0`/`1` overrides the settings app's Debug HUD toggle (unset = follow it) |
+| `debug.vrhome.hud` | `0`/`1` overrides the settings card's Debug HUD toggle (unset = follow it) |
 | `debug.vrhome.fov` | vertical render FOV in degrees (default `90`) |
 | `debug.vrhome.k0` / `k2` / `k4` / `k6` | lens warp polynomial (stock Pico coefficients; set `k0` to `1` and the rest to `0` for no distortion) |
 | `debug.vrhome.cr` / `debug.vrhome.cb` | chromatic warp scales (default `0.992` / `1.012`) |

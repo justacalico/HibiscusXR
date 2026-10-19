@@ -10,6 +10,8 @@
 #include "../dock/layout.h"
 #include "../hud/engine.h"
 #include "../render/shape.h"
+#include "../set/set.h"
+#include "../set/item.h"
 #include "../text/draw.h"
 #include "../text/glyphs.h"
 
@@ -37,8 +39,7 @@ void quickActivate(HudEngine* e, int idx) {
         wantRecenter();
         return;
     case QOP_SETTINGS:
-        queueLaunch(kSettingsPkg);
-        e->quick.shown = false;
+        setOpen(e, SEC_ABOUT);
         return;
     default:
         return;
@@ -46,8 +47,7 @@ void quickActivate(HudEngine* e, int idx) {
 }
 
 void quickGear(HudEngine* e) {
-    queueLaunch(kSettingsPkg);
-    e->quick.shown = false;
+    setOpen(e, SEC_WIFI);
 }
 
 void quickSliderTo(HudEngine* e, int slider, float u) {

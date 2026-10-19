@@ -1,11 +1,15 @@
 #include "pick.h"
 
 DashSel dashSel(bool sysModal, const SysMsgPick& mp, const NotifPick& np,
-                const GridPick& gp, const QsPick& qp, const ShelfPick& sp,
+                const GridPick& gp, const QsPick& qp, const SetHit& st,
+                const ShelfPick& sp,
                 const DockPick& dp, float kbdT) {
     if (sysModal || mp.hit) return DSEL_SYSMSG;
     if (np.stack && (!dp.bar || np.t <= dp.t) &&
         (kbdT < 0.0f || np.t <= kbdT)) return DSEL_NOTIF;
+    if (st.hit && (!dp.bar || st.t <= dp.t) &&
+        (!sp.hit || st.t <= sp.t) &&
+        (kbdT < 0.0f || st.t <= kbdT)) return DSEL_SET;
     if (qp.hit && (!dp.bar || qp.t <= dp.t) &&
         (!sp.hit || qp.t <= sp.t) &&
         (kbdT < 0.0f || qp.t <= kbdT)) return DSEL_QUICK;

@@ -8,6 +8,7 @@
 #include "../notif/item.h"
 #include "../sysmsg/item.h"
 #include "../quick/item.h"
+#include "../set/item.h"
 #include "../kbd/kbd.h"
 #include "../common/config.h"
 #include "../input/ctrl_state.h"
@@ -81,6 +82,11 @@ struct HudEngine : Engine {
     // closes on BACK, its close disc, a re-tap or the gear launch. Only
     // one card overlay is up at a time - opening this drops the grid
     QuickPanel quick;
+
+    // the settings card: the full settings surface inside the dash, from
+    // the quick panel's gear or About tile. Same overlay-exclusion rules
+    // as the other cards
+    SetOverlay set;
 
     // dock: rebuilt each frame by syncDock from the pin list, the live
     // panels and the immersive tasks the java poller sees. dockYaw anchors
@@ -171,6 +177,8 @@ struct HudEngine : Engine {
     // tile in QsId order - the fallback table in quick.cpp covers a pull
     // that hasn't landed yet
     std::string uiQs[UIQS_COUNT];
+    // the settings card's labels: UiSetStr slots
+    std::string uiSet[UISET_COUNT];
 
     // developer-settings debug line: debugHud is the toggle itself;
     // debugOnly means the window is up over a covered app solely for that

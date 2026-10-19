@@ -75,6 +75,7 @@ static void hudQuietSample(HudEngine* e, HudQuietIn* q) {
     *q = {};
     q->panels = !e->panels.empty();
     q->grid = e->grid.openT > 0.0f || e->grid.shown;
+    q->set = e->set.openT > 0.0f || e->set.shown;
     q->notifs = !e->notifs.empty();
     q->sysmsgs = !e->sysMsgs.empty();
     q->toastOnly = e->toastOnly;

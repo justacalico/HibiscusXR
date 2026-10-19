@@ -32,6 +32,7 @@ public:
         log.push_back("move");
     }
     void recenter() override { log.push_back("recenter"); }
+    bool setOn = false;
     void setGrid(bool shown) override {
         st.grid = shown;
         log.push_back("grid " + std::to_string(shown));
@@ -40,6 +41,7 @@ public:
         st.kbd = shown;
         log.push_back("kbd " + std::to_string(shown));
     }
+    void setSettings(bool shown) override { setOn = shown; }
     void setQuick(bool shown) override {
         log.push_back("quick " + std::to_string(shown));
     }
@@ -158,9 +160,9 @@ void testMcp() {
         r = parse(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\"}"));
         const Json* tools = r.get("result")->get("tools");
-        CHECK(tools->a.size() == 11);
+        CHECK(tools->a.size() == 12);
         CHECK(tools->a[0].get("name")->s == "dash_state");
-        CHECK(tools->a[10].get("name")->s == "dash_screenshot");
+        CHECK(tools->a[11].get("name")->s == "dash_screenshot");
 
         CHECK(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/"

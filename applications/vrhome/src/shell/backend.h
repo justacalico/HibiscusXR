@@ -7,6 +7,7 @@
 #include "../grid/item.h"
 #include "../notif/item.h"
 #include "../quick/item.h"
+#include "../set/item.h"
 #include "../sysmsg/item.h"
 
 struct Kbd;
@@ -88,6 +89,29 @@ public:
     virtual void quickStatus(QsStatus* out) {}
     virtual void quickToggle(int id, bool on) {}
     virtual void quickSetSlider(int slider, float v) {}
+
+    // the settings card's platform side: versioned snapshot pulls while
+    // the card is up, writes keyed by the SetTgl/SetSld/SetTxt/SetAct
+    // ids; the section calls carry open/change/close so the host can arm
+    // scans and the controller link only while the card needs them
+    virtual int settingsVersion() { return 0; }
+    virtual void settingsStatus(SetSnap* out) {}
+    virtual void settingsSection(int sec) {}
+    virtual void settingsClose() {}
+    virtual void settingsToggle(int id, bool on) {}
+    virtual void settingsSlider(int id, float v) {}
+    virtual void settingsText(int id, const std::string& v) {}
+    virtual void settingsAction(int id) {}
+    virtual void settingsScan(int sec) {}
+    virtual void settingsToggleScan() {}
+    virtual void settingsReboot() {}
+    virtual void wifiJoin(const std::string& ssid, int sec,
+                          const std::string& pw) {}
+    virtual void wifiForget(int netId) {}
+    virtual void btPair(const std::string& addr) {}
+    virtual void btUnpair(const std::string& addr) {}
+    virtual void imePick(const std::string& id) {}
+    virtual void envDelete(const std::string& id) {}
 
     virtual void launchPackageOn(const std::string& pkg, int displayId) {}
     virtual void launchVrApp(const std::string& pkg) {}

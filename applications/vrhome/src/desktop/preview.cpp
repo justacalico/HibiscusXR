@@ -13,6 +13,7 @@
 #include "../panels/panel.h"
 #include "../render/resources.h"
 #include "../shell/backend.h"
+#include "../set/set.h"
 
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
@@ -107,6 +108,152 @@ public:
     void quickSetSlider(int slider, float v) override {
         if (slider == 0) qsBri = v; else qsVol = v;
     }
+
+    // the settings card's fixture: a believable in-memory rig so the
+    // preview exercises every row kind - scans fill the wifi/bt lists,
+    // writes land on the fixture and the version bumps
+    int settingsVersion() override { return setVer; }
+    void settingsStatus(SetSnap* out) override {
+        int t = 0;
+        if (setWifiOn) t |= 1u << TG_WIFI;
+        if (setBtOn) t |= 1u << TG_BT;
+        if (setMicOn) t |= 1u << TG_MIC;
+        if (setDof6) t |= 1u << TG_DOF6;
+        if (setDbg) t |= 1u << TG_DEBUG_HUD;
+        out->toggles = t;
+        out->flags = (setWifiScan ? SFL_WIFI_SCAN : 0) |
+                     (setBtScan ? SFL_BT_SCAN : 0) |
+                     (setCtrlScan ? SFL_CTRL_SCAN : 0);
+        out->sld[SL_VOL] = setVol;
+        out->sld[SL_BRI] = setBri;
+        out->sld[SL_IPD] = setIpd;
+        out->txt[TX_SSID] = setWifiOn ? setSsid : "";
+        out->txt[TX_THEME] = setTheme;
+        out->txt[TX_ENV] = setEnv;
+        out->txt[TX_LANG] = setLang;
+        out->txt[TX_MODEL] = "Preview HMD";
+        out->txt[TX_ANDROID] = "10";
+        out->txt[TX_HBVER] = "preview";
+        out->wifi = setWifi;
+        out->bt = setBt;
+        out->imes = setImes;
+        out->envs = setEnvs;
+        out->ctrl[0] = setCtrl[0];
+        out->ctrl[1] = setCtrl[1];
+    }
+    void settingsSection(int sec) override {
+        setSec = sec;
+        if (sec == SEC_WIFI) settingsScan(SEC_WIFI);
+        else if (sec == SEC_BT) settingsScan(SEC_BT);
+    }
+    void settingsClose() override { setSec = -1; }
+    void settingsToggle(int id, bool on) override {
+        switch (id) {
+        case TG_WIFI: setWifiOn = on;
+            if (on) settingsScan(SEC_WIFI);
+            else { setSsid = ""; setWifi.clear(); }
+            break;
+        case TG_BT: setBtOn = on;
+            if (on) settingsScan(SEC_BT);
+            else setBt.clear();
+            break;
+        case TG_MIC: setMicOn = on; break;
+        case TG_DOF6: setDof6 = on; break;
+        case TG_DEBUG_HUD: setDbg = on; break;
+        default: break;
+        }
+        ++setVer;
+    }
+    void settingsSlider(int id, float v) override {
+        if (id == SL_VOL) setVol = v;
+        else if (id == SL_BRI) setBri = v;
+        else if (id == SL_IPD) setIpd = v;
+        ++setVer;
+    }
+    void settingsText(int id, const std::string& v) override {
+        if (id == TX_THEME) setTheme = v;
+        else if (id == TX_ENV) setEnv = v;
+        else if (id == TX_LANG) setLang = v;
+        ++setVer;
+    }
+    void settingsAction(int id) override {
+        if (id == ACT_CTRL_UNBIND) {
+            setCtrl[0].state = setCtrl[1].state = 0;
+            setCtrl[0].mac = setCtrl[1].mac = "";
+        }
+        ++setVer;
+    }
+    void settingsScan(int sec) override {
+        if (sec == SEC_WIFI && setWifiOn) {
+            setWifiScan = true;
+            setWifi.clear();
+            SetWifi a; a.ssid = "PreviewNet"; a.sec = WSEC_WPA;
+            a.level = 3; a.conn = true; a.saved = 0;
+            SetWifi b; b.ssid = "CafeGuest"; b.sec = WSEC_OPEN;
+            b.level = 1;
+            SetWifi c2; c2.ssid = "Office-5G"; c2.sec = WSEC_WPA;
+            c2.level = 4;
+            setWifi.push_back(a); setWifi.push_back(b);
+            setWifi.push_back(c2);
+            setWifiScan = false;
+        } else if (sec == SEC_BT && setBtOn) {
+            setBtScan = true;
+            setBt.clear();
+            SetBtDev a; a.name = "Preview Pods";
+            a.addr = "AA:BB:CC:DD:EE:01"; a.bonded = true; a.conn = true;
+            SetBtDev b; b.name = "KB-380"; b.addr = "AA:BB:CC:DD:EE:02";
+            setBt.push_back(a); setBt.push_back(b);
+            setBtScan = false;
+        }
+        ++setVer;
+    }
+    void settingsToggleScan() override {
+        setCtrlScan = !setCtrlScan;
+        setCtrl[0].state = setCtrlScan ? 2 : (setCtrl[0].mac.empty() ? 0 : 1);
+        setCtrl[1].state = setCtrlScan ? 2 : (setCtrl[1].mac.empty() ? 0 : 1);
+        ++setVer;
+    }
+    void wifiJoin(const std::string& ssid, int sec,
+                  const std::string&) override {
+        for (size_t i = 0; i < setWifi.size(); ++i) {
+            setWifi[i].conn = setWifi[i].ssid == ssid;
+            if (setWifi[i].conn) setWifi[i].saved = (int)i;
+        }
+        setSsid = ssid;
+        ++setVer;
+    }
+    void wifiForget(int netId) override {
+        for (auto& n : setWifi)
+            if (n.saved == netId) n.saved = -1;
+        if (netId < (int)setWifi.size() && setWifi[netId].ssid == setSsid) {
+            for (auto& n : setWifi) if (n.ssid == setSsid) n.conn = false;
+            setSsid = "";
+        }
+        ++setVer;
+    }
+    void btPair(const std::string& addr) override {
+        for (auto& d : setBt)
+            if (d.addr == addr) { d.bonded = true; d.conn = true; }
+        ++setVer;
+    }
+    void btUnpair(const std::string& addr) override {
+        for (auto& d : setBt)
+            if (d.addr == addr) { d.bonded = false; d.conn = false; }
+        ++setVer;
+    }
+    void imePick(const std::string& id) override {
+        for (auto& i : setImes) i.active = i.id == id;
+        ++setVer;
+    }
+    void envDelete(const std::string& id) override {
+        for (size_t i = 0; i < setEnvs.size(); ++i)
+            if (setEnvs[i].id == id) {
+                setEnvs.erase(setEnvs.begin() + i);
+                break;
+            }
+        ++setVer;
+    }
+
     std::string appLabel(const std::string& pkg) override {
         const size_t dot = pkg.rfind('.');
         return dot == std::string::npos ? pkg : pkg.substr(dot + 1);
@@ -146,6 +293,20 @@ private:
     bool kbdShown = false;
     unsigned qsMask = 1u << QS_WIFI;
     float qsVol = 0.6f, qsBri = 0.8f;
+
+    int setVer = 1;
+    int setSec = -1;
+    bool setWifiOn = true, setBtOn = true, setMicOn = true;
+    bool setDof6 = false, setDbg = false;
+    bool setWifiScan = false, setBtScan = false, setCtrlScan = false;
+    float setVol = 0.6f, setBri = 0.8f, setIpd = 63.5f;
+    std::string setSsid = "PreviewNet", setTheme = "dark";
+    std::string setEnv = "builtin", setLang = "en";
+    std::vector<SetWifi> setWifi;
+    std::vector<SetBtDev> setBt;
+    std::vector<SetImeOpt> setImes;
+    std::vector<SetEnvOpt> setEnvs;
+    SetCtrl setCtrl[2];
 
     static void texParams(unsigned tex) {
         glBindTexture(GL_TEXTURE_2D, tex);
@@ -199,9 +360,13 @@ int main(int argc, char** argv) {
     PreviewBackend backend;
     app.hud = &hud;
     app.kbdSet = [&backend](bool on) { backend.kbdShow(on); };
-    app.extraKey = [&backend](int key, int, int action) {
+    app.extraKey = [&hud, &backend](int key, int, int action) {
         if (key == GLFW_KEY_K && action == GLFW_PRESS)
             backend.kbdShow(!backend.kbdState().shown);
+        if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+            if (hud.set.shown) setClose(&hud);
+            else setOpen(&hud, SEC_WIFI);
+        }
     };
     hud.backend = &backend;
     hud.haveQuat = true;

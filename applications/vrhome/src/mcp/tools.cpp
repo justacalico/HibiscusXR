@@ -59,6 +59,7 @@ Json stateJson(const McpState& s) {
     j.set("camera", cam);
     j.set("grid", Json::boolean(s.grid));
     j.set("keyboard", Json::boolean(s.kbd));
+    j.set("settings", Json::boolean(s.settings));
     j.set("hover", Json::num(s.hover));
     j.set("hoverZone", Json::num(s.hoverZone));
     Json ps = Json::arr();
@@ -115,7 +116,7 @@ Json mcpToolList() {
     {
         Json p = Json::obj();
         p.set("package", prop("string",
-            "package name to open, e.g. gitlab.neosalsa.settings"));
+            "package name to open, e.g. gitlab.neosalsa.store"));
         tools.push(toolDef("dash_launch",
             "Launch a package onto a new dash panel.", p, {"package"}));
     }
@@ -181,6 +182,8 @@ Json mcpToolList() {
         p.set("shown", prop("boolean", "true to show, false to hide"));
         tools.push(toolDef("dash_quick",
             "Show or hide the quick-settings card.", p, {"shown"}));
+        tools.push(toolDef("dash_settings",
+            "Show or hide the settings card.", p, {"shown"}));
     }
 
     tools.push(toolDef("dash_screenshot",
@@ -283,7 +286,7 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
         return true;
     }
     if (name == "dash_grid" || name == "dash_keyboard" ||
-            name == "dash_quick") {
+            name == "dash_quick" || name == "dash_settings") {
         const Json* v = a.get("shown");
         if (!v || !v->isBool()) {
             *errMsg = "shown is required";
@@ -291,6 +294,7 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
         }
         if (name == "dash_grid") d->setGrid(v->b);
         else if (name == "dash_quick") d->setQuick(v->b);
+        else if (name == "dash_settings") d->setSettings(v->b);
         else d->setKbd(v->b);
         *result = textRes(v->b ? "shown" : "hidden");
         return true;

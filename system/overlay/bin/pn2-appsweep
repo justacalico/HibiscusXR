@@ -1,0 +1,23 @@
+#!/system/bin/sh
+# Uninstall the retired Flutter shell apps: settings and the quick panel
+# moved into the HUD, the library app was replaced by the env's app grid.
+# Headsets that ran an image carrying them still hold the installs under
+# /data/app, so the dead launchers keep resolving forever.
+#
+# Package id alone is not proof an install is ours - anyone can publish an
+# apk under the same name. Every shipped apk is signed with the platform
+# cert, so the sweep compares each candidate's cert hashCode (the
+# `signatures:[xxxx]` line in `pm dump`; the PackageSignatures{...} id
+# beside it is an identity hash and cannot be compared) against the HUD's
+# own. A foreign or debug-signed package squatting the id stays installed.
+
+ours=$(pm dump gitlab.neosalsa.hud 2>/dev/null \
+    | grep -o 'signatures:\[[0-9a-f]*\]' | head -1)
+[ -n "$ours" ] || exit 0
+
+for p in gitlab.neosalsa.settings gitlab.neosalsa.quicksettings \
+         gitlab.neosalsa.library; do
+    sig=$(pm dump "$p" 2>/dev/null \
+        | grep -o 'signatures:\[[0-9a-f]*\]' | head -1)
+    [ -n "$sig" ] && [ "$sig" = "$ours" ] && pm uninstall "$p"
+done

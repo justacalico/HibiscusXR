@@ -18,11 +18,15 @@
 # The same first-boot pass disables the stock Pico homes (PVRLauncher, PVRHome,
 # VRShell) so nothing else can claim display 0, plus Provision - the setup
 # wizard the stock launcher keeps starting, which crashes in its language
-# picker and churns the foreground - and whitelists the shell packages plus
-# the settings app for hidden API access - the shell reflects into
-# ActivityTaskManager/InputManager for task adoption, touch injection and the
-# summon-key input monitor, and settings needs BluetoothDevice.removeBond
-# for in-app unpairing.
+# picker and churns the foreground - and whitelists the shell packages for
+# hidden API access - the shell reflects into ActivityTaskManager/InputManager
+# for task adoption, touch injection, the summon-key input monitor and
+# BluetoothDevice.removeBond for in-app unpairing.
+#
+# It also sweeps the retired Flutter shell apps (settings, quick panel,
+# library) out of /data: pn2-appsweep uninstalls each only when its signing
+# cert matches the platform key, so installs that are not ours are left
+# alone.
 #
 # Notification listener access goes through `cmd notification allow_listener`
 # rather than a settings write: this build's NotificationManagerService does
@@ -33,7 +37,7 @@
 # The HUD service is started on every boot, not just the first: it owns the
 # overlay window and the virtual displays, so panel tasks die with it.
 
-service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v7 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; pm disable com.picovr.provision; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud,gitlab.neosalsa.settings'; pm grant gitlab.neosalsa.home android.permission.CAMERA; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; touch /data/local/.pn2_panels_done_v7; fi"
+service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v8 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; pm disable com.picovr.provision; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud'; pm grant gitlab.neosalsa.home android.permission.CAMERA; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; /system/bin/pn2-appsweep; touch /data/local/.pn2_panels_done_v8; fi"
     user root
     group root
     seclabel u:r:shell:s0

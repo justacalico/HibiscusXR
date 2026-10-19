@@ -61,6 +61,7 @@ put "$OV/bin/pn2-ipdd" "/bin/pn2-ipdd" 755
 put "$OV/bin/pn2-dofd" "/bin/pn2-dofd" 755
 put "$OV/bin/pn2-themed" "/bin/pn2-themed" 755
 put "$OV/bin/pn2-envd" "/bin/pn2-envd" 755
+put "$OV/bin/pn2-appsweep" "/bin/pn2-appsweep" 755
 
 echo
 echo "=== VINTF manifest override ==="

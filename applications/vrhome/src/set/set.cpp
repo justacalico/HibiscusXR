@@ -424,16 +424,19 @@ static void sText(HudEngine* e, const Mat4& vp, const float c[3],
     glUseProgram(e->shapeProg);
 }
 
-// a rounded quad centred at card-local (x,y)
+// a rounded quad centred at card-local (x,y); clipY/clipC/clipH fade it
+// at the pane's scroll-band edges like the grid's cells
 static void sQuad(HudEngine* e, const Mat4& vp, const float c[3],
                   const float r[3], const float up[3],
                   float x, float y, float hw, float hh, float rad,
-                  const float col[4]) {
+                  const float col[4],
+                  float clipY = 0.0f, float clipC = 0.0f,
+                  float clipH = 0.0f) {
     const float qc[3] = {c[0] + r[0]*x + up[0]*y,
                          c[1] + r[1]*x + up[1]*y,
                          c[2] + r[2]*x + up[2]*y};
     shapeQuad(e, vp, qc, r, up, 0.006f, 0.0f, hw, hh, hw, hh, rad, 0.0f,
-              0.002f, col);
+              0.002f, col, -1.0f, 0.0f, clipY, clipC, clipH);
 }
 
 static const char* infoText(HudEngine* e, int txt) {
@@ -533,29 +536,74 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     float rx, ry, hw, hh;
     setRowRect(st, i, &rx, &ry, &hw, &hh);
     if (!setRowShown(st, i)) return;
+    float blo, bhi;
+    setClipBand(&blo, &bhi);
+    const float clipC = (blo + bhi) * 0.5f * gs;
+    const float clipH = (bhi - blo) * 0.5f * gs;
+    const bool full = ry + hh <= bhi + 0.002f &&
+                      ry - hh >= blo - 0.002f;
     const bool en = setImplemented(row.aux);
     const bool hot = st.zone == SZONE_ROW && st.hover == i &&
                      st.dlg == DLG_NONE;
     const float fade = en ? 1.0f : 0.45f;
     const float paneLx = rx - hw;
-    // row surface: brighter under the cursor
+    // row surface: brighter under the cursor, fades at the band edges
     const float hov = hot ? 0.16f : 0.0f;
     const float rcol[4] = {kPalSurface[0], kPalSurface[1], kPalSurface[2],
                            (0.35f + hov) * fade * ga};
     const float rcx = rx * gs, rcy = ry * gs;
-    sQuad(e, vp, c, r, up, rcx, rcy, hw * gs, hh * gs, 0.018f * gs, rcol);
-    const float lx = (paneLx + 0.016f) * gs;
+    sQuad(e, vp, c, r, up, rcx, rcy, hw * gs, hh * gs, 0.018f * gs, rcol,
+          rcy, clipC, clipH);
+    if (!full) return;   // contents only draw while the band holds them
+    const float lxC = paneLx + 0.016f;
+    const float lx = lxC * gs;
+    const float reC = rx + hw;              // the row's right edge
+    auto fit = [&](const char* str, float ts, float xC,
+                   float rightC) -> std::string {
+        return clipText(e->font.set, str, ts, (rightC - xC) * gs);
+    };
+    // where the row's texts have to stop: before the right-side control
+    float txR = reC - 0.016f;
+    switch (row.kind) {
+    case RK_TOGGLE: txR = reC - 0.070f; break;
+    case RK_ACTION: txR = reC - 0.055f; break;
+    case RK_SLIDER: {
+        float tl, tr;
+        setSliderTrack(&tl, &tr);
+        txR = tl - 0.070f;
+        break;
+    }
+    case RK_SEG:
+        txR = reC - 0.024f - setSegCount(row.id) * kSetSegCellW;
+        break;
+    case RK_SCANHDR:
+        txR = row.id == SEC_CTRL ? reC - 0.016f : reC - 0.115f;
+        break;
+    case RK_NET: case RK_ENV: txR = reC - 0.055f; break;
+    default: break;
+    }
     const char* label = row.aux >= 0 && row.aux < RID_COUNT
                         ? setStr(e, UISET_LBL0 + row.aux) : "";
     const char* desc = row.aux >= 0 && row.aux < RID_COUNT
                        ? setStr(e, UISET_DESC0 + row.aux) : "";
+    std::string infoVal;
+    float infoW = 0.0f;
+    if (row.kind == RK_INFO) {
+        infoVal = fit(infoText(e, row.id), 0.0014f * gs, lxC,
+                      reC - 0.016f);
+        infoW = measureText(e, infoVal.c_str(), 0.0014f * gs);
+        txR = reC - 0.016f - infoW - 0.030f;
+    }
     switch (row.kind) {
-    case RK_TOGGLE: case RK_ACTION: case RK_INFO: case RK_SEG:
-        sText(e, vp, c, r, up, lx, rcy + 0.016f * gs, label,
+    case RK_TOGGLE: case RK_ACTION: case RK_INFO: case RK_SEG: {
+        const std::string t = fit(label, 0.0016f * gs, lxC, txR);
+        const std::string d = fit(desc, 0.0011f * gs, lxC, txR);
+        sText(e, vp, c, r, up, lx, rcy + 0.016f * gs, t.c_str(),
               0.0016f * gs, fade * ga, false, false);
-        sText(e, vp, c, r, up, lx, rcy - 0.022f * gs, desc,
+        sText(e, vp, c, r, up, lx, rcy - 0.022f * gs, d.c_str(),
               0.0011f * gs, fade * ga, false, true);
         break;
+    }
     default:
         break;
     }
@@ -565,19 +613,21 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
                    (rx + hw - 0.035f) * gs, rcy,
                    (st.snap.toggles >> row.id) & 1u, gs, fade * ga);
         break;
-    case RK_SLIDER:
-        sText(e, vp, c, r, up, lx, rcy + 0.018f * gs, label,
+    case RK_SLIDER: {
+        const std::string t = fit(label, 0.0016f * gs, lxC, txR);
+        const std::string d = fit(desc, 0.0011f * gs, lxC, txR);
+        sText(e, vp, c, r, up, lx, rcy + 0.018f * gs, t.c_str(),
               0.0016f * gs, ga, false, false);
-        sText(e, vp, c, r, up, lx, rcy - 0.024f * gs, desc,
+        sText(e, vp, c, r, up, lx, rcy - 0.024f * gs, d.c_str(),
               0.0011f * gs, ga, false, true);
         drawSliderRow(e, vp, c, r, up, row, ry, gs, ga,
                       st.slideHeld == i ||
                       (st.zone == SZONE_SLIDER && st.hover == i));
         break;
+    }
     case RK_INFO:
-        sText(e, vp, c, r, up, (rx + hw - 0.016f) * gs -
-              measureText(e, infoText(e, row.id), 0.0014f * gs), rcy,
-              infoText(e, row.id), 0.0014f * gs, ga, false, true);
+        sText(e, vp, c, r, up, (reC - 0.016f) * gs - infoW, rcy,
+              infoVal.c_str(), 0.0014f * gs, ga, false, true);
         break;
     case RK_ACTION: {
         const float ic[3] = {c[0] + r[0]*(rx + hw - 0.030f)*gs + up[0]*rcy,
@@ -607,7 +657,9 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
                 ? UISET_THEME_DARK + o
                 : row.id == PK_LANG ? UISET_LANG_EN + o
                 : UISET_3DOF + o;
-            sText(e, vp, c, r, up, sx * gs, sy * gs, setStr(e, strId),
+            const std::string t = fit(setStr(e, strId), 0.0011f * gs,
+                                      sx - shw, sx + shw);
+            sText(e, vp, c, r, up, sx * gs, sy * gs, t.c_str(),
                   0.0011f * gs, fade * ga, true, !sel);
         }
         break;
@@ -630,12 +682,16 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         const float icol[4] = {kPalAccent[0], kPalAccent[1],
                                kPalAccent[2], ga};
         setGlyph(e, vp, SG_REFRESH, ic, r, up, 0.020f * gs, icol);
-        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy + 0.016f * gs, label,
-              0.0016f * gs, ga, false, false);
-        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy - 0.022f * gs,
-              setStr(e, scanning ? scanStr : idleStr >= 0 ? idleStr
-                                                            : UISET_IDLE_WIFI),
-              0.0011f * gs, ga, false, scanning ? false : true);
+        const std::string t = fit(label, 0.0016f * gs, lxC + 0.040f, txR);
+        const std::string d = fit(
+            setStr(e, scanning ? scanStr : idleStr >= 0 ? idleStr
+                                                          : UISET_IDLE_WIFI),
+            0.0011f * gs, lxC + 0.040f, txR);
+        sText(e, vp, c, r, up, lx + 0.040f * gs, rcy + 0.016f * gs,
+              t.c_str(), 0.0016f * gs, ga, false, false);
+        sText(e, vp, c, r, up, lx + 0.040f * gs, rcy - 0.022f * gs,
+              d.c_str(), 0.0011f * gs, ga, false,
+              scanning ? false : true);
         if (row.id != SEC_CTRL) {
             const float bx = (rx + hw - 0.055f) * gs;
             const bool bhov = st.zone == SZONE_SCAN && st.hover == i;
@@ -644,9 +700,11 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
                                    (bhov ? 0.85f : 0.6f) * ga};
             sQuad(e, vp, c, r, up, bx, rcy, 0.045f * gs, 0.026f * gs,
                   0.026f * gs, bcol);
-            const char* t = setStr(e, UISET_REFRESH);
-            sText(e, vp, c, r, up, bx, rcy, t, 0.0011f * gs, ga, true,
-                  false);
+            const std::string pt = fit(setStr(e, UISET_REFRESH),
+                                       0.0011f * gs,
+                                       bx / gs - 0.045f, bx / gs + 0.045f);
+            sText(e, vp, c, r, up, bx, rcy, pt.c_str(), 0.0011f * gs,
+                  ga, true, false);
         }
         break;
     }
@@ -658,14 +716,17 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         const float* icp = n.conn ? kPalAccent : kPalTextDim;
         const float icol[4] = {icp[0], icp[1], icp[2], ga};
         setSecIcon(e, vp, SEC_WIFI, ic, r, up, 0.018f * gs, icol);
-        sText(e, vp, c, r, up, lx + 0.034f * gs, rcy + 0.014f * gs,
-              n.ssid.c_str(), 0.0014f * gs, ga, false, false);
+        const std::string t = fit(n.ssid.c_str(), 0.0014f * gs,
+                                  lxC + 0.036f, txR);
         const char* sub = n.conn ? setStr(e, UISET_CONNECTED)
                         : n.saved >= 0 ? setStr(e, UISET_SAVED)
                         : n.sec == WSEC_OPEN ? setStr(e, UISET_OPENNET)
                         : setStr(e, UISET_SECURED);
-        sText(e, vp, c, r, up, lx + 0.034f * gs, rcy - 0.020f * gs, sub,
-              0.00105f * gs, ga, false, !n.conn);
+        const std::string d = fit(sub, 0.00105f * gs, lxC + 0.036f, txR);
+        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy + 0.014f * gs,
+              t.c_str(), 0.0014f * gs, ga, false, false);
+        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy - 0.020f * gs,
+              d.c_str(), 0.00105f * gs, ga, false, !n.conn);
         if (n.sec != WSEC_OPEN) {
             const float lc[3] = {c[0] + r[0]*(rx + hw - 0.036f)*gs +
                                      up[0]*rcy,
@@ -687,17 +748,24 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         const float* icp = d.conn ? kPalAccent : kPalTextDim;
         const float icol[4] = {icp[0], icp[1], icp[2], ga};
         setSecIcon(e, vp, SEC_BT, ic, r, up, 0.016f * gs, icol);
-        sText(e, vp, c, r, up, lx + 0.034f * gs, rcy + 0.014f * gs,
-              d.name.empty() ? d.addr.c_str() : d.name.c_str(),
-              0.0014f * gs, ga, false, false);
+        const float pairR = d.bonded ? txR :
+            reC - 0.016f - measureText(e, setStr(e, UISET_PAIR),
+                                       0.0012f * gs) / gs - 0.014f;
+        const std::string t = fit(
+            d.name.empty() ? d.addr.c_str() : d.name.c_str(),
+            0.0014f * gs, lxC + 0.036f, pairR);
         const char* sub = d.conn ? setStr(e, UISET_CONNECTED)
                         : d.bonded ? setStr(e, UISET_PAIRED)
                         : d.addr.c_str();
-        sText(e, vp, c, r, up, lx + 0.034f * gs, rcy - 0.020f * gs, sub,
-              0.00105f * gs, ga, false, !d.conn);
+        const std::string sd = fit(sub, 0.00105f * gs, lxC + 0.036f,
+                                   pairR);
+        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy + 0.014f * gs,
+              t.c_str(), 0.0014f * gs, ga, false, false);
+        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy - 0.020f * gs,
+              sd.c_str(), 0.00105f * gs, ga, false, !d.conn);
         if (!d.bonded)
             sText(e, vp, c, r, up,
-                  (rx + hw - 0.016f) * gs -
+                  (reC - 0.016f) * gs -
                   measureText(e, setStr(e, UISET_PAIR), 0.0012f * gs),
                   rcy, setStr(e, UISET_PAIR), 0.0012f * gs, ga, false,
                   false);
@@ -705,7 +773,9 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     }
     case RK_IME: {
         const SetImeOpt& im = st.snap.imes[row.aux];
-        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs, im.label.c_str(),
+        const std::string t = fit(im.label.c_str(), 0.0014f * gs, lxC,
+                                  txR);
+        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs, t.c_str(),
               0.0014f * gs, ga, false, false);
         if (im.active)
             sText(e, vp, c, r, up, lx, rcy - 0.020f * gs,
@@ -745,9 +815,11 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
                     np[0], np[1], np[2]);
         (void)ncol;
         glUseProgram(e->shapeProg);
-        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs, name,
+        const std::string t = fit(name, 0.0014f * gs, lxC, txR);
+        const std::string d = fit(sub, 0.00105f * gs, lxC, txR);
+        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs, t.c_str(),
               0.0014f * gs, ga, false, !active);
-        sText(e, vp, c, r, up, lx, rcy - 0.020f * gs, sub,
+        sText(e, vp, c, r, up, lx, rcy - 0.020f * gs, d.c_str(),
               0.00105f * gs, ga, false, true);
         if (active) {
             const float ic[3] = {c[0] + r[0]*(rx + hw - 0.030f)*gs +
@@ -776,46 +848,59 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     }
     case RK_CTRL: {
         const SetCtrl& ct = st.snap.ctrl[row.aux];
-        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs,
-              setStr(e, UISET_LBL0 + (row.aux == 0 ? RID_CTRL_L
-                                                 : RID_CTRL_R)),
+        const float battR = ct.batt >= 0 ? reC - 0.11f : txR;
+        const std::string t = fit(
+            setStr(e, UISET_LBL0 + (row.aux == 0 ? RID_CTRL_L
+                                                : RID_CTRL_R)),
+            0.0014f * gs, lxC, battR);
+        sText(e, vp, c, r, up, lx, rcy + 0.014f * gs, t.c_str(),
               0.0014f * gs, ga, false, false);
         const int stateStr = ct.state == 1 ? UISET_CONNECTED
                            : ct.state == 2 ? UISET_PAIRING
                            : UISET_DISCONNECTED;
-        sText(e, vp, c, r, up, lx, rcy - 0.020f * gs,
-              setStr(e, stateStr), 0.00105f * gs, ga, false,
-              ct.state != 1);
+        const std::string d = fit(setStr(e, stateStr), 0.00105f * gs,
+                                  lxC, battR);
+        sText(e, vp, c, r, up, lx, rcy - 0.020f * gs, d.c_str(),
+              0.00105f * gs, ga, false, ct.state != 1);
         if (ct.batt >= 0) {
             char b[24];
             snprintf(b, sizeof(b), setStr(e, UISET_CTRL_BATT_FMT),
                      ct.batt);
             const float bw = measureText(e, b, 0.0011f * gs);
-            sText(e, vp, c, r, up, (rx + hw - 0.016f) * gs - bw, rcy, b,
+            sText(e, vp, c, r, up, (reC - 0.016f) * gs - bw, rcy, b,
                   0.0011f * gs, ga, false, true);
         }
         break;
     }
-    case RK_BRAND:
-        sText(e, vp, c, r, up, rcx, rcy + 0.020f * gs,
-              setStr(e, UISET_LBL0 + RID_BRAND), 0.0030f * gs, ga, true,
-              false);
-        sText(e, vp, c, r, up, rcx, rcy - 0.030f * gs,
-              setStr(e, UISET_DESC0 + RID_BRAND), 0.0013f * gs, ga, true,
-              true);
+    case RK_BRAND: {
+        const std::string t = fit(setStr(e, UISET_LBL0 + RID_BRAND),
+                                  0.0030f * gs, rx - hw, rx + hw);
+        const std::string d = fit(setStr(e, UISET_DESC0 + RID_BRAND),
+                                  0.0013f * gs, rx - hw, rx + hw);
+        sText(e, vp, c, r, up, rcx, rcy + 0.020f * gs, t.c_str(),
+              0.0030f * gs, ga, true, false);
+        sText(e, vp, c, r, up, rcx, rcy - 0.030f * gs, d.c_str(),
+              0.0013f * gs, ga, true, true);
         break;
+    }
     default:
         break;
     }
-    // list-empty hints
-    if ((row.kind == RK_SCANHDR && row.id == SEC_WIFI &&
-         st.snap.wifi.empty()) ||
-        (row.kind == RK_SCANHDR && row.id == SEC_BT &&
-         st.snap.bt.empty()))
-        sText(e, vp, c, r, up, lx + 0.036f * gs, rcy - 0.056f * gs,
-              setStr(e, row.id == SEC_WIFI ? UISET_EMPTY_WIFI
-                                           : UISET_EMPTY_BT),
-              0.0011f * gs, ga, false, true);
+    // the empty-list hint lives in the free pane space under the scan
+    // row, never inside the row's own band
+    if (row.kind == RK_SCANHDR &&
+        ((row.id == SEC_WIFI && st.snap.wifi.empty()) ||
+         (row.id == SEC_BT && st.snap.bt.empty()))) {
+        const float hy = rcy - hh * gs - 0.040f * gs;
+        if (hy > blo * gs) {
+            const std::string t = fit(
+                setStr(e, row.id == SEC_WIFI ? UISET_EMPTY_WIFI
+                                             : UISET_EMPTY_BT),
+                0.0011f * gs, lxC, txR);
+            sText(e, vp, c, r, up, lx, hy, t.c_str(), 0.0011f * gs, ga,
+                  false, true);
+        }
+    }
 }
 
 static void drawDlg(HudEngine* e, const Mat4& vp, const float c[3],

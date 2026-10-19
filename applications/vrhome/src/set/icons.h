@@ -18,3 +18,11 @@ enum SetGlyph {
 void setGlyph(HudEngine* e, const Mat4& vp, int glyph,
               const float ic[3], const float r[3], const float up[3],
               float s, const float col[4]);
+
+// the project mark on the About card's brand row: five petals around a
+// dark throat, the gold stamen ray and the tracking orbit ring with its
+// planet - the procedural twin of the old app's hibiscusxr_icon.svg,
+// fixed brand colours instead of the theme palette. s is half-size
+void setBrandMark(HudEngine* e, const Mat4& vp, const float ic[3],
+                  const float r[3], const float up[3], float s,
+                  float alpha);

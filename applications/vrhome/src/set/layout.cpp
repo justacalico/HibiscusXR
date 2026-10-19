@@ -72,6 +72,7 @@ void setBuildRows(int sec, const SetSnap& snap, std::vector<SetRow>* out) {
         row(RK_ENV, -1, 1);
         for (int i = 0; i < (int)snap.envs.size(); ++i)
             row(RK_ENV, -1, i + 2);
+        row(RK_INFO, TX_ENV, RID_HOME_ENV);
         break;
     case SEC_SOUND:
         row(RK_SLIDER, SL_VOL, RID_VOL);

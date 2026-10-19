@@ -876,13 +876,18 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         break;
     }
     case RK_BRAND: {
+        const float my = rcy + 0.031f * gs;
+        const float ic[3] = {c[0] + r[0]*rcx + up[0]*my,
+                             c[1] + r[1]*rcx + up[1]*my,
+                             c[2] + r[2]*rcx + up[2]*my};
+        setBrandMark(e, vp, ic, r, up, 0.020f * gs, ga);
         const std::string t = fit(setStr(e, UISET_LBL0 + RID_BRAND),
-                                  0.0030f * gs, rx - hw, rx + hw);
+                                  0.0027f * gs, rx - hw, rx + hw);
         const std::string d = fit(setStr(e, UISET_DESC0 + RID_BRAND),
                                   0.0013f * gs, rx - hw, rx + hw);
-        sText(e, vp, c, r, up, rcx, rcy + 0.020f * gs, t.c_str(),
-              0.0030f * gs, ga, true, false);
-        sText(e, vp, c, r, up, rcx, rcy - 0.030f * gs, d.c_str(),
+        sText(e, vp, c, r, up, rcx, rcy - 0.009f * gs, t.c_str(),
+              0.0027f * gs, ga, true, false);
+        sText(e, vp, c, r, up, rcx, rcy - 0.043f * gs, d.c_str(),
               0.0013f * gs, ga, true, true);
         break;
     }

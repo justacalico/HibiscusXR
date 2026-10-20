@@ -1,6 +1,7 @@
 #include "layout.h"
 
 #include "../common/config.h"
+#include "../dock/item.h"
 #include "../panels/layout.h"
 
 #include <cmath>
@@ -104,6 +105,11 @@ float quickTitleY() {
 
 bool quickToggleOn(const QsStatus& st, int id) {
     return (st.toggles & (1u << id)) != 0;
+}
+
+int quickTileIcon(const QsStatus& st, int id) {
+    if (id == QS_WIFI && st.net == DNET_ETH) return QS_ICON_ETH;
+    return id;
 }
 
 QsSub quickSubtitle(const QsStatus& st, int id) {

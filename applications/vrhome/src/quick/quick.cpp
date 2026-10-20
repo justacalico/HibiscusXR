@@ -190,7 +190,8 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const float ic[3] = {c[0] + r[0]*tcx + up[0]*iconY,
                          c[1] + r[1]*tcx + up[1]*iconY,
                          c[2] + r[2]*tcx + up[2]*iconY};
-    quickIcon(e, vp, s.id, ic, r, up, is, icol, bgc2);
+    quickIcon(e, vp, quickTileIcon(e->quick.st, s.id), ic, r, up, is,
+              icol, bgc2);
     float labelY, subY;
     quickTileTextY(s.large, &labelY, &subY);
     const char* label = qsStr(e, UIQS_LABEL0 + s.id);

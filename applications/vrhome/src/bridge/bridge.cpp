@@ -155,6 +155,7 @@ public:
         fQsChg = env->GetFieldID(qsSnapCls, "chg", "I");
         fQsVol = env->GetFieldID(qsSnapCls, "vol", "F");
         fQsBri = env->GetFieldID(qsSnapCls, "bri", "F");
+        fQsNet = env->GetFieldID(qsSnapCls, "net", "I");
         fQsSsid = env->GetFieldID(qsSnapCls, "ssid", "Ljava/lang/String;");
         fQsBt = env->GetFieldID(qsSnapCls, "bt", "Ljava/lang/String;");
         setSnapCls = (jclass)env->NewGlobalRef(loadAppClass(env, ctx,
@@ -510,6 +511,7 @@ public:
         out->toggles = (unsigned)e->GetIntField(s, fQsToggles);
         out->batt = e->GetIntField(s, fQsBatt);
         out->chg = e->GetIntField(s, fQsChg);
+        out->net = e->GetIntField(s, fQsNet);
         out->volume = e->GetFloatField(s, fQsVol);
         out->brightness = e->GetFloatField(s, fQsBri);
         out->ssid = jstr(e, (jstring)e->GetObjectField(s, fQsSsid));
@@ -775,7 +777,7 @@ private:
     jfieldID fPendTask, fPendPkg, fAppPkg, fAppLabel, fNotifKey, fNotifPkg,
         fNotifTitle, fNotifText, fNotifMs, fNotifClear, fMsgId, fMsgPkg,
         fMsgTitle, fMsgText, fMsgBtns, fQsToggles, fQsBatt, fQsChg, fQsVol,
-        fQsBri, fQsSsid, fQsBt,
+        fQsBri, fQsNet, fQsSsid, fQsBt,
         fSetToggles, fSetFlags, fSetVol, fSetBri, fSetIpd, fSetTexts,
         fSetWifi, fSetBt, fSetIme, fSetEnv, fSetCtrl,
         fWifiSsid, fWifiSec, fWifiLevel, fWifiConn, fWifiSaved,

@@ -21,6 +21,10 @@ enum QsId {
     QS_COUNT
 };
 
+// glyph id for quickIcon's switch only, never a tile index: the wifi
+// tile swaps it in while a cable is patched
+constexpr int QS_ICON_ETH = QS_COUNT;
+
 // the card's two sliders, top row first; same ordering QuickState.java
 // switches on
 enum QsSlider {
@@ -44,6 +48,7 @@ enum QsZone {
 // subtitles as strings. QuickState.snap() fills it fresh on every pull.
 struct QsStatus {
     unsigned toggles = 0;
+    int net = 0;            // uplink kind: dock/item.h's DockNet values
     int batt = -1;          // 0..100, -1: the device has no battery
     int chg = 0;
     float volume = 0.0f;

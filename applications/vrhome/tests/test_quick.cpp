@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "quick/layout.h"
+#include "dock/item.h"
 #include "common/config.h"
 #include "math/head.h"
 
@@ -131,6 +132,18 @@ void testQuick() {
         st.btName = "Pods";
         s = quickSubtitle(st, QS_BLUETOOTH);
         CHECK(s.kind == QSUB_CUSTOM && s.text == st.btName.c_str());
+    }
+
+    // the wifi tile swaps its fan for the plug while a cable is patched;
+    // every other tile keeps its own glyph
+    {
+        QsStatus st;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_WIFI);
+        st.net = DNET_WIFI;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_WIFI);
+        st.net = DNET_ETH;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_ICON_ETH);
+        CHECK(quickTileIcon(st, QS_MIC) == QS_MIC);
     }
 
     // the card sits on the dash's anchor cylinder at the grid's distance:

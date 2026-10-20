@@ -10,6 +10,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
@@ -41,6 +43,7 @@ public class QuickState {
 
     public static class Snap {
         public int toggles;
+        public int net;         // uplink kind: 0 none, 1 wifi, 2 wired
         public int batt = -1;   // -1: the device has no battery
         public int chg;
         public float vol;
@@ -105,6 +108,18 @@ public class QuickState {
                     if (!ssid.isEmpty() && !ssid.equals("<unknown ssid>"))
                         s.ssid = ssid;
                 }
+            }
+        } catch (Throwable ignored) {}
+        try {
+            ConnectivityManager cm = (ConnectivityManager)
+                    ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo ei =
+                    cm.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
+            if (ei != null && ei.isConnected()) s.net = 2;
+            if (s.net == 0) {
+                NetworkInfo wi =
+                        cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                if (wi != null && wi.isConnected()) s.net = 1;
             }
         } catch (Throwable ignored) {}
         try {

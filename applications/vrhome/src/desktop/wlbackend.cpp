@@ -385,6 +385,7 @@ void WlBackend::quickStatus(QsStatus* out) {
     pollSys();
     out->toggles = qsMask;
     if (sysWifi) out->toggles |= (1u << QS_WIFI);
+    out->net = sysEth ? DNET_ETH : sysWifi ? DNET_WIFI : DNET_NONE;
     const std::string v =
         runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
     out->volume = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);

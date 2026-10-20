@@ -55,6 +55,10 @@ float quickTitleY();
 // a toggle tile's current bit in the snapshot
 bool quickToggleOn(const QsStatus& st, int id);
 
+// the glyph a tile draws for a snapshot: the wifi tile swaps in the
+// wired plug while a cable is patched, everything else keeps its own id
+int quickTileIcon(const QsStatus& st, int id);
+
 // a large tile's subtitle: wifi and bluetooth carry the connected name
 // when one's known, otherwise the on/off/not-connected word
 enum QsSubKind { QSUB_ON, QSUB_OFF, QSUB_NOTCONN, QSUB_CUSTOM };

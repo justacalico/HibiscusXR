@@ -1,0 +1,92 @@
+--- a/src/xrt/compositor/main/comp_renderer.c
++++ b/src/xrt/compositor/main/comp_renderer.c
+@@ -170,6 +170,10 @@
+ 	//! pacer once its fence retires at the top of the next draw.
+ 	int64_t ts_frame_id;
+ 
++	//! Late-latched pose target time for this draw, 0 to use the frame's
++	//! predicted display time.
++	int64_t late_pose_time_ns;
++
+ 	/*!
+ 	 * The render pass used to render to the target, it depends on the
+ 	 * target's format so will be recreated each time the target changes.
+@@ -439,6 +443,9 @@
+ 	const int64_t scanout_time_ns = calc_scanout_compensation_ns(r);
+ 
+ 	int64_t begin_timestamp_ns = r->c->frame.rendering.predicted_display_time_ns;
++	if (r->late_pose_time_ns != 0) {
++		begin_timestamp_ns = r->late_pose_time_ns;
++	}
+ 	int64_t end_timestamp_ns = begin_timestamp_ns + scanout_time_ns;
+ 
+ 	// Pose at beginning of scanout
+@@ -1270,6 +1277,28 @@
+ 	renderer_wait_for_last_fence(r);
+ 	int64_t t_fenced_ns = os_monotonic_get_ns();
+ 
++	/*
++	 * Late-latch: on a fake-timing target the predicted display time was
++	 * fixed a full frame ago at wait-frame, so a frame that slipped a
++	 * vsync still warps for the old one and eats the whole judder.
++	 * Re-derive the photon time now from the vsync feed and the frame
++	 * interval so the pose is sampled for the scanout the frame will
++	 * actually hit; falls back to the prediction when no vblank stamp
++	 * has been seen yet.
++	 */
++	r->late_pose_time_ns = 0;
++	if (ct->fake_display_timing && ct->get_last_vblank_ns != NULL) {
++		int64_t last_vblank_ns = ct->get_last_vblank_ns(ct);
++		if (last_vblank_ns > 0) {
++			int64_t half = c->frame_interval_ns / 2;
++			int64_t t = last_vblank_ns;
++			while (t <= t_fenced_ns + half) {
++				t += c->frame_interval_ns;
++			}
++			r->late_pose_time_ns = t + half;
++		}
++	}
++
+ 	// Previous frame's GPU timestamps are ready once its fence retired.
+ 	if (r->ts_frame_id >= 0) {
+ 		uint64_t gpu_start_ns, gpu_end_ns;
+--- a/src/xrt/compositor/main/comp_target.h
++++ b/src/xrt/compositor/main/comp_target.h
+@@ -358,6 +358,9 @@
+ 	 */
+ 	xrt_result_t (*request_refresh_rate)(struct comp_target *ct, float display_refresh_rate_hz);
+ 
++	//! Last seen vsync timestamp in ns, 0 when the target has no vblank feed.
++	int64_t (*get_last_vblank_ns)(struct comp_target *ct);
++
+ 	/*!
+ 	 * Queries if a particular queue supports presentation ops/cmds for the compositor target
+ 	 *
+--- a/src/xrt/compositor/main/comp_target_swapchain.c
++++ b/src/xrt/compositor/main/comp_target_swapchain.c
+@@ -1405,6 +1405,17 @@
+ 	return VK_SUCCESS;
+ }
+ 
++static int64_t
++comp_target_swapchain_get_last_vblank(struct comp_target *ct)
++{
++	struct comp_target_swapchain *cts = (struct comp_target_swapchain *)ct;
++
++	os_thread_helper_lock(&cts->vblank.event_thread);
++	int64_t ts = cts->vblank.last_vblank_ns;
++	os_thread_helper_unlock(&cts->vblank.event_thread);
++	return ts;
++}
++
+ void
+ comp_target_swapchain_init_and_set_fnptrs(struct comp_target_swapchain *cts,
+                                           enum comp_target_display_timing_usage timing_usage)
+@@ -1423,6 +1434,7 @@
+ 	cts->base.update_timings = comp_target_swapchain_update_timings;
+ 	cts->base.info_gpu = comp_target_swapchain_info_gpu;
+ 	cts->base.queue_supports_present = comp_target_swapchain_queue_supports_present;
++	cts->base.get_last_vblank_ns = comp_target_swapchain_get_last_vblank;
+ 
+ 	os_thread_helper_init(&cts->vblank.event_thread);
+ #ifdef XRT_OS_ANDROID

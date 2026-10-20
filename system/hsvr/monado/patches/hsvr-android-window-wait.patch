@@ -1,0 +1,11 @@
+--- a/src/xrt/compositor/main/comp_window_android.c
++++ b/src/xrt/compositor/main/comp_window_android.c
+@@ -157,7 +157,7 @@
+ 		 * TODO: change java code to callback native code to notify Session lifecycle progress, instead
+ 		 * of polling here
+ 		 */
+-		for (int i = 0; i < 100; i++) {
++		for (int i = 0; i < 400; i++) {
+ 			window = (struct ANativeWindow *)android_globals_get_window();
+ 			if (window)
+ 				break;

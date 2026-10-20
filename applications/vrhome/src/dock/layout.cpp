@@ -175,6 +175,17 @@ float dockDotOff(float iconHalf) {
     return off < maxOff ? off : maxOff;
 }
 
+DockNetIcon dockNetIcon(int net) {
+    DockNetIcon i;
+    if (net == DNET_ETH) {
+        i.glyph = DNET_ETH;
+        i.lit = true;
+    } else {
+        i.lit = net == DNET_WIFI;
+    }
+    return i;
+}
+
 // the close badge hangs off a live immersive icon's top-right corner
 static void badgeAt(float itemX, float* bx, float* by) {
     *bx = itemX + kDockIconHW * 0.72f;

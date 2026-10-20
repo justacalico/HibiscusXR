@@ -1,6 +1,7 @@
 #include "test.h"
 
 #include "quick/layout.h"
+#include "dock/item.h"
 #include "common/config.h"
 #include "math/head.h"
 
@@ -102,15 +103,16 @@ void testQuick() {
     // activate policy: inert tiles resolve to nothing, toggles flip,
     // reset view is native, about opens settings
     {
-        CHECK(quickActivateOp(QS_BOUNDARY) == QOP_NONE);
-        CHECK(quickActivateOp(QS_SEETHROUGH) == QOP_NONE);
-        CHECK(quickActivateOp(QS_REPORT) == QOP_NONE);
-        CHECK(quickActivateOp(QS_WIFI) == QOP_TOGGLE);
-        CHECK(quickActivateOp(QS_MIC) == QOP_TOGGLE);
-        CHECK(quickActivateOp(QS_RESET_VIEW) == QOP_RECENTER);
-        CHECK(quickActivateOp(QS_ABOUT) == QOP_SETTINGS);
-        CHECK(quickActivateOp(-1) == QOP_NONE);
-        CHECK(quickActivateOp(QS_COUNT) == QOP_NONE);
+        QsStatus st;
+        CHECK(quickActivateOp(st, QS_BOUNDARY) == QOP_NONE);
+        CHECK(quickActivateOp(st, QS_SEETHROUGH) == QOP_NONE);
+        CHECK(quickActivateOp(st, QS_REPORT) == QOP_NONE);
+        CHECK(quickActivateOp(st, QS_WIFI) == QOP_TOGGLE);
+        CHECK(quickActivateOp(st, QS_MIC) == QOP_TOGGLE);
+        CHECK(quickActivateOp(st, QS_RESET_VIEW) == QOP_RECENTER);
+        CHECK(quickActivateOp(st, QS_ABOUT) == QOP_SETTINGS);
+        CHECK(quickActivateOp(st, -1) == QOP_NONE);
+        CHECK(quickActivateOp(st, QS_COUNT) == QOP_NONE);
     }
 
     // toggle bits and subtitles: wifi carries the ssid when one's known,
@@ -131,6 +133,34 @@ void testQuick() {
         st.btName = "Pods";
         s = quickSubtitle(st, QS_BLUETOOTH);
         CHECK(s.kind == QSUB_CUSTOM && s.text == st.btName.c_str());
+    }
+
+    // the wifi tile swaps its fan for the plug while a cable is patched;
+    // every other tile keeps its own glyph
+    {
+        QsStatus st;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_WIFI);
+        st.net = DNET_WIFI;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_WIFI);
+        st.net = DNET_ETH;
+        CHECK(quickTileIcon(st, QS_WIFI) == QS_ICON_ETH);
+        CHECK(quickTileIcon(st, QS_MIC) == QS_MIC);
+    }
+
+    // the wired state: the tile reads "Ethernet", lit, untappable, with
+    // no ssid to carry it falls back to the on word
+    {
+        QsStatus st;
+        CHECK(!quickTileOn(st, QS_WIFI));
+        CHECK(quickTileLabel(st, QS_WIFI) == UIQS_LABEL0 + QS_WIFI);
+        st.net = DNET_ETH;
+        CHECK(quickTileOn(st, QS_WIFI));
+        CHECK(!quickTileOn(st, QS_MIC));
+        CHECK(quickTileLabel(st, QS_WIFI) == UIQS_ETH);
+        CHECK(quickTileLabel(st, QS_MIC) == UIQS_LABEL0 + QS_MIC);
+        CHECK(quickSubtitle(st, QS_WIFI).kind == QSUB_ON);
+        CHECK(quickActivateOp(st, QS_WIFI) == QOP_NONE);
+        CHECK(quickActivateOp(st, QS_MIC) == QOP_TOGGLE);
     }
 
     // the card sits on the dash's anchor cylinder at the grid's distance:

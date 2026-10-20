@@ -58,6 +58,11 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st);
 // dot past the bar's bottom edge
 float dockDotOff(float iconHalf);
 
+// the status pill's net slot for a reported link kind: a wired link owns
+// the slot while it's up; the fan covers the rest and only lights while
+// wifi itself is associated
+DockNetIcon dockNetIcon(int net);
+
 // which item a bar-local point hits (u -1..1 across the bar, v -1..1 across
 // its height); *zone gets DZONE_CLOSE on a live immersive item's badge, or
 // DZONE_SYS on the status pill with no item index

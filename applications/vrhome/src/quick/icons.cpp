@@ -27,6 +27,16 @@ void quickIcon(HudEngine* e, const Mat4& vp, int id, const float ic[3],
         iconArc(e, vp, ic, r, up, 0.0f, -0.42f * s, s * 0.34f, w, 0.0f, col);
         iconDisc(e, vp, ic, r, up, 0.0f, -0.42f * s, s * 0.12f, 0.0f, col);
         break;
+    case QS_ICON_ETH:
+        // the plug's contact pins standing on its base bar
+        iconSeg(e, vp, ic, r, up, -0.62f * s, -0.55f * s, 0.62f * s,
+            -0.55f * s, w * 1.15f, col);
+        for (int k = 0; k < 7; ++k) {
+            const float px = (k - 3) * 0.175f * s;
+            iconSeg(e, vp, ic, r, up, px, -0.52f * s, px, 0.55f * s,
+                w * 0.45f, col);
+        }
+        break;
     case QS_BOUNDARY:
         iconCorners(e, vp, ic, r, up, s * 0.88f, w * 1.15f, col);
         break;

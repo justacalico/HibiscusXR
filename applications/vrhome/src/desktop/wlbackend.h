@@ -74,7 +74,7 @@ private:
     int appsVer = 0;
     long long appsScanAt = 0;
     long long sysPollAt = 0;
-    int sysWifi = 0, sysBatt = -1, sysChg = 0;
+    int sysWifi = 0, sysEth = 0, sysBatt = -1, sysChg = 0;
     std::string sysSsid;
     bool pinsSent = false;
     unsigned qsMask = 0;

@@ -29,7 +29,7 @@ void syncQuick(HudEngine* e) {
 void quickActivate(HudEngine* e, int idx) {
     if (idx < 0 || idx >= QS_COUNT) return;
     const int id = quickSpec(idx).id;
-    switch (quickActivateOp(id)) {
+    switch (quickActivateOp(e->quick.st, id)) {
     case QOP_TOGGLE:
         e->quick.st.toggles ^= (1u << id);
         if (e->backend)
@@ -67,7 +67,7 @@ static const char* kQsFallback[UIQS_COUNT] = {
     "Wi-Fi", "Boundary", "Bluetooth", "Seethrough",
     "Microphone", "Reset view", "Night mode", "Do Not Disturb",
     "Airplane mode", "Battery saver", "Report problem",
-    "About device",
+    "About device", "Ethernet",
 };
 
 static const char* qsStr(HudEngine* e, int i) {
@@ -160,7 +160,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const QsSpec& s = quickSpec(i);
     float tx, ty, hw, hh;
     quickTileRect(i, &tx, &ty, &hw, &hh);
-    const bool on = s.toggle && quickToggleOn(e->quick.st, s.id);
+    const bool on = s.toggle && quickTileOn(e->quick.st, s.id);
     const float hs = e->quick.hs[i];
     const float hp = hoverP(hs, kQuickHoverScale);
     const float tcx = tx * gs, tcy = ty * gs;
@@ -190,10 +190,11 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const float ic[3] = {c[0] + r[0]*tcx + up[0]*iconY,
                          c[1] + r[1]*tcx + up[1]*iconY,
                          c[2] + r[2]*tcx + up[2]*iconY};
-    quickIcon(e, vp, s.id, ic, r, up, is, icol, bgc2);
+    quickIcon(e, vp, quickTileIcon(e->quick.st, s.id), ic, r, up, is,
+              icol, bgc2);
     float labelY, subY;
     quickTileTextY(s.large, &labelY, &subY);
-    const char* label = qsStr(e, UIQS_LABEL0 + s.id);
+    const char* label = qsStr(e, quickTileLabel(e->quick.st, s.id));
     cardText(e, vp, c, r, up, tcx, tcy + labelY * thh,
              label, 0.0010f * gs, dead * ga, true, !on);
     if (s.large) {

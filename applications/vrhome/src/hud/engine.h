@@ -128,7 +128,7 @@ struct HudEngine : Engine {
     // positions, the rest is the last bridge pull + the formatted clock
     DockStatus dockSys;
     char sysClock[8] = "--:--";
-    int sysWifi = 0;               // wifi link state: 1 connected
+    int sysNet = 0;                // uplink kind: a DockNet value
     int sysBatt = -1;              // battery percent 0..100, -1: no battery
     int sysChg = 0;                // charging flag
 

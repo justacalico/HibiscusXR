@@ -36,6 +36,18 @@ bool parseNmRadio(const std::string& text) {
     return trimmed(text).rfind("enabled", 0) == 0;
 }
 
+bool parseEthLink(const std::string& text) {
+    size_t at = 0;
+    while (at <= text.size()) {
+        const size_t eol = text.find('\n', at);
+        const std::string line = text.substr(at,
+            eol == std::string::npos ? eol : eol - at);
+        at = eol == std::string::npos ? text.size() + 1 : eol + 1;
+        if (line.rfind("ethernet:connected", 0) == 0) return true;
+    }
+    return false;
+}
+
 float parseWpctlVol(const std::string& text) {
     const size_t colon = text.find(':');
     if (colon == std::string::npos) return -1.0f;

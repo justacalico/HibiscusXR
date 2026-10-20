@@ -14,6 +14,10 @@ bool parseCharging(const std::string& text);       // Charging/Full -> true
 std::string parseWifiSsid(const std::string& text);
 bool parseNmRadio(const std::string& text);        // "enabled"/"disabled"
 
+// `nmcli -t -f type,state dev`: an "ethernet:connected" row means the
+// wired link is up
+bool parseEthLink(const std::string& text);
+
 // `wpctl get-volume @DEFAULT_AUDIO_SINK@` -> "Volume: 0.63 [MUTED]"
 float parseWpctlVol(const std::string& text);
 bool parseWpctlMuted(const std::string& text);

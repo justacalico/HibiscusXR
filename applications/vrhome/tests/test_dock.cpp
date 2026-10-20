@@ -138,6 +138,17 @@ void testDock() {
         CHECK(zone == DZONE_SYS);
     }
 
+    // the net slot: a patched cable owns it lit, the fan covers the rest
+    // and only lights while wifi is associated
+    {
+        const DockNetIcon eth = dockNetIcon(DNET_ETH);
+        CHECK(eth.glyph == DNET_ETH && eth.lit);
+        const DockNetIcon wi = dockNetIcon(DNET_WIFI);
+        CHECK(wi.glyph == DNET_WIFI && wi.lit);
+        const DockNetIcon off = dockNetIcon(DNET_NONE);
+        CHECK(off.glyph == DNET_WIFI && !off.lit);
+    }
+
     // an empty item list still places the cluster, just with no separator
     {
         std::vector<DockItem> items;

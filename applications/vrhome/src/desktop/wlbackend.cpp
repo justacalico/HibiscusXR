@@ -137,6 +137,9 @@ void WlBackend::pollSys() {
         runOut("nmcli -t -f active,ssid dev wifi 2>/dev/null");
     sysSsid = parseWifiSsid(w);
     sysWifi = sysSsid.empty() ? 0 : 1;
+    const std::string devs =
+        runOut("nmcli -t -f type,state dev 2>/dev/null");
+    sysEth = parseEthLink(devs) ? 1 : 0;
     // -1 survives only when no BAT* entry exists: a power_supply node
     // whose capacity won't parse still counts as a battery at 0%
     sysBatt = -1; sysChg = 0;
@@ -324,7 +327,8 @@ void WlBackend::setPins(const std::vector<std::string>& pins) {
 
 void WlBackend::sysStatus(int out[3]) {
     pollSys();
-    out[0] = sysWifi; out[1] = sysBatt; out[2] = sysChg;
+    out[0] = sysEth ? DNET_ETH : sysWifi ? DNET_WIFI : DNET_NONE;
+    out[1] = sysBatt; out[2] = sysChg;
 }
 
 bool WlBackend::iconPixels(const std::string& pkg, IconPixels* out) {
@@ -374,6 +378,7 @@ void WlBackend::uiStrings(std::vector<std::string>* out) {
         "Wi-Fi", "Boundary", "Bluetooth", "Seethrough", "Microphone",
         "Reset view", "Night mode", "Do Not Disturb", "Airplane mode",
         "Battery saver", "Report problem", "About device",
+        "Ethernet",
     };
 }
 
@@ -381,6 +386,7 @@ void WlBackend::quickStatus(QsStatus* out) {
     pollSys();
     out->toggles = qsMask;
     if (sysWifi) out->toggles |= (1u << QS_WIFI);
+    out->net = sysEth ? DNET_ETH : sysWifi ? DNET_WIFI : DNET_NONE;
     const std::string v =
         runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
     out->volume = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);

@@ -57,7 +57,7 @@ static void pullXr(HudEngine* e) {
 static void pullSys(HudEngine* e) {
     int v[3];
     e->backend->sysStatus(v);
-    e->sysWifi = v[0]; e->sysBatt = v[1]; e->sysChg = v[2];
+    e->sysNet = v[0]; e->sysBatt = v[1]; e->sysChg = v[2];
 }
 
 DockIcon& iconFor(HudEngine* e, const std::string& pkg) {
@@ -405,23 +405,45 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         glUseProgram(e->shapeProg);
     }
 
-    // wifi fan: the apex dot anchors the fan and three arcs open upward;
-    // wy drops the apex just enough that the fan's bounding box centres on
-    // the slot like the battery and clock do
+    // the net slot: the wifi fan unless a cable is patched in - the apex
+    // dot anchors the fan and three arcs open upward; wy drops the apex
+    // just enough that the fan's bounding box centres on the slot like
+    // the battery and clock do
     {
+        const DockNetIcon ni = dockNetIcon(e->sysNet);
         const float wcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               (e->sysWifi ? 0.92f : 0.25f) * a};
-        const float wy = -0.019f;
-        const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
-                             c[1] + r[1]*st.wifiX + up[1]*wy,
-                             c[2] + r[2]*st.wifiX + up[2]*wy};
-        const float wr[3] = {0.014f, 0.027f, 0.040f};
-        for (int k = 0; k < 3; ++k)
-            shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f,
-                      wr[k] + 0.008f, wr[k] + 0.008f, wr[k], wr[k],
-                      wr[k], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
-        shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f, 0.006f, 0.006f,
-                  0.0045f, 0.0045f, 0.0045f, 0.0f, 0.0015f, wcol);
+                               (ni.lit ? 0.92f : 0.25f) * a};
+        if (ni.glyph == DNET_ETH) {
+            // wired: the plug's contact pins standing on its base bar
+            const float bc[3] = {c[0] + r[0]*st.wifiX - up[0]*0.009f,
+                                 c[1] + r[1]*st.wifiX - up[1]*0.009f,
+                                 c[2] + r[2]*st.wifiX - up[2]*0.009f};
+            shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, 0.027f, 0.0065f,
+                      0.024f, 0.0035f, 0.0035f, 0.0f, 0.0015f, wcol);
+            for (int k = 0; k < 7; ++k) {
+                const float px = (k - 3) * 0.007f;
+                const float pc[3] = {c[0] + r[0]*(st.wifiX + px) +
+                                         up[0]*0.002f,
+                                     c[1] + r[1]*(st.wifiX + px) +
+                                         up[1]*0.002f,
+                                     c[2] + r[2]*(st.wifiX + px) +
+                                         up[2]*0.002f};
+                shapeQuad(e, vp, pc, r, up, 0.008f, 0.0f, 0.0045f, 0.010f,
+                          0.0015f, 0.007f, 0.0015f, 0.0f, 0.0012f, wcol);
+            }
+        } else {
+            const float wy = -0.019f;
+            const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
+                                 c[1] + r[1]*st.wifiX + up[1]*wy,
+                                 c[2] + r[2]*st.wifiX + up[2]*wy};
+            const float wr[3] = {0.014f, 0.027f, 0.040f};
+            for (int k = 0; k < 3; ++k)
+                shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f,
+                          wr[k] + 0.008f, wr[k] + 0.008f, wr[k], wr[k],
+                          wr[k], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
+            shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f, 0.006f, 0.006f,
+                      0.0045f, 0.0045f, 0.0045f, 0.0f, 0.0015f, wcol);
+        }
     }
 
     // battery: outline body, level fill inside, tip nub on the right;

@@ -65,7 +65,8 @@ public:
     virtual void setPins(const std::vector<std::string>& pins) {}
     virtual int vrVersion() { return 0; }
     virtual void runningVr(std::vector<XrTask>* out) { out->clear(); }
-    // {wifi, battPct, charging}; battPct -1 = the device has no battery
+    // {net, battPct, charging}; net is a DockNet link kind, battPct -1 =
+    // the device has no battery
     virtual void sysStatus(int out[3]) { out[0] = 0; out[1] = -1; out[2] = 0; }
     virtual bool iconPixels(const std::string& pkg, IconPixels* out) {
         return false;

@@ -72,6 +72,12 @@ git apply "$ROOT/patches/hsvr-swapchain-max-samples.patch"
 git apply "$ROOT/patches/hsvr-session-synchronized-on-begin.patch"
 git apply "$ROOT/patches/hsvr-compositor-late-latch.patch"
 git apply "$ROOT/patches/hsvr-android-window-wait.patch"
+# drops files the foveation patch adds so re-applies stay clean
+rm -f src/xrt/auxiliary/util/u_foveation.h \
+      src/xrt/compositor/client/comp_vk_foveation.c \
+      src/xrt/compositor/client/comp_vk_foveation.h \
+      src/xrt/state_trackers/oxr/oxr_api_foveation_fb.c
+git apply "$ROOT/patches/hsvr-foveated-rendering.patch"
 
 # drv_hsvr builds from one directory: the kit, the hsvr prober shim, every
 # device driver under drivers/<name>/monado/ and every shared controller

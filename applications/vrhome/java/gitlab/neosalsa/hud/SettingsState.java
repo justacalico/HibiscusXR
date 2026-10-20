@@ -68,12 +68,14 @@ public class SettingsState {
 
     // the Experimental section's registry: each entry is a feature flag
     // persisted in Settings.Global under XP_PREFIX + id and surfaced as
-    // a row. Empty for now - features land here as they ship
+    // a row. Features land here as they ship.
     private static final class XpDef {
         final String id; final int nameRes, descRes;
         XpDef(String i, int n, int d) { id = i; nameRes = n; descRes = d; }
     }
-    private static final XpDef[] XP_DEFS = {};
+    private static final XpDef[] XP_DEFS = {
+        new XpDef("ffr", R.string.set_xp_ffr_name, R.string.set_xp_ffr_desc),
+    };
 
     private static final String CTRL_SVC_PKG =
             "com.picovr.picovrlib.cvcontroller";

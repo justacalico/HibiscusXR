@@ -11,7 +11,7 @@
 // sidebar sections, top to bottom in display order
 enum SetSec {
     SEC_WIFI = 0, SEC_BT, SEC_CTRL, SEC_DISP, SEC_ENV, SEC_SOUND,
-    SEC_LANG, SEC_TIME, SEC_IME, SEC_DEV, SEC_ABOUT, SEC_COUNT
+    SEC_LANG, SEC_TIME, SEC_IME, SEC_DEV, SEC_XP, SEC_ABOUT, SEC_COUNT
 };
 
 // toggle bits in SetSnap.toggles - the wire contract with
@@ -80,6 +80,7 @@ enum SetRowKind {
     RK_IME,         // aux: index into snap.imes
     RK_ENV,         // aux: 0 passthrough, 1 builtin, 2+n snap.envs[n]
     RK_CTRL,        // aux: controller slot 0/1
+    RK_XP,          // aux: index into snap.xp; switch on the right
     RK_BRAND,       // the about card
 };
 
@@ -113,6 +114,13 @@ struct SetEnvOpt {
     int st = 0;         // 0 ok, 1 unreadable zip, 2 no map.obj
 };
 
+// one experimental feature flag the platform reports: id is the flag's
+// key on the host side, name/desc the display strings, on its state
+struct SetXpOpt {
+    std::string id, name, desc;
+    bool on = false;
+};
+
 // one controller slot: state 0 idle / 1 connected / 2 pairing, -1 unknown
 struct SetCtrl {
     int state = 0;
@@ -131,6 +139,7 @@ struct SetSnap {
     std::vector<SetBtDev> bt;
     std::vector<SetImeOpt> imes;
     std::vector<SetEnvOpt> envs;
+    std::vector<SetXpOpt> xp;
     SetCtrl ctrl[2];
 };
 
@@ -221,6 +230,7 @@ enum UiSetStr {
     UISET_SCAN_WIFI,   UISET_SCAN_BT,    UISET_SCAN_CTRL,
     UISET_IDLE_WIFI,   UISET_IDLE_BT,    UISET_IDLE_CTRL,
     UISET_EMPTY_WIFI,  UISET_EMPTY_BT,   UISET_EMPTY_ENV,
+    UISET_XP_EMPTY,
     UISET_SECURED,     UISET_OPENNET,    UISET_SAVED,
     UISET_REFRESH,     UISET_PAIR,       UISET_FORGET,
     UISET_CONNECT,     UISET_CANCEL,     UISET_REMOVE,   UISET_REBOOT,

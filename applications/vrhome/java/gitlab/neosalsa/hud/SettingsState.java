@@ -64,6 +64,16 @@ public class SettingsState {
     private static final String SYSTEM_LOCALES = "system_locales";
     private static final String ENV_DIR = "/data/local/tmp/hibiscus/envs";
     private static final String HB_RELEASE = "/system/etc/hibiscus-release";
+    private static final String XP_PREFIX = "hibiscus_xp_";
+
+    // the Experimental section's registry: each entry is a feature flag
+    // persisted in Settings.Global under XP_PREFIX + id and surfaced as
+    // a row. Empty for now - features land here as they ship
+    private static final class XpDef {
+        final String id; final int nameRes, descRes;
+        XpDef(String i, int n, int d) { id = i; nameRes = n; descRes = d; }
+    }
+    private static final XpDef[] XP_DEFS = {};
 
     private static final String CTRL_SVC_PKG =
             "com.picovr.picovrlib.cvcontroller";
@@ -91,6 +101,7 @@ public class SettingsState {
         public BtDev[] bt;
         public ImeEnt[] imes;
         public EnvEnt[] envs;
+        public XpEnt[] xp;
         public CtrlSlot[] ctrl;
     }
     public static class WifiNet {
@@ -106,6 +117,10 @@ public class SettingsState {
     }
     public static class EnvEnt {
         public String id; public String name; public int st;
+    }
+    public static class XpEnt {
+        public String id; public String name; public String desc;
+        public boolean on;
     }
     public static class CtrlSlot {
         public int state; public int batt; public boolean chg;
@@ -301,6 +316,7 @@ public class SettingsState {
         s.bt = btDevs(ba);
         s.imes = imeList();
         s.envs = envList();
+        s.xp = xpList();
         synchronized (ctrl) {
             s.ctrl = new CtrlSlot[]{copy(ctrl[0]), copy(ctrl[1])};
         }
@@ -603,6 +619,36 @@ public class SettingsState {
     public void envDelete(String id) {
         try { new File(ENV_DIR, id + ".zip").delete(); }
         catch (Throwable ignored) {}
+        bump();
+    }
+
+    // ----------------------------------------------------- experimental
+
+    private XpEnt[] xpList() {
+        XpEnt[] out = new XpEnt[XP_DEFS.length];
+        for (int i = 0; i < XP_DEFS.length; ++i) {
+            XpDef d = XP_DEFS[i];
+            XpEnt e = new XpEnt();
+            e.id = d.id;
+            e.name = ctx.getString(d.nameRes);
+            e.desc = ctx.getString(d.descRes);
+            e.on = "1".equals(getGlobalStr(XP_PREFIX + d.id, "0"));
+            out[i] = e;
+        }
+        return out;
+    }
+
+    public void xpToggle(String id, boolean on) {
+        for (XpDef d : XP_DEFS)
+            if (d.id.equals(id)) {
+                try {
+                    Settings.Global.putString(ctx.getContentResolver(),
+                            XP_PREFIX + id, on ? "1" : "0");
+                } catch (Throwable t) {
+                    Log.w(TAG, "xpToggle " + id + " denied", t);
+                }
+                break;
+            }
         bump();
     }
 

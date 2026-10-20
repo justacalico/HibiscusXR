@@ -28,6 +28,7 @@ void setSecIcon(HudEngine* e, const Mat4& vp, int sec,
     case SEC_TIME:   g = GI_SCHEDULE; break;
     case SEC_IME:    g = GI_KEYBOARD; break;
     case SEC_DEV:    g = GI_TERMINAL; break;
+    case SEC_XP:     g = GI_SCIENCE; break;
     case SEC_ABOUT:  g = GI_INFO; break;
     }
     if (g >= 0) drawGlyph(e, vp, g, ic, r, up, s, 0.008f, col);

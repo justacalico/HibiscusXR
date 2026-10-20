@@ -101,6 +101,11 @@ void setBrandGroup(float rowCx, float minL, float textW, float* iconX,
 // same convention as the quick panel's unimplemented tiles
 bool setImplemented(int rid);
 
+// the row-level form of the gate: setImplemented reads aux as a SetRowId,
+// which only named rows carry; a list row's aux is an index into a snap
+// vector, never a gate
+bool setRowImplemented(const SetRow& r);
+
 // a wifi net row's tap resolves to the join/manage dialog; needsPw means
 // the dialog carries the password field + mini keyboard
 bool setWifiNeedsPw(const SetWifi& n);

@@ -37,6 +37,7 @@
     <string name="set_sec_time">Time</string>
     <string name="set_sec_ime">Keyboard</string>
     <string name="set_sec_dev">Developer</string>
+    <string name="set_sec_xp">Experimental</string>
     <string name="set_sec_about">About</string>
     <string name="set_l_wifi_on">Wi-Fi</string>
     <string name="set_l_wifi_ssid">Network</string>
@@ -109,6 +110,7 @@
     <string name="set_v_empty_wifi">No networks found</string>
     <string name="set_v_empty_bt">No devices found</string>
     <string name="set_v_empty_env">No environments installed</string>
+    <string name="set_v_xp_empty">No experimental features</string>
     <string name="set_v_secured">Secured</string>
     <string name="set_v_opennet">Open</string>
     <string name="set_v_saved">Saved</string>

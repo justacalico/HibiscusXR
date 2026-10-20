@@ -110,6 +110,8 @@ public:
     virtual void settingsScan(int sec) {}
     virtual void settingsToggleScan() {}
     virtual void settingsReboot() {}
+    // an experimental feature flag's write, keyed by the flag's id
+    virtual void xpToggle(const std::string& id, bool on) {}
     virtual void wifiJoin(const std::string& ssid, int sec,
                           const std::string& pw) {}
     virtual void wifiForget(int netId) {}

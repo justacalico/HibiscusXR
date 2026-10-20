@@ -96,6 +96,10 @@ void setBuildRows(int sec, bool android, const SetSnap& snap,
         row(RK_TOGGLE, TG_TOUCHES, RID_TOUCHES);
         row(RK_TOGGLE, TG_DEBUG_HUD, RID_DEBUGHUD);
         break;
+    case SEC_XP:
+        for (int i = 0; i < (int)snap.xp.size(); ++i)
+            row(RK_XP, -1, i);
+        break;
     case SEC_ABOUT:
         row(RK_BRAND, -1, RID_BRAND);
         row(RK_INFO, TX_MODEL, android ? RID_MODEL : RID_SYSTEM);
@@ -113,7 +117,7 @@ void setBuildRows(int sec, bool android, const SetSnap& snap,
 // providers or HMD hardware - the controller link, locale write,
 // timezone intent, input methods and the developer toggles - drop out
 static const int kSecsDesk[] = {SEC_WIFI, SEC_BT, SEC_DISP, SEC_ENV,
-                                SEC_SOUND, SEC_ABOUT};
+                                SEC_SOUND, SEC_XP, SEC_ABOUT};
 
 int setSecCount(bool android) {
     return android ? SEC_COUNT : (int)(sizeof(kSecsDesk) / sizeof(int));
@@ -292,6 +296,16 @@ bool setImplemented(int rid) {
         return false;
     default:
         return true;
+    }
+}
+
+bool setRowImplemented(const SetRow& r) {
+    switch (r.kind) {
+    case RK_NET: case RK_BTROW: case RK_IME: case RK_ENV:
+    case RK_CTRL: case RK_XP:
+        return true;
+    default:
+        return setImplemented(r.aux);
     }
 }
 

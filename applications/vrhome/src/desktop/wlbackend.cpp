@@ -593,6 +593,12 @@ void WlBackend::settingsScan(int sec) {
     ++setVer;
 }
 
+void WlBackend::xpToggle(const std::string& id, bool on) {
+    for (auto& f : setSnap.xp)
+        if (f.id == id) { f.on = on; break; }
+    ++setVer;
+}
+
 void WlBackend::wifiJoin(const std::string& ssid, int sec,
                          const std::string& pw) {
     std::vector<std::string> argv = {"nmcli", "dev", "wifi", "connect",

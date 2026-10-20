@@ -32,7 +32,7 @@ ZIPALIGN := $(BT)/zipalign
 APKSIGNER := $(BT)/apksigner
 
 CXX ?= c++
-HOST_CXXFLAGS := -std=c++17 -O0 -g -Wall -Wextra -Isrc
+HOST_CXXFLAGS := -std=c++17 -O0 -g -Wall -Wextra -Isrc -Iout/gen
 
 # what the wayland dash's About card reports as the Hibiscus version when
 # the host has no /etc/hibiscus-release: the dist pipeline's stamp wins,
@@ -65,7 +65,8 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/quick/quick.cpp src/quick/layout.cpp src/quick/icons.cpp \
             src/set/set.cpp src/set/layout.cpp src/set/icons.cpp \
-            src/render/iprim.cpp \
+            src/render/iprim.cpp src/render/icons.cpp \
+            src/render/iconatlas.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
             src/bridge/bridge.cpp src/bridge/core.cpp \
@@ -110,6 +111,7 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/input/ctrl_debug.cpp src/env/envmap.cpp src/env/zipfile.cpp \
              src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
              src/mcp/tools.cpp \
+             src/render/iconatlas.cpp \
              src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
              src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
              src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
@@ -126,6 +128,7 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
                 src/text/draw.cpp src/render/resources.cpp \
                 src/render/shaders.cpp src/render/shape.cpp \
                 src/render/chrome.cpp src/render/ctrl_render.cpp \
+                src/render/icons.cpp src/render/iconatlas.cpp \
                 src/render/scene_geo.cpp src/render/mesh.cpp \
                 src/panels/panels.cpp src/panels/layout.cpp \
                 src/anim/anim.cpp src/pill/pill.cpp \
@@ -206,6 +209,16 @@ $(OUT)/gen/ctrl_r.inc: models/ctrl_r.obj tools/obj2c.py
 	python3 tools/obj2c.py $< kObjR $@
 
 $(OUT)/obj/render/ctrl_render.o: $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
+
+# baked Material Symbols glyph atlas for the dash's icons
+$(OUT)/gen/icons.inc $(OUT)/gen/icon_ids.h: $(wildcard art/icons/*.svg) \
+                                          tools/icons2c.py
+	@mkdir -p $(OUT)/gen
+	python3 tools/icons2c.py art/icons $(OUT)/gen
+
+$(OUT)/obj/render/icons.o $(OUT)/obj/render/iconatlas.o \
+$(TEST_BIN) $(PREVIEW_BIN) $(WL_BIN): $(OUT)/gen/icons.inc \
+                                      $(OUT)/gen/icon_ids.h
 
 -include $(ENV_OBJS:.o=.d) $(HUD_OBJS:.o=.d)
 

@@ -34,6 +34,7 @@ struct Engine {
     GLuint sceneProg = 0, warpProg = 0, textProg = 0, floatProg = 0,
            shapeProg = 0, holdProg = 0, iconProg = 0;
     GLuint quadVbo = 0, gridVbo = 0, textVbo = 0, panelVbo = 0, skyVbo = 0;
+    GLuint glyphTex = 0;
     int gridVerts = 0, skyVerts = 0;
     Font font;
     Eye eye[2];

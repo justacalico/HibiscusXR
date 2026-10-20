@@ -128,8 +128,9 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
     // status cluster on the left in two pills: clock + battery + wifi in
     // the first, the bell alone in the second, then a separator gap
     // before the app icons like the group seps use
-    const float pillAW = kSysPillPad * 2.0f + st.clockW + kSysIconW * 2.0f +
-                         kSysGap * 2.0f;
+    const float icons = st.hasBatt ? 2.0f : 1.0f;
+    const float pillAW = kSysPillPad * 2.0f + st.clockW +
+                         kSysIconW * icons + kSysGap * icons;
     const float pillBW = kSysPillPad * 2.0f + kSysIconW;
     const float clusterW = pillAW + kSysPillGap + pillBW;
     const float lead = items.empty() ? clusterW
@@ -143,8 +144,10 @@ float dockLayout(std::vector<DockItem>& items, DockStatus& st) {
     st.pillAL = x;
     st.clockX = x + kSysPillPad;
     x = st.clockX + st.clockW + kSysGap;
-    st.battX = x + kSysIconW * 0.5f;
-    x += kSysIconW + kSysGap;
+    if (st.hasBatt) {
+        st.battX = x + kSysIconW * 0.5f;
+        x += kSysIconW + kSysGap;
+    }
     st.wifiX = x + kSysIconW * 0.5f;
     x += kSysIconW + kSysPillPad;
     st.pillAR = x;

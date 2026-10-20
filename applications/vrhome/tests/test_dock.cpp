@@ -109,6 +109,35 @@ void testDock() {
         CHECK(wide.sepX > st.sepX);
     }
 
+    // a device with no battery: pill A drops the battery slot, wifi takes
+    // its spot against the clock and the pill pulls in by a slot + gap
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_RUN;
+        items = {a};
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw0 = dockLayout(items, st);
+        DockStatus nb;
+        nb.clockW = 0.06f;
+        nb.hasBatt = false;
+        std::vector<DockItem> items2 = items;
+        const float hw = dockLayout(items2, nb);
+        // bar narrows by the dropped slot; the pill's own width loses a
+        // slot + gap while wifi keeps the battery's offset inside it
+        CHECK_F(hw0 - hw, (kSysIconW + kSysGap) * 0.5f, 1e-6f);
+        CHECK_F(nb.pillAR - nb.pillAL,
+                st.pillAR - st.pillAL - kSysIconW - kSysGap, 1e-6f);
+        CHECK_F(nb.wifiX - nb.pillAL, st.battX - st.pillAL, 1e-6f);
+        CHECK(nb.clockX < nb.wifiX && nb.wifiX < nb.pillAR);
+        CHECK(nb.pillAR < nb.pillBL && nb.pillBL < nb.bellX);
+        // the hit zone tracks the slimmer pill
+        int zone = DZONE_NONE;
+        const float px = (nb.pillAL + nb.pillAR) * 0.5f;
+        CHECK(dockItemAt(items2, nb, hw, px / hw, 0.0f, &zone) == -1);
+        CHECK(zone == DZONE_SYS);
+    }
+
     // an empty item list still places the cluster, just with no separator
     {
         std::vector<DockItem> items;

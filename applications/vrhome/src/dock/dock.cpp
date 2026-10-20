@@ -84,6 +84,7 @@ void syncDock(HudEngine* e) {
     std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
                   std::localtime(&tt));
     e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
+    e->dockSys.hasBatt = e->sysBatt >= 0;
     std::vector<DockItem> prevDock;
     prevDock.swap(e->dock);
     e->dock = buildDock(e->dockPins, e->panels, e->dockXr);
@@ -424,8 +425,9 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     }
 
     // battery: outline body, level fill inside, tip nub on the right;
-    // the fill runs the quick-panel's tint bands
-    {
+    // the fill runs the quick-panel's tint bands. No slot at all when the
+    // device reports no battery
+    if (st.hasBatt) {
         const float bw = 0.044f, bh = 0.024f, bt = 0.0030f;
         const float bc[3] = {c[0] + r[0]*st.battX, c[1] + r[1]*st.battX,
                              c[2] + r[2]*st.battX};

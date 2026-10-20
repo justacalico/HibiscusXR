@@ -44,7 +44,7 @@ enum QsZone {
 // subtitles as strings. QuickState.snap() fills it fresh on every pull.
 struct QsStatus {
     unsigned toggles = 0;
-    int batt = 0;
+    int batt = -1;          // 0..100, -1: the device has no battery
     int chg = 0;
     float volume = 0.0f;
     float brightness = 0.0f;

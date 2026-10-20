@@ -280,10 +280,11 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
         shapeQuad(e, vp, bc, r, up, 0.008f, -0.785398f, il, it,
                   il, it, it, 0.0f, 0.0015f, icol);
     }
-    // title left, battery % beside the gear
+    // title left, battery % beside the gear - dropped entirely on a
+    // device with no battery
     cardText(e, vp, c, r, up, (-kQuickHW + kQuickPad) * gs, hy,
              qsStr(e, UIQS_TITLE), 0.0016f * gs, ga, false, false);
-    {
+    if (e->quick.st.batt >= 0) {
         char batt[8];
         snprintf(batt, sizeof(batt), "%d%%", e->quick.st.batt);
         const float bw2 = measureText(e, batt, 0.0012f * gs);

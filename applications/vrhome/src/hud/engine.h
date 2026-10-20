@@ -129,7 +129,7 @@ struct HudEngine : Engine {
     DockStatus dockSys;
     char sysClock[8] = "--:--";
     int sysWifi = 0;               // wifi link state: 1 connected
-    int sysBatt = 0;               // battery percent 0..100
+    int sysBatt = -1;              // battery percent 0..100, -1: no battery
     int sysChg = 0;                // charging flag
 
     // notification cards: notifsAll is the live record set rebuilt when

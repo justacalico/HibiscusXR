@@ -173,6 +173,15 @@ constexpr float kGridSidePad = 0.04f; // inner left/right padding
 constexpr float kGridCloseR = 0.024f; // close disc radius on the title row
 constexpr float kGridDragSlop = 0.035f; // card-local metres a held press must travel before it counts as a scroll drag
 constexpr float kGridWheelStep = 0.20f; // card-local metres one wheel detent scrolls
+constexpr float kGridDotsOff = 0.072f;  // cell menu affordance offset from the icon centre, card-local metres
+constexpr float kGridDotsR = 0.020f;    // its hit radius
+constexpr float kGridPillHH = 0.030f;   // group dropdown pill half height on the title row
+constexpr float kGridPillHW0 = 0.070f;  // pill half width floor before the label measure lands
+constexpr float kGridPillPadX = 0.026f; // pill horizontal padding incl the caret
+constexpr float kGridMenuRowH = 0.052f; // context menu / dropdown row pitch
+constexpr float kGridMenuHW = 0.170f;   // popup half width
+constexpr float kGridMenuPad = 0.008f;  // popup inner edge pad
+constexpr float kGridPopGap = 0.010f;   // gap between an anchor and its popup
 
 // the quick panel: the dock's status pill opens this card - sliders for
 // volume and brightness up top, then a row of large radio tiles and the

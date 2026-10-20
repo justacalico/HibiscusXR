@@ -16,3 +16,12 @@ linked line per MR no matter how many commits it carried.
 - [Dock 铃铛按钮接入通知卡片](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/166) (!166)
 - [ci: 打开 MR 自动写 changelog 片段,release 收口](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/167) (!167)
 - [fix: changelog 片段推送改回正常流水线](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/168) (!168)
+- Hide the battery icons when no battery is present.
+- Buttons show as cables when a hardwired cable is plugged in.
+- Remove message for saying what home env you have set.
+- About device can now show generic hardware.
+- Fix clipping in settings about page and moves logo to the left.
+- Replace our icons with ones provided by Google. (These are lienaced under Apache License NOT AGPL v3)
+- Adds the abilty to pin apps to dock.
+- Adds app groups into the libary page.
+- Adds a new app for notifcation support.

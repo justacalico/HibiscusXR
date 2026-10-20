@@ -123,7 +123,7 @@ struct pn2_device
 	enum u_logging_level log_level;
 	struct xrt_quat sens_to_head; //!< maps raw sensor axes into head frame
 	float lens_cx[2];             //!< lens centre uv in each half-panel
-	float lens_cy;
+	float lens_cy[2];             //!< lens centre uv, per eye
 	float tan_x;                  //!< panel-uv offset -> tan(angle) scales
 	float tan_y;
 	float chroma_r;
@@ -249,6 +249,45 @@ pn2_apply_ipd(struct pn2_device *d, float ipd)
 	d->ipd_m = ipd;
 }
 
+// Per-unit factory lens-axis calibration. Stock's platform lib reads
+// /persist/pvr/lens/axisOffset.txt into lensParameters verbatim (four
+// millimetre offsets - left x,y then right x,y - each clamped to
+// +-0.15mm) and the warp mesh shifts each eye's distortion centre by it.
+// debug.pn2.axiscale multiplies the offsets for verification, 0 disables.
+#define PN2_AXIS_OFFSET_PATH "/persist/pvr/lens/axisOffset.txt"
+static void
+pn2_lens_axis_offset(struct pn2_device *d, float half_w_m, float h_m)
+{
+	FILE *f = fopen(PN2_AXIS_OFFSET_PATH, "r");
+	if (f == NULL) {
+		return;
+	}
+	char buf[96] = {0};
+	float v[4] = {0};
+	int n = fread(buf, 1, sizeof(buf) - 1, f) > 0
+	            ? sscanf(buf, "%f,%f,%f,%f", &v[0], &v[1], &v[2], &v[3])
+	            : 0;
+	fclose(f);
+	if (n != 4) {
+		return;
+	}
+	for (int i = 0; i < 4; i++) {
+		if (v[i] > 0.15f) {
+			v[i] = 0.15f;
+		} else if (v[i] < -0.15f) {
+			v[i] = -0.15f;
+		}
+	}
+	float scale = pn2_prop_float("debug.pn2.axiscale", 1.0f);
+	d->lens_cx[0] += v[0] * scale / (half_w_m * 1000.0f);
+	d->lens_cx[1] += v[2] * scale / (half_w_m * 1000.0f);
+	d->lens_cy[0] += v[1] * scale / (h_m * 1000.0f);
+	d->lens_cy[1] += v[3] * scale / (h_m * 1000.0f);
+	PN2_INFO(d, "lens axis offset %.4f %.4f %.4f %.4fmm x%.2f -> cx %.4f %.4f cy %.4f %.4f",
+	         v[0], v[1], v[2], v[3], scale, d->lens_cx[0], d->lens_cx[1], d->lens_cy[0],
+	         d->lens_cy[1]);
+}
+
 static void
 pn2_remap(const struct pn2_device *d, const struct xrt_vec3 *in, struct xrt_vec3 *out)
 {
@@ -352,14 +391,14 @@ pn2_push_qvr(struct pn2_device *d)
 		d->posedump_next = now + 250000000ull;
 		PN2_DUMP(
 		    "qvr  q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f) st=%u q=%.2f\n"
-		    "     rel q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f) w=(%.3f %.3f %.3f) ts=%lld\n"
+		    "     rel q=(%.4f %.4f %.4f %.4f) p=(%.4f %.4f %.4f) w=(%.3f %.3f %.3f) ts=%lld off=%lld\n"
 		    "     imu q=(%.4f %.4f %.4f %.4f) a=(%.3f %.3f %.3f) g=(%.3f %.3f %.3f)",
 		    pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w,
 		    pose.position.x, pose.position.y, pose.position.z, pose.tracking_state,
 		    pose.pose_quality, rel.pose.orientation.x, rel.pose.orientation.y,
 		    rel.pose.orientation.z, rel.pose.orientation.w, rel.pose.position.x,
 		    rel.pose.position.y, rel.pose.position.z, w.x, w.y, w.z,
-		    (long long)pose.timestamp_ns,
+		    (long long)pose.timestamp_ns, (long long)pn2_qvr_clock_offset(d->qvr),
 		    d->fusion.rot.x, d->fusion.rot.y, d->fusion.rot.z, d->fusion.rot.w,
 		    d->accel.x, d->accel.y, d->accel.z,
 		    d->fusion.last.gyro.x, d->fusion.last.gyro.y, d->fusion.last.gyro.z);
@@ -689,7 +728,7 @@ pn2_get_tracked_pose(struct xrt_device *xdev,
 		int64_t latest_ts = 0;
 		struct xrt_space_relation latest;
 		if (m_relation_history_get_latest(d->rh, &latest_ts, &latest) &&
-		    (int64_t)os_monotonic_get_ns() - latest_ts > 500000000ll) {
+		    (int64_t)os_monotonic_get_ns() - latest_ts > 120000000ll) {
 			src = "coast";
 			if (!d->coasting) {
 				d->coasting = true;
@@ -753,7 +792,7 @@ pn2_compute_distortion(struct xrt_device *xdev, uint32_t view, float u, float v,
 
 	// panel-pixel offset from this eye's lens centre, in half-panel uv
 	const float cx = d->lens_cx[view];
-	const float cy = d->lens_cy;
+	const float cy = d->lens_cy[view];
 	float px = u - cx;
 	float py = v - cy;
 	float qx = px * d->tan_x;
@@ -876,7 +915,8 @@ pn2_hmd_create(void)
 	    atanf(lens_cx_m / eye_relief) + atanf((half_w_m - lens_cx_m) / eye_relief);
 	d->lens_cx[0] = (half_w_m - lens_cx_m) / half_w_m;
 	d->lens_cx[1] = lens_cx_m / half_w_m;
-	d->lens_cy = 0.5f;
+	d->lens_cy[0] = d->lens_cy[1] = 0.5f;
+	pn2_lens_axis_offset(d, half_w_m, info.display.h_meters);
 	d->tan_x = half_w_m / eye_relief;
 	d->tan_y = info.display.h_meters / eye_relief;
 	if (!u_device_setup_split_side_by_side(&d->base, &info)) {

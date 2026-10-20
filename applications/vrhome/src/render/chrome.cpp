@@ -11,6 +11,7 @@
 #include "../kbd/kbd.h"
 #include "../panels/layout.h"
 #include "../pill/pill.h"
+#include "icons.h"
 #include "shape.h"
 #include "../text/draw.h"
 
@@ -103,16 +104,17 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                   kPillH * 0.5f * sc, 0.0016f, 0.0012f, rimCol,
                   -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.30f);
 
-        // float + minimize + close discs on the pill's right end; glyphs
-        // are small capsules, the close pair rotated into an x, the float
-        // one four diagonal ticks pointing out - the window leaves the grid
+        // float + minimize + close discs on the pill's right end; the
+        // float glyph lights accent while the window's out of the grid
         {
             const float icon[4] = {kPalText[0], kPalText[1], kPalText[2],
                                    0.92f * a};
-            const float il = kPillBtnR * 0.55f * sc, it = 0.0028f * sc;
+            const float gs2 = kPillBtnR * 0.55f * sc;
             const float bxs[3] = {pillFloatX(phw), pillMinX(phw),
                                   pillCloseX(phw)};
             const int zones[3] = {ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE};
+            const int gls[3] = {GI_OPEN_IN_NEW, GI_REMOVE,
+                                GI_CLOSE};
             for (int b = 0; b < 3; ++b) {
                 const float bx = bxs[b];
                 const bool bhov = hov && e->hoverZone == zones[b];
@@ -127,40 +129,11 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
                 shapeQuad(e, viewProj, bc, r, up, 0.006f, 0.0f,
                           kPillBtnR * sc, kPillBtnR * sc, kPillBtnR * sc,
                           kPillBtnR * sc, kPillBtnR * sc, 0.0f, 0.002f, bg);
-                if (zones[b] == ZONE_FLOAT) {
-                    // two overlapping windows, lit while floating: a
-                    // stroked square behind top-left, a pane-filled one
-                    // in front bottom-right - reads as a free window
-                    // where plain corner ticks read as fullscreen
-                    const float* gcp = p.floating ? kPalAccent : kPalText;
-                    const float gc[4] = {gcp[0], gcp[1], gcp[2], 0.92f * a};
-                    const float wo = kPillBtnR * 0.15f * sc;
-                    const float ws = kPillBtnR * 0.32f * sc;
-                    const float wr = ws * 0.28f;
-                    const float wt = it * 0.8f;
-                    const float back[3] = {bc[0] - r[0]*wo + up[0]*wo,
-                                           bc[1] - r[1]*wo + up[1]*wo,
-                                           bc[2] - r[2]*wo + up[2]*wo};
-                    const float fore[3] = {bc[0] + r[0]*wo - up[0]*wo,
-                                           bc[1] + r[1]*wo - up[1]*wo,
-                                           bc[2] + r[2]*wo - up[2]*wo};
-                    shapeQuad(e, viewProj, back, r, up, 0.008f, 0.0f,
-                              ws, ws, ws, ws, wr, wt, 0.0015f, gc);
-                    const float pane[4] = {bcp[0], bcp[1], bcp[2],
-                                           0.95f * a};
-                    shapeQuad(e, viewProj, fore, r, up, 0.009f, 0.0f,
-                              ws, ws, ws, ws, wr, 0.0f, 0.0015f, pane);
-                    shapeQuad(e, viewProj, fore, r, up, 0.010f, 0.0f,
-                              ws, ws, ws, ws, wr, wt, 0.0015f, gc);
-                } else if (zones[b] == ZONE_MIN) {
-                    shapeQuad(e, viewProj, bc, r, up, 0.008f, 0.0f, il, it,
-                              il, it, it, 0.0f, 0.0015f, icon);
-                } else {
-                    shapeQuad(e, viewProj, bc, r, up, 0.008f, 0.785398f, il,
-                              it, il, it, it, 0.0f, 0.0015f, icon);
-                    shapeQuad(e, viewProj, bc, r, up, 0.008f, -0.785398f, il,
-                              it, il, it, it, 0.0f, 0.0015f, icon);
-                }
+                const float* gcp = zones[b] == ZONE_FLOAT && p.floating
+                                   ? kPalAccent : kPalText;
+                const float gc[4] = {gcp[0], gcp[1], gcp[2], icon[3]};
+                drawGlyph(e, viewProj, gls[b], bc, r, up, gs2, 0.008f,
+                          gc);
             }
         }
 

@@ -6,6 +6,7 @@
 #include "../common/log.h"
 #include "../common/palette.h"
 #include "../dock/dock.h"
+#include "../render/icons.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
 #include "../text/glyphs.h"
@@ -151,11 +152,8 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
                       kNotifBadgeR, 0.0f, 0.0015f, bcol);
             const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                    0.95f};
-            const float il = kNotifBadgeR * 0.52f, itw = 0.0020f;
-            shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, itw,
-                      il, itw, itw, 0.0f, 0.001f, xcol);
-            shapeQuad(e, vp, bc, r, up, 0.012f, -0.785398f, il, itw,
-                      il, itw, itw, 0.0f, 0.001f, xcol);
+            drawGlyph(e, vp, GI_CLOSE, bc, r, up, kNotifBadgeR * 0.52f,
+                      0.012f, xcol);
         }
     }
     glDepthMask(GL_TRUE);

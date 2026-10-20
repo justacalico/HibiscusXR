@@ -1,5 +1,6 @@
 #include "resources.h"
 
+#include "icons.h"
 #include "scene_geo.h"
 #include "shaders.h"
 #include "../engine.h"
@@ -27,6 +28,7 @@ int initGlResources(Engine* e) {
             !e->shapeProg || !e->holdProg || !e->iconProg)
         return -1;
     if (!loadFont(e)) LOGE("font load failed, HUD text disabled");
+    loadGlyphs(e);
     glGenBuffers(1, &e->textVbo);
     glGenBuffers(1, &e->panelVbo);
     glGenBuffers(1, &e->quadVbo);

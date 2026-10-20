@@ -12,3 +12,4 @@ linked line per MR no matter how many commits it carried.
 - [关于页品牌行图标移到文字左侧并放大](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/163) (!163)
 - [界面手绘图标全部换成 Material Symbols](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/164) (!164)
 - [应用库：右键菜单与分组](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/165) (!165)
+- [Dock 铃铛按钮接入通知卡片](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/166) (!166)

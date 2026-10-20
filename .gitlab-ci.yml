@@ -1,10 +1,12 @@
 # Monorepo CI, gated by folder group - a push only runs the CI for the group
-# that changed, plus the os-changelog housekeeping job which always runs:
+# that changed, plus the changelog housekeeping jobs which always run:
 #
 #   applications/  -> apps-test (flutter analyze/test + vrhome make test)
 #   websites/      -> website-test, pages
 #   system/dist/   -> manual pipelines only, never runs on a git push
 #   every push     -> os-changelog (refreshes CHANGELOG.md Unreleased)
+#   every MR       -> os-changelog-mr (commits a changelogs/unreleased/
+#                     fragment onto the MR source branch)
 #
 # The dist lane: "Run pipeline" (web/api) pushes main to the GitHub mirror,
 # dispatches the image build there, and pulls the release back through the
@@ -27,16 +29,12 @@ stages:
   - release
   - deploy
 
-# Folder groups. Job rules reference these; the workflow rules below use the
-# combined list so pushes outside CI'd folders never even create a pipeline.
+# Folder groups. Job rules reference these so the heavy lanes only run
+# when their folder changed.
 .apps-paths: &apps-paths
   - "applications/**/*"
 
 .web-paths: &web-paths
-  - "websites/**/*"
-
-.ci-paths: &ci-paths
-  - "applications/**/*"
   - "websites/**/*"
 
 workflow:
@@ -48,9 +46,10 @@ workflow:
     - if: $CI_PIPELINE_SOURCE == "web"
     - if: $CI_PIPELINE_SOURCE == "api"
     - if: $CI_PIPELINE_SOURCE == "trigger"
-    # MRs only when a CI'd folder changed
+    # every MR gets a pipeline: os-changelog-mr writes its changelog
+    # fragment no matter which folder changed. It is the only ungated MR
+    # job, so MRs that touch nothing CI'd still stay cheap
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes: *ci-paths
     # every push to main gets a pipeline: the os-changelog cog job has to
     # see merges outside the CI'd folders too. It is the only ungated job,
     # so pushes that touch nothing CI'd still stay cheap
@@ -183,6 +182,25 @@ os-changelog:
     - git config user.email "ci@gitlab.com"
   script:
     - bash system/dist/scripts/update-os-changelog.sh
+
+# Every MR pipeline writes the MR's changelog fragment
+# (changelogs/unreleased/<iid>.md) onto its source branch via the job
+# token - the project has "push with CI_JOB_TOKEN" enabled, so no secrets
+# are needed here. The commit goes up with ci.skip and never retriggers a
+# pipeline. Fork MRs cannot be pushed to; the merge-time regen covers
+# them.
+os-changelog-mr:
+  stage: test
+  image: alpine:3.20
+  timeout: 10m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  before_script:
+    - apk add --no-cache bash git python3
+    - git config user.name "GitLab CI"
+    - git config user.email "ci@gitlab.com"
+  script:
+    - bash system/dist/scripts/mr-changelog.sh
 
 # -------------------------------------------------------------- apps -------
 

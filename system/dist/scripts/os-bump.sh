@@ -47,6 +47,7 @@ EOF
 
   python3 system/dist/scripts/os_changelog.py release "$TAG"
   git add CHANGELOG.md
+  [ -d changelogs ] && git add -A changelogs/
   git commit -m "docs: 发布 $TAG"
 
   # the commit above is conventional, so changelog generation inside the

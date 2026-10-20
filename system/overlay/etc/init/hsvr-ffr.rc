@@ -1,0 +1,16 @@
+# Foveated-rendering experimental flag bridge.
+#
+# The settings app stores the experimental toggle in the hibiscus_xp_ffr
+# Settings.Global key; this daemon mirrors it onto persist.hsvr.ffr, the
+# property the OpenXR runtime reads. Started at boot_completed like the
+# other settings-backed services: the settings table lives in /data and
+# does not exist at post-fs.
+
+service hsvr_ffrd /system/bin/hsvr-ffrd
+    user root
+    group root
+    seclabel u:r:shell:s0
+    disabled
+
+on property:sys.boot_completed=1
+    start hsvr_ffrd

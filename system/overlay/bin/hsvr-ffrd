@@ -1,0 +1,28 @@
+#!/system/bin/sh
+# Bridge the foveated-rendering experimental flag to persist.hsvr.ffr.
+#
+# The settings app writes hibiscus_xp_ffr ("1" or "0") into
+# Settings.Global. Apps cannot setprop, so a root daemon is the narrow
+# piece that crosses, same shape as pn2-dofd. The settings table is
+# polled rather than pushed: `settings get` would spawn a JVM per poll.
+#
+# Missing or unparsable means off: the prop gates foveated swapchain
+# handling in the OpenXR runtime, so an unexpected value must fail safe.
+
+DB=/data/system/users/0/settings_global.xml
+PROP=persist.hsvr.ffr
+
+cur="__boot__"
+while true; do
+    v=$(grep 'name="hibiscus_xp_ffr"' "$DB" 2>/dev/null \
+        | sed -n 's/.*value="\([^"]*\)".*/\1/p' | head -1)
+    case "$v" in
+        1) want=1 ;;
+        *) want=0 ;;
+    esac
+    if [ "$want" != "$cur" ]; then
+        setprop "$PROP" "$want"
+        cur="$want"
+    fi
+    sleep 0.5
+done

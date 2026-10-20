@@ -111,6 +111,8 @@
     <string name="set_v_empty_bt">No devices found</string>
     <string name="set_v_empty_env">No environments installed</string>
     <string name="set_v_xp_empty">No experimental features</string>
+    <string name="set_xp_ffr_name">Fixed foveated rendering</string>
+    <string name="set_xp_ffr_desc">Render screen edges at lower resolution to save GPU. Needs app support and applies to newly launched apps.</string>
     <string name="set_v_secured">Secured</string>
     <string name="set_v_opennet">Open</string>
     <string name="set_v_saved">Saved</string>

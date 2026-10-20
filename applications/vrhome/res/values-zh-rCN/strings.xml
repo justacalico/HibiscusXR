@@ -111,6 +111,8 @@
     <string name="set_v_empty_bt">未发现设备</string>
     <string name="set_v_empty_env">未安装环境</string>
     <string name="set_v_xp_empty">暂无实验性功能</string>
+    <string name="set_xp_ffr_name">固定注视点渲染</string>
+    <string name="set_xp_ffr_desc">降低画面边缘渲染分辨率以节省 GPU 算力,需要应用支持,应用重启后生效。</string>
     <string name="set_v_secured">加密</string>
     <string name="set_v_opennet">开放</string>
     <string name="set_v_saved">已保存</string>

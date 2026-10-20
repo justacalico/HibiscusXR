@@ -182,10 +182,10 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const float* icp = on ? kPalText : kPalTextDim;
     const float icol[4] = {icp[0], icp[1], icp[2],
                            (0.92f + 0.08f * hp) * dead * ga};
-    const float is = (s.large ? 0.031f : 0.026f) * gs;
+    const float is = (s.large ? 0.024f : 0.019f) * gs;
     // icon sits in the tile's upper half for large tiles, above the label
     // for small ones
-    const float iconY = s.large ? tcy + thh * 0.38f : tcy + thh * 0.30f;
+    const float iconY = s.large ? tcy + thh * 0.42f : tcy + thh * 0.36f;
     const float ic[3] = {c[0] + r[0]*tcx + up[0]*iconY,
                          c[1] + r[1]*tcx + up[1]*iconY,
                          c[2] + r[2]*tcx + up[2]*iconY};

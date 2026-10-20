@@ -34,6 +34,12 @@ APKSIGNER := $(BT)/apksigner
 CXX ?= c++
 HOST_CXXFLAGS := -std=c++17 -O0 -g -Wall -Wextra -Isrc
 
+# what the wayland dash's About card reports as the Hibiscus version when
+# the host has no /etc/hibiscus-release: the dist pipeline's stamp wins,
+# else the tree's own describe, else dev
+HIBISCUS_VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
+HOST_CXXFLAGS += -DHIBISCUS_VERSION=\"$(HIBISCUS_VERSION)\"
+
 # render/platform code shared by both .so's
 SHARED_SRCS := src/common/props.cpp src/common/jni.cpp \
                src/common/palette.cpp \

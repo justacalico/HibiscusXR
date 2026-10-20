@@ -20,6 +20,12 @@
 #include <filesystem>
 #include <unistd.h>
 
+// the About card's Hibiscus version fallback when the host has no
+// /etc/hibiscus-release - baked in by the Makefile from `git describe`
+#ifndef HIBISCUS_VERSION
+#define HIBISCUS_VERSION "dev"
+#endif
+
 namespace fs = std::filesystem;
 
 // a pending launch slot with no spawn recorded gets this long to bind a
@@ -103,6 +109,14 @@ static bool decodePng(const std::string& path, IconPixels* out) {
 WlBackend::WlBackend(WlComp* comp) : c(comp) {
     c->onTaskMap = [this](WlTask* t) { onTaskMap(t); };
     c->onTaskDead = [this](WlTask* t) { onTaskDead(t); };
+    const char* lang = getenv("LANG");
+    if (lang && *lang) {
+        setLang = lang;
+        const size_t dot = setLang.find('.');
+        if (dot != std::string::npos) setLang.resize(dot);
+        for (char& ch : setLang)
+            if (ch == '_') ch = '-';
+    }
     rescanApps();
 }
 
@@ -391,8 +405,9 @@ void WlBackend::quickStatus(QsStatus* out) {
         runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
     out->volume = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);
     if (out->volume < 0.0f) out->volume = 0.0f;
+    // -c backlight: unfiltered -m can lead with a keyboard led
     const std::string b =
-        runOut("brightnessctl -m 2>/dev/null");
+        runOut("brightnessctl -m -c backlight 2>/dev/null");
     out->brightness = parseBrightness(b);
     if (out->brightness < 0.0f) out->brightness = 0.5f;
     out->batt = sysBatt;
@@ -421,6 +436,155 @@ void WlBackend::quickSetSlider(int slider, float v) {
                  v * 100.0f);
         runBg(cmd);
     }
+}
+
+// -------------------------------------------------------------- settings -
+
+void WlBackend::pollSet() {
+    const long long now = dashNowMs();
+    if (now - setPollAt < 2000) return;
+    setPollAt = now;
+    ++setVer;
+    unsigned t = 0;
+    if (parseNmRadio(runOut("nmcli radio wifi 2>/dev/null")))
+        t |= 1u << TG_WIFI;
+    if (parseBtPowered(runOut("bluetoothctl show 2>/dev/null")))
+        t |= 1u << TG_BT;
+    if (!parseWpctlMuted(
+            runOut("wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null")))
+        t |= 1u << TG_MIC;
+    setSnap.toggles = t;
+    const std::string v =
+        runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
+    setSnap.sld[SL_VOL] =
+        parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);
+    if (setSnap.sld[SL_VOL] < 0.0f) setSnap.sld[SL_VOL] = 0.0f;
+    setSnap.sld[SL_BRI] =
+        parseBrightness(runOut("brightnessctl -m -c backlight 2>/dev/null"));
+    if (setSnap.sld[SL_BRI] < 0.0f) setSnap.sld[SL_BRI] = 0.5f;
+    setSnap.sld[SL_IPD] = kIpdMinMm;
+    setCons = parseConNames(
+        runOut("nmcli -t -f name con show 2>/dev/null"));
+    parseWifiList(
+        runOut("nmcli -t -f active,ssid,signal,security dev wifi "
+               "2>/dev/null"),
+        setCons, &setSnap.wifi);
+    parseBtDevs(runOut("bluetoothctl devices 2>/dev/null"),
+                runOut("bluetoothctl devices Connected 2>/dev/null"),
+                &setSnap.bt);
+}
+
+// host identity for the About card, probed once: the spec line is cpu +
+// memory + the GL renderer, the release file wins over the baked-in
+// version so a Hibiscus host reports its image stamp
+void WlBackend::fillAbout(SetSnap* out) {
+    if (!aboutDone) {
+        std::string cpuinfo, meminfo, rel;
+        readFile("/proc/cpuinfo", &cpuinfo);
+        readFile("/proc/meminfo", &meminfo);
+        readFile("/etc/hibiscus-release", &rel);
+        const char* gpu = (const char*)glGetString(GL_RENDERER);
+        sysModel = specLine(parseCpuModel(cpuinfo),
+                            parseMemTotal(meminfo),
+                            cleanGpuName(gpu ? gpu : ""));
+        sysHb = parseHibiscusRelease(rel);
+        if (sysHb.empty()) sysHb = HIBISCUS_VERSION;
+        aboutDone = true;
+    }
+    out->txt[TX_MODEL] = sysModel;
+    out->txt[TX_HBVER] = sysHb;
+}
+
+int WlBackend::settingsVersion() {
+    pollSet();
+    return setVer;
+}
+
+void WlBackend::settingsStatus(SetSnap* out) {
+    pollSet();
+    *out = setSnap;
+    const long long now = dashNowMs();
+    if (now < wifiScanUntil) out->flags |= SFL_WIFI_SCAN;
+    if (now < btScanUntil) out->flags |= SFL_BT_SCAN;
+    out->txt[TX_SSID] = sysSsid;
+    out->txt[TX_THEME] = setTheme;
+    out->txt[TX_ENV] = setEnv;
+    out->txt[TX_LANG] = setLang;
+    fillAbout(out);
+}
+
+void WlBackend::settingsSection(int sec) {
+    if (sec == SEC_WIFI || sec == SEC_BT) settingsScan(sec);
+    else ++setVer;
+}
+
+void WlBackend::settingsToggle(int id, bool on) {
+    if (on) setSnap.toggles |= (1u << id);
+    else setSnap.toggles &= ~(1u << id);
+    if (id == TG_WIFI)
+        runBg(std::string("nmcli radio wifi ") + (on ? "on" : "off"));
+    else if (id == TG_BT)
+        runBg(std::string("bluetoothctl power ") + (on ? "on" : "off"));
+    else if (id == TG_MIC)
+        runBg(std::string("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ ") +
+              (on ? "0" : "1"));
+    ++setVer;
+}
+
+void WlBackend::settingsSlider(int id, float v) {
+    if (id < 0 || id >= SL_COUNT) return;
+    setSnap.sld[id] = v;
+    if (id == SL_VOL) quickSetSlider(QSLIDER_VOLUME, v);
+    else if (id == SL_BRI) quickSetSlider(QSLIDER_BRIGHTNESS, v);
+    ++setVer;
+}
+
+void WlBackend::settingsText(int id, const std::string& v) {
+    if (id == TX_THEME) setTheme = v;
+    else if (id == TX_ENV) setEnv = v;
+    else if (id == TX_LANG) setLang = v;
+    ++setVer;
+}
+
+void WlBackend::settingsScan(int sec) {
+    const long long now = dashNowMs();
+    if (sec == SEC_WIFI) {
+        runBg("nmcli dev wifi rescan 2>/dev/null");
+        wifiScanUntil = now + 4000;
+    } else if (sec == SEC_BT) {
+        runBg("bluetoothctl --timeout 8 scan on 2>/dev/null");
+        btScanUntil = now + 8000;
+    }
+    ++setVer;
+}
+
+void WlBackend::wifiJoin(const std::string& ssid, int sec,
+                         const std::string& pw) {
+    std::vector<std::string> argv = {"nmcli", "dev", "wifi", "connect",
+                                     ssid};
+    if (sec != WSEC_OPEN && !pw.empty()) {
+        argv.push_back("password");
+        argv.push_back(pw);
+    }
+    runBg(shellJoin(argv) + " 2>/dev/null");
+    ++setVer;
+}
+
+void WlBackend::wifiForget(int netId) {
+    if (netId < 0 || netId >= (int)setCons.size()) return;
+    runBg(shellJoin({"nmcli", "con", "delete", setCons[netId]}) +
+          " 2>/dev/null");
+    ++setVer;
+}
+
+void WlBackend::btPair(const std::string& addr) {
+    runBg(shellJoin({"bluetoothctl", "pair", addr}) + " 2>/dev/null");
+    ++setVer;
+}
+
+void WlBackend::btUnpair(const std::string& addr) {
+    runBg(shellJoin({"bluetoothctl", "remove", addr}) + " 2>/dev/null");
+    ++setVer;
 }
 
 void WlBackend::launchPackageOn(const std::string& pkg, int displayId) {

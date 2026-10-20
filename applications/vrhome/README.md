@@ -156,7 +156,12 @@ raw-input apps need. Shift+` always releases the grab. The quick panel
 talks to the
 host's tools: `nmcli` for the Wi-Fi tile, `bluetoothctl` for Bluetooth,
 `wpctl` for the volume slider and `brightnessctl` for brightness. Dock pins
-persist to `$XDG_CONFIG_HOME/hibiscus/dash-pins`.
+persist to `$XDG_CONFIG_HOME/hibiscus/dash-pins`. The settings card reads
+the same tools: networks come from `nmcli` (join and forget work), devices
+from `bluetoothctl`, and the About page shows the host's specs plus the
+Hibiscus version - `/etc/hibiscus-release` when the host carries one,
+otherwise the tree's `git describe` baked in at build time
+(`HIBISCUS_VERSION` overrides it).
 
 Host deps beyond the preview's: `wayland-server`, `wayland-protocols` (for
 the xdg-shell xml `wayland-scanner` compiles at build time), `xkbcommon` and

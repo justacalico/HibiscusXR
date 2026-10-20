@@ -53,7 +53,6 @@
     <string name="set_l_dof">Device mode</string>
     <string name="set_l_night">Night mode</string>
     <string name="set_l_env_list">Home environments</string>
-    <string name="set_l_home_env">Active environment</string>
     <string name="set_l_vol">Volume</string>
     <string name="set_l_mic">Microphone</string>
     <string name="set_l_lang">Language</string>
@@ -82,7 +81,6 @@
     <string name="set_d_dof">3DoF tracks head rotation only. 6DoF also tracks position</string>
     <string name="set_d_night">Warm the display colors after dark</string>
     <string name="set_d_env_list">Pick what surrounds you at home</string>
-    <string name="set_d_home_env">The environment the home shell loads</string>
     <string name="set_d_vol">Adjust the media volume</string>
     <string name="set_d_mic">Allow apps to use the microphone</string>
     <string name="set_d_lang">Change the system language</string>

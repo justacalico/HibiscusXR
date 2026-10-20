@@ -53,7 +53,6 @@
     <string name="set_l_dof">设备模式</string>
     <string name="set_l_night">夜间模式</string>
     <string name="set_l_env_list">主场景列表</string>
-    <string name="set_l_home_env">当前主场景</string>
     <string name="set_l_vol">音量</string>
     <string name="set_l_mic">麦克风</string>
     <string name="set_l_lang">语言</string>
@@ -82,7 +81,6 @@
     <string name="set_d_dof">3DoF 仅跟踪头部旋转，6DoF 还跟踪位置</string>
     <string name="set_d_night">天黑后使显示颜色变暖</string>
     <string name="set_d_env_list">选择主场景环境</string>
-    <string name="set_d_home_env">主场景加载的环境</string>
     <string name="set_d_vol">调整媒体音量</string>
     <string name="set_d_mic">允许应用使用麦克风</string>
     <string name="set_d_lang">更改系统语言</string>

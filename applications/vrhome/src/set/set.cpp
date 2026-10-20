@@ -353,7 +353,7 @@ static const char* kSetFallback[UISET_COUNT] = {
     "Unpair all",
     "Brightness", "Theme", "Eye spacing (IPD)", "Device mode",
     "Night mode",
-    "Home environments", "Active environment",
+    "Home environments",
     "Volume", "Microphone",
     "Language",
     "Date and time",
@@ -370,7 +370,7 @@ static const char* kSetFallback[UISET_COUNT] = {
     "Match the stereo eye separation to your pupils",
     "3DoF tracks head rotation only. 6DoF also tracks position",
     "Warm the display colors after dark",
-    "Pick what surrounds you at home", "The environment the home shell loads",
+    "Pick what surrounds you at home",
     "Adjust the media volume", "Allow apps to use the microphone",
     "Change the system language", "Set the time zone and clock format",
     "Choose the active input method",
@@ -449,11 +449,6 @@ static const char* infoText(HudEngine* e, int txt) {
     if (txt == TX_SSID && s.empty())
         return e->uiQs[UIQS_NOTCONN].empty() ? "Not connected"
                                              : e->uiQs[UIQS_NOTCONN].c_str();
-    if (txt == TX_ENV)
-        return s.empty() ? setStr(e, UISET_ENV_PT)
-             : s == "passthrough" ? setStr(e, UISET_ENV_PT)
-             : s == "builtin" ? setStr(e, UISET_ENV_BUILTIN)
-             : s.c_str();
     return s.empty() ? setStr(e, UISET_UNKNOWN) : s.c_str();
 }
 

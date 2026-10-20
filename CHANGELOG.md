@@ -19,6 +19,7 @@ linked line per MR no matter how many commits it carried.
 - [docs: 手写本版本 changelog 条目](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/169) (!169)
 - [pn2: 头显眩晕修复 - 出厂标定/掉线滑行/合成器迟到锁存](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/171) (!171)
 - [vrhome: 设置新增实验功能区](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/172) (!172)
+- [实验性功能:固定注视点渲染](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/173) (!173)
 - Hide the battery icons when no battery is present.
 - Buttons show as cables when a hardwired cable is plugged in.
 - Remove message for saying what home env you have set.

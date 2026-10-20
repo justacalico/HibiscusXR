@@ -267,6 +267,12 @@ static void testSysinfo() {
     CHECK(parseNmRadio("enabled\n"));
     CHECK(!parseNmRadio("disabled\n"));
 
+    CHECK(parseEthLink("wifi:connected\nethernet:connected\n"
+                       "loopback:unmanaged\n"));
+    CHECK(parseEthLink("ethernet:connected (externally)\n"));
+    CHECK(!parseEthLink("ethernet:unavailable\nwifi:connected\n"));
+    CHECK(!parseEthLink(""));
+
     CHECK_F(parseWpctlVol("Volume: 0.63\n"), 0.63f, 0.01f);
     CHECK(parseWpctlMuted("Volume: 0.63 [MUTED]"));
     CHECK(!parseWpctlMuted("Volume: 0.63"));

@@ -77,6 +77,20 @@ struct ShelfPick {
     float t = 1e9f;         // ray distance, for pick arbitration
 };
 
+// uplink kinds the backend's sysStatus slot 0 can report; the value also
+// picks the status pill's net glyph - a patched cable swaps the fan out
+enum DockNet {
+    DNET_NONE = 0,
+    DNET_WIFI = 1,
+    DNET_ETH = 2,
+};
+
+// the net slot's resolved draw state for a link kind
+struct DockNetIcon {
+    int glyph = DNET_WIFI;  // a DNET_* value: fan or cable comb
+    bool lit = false;       // bright vs the dimmed no-link look
+};
+
 // status cluster pinned to the strip's left end: clock, battery and wifi
 // grouped in one pill - a tap there opens the quick panel - then the
 // notification bell alone in a second, then a separator before the app

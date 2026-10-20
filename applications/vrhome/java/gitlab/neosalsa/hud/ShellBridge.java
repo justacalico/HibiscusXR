@@ -174,16 +174,23 @@ public class ShellBridge {
         }
     }
 
-    // render thread: status bits for the dock cluster - wifi link state,
-    // battery percent, charging flag. Local reads, cheap enough per frame.
-    // pct is -1 when the device has no battery at all
+    // render thread: status bits for the dock cluster - uplink kind
+    // (0 none, 1 wifi, 2 wired; a patched cable wins the status slot),
+    // battery percent, charging flag. Local reads, cheap enough per
+    // frame. pct is -1 when the device has no battery at all
     public int[] sysStatus() {
-        int wifi = 0, pct = -1, chg = 0;
+        int net = 0, pct = -1, chg = 0;
         try {
             ConnectivityManager cm = (ConnectivityManager)
                 ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo wi = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-            if (wi != null && wi.isConnected()) wifi = 1;
+            NetworkInfo ei =
+                cm.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
+            if (ei != null && ei.isConnected()) net = 2;
+            if (net == 0) {
+                NetworkInfo wi =
+                    cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                if (wi != null && wi.isConnected()) net = 1;
+            }
         } catch (Throwable ignored) {}
         try {
             Intent batt = ctx.registerReceiver(null,
@@ -199,7 +206,7 @@ public class ShellBridge {
                         st == BatteryManager.BATTERY_STATUS_FULL) chg = 1;
             }
         } catch (Throwable ignored) {}
-        return new int[]{wifi, pct, chg};
+        return new int[]{net, pct, chg};
     }
 
     // render thread: bumped when the immersive task set changes

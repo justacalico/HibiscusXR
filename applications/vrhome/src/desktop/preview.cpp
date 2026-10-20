@@ -64,6 +64,15 @@ public:
         *out = {"preview.browser", "preview.files", "preview.settings"};
         return true;
     }
+    bool takeGroups(std::vector<LibGroup>* out) override {
+        if (groupsSent) return false;
+        groupsSent = true;
+        *out = groups;
+        return true;
+    }
+    void setGroups(const std::vector<LibGroup>& g) override {
+        groups = g;
+    }
     int appsVersion() override { return 1; }
     void launcherApps(std::vector<GridItem>* out) override {
         static const char* names[] = {
@@ -295,6 +304,8 @@ public:
 private:
     int nextDisp = 100;
     bool pinsSent = false;
+    bool groupsSent = false;
+    std::vector<LibGroup> groups;
     bool kbdShown = false;
     unsigned qsMask = 1u << QS_WIFI;
     float qsVol = 0.6f, qsBri = 0.8f;

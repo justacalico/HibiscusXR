@@ -8,6 +8,7 @@
 #include "sysinfo.h"
 #include "../common/config.h"
 #include "../common/log.h"
+#include "../grid/layout.h"
 #include "../panels/panel.h"
 #include "../quick/item.h"
 
@@ -336,6 +337,40 @@ void WlBackend::setPins(const std::vector<std::string>& pins) {
     FILE* f = fopen((dir + "/dash-pins").c_str(), "wb");
     if (!f) return;
     for (const std::string& p : pins) fprintf(f, "%s\n", p.c_str());
+    fclose(f);
+}
+
+// the library's groups persist next to the pins in the same encoding the
+// android bridge uses: one "name<TAB>pkg,pkg" line per group
+bool WlBackend::takeGroups(std::vector<LibGroup>* out) {
+    if (groupsSent) return false;
+    groupsSent = true;
+    out->clear();
+    std::string text;
+    if (readFile(configDir() + "/hibiscus/dash-groups", &text)) {
+        size_t at = 0;
+        while (at <= text.size()) {
+            const size_t eol = text.find('\n', at);
+            const std::string line = text.substr(at,
+                eol == std::string::npos ? eol : eol - at);
+            at = eol == std::string::npos ? text.size() + 1 : eol + 1;
+            LibGroup g;
+            if (groupDecode(line, &g)) out->push_back(g);
+        }
+    }
+    groups = *out;
+    return true;
+}
+
+void WlBackend::setGroups(const std::vector<LibGroup>& g) {
+    groups = g;
+    const std::string dir = configDir() + "/hibiscus";
+    std::error_code ec;
+    fs::create_directories(dir, ec);
+    FILE* f = fopen((dir + "/dash-groups").c_str(), "wb");
+    if (!f) return;
+    for (const LibGroup& gr : g)
+        fprintf(f, "%s\n", groupEncode(gr).c_str());
     fclose(f);
 }
 

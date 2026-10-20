@@ -81,6 +81,11 @@ static void mouseMove(GLFWwindow*, double x, double y) {
 
 static void mouseBtn(GLFWwindow*, int button, int action, int) {
     if (gApp->grabBtn && gApp->grabBtn(button, action)) return;
+    if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+        hudKey(gApp->hud, kKeyMenu,
+               action == GLFW_PRESS ? kKeyDown : kKeyUp, 0);
+        return;
+    }
     if (button != GLFW_MOUSE_BUTTON_LEFT) return;
     hudKey(gApp->hud, kKeyEnter,
            action == GLFW_PRESS ? kKeyDown : kKeyUp, 0);

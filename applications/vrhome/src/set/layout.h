@@ -89,6 +89,14 @@ const char* setSegValue(int pick, int opt);
 void setScanPill(float textW, float* x, float* hw);
 float setScanPillL();
 
+// the about row's hero group: the brand mark left of the two-line text
+// block, centred as a unit on the row. minL pins the group's left edge
+// when a long translation would overflow the row; iconX is the mark's
+// centre, textX the text column's left edge, ty/dy the two line centres
+// as offsets from the row's own centre
+void setBrandGroup(float rowCx, float minL, float textW, float* iconX,
+                   float* textX, float* ty, float* dy);
+
 // rows whose platform side is not trusted yet draw greyed and inert -
 // same convention as the quick panel's unimplemented tiles
 bool setImplemented(int rid);

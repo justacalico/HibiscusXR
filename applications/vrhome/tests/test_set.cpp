@@ -184,6 +184,23 @@ void testSet() {
     CHECK_F(setScanPillL(), x2 - hw2, 1e-5f);      // zone edge = widest pill
     CHECK(x1 - hw1 > setScanPillL());              // any pill stays in zone
     }
+
+    // ---- brandGroupCentresMarkAndText
+    {
+    float ix, tx, ty, dy;
+    setBrandGroup(0.0f, -0.4f, 0.5f, &ix, &tx, &ty, &dy);
+    const float gw = kSetBrandIconS * 2.0f + kSetBrandGap + 0.5f;
+    CHECK_F(ix - kSetBrandIconS, -gw * 0.5f, 1e-5f);   // group centred
+    CHECK_F(tx, ix + kSetBrandIconS + kSetBrandGap, 1e-5f);
+    CHECK(ix + kSetBrandIconS <= tx);                // mark left of text
+    CHECK(ty > 0.0f && dy < 0.0f);                   // name over sub
+    CHECK(ty < kSetBrandH * 0.5f && -dy < kSetBrandH * 0.5f);
+    CHECK(kSetBrandIconS < kSetBrandH * 0.5f);       // mark fits the row
+    CHECK(kSetBrandIconS > 0.04f);                   // big enough to read
+    // a long translation pins the group to the row's left edge
+    setBrandGroup(0.0f, -0.4f, 9.0f, &ix, &tx, &ty, &dy);
+    CHECK_F(ix - kSetBrandIconS, -0.4f, 1e-5f);
+    }
 }
 
 // ------------------------------------------------------------- policy    }

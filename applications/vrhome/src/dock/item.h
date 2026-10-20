@@ -10,6 +10,7 @@ enum DockZone {
     DZONE_CLOSE,       // the close badge on a live immersive item
     DZONE_HANDLE,      // the drag line under the strip: moves the whole dash
     DZONE_SYS,         // the status pill: opens the quick panel
+    DZONE_BELL,        // the bell pill: opens the notification shade
 };
 
 // item kinds in left-to-right group order: pinned favourites, live tasks,
@@ -93,9 +94,9 @@ struct DockNetIcon {
 
 // status cluster pinned to the strip's left end: clock, battery and wifi
 // grouped in one pill - a tap there opens the quick panel - then the
-// notification bell alone in a second, then a separator before the app
-// icons. clockW and hasBatt go in; the rest come back positioned by
-// dockLayout
+// notification bell alone in a second - a tap there opens the shade -
+// then a separator before the app icons. clockW and hasBatt go in; the
+// rest come back positioned by dockLayout
 struct DockStatus {
     float clockW = 0;   // measured width of the time text
     bool hasBatt = true;// false drops the battery slot out of pill A

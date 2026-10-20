@@ -14,7 +14,8 @@ void testQuiet() {
     // every busy signal blocks the quiet path on its own
     {
         bool HudQuietIn::*fields[] = {
-            &HudQuietIn::panels, &HudQuietIn::grid, &HudQuietIn::notifs,
+            &HudQuietIn::panels, &HudQuietIn::grid, &HudQuietIn::shade,
+            &HudQuietIn::notifs,
             &HudQuietIn::sysmsgs, &HudQuietIn::toastOnly,
             &HudQuietIn::sysMsgOnly, &HudQuietIn::debugOnly,
             &HudQuietIn::kbd, &HudQuietIn::holdRing, &HudQuietIn::held,

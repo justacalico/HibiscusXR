@@ -2,6 +2,7 @@
 
 #include "../bridge/bridge.h"
 #include "../common/log.h"
+#include "../dock/dock.h"
 #include "../hud/dash.h"
 #include "../hud/engine.h"
 #include "../input/input.h"
@@ -113,6 +114,10 @@ static void keyCb(GLFWwindow*, int key, int scancode, int action,
         }
         if (key == GLFW_KEY_P) {
             gApp->hud->quick.shown = !gApp->hud->quick.shown;
+            return;
+        }
+        if (key == GLFW_KEY_N) {
+            gApp->hud->shade.shown = !gApp->hud->shade.shown;
             return;
         }
         if (key == GLFW_KEY_R) { wantRecenter(); return; }
@@ -369,6 +374,11 @@ public:
     }
     void setQuick(bool shown) override {
         runJob(false, [=] { app->hud->quick.shown = shown; });
+    }
+    void setShade(bool shown) override {
+        runJob(false, [=] {
+            if (shown != app->hud->shade.shown) dockBellActivate(app->hud);
+        });
     }
     void setSettings(bool shown) override {
         runJob(false, [=] {

@@ -7,6 +7,8 @@
 #include "../grid/layout.h"
 #include "../kbd/kbd.h"
 #include "../notif/notif.h"
+#include "../notif/layout.h"
+#include "../notif/shade.h"
 #include "../quick/layout.h"
 #include "../quick/quick.h"
 #include "../set/set.h"
@@ -35,6 +37,10 @@ static bool dropTopOverlay(HudEngine* e) {
     }
     if (e->set.shown) {
         setClose(e);
+        return true;
+    }
+    if (e->shade.shown) {
+        e->shade.shown = false;
         return true;
     }
     if (e->quick.shown) {
@@ -72,6 +78,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->dockPinP = 0.0f;
             e->dockPinDone = false;
             e->sysPress = false;
+            e->bellPress = false;
+            e->shade.press = -1;
+            e->shade.pressZone = SHZONE_NONE;
+            e->shade.pressKey.clear();
+            e->shade.scrollHeld = false;
             e->notifPress = -1;
             e->notifPressZone = NZONE_NONE;
             e->shelfPress = -1;
@@ -152,6 +163,23 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->grid.grabV = e->grid.v;
                 e->grid.grabScroll = e->grid.scroll;
             }
+            if (e->shade.zone == SHZONE_DISMISS && e->shade.hover >= 0) {
+                // a badge press: dismisses on a same-row release - the
+                // key guard catches the shade rebuilding under it
+                e->shade.press = e->shade.hover;
+                e->shade.pressZone = SHZONE_DISMISS;
+                e->shade.pressKey = e->notifsAll[e->shade.hover].key;
+            } else if (e->shade.zone == SHZONE_CLOSE ||
+                       e->shade.zone == SHZONE_CLEAR) {
+                e->shade.pressZone = e->shade.zone;
+            } else if (e->shade.zone == SHZONE_ROW ||
+                       e->shade.zone == SHZONE_BODY) {
+                // a row's body and the card both hold the scroll drag;
+                // the badge owns dismissal, a tap on a row is inert
+                e->shade.scrollHeld = true;
+                e->shade.grabV = e->shade.v;
+                e->shade.grabScroll = e->shade.scroll;
+            }
             if (e->quick.zone == QZONE_TILE && e->quick.hover >= 0) {
                 // a tile press: fires on a same-tile release
                 e->quick.press = e->quick.hover;
@@ -189,6 +217,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 // the status pill: the quick panel fires on a release that
                 // lands back on the pill
                 e->sysPress = true;
+            } else if (e->dockZone == DZONE_BELL) {
+                // the bell pill: the shade fires the same way
+                e->bellPress = true;
             }
             if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
                 Panel& p = e->panels[e->hover];
@@ -322,6 +353,26 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->quick.press = -1;
                 e->quick.pressZone = QZONE_NONE;
                 e->quick.slideHeld = -1;
+            } else if (e->shade.pressZone != SHZONE_NONE ||
+                       e->shade.scrollHeld) {
+                // a shade press fires only when the release lands back on
+                // the same spot; the key guard catches a shade rebuild
+                // under a held badge press. A held scroll drag just ends
+                const bool same = e->shade.zone == e->shade.pressZone &&
+                    e->shade.hover == e->shade.press;
+                const bool sameRow = same && e->shade.press >= 0 &&
+                    e->shade.press < (int)e->notifsAll.size() &&
+                    e->notifsAll[e->shade.press].key == e->shade.pressKey;
+                if (sameRow && e->shade.pressZone == SHZONE_DISMISS)
+                    shadeDismissRow(e, e->shade.press);
+                else if (same && e->shade.pressZone == SHZONE_CLEAR)
+                    shadeClearAll(e);
+                else if (same && e->shade.pressZone == SHZONE_CLOSE)
+                    e->shade.shown = false;
+                e->shade.press = -1;
+                e->shade.pressZone = SHZONE_NONE;
+                e->shade.pressKey.clear();
+                e->shade.scrollHeld = false;
             } else if (e->kbd.pressed) {
                 // key tap: the UP lands where the DOWN did - the aim may
                 // have drifted off the key while the button was held
@@ -380,6 +431,10 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 // panel; drifting off drops the press like the items do
                 if (e->dockZone == DZONE_SYS) dockSysActivate(e);
                 e->sysPress = false;
+            } else if (e->bellPress) {
+                // same arm-and-release rule on the bell pill
+                if (e->dockZone == DZONE_BELL) dockBellActivate(e);
+                e->bellPress = false;
             } else if (e->dockPress >= 0) {
                 // release over the same dock item (and zone) fires its
                 // action; a completed pin-hold suppresses the tap
@@ -513,6 +568,11 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 // desktop harness and the debug tools
 void hudScroll(HudEngine* e, float delta) {
     if (e->set.shown) { setScroll(e, delta); return; }
+    if (e->shade.shown) {
+        e->shade.scroll = shadeScrollBy(e->shade.scroll, delta,
+                                        (int)e->notifsAll.size());
+        return;
+    }
     if (!e->grid.shown) return;
     // the wheel drops an open popup before it touches the scroll offset:
     // the cells slide under a fixed menu anchor otherwise
@@ -637,6 +697,20 @@ void moveTick(HudEngine* e) {
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                     kQuickHW, kQuickHH, &u, &v, &t))
             quickSliderTo(e, e->quick.slideHeld, u);
+    }
+    // a held drag on the shade scrolls the row list: the card-local v
+    // delta from the grab slides the rows
+    if (e->shade.scrollHeld && e->confirmHeld && e->shade.shown) {
+        float c[3], r[3], up[3];
+        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                    c, r, up);
+        float u, v, t;
+        if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
+                    kShadeHW, kShadeHH, &u, &v, &t)) {
+            e->shade.scroll = shadeClampScroll(
+                e->shade.grabScroll + (v - e->shade.grabV) * kShadeHH,
+                (int)e->notifsAll.size());
+        }
     }
     if (e->kbd.moveHeld) {
         e->kbd.offYaw = wrapPi(e->kbd.grabOffYaw +

@@ -123,6 +123,7 @@ void dockActivate(HudEngine* e, int idx) {
         e->grid.shown = !e->grid.shown;
         if (e->grid.shown) {
             e->quick.shown = false;
+            e->shade.shown = false;
             if (e->set.shown) setClose(e);
         }
         return;
@@ -151,6 +152,19 @@ void dockSysActivate(HudEngine* e) {
     e->quick.shown = !e->quick.shown;
     if (e->quick.shown) {
         e->grid.shown = false;
+        e->shade.shown = false;
+        if (e->set.shown) setClose(e);
+    }
+}
+
+void dockBellActivate(HudEngine* e) {
+    // the bell pill flips the notification shade - same in-dash overlay
+    // rule: opening it drops whatever card is already up
+    e->shade.shown = !e->shade.shown;
+    if (e->shade.shown) {
+        e->shade.scroll = 0.0f;
+        e->grid.shown = false;
+        e->quick.shown = false;
         if (e->set.shown) setClose(e);
     }
 }
@@ -360,8 +374,10 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     const float* pc = e->dockZone == DZONE_SYS ? kPalSurfaceHigh
                                              : kPalSurface;
     const float pillACol[4] = {pc[0], pc[1], pc[2], 0.55f * a};
-    const float pillCol[4] = {kPalSurface[0], kPalSurface[1],
-                              kPalSurface[2], 0.55f * a};
+    // the bell pill brightens under the gaze the same way
+    const float* pb = e->dockZone == DZONE_BELL ? kPalSurfaceHigh
+                                              : kPalSurface;
+    const float pillCol[4] = {pb[0], pb[1], pb[2], 0.55f * a};
     {
         const float ax = (st.pillAL + st.pillAR) * 0.5f;
         const float aw = (st.pillAR - st.pillAL) * 0.5f;
@@ -449,12 +465,17 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                   0.0025f, bh * 0.18f, 0.002f, 0.0f, 0.0012f, ocol);
     }
 
-    // bell: dim while the shade is empty, a red shoulder dot while
-    // notifications wait
+    // bell: bright like the library icon, accent while its card is up,
+    // a red shoulder dot while notifications wait
     {
         const bool any = !e->notifsAll.empty();
-        const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               (any ? 0.90f : 0.30f) * a};
+        const float* bc2 = e->shade.shown ? kPalAccent : kPalText;
+        const float bcol[4] = {bc2[0], bc2[1], bc2[2],
+                               (e->shade.shown
+                                    ? 0.95f
+                                    : 0.72f +
+                                      (e->dockZone == DZONE_BELL
+                                           ? 0.23f : 0.0f)) * a};
         const float bx = st.bellX;
         const float bc[3] = {c[0] + r[0]*bx, c[1] + r[1]*bx,
                              c[2] + r[2]*bx};

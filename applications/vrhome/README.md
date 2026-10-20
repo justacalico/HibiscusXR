@@ -68,7 +68,7 @@ At most three windows float at once, including the library. Opening another app 
 
 New apps open on the middle slot: the window already there slides to a free side, left first, and when all three slots are taken the middle window is parked on the shelf instead of evicted so the newcomer can take its place.
 
-The status pill on the dock's left end opens the quick panel: a card inside the dash itself with the volume and brightness sliders and the toggle tiles (radios, mic, night mode, DND, airplane, battery saver). Only one card overlay is up at a time - opening the panel drops the app grid and vice versa.
+The status pill on the dock's left end opens the quick panel: a card inside the dash itself with the volume and brightness sliders and the toggle tiles (radios, mic, night mode, DND, airplane, battery saver). The bell pill beside it opens the notification shade: every live notification as a scrollable row, with a dismiss badge on each clearable one and a clear-all pill on the title row. Only one card overlay is up at a time - opening either drops the app grid and vice versa.
 
 The library's bar carries the × disc only: it can be closed but never minimized, and picking an app from it swaps the grid window out for the app it launched. Its dock pin brings it back.
 
@@ -125,7 +125,8 @@ be tried without a headset.
 The mouse controls the gaze direction, WASD moves the free camera, Q/E move
 vertically, Shift moves faster, left click is confirm, Esc parks the window
 on the shelf, Shift+Esc closes it, G toggles the app grid, P toggles the
-quick panel, K toggles the keyboard, and R recenters the dash.
+quick panel, K toggles the keyboard, N toggles the notification shade,
+and R recenters the dash.
 
 The preview links the same layout, input, animation and draw code the headset
 uses. Android services sit behind `src/shell/backend.h`; the desktop backend is
@@ -185,7 +186,7 @@ stdio: one JSON-RPC message per line, tools to drive the dash.
 | `dash_move` | move the camera (`x` / `y` / `z` in metres) |
 | `dash_key` | send a key: `confirm`, `enter`, `back`, `dpad_center` or `button_a`; `action` is `tap` (default), `down` or `up` |
 | `dash_launch` | open a `package` on a new panel |
-| `dash_grid` / `dash_keyboard` / `dash_quick` / `dash_settings` | show or hide the app grid / keyboard quad / quick-settings card / settings card (`shown`) |
+| `dash_grid` / `dash_keyboard` / `dash_quick` / `dash_settings` / `dash_shade` | show or hide the app grid / keyboard quad / quick-settings card / settings card / notification shade (`shown`) |
 | `dash_recenter` | re-anchor the dash ring in front of the camera |
 | `dash_screenshot` | return the rendered frame as a PNG image |
 

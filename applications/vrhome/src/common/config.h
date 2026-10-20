@@ -249,6 +249,31 @@ constexpr long long kNotifShowMs = 5000; // dash card lifetime from postMs;
 // yaw at the moment the toast pops so it never hides behind the user
 constexpr float kNotifToastPitch = 0.14f;
 
+// the notification shade: the dock's bell pill opens this card - every
+// live record listed newest first, each clearable row carrying its own
+// dismiss badge, a clear-all pill on the title row. It hangs in front of
+// the window slots on the same anchor plane as the other dash cards and
+// shares their open animation
+constexpr float kShadeDist = 1.38f;     // metres; matches the grid card
+constexpr float kShadeHW = 0.56f, kShadeHH = 0.40f;
+constexpr float kShadeHeadH = 0.095f;   // title band height
+constexpr float kShadePad = 0.030f;     // inner side padding
+constexpr float kShadeRowH = 0.105f;    // notification row pitch
+constexpr float kShadeRowGap = 0.010f;  // between rows
+constexpr float kShadeIconHW = 0.026f;  // app icon half-width on a row
+constexpr float kShadeBadgeR = 0.020f;  // row dismiss badge radius
+constexpr float kShadeCloseR = 0.024f;  // close disc on the title row
+constexpr float kShadeClearH = 0.030f;  // clear-all pill half-height
+constexpr float kShadeClearPadX = 0.020f; // its inner x padding
+constexpr int   kShadeMax = 24;         // shade records kept
+constexpr float kShadeMs = 200.0f;      // card open/close
+constexpr float kShadeScale0 = 0.94f;   // card's open-from size share
+constexpr float kShadeDragSlop = 0.035f; // card-local metres a held press
+                                        // must travel before it counts as
+                                        // a scroll drag
+constexpr float kShadeWheelStep = 0.20f; // card-local metres one wheel
+                                        // detent scrolls
+
 // system-message cards: crash/ANR dropbox entries surfaced as a modal VR
 // dialog - the image's hide_error_dialogs keeps the mono dialog off the
 // panel, this card replaces it. In the dash the card rides the dock's

@@ -148,4 +148,7 @@
     <string name="lib_pin">固定到 Dock</string>
     <string name="lib_unpin">从 Dock 移除</string>
     <string name="lib_group_fmt">分组 %d</string>
+    <string name="notif_title">通知</string>
+    <string name="notif_clear_all">全部清除</string>
+    <string name="notif_empty">暂无通知</string>
 </resources>

@@ -68,6 +68,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/render/iprim.cpp src/render/icons.cpp \
             src/render/iconatlas.cpp \
             src/notif/notif.cpp src/notif/layout.cpp \
+            src/notif/shade.cpp \
             src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
             src/bridge/bridge.cpp src/bridge/core.cpp \
             src/input/input.cpp src/input/keys.cpp \
@@ -140,6 +141,7 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
                 src/set/set.cpp src/set/layout.cpp src/set/icons.cpp \
                 src/render/iprim.cpp \
                 src/notif/notif.cpp src/notif/layout.cpp \
+                src/notif/shade.cpp \
                 src/sysmsg/sysmsg.cpp src/sysmsg/layout.cpp \
                 src/input/input.cpp src/input/keys.cpp \
                 src/input/input_state.cpp src/input/aim.cpp \

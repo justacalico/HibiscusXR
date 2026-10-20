@@ -30,6 +30,9 @@ public class UiStrings {
     public static final int LIB_PIN = LIB_ALL + 2;
     public static final int LIB_UNPIN = LIB_ALL + 3;
     public static final int LIB_GROUPFMT = LIB_ALL + 4;
+    // the notification shade's block trails the library's; slot order
+    // matches src/notif/item.h's UiShadeStr
+    public static final int SHADE_TITLE = LIB_GROUPFMT + 1;
 
     private static volatile int ver = 0;
 
@@ -179,6 +182,9 @@ public class UiStrings {
             ctx.getString(R.string.lib_pin),
             ctx.getString(R.string.lib_unpin),
             ctx.getString(R.string.lib_group_fmt),
+            ctx.getString(R.string.notif_title),
+            ctx.getString(R.string.notif_clear_all),
+            ctx.getString(R.string.notif_empty),
         };
     }
 }

@@ -76,6 +76,7 @@ static void hudQuietSample(HudEngine* e, HudQuietIn* q) {
     q->panels = !e->panels.empty();
     q->grid = e->grid.openT > 0.0f || e->grid.shown;
     q->set = e->set.openT > 0.0f || e->set.shown;
+    q->shade = e->shade.openT > 0.0f || e->shade.shown;
     q->notifs = !e->notifs.empty();
     q->sysmsgs = !e->sysMsgs.empty();
     q->toastOnly = e->toastOnly;
@@ -83,10 +84,11 @@ static void hudQuietSample(HudEngine* e, HudQuietIn* q) {
     q->debugOnly = e->debugOnly;
     q->kbd = e->kbd.only || e->kbd.shown || e->kbd.pressed || e->kbd.moveHeld;
     q->holdRing = e->holdStartMs != 0 || e->holdP > 0.0f;
-    q->held = e->confirmHeld || e->moveHeld || e->sysPress;
+    q->held = e->confirmHeld || e->moveHeld || e->sysPress || e->bellPress;
     q->presses = e->dockPress >= 0 || e->shelfPress >= 0 ||
                  e->notifPress >= 0 || e->sysMsgPress >= 0 ||
                  e->grid.press >= 0 || e->grid.scrollHeld ||
+                 e->shade.press >= 0 || e->shade.scrollHeld ||
                  e->pressDisp >= 0 || e->dragDisp >= 0 ||
                  e->dockPinP > 0.0f;
     q->recentSummon = e->frameMs - e->summonMs < 1500;

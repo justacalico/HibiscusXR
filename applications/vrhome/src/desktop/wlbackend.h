@@ -39,6 +39,19 @@ public:
     void quickToggle(int id, bool on) override;
     void quickSetSlider(int slider, float v) override;
 
+    int settingsVersion() override;
+    void settingsStatus(SetSnap* out) override;
+    void settingsSection(int sec) override;
+    void settingsToggle(int id, bool on) override;
+    void settingsSlider(int id, float v) override;
+    void settingsText(int id, const std::string& v) override;
+    void settingsScan(int sec) override;
+    void wifiJoin(const std::string& ssid, int sec,
+                  const std::string& pw) override;
+    void wifiForget(int netId) override;
+    void btPair(const std::string& addr) override;
+    void btUnpair(const std::string& addr) override;
+
     void launchPackageOn(const std::string& pkg, int displayId) override;
     void adoptTaskOn(int taskId, int displayId) override;
     void focusTask(int taskId) override;
@@ -81,10 +94,21 @@ private:
     std::string term;
     bool termSearched = false;
 
+    int setVer = 0;
+    long long setPollAt = 0;
+    long long wifiScanUntil = 0, btScanUntil = 0;
+    SetSnap setSnap;
+    std::vector<std::string> setCons;   // nmcli profile names, saved rows index it
+    std::string setTheme = "dark", setEnv = "builtin", setLang = "en";
+    bool aboutDone = false;
+    std::string sysModel, sysHb;
+
     Slot* slotOf(int displayId);
     WlTask* taskOf(int taskId);
     void rescanApps();
     void pollSys();
+    void pollSet();
+    void fillAbout(SetSnap* out);
     const DeskEntry* entry(const std::string& pkg);
     void onTaskMap(WlTask* t);
     void onTaskDead(WlTask* t);

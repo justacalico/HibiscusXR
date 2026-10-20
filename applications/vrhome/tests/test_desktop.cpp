@@ -279,6 +279,66 @@ static void testSysinfo() {
 
     CHECK_F(parseBrightness("amdgpu,backlight,192,75%,255"), 0.75f,
             0.01f);
+
+    CHECK(parseHibiscusRelease("alpha-v2026.10.19-r19\n") ==
+          "alpha-v2026.10.19-r19");
+    CHECK(parseHibiscusRelease("VERSION=\"alpha-v2\"\n") == "alpha-v2");
+    CHECK(parseHibiscusRelease("VERSION=alpha-v2\njunk\n") == "alpha-v2");
+    CHECK(parseHibiscusRelease("bare\nVERSION=alpha-v2\n") == "alpha-v2");
+    CHECK(parseHibiscusRelease("").empty());
+    CHECK(parseHibiscusRelease("\n\n").empty());
+
+    CHECK(parseCpuModel("processor\t: 0\nmodel name\t: AMD Ryzen 9 7950X\n"
+                        "processor\t: 1\n") == "AMD Ryzen 9 7950X");
+    CHECK(parseCpuModel("processor\t: 0\nHardware\t: BCM2835\n") ==
+          "BCM2835");
+    CHECK(parseCpuModel("processor\t: 0\n").empty());
+
+    CHECK(parseMemTotal("MemTotal:       65777756 kB\nMemFree: x\n") ==
+          "63 GB");
+    CHECK(parseMemTotal("MemTotal:        1048576 kB\n") == "1 GB");
+    CHECK(parseMemTotal("MemFree: 1 kB\n").empty());
+
+    CHECK(cleanGpuName("NVIDIA GeForce RTX 3080/PCIe/SSE2") ==
+          "NVIDIA GeForce RTX 3080");
+    CHECK(cleanGpuName("AMD Radeon RX 7900 (radeonsi, navi31)") ==
+          "AMD Radeon RX 7900");
+    CHECK(cleanGpuName("llvmpipe") == "llvmpipe");
+
+    CHECK(specLine("CPU", "63 GB", "GPU") == "CPU, 63 GB, GPU");
+    CHECK(specLine("CPU", "", "GPU") == "CPU, GPU");
+    CHECK(specLine("", "", "").empty());
+
+    std::vector<SetWifi> nets;
+    parseWifiList("yes:HomeNet:78:WPA2\n"
+                  "no:Cafe\\:Guest:30:\n"
+                  "no::12:WPA2\n"
+                  "no:OldNet:5:WEP\n",
+                  {"HomeNet", "OtherCon"}, &nets);
+    CHECK(nets.size() == 3);
+    CHECK(nets[0].conn && nets[0].ssid == "HomeNet");
+    CHECK(nets[0].sec == WSEC_WPA && nets[0].level == 3);
+    CHECK(nets[0].saved == 0);
+    CHECK(nets[1].ssid == "Cafe:Guest" && nets[1].sec == WSEC_OPEN);
+    CHECK(nets[1].saved == -1);
+    CHECK(nets[2].sec == WSEC_WEP && nets[2].level == 0);
+
+    CHECK(parseConNames("HomeNet\nCorp 5G\n\n").size() == 2);
+
+    CHECK(parseBtPowered("\tName: desk\n\tPowered: yes\n"));
+    CHECK(!parseBtPowered("\tPowered: no\n"));
+    CHECK(!parseBtPowered("No default controller available\n"));
+
+    std::vector<SetBtDev> devs;
+    parseBtDevs("Device 3C:01:02:03:04:05 Keyboard K380\n"
+                "Device 4C:06:07:08:09:0A MX Master 3S\n"
+                "Device 5C:0B:0C:0D:0E:0F\n",
+                "Device 3C:01:02:03:04:05 Keyboard K380\n", &devs);
+    CHECK(devs.size() == 3);
+    CHECK(devs[0].bonded && devs[0].conn);
+    CHECK(devs[0].name == "Keyboard K380");
+    CHECK(!devs[1].conn && devs[1].name == "MX Master 3S");
+    CHECK(devs[2].name.empty() && devs[2].addr == "5C:0B:0C:0D:0E:0F");
 }
 
 static void testTaskMatch() {

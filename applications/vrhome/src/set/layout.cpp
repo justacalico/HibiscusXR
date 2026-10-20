@@ -98,7 +98,7 @@ void setBuildRows(int sec, bool android, const SetSnap& snap,
         break;
     case SEC_ABOUT:
         row(RK_BRAND, -1, RID_BRAND);
-        row(RK_INFO, TX_MODEL, RID_MODEL);
+        row(RK_INFO, TX_MODEL, android ? RID_MODEL : RID_SYSTEM);
         if (android) row(RK_INFO, TX_ANDROID, RID_ANDROID);
         row(RK_INFO, TX_HBVER, RID_HBVER);
         break;

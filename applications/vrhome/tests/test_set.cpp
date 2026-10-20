@@ -80,6 +80,7 @@ void testSet() {
     CHECK(ov.rows.size() == 2);   // brightness + theme only: no ipd/dof
     rowsFor(SEC_ABOUT, snap, &ov);
     CHECK(ov.rows.size() == 3);   // no android version row
+    CHECK(ov.rows[1].aux == RID_SYSTEM);
     CHECK(ov.rows[2].aux == RID_HBVER);
     ov.android = true;
 }

@@ -357,12 +357,15 @@ public class SettingsState {
     private String hbVer() {
         try {
             BufferedReader r = new BufferedReader(new FileReader(HB_RELEASE));
-            String line, out = "";
-            while ((line = r.readLine()) != null)
+            String line, out = "", bare = "";
+            while ((line = r.readLine()) != null) {
                 if (line.startsWith("VERSION="))
                     out = line.substring(8).replace("\"", "");
+                else if (bare.isEmpty() && !line.trim().isEmpty())
+                    bare = line.trim();
+            }
             r.close();
-            return out;
+            return out.isEmpty() ? bare : out;
         } catch (Throwable t) { return ""; }
     }
 

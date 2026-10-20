@@ -66,6 +66,7 @@
     <string name="set_l_model">型号</string>
     <string name="set_l_android">Android 版本</string>
     <string name="set_l_hbver">Hibiscus 版本</string>
+    <string name="set_l_system">系统</string>
     <string name="set_d_wifi_on">连接到无线网络</string>
     <string name="set_d_wifi_ssid">此头显连接的网络</string>
     <string name="set_d_wifi_list">点按网络进行连接或管理</string>
@@ -94,6 +95,7 @@
     <string name="set_d_model">此头显的硬件型号</string>
     <string name="set_d_android">此系统运行的 Android 版本</string>
     <string name="set_d_hbver">此头显安装的 Hibiscus 版本</string>
+    <string name="set_d_system">此系统运行的硬件</string>
     <string name="set_v_connected">已连接</string>
     <string name="set_v_disconnected">未连接</string>
     <string name="set_v_pairing">配对中…</string>

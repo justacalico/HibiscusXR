@@ -66,6 +66,7 @@
     <string name="set_l_model">Model</string>
     <string name="set_l_android">Android version</string>
     <string name="set_l_hbver">Hibiscus version</string>
+    <string name="set_l_system">System</string>
     <string name="set_d_wifi_on">Connect to a wireless network</string>
     <string name="set_d_wifi_ssid">The network this headset is connected to</string>
     <string name="set_d_wifi_list">Tap a network to connect or manage it</string>
@@ -94,6 +95,7 @@
     <string name="set_d_model">The hardware model of this headset</string>
     <string name="set_d_android">The Android release this system runs</string>
     <string name="set_d_hbver">The Hibiscus build installed on this headset</string>
+    <string name="set_d_system">The hardware this system runs on</string>
     <string name="set_v_connected">Connected</string>
     <string name="set_v_disconnected">Disconnected</string>
     <string name="set_v_pairing">Pairing…</string>

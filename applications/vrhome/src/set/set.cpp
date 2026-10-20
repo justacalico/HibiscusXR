@@ -877,19 +877,23 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         break;
     }
     case RK_BRAND: {
-        const float my = rcy + 0.031f * gs;
-        const float ic[3] = {c[0] + r[0]*rcx + up[0]*my,
-                             c[1] + r[1]*rcx + up[1]*my,
-                             c[2] + r[2]*rcx + up[2]*my};
-        setBrandMark(e, vp, ic, r, up, 0.020f * gs, ga);
-        const std::string t = fit(setStr(e, UISET_LBL0 + RID_BRAND),
-                                  0.0027f * gs, rx - hw, rx + hw);
-        const std::string d = fit(setStr(e, UISET_DESC0 + RID_BRAND),
-                                  0.0013f * gs, rx - hw, rx + hw);
-        sText(e, vp, c, r, up, rcx, rcy - 0.009f * gs, t.c_str(),
-              0.0027f * gs, ga, true, false);
-        sText(e, vp, c, r, up, rcx, rcy - 0.043f * gs, d.c_str(),
-              0.0013f * gs, ga, true, true);
+        const char* name = setStr(e, UISET_LBL0 + RID_BRAND);
+        const char* sub = setStr(e, UISET_DESC0 + RID_BRAND);
+        const float nw = measureText(e, name, 0.0027f * gs) / gs;
+        const float sw = measureText(e, sub, 0.0013f * gs) / gs;
+        float ix, tx, ty, dy;
+        setBrandGroup(rx, paneLx + 0.016f, nw > sw ? nw : sw,
+                      &ix, &tx, &ty, &dy);
+        const float ic[3] = {c[0] + r[0]*ix*gs + up[0]*rcy,
+                             c[1] + r[1]*ix*gs + up[1]*rcy,
+                             c[2] + r[2]*ix*gs + up[2]*rcy};
+        setBrandMark(e, vp, ic, r, up, kSetBrandIconS * gs, ga);
+        const std::string t = fit(name, 0.0027f * gs, tx, reC - 0.016f);
+        const std::string d = fit(sub, 0.0013f * gs, tx, reC - 0.016f);
+        sText(e, vp, c, r, up, tx * gs, rcy + ty * gs, t.c_str(),
+              0.0027f * gs, ga, false, false);
+        sText(e, vp, c, r, up, tx * gs, rcy + dy * gs, d.c_str(),
+              0.0013f * gs, ga, false, true);
         break;
     }
     default:

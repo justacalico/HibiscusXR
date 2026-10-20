@@ -251,6 +251,17 @@ float setScanPillL() {
     return paneR() - kSetPillMR - kSetPillHW1 * 2.0f;
 }
 
+void setBrandGroup(float rowCx, float minL, float textW, float* iconX,
+                   float* textX, float* ty, float* dy) {
+    const float w = kSetBrandIconS * 2.0f + kSetBrandGap + textW;
+    float l = rowCx - w * 0.5f;
+    if (l < minL) l = minL;
+    *iconX = l + kSetBrandIconS;
+    *textX = l + kSetBrandIconS * 2.0f + kSetBrandGap;
+    *ty = 0.019f;
+    *dy = -0.030f;
+}
+
 // language tag -> option index, the same normalization the flutter app
 // applied: English dialects to en, unambiguous Simplified tags to zh-CN
 static int langOpt(const std::string& tag) {

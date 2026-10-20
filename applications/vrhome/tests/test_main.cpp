@@ -14,6 +14,7 @@ void testWarp();
 void testDock();
 void testShelf();
 void testNotif();
+void testShade();
 void testSysMsg();
 void testInput();
 void testCtrlDebug();
@@ -49,6 +50,7 @@ int main() {
     testDock();
     testShelf();
     testNotif();
+    testShade();
     testSysMsg();
     testInput();
     testCtrlDebug();

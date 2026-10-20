@@ -15,6 +15,7 @@
 #include "../kbd/kbd.h"
 #include "../notif/layout.h"
 #include "../notif/notif.h"
+#include "../notif/shade.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 #include "../pill/pill.h"
@@ -84,6 +85,7 @@ void drawDashScene(Engine* e, const Mat4& vp) {
     drawGrid(h, vp);
     drawQuick(h, vp);
     drawSet(h, vp);
+    drawShade(h, vp);
     drawDock(h, vp);
     drawShelf(h, vp);
     drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
@@ -145,6 +147,11 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
         ? pickSetRay(e->set, e->dockYaw, ringPitchFor(e->dockPitch),
                      e->ringPos, e->aimO, e->aimD)
         : SetHit{};
+    const ShadePick hp = e->shade.shown
+        ? pickShadeRay(e->notifsAll, e->shade.scroll, e->shade.clearHW,
+                       e->dockYaw, ringPitchFor(e->dockPitch),
+                       e->ringPos, e->aimO, e->aimD)
+        : ShadePick{};
     e->grid.hover = -1;
     e->grid.zone = GZONE_NONE;
     e->quick.hover = -1;
@@ -152,6 +159,8 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
     e->set.hover = -1;
     e->set.zone = SZONE_NONE;
     e->set.aux = -1;
+    e->shade.hover = -1;
+    e->shade.zone = SHZONE_NONE;
     e->quick.slider = -1;
     e->sysMsgHover = -1; e->sysMsgZone = MZONE_NONE; e->sysMsgBtn = -1;
     e->notifHover = -1; e->notifZone = NZONE_NONE;
@@ -159,7 +168,7 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
     e->dockHover = -1; e->dockZone = DZONE_NONE;
     e->hover = -1; e->hoverZone = ZONE_NONE;
     e->aimHitT = -1.0f;
-    switch (dashSel(msgModal, mp, np, gp, qp, s5, sp, dp, kT)) {
+    switch (dashSel(msgModal, mp, np, gp, qp, s5, hp, sp, dp, kT)) {
     case DSEL_SYSMSG:
         e->sysMsgHover = mp.hit ? 0 : -1;
         e->sysMsgZone = mp.zone;
@@ -186,6 +195,11 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
         e->set.aux = s5.aux;
         e->set.u = s5.u; e->set.v = s5.v;
         e->aimHitT = s5.t;
+        break;
+    case DSEL_SHADE:
+        e->shade.hover = hp.idx; e->shade.zone = hp.zone;
+        e->shade.u = hp.u; e->shade.v = hp.v;
+        e->aimHitT = hp.t;
         break;
     case DSEL_SHELF:
         e->shelfHover = sp.idx;
@@ -251,6 +265,7 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
     syncSysMsgs(e);
     syncQuick(e);
     syncSet(e);
+    syncShade(e);
     e->notifs = visibleNotifs(e->notifsAll, epochNowMs());
     pickDash(e, head, now);
     ctrlFlush(e);
@@ -276,6 +291,8 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
         e->quick.openT = stepT(e->quick.openT, e->quick.shown, dtMs,
                                kQuickMs);
         e->set.openT = stepT(e->set.openT, e->set.shown, dtMs, kSetMs);
+        e->shade.openT = stepT(e->shade.openT, e->shade.shown, dtMs,
+                               kShadeMs);
     }
     updatePanels(e);
     kbdTick(e);

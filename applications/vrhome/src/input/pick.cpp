@@ -2,7 +2,7 @@
 
 DashSel dashSel(bool sysModal, const SysMsgPick& mp, const NotifPick& np,
                 const GridPick& gp, const QsPick& qp, const SetHit& st,
-                const ShelfPick& sp,
+                const ShadePick& hp, const ShelfPick& sp,
                 const DockPick& dp, float kbdT) {
     if (sysModal || mp.hit) return DSEL_SYSMSG;
     if (np.stack && (!dp.bar || np.t <= dp.t) &&
@@ -10,6 +10,9 @@ DashSel dashSel(bool sysModal, const SysMsgPick& mp, const NotifPick& np,
     if (st.hit && (!dp.bar || st.t <= dp.t) &&
         (!sp.hit || st.t <= sp.t) &&
         (kbdT < 0.0f || st.t <= kbdT)) return DSEL_SET;
+    if (hp.hit && (!dp.bar || hp.t <= dp.t) &&
+        (!sp.hit || hp.t <= sp.t) &&
+        (kbdT < 0.0f || hp.t <= kbdT)) return DSEL_SHADE;
     if (qp.hit && (!dp.bar || qp.t <= dp.t) &&
         (!sp.hit || qp.t <= sp.t) &&
         (kbdT < 0.0f || qp.t <= kbdT)) return DSEL_QUICK;

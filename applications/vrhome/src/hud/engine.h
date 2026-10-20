@@ -83,6 +83,11 @@ struct HudEngine : Engine {
     // one card overlay is up at a time - opening this drops the grid
     QuickPanel quick;
 
+    // the notification shade: opened from the dock's bell pill, lists
+    // every live record from notifsAll with per-row dismiss and a
+    // clear-all pill. Same one-card overlay rule as the quick panel
+    ShadeOverlay shade;
+
     // the settings card: the full settings surface inside the dash, from
     // the quick panel's gear or About tile. Same overlay-exclusion rules
     // as the other cards
@@ -113,6 +118,7 @@ struct HudEngine : Engine {
     bool dockPinDone = false;      // long-press already toggled the pin
     float dockPinP = 0.0f;         // pin hold fill 0..1
     bool sysPress = false;         // confirm armed on the status pill
+    bool bellPress = false;        // confirm armed on the bell pill
 
     // minimized-window shelf: hidden panels parked on a pill above the
     // dock bar, rebuilt each frame by syncDock. hover/press mirror the
@@ -182,6 +188,8 @@ struct HudEngine : Engine {
     std::string uiQs[UIQS_COUNT];
     // the settings card's labels: UiSetStr slots
     std::string uiSet[UISET_COUNT];
+    // the shade card's labels: UiShadeStr slots
+    std::string uiShade[UISHADE_COUNT];
 
     // developer-settings debug line: debugHud is the toggle itself;
     // debugOnly means the window is up over a covered app solely for that

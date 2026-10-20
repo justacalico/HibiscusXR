@@ -34,6 +34,7 @@ void setOpen(HudEngine* e, int section) {
     e->set.snapVer = -1;
     e->grid.shown = false;
     e->quick.shown = false;
+    e->shade.shown = false;
     if (e->backend) e->backend->settingsSection(section);
 }
 

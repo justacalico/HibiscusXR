@@ -30,6 +30,10 @@ void dockActivate(HudEngine* e, int idx);
 // inside the dash, so there's no window to focus or launch
 void dockSysActivate(HudEngine* e);
 
+// release on the bell pill: toggle the notification shade - another
+// in-dash card under the same one-overlay rule
+void dockBellActivate(HudEngine* e);
+
 // the close badge on a live immersive item: kill its task
 void dockClose(HudEngine* e, int idx);
 

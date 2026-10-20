@@ -184,6 +184,8 @@ Json mcpToolList() {
             "Show or hide the quick-settings card.", p, {"shown"}));
         tools.push(toolDef("dash_settings",
             "Show or hide the settings card.", p, {"shown"}));
+        tools.push(toolDef("dash_shade",
+            "Show or hide the notification shade.", p, {"shown"}));
     }
 
     tools.push(toolDef("dash_screenshot",
@@ -286,7 +288,8 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
         return true;
     }
     if (name == "dash_grid" || name == "dash_keyboard" ||
-            name == "dash_quick" || name == "dash_settings") {
+            name == "dash_quick" || name == "dash_settings" ||
+            name == "dash_shade") {
         const Json* v = a.get("shown");
         if (!v || !v->isBool()) {
             *errMsg = "shown is required";
@@ -295,6 +298,7 @@ bool mcpToolCall(McpDash* d, const std::string& name, const Json& args,
         if (name == "dash_grid") d->setGrid(v->b);
         else if (name == "dash_quick") d->setQuick(v->b);
         else if (name == "dash_settings") d->setSettings(v->b);
+        else if (name == "dash_shade") d->setShade(v->b);
         else d->setKbd(v->b);
         *result = textRes(v->b ? "shown" : "hidden");
         return true;

@@ -218,10 +218,13 @@ int dockItemAt(const std::vector<DockItem>& items, const DockStatus& st,
             return i;
         }
     }
-    // the status pill answers to its own bounds: it sits left of every
-    // item, centred on the bar like the strip draws it
+    // the status pills answer to their own bounds: they sit left of every
+    // item, centred on the bar like the strip draws them. Pill A opens
+    // the quick panel, pill B the notification shade
     if (x >= st.pillAL && x <= st.pillAR && fabsf(y) <= kSysPillHH)
         *zone = DZONE_SYS;
+    else if (x >= st.pillBL && x <= st.pillBR && fabsf(y) <= kSysPillHH)
+        *zone = DZONE_BELL;
     return -1;
 }
 

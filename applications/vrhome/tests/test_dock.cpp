@@ -223,11 +223,33 @@ void testDock() {
         CHECK(dockItemAt(items, st, hw, px / hw, vTop + 0.01f,
                          &zone) == -1);
         CHECK(zone == DZONE_NONE);
-        // between the two pills and on the bell: plain bar body
+        // between the two pills: plain bar body
         const float gapX = (st.pillAR + st.pillBL) * 0.5f;
         CHECK(dockItemAt(items, st, hw, gapX / hw, 0.0f, &zone) == -1);
         CHECK(zone == DZONE_NONE);
+    }
+
+    // the bell pill is its own zone: it opens the notification shade
+    {
+        std::vector<DockItem> items;
+        DockItem a; a.pkg = "a"; a.kind = DK_PIN;
+        items = {a};
+        DockStatus st;
+        st.clockW = 0.06f;
+        const float hw = dockLayout(items, st);
+        int zone = DZONE_NONE;
         CHECK(dockItemAt(items, st, hw, st.bellX / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_BELL);
+        // the pill's edges still count, a point past them doesn't
+        CHECK(dockItemAt(items, st, hw, st.pillBL / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_BELL);
+        CHECK(dockItemAt(items, st, hw, st.pillBR / hw, 0.0f,
+                         &zone) == -1);
+        CHECK(zone == DZONE_BELL);
+        const float vTop = kSysPillHH / (kDockBarH * 0.5f);
+        CHECK(dockItemAt(items, st, hw, st.bellX / hw, vTop + 0.01f,
                          &zone) == -1);
         CHECK(zone == DZONE_NONE);
     }

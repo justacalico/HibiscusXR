@@ -17,6 +17,7 @@ enum DashSel {
     DSEL_NOTIF,
     DSEL_QUICK,
     DSEL_SET,
+    DSEL_SHADE,
     DSEL_GRID,
     DSEL_SHELF,
     DSEL_DOCK,
@@ -28,5 +29,6 @@ enum DashSel {
 // the ray distance to the keyboard quad, negative when it missed
 DashSel dashSel(bool sysModal, const SysMsgPick& mp, const NotifPick& np,
                 const GridPick& gp, const QsPick& qp,
-                const SetHit& st, const ShelfPick& sp,
+                const SetHit& st, const ShadePick& hp,
+                const ShelfPick& sp,
                 const DockPick& dp, float kbdT);

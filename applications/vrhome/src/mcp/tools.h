@@ -42,6 +42,7 @@ public:
     virtual void setKbd(bool shown) = 0;
     virtual void setQuick(bool shown) = 0;
     virtual void setSettings(bool shown) = 0;
+    virtual void setShade(bool shown) = 0;
     virtual void scroll(float delta) = 0;
     virtual bool state(McpState* out) = 0;
     virtual bool screenshot(std::vector<unsigned char>* rgba,

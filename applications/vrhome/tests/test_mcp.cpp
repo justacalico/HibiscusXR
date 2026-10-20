@@ -45,6 +45,9 @@ public:
     void setQuick(bool shown) override {
         log.push_back("quick " + std::to_string(shown));
     }
+    void setShade(bool shown) override {
+        log.push_back("shade " + std::to_string(shown));
+    }
     void scroll(float delta) override {
         log.push_back("scroll " + std::to_string(delta));
     }
@@ -160,9 +163,9 @@ void testMcp() {
         r = parse(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\"}"));
         const Json* tools = r.get("result")->get("tools");
-        CHECK(tools->a.size() == 12);
+        CHECK(tools->a.size() == 13);
         CHECK(tools->a[0].get("name")->s == "dash_state");
-        CHECK(tools->a[11].get("name")->s == "dash_screenshot");
+        CHECK(tools->a[12].get("name")->s == "dash_screenshot");
 
         CHECK(srv.handleLine(
             "{\"jsonrpc\":\"2.0\",\"method\":\"notifications/"

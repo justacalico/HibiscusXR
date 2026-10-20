@@ -186,9 +186,10 @@ os-changelog:
 # Every MR pipeline writes the MR's changelog fragment
 # (changelogs/unreleased/<iid>.md) onto its source branch via the job
 # token - the project has "push with CI_JOB_TOKEN" enabled, so no secrets
-# are needed here. The commit goes up with ci.skip and never retriggers a
-# pipeline. Fork MRs cannot be pushed to; the merge-time regen covers
-# them.
+# are needed here. The push retriggers one pipeline where the job sees
+# the fragment is current and no-ops - skipping that pipeline would leave
+# the head sha without CI and block merging. Fork MRs cannot be pushed
+# to; the merge-time regen covers them.
 os-changelog-mr:
   stage: test
   image: alpine:3.20

@@ -6,9 +6,11 @@
 #
 # Pushes with the CI job token - the project has
 # ci_push_repository_for_job_token_allowed enabled, so no secrets are
-# needed in MR pipelines. ci.skip keeps the push from retriggering a
-# pipeline. Fork MRs cannot be pushed to; the merge-time regeneration on
-# main writes their entry instead.
+# needed in MR pipelines. The push deliberately does NOT use ci.skip:
+# the new head sha needs a real pipeline or the MR cannot be merged.
+# No loop - on the rerun the fragment is already current so nothing
+# gets pushed. Fork MRs cannot be pushed to; the merge-time
+# regeneration on main writes their entry instead.
 set -euo pipefail
 
 if [ "${CI_MERGE_REQUEST_SOURCE_PROJECT_ID:-}" != "${CI_PROJECT_ID:-}" ]; then
@@ -32,8 +34,7 @@ git add changelogs/
 git commit -m "docs: !${CI_MERGE_REQUEST_IID} changelog 片段"
 
 push() {
-  git push -o ci.skip origin "HEAD:$SRC" 2>/tmp/push.err && return 0
-  grep -q "push options" /tmp/push.err && git push origin "HEAD:$SRC"
+  git push origin "HEAD:$SRC"
 }
 if ! push; then
   echo "source branch moved, rebasing once"

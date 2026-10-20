@@ -45,6 +45,10 @@ void syncUiStrings(HudEngine* e) {
     for (int i = 0; i < UISET_COUNT; ++i)
         e->uiSet[i] = i + 1 + UIQS_COUNT < (int)s.size()
                           ? s[i + 1 + UIQS_COUNT] : "";
+    // the library's block trails the settings card's
+    for (int i = 0; i < UILIB_COUNT; ++i)
+        e->uiLibStr[i] = i + 1 + UIQS_COUNT + UISET_COUNT < (int)s.size()
+                             ? s[i + 1 + UIQS_COUNT + UISET_COUNT] : "";
     for (auto& p : e->panels) p.label.clear();
     for (auto& kv : e->dockIcons) kv.second.label.clear();
 }

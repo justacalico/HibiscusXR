@@ -26,6 +26,8 @@ public:
 
     bool takePins(std::vector<std::string>* out) override;
     void setPins(const std::vector<std::string>& pins) override;
+    bool takeGroups(std::vector<LibGroup>* out) override;
+    void setGroups(const std::vector<LibGroup>& groups) override;
     void sysStatus(int out[3]) override;
     bool iconPixels(const std::string& pkg, IconPixels* out) override;
     std::string appLabel(const std::string& pkg) override;
@@ -90,6 +92,8 @@ private:
     int sysWifi = 0, sysEth = 0, sysBatt = -1, sysChg = 0;
     std::string sysSsid;
     bool pinsSent = false;
+    bool groupsSent = false;
+    std::vector<LibGroup> groups;
     unsigned qsMask = 0;
     std::string term;
     bool termSearched = false;

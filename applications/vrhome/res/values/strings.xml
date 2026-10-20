@@ -143,4 +143,9 @@
     <string name="set_v_batt_fmt">Battery %d/5</string>
     <string name="set_v_ctrl_chg">Charging</string>
     <string name="set_v_space">space</string>
+    <string name="lib_all">All apps</string>
+    <string name="lib_new_group">New group</string>
+    <string name="lib_pin">Pin to dock</string>
+    <string name="lib_unpin">Remove from dock</string>
+    <string name="lib_group_fmt">Group %d</string>
 </resources>

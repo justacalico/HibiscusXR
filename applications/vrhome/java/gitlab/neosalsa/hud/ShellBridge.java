@@ -81,6 +81,7 @@ public class ShellBridge {
     private final CoveredListener listener;
 
     private final DockPins pins;
+    private final LibGroups groups;
     private final PanelDisplays displays;
     private final Taskman taskman;
     private final Injector injector;
@@ -121,6 +122,7 @@ public class ShellBridge {
                 (InputManager) c.getSystemService(Context.INPUT_SERVICE);
 
         pins = new DockPins(c, pm);
+        groups = new LibGroups(c);
         displays = new PanelDisplays(dm);
         taskman = new Taskman(c, main, l, displays, pendingAdopts,
                 adopting, pendingReleases);
@@ -149,6 +151,13 @@ public class ShellBridge {
 
     // render thread: the dock long-press pushed a new pin list
     public void setPins(String[] pkgs) { pins.set(pkgs); }
+
+    // render thread: the library's groups when they changed since the last
+    // take, else null - same handshake the pins use
+    public String[] takeGroups() { return groups.take(); }
+
+    // render thread: the library pushed a new group list
+    public void setGroups(String[] enc) { groups.set(enc); }
 
     // render thread: app icon as a 96px ARGB bitmap for the dock texture,
     // or null - the dock falls back to a letter tile

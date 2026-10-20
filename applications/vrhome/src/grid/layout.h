@@ -55,12 +55,67 @@ int gridItemAt(int n, float u, float v, float scroll);
 // x of the close disc's centre, card-local metres
 float gridCloseX();
 
-// zone a card-local hit lands on: close disc on the title row, an item,
-// or the card body
-int gridZoneAt(int n, float u, float v, float scroll, int* idx);
+// ------------------------------------------------------- groups + menus
+
+// membership ops on the plain group list the backend persists
+bool groupHas(const LibGroup& g, const std::string& pkg);
+void groupToggle(LibGroup* g, const std::string& pkg);
+
+// the next free auto name under fmt ("Group %d"): the first index the
+// existing names don't already take
+std::string groupNewName(const std::vector<LibGroup>& gs,
+                         const char* fmt);
+
+// the overlay's visible subset: `all` filtered through the selected group
+// (-1 shows everything); dead pkgs in a group just don't match
+std::vector<GridItem> gridVisible(const std::vector<GridItem>& all,
+                                  const std::vector<LibGroup>& gs,
+                                  int sel);
+
+// wire format the bridge persists: one group per line, "name<TAB>pkg,pkg"
+std::string groupEncode(const LibGroup& g);
+bool groupDecode(const std::string& line, LibGroup* out);
+
+// the title-row group pill: centre + half extents for a measured label
+// half width
+void gridGroupPill(float labelHW, float* x, float* y,
+                   float* hw, float* hh);
+
+// dropdown rows: "new group" first, "all apps", then one per group
+enum GridDropRow { GD_NEW = 0, GD_ALL, GD_GROUP };
+int gridDropRows(int nGroups);
+int gridDropRowKind(int row);
+
+// the dropdown hangs off the pill: rect for its row count, centred on the
+// pill and clamped inside the card; cx/cy/hw/hh in card-local metres
+void gridDropRect(float pillX, int rows, float* cx, float* cy,
+                  float* hw, float* hh);
+// the dropdown row a card-local point sits on, or -1
+int gridDropRowAt(float cx, float cy, int rows, float x, float y);
+
+// context menu rows: the pin toggle, then one per group, then "new group"
+enum GridMenuRow { GM_PIN = 0, GM_GROUP, GM_NEW };
+int gridMenuRows(int nGroups);
+int gridMenuRowKind(int row, int nGroups);
+
+// the menu's rect for an anchor point, clamped inside the card; cx/cy/hw/hh
+// in card-local metres
+void gridMenuRect(float ax, float ay, int rows, float* cx, float* cy,
+                  float* hw, float* hh);
+// the menu row a card-local point sits on, or -1
+int gridMenuRowAt(float cx, float cy, int rows, float x, float y);
+
+// a cell's 3-dots affordance centre, card-local metres (post-scroll y)
+void gridDotsPos(const GridItem& it, float scroll, float* x, float* y);
+// is a card-local point on the cell's dots
+bool gridDotsHit(const GridItem& it, float scroll, float x, float y);
+
+// zone a card-local hit lands on: open popups first, then the title row's
+// close disc and group pill, then a cell or its dots, else the card body
+int gridZoneAt(const GridOverlay& g, float u, float v, int* idx);
 
 // arbitrary ray vs the card; hit is set on any card hit so the body still
 // blocks the windows behind it
-GridPick pickGridRay(int n, float scroll, float yaw, float pitch,
+GridPick pickGridRay(const GridOverlay& g, float yaw, float pitch,
                      const float origin[3], const float o[3],
                      const float d[3]);

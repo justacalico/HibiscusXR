@@ -42,6 +42,12 @@ static bool dropTopOverlay(HudEngine* e) {
         return true;
     }
     if (e->grid.shown) {
+        // an open popup steps down first, then the card itself
+        if (!e->grid.menuPkg.empty() || e->grid.grpOpen) {
+            e->grid.menuPkg.clear();
+            e->grid.grpOpen = false;
+            return true;
+        }
         e->grid.shown = false;
         return true;
     }
@@ -104,7 +110,29 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->notifPressZone = e->notifZone;
                 e->notifPressKey = e->notifs[e->notifHover].key;
             }
-            if (e->grid.zone == GZONE_ITEM && e->grid.hover >= 0) {
+            const bool popEat =
+                (!e->grid.menuPkg.empty() || e->grid.grpOpen) &&
+                e->grid.zone != GZONE_MENU && e->grid.zone != GZONE_GROW;
+            if (popEat) {
+                // a press anywhere but a popup row just drops the popup
+                e->grid.menuPkg.clear();
+                e->grid.grpOpen = false;
+            } else if (e->grid.zone == GZONE_MENU ||
+                       e->grid.zone == GZONE_GROW) {
+                // a popup row: fires on a same-row release
+                e->grid.press = e->grid.hover;
+                e->grid.pressZone = e->grid.zone;
+            } else if (e->grid.zone == GZONE_GROUPSEL) {
+                e->grid.pressZone = GZONE_GROUPSEL;
+            } else if (e->grid.zone == GZONE_DOTS && e->grid.hover >= 0) {
+                // the cell's menu affordance: same arm + scroll-grab
+                // guard an item press gets
+                e->grid.press = e->grid.hover;
+                e->grid.pressZone = GZONE_DOTS;
+                e->grid.pressPkg = e->grid.items[e->grid.hover].pkg;
+                e->grid.grabV = e->grid.v;
+                e->grid.grabScroll = e->grid.scroll;
+            } else if (e->grid.zone == GZONE_ITEM && e->grid.hover >= 0) {
                 // a cell press: arms the launch, fires on a same-cell
                 // release - but it also grabs the card like a body press
                 // does, so sliding past the slop turns it into the scroll
@@ -235,10 +263,12 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->kbd.moveHeld = false;
             e->grid.scrollHeld = false;
             if (e->grid.pressZone == GZONE_ITEM ||
-                    e->grid.pressZone == GZONE_CLOSE) {
-                // an app cell or the close disc: fires only when the
-                // release lands back on the same spot and a package-list
-                // rebuild hasn't moved the cell under the press
+                    e->grid.pressZone == GZONE_CLOSE ||
+                    e->grid.pressZone == GZONE_DOTS) {
+                // an app cell, its dots or the close disc: fires only when
+                // the release lands back on the same spot and a
+                // package-list rebuild hasn't moved the cell under the
+                // press
                 const bool same = e->grid.press >= 0 &&
                     e->grid.hover == e->grid.press &&
                     e->grid.zone == e->grid.pressZone &&
@@ -246,11 +276,32 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                     e->grid.items[e->grid.press].pkg == e->grid.pressPkg;
                 const bool sameClose = e->grid.pressZone == GZONE_CLOSE &&
                                        e->grid.zone == GZONE_CLOSE;
-                if (same) gridActivate(e, e->grid.press);
+                if (same && e->grid.pressZone == GZONE_DOTS)
+                    gridMenuOpen(e, e->grid.press);
+                else if (same) gridActivate(e, e->grid.press);
                 else if (sameClose) e->grid.shown = false;
                 e->grid.press = -1;
                 e->grid.pressZone = GZONE_NONE;
                 e->grid.pressPkg.clear();
+            } else if (e->grid.pressZone == GZONE_GROUPSEL) {
+                // a same-pill release flips the dropdown
+                if (e->grid.zone == GZONE_GROUPSEL) {
+                    e->grid.grpOpen = !e->grid.grpOpen;
+                    e->grid.menuPkg.clear();
+                }
+                e->grid.press = -1;
+                e->grid.pressZone = GZONE_NONE;
+            } else if (e->grid.pressZone == GZONE_MENU ||
+                       e->grid.pressZone == GZONE_GROW) {
+                // a popup row fires only when the release lands back on it
+                const bool same = e->grid.hover == e->grid.press &&
+                    e->grid.zone == e->grid.pressZone;
+                if (same && e->grid.pressZone == GZONE_MENU)
+                    gridMenuActivate(e, e->grid.press);
+                else if (same)
+                    gridDropActivate(e, e->grid.press);
+                e->grid.press = -1;
+                e->grid.pressZone = GZONE_NONE;
             } else if (e->set.pressZone != SZONE_NONE ||
                        e->set.slideHeld >= 0) {
                 setRelease(e);
@@ -421,6 +472,17 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         }
         return;
     }
+    if (code == kKeyMenu && action == kKeyUp) {
+        // a secondary click on a cell opens its context menu; fired again
+        // while a menu is up it drops it like a body press would
+        if (e->grid.shown) {
+            if (!e->grid.menuPkg.empty()) e->grid.menuPkg.clear();
+            else if ((e->grid.zone == GZONE_ITEM ||
+                      e->grid.zone == GZONE_DOTS) && e->grid.hover >= 0)
+                gridMenuOpen(e, e->grid.hover);
+        }
+        return;
+    }
     if (code == kKeyBack && action == kKeyUp) {
         // over a covered app the service consumes BACK itself to dismiss
         // the menu, so closing only ever runs in home space
@@ -452,6 +514,13 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 void hudScroll(HudEngine* e, float delta) {
     if (e->set.shown) { setScroll(e, delta); return; }
     if (!e->grid.shown) return;
+    // the wheel drops an open popup before it touches the scroll offset:
+    // the cells slide under a fixed menu anchor otherwise
+    if (!e->grid.menuPkg.empty() || e->grid.grpOpen) {
+        e->grid.menuPkg.clear();
+        e->grid.grpOpen = false;
+        return;
+    }
     e->grid.scroll = gridScrollBy(e->grid.scroll, delta,
                                   (int)e->grid.items.size());
 }
@@ -526,7 +595,8 @@ void moveTick(HudEngine* e) {
     // a cell press that slid past the slop converts to the body drag:
     // the launch only arms while the aim stays put, and the drag re-grabs
     // at the point it crossed so the scroll doesn't jump the slop
-    if (e->grid.pressZone == GZONE_ITEM && e->confirmHeld &&
+    if ((e->grid.pressZone == GZONE_ITEM ||
+         e->grid.pressZone == GZONE_DOTS) && e->confirmHeld &&
             e->grid.shown) {
         float c[3], r[3], up[3];
         gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,

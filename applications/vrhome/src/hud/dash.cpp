@@ -134,8 +134,7 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
     const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
                                       e->ringPos, e->aimO, e->aimD);
     const GridPick gp = e->grid.shown
-        ? pickGridRay((int)e->grid.items.size(), e->grid.scroll,
-                      e->dockYaw, ringPitchFor(e->dockPitch),
+        ? pickGridRay(e->grid, e->dockYaw, ringPitchFor(e->dockPitch),
                       e->ringPos, e->aimO, e->aimD)
         : GridPick{};
     const QsPick qp = e->quick.shown
@@ -264,7 +263,11 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
         tickPanels(e->panels, dtMs);
         tickDockHover(e->dock, e->dockHover, dtMs);
         tickShelfHover(e->shelf, e->shelfHover, dtMs);
-        tickGridHover(e->grid.items, e->grid.hover, dtMs);
+        // hover on a popup row or pill isn't a cell: keep the cell the
+        // press started on from magnifying under the menu
+        tickGridHover(e->grid.items,
+            e->grid.zone == GZONE_ITEM || e->grid.zone == GZONE_DOTS
+                ? e->grid.hover : -1, dtMs);
         e->grid.openT = stepT(e->grid.openT, e->grid.shown, dtMs, kGridMs);
         for (int i = 0; i < QS_COUNT; ++i)
             e->quick.hs[i] = dampMs(e->quick.hs[i],

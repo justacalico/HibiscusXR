@@ -9,6 +9,9 @@ constexpr int kKeyButtonA    = 96;   // AKEYCODE_BUTTON_A
 constexpr int kKeyBack       = 4;    // AKEYCODE_BACK
 // kPicoConfirm (1001) lives in common/config.h
 
+constexpr int kKeyMenu       = 82;   // AKEYCODE_MENU; a secondary click
+// kPicoConfirm (1001) lives in common/config.h
+
 // semantic-only codes hudKey routes like the AKEYCODE_* ones above: no
 // hardware ever emits these
 constexpr int kKeyMinimize   = 9003; // park the top window on the shelf

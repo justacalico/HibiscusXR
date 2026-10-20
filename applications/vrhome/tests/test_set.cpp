@@ -47,8 +47,8 @@ void testSet() {
     CHECK(ov.rows[3].id == PK_DOF);
 
     rowsFor(SEC_ENV, snap, &ov);
-    CHECK(ov.rows.size() == 5);   // scan + pt + builtin + 1 zip + active
-    CHECK(ov.rows[4].kind == RK_INFO && ov.rows[4].aux == RID_HOME_ENV);
+    CHECK(ov.rows.size() == 4);   // scan + pt + builtin + 1 zip
+    CHECK(ov.rows[3].kind == RK_ENV && ov.rows[3].aux == 2);
 
     rowsFor(SEC_SOUND, snap, &ov);
     CHECK(ov.rows.size() == 2 && ov.rows[0].id == SL_VOL);

@@ -9,6 +9,7 @@
 #include "../quick/layout.h"
 #include "../set/layout.h"
 #include "../kbd/kbd.h"
+#include "../notif/layout.h"
 #include "../panels/layout.h"
 #include "../pill/pill.h"
 #include "icons.h"
@@ -400,7 +401,7 @@ void drawHoldRing(HudEngine* e) {
 void drawCursor(HudEngine* e, const Mat4& viewProj) {
     float c[3], r[3], up[3], pos[3];
     if (e->dockHover >= 0 || e->dockZone == DZONE_HANDLE ||
-            e->dockZone == DZONE_SYS) {
+            e->dockZone == DZONE_SYS || e->dockZone == DZONE_BELL) {
         // on the dock the cursor sits on the strip's own plane - a handle
         // or status-pill hit has no item index but still carries u,v, so
         // it lands right where the gaze did. The summon slide counts: the
@@ -429,6 +430,16 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
                  up[1]*e->quick.v*kQuickHH;
         pos[2] = c[2] + r[2]*e->quick.u*kQuickHW +
                  up[2]*e->quick.v*kQuickHH;
+    } else if (e->shade.zone != SHZONE_NONE) {
+        // on the notification shade the dot lands on the card's own plane
+        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+                    c, r, up);
+        pos[0] = c[0] + r[0]*e->shade.u*kShadeHW +
+                 up[0]*e->shade.v*kShadeHH;
+        pos[1] = c[1] + r[1]*e->shade.u*kShadeHW +
+                 up[1]*e->shade.v*kShadeHH;
+        pos[2] = c[2] + r[2]*e->shade.u*kShadeHW +
+                 up[2]*e->shade.v*kShadeHH;
     } else if (e->grid.zone != GZONE_NONE) {
         // on the app-grid card the dot lands on the card's own plane
         gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,

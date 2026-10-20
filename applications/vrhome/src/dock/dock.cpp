@@ -465,12 +465,17 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                   0.0025f, bh * 0.18f, 0.002f, 0.0f, 0.0012f, ocol);
     }
 
-    // bell: dim while the shade is empty, a red shoulder dot while
-    // notifications wait; stays lit while its card is up
+    // bell: bright like the library icon, accent while its card is up,
+    // a red shoulder dot while notifications wait
     {
-        const bool any = !e->notifsAll.empty() || e->shade.shown;
-        const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
-                               (any ? 0.90f : 0.30f) * a};
+        const bool any = !e->notifsAll.empty();
+        const float* bc2 = e->shade.shown ? kPalAccent : kPalText;
+        const float bcol[4] = {bc2[0], bc2[1], bc2[2],
+                               (e->shade.shown
+                                    ? 0.95f
+                                    : 0.72f +
+                                      (e->dockZone == DZONE_BELL
+                                           ? 0.23f : 0.0f)) * a};
         const float bx = st.bellX;
         const float bc[3] = {c[0] + r[0]*bx, c[1] + r[1]*bx,
                              c[2] + r[2]*bx};

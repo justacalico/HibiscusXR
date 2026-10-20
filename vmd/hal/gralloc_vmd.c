@@ -53,7 +53,7 @@ static int map_buffer(vmd_handle_t *h)
 	}
 	void *p = mm(0, (size_t)h->size, PROT_READ|PROT_WRITE, MAP_SHARED,
 	             h->fd, 0);
-	if (p == (void *)-1) {
+	if ((long)p < 0 && (long)p >= -4096) {
 		return -12;
 	}
 	h->addr = (u64)p;
@@ -168,7 +168,7 @@ static int gr_lock(gralloc_module_t const *module, buffer_handle_t handle,
                    int usage, int l, int t, int w, int h, void **vaddr)
 {
 	(void)module;
-	(void)l; (void)t; (void)w; (void)h;
+	(void)usage; (void)l; (void)t; (void)w; (void)h;
 	if (priv_validate(handle) < 0 || !vaddr) {
 		return -22;
 	}
@@ -177,11 +177,6 @@ static int gr_lock(gralloc_module_t const *module, buffer_handle_t handle,
 	if (err < 0) {
 		return err;
 	}
-	static int logged;
-	if (!logged) {
-		logged = 1;
-		dbgkv("gralloc: first lock usage=", (u64)usage);
-	}
 	*vaddr = (void *)hnd->addr;
 	return 0;
 }
@@ -189,7 +184,10 @@ static int gr_lock(gralloc_module_t const *module, buffer_handle_t handle,
 static int gr_unlock(gralloc_module_t const *module, buffer_handle_t handle)
 {
 	(void)module;
-	return priv_validate(handle) < 0 ? -22 : 0;
+	if (priv_validate(handle) < 0) {
+		return -22;
+	}
+	return 0;
 }
 
 static int gr_perform(gralloc_module_t const *module, int operation, ...)

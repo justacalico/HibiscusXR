@@ -129,16 +129,11 @@ static int hwc_set(struct hwc_composer_device_1 *dev, size_t numDisplays,
 		}
 		for (size_t i = 0; i + 1 < dpy->numHwLayers; i++) {
 			hwc_layer_1_t *l = &dpy->hwLayers[i];
-			if (l->handle && l->compositionType == HWC_OVERLAY) {
+			if (l->handle && (l->compositionType == HWC_OVERLAY ||
+			    l->compositionType == HWC_BACKGROUND)) {
 				blit_target(l, l->displayFrame.left,
 				            l->displayFrame.top);
 			}
-		}
-		static int logged;
-		if (!logged) {
-			logged = 1;
-			dbgkv("hwc: first frame w=", g.mode.hdisplay);
-			dbgkv("hwc: first frame h=", g.mode.vdisplay);
 		}
 		flush_dirty();
 	}

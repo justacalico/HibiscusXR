@@ -86,7 +86,7 @@ static void dbgnum(u64 v)
 	dbg(b + i);
 }
 
-static void dbgkv(const char *k, u64 v)
+static __attribute__((unused)) void dbgkv(const char *k, u64 v)
 {
 	dbg(k);
 	dbgnum(v);
@@ -307,8 +307,8 @@ struct drm_mode_card_res {
 
 struct drm_mode_modeinfo {
 	u32 clock;
-	u16 hdisplay, vdisplay, hsync_start, hsync_end, htotal, hskew;
-	u16 vsync_start, vsync_end, vtotal, vscan;
+	u16 hdisplay, hsync_start, hsync_end, htotal, hskew;
+	u16 vdisplay, vsync_start, vsync_end, vtotal, vscan;
 	u32 vrefresh;
 	u32 flags;
 	u32 type;
@@ -347,9 +347,8 @@ struct drm_mode_crtc {
 };
 
 struct drm_mode_fb_dirty_cmd {
-	u32 fb_id, x, y, w, h;
+	u32 fb_id, flags, color, num_clips;
 	u64 clips_ptr;
-	u32 count_clips;
 };
 
 #endif

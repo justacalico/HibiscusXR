@@ -30,7 +30,7 @@ void drawGlyph(HudEngine* e, const Mat4& vp, int id, const float ic[3],
     const GLint uMVP = glGetUniformLocation(e->textProg, "uMVP");
     const GLint aPos = glGetAttribLocation(e->textProg, "aPos");
     const GLint aUV  = glGetAttribLocation(e->textProg, "aUV");
-    const float qs = s / 0.36f;
+    const float qs = s / 0.60f;
     const float q[4][5] = {
         {ic[0]-r[0]*qs-up[0]*qs - ic[0]*toward,
          ic[1]-r[1]*qs-up[1]*qs - ic[1]*toward,

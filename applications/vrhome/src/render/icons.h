@@ -12,9 +12,9 @@ struct HudEngine;
 void loadGlyphs(Engine* e);
 
 // one Material Symbols glyph centred on ic in the plane's r/up frame.
-// s is the glyph's ink half-size - the symbols carry a uniform ~0.36
-// padding inside their box, so the quad is grown by 1/0.36 and callers
-// can keep passing the half-size the old procedural icons measured.
+// s is the glyph's ink half-size - the symbols carry a uniform padding
+// inside their box, so the quad is grown past s and callers can keep
+// passing the half-size the old procedural icons measured.
 // toward shifts it at the viewer like shapeQuad's, col the tint. Runs
 // through the text program with the atlas bound - the caller's
 // blend/depth state applies and shapeProg is restored afterwards, same

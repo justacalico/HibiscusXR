@@ -113,7 +113,7 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             const float bxs[3] = {pillFloatX(phw), pillMinX(phw),
                                   pillCloseX(phw)};
             const int zones[3] = {ZONE_FLOAT, ZONE_MIN, ZONE_CLOSE};
-            const int gls[3] = {GI_PICTURE_IN_PICTURE_ALT, GI_MINIMIZE,
+            const int gls[3] = {GI_OPEN_IN_NEW, GI_REMOVE,
                                 GI_CLOSE};
             for (int b = 0; b < 3; ++b) {
                 const float bx = bxs[b];

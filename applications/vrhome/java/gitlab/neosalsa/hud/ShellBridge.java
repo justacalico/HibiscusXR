@@ -311,6 +311,8 @@ public class ShellBridge {
 
     public void envDelete(String id) { st.envDelete(id); }
 
+    public void xpToggle(String id, boolean on) { st.xpToggle(id, on); }
+
     public void settingsReboot() { st.reboot(); }
 
     // render thread: bumped on every post/removal by the listener

@@ -148,7 +148,7 @@ static void rowTap(HudEngine* e, int i, int zone, int aux) {
     SetOverlay& st = e->set;
     if (i < 0 || i >= (int)st.rows.size()) return;
     const SetRow& r = st.rows[i];
-    if (!setImplemented(r.aux)) return;
+    if (!setRowImplemented(r)) return;
     switch (r.kind) {
     case RK_TOGGLE:
         st.snap.toggles ^= (1u << r.id);
@@ -211,6 +211,13 @@ static void rowTap(HudEngine* e, int i, int zone, int aux) {
     case RK_IME:
         if (r.aux >= 0 && r.aux < (int)st.snap.imes.size() && e->backend)
             e->backend->imePick(st.snap.imes[r.aux].id);
+        return;
+    case RK_XP:
+        if (r.aux >= 0 && r.aux < (int)st.snap.xp.size()) {
+            SetXpOpt& f = st.snap.xp[r.aux];
+            f.on = !f.on;
+            if (e->backend) e->backend->xpToggle(f.id, f.on);
+        }
         return;
     case RK_ENV: {
         const int idx = r.aux - 2;
@@ -348,7 +355,7 @@ static const char* kSetFallback[UISET_COUNT] = {
     "Settings",
     "Wi-Fi", "Bluetooth", "Controllers", "Display", "Home environment",
     "Sound", "Language and Region", "Time", "Keyboard", "Developer",
-    "About",
+    "Experimental", "About",
     "Wi-Fi", "Network", "Available networks",
     "Bluetooth", "Devices",
     "Scan for controllers", "Left controller", "Right controller",
@@ -389,6 +396,7 @@ static const char* kSetFallback[UISET_COUNT] = {
     "Scanning for controllers…",
     "Tap refresh to scan", "Tap refresh to search", "Not scanning",
     "No networks found", "No devices found", "No environments installed",
+    "No experimental features",
     "Secured", "Open", "Saved", "Refresh", "Pair", "Forget", "Connect",
     "Cancel", "Remove", "Reboot", "Connect to %s", "Remove %s?",
     "The zip file is deleted from the headset.",
@@ -545,7 +553,7 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     const float clipH = (bhi - blo) * 0.5f * gs;
     const bool full = ry + hh <= bhi + 0.002f &&
                       ry - hh >= blo - 0.002f;
-    const bool en = setImplemented(row.aux);
+    const bool en = setRowImplemented(row);
     const bool hot = st.zone == SZONE_ROW && st.hover == i &&
                      st.dlg == DLG_NONE;
     const float fade = en ? 1.0f : 0.45f;
@@ -568,7 +576,8 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     // where the row's texts have to stop: before the right-side control
     float txR = reC - 0.016f;
     switch (row.kind) {
-    case RK_TOGGLE: txR = reC - 0.070f; break;
+    case RK_TOGGLE:
+    case RK_XP: txR = reC - 0.070f; break;
     case RK_ACTION: txR = reC - 0.055f; break;
     case RK_SLIDER: {
         float tl, tr;
@@ -586,10 +595,15 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
     case RK_NET: case RK_ENV: txR = reC - 0.055f; break;
     default: break;
     }
-    const char* label = row.aux >= 0 && row.aux < RID_COUNT
-                        ? setStr(e, UISET_LBL0 + row.aux) : "";
-    const char* desc = row.aux >= 0 && row.aux < RID_COUNT
-                       ? setStr(e, UISET_DESC0 + row.aux) : "";
+    const SetXpOpt* xp = row.kind == RK_XP && row.aux >= 0 &&
+                         row.aux < (int)st.snap.xp.size()
+                             ? &st.snap.xp[row.aux] : nullptr;
+    const char* label = xp ? xp->name.c_str()
+                        : row.aux >= 0 && row.aux < RID_COUNT
+                          ? setStr(e, UISET_LBL0 + row.aux) : "";
+    const char* desc = xp ? xp->desc.c_str()
+                       : row.aux >= 0 && row.aux < RID_COUNT
+                         ? setStr(e, UISET_DESC0 + row.aux) : "";
     std::string infoVal;
     float infoW = 0.0f;
     if (row.kind == RK_INFO) {
@@ -599,7 +613,8 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         txR = reC - 0.016f - infoW - 0.030f;
     }
     switch (row.kind) {
-    case RK_TOGGLE: case RK_ACTION: case RK_INFO: case RK_SEG: {
+    case RK_TOGGLE: case RK_ACTION: case RK_INFO: case RK_SEG:
+    case RK_XP: {
         const std::string t = fit(label, 0.0016f * gs, lxC, txR);
         const std::string d = fit(desc, 0.0011f * gs, lxC, txR);
         sText(e, vp, c, r, up, lx, rcy + 0.016f * gs, t.c_str(),
@@ -616,6 +631,12 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
         drawSwitch(e, vp, c, r, up,
                    (rx + hw - 0.035f) * gs, rcy,
                    (st.snap.toggles >> row.id) & 1u, gs, fade * ga);
+        break;
+    case RK_XP:
+        if (xp)
+            drawSwitch(e, vp, c, r, up,
+                       (rx + hw - 0.035f) * gs, rcy, xp->on, gs,
+                       fade * ga);
         break;
     case RK_SLIDER: {
         const std::string t = fit(label, 0.0016f * gs, lxC, txR);
@@ -1132,6 +1153,12 @@ void drawSet(HudEngine* e, const Mat4& vp) {
 
     for (int i = 0; i < (int)st.rows.size(); ++i)
         drawRowBody(e, vp, c, r, up, i, gs, ga);
+    // a section with no rows says so at the pane's top edge
+    if (st.section == SEC_XP && st.rows.empty())
+        sText(e, vp, c, r, up,
+              (setSideR() + kSetPad + 0.016f) * gs,
+              (kSetHH - kSetHeadH - 0.012f - 0.030f) * gs,
+              setStr(e, UISET_XP_EMPTY), 0.0011f * gs, ga, false, true);
 
     if (st.dlg != DLG_NONE) {
         // dim the card under the modal

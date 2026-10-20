@@ -23,9 +23,9 @@ public class UiStrings {
     // the settings card's block follows the quick panel's; slot order
     // matches src/set/item.h's UiSetStr
     public static final int SET_TITLE = QS_LABEL0 + 13;
-    // the library's block trails the settings card's (117 set_* slots);
+    // the library's block trails the settings card's (119 set_* slots);
     // slot order matches src/grid/item.h's UiLibStr
-    public static final int LIB_ALL = SET_TITLE + 117;
+    public static final int LIB_ALL = SET_TITLE + 119;
     public static final int LIB_NEW = LIB_ALL + 1;
     public static final int LIB_PIN = LIB_ALL + 2;
     public static final int LIB_UNPIN = LIB_ALL + 3;
@@ -71,6 +71,7 @@ public class UiStrings {
             ctx.getString(R.string.set_sec_time),
             ctx.getString(R.string.set_sec_ime),
             ctx.getString(R.string.set_sec_dev),
+            ctx.getString(R.string.set_sec_xp),
             ctx.getString(R.string.set_sec_about),
             ctx.getString(R.string.set_l_wifi_on),
             ctx.getString(R.string.set_l_wifi_ssid),
@@ -143,6 +144,7 @@ public class UiStrings {
             ctx.getString(R.string.set_v_empty_wifi),
             ctx.getString(R.string.set_v_empty_bt),
             ctx.getString(R.string.set_v_empty_env),
+            ctx.getString(R.string.set_v_xp_empty),
             ctx.getString(R.string.set_v_secured),
             ctx.getString(R.string.set_v_opennet),
             ctx.getString(R.string.set_v_saved),

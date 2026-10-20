@@ -62,18 +62,28 @@ void testSet() {
     rowsFor(SEC_DEV, snap, &ov);
     CHECK(ov.rows.size() == 4);
 
+    rowsFor(SEC_XP, snap, &ov);
+    CHECK(ov.rows.empty());                 // registry empty for now
+    snap.xp.resize(2);
+    rowsFor(SEC_XP, snap, &ov);
+    CHECK(ov.rows.size() == 2);
+    CHECK(ov.rows[0].kind == RK_XP && ov.rows[0].aux == 0);
+    CHECK(ov.rows[1].aux == 1);
+    snap.xp.clear();
+
     rowsFor(SEC_ABOUT, snap, &ov);
     CHECK(ov.rows.size() == 4 && ov.rows[0].kind == RK_BRAND);
 
     // ---- catalogDesktopDropsAndroidRows
     ov.android = false;
     CHECK(setSecCount(true) == SEC_COUNT);
-    CHECK(setSecCount(false) == 6);
+    CHECK(setSecCount(false) == 7);
     CHECK(setSecAt(false, 0) == SEC_WIFI &&
-          setSecAt(false, 5) == SEC_ABOUT);
-    CHECK(setSecAt(false, -1) == -1 && setSecAt(false, 6) == -1);
+          setSecAt(false, 5) == SEC_XP &&
+          setSecAt(false, 6) == SEC_ABOUT);
+    CHECK(setSecAt(false, -1) == -1 && setSecAt(false, 7) == -1);
     CHECK(setSecAt(true, SEC_DEV) == SEC_DEV);
-    CHECK(setSecSlot(false, SEC_ABOUT) == 5);
+    CHECK(setSecSlot(false, SEC_ABOUT) == 6);
     CHECK(setSecSlot(false, SEC_DEV) == -1);
     CHECK(setSecSlot(true, SEC_DEV) == SEC_DEV);
     rowsFor(SEC_DISP, snap, &ov);
@@ -244,6 +254,16 @@ void testSet() {
     CHECK(!setImplemented(RID_TOUCHES));
     CHECK(setImplemented(RID_WIFI_ON));
     CHECK(setImplemented(RID_DEBUGHUD));
+    // list rows index a snap vector with aux; the rid gate must not see it
+    SetRow lr;
+    lr.kind = RK_NET; lr.aux = RID_NIGHT;
+    CHECK(setRowImplemented(lr));
+    lr.kind = RK_XP; lr.aux = RID_ADB;
+    CHECK(setRowImplemented(lr));
+    lr.kind = RK_TOGGLE; lr.aux = RID_NIGHT;
+    CHECK(!setRowImplemented(lr));
+    lr.aux = RID_WIFI_ON;
+    CHECK(setRowImplemented(lr));
     }
 
     // ---- wifiNeedsPw
@@ -384,7 +404,7 @@ void testSet() {
     CHECK(setZoneAt(desk, sx / kSetHW, sy / kSetHH, &idx, &aux) ==
            SZONE_SEC);
     CHECK(idx == SEC_DISP);
-    setSecRect(5, &sx, &sy, &hw, &hh);
+    setSecRect(6, &sx, &sy, &hw, &hh);
     CHECK(setZoneAt(desk, sx / kSetHW, sy / kSetHH, &idx, &aux) ==
            SZONE_SEC);
     CHECK(idx == SEC_ABOUT);
@@ -414,6 +434,13 @@ void testSet() {
     CHECK(setZoneAt(ov, sx / kSetHW, ry / kSetHH, &idx, &aux) ==
            SZONE_SEG);
     CHECK(idx == 1 && aux == 2);
+    // an experimental flag row is a plain row hit
+    snap.xp.resize(1);
+    rowsFor(SEC_XP, snap, &ov);
+    setRowRect(ov, 0, &rx, &ry, &hw, &hh);
+    CHECK(setZoneAt(ov, rx / kSetHW, ry / kSetHH, &idx, &aux) ==
+           SZONE_ROW);
+    CHECK(idx == 0);
     // off the card
     CHECK(setZoneAt(ov, 1.5f, 0.0f, &idx, &aux) == SZONE_NONE);
     }

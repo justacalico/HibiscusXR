@@ -37,6 +37,7 @@
     <string name="set_sec_time">时间</string>
     <string name="set_sec_ime">键盘</string>
     <string name="set_sec_dev">开发者</string>
+    <string name="set_sec_xp">实验性功能</string>
     <string name="set_sec_about">关于</string>
     <string name="set_l_wifi_on">Wi-Fi</string>
     <string name="set_l_wifi_ssid">网络</string>
@@ -109,6 +110,7 @@
     <string name="set_v_empty_wifi">未发现网络</string>
     <string name="set_v_empty_bt">未发现设备</string>
     <string name="set_v_empty_env">未安装环境</string>
+    <string name="set_v_xp_empty">暂无实验性功能</string>
     <string name="set_v_secured">加密</string>
     <string name="set_v_opennet">开放</string>
     <string name="set_v_saved">已保存</string>

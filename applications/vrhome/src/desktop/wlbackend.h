@@ -48,6 +48,7 @@ public:
     void settingsSlider(int id, float v) override;
     void settingsText(int id, const std::string& v) override;
     void settingsScan(int sec) override;
+    void xpToggle(const std::string& id, bool on) override;
     void wifiJoin(const std::string& ssid, int sec,
                   const std::string& pw) override;
     void wifiForget(int netId) override;

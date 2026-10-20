@@ -152,6 +152,7 @@ public:
         out->bt = setBt;
         out->imes = setImes;
         out->envs = setEnvs;
+        out->xp = setXp;
         out->ctrl[0] = setCtrl[0];
         out->ctrl[1] = setCtrl[1];
     }
@@ -267,6 +268,11 @@ public:
             }
         ++setVer;
     }
+    void xpToggle(const std::string& id, bool on) override {
+        for (auto& f : setXp)
+            if (f.id == id) { f.on = on; break; }
+        ++setVer;
+    }
 
     std::string appLabel(const std::string& pkg) override {
         const size_t dot = pkg.rfind('.');
@@ -322,6 +328,10 @@ private:
     std::vector<SetBtDev> setBt;
     std::vector<SetImeOpt> setImes;
     std::vector<SetEnvOpt> setEnvs;
+    std::vector<SetXpOpt> setXp = {
+        {"preview_flag", "Preview flag", "Fixture experimental toggle", true},
+        {"preview_labs", "Preview labs", "Fixture experimental toggle", false},
+    };
     SetCtrl setCtrl[2];
 
     static void texParams(unsigned tex) {

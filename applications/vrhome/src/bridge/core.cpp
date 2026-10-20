@@ -49,6 +49,11 @@ void syncUiStrings(HudEngine* e) {
     for (int i = 0; i < UILIB_COUNT; ++i)
         e->uiLibStr[i] = i + 1 + UIQS_COUNT + UISET_COUNT < (int)s.size()
                              ? s[i + 1 + UIQS_COUNT + UISET_COUNT] : "";
+    // the shade's block trails the library's
+    for (int i = 0; i < UISHADE_COUNT; ++i)
+        e->uiShade[i] =
+            i + 1 + UIQS_COUNT + UISET_COUNT + UILIB_COUNT < (int)s.size()
+                ? s[i + 1 + UIQS_COUNT + UISET_COUNT + UILIB_COUNT] : "";
     for (auto& p : e->panels) p.label.clear();
     for (auto& kv : e->dockIcons) kv.second.label.clear();
 }

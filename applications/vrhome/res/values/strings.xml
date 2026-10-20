@@ -148,4 +148,7 @@
     <string name="lib_pin">Pin to dock</string>
     <string name="lib_unpin">Remove from dock</string>
     <string name="lib_group_fmt">Group %d</string>
+    <string name="notif_title">Notifications</string>
+    <string name="notif_clear_all">Clear all</string>
+    <string name="notif_empty">No notifications</string>
 </resources>

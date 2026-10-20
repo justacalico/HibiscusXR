@@ -175,9 +175,10 @@ public class ShellBridge {
     }
 
     // render thread: status bits for the dock cluster - wifi link state,
-    // battery percent, charging flag. Local reads, cheap enough per frame
+    // battery percent, charging flag. Local reads, cheap enough per frame.
+    // pct is -1 when the device has no battery at all
     public int[] sysStatus() {
-        int wifi = 0, pct = 0, chg = 0;
+        int wifi = 0, pct = -1, chg = 0;
         try {
             ConnectivityManager cm = (ConnectivityManager)
                 ctx.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -187,7 +188,9 @@ public class ShellBridge {
         try {
             Intent batt = ctx.registerReceiver(null,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-            if (batt != null) {
+            if (batt != null && batt.getBooleanExtra(
+                    BatteryManager.EXTRA_PRESENT, true)) {
+                pct = 0;
                 int lv = batt.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int sc = batt.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
                 if (lv >= 0 && sc > 0) pct = lv * 100 / sc;

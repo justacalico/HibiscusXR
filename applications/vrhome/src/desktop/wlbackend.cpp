@@ -137,6 +137,8 @@ void WlBackend::pollSys() {
         runOut("nmcli -t -f active,ssid dev wifi 2>/dev/null");
     sysSsid = parseWifiSsid(w);
     sysWifi = sysSsid.empty() ? 0 : 1;
+    // -1 survives only when no BAT* entry exists: a power_supply node
+    // whose capacity won't parse still counts as a battery at 0%
     sysBatt = -1; sysChg = 0;
     std::error_code ec;
     for (const auto& de :
@@ -146,11 +148,11 @@ void WlBackend::pollSys() {
         std::string cap, st;
         readFile(de.path().string() + "/capacity", &cap);
         readFile(de.path().string() + "/status", &st);
-        sysBatt = parseCapacity(cap);
+        const int pct = parseCapacity(cap);
+        sysBatt = pct < 0 ? 0 : pct;
         sysChg = parseCharging(st) ? 1 : 0;
         break;
     }
-    if (sysBatt < 0) sysBatt = 0;
 }
 
 const DeskEntry* WlBackend::entry(const std::string& pkg) {

@@ -41,7 +41,7 @@ public class QuickState {
 
     public static class Snap {
         public int toggles;
-        public int batt;
+        public int batt = -1;   // -1: the device has no battery
         public int chg;
         public float vol;
         public float bri;
@@ -145,7 +145,9 @@ public class QuickState {
         try {
             Intent b = ctx.registerReceiver(null,
                     new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-            if (b != null) {
+            if (b != null && b.getBooleanExtra(
+                    BatteryManager.EXTRA_PRESENT, true)) {
+                s.batt = 0;
                 int lv = b.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
                 int sc = b.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
                 if (lv >= 0 && sc > 0) s.batt = lv * 100 / sc;

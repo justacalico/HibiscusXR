@@ -80,10 +80,11 @@ struct ShelfPick {
 // status cluster pinned to the strip's left end: clock, battery and wifi
 // grouped in one pill - a tap there opens the quick panel - then the
 // notification bell alone in a second, then a separator before the app
-// icons. clockW goes in measured; the rest come back positioned by
+// icons. clockW and hasBatt go in; the rest come back positioned by
 // dockLayout
 struct DockStatus {
     float clockW = 0;   // measured width of the time text
+    bool hasBatt = true;// false drops the battery slot out of pill A
     float clockX = 0;   // text's left edge in bar coords
     float wifiX = 0;    // icon centres
     float battX = 0;

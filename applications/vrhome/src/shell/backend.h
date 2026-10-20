@@ -63,6 +63,9 @@ public:
 
     virtual bool takePins(std::vector<std::string>* out) { return false; }
     virtual void setPins(const std::vector<std::string>& pins) {}
+    // the library's app groups, same take/set handshake the pins use
+    virtual bool takeGroups(std::vector<LibGroup>* out) { return false; }
+    virtual void setGroups(const std::vector<LibGroup>& groups) {}
     virtual int vrVersion() { return 0; }
     virtual void runningVr(std::vector<XrTask>* out) { out->clear(); }
     // {net, battPct, charging}; net is a DockNet link kind, battPct -1 =

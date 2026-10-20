@@ -2,6 +2,7 @@
 
 #include "../common/jni.h"
 #include "../common/log.h"
+#include "../grid/layout.h"
 #include "../hud/engine.h"
 #include "../kbd/kbd.h"
 #include "../panels/panel.h"
@@ -61,6 +62,8 @@ public:
         mIsCovered    = env->GetMethodID(bc, "isCovered", "()Z");
         mTakePins     = env->GetMethodID(bc, "takePins", "()[Ljava/lang/String;");
         mSetPins      = env->GetMethodID(bc, "setPins", "([Ljava/lang/String;)V");
+        mTakeGroups   = env->GetMethodID(bc, "takeGroups", "()[Ljava/lang/String;");
+        mSetGroups    = env->GetMethodID(bc, "setGroups", "([Ljava/lang/String;)V");
         mAppIcon      = env->GetMethodID(bc, "appIcon",
                             "(Ljava/lang/String;)Landroid/graphics/Bitmap;");
         mVrVer        = env->GetMethodID(bc, "vrVersion", "()I");
@@ -326,6 +329,37 @@ public:
         for (int i = 0; i < (int)pins.size(); ++i)
             e->SetObjectArrayElement(a, i, e->NewStringUTF(pins[i].c_str()));
         e->CallVoidMethod(bridge, mSetPins, a);
+        fail(e);
+        e->DeleteLocalRef(a); e->DeleteLocalRef(sc);
+    }
+
+    // the group list crosses encoded: one "name<TAB>pkg,pkg" line each
+    bool takeGroups(std::vector<LibGroup>* out) override {
+        JNIEnv* e = env();
+        jobjectArray arr =
+            (jobjectArray)e->CallObjectMethod(bridge, mTakeGroups);
+        if (fail(e) || !arr) return false;
+        out->clear();
+        const int n = e->GetArrayLength(arr);
+        for (int i = 0; i < n; ++i) {
+            LibGroup g;
+            if (groupDecode(jstr(e, (jstring)e->GetObjectArrayElement(
+                    arr, i)), &g))
+                out->push_back(g);
+        }
+        e->DeleteLocalRef(arr);
+        return true;
+    }
+
+    void setGroups(const std::vector<LibGroup>& groups) override {
+        JNIEnv* e = env();
+        jclass sc = e->FindClass("java/lang/String");
+        jobjectArray a = e->NewObjectArray((int)groups.size(), sc,
+                                           nullptr);
+        for (int i = 0; i < (int)groups.size(); ++i)
+            e->SetObjectArrayElement(a, i,
+                e->NewStringUTF(groupEncode(groups[i]).c_str()));
+        e->CallVoidMethod(bridge, mSetGroups, a);
         fail(e);
         e->DeleteLocalRef(a); e->DeleteLocalRef(sc);
     }
@@ -762,7 +796,7 @@ private:
     jmethodID mCreatePanel, mResizePanel, mPanelTex, mLaunchPkg, mAdopt, mReleasePanel,
         mTakeAdopt, mTakeRelease, mInjectTap, mInjectTouch, mRemoveTask,
         mRemoveDisp, mFocusTask, mAppLabel, mIsVr, mLaunchVr, mIsCovered,
-        mTakePins, mSetPins, mAppIcon, mVrVer, mRunningVr, mDismiss,
+        mTakePins, mSetPins, mTakeGroups, mSetGroups, mAppIcon, mVrVer, mRunningVr, mDismiss,
         mNotifVer, mNotifs, mDismissNotif, mToastOnly, mDebugHud,
         mDebugOnly, mSysStatus, mSysMsgVer, mSysMsgs, mSysMsgClick,
         mSysMsgDismiss, mSysMsgOnly, mUiStrVer, mUiStrings,

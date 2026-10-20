@@ -143,4 +143,9 @@
     <string name="set_v_batt_fmt">电量 %d/5</string>
     <string name="set_v_ctrl_chg">充电中</string>
     <string name="set_v_space">空格</string>
+    <string name="lib_all">全部应用</string>
+    <string name="lib_new_group">新建分组</string>
+    <string name="lib_pin">固定到 Dock</string>
+    <string name="lib_unpin">从 Dock 移除</string>
+    <string name="lib_group_fmt">分组 %d</string>
 </resources>

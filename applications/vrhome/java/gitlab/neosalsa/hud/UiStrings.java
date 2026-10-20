@@ -23,6 +23,13 @@ public class UiStrings {
     // the settings card's block follows the quick panel's; slot order
     // matches src/set/item.h's UiSetStr
     public static final int SET_TITLE = QS_LABEL0 + 13;
+    // the library's block trails the settings card's (117 set_* slots);
+    // slot order matches src/grid/item.h's UiLibStr
+    public static final int LIB_ALL = SET_TITLE + 117;
+    public static final int LIB_NEW = LIB_ALL + 1;
+    public static final int LIB_PIN = LIB_ALL + 2;
+    public static final int LIB_UNPIN = LIB_ALL + 3;
+    public static final int LIB_GROUPFMT = LIB_ALL + 4;
 
     private static volatile int ver = 0;
 
@@ -167,6 +174,11 @@ public class UiStrings {
             ctx.getString(R.string.set_v_batt_fmt),
             ctx.getString(R.string.set_v_ctrl_chg),
             ctx.getString(R.string.set_v_space),
+            ctx.getString(R.string.lib_all),
+            ctx.getString(R.string.lib_new_group),
+            ctx.getString(R.string.lib_pin),
+            ctx.getString(R.string.lib_unpin),
+            ctx.getString(R.string.lib_group_fmt),
         };
     }
 }

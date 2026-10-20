@@ -87,7 +87,7 @@ enum DockNet {
 
 // the net slot's resolved draw state for a link kind
 struct DockNetIcon {
-    int glyph = DNET_WIFI;  // a DNET_* value: fan or cable comb
+    int glyph = DNET_WIFI;  // a DNET_* value: wifi or wired
     bool lit = false;       // bright vs the dimmed no-link look
 };
 

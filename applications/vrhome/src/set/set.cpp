@@ -10,6 +10,7 @@
 #include "../dock/layout.h"
 #include "../hud/engine.h"
 #include "../panels/layout.h"
+#include "../render/icons.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
 
@@ -1081,11 +1082,8 @@ void drawSet(HudEngine* e, const Mat4& vp) {
               kSetCloseR * gs, 0.0f, 0.002f, bg);
     const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                            0.92f * ga};
-    const float il = kSetCloseR * 0.52f * gs, it = 0.0026f;
-    shapeQuad(e, vp, bc, r, up, 0.008f, 0.785398f, il, it, il, it, it,
-              0.0f, 0.0015f, xcol);
-    shapeQuad(e, vp, bc, r, up, 0.008f, -0.785398f, il, it, il, it, it,
-              0.0f, 0.0015f, xcol);
+    drawGlyph(e, vp, GI_CLOSE, bc, r, up, kSetCloseR * 0.52f * gs,
+              0.008f, xcol);
     sText(e, vp, c, r, up, (-kSetHW + kSetPad) * gs, hy,
           setStr(e, UISET_TITLE), 0.0017f * gs, ga, false, false);
 

@@ -9,6 +9,7 @@
 #include "../common/palette.h"
 #include "../dock/layout.h"
 #include "../hud/engine.h"
+#include "../render/icons.h"
 #include "../render/shape.h"
 #include "../set/set.h"
 #include "../set/item.h"
@@ -181,8 +182,6 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     const float* icp = on ? kPalText : kPalTextDim;
     const float icol[4] = {icp[0], icp[1], icp[2],
                            (0.92f + 0.08f * hp) * dead * ga};
-    const float* bcp = on ? kPalAccent : kPalSurface;
-    const float bgc2[4] = {bcp[0], bcp[1], bcp[2], dead * ga};
     const float is = (s.large ? 0.031f : 0.026f) * gs;
     // icon sits in the tile's upper half for large tiles, above the label
     // for small ones
@@ -191,7 +190,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
                          c[1] + r[1]*tcx + up[1]*iconY,
                          c[2] + r[2]*tcx + up[2]*iconY};
     quickIcon(e, vp, quickTileIcon(e->quick.st, s.id), ic, r, up, is,
-              icol, bgc2);
+              icol);
     float labelY, subY;
     quickTileTextY(s.large, &labelY, &subY);
     const char* label = qsStr(e, quickTileLabel(e->quick.st, s.id));
@@ -275,11 +274,8 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
                   kQuickCloseR * gs, 0.0f, 0.002f, bg);
         const float icol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                0.92f * ga};
-        const float il = kQuickCloseR * 0.52f * gs, it = 0.0026f;
-        shapeQuad(e, vp, bc, r, up, 0.008f, 0.785398f, il, it,
-                  il, it, it, 0.0f, 0.0015f, icol);
-        shapeQuad(e, vp, bc, r, up, 0.008f, -0.785398f, il, it,
-                  il, it, it, 0.0f, 0.0015f, icol);
+        drawGlyph(e, vp, GI_CLOSE, bc, r, up, kQuickCloseR * 0.52f * gs,
+                  0.008f, icol);
     }
     // title left, battery % beside the gear - dropped entirely on a
     // device with no battery

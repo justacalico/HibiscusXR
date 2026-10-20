@@ -10,6 +10,7 @@
 #include "../panels/layout.h"
 #include "../pill/pill.h"
 #include "../render/chrome.h"
+#include "../render/icons.h"
 #include "../render/shape.h"
 #include "../set/set.h"
 #include "../text/draw.h"
@@ -405,45 +406,16 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         glUseProgram(e->shapeProg);
     }
 
-    // the net slot: the wifi fan unless a cable is patched in - the apex
-    // dot anchors the fan and three arcs open upward; wy drops the apex
-    // just enough that the fan's bounding box centres on the slot like
-    // the battery and clock do
+    // the net slot: wifi unless a cable is patched in, dimmed while the
+    // uplink reports down
     {
         const DockNetIcon ni = dockNetIcon(e->sysNet);
         const float wcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                (ni.lit ? 0.92f : 0.25f) * a};
-        if (ni.glyph == DNET_ETH) {
-            // wired: the plug's contact pins standing on its base bar
-            const float bc[3] = {c[0] + r[0]*st.wifiX - up[0]*0.009f,
-                                 c[1] + r[1]*st.wifiX - up[1]*0.009f,
-                                 c[2] + r[2]*st.wifiX - up[2]*0.009f};
-            shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, 0.027f, 0.0065f,
-                      0.024f, 0.0035f, 0.0035f, 0.0f, 0.0015f, wcol);
-            for (int k = 0; k < 7; ++k) {
-                const float px = (k - 3) * 0.007f;
-                const float pc[3] = {c[0] + r[0]*(st.wifiX + px) +
-                                         up[0]*0.002f,
-                                     c[1] + r[1]*(st.wifiX + px) +
-                                         up[1]*0.002f,
-                                     c[2] + r[2]*(st.wifiX + px) +
-                                         up[2]*0.002f};
-                shapeQuad(e, vp, pc, r, up, 0.008f, 0.0f, 0.0045f, 0.010f,
-                          0.0015f, 0.007f, 0.0015f, 0.0f, 0.0012f, wcol);
-            }
-        } else {
-            const float wy = -0.019f;
-            const float wc[3] = {c[0] + r[0]*st.wifiX + up[0]*wy,
-                                 c[1] + r[1]*st.wifiX + up[1]*wy,
-                                 c[2] + r[2]*st.wifiX + up[2]*wy};
-            const float wr[3] = {0.014f, 0.027f, 0.040f};
-            for (int k = 0; k < 3; ++k)
-                shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f,
-                          wr[k] + 0.008f, wr[k] + 0.008f, wr[k], wr[k],
-                          wr[k], 0.0045f, 0.0025f, wcol, -1.0f, 1.15f);
-            shapeQuad(e, vp, wc, r, up, 0.008f, 0.0f, 0.006f, 0.006f,
-                      0.0045f, 0.0045f, 0.0045f, 0.0f, 0.0015f, wcol);
-        }
+        const float wc[3] = {c[0] + r[0]*st.wifiX, c[1] + r[1]*st.wifiX,
+                             c[2] + r[2]*st.wifiX};
+        drawGlyph(e, vp, ni.glyph == DNET_ETH ? GI_LAN : GI_WIFI,
+                  wc, r, up, 0.032f, 0.008f, wcol);
     }
 
     // battery: outline body, level fill inside, tip nub on the right;
@@ -477,28 +449,17 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                   0.0025f, bh * 0.18f, 0.002f, 0.0f, 0.0012f, ocol);
     }
 
-    // bell: rounded-top body over a lip with a clapper dot; dim while the
-    // shade is empty, a red shoulder dot while notifications wait
+    // bell: dim while the shade is empty, a red shoulder dot while
+    // notifications wait
     {
         const bool any = !e->notifsAll.empty();
         const float bcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                (any ? 0.90f : 0.30f) * a};
         const float bx = st.bellX;
-        const float bc[3] = {c[0] + r[0]*bx + up[0]*0.002f,
-                             c[1] + r[1]*bx + up[1]*0.002f,
-                             c[2] + r[2]*bx + up[2]*0.002f};
-        shapeQuad(e, vp, bc, r, up, 0.008f, 0.0f, 0.015f, 0.017f,
-                  0.013f, 0.015f, 0.012f, 0.0f, 0.0018f, bcol, 0.002f);
-        const float lc[3] = {c[0] + r[0]*bx - up[0]*0.014f,
-                             c[1] + r[1]*bx - up[1]*0.014f,
-                             c[2] + r[2]*bx - up[2]*0.014f};
-        shapeQuad(e, vp, lc, r, up, 0.008f, 0.0f, 0.021f, 0.004f,
-                  0.019f, 0.004f, 0.003f, 0.0f, 0.0015f, bcol);
-        const float kc[3] = {c[0] + r[0]*bx - up[0]*0.023f,
-                             c[1] + r[1]*bx - up[1]*0.023f,
-                             c[2] + r[2]*bx - up[2]*0.023f};
-        shapeQuad(e, vp, kc, r, up, 0.008f, 0.0f, 0.005f, 0.005f,
-                  0.004f, 0.004f, 0.004f, 0.0f, 0.0015f, bcol);
+        const float bc[3] = {c[0] + r[0]*bx, c[1] + r[1]*bx,
+                             c[2] + r[2]*bx};
+        drawGlyph(e, vp, GI_NOTIFICATIONS, bc, r, up, 0.024f, 0.008f,
+                  bcol);
         if (any) {
             const float dc[3] = {c[0] + r[0]*(bx + 0.014f) + up[0]*0.018f,
                                  c[1] + r[1]*(bx + 0.014f) + up[1]*0.018f,
@@ -534,24 +495,13 @@ void drawDock(HudEngine* e, const Mat4& vp) {
 
         const float alpha = (it.minimized ? 0.45f : 1.0f) * a;
         if (it.kind == DK_GRID) {
-            // the app-grid glyph: a 3x3 dot square, active while the
-            // overlay is open
-            const float dg = s * 0.62f;
+            // the app-grid glyph: lit while the overlay is open
             const float* dc = e->grid.shown ? kPalAccent : kPalText;
             const float dcol[4] = {dc[0], dc[1], dc[2],
                                    (e->grid.shown ? 0.95f
                                                   : 0.72f + 0.23f * hp)
                                        * a};
-            for (int gy = 0; gy < 3; ++gy)
-                for (int gx = 0; gx < 3; ++gx) {
-                    const float pc[3] = {
-                        ic[0] + r[0]*(gx - 1)*dg + up[0]*(1 - gy)*dg,
-                        ic[1] + r[1]*(gx - 1)*dg + up[1]*(1 - gy)*dg,
-                        ic[2] + r[2]*(gx - 1)*dg + up[2]*(1 - gy)*dg};
-                    const float dr = s * 0.105f;
-                    shapeQuad(e, vp, pc, r, up, 0.008f, 0.0f, dr, dr,
-                              dr, dr, dr, 0.0f, 0.0015f, dcol);
-                }
+            drawGlyph(e, vp, GI_APPS, ic, r, up, s * 0.72f, 0.008f, dcol);
         } else if (icon && icon->tex) {
             drawIconTex(e, vp, ic, r, up, s, icon->tex, alpha);
         } else {
@@ -592,7 +542,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         }
 
         // close badge on a live immersive item: a disc off the icon's
-        // top-right corner carrying a rotated capsule x
+        // top-right corner
         if (it.vr && it.running) {
             const float bo = s * 0.72f;
             const float bc[3] = {c[0] + r[0]*(it.x + bo) + up[0]*(kDockIconY + bo),
@@ -606,11 +556,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
                       0.0f, 0.0015f, bcol);
             const float xcol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                    0.95f * a};
-            const float il = kDockBadgeR * 0.52f, it2 = 0.0024f;
-            shapeQuad(e, vp, bc, r, up, 0.012f, 0.785398f, il, it2,
-                      il, it2, it2, 0.0f, 0.001f, xcol);
-            shapeQuad(e, vp, bc, r, up, 0.012f, -0.785398f, il, it2,
-                      il, it2, it2, 0.0f, 0.001f, xcol);
+            drawGlyph(e, vp, GI_CLOSE, bc, r, up, kDockBadgeR * 0.52f,
+                      0.012f, xcol);
         }
 
         // pin-hold fill: an accent ring tightening around the icon

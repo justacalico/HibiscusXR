@@ -8,6 +8,7 @@
 #include "../common/palette.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../render/icons.h"
 #include "../render/shape.h"
 #include "../text/draw.h"
 
@@ -83,11 +84,8 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
                   kGridCloseR * gs, 0.0f, 0.002f, bg);
         const float icol[4] = {kPalText[0], kPalText[1], kPalText[2],
                                0.92f * ga};
-        const float il = kGridCloseR * 0.52f * gs, it = 0.0026f;
-        shapeQuad(e, vp, bc, r, up, 0.008f, 0.785398f, il, it,
-                  il, it, it, 0.0f, 0.0015f, icol);
-        shapeQuad(e, vp, bc, r, up, 0.008f, -0.785398f, il, it,
-                  il, it, it, 0.0f, 0.0015f, icol);
+        drawGlyph(e, vp, GI_CLOSE, bc, r, up, kGridCloseR * 0.52f * gs,
+                  0.008f, icol);
     }
     if (e->font.ok) {
         const float ts = 0.0016f * gs;

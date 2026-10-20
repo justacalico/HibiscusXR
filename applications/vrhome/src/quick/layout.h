@@ -55,9 +55,17 @@ float quickTitleY();
 // a toggle tile's current bit in the snapshot
 bool quickToggleOn(const QsStatus& st, int id);
 
+// a tile's lit state for the snapshot: the wired uplink reads on even
+// though it never carries a toggle bit
+bool quickTileOn(const QsStatus& st, int id);
+
 // the glyph a tile draws for a snapshot: the wifi tile swaps in the
 // wired plug while a cable is patched, everything else keeps its own id
 int quickTileIcon(const QsStatus& st, int id);
+
+// a tile's label slot in the uiStrings pull: the wifi tile reads
+// "Ethernet" while the cable's patched
+int quickTileLabel(const QsStatus& st, int id);
 
 // a large tile's subtitle: wifi and bluetooth carry the connected name
 // when one's known, otherwise the on/off/not-connected word
@@ -71,12 +79,12 @@ QsSub quickSubtitle(const QsStatus& st, int id);
 // what a tile release resolves to, computed off the catalog so the
 // enabled/inert policy is host-testable
 enum QsOp {
-    QOP_NONE = 0,     // greyed tile or unknown id: inert
+    QOP_NONE = 0,     // greyed tile, wired uplink or unknown id: inert
     QOP_TOGGLE,       // flip the toggle through the backend
     QOP_RECENTER,     // re-anchor the dash, handled natively
     QOP_SETTINGS,     // open the settings app on a window
 };
-QsOp quickActivateOp(int id);
+QsOp quickActivateOp(const QsStatus& st, int id);
 
 // zone a card-local hit lands on: the title row's discs first, then the
 // slider bands, then tiles, else the card body

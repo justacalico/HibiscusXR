@@ -20,6 +20,7 @@
     <string name="qs_saver">省电模式</string>
     <string name="qs_report">报告问题</string>
     <string name="qs_about">关于设备</string>
+    <string name="qs_ethernet">以太网</string>
     <string name="sysmsg_keeps_stopping">%1$s 屡次停止运行</string>
     <string name="sysmsg_not_responding">%1$s 无响应</string>
     <string name="sysmsg_close_app">关闭应用</string>

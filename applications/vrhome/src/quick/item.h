@@ -93,5 +93,6 @@ enum UiQsStr {
     UIQS_OFF,
     UIQS_NOTCONN,
     UIQS_LABEL0,            // = 4; tile labels follow in QsId order
-    UIQS_COUNT = UIQS_LABEL0 + QS_COUNT
+    UIQS_ETH = UIQS_LABEL0 + QS_COUNT,   // wired uplink label
+    UIQS_COUNT
 };

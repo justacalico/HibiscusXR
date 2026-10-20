@@ -378,6 +378,7 @@ void WlBackend::uiStrings(std::vector<std::string>* out) {
         "Wi-Fi", "Boundary", "Bluetooth", "Seethrough", "Microphone",
         "Reset view", "Night mode", "Do Not Disturb", "Airplane mode",
         "Battery saver", "Report problem", "About device",
+        "Ethernet",
     };
 }
 

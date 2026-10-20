@@ -22,7 +22,7 @@ public class UiStrings {
     public static final int QS_LABEL0 = 5;
     // the settings card's block follows the quick panel's; slot order
     // matches src/set/item.h's UiSetStr
-    public static final int SET_TITLE = QS_LABEL0 + 12;
+    public static final int SET_TITLE = QS_LABEL0 + 13;
 
     private static volatile int ver = 0;
 
@@ -49,6 +49,7 @@ public class UiStrings {
             ctx.getString(R.string.qs_saver),
             ctx.getString(R.string.qs_report),
             ctx.getString(R.string.qs_about),
+            ctx.getString(R.string.qs_ethernet),
             ctx.getString(R.string.set_title),
             ctx.getString(R.string.set_sec_wifi),
             ctx.getString(R.string.set_sec_bt),

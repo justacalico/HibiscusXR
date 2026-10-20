@@ -107,13 +107,27 @@ bool quickToggleOn(const QsStatus& st, int id) {
     return (st.toggles & (1u << id)) != 0;
 }
 
+bool quickTileOn(const QsStatus& st, int id) {
+    if (id == QS_WIFI && st.net == DNET_ETH) return true;
+    return quickToggleOn(st, id);
+}
+
 int quickTileIcon(const QsStatus& st, int id) {
     if (id == QS_WIFI && st.net == DNET_ETH) return QS_ICON_ETH;
     return id;
 }
 
+int quickTileLabel(const QsStatus& st, int id) {
+    if (id == QS_WIFI && st.net == DNET_ETH) return UIQS_ETH;
+    return UIQS_LABEL0 + id;
+}
+
 QsSub quickSubtitle(const QsStatus& st, int id) {
     QsSub s;
+    // the wired uplink reads on regardless of the wifi radio bit
+    if (id == QS_WIFI && st.net == DNET_ETH) {
+        s.kind = QSUB_ON; return s;
+    }
     if (!quickToggleOn(st, id)) { s.kind = QSUB_OFF; return s; }
     if (id == QS_WIFI && !st.ssid.empty()) {
         s.kind = QSUB_CUSTOM; s.text = st.ssid.c_str();
@@ -127,11 +141,16 @@ QsSub quickSubtitle(const QsStatus& st, int id) {
     return s;
 }
 
-QsOp quickActivateOp(int id) {
+QsOp quickActivateOp(const QsStatus& st, int id) {
     if (id < 0 || id >= QS_COUNT) return QOP_NONE;
     const QsSpec& s = kSpecs[id];
     if (!s.implemented) return QOP_NONE;
-    if (s.toggle) return QOP_TOGGLE;
+    if (s.toggle) {
+        // a patched cable has no off switch: the tile's a readout, not a
+        // toggle, until it comes out
+        if (id == QS_WIFI && st.net == DNET_ETH) return QOP_NONE;
+        return QOP_TOGGLE;
+    }
     if (id == QS_RESET_VIEW) return QOP_RECENTER;
     return QOP_SETTINGS;   // QS_ABOUT
 }

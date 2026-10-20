@@ -173,6 +173,9 @@ struct HudEngine : Engine {
     // the English text
     int uiStrVer = -1;
     std::string uiLib;
+    // the library's extra labels: group pill, context menu and the new-
+    // group name format, slots in UiLibStr order
+    std::string uiLibStr[UILIB_COUNT];
     // the quick panel's labels: title, on/off/not-connected, then one per
     // tile in QsId order - the fallback table in quick.cpp covers a pull
     // that hasn't landed yet

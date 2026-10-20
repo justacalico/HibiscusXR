@@ -16,6 +16,7 @@ linked line per MR no matter how many commits it carried.
 - [Dock 铃铛按钮接入通知卡片](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/166) (!166)
 - [ci: 打开 MR 自动写 changelog 片段,release 收口](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/167) (!167)
 - [fix: changelog 片段推送改回正常流水线](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/168) (!168)
+- [docs: 手写本版本 changelog 条目](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/169) (!169)
 - Hide the battery icons when no battery is present.
 - Buttons show as cables when a hardwired cable is plugged in.
 - Remove message for saying what home env you have set.

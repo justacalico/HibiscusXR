@@ -14,8 +14,9 @@
  *    heap-allocated QVRServiceClientImpl (4072 bytes).
  *  - qvrservice_head_tracking_data_t layout below was verified against
  *    live poses; quality/state fields sit at fixed offsets.
- *  - Pose timestamps come from the QVR clock domain, which runs a few
- *    seconds ahead of CLOCK_MONOTONIC. The offset can't be read
+ *  - Pose timestamps come from the QVR clock domain, measured on-device
+ *    running ~3.5s ahead of CLOCK_MONOTONIC at the same rate (not
+ *    CLOCK_BOOTTIME, not suspend time). The offset can't be read
  *    directly: each fresh pose bounds it from below by that pose's read
  *    latency, so we fit it from the youngest samples seen.
  * @ingroup drv_pn2
@@ -275,6 +276,12 @@ int
 pn2_qvr_stall(struct pn2_qvr *q)
 {
 	return q->stall;
+}
+
+int64_t
+pn2_qvr_clock_offset(struct pn2_qvr *q)
+{
+	return q->clock_offset;
 }
 
 void

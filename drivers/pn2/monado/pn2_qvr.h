@@ -75,6 +75,12 @@ int
 pn2_qvr_stall(struct pn2_qvr *q);
 
 /*!
+ * The fitted qvr-minus-monotonic clock offset in ns, for diagnostics.
+ */
+int64_t
+pn2_qvr_clock_offset(struct pn2_qvr *q);
+
+/*!
  * Stops VR mode and releases the client.
  */
 void

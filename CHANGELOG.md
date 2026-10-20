@@ -15,3 +15,4 @@ linked line per MR no matter how many commits it carried.
 - [应用库：右键菜单与分组](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/165) (!165)
 - [Dock 铃铛按钮接入通知卡片](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/166) (!166)
 - [ci: 打开 MR 自动写 changelog 片段,release 收口](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/167) (!167)
+- [fix: changelog 片段推送改回正常流水线](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/168) (!168)

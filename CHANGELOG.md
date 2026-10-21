@@ -27,3 +27,4 @@ linked line per MR no matter how many commits it carried.
 - [refactor: 抽取 applications/common 共享包](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/178) (!178)
 - [fix: store 拒绝 http 仓库地址并清理下载残留](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/179) (!179)
 - [fix: cte 修复若干已验证缺陷](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/180) (!180)
+- [fix: store 接通设备 SDK 版本过滤并修图片地址与索引解析](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/181) (!181)

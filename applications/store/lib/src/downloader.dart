@@ -49,6 +49,8 @@ class ApkDownloader {
       throw DownloadException('$url unreachable: $e');
     }
     if (res.statusCode != 200) {
+      // the socket stays checked out until the body is consumed
+      await res.stream.drain();
       throw DownloadException('$url returned ${res.statusCode}');
     }
     final dir = Directory('${directory.path}/apks')
@@ -56,6 +58,7 @@ class ApkDownloader {
     final file = File('${dir.path}/$fileName');
     final sink = file.openWrite();
     var received = 0;
+    var complete = false;
     try {
       await for (final chunk in res.stream) {
         sink.add(chunk);
@@ -63,10 +66,13 @@ class ApkDownloader {
         onProgress?.call(received, res.contentLength ?? -1);
       }
       await sink.flush();
+      complete = true;
     } catch (e) {
       throw DownloadException('$url failed mid-download: $e');
     } finally {
       await sink.close();
+      // a truncated APK must never reach the installer
+      if (!complete && await file.exists()) await file.delete();
     }
     if (expectedSha256 != null) {
       final digest = await sha256.bind(file.openRead()).first;

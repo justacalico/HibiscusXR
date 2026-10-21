@@ -38,7 +38,7 @@
   "repoDialogTitle": "仓库",
   "repoDialogBody": "目录和安装包来自这个兼容 F-Droid 的仓库。",
   "repoUrlLabel": "仓库地址",
-  "repoUrlInvalid": "输入 http 或 https 地址",
+  "repoUrlInvalid": "输入 https 地址",
   "repoReset": "重置为默认",
   "cancel": "取消",
   "save": "保存",

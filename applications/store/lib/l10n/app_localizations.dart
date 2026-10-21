@@ -239,7 +239,7 @@ abstract class AppLocalizations {
   /// No description provided for @repoUrlInvalid.
   ///
   /// In en, this message translates to:
-  /// **'Enter an http or https URL'**
+  /// **'Enter an https URL'**
   String get repoUrlInvalid;
 
   /// No description provided for @repoReset.

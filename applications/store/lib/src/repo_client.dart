@@ -12,6 +12,10 @@ class RepoException implements Exception {
   String toString() => 'RepoException: $message';
 }
 
+/// Only https URLs are valid repositories - over plain http the index
+/// (and the checksums inside it) can be rewritten by anyone on the path.
+bool validRepoUrl(Uri uri) => uri.isScheme('https') && uri.host.isNotEmpty;
+
 /// Where the catalog comes from. The HTTP implementation is the default;
 /// tests and the desktop preview substitute canned data.
 abstract class RepoClient {

@@ -90,7 +90,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repoUrlLabel => 'Repository URL';
 
   @override
-  String get repoUrlInvalid => 'Enter an http or https URL';
+  String get repoUrlInvalid => 'Enter an https URL';
 
   @override
   String get repoReset => 'Reset to default';

@@ -163,6 +163,17 @@ void main() {
       );
     });
 
+    test('non-200 drains the response stream to release the socket',
+        () async {
+      final client = _DrainTracker();
+      final dl = ApkDownloader(client: client, directory: dir);
+      await expectLater(
+        dl.download(Uri.parse('https://r.example/a.apk'), 'a.apk'),
+        throwsA(isA<DownloadException>()),
+      );
+      expect(client.consumed, isTrue);
+    });
+
     test('connect failure wraps as DownloadException', () {
       final dl = ApkDownloader(
         client: MockClient((req) async => throw const SocketException('no')),
@@ -174,12 +185,12 @@ void main() {
       );
     });
 
-    test('a stream that dies mid-download wraps too', () {
+    test('a stream that dies mid-download wraps too', () async {
       final dl = ApkDownloader(
         client: _StreamBomber(),
         directory: dir,
       );
-      expect(
+      await expectLater(
         dl.download(Uri.parse('https://r.example/a.apk'), 'a.apk'),
         throwsA(
           isA<DownloadException>().having(
@@ -189,6 +200,8 @@ void main() {
           ),
         ),
       );
+      // the truncated file must not be left behind for the installer
+      expect(await File('${dir.path}/apks/a.apk').exists(), isFalse);
     });
 
     test('dispose closes only the client it owns', () {
@@ -255,6 +268,23 @@ void main() {
       expect(log.last.arguments, {'package': 'com.bad'});
     });
   });
+}
+
+/// Answers 404 with a body stream that records whether it was fully
+/// consumed - an undrained StreamedResponse holds its socket until GC.
+class _DrainTracker extends http.BaseClient {
+  var consumed = false;
+
+  @override
+  Future<http.StreamedResponse> send(http.BaseRequest request) async {
+    return http.StreamedResponse(
+      (() async* {
+        yield [1, 2];
+        consumed = true;
+      })(),
+      404,
+    );
+  }
 }
 
 /// Emits one chunk then errors out, exercising the mid-download catch.

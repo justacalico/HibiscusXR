@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_store/main.dart' as app;
 import 'package:hibiscus_store/src/installer.dart';
-import 'package:hibiscus_store/src/platform/fakes.dart';
 import 'package:hibiscus_store/src/store_controller.dart';
 import 'package:hibiscus_store/src/persistence.dart';
 import 'package:hibiscus_store/src/store_state.dart';
@@ -12,6 +11,7 @@ import 'package:hibiscus_store/src/ui/theme.dart';
 import 'package:hibiscus_store/src/ui/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fakes.dart';
 import 'helpers.dart';
 
 Future<(StoreController,)> pumpApp(
@@ -258,12 +258,15 @@ void main() {
     await tester.tap(find.byIcon(Icons.dns_outlined));
     await tester.pumpAndSettle();
     expect(find.text('Repository'), findsWidgets);
-    // invalid input shows the error and does not save
-    await tester.enterText(find.byType(TextField).last, 'ftp://x');
-    await tester.tap(find.text('Save'));
-    await tester.pumpAndSettle();
-    expect(find.text('Enter an http or https URL'), findsOneWidget);
-    expect(c.store.repoUrl, StoreController.kDefaultRepo);
+    // invalid input shows the error and does not save - plaintext http
+    // is rejected too, the index travels over the same channel
+    for (final bad in ['ftp://x', 'http://x.example/repo']) {
+      await tester.enterText(find.byType(TextField).last, bad);
+      await tester.tap(find.text('Save'));
+      await tester.pumpAndSettle();
+      expect(find.text('Enter an https URL'), findsOneWidget);
+      expect(c.store.repoUrl, StoreController.kDefaultRepo);
+    }
     // a good url persists and reloads
     await tester.enterText(
       find.byType(TextField).last,

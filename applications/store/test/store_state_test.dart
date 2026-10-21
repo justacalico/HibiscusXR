@@ -1,12 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_store/src/fdroid_index.dart';
 import 'package:hibiscus_store/src/installer.dart';
-import 'package:hibiscus_store/src/platform/fakes.dart';
 import 'package:hibiscus_store/src/persistence.dart';
 import 'package:hibiscus_store/src/store_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hibiscus_store/src/platform/prefs_persistence.dart';
 
+import 'fakes.dart';
 import 'helpers.dart';
 
 void main() {

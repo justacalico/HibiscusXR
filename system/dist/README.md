@@ -140,3 +140,21 @@ unxz system-hibiscus-full-neo2.img.xz
 fastboot oem pico unlock
 fastboot -S 128M flash system system-hibiscus-full-neo2.img
 ```
+
+## Updating an installed headset
+
+A release only carries a new system image - `/data` never needs reflashing,
+so an update keeps every installed app and setting. Decompress the image,
+reboot to the bootloader and run `system/dist/scripts/flash-update.sh`:
+
+```
+unxz system-hibiscus-full-neo2.img.xz
+adb reboot bootloader
+bash system/dist/scripts/flash-update.sh system-hibiscus-full-neo2.img
+```
+
+The script flashes only the `system` partition: no `-w`, no userdata or
+other partition writes. It aborts on an unlock or flash failure instead of
+rebooting into a half-written image, and refuses to guess when more than
+one fastboot device is attached (set `HIBISCUS_SERIAL`). There is no
+in-OS updater yet; this is the supported flow until one exists.

@@ -5,7 +5,7 @@ set -e
 cd "$(dirname "$0")/.."
 ROOT=$(git rev-parse --show-toplevel)
 OUT=$(mktemp -d)
-trap "kill %1 2>/dev/null; rm -rf $OUT" EXIT
+trap 'kill %1 2>/dev/null; rm -rf "$OUT"' EXIT
 
 PORT=17340
 CC="${CC:-cc}"

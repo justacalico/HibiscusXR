@@ -6,7 +6,7 @@ set -u
 B=${HIBISCUS_ROOT}
 FW=$B/ndi_firmware
 IMG=$B/images
-FWDIR=${PICO_FW_DIR}/Neo_2
+FWDIR=${PICO_FW_DIR:-$B/firmware}/Neo_2
 N=$B/notes/10_ndi_firmware.log
 TMP=$IMG/_tmp_sys
 
@@ -65,7 +65,7 @@ echo "--- all recovered files ---"
 find "$FW" -type f -printf '%10s  %P\n' | sort -k2
 echo
 echo "--- bitstream identity ---"
-for f in $(find "$FW" -name 'top_level_bitmap.bin'); do
+find "$FW" -name 'top_level_bitmap.bin' -print0 | while IFS= read -r -d '' f; do
   echo "== $f =="
   file -b "$f"
   xxd "$f" | head -6

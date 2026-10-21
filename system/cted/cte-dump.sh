@@ -17,6 +17,7 @@
 
 set +e
 D=/data/local/tmp/cte-dump.$$
+rm -rf "$D"
 mkdir -p "$D/dumpsys" "$D/pkg" "$D/proc" "$D/sys" || exit 1
 
 cap() { # cap <relpath> <cmd...>

@@ -61,9 +61,11 @@ EOF
 
   # ci.skip keeps the bump push from starting a pipeline; remotes without
   # push options get a plain push instead
+  push_err=$(mktemp)
+  trap 'rm -f "$push_err"' EXIT
   push_commit() {
-    git push -o ci.skip origin HEAD:main 2>/tmp/push.err && return 0
-    grep -q "push options" /tmp/push.err && git push origin HEAD:main
+    git push -o ci.skip origin HEAD:main 2>"$push_err" && return 0
+    grep -q "push options" "$push_err" && git push origin HEAD:main
   }
   if ! push_commit; then
     echo "main moved, rebasing"

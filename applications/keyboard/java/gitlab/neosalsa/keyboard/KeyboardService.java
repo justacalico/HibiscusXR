@@ -55,6 +55,10 @@ public class KeyboardService extends InputMethodService
     // HUD -> us: the shell's BACK wants the quad down
     private static final String ACTION_HIDE =
             "gitlab.neosalsa.keyboard.action.HIDE";
+    // signature-level guard on our receiver (declared in the manifest):
+    // only platform-signed senders can hand us a surface or hide calls
+    private static final String PERMISSION_LINK =
+            "gitlab.neosalsa.keyboard.permission.LINK";
 
     private FrameLayout dockBox;      // inputView container on the app display
     private KeyboardView kv;          // the one view, reparented dock <-> quad
@@ -94,7 +98,7 @@ public class KeyboardService extends InputMethodService
         IntentFilter f = new IntentFilter();
         f.addAction(ACTION_SURFACE);
         f.addAction(ACTION_HIDE);
-        registerReceiver(surfaceRecv, f);
+        registerReceiver(surfaceRecv, f, PERMISSION_LINK, null);
         sendBroadcast(new Intent(ACTION_QUERY).setPackage(HUD_PKG));
     }
 

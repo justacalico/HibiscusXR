@@ -65,6 +65,12 @@ public class ShellBridge {
             "gitlab.neosalsa.hud.action.OPEN_PACKAGE";
     public static final String EXTRA_PACKAGE = "package";
 
+    // every broadcast the bridge listens on is gated by this
+    // signature-level permission (declared in the hud manifest): only
+    // platform-signed senders get through
+    public static final String PERMISSION_SHELL =
+            "gitlab.neosalsa.hud.permission.SHELL";
+
     public interface CoveredListener {
         void onCovered(boolean covered);
         // the menu should drop so the user lands inside the app - an
@@ -131,7 +137,8 @@ public class ShellBridge {
         qs = new QuickState(c);
         st = new SettingsState(c);
 
-        ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE));
+        ctx.registerReceiver(openReq, new IntentFilter(ACTION_OPEN_PACKAGE),
+                PERMISSION_SHELL, main);
         IntentFilter pf = new IntentFilter();
         pf.addAction(Intent.ACTION_PACKAGE_ADDED);
         pf.addAction(Intent.ACTION_PACKAGE_REMOVED);

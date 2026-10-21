@@ -78,6 +78,8 @@ rm -f src/xrt/auxiliary/util/u_foveation.h \
       src/xrt/compositor/client/comp_vk_foveation.h \
       src/xrt/state_trackers/oxr/oxr_api_foveation_fb.c
 git apply "$ROOT/patches/hsvr-foveated-rendering.patch"
+rm -f src/xrt/state_trackers/oxr/oxr_shell.h
+git apply "$ROOT/patches/hsvr-shell-recenter.patch"
 
 # drv_hsvr builds from one directory: the kit, the hsvr prober shim, every
 # device driver under drivers/<name>/monado/ and every shared controller

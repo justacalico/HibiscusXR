@@ -1,0 +1,145 @@
+diff --git a/src/xrt/base/b_space_overseer.c b/src/xrt/base/b_space_overseer.c
+--- a/src/xrt/base/b_space_overseer.c
++++ b/src/xrt/base/b_space_overseer.c
+@@ -972,7 +972,9 @@ recenter_local_spaces(struct xrt_space_overseer *xso)
+ 	bool pos_valid = (rel.relation_flags & XRT_SPACE_RELATION_POSITION_VALID_BIT) != 0;
+ 	bool ori_valid = (rel.relation_flags & XRT_SPACE_RELATION_ORIENTATION_VALID_BIT) != 0;
+ 
+-	if (!pos_valid || !ori_valid) {
++	// Orientation-only tracking still gets a yaw recenter; position just
++	// keeps its old offset when the head pose has no position to adopt.
++	if (!ori_valid) {
+ 		goto err_unlock;
+ 	}
+ 
+@@ -994,11 +996,14 @@ recenter_local_spaces(struct xrt_space_overseer *xso)
+ 	local_offset.orientation = rel.pose.orientation;
+ 	local_floor_offset.orientation = rel.pose.orientation;
+ 
+-	// Keep y offset the same.
+-	local_offset.position.x = rel.pose.position.x;
+-	local_offset.position.z = rel.pose.position.z;
+-	local_floor_offset.position.x = rel.pose.position.x;
+-	local_floor_offset.position.z = rel.pose.position.z;
++	// Keep y offset the same; x/z only follow when the head pose is
++	// actually position-tracked.
++	if (pos_valid) {
++		local_offset.position.x = rel.pose.position.x;
++		local_offset.position.z = rel.pose.position.z;
++		local_floor_offset.position.x = rel.pose.position.x;
++		local_floor_offset.position.z = rel.pose.position.z;
++	}
+ 
+ 	// Update the offsets.
+ 	update_offset_write_locked(ulocal, &local_offset);
+diff --git a/src/xrt/state_trackers/oxr/oxr_instance.c b/src/xrt/state_trackers/oxr/oxr_instance.c
+--- a/src/xrt/state_trackers/oxr/oxr_instance.c
++++ b/src/xrt/state_trackers/oxr/oxr_instance.c
+@@ -35,6 +35,7 @@
+ #include "oxr_chain.h"
+ #include "oxr_roles.h"
+ #include "oxr_generated_bindings.h"
++#include "oxr_shell.h"
+ #include "actions/oxr_binding.h"
+ #include "actions/oxr_subaction.h"
+ 
+@@ -560,6 +561,10 @@ oxr_instance_init_system_locked(struct oxr_logger *log, struct oxr_instance *ins
+ 		return ret;
+ 	}
+ 
++	// Adopt the current shell recenter stamp: only bumps after this
++	// point count as recenter gestures for sessions on this system.
++	sys->recenter_seq = oxr_shell_recenter_signal();
++
+ 	// Did we find any HMD
+ 	// @todo Headless with only controllers?
+ 	struct xrt_device *dev = GET_STATIC_XDEV_BY_ROLE(sys, head);
+diff --git a/src/xrt/state_trackers/oxr/oxr_objects.h b/src/xrt/state_trackers/oxr/oxr_objects.h
+--- a/src/xrt/state_trackers/oxr/oxr_objects.h
++++ b/src/xrt/state_trackers/oxr/oxr_objects.h
+@@ -1092,6 +1092,12 @@ struct oxr_system
+ 	//! Space overseer used in all session types.
+ 	struct xrt_space_overseer *xso;
+ 
++	/*!
++	 * Last seen value of the shell recenter signal, adopted at system
++	 * init; see oxr_shell.h.
++	 */
++	uint64_t recenter_seq;
++
+ 	//! System compositor, used to create session compositors.
+ 	struct xrt_system_compositor *xsysc;
+ 
+diff --git a/src/xrt/state_trackers/oxr/oxr_session.c b/src/xrt/state_trackers/oxr/oxr_session.c
+--- a/src/xrt/state_trackers/oxr/oxr_session.c
++++ b/src/xrt/state_trackers/oxr/oxr_session.c
+@@ -48,6 +48,7 @@
+ #include "oxr_conversions.h"
+ #include "oxr_xret.h"
+ #include "oxr_roles.h"
++#include "oxr_shell.h"
+ 
+ #include "actions/oxr_input.h"
+ #include "actions/oxr_session_action_context.h"
+@@ -1080,6 +1081,14 @@ oxr_session_frame_wait(struct oxr_logger *log, struct oxr_session *sess, XrFrame
+ 	//! more than one session per instance.
+ 	XRT_MAYBE_UNUSED timepoint_ns now = time_state_get_now_and_update(sess->sys->inst->timekeeping);
+ 
++	uint64_t seq = oxr_shell_recenter_signal();
++	if (seq != 0 && seq != sess->sys->recenter_seq) {
++		sess->sys->recenter_seq = seq;
++		U_LOG_I("hsvr: shell recenter, seq %llu", (unsigned long long)seq);
++		xrt_space_overseer_recenter_local_spaces(sess->sys->xso);
++	}
++
++
+ 	struct xrt_compositor *xc = sess->compositor;
+ 	if (xc == NULL) {
+ 		frameState->shouldRender = XR_FALSE;
+diff --git a/src/xrt/state_trackers/oxr/oxr_shell.h b/src/xrt/state_trackers/oxr/oxr_shell.h
+new file mode 100644
+--- /dev/null
++++ b/src/xrt/state_trackers/oxr/oxr_shell.h
+@@ -0,0 +1,42 @@
++// Copyright 2026, Hibiscus
++// SPDX-License-Identifier: BSL-1.0
++/*!
++ * @file
++ * @brief Shell signal channel for the in-process runtime.
++ *
++ * The system shell bumps the sys.hsvr.recenter property on its recenter
++ * gesture; every runtime process watches it and recenters the local
++ * spaces so the gesture reaches running sessions. The value is a stamp,
++ * not a state: an instance adopts whatever is there at system init and
++ * only reacts to changes after that.
++ *
++ * @ingroup oxr_main
++ */
++
++#pragma once
++
++#include "xrt/xrt_config_os.h"
++
++#ifdef XRT_OS_ANDROID
++#include <sys/system_properties.h>
++#endif
++
++#include <stdint.h>
++#include <stdlib.h>
++
++
++#define OXR_SHELL_RECENTER_PROP "sys.hsvr.recenter"
++
++static inline uint64_t
++oxr_shell_recenter_signal(void)
++{
++#ifdef XRT_OS_ANDROID
++	char buf[PROP_VALUE_MAX] = {0};
++	if (__system_property_get(OXR_SHELL_RECENTER_PROP, buf) <= 0) {
++		return 0;
++	}
++	return strtoull(buf, NULL, 10);
++#else
++	return 0;
++#endif
++}

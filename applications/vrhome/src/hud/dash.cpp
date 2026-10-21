@@ -248,6 +248,7 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
         e->holdP = 0.0f;
     }
     if (takeWantRecenter()) {
+        if (e->backend) e->backend->signalRecenter(now);
         memcpy(e->ringPos, e->eyePos, sizeof(e->ringPos));
         float yaw, pitch;
         recenterAngles(head, &yaw, &pitch);

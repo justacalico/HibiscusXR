@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -123,13 +124,25 @@ vmd_chan_read(struct vmd_chan *c, struct vmd_pose_packet *out, volatile bool *st
 		ssize_t got = 0;
 		char *p = (char *)out;
 		while (got < (ssize_t)sizeof(*out)) {
-			ssize_t r = recv(c->fd, p + got, sizeof(*out) - got, 0);
-			if (r > 0) {
-				got += r;
+			if (*stop) {
+				return false;
+			}
+			// recv on a blocking fd can wait forever while the host stays
+			// connected but silent; poll in slices so *stop is re-checked
+			struct pollfd pfd = {c->fd, POLLIN, 0};
+			int pr = poll(&pfd, 1, 200);
+			if (pr == 0 || (pr < 0 && errno == EINTR)) {
 				continue;
 			}
-			if (r < 0 && errno == EINTR) {
-				continue;
+			if (pr > 0 && (pfd.revents & POLLIN)) {
+				ssize_t r = recv(c->fd, p + got, sizeof(*out) - got, 0);
+				if (r > 0) {
+					got += r;
+					continue;
+				}
+				if (r < 0 && errno == EINTR) {
+					continue;
+				}
 			}
 			close(c->fd);
 			c->fd = -1;

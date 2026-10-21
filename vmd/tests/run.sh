@@ -1,21 +1,35 @@
 #!/usr/bin/env bash
-# Build and run the DRM resource-count clamp regression tests. The
-# test binaries are freestanding aarch64 like the code under test and
-# run on the host through qemu-aarch64, with the DRM ioctls faked by a
-# hostile kernel (the virtio-gpu host controls these counts).
+# Build and run the vmd regression tests.
 #
-# usage: vmd/tests/run.sh   (needs aarch64-linux-gnu-gcc and
-# qemu-aarch64 or qemu-aarch64-static, or QEMU=<path>)
+# test_chan_stop is hosted POSIX (vmd_chan.c uses libc sockets), so it
+# builds with the native compiler and runs directly.
+#
+# The DRM resource-count clamp tests are freestanding aarch64 like the
+# code under test and run on the host through qemu-aarch64, with the DRM
+# ioctls faked by a hostile kernel (the virtio-gpu host controls these
+# counts). They are skipped when the cross toolchain or qemu is missing.
+#
+# usage: vmd/tests/run.sh   (freestanding tests need aarch64-linux-gnu-gcc
+# and qemu-aarch64 or qemu-aarch64-static, or QEMU=<path>)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-CC=${VMD_HAL_CC:-aarch64-linux-gnu-gcc}
-QEMU=${QEMU:-$(command -v qemu-aarch64 || command -v qemu-aarch64-static || true)}
-[ -n "$QEMU" ] || { echo "run.sh: need qemu-aarch64 (or set QEMU=)" >&2; exit 1; }
-command -v "$CC" >/dev/null || { echo "run.sh: $CC not found" >&2; exit 1; }
-
 OUT=tests/out
 mkdir -p "$OUT"
+
+"${HOSTCC:-cc}" -O2 -Wall -Wextra -D_GNU_SOURCE \
+    -I../drivers/vmd/proto -I../drivers/vmd/monado \
+    -o "$OUT/test_chan_stop" tests/test_chan_stop.c \
+    ../drivers/vmd/monado/vmd_chan.c -lpthread
+"$OUT/test_chan_stop"
+
+CC=${VMD_HAL_CC:-aarch64-linux-gnu-gcc}
+QEMU=${QEMU:-$(command -v qemu-aarch64 || command -v qemu-aarch64-static || true)}
+if [ -z "$QEMU" ] || ! command -v "$CC" >/dev/null; then
+  echo "run.sh: skipping freestanding tests (need aarch64-linux-gnu-gcc and qemu-aarch64)" >&2
+  exit 0
+fi
+
 CFLAGS="-O2 -nostdlib -ffreestanding -fno-stack-protector -Wall -Wextra -static"
 
 # drmpaint carries its own ioct/open/entry symbols, so its call sites

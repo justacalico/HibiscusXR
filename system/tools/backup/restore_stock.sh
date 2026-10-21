@@ -55,12 +55,25 @@ done
 echo
 [ "$missing" -eq 0 ] || { echo "ABORT: missing images above. Not flashing a partial restore."; exit 1; }
 
-run() { echo "+ $*"; [ "$DRY" -eq 0 ] && "$@"; return 0; }
+run() { echo "+ $*"; [ "$DRY" -eq 1 ] || "$@"; }
 
 if [ "$DRY" -eq 0 ]; then
   command -v fastboot >/dev/null || { echo "fastboot not in PATH" >&2; exit 1; }
-  fastboot devices | grep -q . || { echo "no fastboot device" >&2; exit 1; }
-  fbs=$(fastboot devices | awk 'NR==1{print $1}')
+  mapfile -t fbdevs < <(fastboot devices | awk '{print $1}')
+  [ "${#fbdevs[@]}" -gt 0 ] || { echo "no fastboot device" >&2; exit 1; }
+  # the fastboot serial is not the adb serial on this device, but never guess
+  # when more than one device is present
+  if [ -n "${HIBISCUS_SERIAL:-}" ]; then
+    fbs=""
+    for d in "${fbdevs[@]}"; do [ "$d" = "$HIBISCUS_SERIAL" ] && fbs=$d; done
+    if [ -z "$fbs" ]; then
+      [ "${#fbdevs[@]}" -eq 1 ] || { echo "ABORT: ${#fbdevs[@]} fastboot devices, none is $HIBISCUS_SERIAL" >&2; exit 1; }
+      fbs=${fbdevs[0]}
+    fi
+  else
+    [ "${#fbdevs[@]}" -eq 1 ] || { echo "ABORT: ${#fbdevs[@]} fastboot devices, set HIBISCUS_SERIAL" >&2; exit 1; }
+    fbs=${fbdevs[0]}
+  fi
   FB=(fastboot ${fbs:+-s "$fbs"})
 fi
 
@@ -71,7 +84,7 @@ run timeout 45 "${FB[@]}" oem pico unlock || { echo "ABORT: unlock hung or faile
 # -S 128M is not optional: 512M chunks kill the USB link partway through.
 for e in "${plan[@]}"; do
   part="${e%%:*}"; f="${e#*:}"
-  run "${FB[@]}" -S 128M flash "$part" "$f"
+  run "${FB[@]}" -S 128M flash "$part" "$f" || { echo "ABORT: flash $part failed - not continuing a partial restore" >&2; exit 1; }
 done
 
 run "${FB[@]}" reboot

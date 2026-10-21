@@ -15,12 +15,12 @@ import android.util.Log;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * The task side of the shell: the IActivityTaskManager proxy, the
@@ -52,7 +52,10 @@ class Taskman {
     private Field fTaskId, fStackId, fDisplayId, fTopActivity, fBaseActivity,
                   fBaseIntent, fNumActivities;
 
-    private final Map<String, Boolean> vrCache = new HashMap<>();
+    // vrApp() fills this on the main-looper poll and on the render thread
+    // from launchVrApp; clearVrCache wipes it from the render thread's
+    // launcherApps pull
+    private final Map<String, Boolean> vrCache = new ConcurrentHashMap<>();
 
     // categories an immersive activity marks itself with instead of (or
     // alongside) a launcher entry - OpenXR runtimes and Oculus store apps

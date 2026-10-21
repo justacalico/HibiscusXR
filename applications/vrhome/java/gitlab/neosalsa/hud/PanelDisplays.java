@@ -7,9 +7,9 @@ import android.os.SystemClock;
 import android.util.Log;
 import android.view.Surface;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * The panel virtual displays: SurfaceTexture -> Surface -> VirtualDisplay
@@ -30,10 +30,13 @@ class PanelDisplays {
     }
 
     private final DisplayManager dm;
-    private final Map<Integer, Vd> vds = new HashMap<>();
+    // mutated on the render thread (create/release/markLaunching) while
+    // reap() iterates on the main looper - both collections stay weakly
+    // consistent so a poll can never catch one mid-mutation
+    private final Map<Integer, Vd> vds = new ConcurrentHashMap<>();
     // displays the render thread just launched something onto; don't reap
     // them while the task is still landing
-    private final Set<Integer> launching = new java.util.HashSet<>();
+    private final Set<Integer> launching = ConcurrentHashMap.newKeySet();
 
     PanelDisplays(DisplayManager d) {
         dm = d;
@@ -54,6 +57,10 @@ class PanelDisplays {
             Vd v = new Vd();
             v.st = st; v.surf = surf; v.vd = vd;
             v.createdMs = SystemClock.uptimeMillis();
+            // marked before the entry is visible: a poll iterating vds in
+            // the gap before the caller's markLaunching would tear the
+            // fresh display down out from under the incoming launch
+            launching.add(id);
             vds.put(id, v);
             setDisplayIme(id, true);
             Log.i(TAG, "panel display id=" + id + " " + w + "x" + h);

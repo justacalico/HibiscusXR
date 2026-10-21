@@ -7,6 +7,8 @@
 #include "render/mesh.h"
 
 #include <cstring>
+#include <cstdlib>
+#include <unistd.h>
 
 // build a big-endian sharemem snapshot like the service writes it
 static void putBE32(uint8_t* p, uint32_t v) {
@@ -83,6 +85,57 @@ void testInput() {
     mkBlock(buf, CTRL_LEFT, -100.0f, 74, 0);
     CHECK(ctrl_block_has_data(buf, CTRL_LEFT));
     CHECK(!ctrl_block_has_data(buf, CTRL_RIGHT));
+
+    // --- wire probe ----------------------------------------------------
+    // the probe thread writes its verdict through the struct pointer, so
+    // a finished spin has to be joined before the owner can go away:
+    // poll() reaps on a verdict, wait() joins whatever is left
+    char path[] = "/tmp/ctrlprobeXXXXXX";
+    const int fd = mkstemp(path);
+    CHECK(fd >= 0);
+    CHECK(ftruncate(fd, CTRL_SHARE_SIZE) == 0);
+    memset(buf, 0, sizeof(buf));
+    mkBlock(buf, CTRL_LEFT, -100.0f, 74, 0);
+    mkBlock(buf, CTRL_RIGHT, 100.0f, 93, 0);
+    CHECK(write(fd, buf, sizeof(buf)) == (ssize_t)sizeof(buf));
+
+    // a quiet file burns the whole budget and answers "no write"
+    ctrl_probe pr = {};
+    CHECK(ctrl_probe_start(&pr, path, -1, 2000000ull));
+    int verdict = 0;
+    for (int i = 0; i < 1000 && !(verdict = ctrl_probe_poll(&pr)); ++i)
+        usleep(1000);
+    CHECK(verdict == -1);
+    CHECK(pr.state == 0);
+
+    // a flag flip on the wire comes back as an edge
+    CHECK(ctrl_probe_start(&pr, path, -1, 200000000ull));
+    verdict = 0;
+    uint8_t flip = CTRL_FLAG_WRITING;
+    for (int i = 0; i < 200 && !verdict; ++i) {
+        CHECK(pwrite(fd, &flip, 1, CTRL_POSE_FLAG(CTRL_LEFT)) == 1);
+        flip = flip == CTRL_FLAG_WRITING ? CTRL_FLAG_DONE : CTRL_FLAG_WRITING;
+        usleep(1000);
+        verdict = ctrl_probe_poll(&pr);
+    }
+    CHECK(verdict == 1);
+    CHECK(pr.state == 0);
+
+    // wait() joins a probe still inside its spin - the destroy path
+    CHECK(ctrl_probe_start(&pr, path, -1, 60000000ull));
+    ctrl_probe_wait(&pr);
+    CHECK(pr.state == 0);
+    CHECK(ctrl_probe_poll(&pr) == 0);
+    CHECK(ctrl_probe_start(&pr, path, -1, 2000000ull));
+    ctrl_probe_wait(&pr);
+
+    // nothing started, nothing to join
+    ctrl_probe idle = {};
+    ctrl_probe_wait(&idle);
+    CHECK(idle.state == 0);
+
+    close(fd);
+    unlink(path);
 
     // --- liveness ------------------------------------------------------
     ctrl_live lv = {};

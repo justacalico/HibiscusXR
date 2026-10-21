@@ -158,6 +158,8 @@ struct probe_task {
 // loop has to sample continuously. A flag frozen at WRITING (writer died
 // mid-put) never edges and just burns the budget - the dead-writer answer
 // either way. Maps its own view so the caller can close the file freely.
+// The verdict lands through t->p, which is why poll()/wait() join the
+// thread before the owning struct can die.
 static void *probe_main(void *arg) {
     struct probe_task *t = (struct probe_task *)arg;
     int edge = 0;
@@ -210,21 +212,28 @@ int ctrl_probe_start(struct ctrl_probe *p, const char *path, int which,
     t->budget_ns = budget_ns;
     if (path) strncpy(t->path, path, sizeof(t->path) - 1);
     __atomic_store_n(&p->state, 1, __ATOMIC_RELEASE);
-    pthread_t th;
-    if (pthread_create(&th, NULL, probe_main, t) != 0) {
+    if (pthread_create(&p->thread, NULL, probe_main, t) != 0) {
         __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE);
         free(t);
         return 0;
     }
-    pthread_detach(th);
     return 1;
+}
+
+static void probe_join(struct ctrl_probe *p) {
+    pthread_join(p->thread, NULL);
+    __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE);
 }
 
 int ctrl_probe_poll(struct ctrl_probe *p) {
     const int s = __atomic_load_n(&p->state, __ATOMIC_ACQUIRE);
-    if (s == 2) { __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE); return 1; }
-    if (s == 3) { __atomic_store_n(&p->state, 0, __ATOMIC_RELEASE); return -1; }
+    if (s == 2) { probe_join(p); return 1; }
+    if (s == 3) { probe_join(p); return -1; }
     return 0;
+}
+
+void ctrl_probe_wait(struct ctrl_probe *p) {
+    if (__atomic_load_n(&p->state, __ATOMIC_ACQUIRE) != 0) probe_join(p);
 }
 
 int ctrl_block_has_data(const uint8_t buf[CTRL_SHARE_SIZE], int which) {

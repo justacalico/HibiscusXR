@@ -256,16 +256,25 @@ static int drm_setup(void)
 	struct drm_mode_card_res res = {0};
 	ioct(g.drm_fd, DRM_IOCTL_MODE_GETRESOURCES, &res);
 	u32 conns[32], crtcs[32], encs[32];
+	u32 n_conns = res.count_connectors;
+	u32 n_crtcs = res.count_crtcs;
+	if (n_conns > 32) n_conns = 32;
+	if (n_crtcs > 32) n_crtcs = 32;
+	res.count_connectors = n_conns;
+	res.count_crtcs = n_crtcs;
+	if (res.count_encoders > 32) res.count_encoders = 32;
 	res.connector_id_ptr = (u64)conns;
 	res.crtc_id_ptr = (u64)crtcs;
 	res.encoder_id_ptr = (u64)encs;
 	ioct(g.drm_fd, DRM_IOCTL_MODE_GETRESOURCES, &res);
-	for (u32 i = 0; i < res.count_connectors; i++) {
+	for (u32 i = 0; i < n_conns; i++) {
 		struct drm_mode_get_connector c = {0};
 		c.connector_id = conns[i];
 		ioct(g.drm_fd, DRM_IOCTL_MODE_GETCONNECTOR, &c);
 		struct drm_mode_modeinfo modes[64];
 		u32 en[16];
+		if (c.count_modes > 64) c.count_modes = 64;
+		if (c.count_encoders > 16) c.count_encoders = 16;
 		c.modes_ptr = (u64)modes;
 		c.encoders_ptr = (u64)en;
 		ioct(g.drm_fd, DRM_IOCTL_MODE_GETCONNECTOR, &c);
@@ -277,6 +286,10 @@ static int drm_setup(void)
 	}
 	if (!g.conn) {
 		dbg("hwc: no connected connector\n");
+		return -1;
+	}
+	if (!n_crtcs) {
+		dbg("hwc: no crtcs\n");
 		return -1;
 	}
 	g.crtc = crtcs[0];

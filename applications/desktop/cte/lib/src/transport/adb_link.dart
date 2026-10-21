@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../adb_runner.dart';
+import 'package:common/common.dart';
+
 import '../ctrl_share.dart';
 import '../debug_dump.dart';
 import '../link.dart';

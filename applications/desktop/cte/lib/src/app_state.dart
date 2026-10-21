@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'dart:collection';
 
+import 'package:common/common.dart';
 import 'package:flutter/foundation.dart';
 
-import 'adb_runner.dart';
 import 'debug_dump.dart';
 import 'link.dart';
 import 'models.dart';
@@ -40,8 +39,8 @@ class AppState extends ChangeNotifier {
 
   // live feeds
   final List<CtrlState> ctrls = [const CtrlState(index: 0), const CtrlState(index: 1)];
-  final Queue<PoseSample> poseBuf = ListQueue(600);
-  final Queue<String> logBuf = ListQueue(400);
+  final poseBuf = BoundedQueue<PoseSample>(600);
+  final logBuf = BoundedQueue<String>(400);
   Uint8List? frame;
   int framesSeen = 0;
   double frameRate = 0;
@@ -158,10 +157,7 @@ class AppState extends ChangeNotifier {
   }
 
   void _onPose(PoseSample s) {
-    poseBuf.addLast(s);
-    while (poseBuf.length > 600) {
-      poseBuf.removeFirst();
-    }
+    poseBuf.push(s);
     // rolling 2s rate window
     final now = DateTime.now().millisecondsSinceEpoch;
     _poseStamp++;
@@ -192,10 +188,7 @@ class AppState extends ChangeNotifier {
   }
 
   void _onLog(String line) {
-    logBuf.addLast(line);
-    while (logBuf.length > 400) {
-      logBuf.removeFirst();
-    }
+    logBuf.push(line);
     notifyListeners();
   }
 

@@ -49,3 +49,4 @@ linked line per MR no matter how many commits it carried.
 - [Require HIBISCUS_ROOT via shared env.sh, drop personal paths](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/201) (!201)
 - [Documented no-data-loss update path](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/202) (!202)
 - [Device identity moves out of the shared base image](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/203) (!203)
+- [Hold a wakelock while an app owns the display](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/204) (!204)

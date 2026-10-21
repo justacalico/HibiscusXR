@@ -12,6 +12,7 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.os.PowerManager;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
@@ -68,6 +69,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     // start hidden: the first poll decides; a game booting before the
     // service should never see the overlay flash up
     private volatile boolean covered = true;
+    private PowerManager.WakeLock sessionLock;
     private volatile boolean summoned;   // user pulled the HUD over it
     private long summonDownAt = -1;
     // the hold ring has to be visible while the button is down even over an
@@ -148,6 +150,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
                 try { wm.removeView(view); } catch (Throwable ignored) {}
             }
         }
+        if (sessionLock != null && sessionLock.isHeld()) sessionLock.release();
         if (homeLock != null) homeLock.close();
         SysMsgs.onChanged(null);
         NotifService.onPosted(null);
@@ -291,7 +294,26 @@ public class HudService extends Service implements SurfaceHolder.Callback,
             summoned = false;
             toastOn = false;
         }
+        setSessionLock(c);
         updateWindow();
+    }
+
+    // a non-env task owning the physical display means a game/session is
+    // running: the display timeout must not put the headset to sleep
+    // mid-game. Held only while covered, so the OS still idles at home.
+    private void setSessionLock(boolean on) {
+        if (on) {
+            if (sessionLock == null) {
+                PowerManager pm =
+                        (PowerManager) getSystemService(POWER_SERVICE);
+                sessionLock = pm.newWakeLock(
+                        PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "vrhud:session");
+                sessionLock.setReferenceCounted(false);
+            }
+            if (!sessionLock.isHeld()) sessionLock.acquire();
+        } else if (sessionLock != null && sessionLock.isHeld()) {
+            sessionLock.release();
+        }
     }
 
     // NotifService on the listener's binder thread: a fresh post while an

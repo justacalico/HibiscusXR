@@ -84,6 +84,9 @@ const char *sess_state_str(int s) {
 }
 
 void prop_str(const char *key, char *out, int outlen) {
-    if (__system_property_get(key, out) <= 0)
+    char scratch[PROP_VALUE_MAX];
+    if (__system_property_get(key, scratch) <= 0)
         snprintf(out, outlen, "-");
+    else
+        snprintf(out, outlen, "%s", scratch);
 }

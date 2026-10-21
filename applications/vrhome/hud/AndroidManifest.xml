@@ -23,6 +23,14 @@
     <uses-feature android:glEsVersion="0x00020000" android:required="true" />
     <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false" />
 
+    <!-- the shell's broadcast RPC surface (OPEN_PACKAGE, the keyboard
+         link actions) only answers senders holding this permission -
+         signature-level, so the platform-signed set is in and anything
+         installed later is out -->
+    <permission
+        android:name="gitlab.neosalsa.hud.permission.SHELL"
+        android:protectionLevel="signature" />
+
     <!-- system overlay window -->
     <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW" />
     <!-- virtual displays, task moves, touch injection -->
@@ -63,6 +71,9 @@
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <!-- SSID reads are location-gated on Android 10+ -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- lets us hand the keyboard surface and hide calls to the IME's
+         receiver, which is gated the same way ours is -->
+    <uses-permission android:name="gitlab.neosalsa.keyboard.permission.LINK" />
 
     <application
         android:label="@string/hud_label"
@@ -100,9 +111,11 @@
             </intent-filter>
         </service>
 
+        <!-- system-only: BOOT_COMPLETED still reaches a non-exported
+             receiver, and nothing else can poke it -->
         <receiver
             android:name=".BootReceiver"
-            android:exported="true">
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>

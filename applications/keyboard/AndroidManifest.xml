@@ -14,6 +14,13 @@
 
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="29" />
 
+    <!-- the surface/hide broadcasts from the HUD only get answered when
+         the sender holds this signature-level permission -->
+    <permission
+        android:name="gitlab.neosalsa.keyboard.permission.LINK"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="gitlab.neosalsa.hud.permission.SHELL" />
+
     <application
         android:label="@string/app_label"
         android:allowBackup="false"

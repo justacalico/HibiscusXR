@@ -9,6 +9,7 @@ import android.content.Intent;
 // installed. startForegroundService is allowed from this broadcast.
 public class BootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context ctx, Intent i) {
+        if (!Intent.ACTION_BOOT_COMPLETED.equals(i.getAction())) return;
         ctx.startForegroundService(new Intent(ctx, HudService.class));
     }
 }

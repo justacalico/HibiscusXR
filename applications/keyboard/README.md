@@ -23,7 +23,10 @@ splits that way: HUD keeps the texture, this app keeps the display.
 While the quad is up the service reports it
 (`gitlab.neosalsa.hud.action.KBD`, `shown` + `display` extras) so the HUD
 draws the texture under the panel that owns the field and injects taps
-onto the reported display. The docked input view collapses to a hairline.
+onto the reported display. Both directions are signature-gated
+(`gitlab.neosalsa.hud.permission.SHELL` in, `...keyboard.permission.LINK`
+out), so only the platform-signed set can drive the link. The docked
+input view collapses to a hairline.
 If the surface never shows up the docked view stays a real keyboard - the
 fallback keeps text entry possible even with the HUD's half missing.
 

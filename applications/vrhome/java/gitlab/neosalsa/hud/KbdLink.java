@@ -57,7 +57,8 @@ class KbdLink {
         IntentFilter kf = new IntentFilter();
         kf.addAction(ACTION_KBD);
         kf.addAction(ACTION_KBD_QUERY);
-        ctx.registerReceiver(kbdRecv, kf);
+        ctx.registerReceiver(kbdRecv, kf,
+                ShellBridge.PERMISSION_SHELL, null);
     }
 
     // render thread: create the shared surface; texId is a GL texture in

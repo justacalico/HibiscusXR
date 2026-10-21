@@ -40,7 +40,8 @@ class _InstallPageState extends State<InstallPage> {
                             type: FileType.custom,
                             allowedExtensions: ['apk']);
                         final p = f?.path;
-                        if (p != null) setState(() => _apkPath = p);
+                        if (p == null || !mounted) return;
+                        setState(() => _apkPath = p);
                       },
                 icon: const Icon(Icons.folder_open, size: 18),
                 label: Text(l10n.installPick),

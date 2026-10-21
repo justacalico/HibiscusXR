@@ -113,7 +113,7 @@ class PoseLogParser {
   }
 
   List<double>? _parseVec(String body, String name) {
-    final m = RegExp('$name=\\(([^)]*)\\)').firstMatch(body);
+    final m = RegExp('(?:^|\\s)$name=\\(([^)]*)\\)').firstMatch(body);
     if (m == null) return null;
     return m
         .group(1)!
@@ -124,12 +124,12 @@ class PoseLogParser {
   }
 
   static double? _parseNum(String body, String name) {
-    final m = RegExp('$name=(-?[0-9.eE+-]+)').firstMatch(body);
+    final m = RegExp('(?:^|\\s)$name=(-?[0-9.eE+-]+)').firstMatch(body);
     return m == null ? null : double.tryParse(m.group(1)!);
   }
 
   static int? _parseInt(String body, String name) {
-    final m = RegExp('$name=(-?\\d+)').firstMatch(body);
+    final m = RegExp('(?:^|\\s)$name=(-?\\d+)').firstMatch(body);
     return m == null ? null : int.tryParse(m.group(1)!);
   }
 }

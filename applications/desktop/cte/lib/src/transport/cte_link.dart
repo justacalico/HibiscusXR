@@ -61,6 +61,10 @@ class CteLink extends HeadsetLink {
     } on TimeoutException {
       await sock?.close().catchError((_) {});
       return null;
+    } on StateError {
+      // the peer dropped the socket mid-handshake
+      await sock?.close().catchError((_) {});
+      return null;
     }
   }
 
@@ -80,11 +84,15 @@ class CteLink extends HeadsetLink {
 
   Future<CteMsg> _first(String cmd,
       {Duration timeout = const Duration(seconds: 8)}) async {
-    final ch = await _open(cmd);
+    _Channel? ch;
     try {
+      ch = await _open(cmd);
       return await ch.messages.first.timeout(timeout);
+    } on StateError {
+      // cted closed the channel without sending a reply
+      throw Exception('no reply from cted');
     } finally {
-      await ch.sock.close();
+      await ch?.sock.close();
     }
   }
 

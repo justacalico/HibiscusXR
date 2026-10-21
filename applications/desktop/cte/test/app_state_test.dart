@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -70,6 +71,34 @@ void main() {
     expect(state.linkKind, LinkKind.adbWireless);
   });
 
+  test('wireless splits a host:port target before adb connect', () async {
+    final fake = FakeLink(description: 'adb:10.0.0.2:5555');
+    String? probedHost;
+    String? serial;
+    List<String>? connectArgs;
+    final state = AppState(
+      adb: AdbRunner(run: (args) async {
+        if (args.first == 'connect') connectArgs = args;
+        return args.first == 'connect'
+            ? ProcessResult(0, 0, 'connected to 10.0.0.2:5555', '')
+            : ProcessResult(0, 0, '', '');
+      }),
+      socketFactory: (h) async {
+        probedHost = h;
+        return null;
+      },
+      adbLinkFactory: (s) {
+        serial = s;
+        return fake;
+      },
+    );
+    await state.connectWireless('10.0.0.2:5555');
+    expect(probedHost, '10.0.0.2');
+    expect(connectArgs, ['connect', '10.0.0.2:5555']);
+    expect(serial, '10.0.0.2:5555');
+    expect(state.linkKind, LinkKind.adbWireless);
+  });
+
   test('wireless prefers cted when it answers', () async {
     final fake = FakeLink(description: 'cte://10.0.0.2');
     final state = AppState(
@@ -93,6 +122,55 @@ void main() {
     await state.connectWireless('10.0.0.2');
     expect(state.connState, ConnState.failed);
     expect(state.lastError, contains('failed to connect'));
+  });
+
+  test('drops controller updates with out-of-range indexes', () async {
+    final fake = FakeLink(description: 'adb:F');
+    final state = fakeState(link: fake);
+    await state.connectAdb('F');
+    fake.ctrlFeed.add(const [
+      CtrlState(index: -1, connected: true, battery: 99),
+      CtrlState(index: 9, connected: true, battery: 99),
+      CtrlState(index: 0, connected: true, battery: 42),
+    ]);
+    await pumpEventQueue();
+    expect(state.ctrls[0].battery, 42);
+    expect(state.ctrls[1].connected, isFalse);
+  });
+
+  test('a late fetchProps reply is dropped after disconnect', () async {
+    final gate = Completer<Map<String, String>>();
+    final fake = FakeLink(
+        description: 'adb:F', propsLoader: () => gate.future);
+    final state = fakeState(link: fake);
+    await state.connectAdb('F');
+    await state.disconnect();
+    gate.complete(const {'ro.stale': '1'});
+    await pumpEventQueue();
+    expect(state.props, isNull);
+  });
+
+  test('a late fetchProps reply cannot clobber the new link', () async {
+    final gate = Completer<Map<String, String>>();
+    final stale = FakeLink(
+        description: 'adb:A', propsLoader: () => gate.future);
+    final fresh = FakeLink(
+        description: 'adb:B', props: const {'ro.fresh': '1'});
+    var next = stale;
+    final state = AppState(
+      adb: AdbRunner(run: (_) async => ProcessResult(0, 0, '', '')),
+      adbLinkFactory: (_) => next,
+      socketFactory: (_) async => null,
+    );
+    await state.connectAdb('A');
+    await state.disconnect();
+    next = fresh;
+    await state.connectAdb('B');
+    await pumpEventQueue();
+    expect(state.props, fresh.props);
+    gate.complete(const {'ro.stale': '1'});
+    await pumpEventQueue();
+    expect(state.props, fresh.props);
   });
 
   test('scanAdb lists devices', () async {

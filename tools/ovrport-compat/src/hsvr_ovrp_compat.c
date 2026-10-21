@@ -12,6 +12,7 @@
 #include <EGL/egl.h>
 #include <GLES3/gl32.h>
 #include <sys/mman.h>
+#include <sys/system_properties.h>
 
 #define TAG "hsvrovrp"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
@@ -893,7 +894,9 @@ static int blit_into_eye_sc(GLuint src) {
             LOGE("probe eye%d idx=%u src=%u hash=%08x", eye, idx, src, h);
         }
         static int dump_n;
-        if (p_glReadPixels && dump_n < 400 && ++dump_n == 400) {
+        char ppm_path[PROP_VALUE_MAX];
+        if (p_glReadPixels && dump_n < 400 && ++dump_n == 400 &&
+            __system_property_get("debug.hsvrovrp.dump_ppm", ppm_path) > 0) {
             uint8_t *buf = malloc((size_t)g_eye_w * g_eye_h * 4);
             if (buf) {
                 p_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_fbo[1]);
@@ -910,9 +913,7 @@ static int blit_into_eye_sc(GLuint src) {
                     LOGE("dst alpha avg=%ld", asum / ((g_eye_w * g_eye_h * 4) / 401));
                 }
                 int nw = g_eye_w / 4, nh = g_eye_h / 4;
-                FILE *f = fopen(
-                    "/data/data/com.owlchemylabs.jobsimulator/files/eye0.ppm",
-                    "wb");
+                FILE *f = fopen(ppm_path, "wb");
                 if (f) {
                     fprintf(f, "P6\n%d %d\n255\n", nw, nh);
                     for (int y = 0; y < nh; y++)
@@ -922,9 +923,9 @@ static int blit_into_eye_sc(GLuint src) {
                             fwrite(p, 1, 3, f);
                         }
                     fclose(f);
-                    LOGE("dumped eye0.ppm %dx%d", nw, nh);
+                    LOGE("dumped %s %dx%d", ppm_path, nw, nh);
                 } else {
-                    LOGE("eye0.ppm fopen failed errno=%d", errno);
+                    LOGE("ppm fopen %s failed errno=%d", ppm_path, errno);
                 }
                 free(buf);
             }

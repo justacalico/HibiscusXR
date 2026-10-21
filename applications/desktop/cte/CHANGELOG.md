@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## cte-v0.2.2 - 2026-10-21
+#### Bug Fixes
+- cte 修复若干已验证缺陷 - (35e700a) - HttpAnimations
+#### Refactoring
+- cte 接入共享包 - (7aa1666) - HttpAnimations
+- 新增 applications/common 共享包 - (f58fd91) - HttpAnimations
+
+- - -
+
 ## cte-v0.2.1 - 2026-10-21
 #### Bug Fixes
 - cte 探测时发 PING 确认 cted 应答 - (fce4bd6) - HttpAnimations

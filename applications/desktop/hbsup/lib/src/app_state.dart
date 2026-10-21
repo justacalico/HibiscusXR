@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
 
+import 'package:common/common.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 
-import 'adb_runner.dart';
 import 'engine.dart';
 import 'models.dart';
 import 'plan.dart';
@@ -54,7 +53,7 @@ class AppState extends ChangeNotifier {
   List<BackupItem> items = const [];
   int currentItem = -1;
   bool manifestWritten = false;
-  final Queue<String> logBuf = ListQueue(400);
+  final logBuf = BoundedQueue<String>(400);
 
   CancelToken? _cancel;
 
@@ -79,10 +78,7 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _log(String line) {
-    logBuf.addLast(line);
-    if (logBuf.length > 400) logBuf.removeFirst();
-  }
+  void _log(String line) => logBuf.push(line);
 
   Future<void> scanAdb() async {
     scanState = ScanState.scanning;

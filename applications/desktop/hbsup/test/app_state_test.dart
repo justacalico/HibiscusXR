@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:common/common.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibiscus_hbsup/src/adb_runner.dart';
 import 'package:hibiscus_hbsup/src/app_state.dart';
 import 'package:hibiscus_hbsup/src/engine.dart';
 
@@ -37,9 +37,10 @@ class FakeAdb extends AdbRunner {
       _shell[command] ?? '';
 
   @override
-  Stream<Uint8List> execOut(String serial, String command) {
-    onExec?.call(command);
-    return _exec[command] ?? const Stream.empty();
+  Stream<Uint8List> execOut(String serial, List<String> command,
+      {bool failOnExit = false}) {
+    onExec?.call(command.join(' '));
+    return _exec[command.join(' ')] ?? const Stream.empty();
   }
 }
 

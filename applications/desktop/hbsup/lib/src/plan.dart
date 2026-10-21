@@ -44,19 +44,6 @@ class SpaceCheck {
 SpaceCheck checkSpace(BackupPlan plan, int? freeBytes) =>
     SpaceCheck(needed: plan.totalBytes, free: freeBytes);
 
-/// Human-readable byte counts: 512 B, 4.0 MB, 3.6 GB.
-String formatBytes(int bytes) {
-  if (bytes < 1024) return '$bytes B';
-  const units = ['KB', 'MB', 'GB', 'TB'];
-  var v = bytes / 1024.0;
-  var i = 0;
-  while (v >= 1024 && i < units.length - 1) {
-    v /= 1024;
-    i++;
-  }
-  return '${v.toStringAsFixed(1)} ${units[i]}';
-}
-
 /// manifest.txt written next to the dumps - the restore reference.
 String manifestFor(String serial, List<Partition> parts) {
   final b = StringBuffer()

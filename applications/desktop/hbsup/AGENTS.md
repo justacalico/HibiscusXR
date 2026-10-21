@@ -3,8 +3,9 @@
 ## Testability
 
 Every new line of Dart must be 100% testable. Logic belongs in the pure
-modules under `lib/src/` (models, plan, engine, app_state, adb_runner)
-that run on the host. Widget code stays thin: pages and controls hold
+modules under `lib/src/` (models, plan, engine, app_state) that run on
+the host; code shared with the other apps lives in
+`applications/common`. Widget code stays thin: pages and controls hold
 no decisions. If a new function cannot be reached by `flutter test`,
 the design is wrong - move the logic somewhere that can.
 

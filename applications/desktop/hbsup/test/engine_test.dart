@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:common/common.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibiscus_hbsup/src/adb_runner.dart';
 import 'package:hibiscus_hbsup/src/engine.dart';
 import 'package:hibiscus_hbsup/src/models.dart';
 import 'package:hibiscus_hbsup/src/plan.dart';
@@ -20,8 +20,9 @@ class FakeAdb extends AdbRunner {
   final Map<String, Stream<Uint8List>> _exec;
 
   @override
-  Stream<Uint8List> execOut(String serial, String command) =>
-      _exec[command] ?? const Stream.empty();
+  Stream<Uint8List> execOut(String serial, List<String> command,
+          {bool failOnExit = false}) =>
+      _exec[command.join(' ')] ?? const Stream.empty();
 }
 
 String dd(Partition p) => 'dd if=${p.path} bs=4M 2>/dev/null';

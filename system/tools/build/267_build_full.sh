@@ -31,7 +31,6 @@ ls -l "$IMG"
 OV=${HIBISCUS_ROOT}/overlay_pvr
 AIR=${HIBISCUS_ROOT}/airsvc
 SHIM=${HIBISCUS_ROOT}/shim
-INIT=${HIBISCUS_ROOT}/overlay/etc/init
 ST=${HIBISCUS_ROOT}/seethrough
 
 # The shims are our own code - rebuild them from source when the .so is absent
@@ -78,65 +77,6 @@ put "$SHIM/libshim_air.so"        /lib64/pvr_air/libshim_air.so   644
 echo
 echo "=== shims ==="
 put "$SHIM/libshim_pvr.so" /lib64/libshim_pvr.so 644
-
-echo
-echo "=== headset buttons: key layouts + libinput keycode labels ==="
-# Without gpio-keys.kl the gpio-keys device falls back to Generic.kl and the
-# confirm button arrives as ENTER; lib2dToVr only treats 1001/1002/96 as
-# confirm, so the ok button is dead inside PVR Home. libinput must also know
-# Pico's keycode labels or the whole .kl is discarded at parse time.
-mkd /usr/keylayout
-put ${HIBISCUS_ROOT}/overlay/usr/keylayout/gpio-keys.kl /usr/keylayout/gpio-keys.kl 644
-put ${HIBISCUS_ROOT}/overlay/usr/keylayout/dc_detect.kl /usr/keylayout/dc_detect.kl 644
-TMPD=$(mktemp -d)
-for lib in lib64 lib; do
-  debugfs -R "dump /$lib/libinput.so $TMPD/libinput.so" "$IMG" 2>/dev/null
-  if [ ! -s "$TMPD/libinput.so" ]; then
-    echo "  FAIL    /$lib/libinput.so missing from image"; fail=$((fail+1))
-  elif strings "$TMPD/libinput.so" | grep -q DEFINE_HOME; then
-    echo "  OK    /$lib/libinput.so already patched"
-  elif python3 "$HIBISCUS_ROOT/tools/patch/401_patch_libinput.py" \
-      "$TMPD/libinput.so" "$TMPD/libinput.patched.so" >/dev/null 2>&1; then
-    put "$TMPD/libinput.patched.so" "/$lib/libinput.so" 644
-  else
-    echo "  FAIL    /$lib/libinput.so patch failed"; fail=$((fail+1))
-  fi
-  rm -f "$TMPD/libinput.so" "$TMPD/libinput.patched.so"
-done
-rm -rf "$TMPD"
-
-echo
-echo "=== init scripts ==="
-# the generic shell hooks (pn2-home, pn2-openxr, pn2-adbwifi) are in
-# 270_shell_stack.sh - this list is only the pn2 hardware services
-put "$INIT/pn2-airservice.rc" /etc/init/pn2-airservice.rc 644
-put "$INIT/pvrservice.rc"     /etc/init/pvrservice.rc     644
-put "$INIT/pn2-qvrd.rc"       /etc/init/pn2-qvrd.rc       644
-put "$INIT/pn2-settings.rc"   /etc/init/pn2-settings.rc   644
-put "$INIT/pn2-vulkan.rc"     /etc/init/pn2-vulkan.rc     644
-put "$INIT/pn2-ipd.rc"        /etc/init/pn2-ipd.rc        644
-put "$INIT/pn2-dof.rc"        /etc/init/pn2-dof.rc        644
-put "$INIT/pn2-theme.rc"      /etc/init/pn2-theme.rc      644
-put "$INIT/pn2-env.rc"        /etc/init/pn2-env.rc        644
-
-echo
-echo "=== CVService runtime permission pregrant ==="
-# CVService's MainActivity requestPermissions()s its dangerous permissions
-# (location + storage) and stock grants them silently; our base pops the
-# grant dialog inside VR instead. Pre-granting as system-fixed kills the
-# dialog for every boot.
-mkd /etc/default-permissions
-put ${HIBISCUS_ROOT}/drivers/pn2/image/etc/default-permissions/pn2-cvservice.xml \
-    /etc/default-permissions/pn2-cvservice.xml 644
-
-echo
-echo "=== settings bridge daemons ==="
-# settings.Global -> persist props; the props are the channel every native
-# renderer can read live without a settings-provider round trip
-put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-ipdd /bin/pn2-ipdd 755
-put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-dofd /bin/pn2-dofd 755
-put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-themed /bin/pn2-themed 755
-put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-envd /bin/pn2-envd 755
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="

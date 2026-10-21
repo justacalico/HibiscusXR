@@ -58,8 +58,9 @@ fi
 echo
 echo "=== inject into full image ==="
 mkd /etc/pn2
+# pn2-egl.rc (the bind mount over the vendor blob) ships with the rest of
+# the device identity - the pn2 driver's base step installs it
 put "$TMP/libGLESv2_adreno.so"              "/etc/pn2/libGLESv2_adreno.so" 644
-put "$HIBISCUS_ROOT/overlay/etc/init/pn2-egl.rc" "/etc/init/pn2-egl.rc"          644
 
 echo
 echo "=== repair + verify ==="

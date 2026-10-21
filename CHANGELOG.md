@@ -44,3 +44,4 @@ linked line per MR no matter how many commits it carried.
 - [Keep adb auth on for release images](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/195) (!195)
 - [vmd HALs: full -errno mmap checks, size overflow and foreign munmap fixes](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/197) (!197)
 - [Extract shared debugfs image helpers into tools/lib/img.sh](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/198) (!198)
+- [Real teardown chain for HudService.onDestroy](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/199) (!199)

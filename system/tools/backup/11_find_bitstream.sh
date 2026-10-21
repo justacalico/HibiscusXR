@@ -52,7 +52,7 @@ debugfs -R "ls -l /priv-app" "$OEM" 2>/dev/null | head -40
 echo
 
 echo "################ 6. search all OTA zips for ndi/bitmap entries ################"
-for z in ${PICO_FW_DIR}/Neo_2/*.zip ${PICO_FW_DIR}/G2/*.zip; do
+for z in "${PICO_FW_DIR:-$B/firmware}"/Neo_2/*.zip "${PICO_FW_DIR:-$B/firmware}"/G2/*.zip; do
   echo "--- $(basename "$z") ---"
   unzip -l "$z" 2>/dev/null | grep -iE 'ndi|fpga|bitmap|w25q' || echo "  (none)"
 done

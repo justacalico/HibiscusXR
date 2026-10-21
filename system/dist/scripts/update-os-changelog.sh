@@ -20,9 +20,11 @@ fi
 git add CHANGELOG.md
 git commit -m "docs: 更新系统 changelog"
 
+push_err=$(mktemp)
+trap 'rm -f "$push_err"' EXIT
 push() {
-  git push -o ci.skip origin HEAD:main 2>/tmp/push.err && return 0
-  grep -q "push options" /tmp/push.err && git push origin HEAD:main
+  git push -o ci.skip origin HEAD:main 2>"$push_err" && return 0
+  grep -q "push options" "$push_err" && git push origin HEAD:main
 }
 if ! push; then
   echo "main moved, rebasing"

@@ -21,7 +21,10 @@ if [ -n "${GITHUB_RUN_ID:-}" ]; then
   gh run view "$GITHUB_RUN_ID" -R "$REPO" --log > release-assets/github-logs.txt 2>/dev/null || true
 fi
 
-(cd release-assets && sha256sum * > ../SHA256SUMS.txt)
+(cd release-assets && for f in *; do
+  [ -f "$f" ] || continue
+  sha256sum "$f"
+done > ../SHA256SUMS.txt)
 cp SHA256SUMS.txt release-assets/
 ls -la release-assets/
 

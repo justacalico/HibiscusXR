@@ -23,7 +23,7 @@ typedef struct vmd_handle {
 	int magic;
 	int flags;
 	int size;
-	int unused0;
+	int owner;
 	u64 addr;
 	int pid;
 	int w, h, stride, format;
@@ -53,7 +53,7 @@ static int map_buffer(vmd_handle_t *h)
 	}
 	void *p = mm(0, (size_t)h->size, PROT_READ|PROT_WRITE, MAP_SHARED,
 	             h->fd, 0);
-	if ((long)p < 0 && (long)p >= -4096) {
+	if (mm_err(p)) {
 		return -12;
 	}
 	h->addr = (u64)p;
@@ -87,8 +87,18 @@ static int gr_alloc(alloc_device_t *dev, int w, int h, int format, int usage,
 		dbgkv("gralloc: bad fmt ", (u64)format);
 		return -22;
 	}
-	int stride = (w + 1) & ~1;
-	int size = ((h + 1) & ~1) * stride * bpp + 4;
+	if (w <= 0 || h <= 0) {
+		dbgkv("gralloc: bad dims ", (u64)(u32)w);
+		return -22;
+	}
+	u64 stride64 = ((u64)w + 1) & ~1ULL;
+	u64 size64 = (((u64)h + 1) & ~1ULL) * stride64 * (u64)bpp + 4;
+	if (stride64 > 0x7fffffff || size64 > 0x7fffffff) {
+		dbgkv("gralloc: dims too big ", (u64)(u32)w);
+		return -22;
+	}
+	int stride = (int)stride64;
+	int size = (int)size64;
 
 	int fd = fd_open("/dev/ashmem", O_RDWR|O_CLOEXEC);
 	if (fd < 0) {
@@ -102,7 +112,7 @@ static int gr_alloc(alloc_device_t *dev, int w, int h, int format, int usage,
 	}
 	vmd_handle_t *hnd = mm(0, sizeof(*hnd), PROT_READ|PROT_WRITE,
 	                       MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-	if (hnd == (void *)-1 || !hnd) {
+	if (mm_err(hnd)) {
 		fd_close(fd);
 		return -12;
 	}
@@ -111,6 +121,7 @@ static int gr_alloc(alloc_device_t *dev, int w, int h, int format, int usage,
 	hnd->base.numInts = 12;
 	hnd->fd = fd;
 	hnd->magic = GR_MAGIC;
+	hnd->owner = (int)sys1(__NR_getpid, 0);
 	hnd->size = size;
 	hnd->w = w;
 	hnd->h = h;
@@ -133,11 +144,15 @@ static int gr_free(alloc_device_t *dev, buffer_handle_t handle)
 		return -22;
 	}
 	vmd_handle_t *h = (vmd_handle_t *)handle;
-	if (h->addr) {
+	int pid = (int)sys1(__NR_getpid, 0);
+	if (h->addr && h->pid == pid) {
 		unmap((void *)h->addr, (size_t)h->size);
+		h->addr = 0;
 	}
 	fd_close(h->fd);
-	unmap(h, sizeof(*h));
+	if (h->owner == pid) {
+		unmap(h, sizeof(*h));
+	}
 	return 0;
 }
 
@@ -271,7 +286,7 @@ static int gr_open(const hw_module_t *module, const char *name,
 	}
 	alloc_device_t *ctx = mm(0, sizeof(*ctx), PROT_READ|PROT_WRITE,
 	                         MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
-	if (ctx == (void *)-1 || !ctx) {
+	if (mm_err(ctx)) {
 		return -12;
 	}
 	ctx->common.tag = HARDWARE_DEVICE_TAG;

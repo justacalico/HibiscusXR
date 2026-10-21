@@ -88,7 +88,7 @@ int main(void){
     struct drm_mode_map_dumb md={0};md.handle=cd.handle;
     if(ioct(fd,DRM_IOCTL_MODE_MAP_DUMB,&md)){ps("mapdumb fail\n");return 1;}
     u8*pix=mm(0,cd.size,PROT_READ|PROT_WRITE,MAP_SHARED,fd,md.offset);
-    if(pix==(u8*)-1){ps("mmap fail\n");return 1;}
+    if(!pix||((long)pix<0&&(long)pix>=-4096)){ps("mmap fail\n");return 1;}
 
     u32*p=(u32*)pix;
     for(u32 y=0;y<mode.vdisplay;y++)for(u32 x=0;x<mode.hdisplay;x++){

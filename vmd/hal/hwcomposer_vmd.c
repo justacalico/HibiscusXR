@@ -19,7 +19,7 @@ typedef struct vmd_priv_handle {
 	int magic;
 	int flags;
 	int size;
-	int unused0;
+	int owner;
 	u64 addr;
 	int pid;
 	int w, h, stride, format;
@@ -55,18 +55,24 @@ static void fire_vsync(void)
 static void blit_target(hwc_layer_1_t *layer, int dx, int dy)
 {
 	vmd_priv_handle_t *hnd = (vmd_priv_handle_t *)layer->handle;
-	if (!hnd || hnd->fd < 0 || !hnd->size) {
+	if (!hnd || hnd->fd < 0 || hnd->size <= 0 ||
+	    hnd->w < 0 || hnd->h < 0 || hnd->stride < 0) {
 		return;
 	}
 	u8 *src = mm(0, (size_t)hnd->size, PROT_READ|PROT_WRITE, MAP_SHARED,
 	             hnd->fd, 0);
-	if (src == (u8 *)-1) {
+	if (mm_err(src)) {
 		dbg("hwc: target map fail\n");
 		return;
 	}
 	int w = hnd->w ? hnd->w : g.mode.hdisplay;
 	int h = hnd->h ? hnd->h : g.mode.vdisplay;
 	int stride = hnd->stride ? hnd->stride : w;
+	if (w > stride || (u64)stride * (u64)h * 4 > (u64)hnd->size) {
+		dbg("hwc: target size/stride mismatch\n");
+		unmap(src, (size_t)hnd->size);
+		return;
+	}
 	if (dx < 0) dx = 0;
 	if (dy < 0) dy = 0;
 	if (h + dy > g.mode.vdisplay) h = g.mode.vdisplay - dy;
@@ -320,7 +326,7 @@ static int drm_setup(void)
 	}
 	g.fb = mm(0, cd.size, PROT_READ|PROT_WRITE, MAP_SHARED, g.drm_fd,
 	          md.offset);
-	if (g.fb == (u8 *)-1) {
+	if (mm_err(g.fb)) {
 		dbg("hwc: mmap fail\n");
 		return -1;
 	}

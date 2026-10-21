@@ -50,6 +50,7 @@ static inline int fd_close(int fd){return (int)sys1(__NR_close,fd);}
 static inline long ioct(int fd, unsigned long req, void *arg){return sys3(__NR_ioctl,fd,req,(long)arg);}
 static inline void *mm(void *a, size_t l, int pr, int fl, int f, long o){return (void*)sys6(__NR_mmap,(long)a,l,pr,fl,f,o);}
 static inline int unmap(void *a, size_t l){return (int)sys2(__NR_munmap,(long)a,l);}
+static inline int mm_err(const void *p){return !p || ((long)p < 0 && (long)p >= -4096);}
 static inline void wr(int fd, const char *s, int n){sys3(__NR_write,fd,(long)s,n);}
 static inline int sl(const char *s){int n=0;while(s[n])n++;return n;}
 

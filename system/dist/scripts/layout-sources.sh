@@ -28,6 +28,9 @@ PAIRS=(
   # shared by the panel apps through a ../panel_theme path dep - has to
   # sit next to them in the flat layout for the reference to resolve
   "applications/panel_theme:panel_theme"
+  # path dep of store (pubspec ../common) - the flutter build resolves it
+  # inside the flat $HIBISCUS_ROOT layout
+  "applications/common:common"
   "applications/store:store"
   "applications/keyboard:keyboard"
 )

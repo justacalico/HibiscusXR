@@ -82,6 +82,35 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	}
 	glfwMakeContextCurrent(win);
 
+	struct eye {
+		XrSwapchain sc;
+		std::vector<XrSwapchainImageOpenGLKHR> imgs;
+		uint32_t w, h;
+	};
+	XrInstance inst = XR_NULL_HANDLE;
+	XrSession sess = XR_NULL_HANDLE;
+	XrSpace space = XR_NULL_HANDLE;
+	std::vector<eye> eyes;
+	auto fail = [&]() -> int {
+		for (auto &e : eyes) {
+			if (e.sc != 0) {
+				xrDestroySwapchain(e.sc);
+			}
+		}
+		if (space != XR_NULL_HANDLE) {
+			xrDestroySpace(space);
+		}
+		if (sess != XR_NULL_HANDLE) {
+			xrDestroySession(sess);
+		}
+		if (inst != XR_NULL_HANDLE) {
+			xrDestroyInstance(inst);
+		}
+		glfwDestroyWindow(win);
+		glfwTerminate();
+		return 1;
+	};
+
 	XrInstanceCreateInfo ici = {XR_TYPE_INSTANCE_CREATE_INFO};
 	snprintf(ici.applicationInfo.applicationName,
 	         sizeof(ici.applicationInfo.applicationName), "vmd");
@@ -91,13 +120,10 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	ici.enabledExtensionNames = exts;
 	ici.enabledExtensionCount = 1;
 
-	XrInstance inst;
 	if (!xr_ok(xrCreateInstance(&ici, &inst), "xrCreateInstance")) {
 		fprintf(stderr, "vmd xr: no OpenXR runtime registered "
 		        "(WiVRn/Monado not running?)\n");
-		glfwDestroyWindow(win);
-		glfwTerminate();
-		return 1;
+		return fail();
 	}
 
 	fprintf(stderr, "vmd xr: instance up, finding HMD system\n");
@@ -106,8 +132,7 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	XrSystemId sysid;
 	if (!xr_ok(xrGetSystem(inst, &sgi, &sysid), "xrGetSystem")) {
 		fprintf(stderr, "vmd xr: no HMD system - connect a headset and retry\n");
-		xrDestroyInstance(inst);
-		return 1;
+		return fail();
 	}
 
 	PFN_xrGetOpenGLGraphicsRequirementsKHR getReq = nullptr;
@@ -122,7 +147,7 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	GLXContext glxctx = glfwGetGLXContext(win);
 	if (dpy == nullptr || glxctx == nullptr) {
 		fprintf(stderr, "vmd xr: no GLX context (wayland-only glfw?)\n");
-		return 1;
+		return fail();
 	}
 	XrGraphicsBindingOpenGLXlibKHR binding = {XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR};
 	binding.xDisplay = dpy;
@@ -138,17 +163,14 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	XrSessionCreateInfo sci = {XR_TYPE_SESSION_CREATE_INFO};
 	sci.systemId = sysid;
 	sci.next = &binding;
-	XrSession sess;
 	fprintf(stderr, "vmd xr: creating session (GLX binding)\n");
 	if (!xr_ok(xrCreateSession(inst, &sci, &sess), "xrCreateSession")) {
-		xrDestroyInstance(inst);
-		return 1;
+		return fail();
 	}
 
 	XrReferenceSpaceCreateInfo rci = {XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
 	rci.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
 	rci.poseInReferenceSpace.orientation.w = 1.0f;
-	XrSpace space;
 	xrCreateReferenceSpace(sess, &rci, &space);
 	fprintf(stderr, "vmd xr: session up, waiting for READY\n");
 
@@ -159,15 +181,10 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	xrEnumerateViewConfigurationViews(inst, sysid, vcfg, nviews, &nviews, views.data());
 	if (nviews == 0) {
 		fprintf(stderr, "vmd xr: runtime reports no views\n");
-		return 1;
+		return fail();
 	}
 
-	struct eye {
-		XrSwapchain sc;
-		std::vector<XrSwapchainImageOpenGLKHR> imgs;
-		uint32_t w, h;
-	};
-	std::vector<eye> eyes(nviews);
+	eyes.resize(nviews);
 	for (uint32_t i = 0; i < nviews; i++) {
 		XrSwapchainCreateInfo sci2 = {XR_TYPE_SWAPCHAIN_CREATE_INFO};
 		sci2.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
@@ -179,7 +196,7 @@ vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 		sci2.arraySize = 1;
 		sci2.mipCount = 1;
 		if (!xr_ok(xrCreateSwapchain(sess, &sci2, &eyes[i].sc), "xrCreateSwapchain")) {
-			return 1;
+			return fail();
 		}
 		uint32_t nimg = 0;
 		xrEnumerateSwapchainImages(eyes[i].sc, 0, &nimg, nullptr);

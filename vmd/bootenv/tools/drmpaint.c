@@ -31,6 +31,7 @@ typedef unsigned long size_t;
 #define __NR_nanosleep 101
 
 static inline long sys1(long n,long a){register long x8 asm("x8")=n;register long x0 asm("x0")=a;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0):"memory");return x0;}
+static inline long sys2(long n,long a,long b){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1):"memory");return x0;}
 static inline long sys3(long n,long a,long b,long c){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b,x2 asm("x2")=c;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1),"r"(x2):"memory");return x0;}
 static inline long sys6(long n,long a,long b,long c,long d,long e,long f){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b,x2 asm("x2")=c,x3 asm("x3")=d,x4 asm("x4")=e,x5 asm("x5")=f;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1),"r"(x2),"r"(x3),"r"(x4),"r"(x5):"memory");return x0;}
 
@@ -52,20 +53,28 @@ int main(void){
     struct drm_mode_card_res res={0};
     ioct(fd,DRM_IOCTL_MODE_GETRESOURCES,&res);
     u32 conns[32],crtcs[32],encs[32];
+    u32 n_conns=res.count_connectors,n_crtcs=res.count_crtcs;
+    if(n_conns>32)n_conns=32;
+    if(n_crtcs>32)n_crtcs=32;
+    res.count_connectors=n_conns;res.count_crtcs=n_crtcs;
+    if(res.count_encoders>32)res.count_encoders=32;
     res.connector_id_ptr=(u64)conns;res.crtc_id_ptr=(u64)crtcs;res.encoder_id_ptr=(u64)encs;
     ioct(fd,DRM_IOCTL_MODE_GETRESOURCES,&res);
     ps("conns=");pn(res.count_connectors);ps(" crtcs=");pn(res.count_crtcs);ps("\n");
     u32 conn=0;struct drm_mode_modeinfo mode={0};
-    for(int i=0;i<res.count_connectors;i++){
+    for(u32 i=0;i<n_conns;i++){
         struct drm_mode_get_connector c={0};c.connector_id=conns[i];
         ioct(fd,DRM_IOCTL_MODE_GETCONNECTOR,&c);
         struct drm_mode_modeinfo m[64];u32 en[16];
+        if(c.count_modes>64)c.count_modes=64;
+        if(c.count_encoders>16)c.count_encoders=16;
         c.modes_ptr=(u64)m;c.encoders_ptr=(u64)en;
         ioct(fd,DRM_IOCTL_MODE_GETCONNECTOR,&c);
         ps("conn ");pn(conns[i]);ps(" link=");pn(c.connection);ps(" modes=");pn(c.count_modes);ps("\n");
         if(c.connection==1&&c.count_modes){conn=conns[i];mode=m[0];break;}
     }
     if(!conn){ps("no connected connector\n");return 1;}
+    if(!n_crtcs){ps("no crtcs\n");return 1;}
     u32 crtc=crtcs[0];
     ps("mode ");pn(mode.hdisplay);ps("x");pn(mode.vdisplay);ps("\n");
 

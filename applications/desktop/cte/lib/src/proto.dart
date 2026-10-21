@@ -16,6 +16,7 @@ abstract final class CteProto {
   static const ok = '+OK';
   static const err = '+ERR';
   static const json = '+JSON';
+  static const pong = '+PONG';
 
   static const cmdPing = 'PING';
   static const cmdInfo = 'INFO';

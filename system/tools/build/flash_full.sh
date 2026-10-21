@@ -34,8 +34,21 @@ for i in $(seq 20); do
   [ "$i" -lt 20 ] || { log "ABORT: never reached fastboot"; exit 1; }
   sleep 2
 done
-# the fastboot serial is not the adb serial on this device - take whatever shows up
-FB_SERIAL=$(fastboot devices | awk 'NR==1{print $1}')
+# the fastboot serial is not the adb serial on this device, so HIBISCUS_SERIAL
+# often will not match the fastboot listing - but never guess when more than
+# one device is present
+mapfile -t fbdevs < <(fastboot devices | awk '{print $1}')
+if [ -n "${HIBISCUS_SERIAL:-}" ]; then
+  FB_SERIAL=""
+  for d in "${fbdevs[@]}"; do [ "$d" = "$HIBISCUS_SERIAL" ] && FB_SERIAL=$d; done
+  if [ -z "$FB_SERIAL" ]; then
+    [ "${#fbdevs[@]}" -eq 1 ] || { log "ABORT: ${#fbdevs[@]} fastboot devices, none is $HIBISCUS_SERIAL"; exit 1; }
+    FB_SERIAL=${fbdevs[0]}
+  fi
+else
+  [ "${#fbdevs[@]}" -eq 1 ] || { log "ABORT: ${#fbdevs[@]} fastboot devices, set HIBISCUS_SERIAL"; exit 1; }
+  FB_SERIAL=${fbdevs[0]}
+fi
 FB=(fastboot ${FB_SERIAL:+-s "$FB_SERIAL"})
 log "fastboot: $(fastboot devices | tr '\n' ' ')"
 
@@ -49,7 +62,14 @@ log "unlock: $(echo "$out" | tr '\n' ' ')"
 
 log "flashing system ($(du -h "$IMG" | cut -f1) in 128M chunks - this takes a few minutes)"
 t0=$SECONDS
-"${FB[@]}" -S 128M flash system "$IMG" 2>&1 | grep -iE 'sending|writing|okay|failed|error' | tee -a "$LOG" || true
+if out=$("${FB[@]}" -S 128M flash system "$IMG" 2>&1); then
+  echo "$out" | grep -iE 'sending|writing|okay|failed|error' | tee -a "$LOG" || true
+else
+  rc=$?
+  echo "$out" | tee -a "$LOG" || true
+  log "ABORT: flash failed (rc=$rc) - system may be half-written, reflash before rebooting"
+  exit 1
+fi
 log "flash finished in $((SECONDS-t0))s"
 
 log "rebooting"

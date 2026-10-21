@@ -21,7 +21,8 @@ mkdir -p "$DST"
 # never back up (or touch) the wrong unit
 mapfile -t devs < <(adb devices | awk '$2=="device"{print $1}')
 [ "${#devs[@]}" -eq 1 ] || { log "ABORT: expected 1 device, found ${#devs[@]}"; exit 1; }
-if [ -n "${HIBISCUS_SERIAL:-${PN2_SERIAL:-}}" ] && [ "${devs[0]}" != "$HIBISCUS_SERIAL" ]; then
+want="${HIBISCUS_SERIAL:-${PN2_SERIAL:-}}"
+if [ -n "$want" ] && [ "${devs[0]}" != "$want" ]; then
   log "ABORT: wrong device ${devs[0]}"; exit 1
 fi
 log "device OK: ${devs[0]}"

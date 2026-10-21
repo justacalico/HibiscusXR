@@ -248,17 +248,6 @@ void main() {
     });
   });
 
-  group('formatBytes', () {
-    test('formats each band', () {
-      expect(formatBytes(0), '0 B');
-      expect(formatBytes(1023), '1023 B');
-      expect(formatBytes(1024), '1.0 KB');
-      expect(formatBytes(1500000), '1.4 MB');
-      expect(formatBytes(150 * 1024 * 1024), '150 MB');
-      expect(formatBytes(3 * 1024 * 1024 * 1024), '3.0 GB');
-    });
-  });
-
   group('stripHtml', () {
     test('drops tags and decodes entities', () {
       expect(

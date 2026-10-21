@@ -17,6 +17,10 @@ ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 command -v adb >/dev/null || { echo "adb not in PATH" >&2; exit 1; }
 [ -d "$FIN" ] || { echo "no such dir: $FIN" >&2; exit 1; }
 
+shopt -s nullglob
+apps=("$FIN"/*/)
+[ ${#apps[@]} -gt 0 ] || { echo "no app dirs under $FIN" >&2; exit 1; }
+
 "${ADB[@]}" shell rm -rf /data/local/tmp/oemapps >/dev/null 2>&1 || true
 "${ADB[@]}" push "$FIN" /data/local/tmp/oemapps | tail -1
 
@@ -25,13 +29,13 @@ sh=$(mktemp)
   echo '#!/system/bin/sh'
   echo 'exec 2>&1'
   echo 'mount -o rw,remount /system'
-  for app in "$FIN"/*/; do
+  for app in "${apps[@]}"; do
     n=$(basename "$app")
-    echo "rm -rf /system/priv-app/$n"
-    echo "cp -r /data/local/tmp/oemapps/$n /system/priv-app/$n"
-    echo "chown -R root:root /system/priv-app/$n"
-    echo "find /system/priv-app/$n -type d -exec chmod 755 {} \\;"
-    echo "find /system/priv-app/$n -type f -exec chmod 644 {} \\;"
+    echo "rm -rf \"/system/priv-app/$n\""
+    echo "cp -r \"/data/local/tmp/oemapps/$n\" \"/system/priv-app/$n\""
+    echo "chown -R root:root \"/system/priv-app/$n\""
+    echo "find \"/system/priv-app/$n\" -type d -exec chmod 755 {} \\;"
+    echo "find \"/system/priv-app/$n\" -type f -exec chmod 644 {} \\;"
   done
   echo 'sync'
   echo 'mount -o ro,remount /system'

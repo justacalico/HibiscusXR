@@ -18,6 +18,10 @@ ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})
 command -v adb >/dev/null || { echo "adb not in PATH" >&2; exit 1; }
 [ -d "$SRC" ] || { echo "no such dir: $SRC" >&2; exit 1; }
 
+shopt -s nullglob
+libdirs=("$SRC"/*/)
+[ ${#libdirs[@]} -gt 0 ] || { echo "no app lib dirs under $SRC" >&2; exit 1; }
+
 # where each app lives (app/ vs priv-app/)
 declare -A loc
 while IFS= read -r apk; do
@@ -32,17 +36,17 @@ sh=$(mktemp)
   echo '#!/system/bin/sh'
   echo 'exec 2>&1'
   echo 'mount -o rw,remount /system'
-  for app in "$SRC"/*/; do
+  for app in "${libdirs[@]}"; do
     n=$(basename "$app")
     where="${loc[$n]:-priv-app}"
     dest="/system/$where/$n"
-    echo "rm -rf $dest/lib"
+    echo "rm -rf \"$dest/lib\""
     # adb push into a NON-existent target puts the contents directly in it, with
     # no extra source-dir level - hence no applibs/ component here
-    echo "cp -r /data/local/tmp/applibs/$n/lib $dest/lib"
-    echo "chown -R root:root $dest/lib"
-    echo "find $dest/lib -type d -exec chmod 755 {} \\;"
-    echo "find $dest/lib -type f -exec chmod 644 {} \\;"
+    echo "cp -r \"/data/local/tmp/applibs/$n/lib\" \"$dest/lib\""
+    echo "chown -R root:root \"$dest/lib\""
+    echo "find \"$dest/lib\" -type d -exec chmod 755 {} \\;"
+    echo "find \"$dest/lib\" -type f -exec chmod 644 {} \\;"
   done
   # put the system SDK lib back the way it shipped
   echo 'for a in lib64 lib; do'

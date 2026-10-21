@@ -99,19 +99,11 @@ step "strip stock apps (410)"
 bash "$T/410_strip_stock_apps.sh" || true
 ran 410_strip.txt "STRIP OK"
 
-step "drivers: base identity"
-run_phase base
-
-if [ "$DEVICE" = "neo2" ]; then
-  step "LoadingRes stub image"
-  "$SELF/scripts/make-loadingres-img.sh"
-fi
-
 # device payloads come from the driver provider - each
 # drivers/<name>/driver.json lists its own steps, the pipeline only runs
 # them in order and checks their markers
 PROV="$SELF/../../tools/provider.py"
-run_phase() { # run_phase <stage|inject>; leaves the count in PHASE_RAN
+run_phase() { # run_phase <base|stage|inject>; leaves the count in PHASE_RAN
   local phase="$1" run log marker
   PHASE_RAN=0
   while IFS=$'\t' read -r run log marker; do
@@ -122,6 +114,14 @@ run_phase() { # run_phase <stage|inject>; leaves the count in PHASE_RAN
     [ -n "$marker" ] && ran "$log" "$marker"
   done < <(python3 "$PROV" steps "$phase")
 }
+
+step "drivers: base identity"
+run_phase base
+
+if [ "$DEVICE" = "neo2" ]; then
+  step "LoadingRes stub image"
+  "$SELF/scripts/make-loadingres-img.sh"
+fi
 
 step "drivers: stage payloads"
 run_phase stage

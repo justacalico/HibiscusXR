@@ -2,7 +2,6 @@ package gitlab.neosalsa.hud;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,13 +15,13 @@ import java.util.List;
  */
 class DockPins {
     private final Context ctx;
-    private final PackageManager pm;
+    private final Taskman taskman;
     private final List<String> pins = new ArrayList<>();
     private volatile boolean dirty = true;
 
-    DockPins(Context c, PackageManager p) {
+    DockPins(Context c, Taskman t) {
         ctx = c;
-        pm = p;
+        taskman = t;
         load();
     }
 
@@ -34,7 +33,10 @@ class DockPins {
                 save();
             } else if (!saved.isEmpty()) {
                 for (String p : saved.split(",")) {
-                    if (pm.getLaunchIntentForPackage(p) != null)
+                    // Taskman's resolver also sees leanback/immersive-only
+                    // entries; getLaunchIntentForPackage would drop a
+                    // pinned VR game on every service restart
+                    if (taskman.launchIntentForPackage(p) != null)
                         pins.add(p);
                 }
             }

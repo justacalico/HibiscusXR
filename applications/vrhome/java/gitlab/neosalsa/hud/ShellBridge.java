@@ -121,11 +121,11 @@ public class ShellBridge {
         InputManager input =
                 (InputManager) c.getSystemService(Context.INPUT_SERVICE);
 
-        pins = new DockPins(c, pm);
-        groups = new LibGroups(c);
         displays = new PanelDisplays(dm);
         taskman = new Taskman(c, main, l, displays, pendingAdopts,
                 adopting, pendingReleases);
+        pins = new DockPins(c, taskman);
+        groups = new LibGroups(c);
         injector = new Injector(input);
         kbd = new KbdLink(c, l);
         qs = new QuickState(c);

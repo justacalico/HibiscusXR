@@ -373,8 +373,8 @@ public class SettingsState {
     }
 
     private String hbVer() {
-        try {
-            BufferedReader r = new BufferedReader(new FileReader(HB_RELEASE));
+        try (BufferedReader r =
+                new BufferedReader(new FileReader(HB_RELEASE))) {
             String line, out = "", bare = "";
             while ((line = r.readLine()) != null) {
                 if (line.startsWith("VERSION="))
@@ -382,7 +382,6 @@ public class SettingsState {
                 else if (bare.isEmpty() && !line.trim().isEmpty())
                     bare = line.trim();
             }
-            r.close();
             return out.isEmpty() ? bare : out;
         } catch (Throwable t) { return ""; }
     }

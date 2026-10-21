@@ -16,20 +16,7 @@ LOG=${HIBISCUS_ROOT}/notes/380_img_cted.txt
 exec >"$LOG" 2>&1
 
 fail=0
-put() {
-  local src="$1" dst="$2" mode="$3" dir base want got
-  dir=$(dirname "$dst"); base=$(basename "$dst")
-  [ -f "$src" ] || { printf '  MISSING SRC %s\n' "$src"; fail=$((fail+1)); return; }
-  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
-  want=$(stat -c%s "$src")
-  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
-  if [ "$got" = "$want" ]; then printf '  OK    %-44s %10s\n' "$dst" "$got"
-  else printf '  FAIL  %-44s want %s got "%s"\n' "$dst" "$want" "${got:-absent}"; fail=$((fail+1)); fi
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo "=== free before ==="
 dumpe2fs -h "$IMG" 2>/dev/null | grep 'Free blocks'
@@ -56,8 +43,7 @@ put "$HIBISCUS_ROOT/cted/cte-dump.sh" /bin/cte-dump 755
 
 echo
 echo "=== repair + verify ==="
-e2fsck -fy "$IMG" 2>&1 | tail -4
-if e2fsck -fn "$IMG" >/tmp/f380.txt 2>&1; then tail -2 /tmp/f380.txt; echo "  CLEAN"; else tail -6 /tmp/f380.txt; echo "  DIRTY"; fail=$((fail+1)); fi
+img_fsck || fail=$((fail+1))
 
 echo
 echo "=== free after ==="

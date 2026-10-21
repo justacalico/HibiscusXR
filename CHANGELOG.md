@@ -32,3 +32,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: ctrl probe 线程写入已释放的结构体](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/183) (!183)
 - [fix: vrhome/vrdemo 若干已验证缺陷 (#45)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/184) (!184)
 - [归中手势同步到 OpenXR 应用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/185) (!185)
+- [fix: 驱动若干已验证缺陷 (#51)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/186) (!186)

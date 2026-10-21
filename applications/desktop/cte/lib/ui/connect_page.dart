@@ -1,3 +1,4 @@
+import 'package:common/common.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -19,8 +20,7 @@ class _ConnectPageState extends State<ConnectPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) => widget.state.scanAdb());
+    scanAfterFirstFrame(widget.state.scanAdb);
   }
 
   @override
@@ -33,34 +33,38 @@ class _ConnectPageState extends State<ConnectPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final s = widget.state;
-    return Scaffold(
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
-          child: ListenableBuilder(
-            listenable: s,
-            builder: (context, _) => ListView(
-              shrinkWrap: true,
-              padding: const EdgeInsets.all(32),
-              children: [
-                _Header(l10n: l10n),
-                const SizedBox(height: 24),
-                if (s.lastError != null)
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(s.lastError!,
-                          style: TextStyle(color: CteTheme.accent)),
-                    ),
-                  ),
-                _UsbCard(l10n: l10n, state: s),
-                const SizedBox(height: 16),
-                _WirelessCard(l10n: l10n, state: s, host: _host),
-              ],
-            ),
+    return ConnectScaffold(
+      listenable: s,
+      children: [
+        _Header(l10n: l10n),
+        const SizedBox(height: 24),
+        if (s.lastError != null)
+          ConnectErrorCard(
+              message: s.lastError!, color: CteTheme.accent),
+        AdbScanCard(
+          title: l10n.connectUsbSection,
+          titleStyle: Theme.of(context).textTheme.titleSmall,
+          refreshTooltip: l10n.connectRefresh,
+          noDevicesLabel: l10n.connectNoDevices,
+          scanningLabel: l10n.connectScanning,
+          devices: s.adbDevices,
+          scanning: s.connState == ConnState.scanning,
+          busy: s.connState == ConnState.scanning ||
+              s.connState == ConnState.connecting,
+          onRefresh: s.scanAdb,
+          tileBuilder: (d) => AdbDeviceTile(
+            device: d,
+            showState: true,
+            trailing: const Icon(Icons.chevron_right),
+            onTap: d.isReady
+                ? () => s.connectAdb(d.serial,
+                    wireless: d.serial.contains(':'))
+                : null,
           ),
         ),
-      ),
+        const SizedBox(height: 16),
+        _WirelessCard(l10n: l10n, state: s, host: _host),
+      ],
     );
   }
 }
@@ -89,60 +93,6 @@ class _Header extends StatelessWidget {
         Text(l10n.connectTitle,
             style: Theme.of(context).textTheme.titleMedium),
       ],
-    );
-  }
-}
-
-class _UsbCard extends StatelessWidget {
-  const _UsbCard({required this.l10n, required this.state});
-  final AppLocalizations l10n;
-  final AppState state;
-
-  @override
-  Widget build(BuildContext context) {
-    final busy = state.connState == ConnState.scanning ||
-        state.connState == ConnState.connecting;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(l10n.connectUsbSection,
-                      style: Theme.of(context).textTheme.titleSmall),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.refresh, size: 18),
-                  tooltip: l10n.connectRefresh,
-                  onPressed: busy ? null : state.scanAdb,
-                ),
-              ],
-            ),
-            if (state.connState == ConnState.scanning)
-              Text(l10n.connectScanning)
-            else if (state.adbDevices.isEmpty)
-              Text(l10n.connectNoDevices,
-                  style: Theme.of(context).textTheme.bodySmall)
-            else
-              for (final d in state.adbDevices)
-                ListTile(
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.usb, size: 18),
-                  title: Text(d.model.isNotEmpty ? d.model : d.serial),
-                  subtitle: Text('${d.serial} - ${d.state}'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: d.isReady
-                      ? () => state.connectAdb(d.serial,
-                          wireless: d.serial.contains(':'))
-                      : null,
-                ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -285,6 +285,7 @@ cte-bump:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "applications/desktop/cte/**/*"
+        - "applications/common/**/*"
         - "cog.toml"
   variables:
     COCOGITTO_VERSION: "7.0.0"
@@ -360,6 +361,7 @@ hbsup-bump:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "applications/desktop/hbsup/**/*"
+        - "applications/common/**/*"
         - "cog.toml"
   variables:
     COCOGITTO_VERSION: "7.0.0"

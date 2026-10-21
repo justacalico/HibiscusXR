@@ -2,7 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'adb_runner.dart';
+import 'package:common/common.dart';
+
 import 'models.dart';
 import 'plan.dart';
 
@@ -98,7 +99,9 @@ class BackupEngine {
       try {
         sink = _openSink('${plan.destDir}/${item.partition.fileName}');
         await for (final chunk in _adb.execOut(
-            serial, 'dd if=${item.partition.path} bs=4M 2>/dev/null')) {
+            serial,
+            ['dd if=${item.partition.path} bs=4M 2>/dev/null'],
+            failOnExit: true)) {
           if (token?.cancelled ?? false) {
             cancelled = true;
             break;

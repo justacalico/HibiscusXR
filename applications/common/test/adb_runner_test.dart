@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:common/common.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibiscus_hbsup/src/adb_runner.dart';
 
 void main() {
   group('parseAdbDevices', () {
@@ -52,22 +52,47 @@ x
     expect(await adb.shellText('S', 'ls'), 'outerr');
   });
 
-  test('execOut streams process stdout', () async {
-    final adb = AdbRunner(
-        spawn: (args) => Process.start('echo', const ['chunk']));
+  test('execOut passes the command through and streams stdout', () async {
+    List<String> spawned = const [];
+    final adb = AdbRunner(spawn: (args) {
+      spawned = args;
+      return Process.start('echo', const ['chunk']);
+    });
     final bytes =
-        await adb.execOut('S', 'dd if=/x').fold<List<int>>([], (a, c) {
+        await adb.execOut('S', ['cat', '/x']).fold<List<int>>([], (a, c) {
       a.addAll(c);
       return a;
     });
+    expect(spawned, ['-s', 'S', 'exec-out', 'cat', '/x']);
     expect(String.fromCharCodes(bytes).trim(), 'chunk');
   });
 
-  test('execOut throws on a nonzero exit code', () async {
+  test('execOut throws on a nonzero exit code with failOnExit', () async {
     final adb =
         AdbRunner(spawn: (args) => Process.start('false', const []));
-    await expectLater(adb.execOut('S', 'dd if=/x').drain<void>(),
+    await expectLater(
+        adb.execOut('S', ['dd if=/x'], failOnExit: true).drain<void>(),
         throwsA(isA<ProcessException>()));
+  });
+
+  test('execOut ignores a nonzero exit code by default', () async {
+    final adb =
+        AdbRunner(spawn: (args) => Process.start('false', const []));
+    await adb.execOut('S', ['dd if=/x']).drain<void>();
+  });
+
+  test('execOut kills the child when the consumer cancels', () async {
+    final adb = AdbRunner(
+        spawn: (args) => Process.start('sleep', const ['60']));
+    final sub = adb.execOut('S', ['cat', '/x']).listen((_) {});
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await sub.cancel();
+  });
+
+  test('streamLines yields decoded stdout lines', () async {
+    final adb = AdbRunner(
+        spawn: (args) => Process.start('printf', const ['a\nb\n']));
+    expect(await adb.streamLines('S', ['logcat']).toList(), ['a', 'b']);
   });
 
   test('default run/spawn hit the real executable', () async {

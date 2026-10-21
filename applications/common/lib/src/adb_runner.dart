@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -25,20 +26,35 @@ class AdbRunner {
     return (r.stdout as String? ?? '') + (r.stderr as String? ?? '');
   }
 
-  /// `adb exec-out` byte stream - the dd data channel. A nonzero exit
-  /// code surfaces as a stream error so failed dumps can't look clean.
-  /// Cancelling the subscription kills the adb process.
-  Stream<Uint8List> execOut(String serial, String command) async* {
-    final p = await spawn(['-s', serial, 'exec-out', command]);
+  /// `adb exec-out` byte stream - screencap, file reads, dd. Kills the
+  /// adb child when the consumer walks away, which drops the
+  /// device-side command too. With [failOnExit] a nonzero exit code
+  /// surfaces as a stream error so failed transfers can't look clean.
+  Stream<Uint8List> execOut(String serial, List<String> command,
+      {bool failOnExit = false}) async* {
+    final p = await spawn(['-s', serial, 'exec-out', ...command]);
     unawaited(p.stderr.drain());
     try {
       yield* p.stdout
           .map((c) => c is Uint8List ? c : Uint8List.fromList(c));
       final code = await p.exitCode;
-      if (code != 0) {
-        throw ProcessException(adbPath, ['exec-out', command],
+      if (failOnExit && code != 0) {
+        throw ProcessException(adbPath, ['exec-out', ...command],
             'exec-out exited $code', code);
       }
+    } finally {
+      p.kill();
+    }
+  }
+
+  /// Long-running stdout line stream (logcat).
+  Stream<String> streamLines(String serial, List<String> command) async* {
+    final p = await spawn(['-s', serial, ...command]);
+    try {
+      yield* p.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter());
+      await p.exitCode;
     } finally {
       p.kill();
     }

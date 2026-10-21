@@ -37,16 +37,6 @@ void main() {
     });
   });
 
-  group('formatBytes', () {
-    test('formats each unit', () {
-      expect(formatBytes(512), '512 B');
-      expect(formatBytes(1536), '1.5 KB');
-      expect(formatBytes(4194304), '4.0 MB');
-      expect(formatBytes(3865470464), '3.6 GB');
-      expect(formatBytes(2 * 1024 * 1024 * 1024 * 1024), '2.0 TB');
-    });
-  });
-
   test('manifestFor lists every partition', () {
     final m = manifestFor('SERIAL9', _parts);
     expect(m, contains('serial: SERIAL9'));

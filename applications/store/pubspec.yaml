@@ -16,6 +16,8 @@ dependencies:
   shared_preferences: ^2.5.5
   panel_theme:
     path: ../panel_theme
+  common:
+    path: ../common
   flutter_svg: ^2.2.3
   crypto: ^3.0.7
 

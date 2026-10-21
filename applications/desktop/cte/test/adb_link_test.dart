@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hibiscus_cte/src/adb_runner.dart';
+import 'package:common/common.dart';
 import 'package:hibiscus_cte/src/debug_dump.dart';
 import 'package:hibiscus_cte/src/transport/adb_link.dart';
 

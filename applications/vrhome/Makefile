@@ -191,13 +191,18 @@ $(GLUE_O): $(GLUE)/android_native_app_glue.c | toolcheck
 	@mkdir -p $(dir $@)
 	$(CLANG) -c -fPIC -O2 -I $(GLUE) -o $@ $<
 
-$(OUT)/obj/%.o: src/%.cpp | toolcheck
+# every object waits on the generated sources - dep scanning only knows
+# about them after a build, so any new icons.h includer would race icons2c
+GEN := $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc \
+       $(OUT)/gen/icons.inc $(OUT)/gen/icon_ids.h
+
+$(OUT)/obj/%.o: src/%.cpp | toolcheck $(GEN)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -c -fPIC -O2 -std=c++17 -I $(GLUE) -I $(OUT)/gen -MMD -MP -o $@ $<
 
 # pure-C sources shared with the monado driver; -x c++ keeps the dialect
 # identical to the host build, where g++ also compiles .c as C++
-$(OUT)/obj/%.o: src/%.c | toolcheck
+$(OUT)/obj/%.o: src/%.c | toolcheck $(GEN)
 	@mkdir -p $(dir $@)
 	$(CLANGXX) -c -fPIC -O2 -std=c++17 -x c++ -I $(GLUE) -MMD -MP -o $@ $<
 
@@ -214,12 +219,11 @@ $(OUT)/gen/ctrl_r.inc: models/ctrl_r.obj tools/obj2c.py
 $(OUT)/obj/render/ctrl_render.o: $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 
 # baked Material Symbols glyph atlas for the dash's icons
-$(OUT)/gen/icons.inc $(OUT)/gen/icon_ids.h: $(wildcard art/icons/*.svg) \
-                                          tools/icons2c.py
+$(OUT)/gen/icons.inc $(OUT)/gen/icon_ids.h &: $(wildcard art/icons/*.svg) \
+                                             tools/icons2c.py
 	@mkdir -p $(OUT)/gen
 	python3 tools/icons2c.py art/icons $(OUT)/gen
 
-$(OUT)/obj/render/icons.o $(OUT)/obj/render/iconatlas.o \
 $(TEST_BIN) $(PREVIEW_BIN) $(WL_BIN): $(OUT)/gen/icons.inc \
                                       $(OUT)/gen/icon_ids.h
 

@@ -61,6 +61,7 @@ class AppState extends ChangeNotifier {
   Map<String, String>? props;
 
   final _subs = <StreamSubscription<dynamic>>[];
+  int _propsGen = 0;
   int _poseStamp = 0;
   int _poseWindowStart = 0;
   int _frameStamp = 0;
@@ -89,21 +90,26 @@ class AppState extends ChangeNotifier {
   }
 
   /// Wireless path: try cted first, fall back to `adb connect`.
+  /// `host` may carry a `:port` suffix for a non-default adb port.
   Future<void> connectWireless(String host) async {
     connState = ConnState.connecting;
     lastError = null;
     notifyListeners();
     try {
-      final probed = await _socketFactory(host);
+      final parts = host.split(':');
+      final addr = parts.first;
+      final port =
+          parts.length > 1 ? int.tryParse(parts[1]) ?? 5555 : 5555;
+      final probed = await _socketFactory(addr);
       if (probed != null) {
         await _attach(probed, LinkKind.cteSocket);
         return;
       }
-      final reply = await AdbLink.connectWireless(_adb, host);
+      final reply = await AdbLink.connectWireless(_adb, addr, port: port);
       if (!reply.contains('connected')) {
         throw Exception(reply.isEmpty ? 'no reply from adb connect' : reply);
       }
-      final serial = '$host:5555';
+      final serial = '$addr:$port';
       await _attach(_adbLinkFactory(serial)!, LinkKind.adbWireless);
     } catch (e) {
       connState = ConnState.failed;
@@ -143,7 +149,9 @@ class AppState extends ChangeNotifier {
       _frameSub = l.frames().listen(_onFrame, onError: _onFeedError);
       _subs.add(_frameSub!);
     }
+    final gen = ++_propsGen;
     unawaited(l.fetchProps().then((p) {
+      if (gen != _propsGen) return;
       props = p;
       notifyListeners();
     }).catchError((_) {}));
@@ -151,7 +159,7 @@ class AppState extends ChangeNotifier {
 
   void _onCtrls(List<CtrlState> next) {
     for (final c in next) {
-      if (c.index < ctrls.length) ctrls[c.index] = c;
+      if (c.index >= 0 && c.index < ctrls.length) ctrls[c.index] = c;
     }
     notifyListeners();
   }
@@ -275,6 +283,7 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> _detachFeeds() async {
+    _propsGen++;
     for (final s in _subs) {
       await s.cancel();
     }

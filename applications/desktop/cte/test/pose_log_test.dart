@@ -58,6 +58,22 @@ void main() {
     });
   });
 
+  test('field names do not match inside other keys', () {
+    final p = PoseLogParser();
+    final s = p.feed(
+        'HMD ts=1 qx=0 qy=0 qz=0 qw=1 px=1 py=2 pz=3 test=9 st=3');
+    expect(s, isNotNull);
+    expect(s!.trackingState, 3);
+    expect(s.mode, TrackingMode.dof6);
+
+    final p2 = PoseLogParser();
+    p2.feed('qvr  q=(0 0 0 1) p=(0 0 0) st=3 q=0.9');
+    final s2 = p2.feed(
+        'rel q=(0 0 0 1) p=(0 0 0) w=(0 0 0) parts=111 ts=42');
+    expect(s2, isNotNull);
+    expect(s2!.timestampNs, 42);
+  });
+
   test('ignores unrelated lines', () {
     final p = PoseLogParser();
     expect(p.feed('D SomeTag: hello world'), isNull);

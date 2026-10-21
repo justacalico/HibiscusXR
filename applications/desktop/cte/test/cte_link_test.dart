@@ -123,6 +123,34 @@ void main() {
     expect(found, isNull);
   });
 
+  test('probe returns null when the peer drops mid-handshake', () async {
+    final server = await ServerSocket.bind('127.0.0.1', 0);
+    addTearDown(server.close);
+    server.listen((client) {
+      client.write('${CteProto.banner}\n');
+      client.flush().then((_) => client.close());
+    });
+    final found = await CteLink.probe('127.0.0.1',
+        port: server.port, timeout: const Duration(seconds: 2));
+    expect(found, isNull);
+  });
+
+  test('fetchInfo reports a dropped channel instead of a raw StateError',
+      () async {
+    final server = await ServerSocket.bind('127.0.0.1', 0);
+    addTearDown(server.close);
+    server.listen((client) {
+      client.write('${CteProto.banner}\n');
+      client.flush().then((_) => client.close());
+    });
+    final l = CteLink('127.0.0.1', port: server.port);
+    await expectLater(
+      l.fetchInfo(),
+      throwsA(isA<Exception>().having(
+          (e) => e.toString(), 'message', isNot(contains('Bad state')))),
+    );
+  });
+
   test('fetchInfo maps the json reply', () async {
     final info = await link.fetchInfo();
     expect(info.headsetName, 'Pico Neo 2');

@@ -38,6 +38,7 @@ class FakeLink extends HeadsetLink {
     this.description = 'adb:TEST',
     this.info = fakeInfo,
     this.props = fakeProps,
+    this.propsLoader,
     this.install,
     this.dump,
   });
@@ -46,6 +47,7 @@ class FakeLink extends HeadsetLink {
   final String description;
   final DeviceInfo info;
   final Map<String, String> props;
+  final Future<Map<String, String>> Function()? propsLoader;
   final Stream<String> Function(String path)? install;
   final Stream<DumpSection> Function()? dump;
   var disposed = false;
@@ -61,7 +63,8 @@ class FakeLink extends HeadsetLink {
   @override
   Future<DeviceInfo> fetchInfo() async => info;
   @override
-  Future<Map<String, String>> fetchProps() async => props;
+  Future<Map<String, String>> fetchProps() =>
+      propsLoader?.call() ?? Future.value(props);
   @override
   Stream<String> installApk(String path, {Uint8List? bytes}) =>
       install?.call(path) ?? const Stream.empty();

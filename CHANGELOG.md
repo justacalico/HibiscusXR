@@ -40,3 +40,4 @@ linked line per MR no matter how many commits it carried.
 - [ci: 安装 glab 前校验 sha256 (#41)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/191) (!191)
 - [Untrack compiled w25qdump binary](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/192) (!192)
 - [Stop install scripts emitting rm -rf /system/priv-app/*](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/193) (!193)
+- [Fastboot scripts: stop masking failures, never guess the device](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/194) (!194)

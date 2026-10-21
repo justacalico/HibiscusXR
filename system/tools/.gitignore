@@ -67,4 +67,4 @@
 *.mov
 *.wav
 *.mp3
-/w25qdump
+w25qdump

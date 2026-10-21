@@ -29,28 +29,7 @@ fi
 ls -l "$IMG"
 
 fail=0
-put() {   # put <local> <img-path> <mode>
-  local src="$1" dst="$2" mode="$3"
-  local dir base
-  dir=$(dirname "$dst"); base=$(basename "$dst")
-  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
-  # verify for real: is it listed, and is the size right
-  local want got
-  want=$(stat -c%s "$src")
-  # debugfs `ls -l` columns: inode mode (type) uid gid SIZE date time name
-  # so size is field 6. $(NF-4) was landing on gid and always read 0.
-  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
-  if [ "$got" = "$want" ]; then
-    printf '  OK    %-42s %s bytes\n' "$dst" "$got"
-  else
-    printf '  FAIL  %-42s wrote %s, image reports "%s"\n' "$dst" "$want" "${got:-absent}"
-    fail=$((fail+1))
-  fi
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo
 echo "=== init scripts ==="
@@ -65,8 +44,7 @@ put "$OV/bin/pn2-appsweep" "/bin/pn2-appsweep" 755
 
 echo
 echo "=== VINTF manifest override ==="
-debugfs -w -R "mkdir /etc/pn2" "$IMG" >/dev/null 2>&1
-debugfs -w -R "sif /etc/pn2 mode 040755" "$IMG" >/dev/null 2>&1
+mkd /etc/pn2
 put "$OV/etc/pn2/vendor_manifest.xml" "/etc/pn2/vendor_manifest.xml" 644
 
 echo
@@ -76,7 +54,7 @@ put "$OV/lib64/libshim_pvr.so"      "/lib64/libshim_pvr.so"      644
 
 echo
 echo "=== headset buttons: key layouts ==="
-debugfs -w -R "mkdir /usr/keylayout" "$IMG" >/dev/null 2>&1
+mkd /usr/keylayout
 for f in gpio-keys.kl dc_detect.kl; do
   put "$OV/usr/keylayout/$f" "/usr/keylayout/$f" 644
 done
@@ -118,7 +96,7 @@ with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as z:
         for f in sorted(os.listdir(os.path.join(src, part))):
             z.write(os.path.join(src, part, f), f"{part}/{f}")
 EOF
-debugfs -w -R "mkdir /media" "$IMG" >/dev/null 2>&1
+mkd /media
 put "$BA" "/media/bootanimation.zip" 644
 # The stock lookup order is apex -> product -> oem -> system, and the GSI
 # ships its phone-sized animation under product/apex - drop whichever of

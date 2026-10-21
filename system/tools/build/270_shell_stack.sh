@@ -16,31 +16,7 @@ LOG="${2:-$HIBISCUS_ROOT/notes/270_shell.txt}"
 exec >"$LOG" 2>&1
 
 fail=0
-put() {   # put <local> <img-path> <mode>
-  local src="$1" dst="$2" mode="$3"
-  local dir base want got
-  dir=$(dirname "$dst"); base=$(basename "$dst")
-  [ -f "$src" ] || { printf '  MISSING SOURCE %s\n' "$src"; fail=$((fail+1)); return; }
-  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
-  want=$(stat -c%s "$src")
-  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
-  if [ "$got" = "$want" ]; then
-    printf '  OK    %-52s %12s\n' "$dst" "$got"
-  else
-    printf '  FAIL  %-52s wrote %s, image says "%s"\n' "$dst" "$want" "${got:-absent}"
-    fail=$((fail+1))
-  fi
-}
-mkd() {
-  debugfs -w -R "mkdir $1" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 mode 040755" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 gid 0" "$IMG" >/dev/null 2>&1
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo "=== free space before ==="
 dumpe2fs -h "$IMG" 2>/dev/null | grep -E 'Free blocks|Block size'
@@ -180,12 +156,13 @@ printf '%s\0' "${APKS[@]}" | (cd "$W2" && xargs -0 -P4 -I{} "$BT/apksigner" \
 # one debugfs session writes them all back
 CMDS="$W2.cmds"
 : > "$CMDS"
+IMG_CMDS="$CMDS"
 for a in "${APKS[@]}"; do
   rel="${a#./}"
-  printf 'rm %s\nwrite %s %s\nsif %s mode 0100644\nsif %s uid 0\nsif %s gid 0\nrm %s.idsig\n' \
-      "/$rel" "$W2/$rel" "/$rel" "/$rel" "/$rel" "/$rel" "/$rel" >> "$CMDS"
+  img_cmd_put "$W2/$rel" "/$rel" 644 || { echo "FAIL re-sign cmdfile"; fail=$((fail+1)); break; }
+  printf 'rm %s.idsig\n' "/$rel" >> "$IMG_CMDS"
 done
-debugfs -w -f "$CMDS" "$IMG" >/dev/null 2>&1
+img_run_cmds
 for probe in /framework/framework-res.apk /app/vrhud/vrhud.apk /product/priv-app/Settings/Settings.apk; do
   debugfs -R "dump $probe $W2-probe.apk" "$IMG" >/dev/null 2>&1
   "$BT/apksigner" verify --print-certs "$W2-probe.apk" 2>/dev/null | grep -q "CN=PN2" \
@@ -195,16 +172,8 @@ rm -rf "$W2" "$CMDS" "$W2-probe.apk"
 echo "  re-signed and verified"
 
 echo
-echo "=== repair pass (debugfs write/rm leaves accounting inconsistent) ==="
-e2fsck -fy "$IMG" 2>&1 | tail -6
-
-echo
-echo "=== fsck must be clean ==="
-if e2fsck -fn "$IMG" >/tmp/fsck.txt 2>&1; then
-  tail -2 /tmp/fsck.txt; echo "  FILESYSTEM CLEAN"
-else
-  tail -8 /tmp/fsck.txt; echo "  FILESYSTEM DIRTY"; fail=$((fail+1))
-fi
+echo "=== repair + fsck ==="
+img_fsck || fail=$((fail+1))
 
 echo
 echo "=== free space after ==="

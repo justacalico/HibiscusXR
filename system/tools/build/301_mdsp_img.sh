@@ -8,19 +8,11 @@ S=${HIBISCUS_ROOT}/cdsp/vendor/libmdsprpc.so
 D=/lib/libmdsprpc.so
 
 [ -f "$S" ] || { echo "source missing"; exit 1; }
-debugfs -w -R "rm $D"          "$IMG" >/dev/null 2>&1
-debugfs -w -R "write $S $D"    "$IMG" >/dev/null 2>&1
-debugfs -w -R "sif $D mode 0100644" "$IMG" >/dev/null 2>&1
-debugfs -w -R "sif $D uid 0"   "$IMG" >/dev/null 2>&1
-debugfs -w -R "sif $D gid 0"   "$IMG" >/dev/null 2>&1
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
+fail=0
+put "$S" "$D" 644
 
-want=$(stat -c%s "$S")
-got=$(debugfs -R "ls -l /lib" "$IMG" 2>/dev/null | awk '$NF=="libmdsprpc.so"{print $6}')
-echo "  want $want, image says ${got:-absent}"
-[ "$got" = "$want" ] && echo "  OK" || echo "  FAIL"
-
-e2fsck -fy "$IMG" >/dev/null 2>&1
-if e2fsck -fn "$IMG" >/dev/null 2>&1; then echo "  fsck CLEAN"; else echo "  fsck DIRTY"; fi
+img_fsck || fail=$((fail+1))
 
 echo
 echo "=== final DSP inventory in the image ==="

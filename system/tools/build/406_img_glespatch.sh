@@ -29,20 +29,7 @@ trap 'rm -rf "$TMP"' EXIT
 exec >"$LOG" 2>&1
 
 fail=0
-put() {
-  local src="$1" dst="$2" mode="$3" dir base want got
-  dir=$(dirname "$dst"); base=$(basename "$dst")
-  [ -f "$src" ] || { printf '  MISSING SRC %s\n' "$src"; fail=$((fail+1)); return; }
-  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
-  want=$(stat -c%s "$src")
-  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
-  if [ "$got" = "$want" ]; then printf '  OK    %-44s %10s\n' "$dst" "$got"
-  else printf '  FAIL  %-44s want %s got "%s"\n' "$dst" "$want" "${got:-absent}"; fail=$((fail+1)); fi
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo "=== stock blob source ==="
 SRC=""
@@ -70,15 +57,13 @@ fi
 
 echo
 echo "=== inject into full image ==="
-debugfs -w -R "mkdir /etc/pn2" "$IMG" >/dev/null 2>&1
-debugfs -w -R "sif /etc/pn2 mode 040755" "$IMG" >/dev/null 2>&1
+mkd /etc/pn2
 put "$TMP/libGLESv2_adreno.so"              "/etc/pn2/libGLESv2_adreno.so" 644
 put "$HIBISCUS_ROOT/overlay/etc/init/pn2-egl.rc" "/etc/init/pn2-egl.rc"          644
 
 echo
 echo "=== repair + verify ==="
-e2fsck -fy "$IMG" 2>&1 | tail -4
-if e2fsck -fn "$IMG" >/tmp/f4.txt 2>&1; then tail -2 /tmp/f4.txt; echo "  CLEAN"; else tail -6 /tmp/f4.txt; echo "  DIRTY"; fail=$((fail+1)); fi
+img_fsck || fail=$((fail+1))
 
 echo
 [ "$fail" -eq 0 ] && echo "GLES ROBUST PATCH OK" || echo "HAD $fail FAILURES"

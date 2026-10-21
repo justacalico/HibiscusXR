@@ -110,29 +110,7 @@ want_dead() {
 }
 
 # ------------------------------------------------------------- img walks
-# debugfs exits 0 even when a path does not resolve - the only signal
-# is the "File not found by ext2_lookup" text it prints.
-img_exists() {
-  ! debugfs -R "stat $1" "$IMG" 2>&1 | grep -q ext2_lookup
-}
-
-# debugfs `ls -l` fields: inode mode (links) uid gid size date time name.
-img_ls() { # img_ls <dir> -> "mode name" per entry
-  debugfs -R "ls -l $1" "$IMG" 2>/dev/null | \
-    awk 'NF >= 8 && $2 ~ /^[0-9]+$/ {print $2, $NF}'
-}
-
-rmrf() { # rmrf <img-dir>: delete a directory tree inside the image
-  local d="$1" mode name
-  img_ls "$d" | while read -r mode name; do
-    case "$name" in .|..) continue ;; esac
-    case "$mode" in
-      4*|04*) rmrf "$d/$name" ;;
-      *)      debugfs -w -R "rm $d/$name" "$IMG" >/dev/null 2>&1 ;;
-    esac
-  done
-  debugfs -w -R "rmdir $d" "$IMG" >/dev/null 2>&1
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 find_apks() { # find_apks <img-dir>: print every *.apk path under it
   local d="$1" mode name
@@ -214,19 +192,8 @@ for k in $KEEP; do
 done
 
 echo
-echo "=== repair pass ==="
-e2fsck -fy "$IMG" 2>&1 | tail -6
-
-echo
-echo "=== fsck after repair (must be clean) ==="
-if e2fsck -fn "$IMG" > "$TMP/fsck.txt" 2>&1; then
-  tail -2 "$TMP/fsck.txt"
-  echo "  filesystem CLEAN"
-else
-  tail -8 "$TMP/fsck.txt"
-  echo "  filesystem STILL DIRTY"
-  fail=$((fail+1))
-fi
+echo "=== repair + fsck (must be clean) ==="
+img_fsck || fail=$((fail+1))
 rm -rf "$TMP"
 
 echo

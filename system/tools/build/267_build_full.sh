@@ -22,31 +22,7 @@ LOG=${HIBISCUS_ROOT}/notes/267_build.txt
 exec >"$LOG" 2>&1
 
 fail=0
-put() {   # put <local> <img-path> <mode>
-  local src="$1" dst="$2" mode="$3"
-  local dir base want got
-  dir=$(dirname "$dst"); base=$(basename "$dst")
-  [ -f "$src" ] || { printf '  MISSING SOURCE %s\n' "$src"; fail=$((fail+1)); return; }
-  debugfs -w -R "rm $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "write $src $dst" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst mode 0100$mode" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $dst gid 0" "$IMG" >/dev/null 2>&1
-  want=$(stat -c%s "$src")
-  got=$(debugfs -R "ls -l $dir" "$IMG" 2>/dev/null | awk -v b="$base" '$NF==b {print $6}' | head -1)
-  if [ "$got" = "$want" ]; then
-    printf '  OK    %-52s %12s\n' "$dst" "$got"
-  else
-    printf '  FAIL  %-52s wrote %s, image says "%s"\n' "$dst" "$want" "${got:-absent}"
-    fail=$((fail+1))
-  fi
-}
-mkd() {
-  debugfs -w -R "mkdir $1" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 mode 040755" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 uid 0" "$IMG" >/dev/null 2>&1
-  debugfs -w -R "sif $1 gid 0" "$IMG" >/dev/null 2>&1
-}
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo "=== free space before ==="
 dumpe2fs -h "$IMG" 2>/dev/null | grep -E 'Free blocks|Block size'

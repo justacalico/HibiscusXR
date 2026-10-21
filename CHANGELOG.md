@@ -45,3 +45,6 @@ linked line per MR no matter how many commits it carried.
 - [vmd HALs: full -errno mmap checks, size overflow and foreign munmap fixes](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/197) (!197)
 - [Extract shared debugfs image helpers into tools/lib/img.sh](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/198) (!198)
 - [Real teardown chain for HudService.onDestroy](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/199) (!199)
+- [CI hygiene: pinned flutter everywhere, rerun-safe release, cted test wired](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/200) (!200)
+- [Require HIBISCUS_ROOT via shared env.sh, drop personal paths](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/201) (!201)
+- [Documented no-data-loss update path](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/202) (!202)

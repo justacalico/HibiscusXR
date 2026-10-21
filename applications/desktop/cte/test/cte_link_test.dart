@@ -36,8 +36,8 @@ class FakeCted {
         .listen((line) {
       commands.add(line);
       try {
-      if (line == 'PING') {
-        client.write('+PONG\n');
+      if (line == CteProto.cmdPing) {
+        client.write('${CteProto.pong}\n');
       } else if (line == 'INFO') {
         final body = utf8.encode(jsonEncode({
           'model': 'Pico Neo 2',
@@ -109,8 +109,18 @@ void main() {
   test('probe detects a cted banner', () async {
     final found = await CteLink.probe('127.0.0.1', port: cted.port);
     expect(found, isNotNull);
+    expect(cted.commands, contains(CteProto.cmdPing));
     final missing = await CteLink.probe('127.0.0.1', port: 1);
     expect(missing, isNull);
+  });
+
+  test('probe rejects a banner that never answers PING', () async {
+    final server = await ServerSocket.bind('127.0.0.1', 0);
+    addTearDown(server.close);
+    server.listen((client) => client.write('${CteProto.banner}\n'));
+    final found = await CteLink.probe('127.0.0.1',
+        port: server.port, timeout: const Duration(milliseconds: 300));
+    expect(found, isNull);
   });
 
   test('fetchInfo maps the json reply', () async {

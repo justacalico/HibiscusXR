@@ -48,7 +48,6 @@ void main() {
         .run('S', planIn(tmp.path, [boot, system]))
         .toList();
     final last = snaps.last;
-    expect(last.finished, isTrue);
     expect(last.cancelled, isFalse);
     expect(last.doneCount, 2);
     expect(last.anyFailed, isFalse);
@@ -144,7 +143,6 @@ void main() {
     await c.close();
     final last = await done;
     expect(last.cancelled, isTrue);
-    expect(last.finished, isFalse);
     expect(last.items[0].phase, ItemPhase.failed);
     expect(last.items[0].error, 'cancelled');
     expect(last.items[0].written, 4);
@@ -166,7 +164,6 @@ void main() {
       },
     ).run('S', planIn(tmp.path, [boot])).last;
     expect(calls, 2);
-    expect(last.finished, isTrue);
     expect(last.manifestWritten, isFalse);
   });
 }

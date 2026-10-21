@@ -30,21 +30,29 @@ class CteLink extends HeadsetLink {
   @override
   String get description => 'cte://$host:$port';
 
-  /// Check whether a cted answers on host:port (reads the banner).
+  /// Check whether a cted answers on host:port - reads the banner, then
+  /// PINGs so a port that prints `CTE/1` but never runs commands still
+  /// fails the probe.
   static Future<CteLink?> probe(String host,
       {int port = CteProto.port,
       Duration timeout = const Duration(seconds: 3)}) async {
     Socket? sock;
     try {
       sock = await Socket.connect(host, port, timeout: timeout);
-      final first = await sock
+      final lines = StreamIterator(sock
           .cast<List<int>>()
           .transform(utf8.decoder)
-          .transform(const LineSplitter())
-          .first
-          .timeout(timeout);
+          .transform(const LineSplitter()));
+      if (!await lines.moveNext().timeout(timeout) ||
+          !lines.current.trim().startsWith(CteProto.banner)) {
+        await sock.close();
+        return null;
+      }
+      sock.writeln(CteProto.cmdPing);
+      await sock.flush();
+      final answered = await lines.moveNext().timeout(timeout);
       await sock.close();
-      return first.trim().startsWith(CteProto.banner)
+      return answered && lines.current.trim() == CteProto.pong
           ? CteLink(host, port: port)
           : null;
     } on SocketException {

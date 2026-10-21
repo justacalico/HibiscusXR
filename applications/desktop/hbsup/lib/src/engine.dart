@@ -31,7 +31,6 @@ class BackupSnapshot {
   const BackupSnapshot({
     required this.items,
     required this.current,
-    required this.finished,
     required this.cancelled,
     required this.manifestWritten,
   });
@@ -40,7 +39,6 @@ class BackupSnapshot {
 
   /// Index of the partition currently dumping, -1 when idle.
   final int current;
-  final bool finished;
   final bool cancelled;
 
   /// manifest.txt landed next to the dumps.
@@ -82,7 +80,6 @@ class BackupEngine {
     BackupSnapshot snap() => BackupSnapshot(
           items: items,
           current: current,
-          finished: false,
           cancelled: cancelled,
           manifestWritten: manifestWritten,
         );
@@ -150,7 +147,6 @@ class BackupEngine {
     yield BackupSnapshot(
       items: items,
       current: current,
-      finished: !cancelled,
       cancelled: cancelled,
       manifestWritten: manifestWritten,
     );

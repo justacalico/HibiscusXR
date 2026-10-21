@@ -9,6 +9,7 @@
 // duplicated layouts. Kept C99 for that reason; it must also compile as C++
 // for the host tests.
 
+#include <pthread.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -106,20 +107,30 @@ struct ctrl_live {
 #define CTRL_PROBE_SPIN_NS 60000000ull
 
 // flag-edge probe: launch it from the input loop, poll() it for the
-// verdict. The spin happens on a detached thread that maps its own view
+// verdict. The spin happens on a joinable thread that maps its own view
 // of the file, so a close on the caller's side can't kill it mid-spin.
+// The thread writes its verdict back through p, so the owner must
+// outlive it: poll() reaps a finished thread, wait() joins whatever is
+// still out before the owning struct goes away.
 struct ctrl_probe {
     volatile int state;   // 0 idle, 1 running, 2 edge seen, 3 quiet
+    pthread_t thread;     // live while state is nonzero
 };
 
-// launch a detached probe; nonzero when a thread was started. `which`
+// launch a probe thread; nonzero when a thread was started. `which`
 // picks a block's flag pair, -1 watches all four flag offsets at once.
 int ctrl_probe_start(struct ctrl_probe *p, const char *path, int which,
                      uint64_t budget_ns);
 
 // poll the verdict: 0 while idle or still running, 1 on a caught edge,
-// -1 when the spin expired quiet. A finished probe goes back to idle.
+// -1 when the spin expired quiet. A finished probe is joined and goes
+// back to idle.
 int ctrl_probe_poll(struct ctrl_probe *p);
+
+// join a probe still inside its spin; blocks at most one spin budget.
+// Call before freeing whatever struct the probe is embedded in - a
+// probe left running writes its verdict into dead memory.
+void ctrl_probe_wait(struct ctrl_probe *p);
 
 // fold one frame's observation into the tracker: a moved hash or a caught
 // flag edge both mean a write landed. Returns nonzero while live.

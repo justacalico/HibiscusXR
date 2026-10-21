@@ -263,6 +263,7 @@ static void* hudThread(void* arg) {
     // before the overlay is shown for the first time
     initEglContext(e);
     while (e->running) hudFrame(e);
+    ctrl_probe_wait(&e->ctrlProbe);
     termDisplay(e);
     return nullptr;
 }

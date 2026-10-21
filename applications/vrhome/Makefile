@@ -307,7 +307,7 @@ $(HUD_APK): $(HUD_UNALIGNED) $(HUD_SO) $(HUD_DEX) | toolcheck
 
 $(TEST_BIN): $(TEST_SRCS) $(HOST_SRCS) tests/test.h
 	@mkdir -p $(dir $@)
-	$(CXX) $(HOST_CXXFLAGS) -o $@ $(TEST_SRCS) $(HOST_SRCS) -lz -lm
+	$(CXX) $(HOST_CXXFLAGS) -o $@ $(TEST_SRCS) $(HOST_SRCS) -lz -lm -lpthread
 
 test: $(TEST_BIN)
 	./$(TEST_BIN)

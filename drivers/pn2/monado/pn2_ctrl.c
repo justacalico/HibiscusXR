@@ -251,6 +251,9 @@ static void
 pn2_ctrl_destroy(struct xrt_device *xdev)
 {
 	struct pn2_ctrl *d = pn2_ctrl(xdev);
+	// a probe still inside its spin writes the verdict back into this
+	// struct - join it before the free
+	ctrl_probe_wait(&d->probe);
 	if (d->share_open) {
 		ctrl_share_close(&d->share);
 	}

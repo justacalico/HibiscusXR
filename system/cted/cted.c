@@ -451,6 +451,9 @@ cmd_ctrl(int fd)
 		}
 		usleep(33 * 1000);
 	}
+	// the probe writes its verdict through &probe - join it before the
+	// stack frame goes away
+	ctrl_probe_wait(&probe);
 	ctrl_share_close(&share);
 }
 

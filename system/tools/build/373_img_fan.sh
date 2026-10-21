@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Add Pico's fan daemon to system-pn2-full.img.
 #
 # The GSI ships no fan control at all. The gpio-fan cooling device exists and

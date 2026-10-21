@@ -1,8 +1,8 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Characterise the NDI electromagnetic controller tracking stack.
 set -u
-W=/home/justin/pn2
+W=$HIBISCUS_ROOT
 V=$W/vendor
 N=${HIBISCUS_ROOT}/notes
 SYS=${HIBISCUS_ROOT}/images/snapshot_lun0/system.bin

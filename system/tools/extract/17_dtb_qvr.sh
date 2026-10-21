@@ -1,10 +1,10 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 set -u
 B=${HIBISCUS_ROOT}
 EX=$B/extracted
 N=$B/notes
-V=/home/justin/pn2/vendor
+V=$HIBISCUS_ROOT/vendor
 
 mkdir -p "$EX/dtb"
 

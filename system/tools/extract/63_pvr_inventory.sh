@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Inventory the Pico VR stack inside the STOCK system.img.
 #
 # /vendor kept the QVR/PVR *client* libraries, but the daemons, framework jars,

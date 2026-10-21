@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Build vendor.img from the OTA and pull the key identity files out of system/vendor/oem.
 set -u
 B=${HIBISCUS_ROOT}

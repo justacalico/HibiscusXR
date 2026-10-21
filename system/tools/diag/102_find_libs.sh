@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # CVService wants libCVController.so, which is not the same file as the
 # libCVControllerClient.pxr.so I already pulled. My extraction list was written
 # from the directory listing rather than from what the apps actually load, so

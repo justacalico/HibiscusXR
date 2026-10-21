@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # The flasher binary is the authoritative answer for how to reach the FPGA's SPI flash.
 set -u
 T=${HIBISCUS_ROOT}/ndi_firmware/EYE_pui4.1.3_firehose/w25q_write_bin

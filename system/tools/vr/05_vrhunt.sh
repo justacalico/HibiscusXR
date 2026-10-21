@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # THE DECISIVE TEST.
 # Find Pico's VR runtime binaries in /system and determine what they link against.
 # If they only need vendor + NDK/VNDK-stable libs -> portable.

@@ -1,7 +1,7 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 set -u
-V=/home/justin/pn2/vendor
+V=$HIBISCUS_ROOT/vendor
 L=${HIBISCUS_ROOT}/notes/31_fstab.log
 exec >"$L" 2>&1
 

@@ -37,7 +37,7 @@ if [ "${1:-}" = "--list" ]; then
   exit 0
 fi
 
-R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
+R="${HIBISCUS_ROOT:?set HIBISCUS_ROOT to a build root - see system/dist/README.md}"
 REPO="$(cd "$(dirname "$0")/../../.." && pwd -P)"
 
 # $HIBISCUS_ROOT is a scratch root, never the checkout - the copies below replace

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Compile and inject cted, the CTE daemon HCTE talks to.
 #
 # Generic OS feature - not tied to a headset vendor: the protocol only leans

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # "VrApi: trackingstate = 0x0,0x0" is logged by the app's SDK while pvrservice is
 # publishing perfectly good rotation. Find the code that emits it and what it reads.
 set -u

@@ -9,7 +9,7 @@
 # There is no clean/full split for vmd and no device partition cap: qemu
 # takes the raw image on virtio-blk as-is.
 set -u
-R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
+R="${HIBISCUS_ROOT:?set HIBISCUS_ROOT to a build root - see system/dist/README.md}"
 IMG="$R/out/system-vmd.img"
 LOG="$R/notes/500_vmd.txt"
 exec >"$LOG" 2>&1

@@ -1,10 +1,10 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 set -u
 B=${HIBISCUS_ROOT}
 P=$B/images/snapshot_lun0/persist.bin
 N=$B/notes
-W=/home/justin/pn2
+W=$HIBISCUS_ROOT
 
 {
 echo "=== persist.bin identity ==="

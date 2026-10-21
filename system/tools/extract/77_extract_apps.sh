@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Pull the Pico VR apps out of the stock system image.
 #
 # Inspect before installing. Pico's apps are signed with Pico's platform key; the

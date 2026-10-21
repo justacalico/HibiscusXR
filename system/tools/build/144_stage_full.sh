@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Assemble a staging tree that mirrors /system, containing every Pico component
 # we have. This feeds the "full" image - the one that ships with the blobs in.
 #

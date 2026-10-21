@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Independent verification: extract key files back out of the image and hash them
 # against the sources. The write log said OK, but debugfs has silently refused
 # overwrites before, so confirm content rather than trusting the report.

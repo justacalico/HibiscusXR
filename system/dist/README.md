@@ -106,7 +106,7 @@ bash system/dist/scripts/layout-sources.sh
 
 - supply the input packages - either run `fetch-inputs.sh` (needs the
   deploy-token secrets, fetches only what the device's drivers declare)
-  or link the extracted dirs from an existing `~/PN2Lineage` workspace
+  or link the extracted dirs from an existing build-root workspace
   (`pvr_stack`, `pvr_apps_final`, `pvr_applibs`, `oem_final`,
   `overlay_pvr`, `airsvc`, `rfsa`, `qvr`, `cdsp`, `fan`, `seethrough`,
   `linklibs`, `build`, `overlay/lib64`,

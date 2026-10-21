@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Reconstruct stock system.img from the OTA so restore_stock.ps1 has something
 # to flash. Without this the restore path is broken.
 set -u
@@ -10,7 +10,7 @@ L=$B/notes/21_system_img.log
 exec >"$L" 2>&1
 
 echo "=== free space before ==="
-df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
+df -h "$HIBISCUS_ROOT" | tail -1
 
 if [ -f "$OTA/system.img" ]; then
   echo "system.img already present:"
@@ -44,5 +44,5 @@ grep -E 'ro.build.fingerprint|ro.pvr.internal.version|ro.build.version.release' 
 
 echo
 echo "=== free space after ==="
-df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
+df -h "$HIBISCUS_ROOT" | tail -1
 echo DONE

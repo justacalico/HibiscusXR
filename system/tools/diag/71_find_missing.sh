@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Two jobs:
 #  1. find the pvr modules I failed to extract the first time
 #  2. find out how many of the PVR blobs reference framework symbols that

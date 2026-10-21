@@ -40,7 +40,7 @@ def resolve(m, path):
     if path.startswith("/"):
         return path
     if path.startswith("tools/"):
-        root = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT")
+        root = os.environ.get("HIBISCUS_ROOT")
         if not root:
             sys.exit("provider: HIBISCUS_ROOT unset, cannot resolve %s" % path)
         return os.path.join(root, path)

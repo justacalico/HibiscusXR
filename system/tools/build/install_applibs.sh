@@ -10,7 +10,7 @@
 #   HIBISCUS_SERIAL  device serial if more than one is connected
 set -euo pipefail
 
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 SRC="${1:-$HIBISCUS_ROOT/pvr_applibs}"
 APPS="${2:-$HIBISCUS_ROOT/pvr_apps}"
 ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})

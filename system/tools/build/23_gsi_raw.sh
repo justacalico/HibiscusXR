@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 set -u
 D=${HIBISCUS_ROOT}/gsi
 G=$D/lineage-17.1-20210808-UNOFFICIAL-treble_arm64_avS.img

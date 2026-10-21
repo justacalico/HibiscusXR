@@ -8,7 +8,7 @@
 # Defaults to the version already pinned in manifest.env - bump the pin,
 # upload, push.
 set -euo pipefail
-SRC="${PN2_SRC:-$HOME/PN2Lineage}"
+SRC="${HIBISCUS_SRC:-${HIBISCUS_ROOT:?set HIBISCUS_SRC or HIBISCUS_ROOT to the inputs root}}"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"
 # Inputs live in the private neosalsa/dist-inputs project so they stay
 # non-public while dist itself (and its release assets) are open.

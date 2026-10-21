@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # /bin/vr and /framework/vr.jar exist in the GSI already, and debugfs `write`
 # does not overwrite - it fails and leaves the original. Remove then write.
 set -u

@@ -35,3 +35,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: 驱动若干已验证缺陷 (#51)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/186) (!186)
 - [vmd: 钳制 DRM 资源计数防止栈溢出 (#48)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/187) (!187)
 - [fix: vmd_destroy 不再因 recv 阻塞永久挂起 (#47)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/188) (!188)
+- [fix: vrhud 跨线程共享集合的并发修改 (#43)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/189) (!189)

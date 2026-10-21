@@ -13,7 +13,7 @@ through the package registry, so they never expire.
 
 1. `scripts/layout-sources.sh` copies the monorepo source dirs into
    `$HIBISCUS_ROOT` (`system/{tools,overlay,shim,hsvr,cted}`, `drivers/`,
-   `controllers/`, `applications/{vrhome,settings,
+   `controllers/`, `applications/{vrhome,panel_theme,
    store,keyboard}`) - the sources are the monorepo checkout itself, nothing
    gets cloned.
 2. `scripts/fetch-inputs.sh` downloads the pinned input packages from the

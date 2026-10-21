@@ -6,6 +6,9 @@ monorepo_version_separator = "-v"
 
 [monorepo.packages.cte]
 path = "applications/desktop/cte"
+# The shared package ships inside the apps - its commits count as in
+# scope for both, so a fix there can bump a release.
+include = ["applications/common/**"]
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]
@@ -19,6 +22,7 @@ pre_bump_hooks = [
 
 [monorepo.packages.hbsup]
 path = "applications/desktop/hbsup"
+include = ["applications/common/**"]
 pre_bump_hooks = [
   "sed -i -E 's/^version:.*/version: {{version}}/' pubspec.yaml",
 ]

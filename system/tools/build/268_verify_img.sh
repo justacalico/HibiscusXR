@@ -30,13 +30,13 @@ check /lib64/pvr_air/libskia.so              ${HIBISCUS_ROOT}/shim/libskia_stub.
 check /lib64/libshim_pvr.so                  ${HIBISCUS_ROOT}/shim/libshim_pvr.so
 check /apex/com.android.runtime.release/lib64/libart.so ${HIBISCUS_ROOT}/notes/libart-patched.so
 check /priv-app/VRShell2/lib/arm64/libPvr_UnitySDK.so   ${HIBISCUS_ROOT}/notes/vrshell_lib/libPvr_UnitySDK.patched2.so
-check /etc/init/pn2-qvrd.rc                  ${HIBISCUS_ROOT}/overlay/etc/init/pn2-qvrd.rc
-check /etc/init/pn2-ipd.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-ipd.rc
-check /etc/init/pn2-dof.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-dof.rc
-check /etc/init/pn2-env.rc                   ${HIBISCUS_ROOT}/overlay/etc/init/pn2-env.rc
-check /bin/pn2-ipdd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-ipdd
-check /bin/pn2-dofd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-dofd
-check /bin/pn2-envd                          ${HIBISCUS_ROOT}/overlay/bin/pn2-envd
+check /etc/init/pn2-qvrd.rc                  ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-qvrd.rc
+check /etc/init/pn2-ipd.rc                   ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-ipd.rc
+check /etc/init/pn2-dof.rc                   ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-dof.rc
+check /etc/init/pn2-env.rc                   ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-env.rc
+check /bin/pn2-ipdd                          ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-ipdd
+check /bin/pn2-dofd                          ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-dofd
+check /bin/pn2-envd                          ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-envd
 check /media/bootanimation.zip               ${HIBISCUS_ROOT}/out/bootanimation.zip
 check /media/LoadingRes/config.txt           ${HIBISCUS_ROOT}/.stub/media/LoadingRes/config.txt
 check /media/LoadingRes/inside_background_img.png \
@@ -71,8 +71,8 @@ echo "=== OpenXR chain ==="
 XR=${HIBISCUS_ROOT}/hsvr
 check /etc/openxr/1/active_runtime.json            "$XR/android/active_runtime.json"
 check /product/etc/openxr/1/active_runtime.json    "$XR/android/active_runtime.json"
-check /etc/init/pn2-openxr.rc                      ${HIBISCUS_ROOT}/overlay/etc/init/pn2-openxr.rc
-check /etc/init/pn2-vulkan.rc                      ${HIBISCUS_ROOT}/overlay/etc/init/pn2-vulkan.rc
+check /etc/init/hibiscus-openxr.rc                      ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/hibiscus-openxr.rc
+check /etc/init/pn2-vulkan.rc                      ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-vulkan.rc
 check /etc/permissions/pn2-xr-features.xml         ${HIBISCUS_ROOT}/overlay/etc/permissions/pn2-xr-features.xml
 check /etc/default-permissions/pn2-cvservice.xml  ${HIBISCUS_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml
 check /lib64/hw/vulkan.sdm845.so                   "$XR/turnip/out/libvulkan_freedreno.so"
@@ -91,7 +91,7 @@ debugfs -R "dump /app/MonadoOpenXR/MonadoOpenXR.apk $T/mx.apk" "$IMG" >/dev/null
   || printf '  DIFFER %s\n' "/app/MonadoOpenXR/MonadoOpenXR.apk (missing or not PN2-signed)"
 # pvrservice ships again for the controller tracking path - the rc itself
 # gates the service on ro.product.device=PICOA7B10
-check /etc/init/pvrservice.rc ${HIBISCUS_ROOT}/overlay/etc/init/pvrservice.rc
+check /etc/init/pvrservice.rc ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pvrservice.rc
 
 echo
 echo "=== init scripts present ==="

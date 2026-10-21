@@ -126,17 +126,17 @@ echo "=== CVService runtime permission pregrant ==="
 # grant dialog inside VR instead. Pre-granting as system-fixed kills the
 # dialog for every boot.
 mkd /etc/default-permissions
-put ${HIBISCUS_ROOT}/overlay/etc/default-permissions/pn2-cvservice.xml \
+put ${HIBISCUS_ROOT}/drivers/pn2/image/etc/default-permissions/pn2-cvservice.xml \
     /etc/default-permissions/pn2-cvservice.xml 644
 
 echo
 echo "=== settings bridge daemons ==="
 # settings.Global -> persist props; the props are the channel every native
 # renderer can read live without a settings-provider round trip
-put ${HIBISCUS_ROOT}/overlay/bin/pn2-ipdd /bin/pn2-ipdd 755
-put ${HIBISCUS_ROOT}/overlay/bin/pn2-dofd /bin/pn2-dofd 755
-put ${HIBISCUS_ROOT}/overlay/bin/pn2-themed /bin/pn2-themed 755
-put ${HIBISCUS_ROOT}/overlay/bin/pn2-envd /bin/pn2-envd 755
+put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-ipdd /bin/pn2-ipdd 755
+put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-dofd /bin/pn2-dofd 755
+put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-themed /bin/pn2-themed 755
+put ${HIBISCUS_ROOT}/drivers/pn2/image/bin/pn2-envd /bin/pn2-envd 755
 
 echo
 echo "=== ART trampoline patch (mov sp,x28 -> mov sp,x29) ==="

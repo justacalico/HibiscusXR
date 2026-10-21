@@ -12,6 +12,13 @@
   "image": {
     "inputs": ["STACK", "APPS", "APPLIBS", "OEM", "LOADINGRES", "BLOBS", "SEETHROUGH"],
     "steps": {
+      "base": [
+        {
+          "run": "scripts/base.sh",
+          "log": "150_pn2_base.txt",
+          "marker": "PN2 BASE OK"
+        }
+      ],
       "stage": [
         {
           "run": "tools/build/144_stage_full.sh",

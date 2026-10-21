@@ -84,6 +84,6 @@ EOF
   echo
 }
 
-fix_image ${HIBISCUS_ROOT}/out/system-pn2.img
+fix_image ${HIBISCUS_ROOT}/out/system-base.img
 fix_image ${HIBISCUS_ROOT}/out/system-pn2-full.img
 echo DONE

@@ -24,7 +24,7 @@ dumpe2fs -h "$IMG" 2>/dev/null | grep 'Free blocks'
 echo
 echo "=== fan daemon ==="
 put ${HIBISCUS_ROOT}/fan/fancontrol /bin/fancontrol 755
-put ${HIBISCUS_ROOT}/overlay/etc/init/pn2-fanservice.rc /etc/init/pn2-fanservice.rc 644
+put ${HIBISCUS_ROOT}/drivers/pn2/image/etc/init/pn2-fanservice.rc /etc/init/pn2-fanservice.rc 644
 
 echo
 echo "=== repair + verify ==="

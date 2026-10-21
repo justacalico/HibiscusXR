@@ -15,7 +15,7 @@
 # /priv-app/Dialer), so the script walks the image's app roots, reads
 # each APK's package name with aapt and kills the ones on the list.
 set -u
-IMG=${HIBISCUS_ROOT}/out/system-pn2.img
+IMG=${HIBISCUS_ROOT}/out/system-base.img
 LOG=${HIBISCUS_ROOT}/notes/410_strip.txt
 exec >"$LOG" 2>&1
 

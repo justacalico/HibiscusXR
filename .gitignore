@@ -211,6 +211,7 @@ replay_pid*
 # === Crash dumps & core files ==============================================
 core
 core.[0-9]*
+*.core
 *.dump
 *.heapdump
 *.hprof

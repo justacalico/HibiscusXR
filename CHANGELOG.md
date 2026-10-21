@@ -21,3 +21,4 @@ linked line per MR no matter how many commits it carried.
 - [vrhome: 设置新增实验功能区](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/172) (!172)
 - [实验性功能:固定注视点渲染](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/173) (!173)
 - [vrhome: 设置与快捷面板以应用形式加入应用库](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/174) (!174)
+- [docs: 修正 dist README 应用列表并清理重复 changelog 条目](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/175) (!175)

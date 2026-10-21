@@ -841,6 +841,9 @@ pn2_hmd_create(void)
 	enum u_device_alloc_flags flags =
 	    (enum u_device_alloc_flags)(U_DEVICE_ALLOC_HMD | U_DEVICE_ALLOC_TRACKING_NONE);
 	struct pn2_device *d = U_DEVICE_ALLOCATE(struct pn2_device, flags, 1, 0);
+	if (d == NULL) {
+		return NULL;
+	}
 
 	d->base.name = XRT_DEVICE_GENERIC_HMD;
 	d->base.device_type = XRT_DEVICE_TYPE_HMD;

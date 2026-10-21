@@ -129,7 +129,7 @@ vmd_run_thread(void *ptr)
 		}
 		uint64_t now = os_monotonic_get_ns();
 		os_mutex_lock(&d->lock);
-		if (pkt.seq != d->last_seq) {
+		if (!d->have_pose || pkt.seq != d->last_seq) {
 			vmd_push(d, &pkt, now);
 			d->last_seq = pkt.seq;
 		}

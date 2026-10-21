@@ -1,0 +1,92 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
+/// Injectable seams so tests never touch a real adb binary.
+typedef AdbRun = Future<ProcessResult> Function(List<String> args);
+typedef AdbSpawn = Future<Process> Function(List<String> args);
+
+/// Thin wrapper over the `adb` executable.
+class AdbRunner {
+  AdbRunner({this.adbPath = 'adb', AdbRun? run, AdbSpawn? spawn})
+      : _run = run ?? ((args) => Process.run(adbPath, args)),
+        _spawn = spawn ?? ((args) => Process.start(adbPath, args));
+
+  final String adbPath;
+  final AdbRun _run;
+  final AdbSpawn _spawn;
+
+  Future<ProcessResult> run(List<String> args) => _run(args);
+
+  Future<Process> spawn(List<String> args) => _spawn(args);
+
+  Future<String> shellText(String serial, String command) async {
+    final r = await run(['-s', serial, 'shell', command]);
+    return (r.stdout as String? ?? '') + (r.stderr as String? ?? '');
+  }
+
+  /// `adb exec-out` byte stream - screencap, file reads, dd. Kills the
+  /// adb child when the consumer walks away, which drops the
+  /// device-side command too. With [failOnExit] a nonzero exit code
+  /// surfaces as a stream error so failed transfers can't look clean.
+  Stream<Uint8List> execOut(String serial, List<String> command,
+      {bool failOnExit = false}) async* {
+    final p = await spawn(['-s', serial, 'exec-out', ...command]);
+    unawaited(p.stderr.drain());
+    try {
+      yield* p.stdout
+          .map((c) => c is Uint8List ? c : Uint8List.fromList(c));
+      final code = await p.exitCode;
+      if (failOnExit && code != 0) {
+        throw ProcessException(adbPath, ['exec-out', ...command],
+            'exec-out exited $code', code);
+      }
+    } finally {
+      p.kill();
+    }
+  }
+
+  /// Long-running stdout line stream (logcat).
+  Stream<String> streamLines(String serial, List<String> command) async* {
+    final p = await spawn(['-s', serial, ...command]);
+    try {
+      yield* p.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter());
+      await p.exitCode;
+    } finally {
+      p.kill();
+    }
+  }
+
+  /// `adb devices -l` rows.
+  Future<List<AdbDeviceRow>> devices() async {
+    final r = await run(['devices', '-l']);
+    return parseAdbDevices(r.stdout as String? ?? '');
+  }
+}
+
+class AdbDeviceRow {
+  const AdbDeviceRow(this.serial, this.state, this.model);
+  final String serial, state, model;
+  bool get isReady => state == 'device';
+}
+
+List<AdbDeviceRow> parseAdbDevices(String out) {
+  final rows = <AdbDeviceRow>[];
+  for (final line in out.split('\n')) {
+    final t = line.trim();
+    if (t.isEmpty || t.startsWith('List of devices') || t.startsWith('*')) {
+      continue;
+    }
+    final parts = t.split(RegExp(r'\s+'));
+    if (parts.length < 2) continue;
+    var model = '';
+    for (final kv in parts.skip(2)) {
+      if (kv.startsWith('model:')) model = kv.substring(6);
+    }
+    rows.add(AdbDeviceRow(parts[0], parts[1], model));
+  }
+  return rows;
+}

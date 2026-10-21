@@ -113,7 +113,8 @@ read_ppm(const std::string &path, int *w, int *h, std::vector<uint8_t> *rgb)
 	char magic[3] = {};
 	int maxv = 0;
 	if (fscanf(f, "%2s", magic) != 1 || strcmp(magic, "P6") != 0 ||
-	    fscanf(f, "%d %d %d", w, h, &maxv) != 3 || fgetc(f) == EOF) {
+	    fscanf(f, "%d %d %d", w, h, &maxv) != 3 || *w <= 0 || *h <= 0 ||
+	    *w > 16384 || *h > 16384 || maxv != 255 || fgetc(f) == EOF) {
 		fclose(f);
 		return false;
 	}

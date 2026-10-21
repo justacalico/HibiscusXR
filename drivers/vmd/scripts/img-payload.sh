@@ -17,7 +17,7 @@ exec >"$LOG" 2>&1
 fail=0
 
 echo "=== starting from the clean image ==="
-CLEAN="$R/out/system-pn2.img"
+CLEAN="$R/out/system-base.img"
 [ -f "$CLEAN" ] || { echo "FAIL: $CLEAN missing - 143 never ran"; exit 1; }
 cp -f "$CLEAN" "$IMG"
 ls -l "$IMG"
@@ -63,7 +63,7 @@ echo "=== self-check ==="
 for p in /app/vrhome/vrhome.apk /app/vrhud/vrhud.apk \
          /app/MonadoOpenXR/MonadoOpenXR.apk \
          /app/MonadoOpenXR/lib/arm64/libopenxr_monado.so \
-         /etc/init/pn2-home.rc /etc/init/pn2-openxr.rc \
+         /etc/init/hibiscus-home.rc /etc/init/hibiscus-openxr.rc \
          /etc/hibiscus-release; do
   if debugfs -R "stat $p" "$IMG" 2>/dev/null | grep -q "Inode:"; then
     echo "  OK    $p"

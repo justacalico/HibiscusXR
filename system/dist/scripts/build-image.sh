@@ -99,6 +99,9 @@ step "strip stock apps (410)"
 bash "$T/410_strip_stock_apps.sh" || true
 ran 410_strip.txt "STRIP OK"
 
+step "drivers: base identity"
+run_phase base
+
 if [ "$DEVICE" = "neo2" ]; then
   step "LoadingRes stub image"
   "$SELF/scripts/make-loadingres-img.sh"

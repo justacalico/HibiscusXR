@@ -16,7 +16,7 @@ set -u
 GSI=${HIBISCUS_ROOT}/gsi/gsi_raw.img
 OV=${HIBISCUS_ROOT}/overlay
 OUT=${HIBISCUS_ROOT}/out
-IMG=$OUT/system-pn2.img
+IMG=$OUT/system-base.img
 LOG=${HIBISCUS_ROOT}/notes/143_build.txt
 MODE=${1:-update}
 exec >"$LOG" 2>&1
@@ -32,53 +32,11 @@ fail=0
 . "$(dirname "${BASH_SOURCE[0]}")/../lib/img.sh"
 
 echo
-echo "=== init scripts ==="
-for f in pn2-vintf.rc pn2-snd.rc pn2-settings.rc pn2-power.rc pvrservice.rc pn2-ipd.rc pn2-dof.rc pn2-theme.rc pn2-env.rc; do
-  [ -f "$OV/etc/init/$f" ] && put "$OV/etc/init/$f" "/etc/init/$f" 644
-done
-put "$OV/bin/pn2-ipdd" "/bin/pn2-ipdd" 755
-put "$OV/bin/pn2-dofd" "/bin/pn2-dofd" 755
-put "$OV/bin/pn2-themed" "/bin/pn2-themed" 755
-put "$OV/bin/pn2-envd" "/bin/pn2-envd" 755
-put "$OV/bin/pn2-appsweep" "/bin/pn2-appsweep" 755
-
-echo
-echo "=== VINTF manifest override ==="
-mkd /etc/pn2
-put "$OV/etc/pn2/vendor_manifest.xml" "/etc/pn2/vendor_manifest.xml" 644
-
-echo
 echo "=== patched libs ==="
 put "$OV/lib64/libsensorservice.so" "/lib64/libsensorservice.so" 644
 put "$OV/lib64/libshim_pvr.so"      "/lib64/libshim_pvr.so"      644
 
 echo
-echo "=== headset buttons: key layouts ==="
-mkd /usr/keylayout
-for f in gpio-keys.kl dc_detect.kl; do
-  put "$OV/usr/keylayout/$f" "/usr/keylayout/$f" 644
-done
-
-echo
-echo "=== headset buttons: libinput keycode labels ==="
-# the GSI's libinput does not know Pico's labels, so gpio-keys.kl would be
-# discarded whole and Confirm would arrive as ENTER through Generic.kl.
-# lib2dToVr only clicks on keycodes 1001/1002/96, so the ok button does
-# nothing inside PVR Home. Patch the image's own libinput in place: dump,
-# repurpose unused TV_* table entries, write back.
-TMP=$(mktemp -d)
-for lib in lib64 lib; do
-  debugfs -R "dump /$lib/libinput.so $TMP/libinput.so" "$IMG" 2>/dev/null
-  if [ -s "$TMP/libinput.so" ] && python3 "$HIBISCUS_ROOT/tools/patch/401_patch_libinput.py" \
-      "$TMP/libinput.so" "$TMP/libinput.patched.so" >/dev/null 2>&1; then
-    put "$TMP/libinput.patched.so" "/$lib/libinput.so" 644
-  else
-    echo "  SKIP    /$lib/libinput.so (patch failed or missing)"
-    fail=$((fail+1))
-  fi
-  rm -f "$TMP/libinput.so" "$TMP/libinput.patched.so"
-done
-
 echo
 echo "=== boot animation ==="
 # overlay/media/bootanimation is the unpacked zip. The panel is 3840x2160
@@ -120,7 +78,7 @@ echo "=== build.prop ==="
 TMP=$(mktemp -d)
 debugfs -R "dump /build.prop $TMP/build.prop" "$IMG" 2>/dev/null
 if [ -s "$TMP/build.prop" ]; then
-  if grep -q 'Pico Neo 2 (A7B10) port additions' "$TMP/build.prop"; then
+  if grep -q 'ro.product.manufacturer=Hibiscus' "$TMP/build.prop"; then
     echo "  already patched ($(stat -c%s "$TMP/build.prop") bytes)"
   else
     # guarantee a trailing newline first. Without this the append glues onto the
@@ -128,16 +86,10 @@ if [ -s "$TMP/build.prop" ]; then
     #   ro.sf.hwrotation=90ro.product.device=PICOA7B10
     # in both shipped images, silently dropping ro.product.device.
     [ -n "$(tail -c1 "$TMP/build.prop")" ] && echo "" >> "$TMP/build.prop"
-    cat "$OV/props.append" >> "$TMP/build.prop"
-    [ -n "$(tail -c1 "$TMP/build.prop")" ] && echo "" >> "$TMP/build.prop"
-    sed -i 's/^ro\.build\.product=.*/ro.build.product=PICOA7B10/' "$TMP/build.prop"
-    grep -q '^ro.product.device=' "$TMP/build.prop" || echo 'ro.product.device=PICOA7B10' >> "$TMP/build.prop"
-    grep -q '^ro.product.model='  "$TMP/build.prop" || echo 'ro.product.model=Pico Neo 2' >> "$TMP/build.prop"
     grep -q '^ro.product.manufacturer=' "$TMP/build.prop" || echo 'ro.product.manufacturer=Hibiscus' >> "$TMP/build.prop"
     put "$TMP/build.prop" "/build.prop" 600
   fi
   echo "  --- our block as it now reads ---"
-  grep -A6 'Pico Neo 2 (A7B10) port additions' "$TMP/build.prop" | head -8 | sed 's/^/    /'
   grep -E '^ro\.(build\.product|product\.(device|model))=' "$TMP/build.prop" | sed 's/^/    /'
 else
   echo "  ERROR: could not read build.prop"
@@ -147,10 +99,7 @@ fi
 echo
 echo "=== hashes: image vs overlay (must match) ==="
 for pair in "/lib64/libshim_pvr.so $OV/lib64/libshim_pvr.so" \
-            "/lib64/libsensorservice.so $OV/lib64/libsensorservice.so" \
-            "/usr/keylayout/gpio-keys.kl $OV/usr/keylayout/gpio-keys.kl" \
-            "/usr/keylayout/dc_detect.kl $OV/usr/keylayout/dc_detect.kl" \
-            "/etc/pn2/vendor_manifest.xml $OV/etc/pn2/vendor_manifest.xml"; do
+            "/lib64/libsensorservice.so $OV/lib64/libsensorservice.so"; do
   set -- $pair
   debugfs -R "dump $1 $TMP/x" "$IMG" 2>/dev/null
   a=$(md5sum "$TMP/x" 2>/dev/null | cut -d' ' -f1)

@@ -8,6 +8,13 @@
   "image": {
     "inputs": ["BLOBS"],
     "steps": {
+      "base": [
+        {
+          "run": "scripts/base.sh",
+          "log": "149_vmd_base.txt",
+          "marker": "VMD BASE OK"
+        }
+      ],
       "stage": [],
       "inject": [
         {

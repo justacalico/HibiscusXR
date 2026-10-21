@@ -3,13 +3,13 @@
 # Build system-pn2-full.img: the clean image plus every Pico component.
 #
 # Two images are maintained:
-#   system-pn2.img       GSI + our fixes only. No proprietary content.
+#   system-base.img      GSI + our fixes only. No proprietary content.
 #   system-pn2-full.img  the same, plus Pico's stack. Ready to flash as-is.
 #
 # The GSI has ~57MB free and the Pico stack is ~313MB, so the filesystem has to
 # be grown first. The system partition is 3943694336 bytes; stay under that.
 set -u
-CLEAN=${HIBISCUS_ROOT}/out/system-pn2.img
+CLEAN=${HIBISCUS_ROOT}/out/system-base.img
 FULL=${HIBISCUS_ROOT}/out/system-pn2-full.img
 STAGE=${HIBISCUS_ROOT}/fullstage
 LOG=${HIBISCUS_ROOT}/notes/145_full.txt

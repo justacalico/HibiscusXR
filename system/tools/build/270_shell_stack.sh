@@ -26,13 +26,13 @@ INIT=${HIBISCUS_ROOT}/overlay/etc/init
 
 echo
 echo "=== shell init hooks (generic, not headset hardware) ==="
-# pn2-home.rc pins the HOME role onto the shell and kills the stock homes;
-# pn2-openxr.rc stages the runtime into /data/local/tmp/xr at boot;
-# pn2-adbwifi.rc is opt-in wireless adb. All three are device-independent
-# Hibiscus wiring despite the pn2_ service names.
-put "$INIT/pn2-home.rc"    /etc/init/pn2-home.rc    644
-put "$INIT/pn2-openxr.rc"  /etc/init/pn2-openxr.rc  644
-put "$INIT/pn2-adbwifi.rc" /etc/init/pn2-adbwifi.rc 644
+# hibiscus-home.rc pins the HOME role onto the shell and kills the stock homes;
+# hibiscus-openxr.rc stages the runtime into /data/local/tmp/xr at boot;
+# hibiscus-adbwifi.rc is opt-in wireless adb. All three are device-independent
+# Hibiscus wiring despite the hibiscus_ service names.
+put "$INIT/hibiscus-home.rc"    /etc/init/hibiscus-home.rc    644
+put "$INIT/hibiscus-openxr.rc"  /etc/init/hibiscus-openxr.rc  644
+put "$INIT/hibiscus-adbwifi.rc" /etc/init/hibiscus-adbwifi.rc 644
 
 echo
 echo "=== shell split: env (gitlab.neosalsa.home) + HUD (gitlab.neosalsa.hud) ==="
@@ -40,7 +40,7 @@ echo "=== shell split: env (gitlab.neosalsa.home) + HUD (gitlab.neosalsa.hud) ==
 # platform-signed service holding a TYPE_SYSTEM_OVERLAY window; it owns the
 # virtual displays, so panels live over the env and over summoned VR apps.
 # HOME role, hidden API whitelist and disabling the stock Pico homes are
-# first-boot work in pn2-home.rc - the role holder lives in /data and cannot
+# first-boot work in hibiscus-home.rc - the role holder lives in /data and cannot
 # be baked in.
 #
 # Always rebuild from source and verify the platform signature: a debug-signed
@@ -49,9 +49,10 @@ echo "=== shell split: env (gitlab.neosalsa.home) + HUD (gitlab.neosalsa.hud) ==
 make -C "$HIBISCUS_ROOT/vrhome" apk \
     || { echo "FAIL vrhome build"; fail=$((fail+1)); }
 BT=$(ls -d "${ANDROID_SDK_ROOT:-/opt/android-sdk}"/build-tools/* | sort -V | tail -1)
+SIGN_CN=$(openssl x509 -in "$HIBISCUS_ROOT/build/keys/platform.x509.pem" -subject -noout | sed -n 's/.*CN *= *\([^,]*\).*/\1/p')
 for a in vrhome vrhud; do
   "$BT/apksigner" verify --print-certs "$HIBISCUS_ROOT/vrhome/out/$a.apk" \
-      | grep -q "CN=PN2" \
+      | grep -q "$SIGN_CN" \
       || { echo "FAIL $a.apk is not platform-signed"; fail=$((fail+1)); }
 done
 mkd /app/vrhome
@@ -73,7 +74,7 @@ for app in store; do
   "$BT/apksigner" sign --key "$HIBISCUS_ROOT/build/keys/platform.pk8" \
       --cert "$HIBISCUS_ROOT/build/keys/platform.x509.pem" "$APK" \
       || { echo "FAIL $app sign"; fail=$((fail+1)); }
-  "$BT/apksigner" verify --print-certs "$APK" | grep -q "CN=PN2" \
+  "$BT/apksigner" verify --print-certs "$APK" | grep -q "$SIGN_CN" \
       || { echo "FAIL $app.apk is not platform-signed"; fail=$((fail+1)); }
 done
 mkd /app/store
@@ -104,7 +105,7 @@ echo "=== OpenXR stack: Monado runtime + hsvr kit drivers ==="
 #     /vendor/etc, /system/etc for openxr/1/active_runtime.json, first hit
 #     wins. /product lives inside this image, so our manifest shadows the
 #     stock one in /vendor/etc without touching vendor.img.
-#   - apps can only dlopen() absolute paths under /data, so pn2-openxr.rc
+#   - apps can only dlopen() absolute paths under /data, so hibiscus-openxr.rc
 #     stages the runtime into /data/local/tmp/xr at boot and the manifest
 #     points there. /system paths are unreachable from an app namespace.
 XR=${HIBISCUS_ROOT}/hsvr
@@ -127,7 +128,7 @@ put "$XR/android/active_runtime.json" /product/etc/openxr/1/active_runtime.json 
 # PM feature flags XR apps query at install/run time (WiVRn marks the first
 # two required) - without these the device reads as a plain handset
 mkd /etc/permissions
-put ${HIBISCUS_ROOT}/overlay/etc/permissions/pn2-xr-features.xml /etc/permissions/pn2-xr-features.xml 644
+put ${HIBISCUS_ROOT}/overlay/etc/permissions/hibiscus-xr-features.xml /etc/permissions/hibiscus-xr-features.xml 644
 # monado is an NDK build and DT_NEEDEDs libc++_shared.so; land it in
 # /system/lib64 so system-side loads (and, on neo2, the sphal-linked Turnip
 # driver) resolve it
@@ -165,7 +166,7 @@ done
 img_run_cmds
 for probe in /framework/framework-res.apk /app/vrhud/vrhud.apk /product/priv-app/Settings/Settings.apk; do
   debugfs -R "dump $probe $W2-probe.apk" "$IMG" >/dev/null 2>&1
-  "$BT/apksigner" verify --print-certs "$W2-probe.apk" 2>/dev/null | grep -q "CN=PN2" \
+  "$BT/apksigner" verify --print-certs "$W2-probe.apk" 2>/dev/null | grep -q "$SIGN_CN" \
       || { echo "FAIL $probe not PN2-signed"; fail=$((fail+1)); }
 done
 rm -rf "$W2" "$CMDS" "$W2-probe.apk"

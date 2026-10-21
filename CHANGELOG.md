@@ -30,3 +30,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: store 接通设备 SDK 版本过滤并修图片地址与索引解析](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/181) (!181)
 - [fix: xrtest prop_str 不再溢出栈缓冲区](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/182) (!182)
 - [fix: ctrl probe 线程写入已释放的结构体](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/183) (!183)
+- [fix: vrhome/vrdemo 若干已验证缺陷 (#45)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/184) (!184)

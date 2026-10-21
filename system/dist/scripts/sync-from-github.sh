@@ -37,8 +37,37 @@ if [ -n "$PKG_ID" ] && [ "$PKG_ID" != "null" ]; then
   glab api --method DELETE "projects/$CI_PROJECT_ID/packages/$PKG_ID" 2>/dev/null || true
 fi
 
+# mark what shipped: fold "Unreleased" into a section named for this tag,
+# so the changelog reads per-build and the notes lookup below finds it.
+# os-v* tags already carry their section - os-bump writes it pre-tag. Runs
+# before `glab release create` so the GitLab tag lands on the changelog
+# commit instead of dangling one commit short.
+if git show FETCH_HEAD:CHANGELOG.md 2>/dev/null | grep -qF "[$RELEASE_TAG]"; then
+  echo "changelog already has a $RELEASE_TAG section"
+else
+  git fetch -q origin main "+refs/tags/*:refs/tags/*"
+  git checkout -B main FETCH_HEAD
+  python3 system/dist/scripts/os_changelog.py release "$RELEASE_TAG"
+  git add CHANGELOG.md
+  [ -d changelogs ] && git add -A changelogs/
+  if git diff --cached --quiet; then
+    echo "changelog unchanged"
+  else
+    git commit -m "docs: 标记 $RELEASE_TAG changelog"
+    if ! git push -o ci.skip origin HEAD:main 2>/dev/null; then
+      git fetch -q origin main
+      git rebase origin/main
+      python3 system/dist/scripts/os_changelog.py release "$RELEASE_TAG"
+      git add CHANGELOG.md
+      [ -d changelogs ] && git add -A changelogs/
+      git commit --amend --no-edit
+      git push origin HEAD:main
+    fi
+  fi
+fi
+
 # pull the matching changelog section (MR titles, one per MR) into the
-# release notes - for os-v* tags the section lives on main after os-bump
+# release notes
 NOTES="Mirrored from the GitHub release."
 git fetch -q origin main 2>/dev/null || true
 REF_SHA=$(git rev-parse FETCH_HEAD 2>/dev/null || echo "$CI_COMMIT_SHA")

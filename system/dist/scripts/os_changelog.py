@@ -22,9 +22,9 @@ Usage:
   os_changelog.py record            write the fragment for the current
                                     merge_request_event pipeline's MR
 
-The base point is the newest os-v* tag (commit date). With none, the newest
-date-scheme image tag (alpha-v*/beta-v*/vYYYY.*-rN) is used so the first
-release does not dump the repo's whole MR history into one section.
+The base point is the newest release tag of any channel - os-v* cogs and
+the alpha-v*/beta-v*/vYYYY.*-rN image tags all mark shipped code, so a new
+section only lists what merged after the last build went out.
 """
 import json
 import os
@@ -38,6 +38,11 @@ FILE = os.environ.get("CHANGELOG_FILE", "CHANGELOG.md")
 FRAG_DIR = os.environ.get("CHANGELOG_FRAG_DIR", "changelogs/unreleased")
 GLAB = os.environ.get("GLAB", "glab")
 GENERATED_RE = re.compile(r"^- \[.*\]\(\S*/-/merge_requests/\d+\) \(!\d+\)\s*$")
+# every tag that marks shipped code: cog releases and the image channel tags
+TAG_RE = re.compile(
+    r"^(?:os-v\d+\.\d+\.\d+|(?:alpha-|beta-)?v\d{4}\.\d{2}\.\d{2}-r\d+)$")
+LINKDEF_RE = re.compile(
+    r"^\[(?:os-v\d[^\]]*|(?:alpha-|beta-)?v\d{4}\.\d{2}\.\d{2}-r\d+)\]: ")
 
 
 def sh(*args):
@@ -69,21 +74,21 @@ def api_paginated(path):
         page += 1
 
 
-def last_release_tag():
-    tags = sh("git", "tag", "-l", "os-v*", "--sort=-version:refname").split()
-    if tags:
-        return tags[0]
-    # pre-cog date scheme: alpha-v2026.10.03-r10 / beta-v* / v2026.*-r*
-    tags = sh("git", "for-each-ref", "--sort=-creatordate",
+def last_release_tag(skip=None):
+    # newest shipped build is the base, whatever channel tagged it - an
+    # alpha section marks its MRs shipped just like an os-v section does.
+    # release mode passes its own tag as skip: a rerun after the tag
+    # already exists must still base on the previous build, not on itself
+    tags = sh("git", "for-each-ref", "--sort=-committerdate",
               "--format=%(refname:short)", "refs/tags").split()
     for t in tags:
-        if re.match(r"^(alpha-|beta-)?v\d{4}\.\d{2}\.\d{2}-r\d+$", t):
+        if t != skip and TAG_RE.match(t):
             return t
     return None
 
 
-def base_date():
-    tag = last_release_tag()
+def base_date(skip=None):
+    tag = last_release_tag(skip)
     if not tag:
         return None
     return sh("git", "log", "-1", "--format=%cI", tag).strip()
@@ -93,9 +98,9 @@ def ts(iso):
     return datetime.fromisoformat(iso.replace("Z", "+00:00")).timestamp()
 
 
-def merged_mrs(proj_api):
+def merged_mrs(proj_api, skip=None):
     qs = "state=merged&order_by=updated_at&sort=asc"
-    base = base_date()
+    base = base_date(skip)
     if base:
         qs += "&updated_after=" + urllib.parse.quote(base)
     mrs = api_paginated(f"projects/{proj_api}/merge_requests?{qs}")
@@ -117,9 +122,9 @@ def fragments():
     return out
 
 
-def section_entries(proj_api):
+def section_entries(proj_api, skip=None):
     """merged MRs from the API union fragment files, deduped by iid"""
-    mrs = merged_mrs(proj_api)
+    mrs = merged_mrs(proj_api, skip)
     entries = [entry(m) for m in mrs]
     seen = {m["iid"] for m in mrs}
     for iid, line in fragments().items():
@@ -158,7 +163,7 @@ def render(preamble, secs, linkdefs):
 
 
 def linkdefs_of(text):
-    return [l for l in text.splitlines() if re.match(r"^\[os-v[^\]]*\]: ", l)]
+    return [l for l in text.splitlines() if LINKDEF_RE.match(l)]
 
 
 def manual_lines(body):
@@ -206,11 +211,12 @@ def main():
     linkdefs = linkdefs_of(text)
     # drop linkdef lines that landed inside a parsed section body
     secs = [(t, "\n".join(l for l in b.splitlines()
-                          if not re.match(r"^\[os-v[^\]]*\]: ", l)))
+                          if not LINKDEF_RE.match(l)))
             for t, b in secs]
 
     unrel = next((b for t, b in secs if t == "Unreleased"), "")
-    body = "\n".join(section_entries(proj_api) + manual_lines(unrel))
+    skip = sys.argv[2] if mode == "release" else None
+    body = "\n".join(section_entries(proj_api, skip) + manual_lines(unrel))
     secs = [(t, b) for t, b in secs if t != "Unreleased"]
 
     if mode == "unreleased":

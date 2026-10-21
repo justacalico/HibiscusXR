@@ -81,8 +81,10 @@ like `os-v0.2.0`. Two hard rules:
   release embeds the changelog section.
 
 Manual pipelines on the default `alpha` (or `beta`) channel skip `os-bump`
-entirely - test builds keep the `alpha-v<date>-r<run>` tag and leave the
-changelog alone.
+entirely - test builds keep the `alpha-v<date>-r<run>` tag. The changelog
+is still marked, just later: `github-release-sync` folds `## Unreleased`
+into a `## [tag]` section when it mirrors the release back, so every
+shipped build has a named section.
 
 Overrides for `os-bump` (set as pipeline variables):
 

@@ -75,6 +75,23 @@ void main() {
       );
     });
 
+    test('valid json that is not an index object wraps as RepoException',
+        () {
+      final client = HttpRepoClient(
+        client: MockClient((req) async => http.Response('[]', 200)),
+      );
+      expect(
+        client.fetchIndex(Uri.parse('https://r.example/repo')),
+        throwsA(
+          isA<RepoException>().having(
+            (e) => e.message,
+            'message',
+            contains('not a valid index'),
+          ),
+        ),
+      );
+    });
+
     test('dispose closes only the client it owns', () {
       final owned = HttpRepoClient()..dispose();
       expect(owned, isNotNull);
@@ -225,15 +242,22 @@ void main() {
     final binding = TestWidgetsFlutterBinding.ensureInitialized();
     final log = <MethodCall>[];
     String next = 'installed';
+    int? sdk = 29;
+    var sdkBroken = false;
 
     setUp(() {
       log.clear();
+      sdk = 29;
+      sdkBroken = false;
       binding.defaultBinaryMessenger.setMockMethodCallHandler(
         channel,
         (call) async {
           log.add(call);
           return switch (call.method) {
             'openApp' => call.arguments['package'] == 'com.good',
+            'deviceSdk' => sdkBroken
+                ? throw PlatformException(code: 'gone')
+                : sdk,
             _ => next,
           };
         },
@@ -266,6 +290,18 @@ void main() {
       expect(await installer.openApp('com.good'), isTrue);
       expect(await installer.openApp('com.bad'), isFalse);
       expect(log.last.arguments, {'package': 'com.bad'});
+    });
+
+    test('deviceSdk reports the platform api level', () async {
+      final installer = ChannelInstaller();
+      expect(await installer.deviceSdk(), 29);
+      expect(log.last.method, 'deviceSdk');
+    });
+
+    test('deviceSdk degrades to null when the platform fails', () async {
+      sdkBroken = true;
+      final installer = ChannelInstaller();
+      expect(await installer.deviceSdk(), isNull);
     });
   });
 }

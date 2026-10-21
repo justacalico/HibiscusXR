@@ -219,7 +219,7 @@ RepoIndex parseFdroidIndex(Map<String, dynamic> json) {
 }
 
 RepoIndex decodeFdroidIndex(String body) =>
-    parseFdroidIndex(jsonDecode(body) as Map<String, dynamic>);
+    parseFdroidIndex(_asMap(jsonDecode(body)));
 
 RepoApp _parseApp(String packageName, Map<String, dynamic> pkg) {
   final meta = _asMap(pkg['metadata']);

@@ -18,6 +18,11 @@ enum InstallOutcome {
 abstract class ApkInstaller {
   Future<InstallOutcome> installApk(String path);
   Future<bool> openApp(String packageName);
+
+  /// The Android API level of the running system, used to pick
+  /// compatible versions. Null when the platform does not report one
+  /// (desktop preview, missing handler).
+  Future<int?> deviceSdk();
 }
 
 /// Talks to the Kotlin side over the installer MethodChannel. The
@@ -50,4 +55,8 @@ class ChannelInstaller implements ApkInstaller {
     );
     return opened ?? false;
   }
+
+  @override
+  Future<int?> deviceSdk() =>
+      channel.invokeMethod<int>('deviceSdk').onError((_, _) => null);
 }

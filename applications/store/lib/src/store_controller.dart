@@ -43,15 +43,11 @@ class StoreController {
   ImageResolver imageResolver;
 
   /// The API level installs target; null installs whatever the repo
-  /// calls newest. The image build passes [kImageSdk].
+  /// calls newest. The production wiring asks the platform.
   final int? deviceSdk;
 
   bool _started = false;
   int _fetchGen = 0;
-
-  /// API level of the Hibiscus system image (Android 10 / LineageOS
-  /// 17.1 on sdm845). Used to pick compatible versions.
-  static const kImageSdk = 29;
 
   /// Where repo-relative files resolve: the index's own address wins,
   /// falling back to the configured URL when the field is empty.

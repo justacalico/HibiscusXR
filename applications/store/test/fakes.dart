@@ -107,10 +107,12 @@ class FakeInstaller implements ApkInstaller {
   FakeInstaller({
     this.outcome = InstallOutcome.installed,
     this.openResult = true,
+    this.sdk,
   });
 
   InstallOutcome outcome;
   bool openResult;
+  int? sdk;
   final List<String> installedPaths = [];
   final List<String> openedPackages = [];
 
@@ -125,4 +127,7 @@ class FakeInstaller implements ApkInstaller {
     openedPackages.add(packageName);
     return openResult;
   }
+
+  @override
+  Future<int?> deviceSdk() async => sdk;
 }

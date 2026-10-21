@@ -13,7 +13,9 @@
 #include "../common/props.h"
 
 #include <android/bitmap.h>
+#include <sys/system_properties.h>
 
+#include <cstdio>
 #include <cstring>
 #include <deque>
 #include <memory>
@@ -821,6 +823,14 @@ public:
     void pokeCtrlThread() override { callCtx("pokeCtrlThread", "()V"); }
     void debugSummon() override { callCtx("debugSummon", "()V"); }
     void debugSummonKey(int action) override { callCtx("debugSummonKey", "(I)V", action); }
+
+    // the recenter channel OpenXR runtimes poll: sys.hsvr.recenter carries
+    // the stamp of the last recenter so every app process sees the edge
+    void signalRecenter(long long nowMs) override {
+        char v[32];
+        snprintf(v, sizeof(v), "%lld", nowMs);
+        __system_property_set("sys.hsvr.recenter", v);
+    }
 
 private:
     JavaVM* vm;

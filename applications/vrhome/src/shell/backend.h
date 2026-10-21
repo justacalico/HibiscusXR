@@ -141,4 +141,9 @@ public:
     virtual void pokeCtrlThread() {}
     virtual void debugSummon() {}
     virtual void debugSummonKey(int action) {}
+
+    // a recenter just executed: stamp the runtime-facing signal so OpenXR
+    // apps running under the system runtime re-anchor too, not just the
+    // dash. nowMs is the same CLOCK_MONOTONIC ms the tick runs on
+    virtual void signalRecenter(long long nowMs) {}
 };

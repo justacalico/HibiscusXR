@@ -4,6 +4,8 @@
 # the job trace as if it were a native runner.
 set -euo pipefail
 
+gh auth status >/dev/null 2>&1 || { echo "gh not authenticated - set GH_TOKEN or run gh auth login" >&2; exit 1; }
+
 REPO="justacalico/HibiscusXR"
 WORKFLOW="build.yml"
 

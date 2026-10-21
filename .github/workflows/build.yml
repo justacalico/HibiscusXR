@@ -184,6 +184,8 @@ jobs:
             echo "Channel: ${CHANNEL}"
             echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           } > dist-out/NOTES.md
+          # drop any existing release first so a rerun on the same tag works
+          gh release delete "$TAG" -R "$GITHUB_REPOSITORY" --yes || true
           gh release create "$TAG" -R "$GITHUB_REPOSITORY" \
             --title "Hibiscus images $TAG" --notes-file dist-out/NOTES.md \
             $PRE dist-out/*

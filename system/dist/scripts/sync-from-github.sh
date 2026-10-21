@@ -4,6 +4,8 @@
 # release, which never expire (unlike job artifacts).
 set -euo pipefail
 
+gh auth status >/dev/null 2>&1 || { echo "gh not authenticated - set GH_TOKEN or run gh auth login" >&2; exit 1; }
+
 export PATH="$HOME/.local/bin:$PATH"
 cd "${CI_PROJECT_DIR:-$PWD}"
 

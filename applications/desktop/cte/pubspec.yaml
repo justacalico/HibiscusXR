@@ -1,7 +1,7 @@
 name: hibiscus_cte
 description: "Hibiscus CTE - desktop companion for Hibiscus headsets."
 publish_to: 'none'
-version: 0.2.0
+version: 0.2.1
 
 environment:
   sdk: ^3.12.2

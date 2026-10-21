@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## cte-v0.2.1 - 2026-10-21
+#### Bug Fixes
+- cte 探测时发 PING 确认 cted 应答 - (fce4bd6) - HttpAnimations
+
+- - -
+
 ## cte-v0.2.0 - 2026-10-15
 #### Features
 - 添加调试转储 Dump Debug SSD - (cdfebef) - HttpAnimations

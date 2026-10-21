@@ -85,7 +85,7 @@ static void refreshTunables() {
     kDistK2 = propF("debug.pn2vr.k2",   0.24f);
     kIPD    = propF("debug.pn2vr.ipd",  propF("persist.pn2.ipd", 0.063f));
     kFovY   = propF("debug.pn2vr.fov",  90.0f);
-    kRoll     = propF("debug.pn2vr.roll",     0.0f);
+    kRoll     = propF("debug.pn2vr.roll",     90.0f);
     kSensRoll = propF("debug.pn2vr.sensroll", 0.0f);
     kWorldX   = propF("debug.pn2vr.worldx",  90.0f);
 }

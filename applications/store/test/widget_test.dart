@@ -1,8 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hibiscus_store/main.dart' as app;
+import 'package:hibiscus_store/src/fdroid_index.dart';
 import 'package:hibiscus_store/src/installer.dart';
 import 'package:hibiscus_store/src/store_controller.dart';
 import 'package:hibiscus_store/src/persistence.dart';
@@ -48,8 +48,19 @@ void main() {
 
   testWidgets('buildStoreController assembles the real wiring', (tester) async {
     SharedPreferences.setMockInitialValues({});
+    const channel = MethodChannel('gitlab.neosalsa.store/installer');
+    final messenger =
+        TestWidgetsFlutterBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      channel,
+      (call) async => call.method == 'deviceSdk' ? 33 : null,
+    );
+    addTearDown(
+      () => messenger.setMockMethodCallHandler(channel, null),
+    );
     final c = await app.buildStoreController();
     expect(c.store.repoUrl, StoreController.kDefaultRepo);
+    expect(c.deviceSdk, 33);
   });
 
   testWidgets('main without a controller builds the real wiring',
@@ -80,6 +91,49 @@ void main() {
     );
     await tester.pump();
     expect(find.text('Alpha Player'), findsOneWidget);
+  });
+
+  testWidgets('media urls fall back to the repo url on an empty index '
+      'address', (tester) async {
+    tester.view.physicalSize = const Size(1280, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    final urls = <String>[];
+    final index = RepoIndex(
+      name: 'x',
+      address: '',
+      timestamp: DateTime.utc(2026),
+      apps: [
+        RepoApp(
+          packageName: 'com.example.alpha',
+          name: 'Alpha Player',
+          summary: 'Plays things',
+          description: '',
+          categories: const [],
+          added: DateTime.utc(2026),
+          lastUpdated: DateTime.utc(2026),
+          iconPath: 'icons/alpha.png',
+          screenshots: const ['phone/a1.png'],
+          versions: const [],
+        ),
+      ],
+    );
+    final c = await readyController(index: index);
+    c.imageResolver = (url) {
+      urls.add(url);
+      return testImageResolver(url);
+    };
+    await tester.pumpWidget(app.StoreApp(controller: c));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Alpha Player'));
+    await tester.pumpAndSettle();
+    expect(
+      urls,
+      containsAll([
+        'https://f-droid.org/repo/icons/alpha.png',
+        'https://f-droid.org/repo/phone/a1.png',
+      ]),
+    );
   });
 
   testWidgets('catalog lists apps and shows count', (tester) async {

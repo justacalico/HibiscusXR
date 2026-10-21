@@ -85,8 +85,7 @@ class AppDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final store = controller.store;
-    final repoAddress =
-        store.index?.address ?? store.repoUrl.toString();
+    final repoBase = controller.repoBase;
     final latest = app.latest;
     final progress = store.progressOf(app.packageName);
     final description = stripHtml(app.description);
@@ -98,7 +97,7 @@ class AppDetailBody extends StatelessWidget {
           children: [
             AppIconImage(
               app: app,
-              repoAddress: repoAddress,
+              repoBase: repoBase,
               resolve: controller.imageResolver,
               size: 84,
             ),
@@ -187,7 +186,7 @@ class AppDetailBody extends StatelessWidget {
               itemBuilder: (context, i) {
                 final provider = controller.imageResolver(
                   repoFileUri(
-                    Uri.parse(repoAddress),
+                    repoBase,
                     app.screenshots[i],
                   ).toString(),
                 );

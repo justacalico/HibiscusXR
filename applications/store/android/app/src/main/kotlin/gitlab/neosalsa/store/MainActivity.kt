@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageInstaller
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.core.content.FileProvider
@@ -23,6 +24,7 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "installApk" -> installApk(call.argument("path"), result)
                     "openApp" -> result.success(openApp(call.argument("package")))
+                    "deviceSdk" -> result.success(Build.VERSION.SDK_INT)
                     else -> result.notImplemented()
                 }
             }

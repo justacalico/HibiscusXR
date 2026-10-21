@@ -13,14 +13,18 @@ import 'src/ui/theme.dart';
 
 /// The production wiring, split out so tests can drive the real
 /// constructors on the host.
-Future<StoreController> buildStoreController() async => StoreController(
-      client: HttpRepoClient(),
-      // APKs land in the app cache - they are staging files, the
-      // installer consumes and the OS reclaims them.
-      downloader: ApkDownloader(directory: Directory.systemTemp),
-      installer: const ChannelInstaller(),
-      persistence: await PrefsPersistence.open(),
-    );
+Future<StoreController> buildStoreController() async {
+  const installer = ChannelInstaller();
+  return StoreController(
+    client: HttpRepoClient(),
+    // APKs land in the app cache - they are staging files, the
+    // installer consumes and the OS reclaims them.
+    downloader: ApkDownloader(directory: Directory.systemTemp),
+    installer: installer,
+    persistence: await PrefsPersistence.open(),
+    deviceSdk: await installer.deviceSdk(),
+  );
+}
 
 Future<void> main({StoreController? controller}) async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -246,6 +246,12 @@ void main() {
     test('invalid json throws', () {
       expect(() => decodeFdroidIndex('not json'), throwsA(anything));
     });
+
+    test('valid json that is not an object throws FormatException', () {
+      for (final body in ['[]', '"x"', '42', 'null']) {
+        expect(() => decodeFdroidIndex(body), throwsFormatException);
+      }
+    });
   });
 
   group('stripHtml', () {

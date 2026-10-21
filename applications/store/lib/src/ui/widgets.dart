@@ -13,13 +13,13 @@ class AppIconImage extends StatelessWidget {
   const AppIconImage({
     super.key,
     required this.app,
-    required this.repoAddress,
+    required this.repoBase,
     required this.resolve,
     this.size = 56,
   });
 
   final RepoApp app;
-  final String repoAddress;
+  final Uri repoBase;
   final ImageResolver resolve;
   final double size;
 
@@ -45,7 +45,7 @@ class AppIconImage extends StatelessWidget {
     final iconPath = app.iconPath;
     final provider = iconPath == null
         ? null
-        : resolve(repoFileUri(Uri.parse(repoAddress), iconPath).toString());
+        : resolve(repoFileUri(repoBase, iconPath).toString());
     if (provider == null) return placeholder;
     return ClipRRect(
       borderRadius: BorderRadius.circular(size * 0.24),
@@ -94,8 +94,7 @@ class AppCard extends StatelessWidget {
               children: [
                 AppIconImage(
                   app: app,
-                  repoAddress: controller.store.index?.address ??
-                      controller.store.repoUrl.toString(),
+                  repoBase: controller.repoBase,
                   resolve: controller.imageResolver,
                 ),
                 const SizedBox(width: 14),

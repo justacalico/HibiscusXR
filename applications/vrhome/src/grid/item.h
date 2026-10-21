@@ -23,11 +23,13 @@ struct LibGroup {
 };
 
 // one app cell in the overlay: pkg/label come from the java side, x/y is
-// the cell centre in card-local metres set by gridItems
+// the cell centre in card-local metres set by gridItems. dashPanel >= 0
+// marks a dash card baked in by dashapps.cpp instead of a package
 struct GridItem {
     std::string pkg;
     std::string label;
     bool vr = false;        // immersive app: launches straight to display 0
+    int dashPanel = -1;     // a DashPanel id, -1: a real package
     float x = 0, y = 0;     // cell centre before scroll, card-local metres
     float hs = 1.0f;        // smoothed hover scale, see DockItem.hs
 };

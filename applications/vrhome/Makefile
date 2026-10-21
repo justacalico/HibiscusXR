@@ -60,7 +60,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/panels/panels.cpp src/panels/layout.cpp \
             src/anim/anim.cpp \
             src/pill/pill.cpp \
-            src/grid/grid.cpp src/grid/layout.cpp \
+            src/grid/grid.cpp src/grid/layout.cpp src/grid/dashapps.cpp \
             src/kbd/kbd.cpp src/kbd/glue.cpp \
             src/dock/dock.cpp src/dock/layout.cpp \
             src/quick/quick.cpp src/quick/layout.cpp src/quick/icons.cpp \
@@ -101,7 +101,7 @@ HUD_UNALIGNED  := $(OUT)/unaligned-hud.apk
 HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/anim/anim.cpp \
              src/panels/layout.cpp src/kbd/kbd.cpp src/pill/pill.cpp \
-             src/grid/layout.cpp \
+             src/grid/layout.cpp src/grid/dashapps.cpp \
              src/text/utf8.cpp src/text/glyphs.cpp src/render/scene_geo.cpp \
              src/render/pt_geo.cpp \
              src/input/keys.cpp src/render/warp.cpp src/dock/layout.cpp \
@@ -134,6 +134,7 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
                 src/panels/panels.cpp src/panels/layout.cpp \
                 src/anim/anim.cpp src/pill/pill.cpp \
                 src/grid/grid.cpp src/grid/layout.cpp \
+                src/grid/dashapps.cpp \
                 src/kbd/kbd.cpp src/kbd/glue.cpp \
                 src/dock/dock.cpp src/dock/layout.cpp \
                 src/quick/quick.cpp src/quick/layout.cpp \

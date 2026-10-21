@@ -1,5 +1,6 @@
 #include "grid.h"
 
+#include "dashapps.h"
 #include "layout.h"
 #include "../anim/anim.h"
 #include "../hud/engine.h"
@@ -8,8 +9,10 @@
 #include "../common/palette.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
+#include "../quick/item.h"
 #include "../render/icons.h"
 #include "../render/shape.h"
+#include "../set/set.h"
 #include "../text/draw.h"
 
 #include <GLES2/gl2.h>
@@ -26,6 +29,18 @@ static const char* kLibFallback[UILIB_COUNT] = {
 
 static const char* libStr(HudEngine* e, int i) {
     return e->uiLibStr[i].empty() ? kLibFallback[i] : e->uiLibStr[i].c_str();
+}
+
+// a dash entry's label rides the card's own uiStrings slot; the
+// registry's baked name covers a pull that hasn't landed yet
+static const char* dashLibLabel(HudEngine* e, int panel) {
+    const std::string* s = nullptr;
+    switch (panel) {
+    case DP_SETTINGS: s = &e->uiSet[UISET_TITLE]; break;
+    case DP_QUICK:    s = &e->uiQs[UIQS_TITLE];   break;
+    }
+    if (s && !s->empty()) return s->c_str();
+    return dashLibApps()[panel].name;
 }
 
 // the pill label's text size, metres per font px like cardText's
@@ -73,7 +88,11 @@ void syncGrid(HudEngine* e) {
     if (v != e->grid.appsVer) {
         e->grid.appsVer = v;
         e->backend->launcherApps(&e->grid.all);
-        for (auto& it : e->grid.all) it.vr = iconFor(e, it.pkg).vr;
+        // the dash's own cards lead the list - baked in, so they cost no
+        // package pull and no icon rebind when the grid opens
+        dashLibMerge(&e->grid.all);
+        for (auto& it : e->grid.all)
+            if (it.dashPanel < 0) it.vr = iconFor(e, it.pkg).vr;
         // a rebuild can pull the floor out from under an open menu
         if (!e->grid.menuPkg.empty()) {
             bool alive = false;
@@ -88,7 +107,18 @@ void syncGrid(HudEngine* e) {
 
 void gridActivate(HudEngine* e, int idx) {
     if (idx < 0 || idx >= (int)e->grid.items.size()) return;
-    queueLaunch(e->grid.items[idx].pkg.c_str());
+    const GridItem& it = e->grid.items[idx];
+    switch (it.dashPanel) {
+    case DP_SETTINGS:
+        setOpen(e, SEC_WIFI);
+        return;
+    case DP_QUICK:
+        // the status pill's own toggle; the grid being up means the
+        // quick card is down, so this can only open it
+        dockSysActivate(e);
+        return;
+    }
+    queueLaunch(it.pkg.c_str());
     e->grid.shown = false;
 }
 
@@ -383,8 +413,10 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
                              c[1] + r[1]*it.x*gs + up[1]*iy,
                              c[2] + r[2]*it.x*gs + up[2]*iy};
         const DockIcon* icon = nullptr;
-        auto f = e->dockIcons.find(it.pkg);
-        if (f != e->dockIcons.end()) icon = &f->second;
+        if (it.dashPanel < 0) {
+            auto f = e->dockIcons.find(it.pkg);
+            if (f != e->dockIcons.end()) icon = &f->second;
+        }
 
         if (hp > 0.02f) {
             const float hl[4] = {kPalText[0], kPalText[1], kPalText[2],
@@ -396,7 +428,23 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
                       hx * kIconRad, 0.0f, 0.002f, hl,
                       -1.0f, 0.0f, iy, clipC, clipH);
         }
-        if (icon && icon->tex) {
+        if (it.dashPanel >= 0) {
+            // baked tile: a glass square carrying the panel's atlas
+            // glyph - no texture bind per cell
+            const float tc[4] = {kPalText[0], kPalText[1], kPalText[2],
+                                 (0.12f + 0.06f * hp) * ga};
+            shapeQuad(e, vp, ic, r, up, 0.008f, 0.0f, s, s, s, s,
+                      s * kIconRad, 0.0f, 0.002f, tc,
+                      -1.0f, 0.0f, iy, clipC, clipH);
+            // the glyph rides the text program, which has no clip hook:
+            // like the letter tile it only draws while it fits the band
+            if (iy + s <= clipC + clipH && iy - s >= clipC - clipH) {
+                const float gcol[4] = {kPalText[0], kPalText[1],
+                                       kPalText[2], 0.92f * ga};
+                drawGlyph(e, vp, dashLibApps()[it.dashPanel].glyph,
+                          ic, r, up, s * 0.58f, 0.014f, gcol);
+            }
+        } else if (icon && icon->tex) {
             drawIconTex(e, vp, ic, r, up, s, icon->tex, ga,
                         iy, clipC, clipH);
         } else {
@@ -415,8 +463,9 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
                       0.0018f, 0.0015f, vc, -1.0f, 0.0f, iy, clipC, clipH);
         }
         // the cell's menu affordance: a small dots glyph off the icon's
-        // top-right, lit while the aim is on it
-        {
+        // top-right, lit while the aim is on it - dash cells get none,
+        // they can't pin or group
+        if (it.dashPanel < 0) {
             float dx, dy;
             gridDotsPos(it, e->grid.scroll, &dx, &dy);
             dy *= gs; dx *= gs;
@@ -436,10 +485,12 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         // the label line sits under the icon; it only draws while it fits
         // the visible band whole, the icon fade carries the edge cases
         const float ly = iy - (kGridIconHW + 0.038f) * gs;
-        if (!it.label.empty() && e->font.ok &&
+        const char* lab = it.dashPanel >= 0
+            ? dashLibLabel(e, it.dashPanel) : it.label.c_str();
+        if (*lab && e->font.ok &&
                 ly + 0.018f < bhi && ly - 0.018f > blo) {
             const float ts = 0.0011f;
-            const float lw = measureText(e, it.label.c_str(), ts) * 0.5f;
+            const float lw = measureText(e, lab, ts) * 0.5f;
             const float maxW = (kGridHW * 2.0f - kGridSidePad * 2.0f) /
                                kGridCols * 0.48f;
             const float lw2 = lw > maxW ? maxW : lw;
@@ -456,7 +507,7 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
             glUniform1i(glGetUniformLocation(e->textProg, "uFont"), 0);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, e->font.tex);
-            drawTextPanel(e, it.label.c_str(), lo3, r, up,
+            drawTextPanel(e, lab, lo3, r, up,
                           lw > maxW ? ts * maxW / lw : ts, 0.0f, ga);
             glUseProgram(e->shapeProg);
         }

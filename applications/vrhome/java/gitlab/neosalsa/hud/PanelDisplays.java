@@ -125,6 +125,10 @@ class PanelDisplays {
         Log.i(TAG, "released display " + displayId);
     }
 
+    void releaseAll() {
+        for (Integer id : vds.keySet()) release(id);
+    }
+
     // queue a teardown for every display no live task sits on; a display
     // still inside its launch grace keeps breathing
     void reap(Set<Integer> liveDisplays, java.util.Queue<Integer> out) {

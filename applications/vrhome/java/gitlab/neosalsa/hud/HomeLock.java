@@ -35,6 +35,7 @@ public class HomeLock {
     private static final ComponentName HOME = new ComponentName(
             "gitlab.neosalsa.home", "gitlab.neosalsa.home.PanelActivity");
 
+    private final Context ctx;
     private final PackageManager pm;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final Intent homeIntent = new Intent(Intent.ACTION_MAIN)
@@ -51,6 +52,7 @@ public class HomeLock {
     private boolean warned;
 
     public HomeLock(Context c) {
+        ctx = c;
         pm = c.getPackageManager();
         homeFilter.addCategory(Intent.CATEGORY_HOME);
         homeFilter.addCategory(Intent.CATEGORY_DEFAULT);
@@ -88,6 +90,11 @@ public class HomeLock {
     private final BroadcastReceiver pkgWatch = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) { enforce(); }
     };
+
+    public void close() {
+        try { ctx.unregisterReceiver(pkgWatch); } catch (Throwable ignored) {}
+        main.removeCallbacks(tick);
+    }
 
     private final Runnable tick = new Runnable() {
         @Override public void run() {

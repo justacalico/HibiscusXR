@@ -34,3 +34,4 @@ linked line per MR no matter how many commits it carried.
 - [归中手势同步到 OpenXR 应用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/185) (!185)
 - [fix: 驱动若干已验证缺陷 (#51)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/186) (!186)
 - [vmd: 钳制 DRM 资源计数防止栈溢出 (#48)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/187) (!187)
+- [fix: vmd_destroy 不再因 recv 阻塞永久挂起 (#47)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/188) (!188)

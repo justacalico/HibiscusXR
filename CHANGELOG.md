@@ -38,3 +38,4 @@ linked line per MR no matter how many commits it carried.
 - [fix: vrhud 跨线程共享集合的并发修改 (#43)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/189) (!189)
 - [hud: 修复未鉴权的广播 RPC 通道 (#42)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/190) (!190)
 - [ci: 安装 glab 前校验 sha256 (#41)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/191) (!191)
+- [Untrack compiled w25qdump binary](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/192) (!192)

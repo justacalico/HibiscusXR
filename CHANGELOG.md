@@ -23,3 +23,4 @@ linked line per MR no matter how many commits it carried.
 - [vrhome: 设置与快捷面板以应用形式加入应用库](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/174) (!174)
 - [docs: 修正 dist README 应用列表并清理重复 changelog 条目](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/175) (!175)
 - [fix: wire up PING probe, drop dead snapshot field](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/176) (!176)
+- [fix: 修复 shell 脚本若干已验证缺陷](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/177) (!177)

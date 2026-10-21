@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../repo_client.dart';
 import '../store_controller.dart';
 import 'theme.dart';
 
@@ -15,12 +16,10 @@ Future<void> showRepoSheet(BuildContext context, StoreController controller) {
   );
 }
 
-/// http or https with a host - everything else is rejected up front.
+/// https with a host - everything else is rejected up front.
 String? repoUrlError(String raw, AppLocalizations l10n) {
   final uri = Uri.tryParse(raw.trim());
-  if (uri == null ||
-      !(uri.isScheme('http') || uri.isScheme('https')) ||
-      uri.host.isEmpty) {
+  if (uri == null || !validRepoUrl(uri)) {
     return l10n.repoUrlInvalid;
   }
   return null;

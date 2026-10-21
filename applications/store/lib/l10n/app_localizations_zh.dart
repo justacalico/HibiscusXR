@@ -88,7 +88,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repoUrlLabel => '仓库地址';
 
   @override
-  String get repoUrlInvalid => '输入 http 或 https 地址';
+  String get repoUrlInvalid => '输入 https 地址';
 
   @override
   String get repoReset => '重置为默认';

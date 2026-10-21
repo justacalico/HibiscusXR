@@ -1,19 +1,18 @@
 import 'dart:io';
 
-import '../downloader.dart';
-import '../fdroid_index.dart';
-import '../installer.dart';
-import '../repo_client.dart';
+import 'package:hibiscus_store/src/downloader.dart';
+import 'package:hibiscus_store/src/fdroid_index.dart';
+import 'package:hibiscus_store/src/installer.dart';
+import 'package:hibiscus_store/src/repo_client.dart';
 
-/// Canned catalog for the non-Android preview and widget tests. The
-/// index a constructor takes is returned verbatim, so tests shape the
-/// data they need.
+/// Canned catalog for widget and controller tests. The index a
+/// constructor takes is returned verbatim, so tests shape the data
+/// they need.
 class FakeRepoClient implements RepoClient {
   FakeRepoClient({RepoIndex? index, this.throwError})
     : index = index ?? previewIndex;
 
-  /// Two seeded apps so `flutter run` on the desktop has something to
-  /// show - the real Android build always fetches over HTTP.
+  /// Two seeded apps for tests that don't care about the contents.
   static final previewIndex = RepoIndex(
     name: 'preview repo',
     address: 'https://repo.example/fdroid/repo',

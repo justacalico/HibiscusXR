@@ -72,7 +72,7 @@ class StoreController {
     final savedUrl = saved?['repoUrl'];
     if (savedUrl is String) {
       final parsed = Uri.tryParse(savedUrl);
-      if (parsed != null) store.repoUrl = parsed;
+      if (parsed != null && validRepoUrl(parsed)) store.repoUrl = parsed;
     }
     await refresh();
   }

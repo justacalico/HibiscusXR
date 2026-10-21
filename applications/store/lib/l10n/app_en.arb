@@ -37,7 +37,7 @@
   "repoDialogTitle": "Repository",
   "repoDialogBody": "Catalog and packages come from this F-Droid compatible repository.",
   "repoUrlLabel": "Repository URL",
-  "repoUrlInvalid": "Enter an http or https URL",
+  "repoUrlInvalid": "Enter an https URL",
   "repoReset": "Reset to default",
   "cancel": "Cancel",
   "save": "Save",

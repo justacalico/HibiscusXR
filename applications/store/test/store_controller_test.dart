@@ -7,13 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:hibiscus_store/src/fdroid_index.dart';
 import 'package:hibiscus_store/src/installer.dart';
-import 'package:hibiscus_store/src/platform/fakes.dart';
 import 'package:hibiscus_store/src/persistence.dart';
 import 'package:hibiscus_store/src/repo_client.dart';
 import 'package:hibiscus_store/src/store_controller.dart';
 import 'package:hibiscus_store/src/store_state.dart';
 import 'package:hibiscus_store/src/downloader.dart';
 
+import 'fakes.dart';
 import 'helpers.dart';
 
 void main() {
@@ -44,6 +44,19 @@ void main() {
       await c.start();
       expect(client.lastRepo, Uri.parse('https://self.hosted/repo'));
       expect(c.store.repoUrl, Uri.parse('https://self.hosted/repo'));
+    });
+
+    test('ignores a persisted http url', () async {
+      final client = FakeRepoClient(index: testIndex());
+      final c = StoreController(
+        client: client,
+        downloader: ApkDownloader(directory: Directory.systemTemp),
+        installer: FakeInstaller(),
+        persistence: MemoryPersistence({'repoUrl': 'http://10.0.0.9/repo'}),
+      );
+      await c.start();
+      expect(client.lastRepo, StoreController.kDefaultRepo);
+      expect(c.store.repoUrl, StoreController.kDefaultRepo);
     });
 
     test('ignores a persisted url that does not parse', () async {

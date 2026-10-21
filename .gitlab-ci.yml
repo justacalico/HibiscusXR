@@ -37,6 +37,18 @@ stages:
 .web-paths: &web-paths
   - "websites/**/*"
 
+# The pinned toolchain every flutter lane shares. The cirruslabs image
+# lags releases, so lanes install the release tarball instead - keep
+# FLUTTER_VERSION in sync with system/dist/manifest.env.
+.flutter-toolchain: &flutter-toolchain
+  - apt-get update -qq
+  - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file ca-certificates
+  - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
+  - tar -xJf /tmp/flutter.tar.xz -C /opt
+  - export PATH="/opt/flutter/bin:$PATH"
+  - git config --global --add safe.directory /opt/flutter
+  - flutter config --no-analytics
+
 workflow:
   rules:
     # cte-v* / hbsup-v* tag pushes run the app release lanes
@@ -59,6 +71,7 @@ workflow:
 # Override CHANNEL when running a pipeline manually to "release" or "beta".
 variables:
   CHANNEL: "alpha"
+  FLUTTER_VERSION: "3.44.6"
 
 # ------------------------------------------------------- dist (manual) -----
 
@@ -207,13 +220,13 @@ os-changelog-mr:
 apps-test:
   stage: test
   # No pinned cirruslabs image is new enough (the apps want Dart
-  # ^3.12.2 -> Flutter 3.44.6+). Keep the tarball version in sync with
-  # FLUTTER_VERSION in system/dist/manifest.env.
+  # ^3.12.2 -> Flutter 3.44.6+). Keep FLUTTER_VERSION in sync with
+  # system/dist/manifest.env.
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
     - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ python3 pkg-config ca-certificates libglu1-mesa zlib1g-dev libglfw3-dev libgles2-mesa-dev libegl1-mesa-dev libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev
-    - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.44.6-stable.tar.xz"
+    - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
     - tar -xJf /tmp/flutter.tar.xz -C /opt
     - export PATH="/opt/flutter/bin:$PATH"
     - git config --global --add safe.directory /opt/flutter
@@ -222,10 +235,8 @@ apps-test:
   script:
     - export PATH="/opt/flutter/bin:$PATH"
     - |
-      for d in applications/*/ applications/*/*/; do
-        if [ -f "$d/pubspec.yaml" ]; then
-          (cd "$d" && flutter pub get && flutter analyze && flutter test) || exit 1
-        fi
+      find applications -name pubspec.yaml -not -path "*/.*" -exec dirname {} \; | sort | while read -r d; do
+        (cd "$d" && flutter pub get && flutter analyze && flutter test) || exit 1
       done
     - make -C applications/vrhome test
     # compile-only: the wayland compositor backend has no host test, so
@@ -237,11 +248,32 @@ apps-test:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes: *apps-paths
 
+# Host smoke test for the controller daemon - compiles cted for the
+# runner and exercises the wire protocol the desktop app speaks.
+cted-test:
+  stage: test
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends gcc python3
+  script:
+    - bash system/cted/tests/run.sh
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "system/cted/**/*"
+        - "applications/vrhome/src/input/**/*"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "system/cted/**/*"
+        - "applications/vrhome/src/input/**/*"
+
 # -------------------------------------------------------------- websites ---
 
 website-test:
   stage: test
-  image: ghcr.io/cirruslabs/flutter:3.44.0
+  image: ubuntu:24.04
+  before_script: *flutter-toolchain
   script:
     - cd websites/website
     - flutter pub get
@@ -257,7 +289,8 @@ website-test:
 
 pages:
   stage: deploy
-  image: ghcr.io/cirruslabs/flutter:3.44.0
+  image: ubuntu:24.04
+  before_script: *flutter-toolchain
   script:
     - cd websites/website
     - flutter pub get

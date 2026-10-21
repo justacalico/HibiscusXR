@@ -4,6 +4,8 @@
 # the cte lane's trigger script.
 set -euo pipefail
 
+gh auth status >/dev/null 2>&1 || { echo "gh not authenticated - set GH_TOKEN or run gh auth login" >&2; exit 1; }
+
 REPO="justacalico/HibiscusXR"
 WORKFLOW="hbsup.yml"
 TAG="${1:?usage: trigger-hbsup-release.sh <tag>}"

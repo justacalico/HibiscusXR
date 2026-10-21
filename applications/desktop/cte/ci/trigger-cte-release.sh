@@ -4,6 +4,8 @@
 # system/dist's trigger-github-build.sh.
 set -euo pipefail
 
+gh auth status >/dev/null 2>&1 || { echo "gh not authenticated - set GH_TOKEN or run gh auth login" >&2; exit 1; }
+
 REPO="justacalico/HibiscusXR"
 WORKFLOW="cte.yml"
 TAG="${1:?usage: trigger-cte-release.sh <tag>}"

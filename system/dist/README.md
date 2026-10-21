@@ -59,6 +59,12 @@ Run a pipeline on `main` (web UI "Run pipeline", or `glab ci run`). The
 the job trace; `github-release-sync` publishes the assets when it succeeds.
 `DEVICE=<name>` on the pipeline picks the target (default `neo2`).
 
+`github-dispatch`, `github-release-sync` and the `cte/hbsup` release jobs
+call the GitHub CLI against the mirror, so `GH_TOKEN` must exist as a
+protected CI variable with read/write on the GitHub repo - every script
+fails fast when `gh` has no auth. The mirror push itself rides
+`GITHUB_SSH_PRIVATE_KEY`.
+
 ## OS releases and versioning
 
 The OS versions with cocogitto as the `os` monorepo package - tags look

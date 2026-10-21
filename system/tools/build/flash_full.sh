@@ -12,7 +12,7 @@
 #   HIBISCUS_SERIAL  device serial if more than one is connected
 set -euo pipefail
 
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 IMG="${1:-$HIBISCUS_ROOT/out/system-pn2-full.img}"
 LOG="${LOG:-$HIBISCUS_ROOT/notes/flash_$(date +%Y%m%d_%H%M%S).log}"
 ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})

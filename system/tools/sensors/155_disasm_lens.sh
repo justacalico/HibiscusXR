@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Confirm the null-deref theory by reading the actual code.
 #
 # fault addr 0x10 = a load at offset 0x10 from a null base. The suspicion is that

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # vdexExtractor builds with -Werror, and GCC 11+ added -Wvla-parameter, which
 # fires on a harmless declaration mismatch in dex_instruction.c:
 #   header:     void dexInstr_getVarArgs(u2 *, u4[]);
@@ -7,7 +7,7 @@ HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # Same type either way. Downgrade that one warning rather than dropping -Werror
 # wholesale or editing the source.
 set -e
-WORK=/home/justin/vdextools/vdexExtractor
+WORK="${VDEXTOOLS:-$HIBISCUS_ROOT/vdextools}/vdexExtractor"
 LOG=${HIBISCUS_ROOT}/notes/94_vdex_build.txt
 exec >"$LOG" 2>&1
 

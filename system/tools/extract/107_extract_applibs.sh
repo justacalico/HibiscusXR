@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Pull the app-private lib/ directories that sit NEXT TO each apk.
 #
 # My original extraction took the apk and oat/ and stopped. For system apps the

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Recover the NDI FPGA bitstream (top_level_bitmap.bin) from every available firmware source.
 # Rebuilds each OTA system image one at a time and deletes it after, to stay inside the disk budget.
 set -u
@@ -14,7 +14,7 @@ mkdir -p "$FW"
 exec >"$N" 2>&1
 
 echo "=== free space before ==="
-df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
+df -h "$HIBISCUS_ROOT" | tail -1
 echo
 
 pull_ndi() {   # image  label
@@ -53,7 +53,7 @@ for z in "$FWDIR"/update_PicoNeo2_*.zip; do
     && rm -f "$TMP/system.new.dat"
   pull_ndi "$TMP/system.img" "$label"
   rm -rf "$TMP"
-  echo "free: $(df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1 | awk '{print $4}')"
+  echo "free: $(df -h "$HIBISCUS_ROOT" | tail -1 | awk '{print $4}')"
   echo
 done
 
@@ -73,7 +73,7 @@ find "$FW" -name 'top_level_bitmap.bin' -print0 | while IFS= read -r -d '' f; do
 done
 
 echo "=== free space after ==="
-df -h "${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}" | tail -1
+df -h "$HIBISCUS_ROOT" | tail -1
 
 echo
 echo "################ STAGING TO J:\\C Desktop ################"

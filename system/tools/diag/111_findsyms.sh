@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # VRShell dlopens libpxr_6dof_optimization.so then dlsyms updateOffsets and
 # getResetPos, and both fail. Find which library really exports them - across the
 # whole stock system image, not just what we happened to extract.

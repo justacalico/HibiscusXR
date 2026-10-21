@@ -9,7 +9,7 @@
 #   HIBISCUS_SERIAL  device serial if more than one is connected
 set -uo pipefail
 
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 OUT="${1:-$HIBISCUS_ROOT/oem_apps}"
 shift 2>/dev/null || true
 

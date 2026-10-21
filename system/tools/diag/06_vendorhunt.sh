@@ -1,11 +1,11 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Extract vendor + system/etc/init to WSL-native storage and inventory the VR stack.
 set -u
 B=${HIBISCUS_ROOT}
 SYS=$B/images/snapshot_lun0/system.bin
 VEN=$B/images/vendor.img
-W=/home/justin/pn2
+W=$HIBISCUS_ROOT
 N=$B/notes
 
 mkdir -p "$W" "$N"
@@ -62,7 +62,7 @@ for f in "$V"/etc/init/*.rc; do
 done
 echo
 echo "=== SYSTEM init rc mentioning vr ==="
-for f in $(find /home/justin/pn2/sysinit -name '*.rc' 2>/dev/null); do
+for f in $(find $HIBISCUS_ROOT/sysinit -name '*.rc' 2>/dev/null); do
   if grep -qiE 'qvr|pvr|pxr|vr_|/vr|tobii|eye|track|sixdof' "$f"; then
     echo "########## $f ##########"
     cat "$f"
@@ -95,7 +95,7 @@ for lib in libqvrservice_client.so libqvrservice.so libpvrservice.so libqvrcamer
   done
 done
 echo "=== same libs in /system (64+32) ==="
-find /home/justin/pn2 -name 'libqvr*' -o -name 'libpvr*' 2>/dev/null | head
+find $HIBISCUS_ROOT -name 'libqvr*' -o -name 'libpvr*' 2>/dev/null | head
 } > "$N/06e_qvr_iface.log" 2>&1
 
 echo "VENDORHUNT DONE"

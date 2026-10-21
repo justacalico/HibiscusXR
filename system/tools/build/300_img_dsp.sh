@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Add the DSP tracking stack to system-pn2-full.img.
 #
 # This is the session's biggest find. Android 8.1 let /system processes load from

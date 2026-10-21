@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
-HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT")
+if not HIBISCUS_ROOT:
+    raise SystemExit("HIBISCUS_ROOT is not set - point it at a build root")
 """Show the __android_log_print call site in libpvrservice.so that crashes.
 
 Tombstone frame #04 is  libpvrservice.so + 0xd0d4  -- the return address, so the

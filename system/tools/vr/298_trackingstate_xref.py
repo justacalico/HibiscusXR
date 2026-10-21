@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
-HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT")
+if not HIBISCUS_ROOT:
+    raise SystemExit("HIBISCUS_ROOT is not set - point it at a build root")
 """Find the code that logs "trackingstate = 0x%x,0x%x" and what it reads.
 
 I assumed this came from QVR because the SDK contains QVRServiceClient strings.

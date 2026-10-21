@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
-HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT")
+if not HIBISCUS_ROOT:
+    raise SystemExit("HIBISCUS_ROOT is not set - point it at a build root")
 """Read the numeric value of Pico's extra keycode labels from stock's libinput.so.
 
 The KEYCODES table is an array of { const char* literal; int32_t value; }. On

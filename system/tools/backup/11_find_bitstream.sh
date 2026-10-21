@@ -1,10 +1,10 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Hunt the NDI FPGA bitstream. Start with the flasher binary: whatever path it opens is authoritative.
 set -u
 B=${HIBISCUS_ROOT}
 FW=$B/ndi_firmware
-W=/home/justin/pn2
+W=$HIBISCUS_ROOT
 N=$B/notes/11_bitstream_hunt.log
 SYS=$B/images/snapshot_lun0/system.bin
 VEN=$B/images/vendor.img

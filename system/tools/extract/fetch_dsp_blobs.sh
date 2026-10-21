@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Populate the gitignored DSP/tracking blobs from the stock dump so the display
 # fix (300_img_dsp.sh + 301_mdsp_img.sh) can be re-run from a fresh checkout.
 #

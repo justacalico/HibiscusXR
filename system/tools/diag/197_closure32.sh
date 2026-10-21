@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # 32-bit dependency closure for the whitelist. zygote (32-bit) preloads the same
 # list, so a missing 32-bit dependency aborts boot exactly like the 64-bit case.
 set -u

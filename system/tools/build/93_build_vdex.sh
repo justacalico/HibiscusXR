@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Build vdexExtractor.
 #
 # Every Pico vdex is quickened (quickening_info_size != 0), so the embedded dex
@@ -12,7 +12,7 @@ HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
 # rewriting opcodes against the quickening stream - a few hundred lines of
 # fiddly, easy-to-get-subtly-wrong work, for something that already exists.
 set -e
-WORK=/home/justin/vdextools
+WORK="${VDEXTOOLS:-$HIBISCUS_ROOT/vdextools}"
 LOG=${HIBISCUS_ROOT}/notes/93_vdex_build.txt
 exec >"$LOG" 2>&1
 

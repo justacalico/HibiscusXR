@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # VRShell needs libmain.so (Unity core) but VRShell2.apk contains no .so at all.
 # For system apps the native libs are commonly laid down in a lib/ directory NEXT
 # TO the apk rather than inside it. I only extracted the apk and oat/, so if that

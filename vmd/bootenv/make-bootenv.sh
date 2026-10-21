@@ -52,7 +52,7 @@ declare -A VD_SHA=(
   [virtio-rng.ko]=28ca936a0097b9e1018c924530274a99feeb1217bf6e30adba6a87c92447dd44
 )
 
-OUT="${HIBISCUS_ROOT:-${PN2_ROOT:-$PWD/..}}/out"
+OUT="${HIBISCUS_ROOT:-$PWD/..}/out"
 while [ $# -gt 0 ]; do
     case "$1" in
         -o) OUT="$2"; shift 2 ;;

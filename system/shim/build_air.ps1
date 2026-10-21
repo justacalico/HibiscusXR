@@ -4,11 +4,17 @@
 # SONAMEs and can resolve the forward targets. --allow-shlib-undefined because
 # their transitive deps are not staged here and we only need their symbol tables.
 $ErrorActionPreference = 'Stop'
-$NDK  = 'F:\Android\Sdk\ndk\23.1.7779620'
+param(
+  [string]$Ndk  = "$env:ANDROID_NDK_ROOT",
+  [string]$Root = "$env:HIBISCUS_ROOT"
+)
+if (-not $Ndk)  { throw 'set ANDROID_NDK_ROOT or pass -Ndk' }
+if (-not $Root) { throw 'set HIBISCUS_ROOT or pass -Root' }
+$NDK  = $Ndk
 $CC   = "$NDK\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android29-clang++.cmd"
 $RD   = "$NDK\toolchains\llvm\prebuilt\windows-x86_64\bin\llvm-readelf.exe"
-$Q    = 'F:\PN2Lineage\notes\qlibs'
-$OUT  = 'F:\PN2Lineage\shim\libshim_air.so'
+$Q    = "$Root\notes\qlibs"
+$OUT  = "$Root\shim\libshim_air.so"
 
 # -nostdlib++ is essential: without it the NDK links libc++_shared.so, which
 # system images do not ship (they use libc++.so). An LD_PRELOAD that cannot link
@@ -16,7 +22,7 @@ $OUT  = 'F:\PN2Lineage\shim\libshim_air.so'
 # the shell before I caught it. The shim uses no C++ runtime, so drop it.
 & $CC -shared -O2 -fno-exceptions -fno-rtti -nostdlib++ `
       '-Wl,--allow-shlib-undefined' '-Wl,-soname,libshim_air.so' `
-      -o $OUT F:\PN2Lineage\shim\shim_air.cpp `
+      -o $OUT "$Root\shim\shim_air.cpp" `
       "$Q\libgui.so" "$Q\libui.so" "$Q\libutils.so" "$Q\libcamera_client.so" "$Q\libtinyxml2.so" -llog
 if ($LASTEXITCODE -ne 0) { throw "link failed" }
 "built $OUT ($((Get-Item $OUT).Length) bytes)"

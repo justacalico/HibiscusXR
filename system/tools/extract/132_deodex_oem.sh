@@ -1,7 +1,7 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Unquicken the /oem apps' vdex, same as the /system ones.
-VDEX=/home/justin/vdextools/vdexExtractor/bin/vdexExtractor
+VDEX="${VDEXTOOLS:-$HIBISCUS_ROOT/vdextools}/vdexExtractor/bin/vdexExtractor"
 SRC=${HIBISCUS_ROOT}/oem_apps
 OUT=${HIBISCUS_ROOT}/oem_dex
 LOG=${HIBISCUS_ROOT}/notes/132_oem_dex.txt

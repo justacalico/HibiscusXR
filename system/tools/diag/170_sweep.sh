@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Linear x28 sweep over everything loaded into the VRShell2 process, plus a list
 # of the JNI entry points in the app's own copy of the SDK (the interposition
 # target if we end up shimming the ABI violation).

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Add libmdsprpc.so (modem DSP RPC, needed by the QVR mapper wrapper) to the image.
 # The /vendor copy is the one to use - its SONAME matches the stub's verneed.
 set -u

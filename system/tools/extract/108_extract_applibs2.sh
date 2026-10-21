@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # rdump quietly did nothing when the destination arch dir already existed, so
 # enumerate and dump each .so individually instead. Slower, but it reports
 # per-file and cannot fail silently.

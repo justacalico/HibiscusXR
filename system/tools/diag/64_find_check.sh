@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Locate the fatal CHECK inside libsensorservice.so:
 #   CHECK failed: (int32_t)src.sensorType >= (int32_t)SensorType::DEVICE_PRIVATE_BASE
 # It lives in convertToSensorEvent(), which is where Pico's non-standard sensor

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Strip the stock GSI packages a WiFi-only headset will never use:
 # telephony, contacts/mail, 2D media apps, printing/backup leftovers,
 # NFC, Lineage extras, the launcher and its provisioning fallback,

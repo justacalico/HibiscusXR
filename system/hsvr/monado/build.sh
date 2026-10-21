@@ -100,7 +100,7 @@ if [ -n "${HSVR_DRIVERS_DIR:-}" ]; then
 elif [ -d "$ROOT/../../../drivers" ]; then
     DRIVERS_DIR="$ROOT/../../../drivers"
 else
-    DRIVERS_DIR="${HIBISCUS_ROOT:-${PN2_ROOT:-$ROOT/../..}}/drivers"
+    DRIVERS_DIR="${HIBISCUS_ROOT:-$ROOT/../..}/drivers"
 fi
 DRV_NAMES=""
 for d in "$DRIVERS_DIR"/*/monado; do
@@ -121,7 +121,7 @@ if [ -n "${HSVR_CONTROLLERS_DIR:-}" ]; then
 elif [ -d "$ROOT/../../../controllers" ]; then
     CONTROLLERS_DIR="$ROOT/../../../controllers"
 else
-    CONTROLLERS_DIR="${HIBISCUS_ROOT:-${PN2_ROOT:-$ROOT/../..}}/controllers"
+    CONTROLLERS_DIR="${HIBISCUS_ROOT:-$ROOT/../..}/controllers"
 fi
 CTRL_NAMES=""
 for d in "$CONTROLLERS_DIR"/*/monado; do

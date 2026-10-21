@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
-HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT")
+if not HIBISCUS_ROOT:
+    raise SystemExit("HIBISCUS_ROOT is not set - point it at a build root")
 """Find every 16-bit store at offset 0x570/0x572, whatever base register is used.
 
 getTrackingState reads:

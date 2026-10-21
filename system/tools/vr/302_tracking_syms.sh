@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # The getter at 0x5b418 returns the cached tracking state (global 0x2049b0 +0x570).
 # Which exported function is that, and which one SETS the field?
 set -u

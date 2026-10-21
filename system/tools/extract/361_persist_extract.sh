@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Our own headset's original persist partition, from the pre-conversion backup.
 # The live device has lost 9 of the 10 files in /pvr/camera - only
 # device_calibration.xml survived - and with no hwcalibration.merge the 6DoF

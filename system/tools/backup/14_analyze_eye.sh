@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 set -u
 F=${HIBISCUS_ROOT}/eyeunit/eye_262144.bin
 L=${HIBISCUS_ROOT}/notes/14_eye_dump.log

@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Disassemble PVR::serviceStatusCallback around the crashing log call.
 #
 # pvrservice dies at __android_log_print <- serviceStatusCallback+472 with a null

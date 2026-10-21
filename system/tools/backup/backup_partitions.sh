@@ -8,7 +8,7 @@
 #   HIBISCUS_ROOT    project root for the default output dir and notes/
 set -uo pipefail
 
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 DST="${1:-$HIBISCUS_ROOT/backup_nonEye}"
 LOG="${LOG:-$HIBISCUS_ROOT/notes/backup_$(date +%Y%m%d_%H%M%S).log}"
 ADB=(adb ${HIBISCUS_SERIAL:+-s "$HIBISCUS_SERIAL"})

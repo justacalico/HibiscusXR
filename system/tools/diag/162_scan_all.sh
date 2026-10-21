@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # The JNI entry point itself may preserve x28 correctly while something it CALLS
 # does not - x28 only has to be trashed once anywhere below the trampoline. So
 # widen the scan to every function in the Pico libs, and confirm the 64-bit SDK

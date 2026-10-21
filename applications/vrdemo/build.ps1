@@ -6,12 +6,21 @@
 # has JDK 11, which modern AGP refuses).
 $ErrorActionPreference = 'Stop'
 
-$NDK  = 'F:\Android\Sdk\ndk\23.1.7779620'
-$BT   = 'F:\Android\Sdk\build-tools\34.0.0'
-$JAR  = 'F:\Android\Sdk\platforms\android-33\android.jar'
-$SRC  = 'F:\PN2Lineage\vrdemo'
-$OUT  = 'F:\PN2Lineage\vrdemo\out'
-$KS   = 'F:\PN2Lineage\build\debug.keystore'   # deliberately outside the source dir
+param(
+  [string]$Sdk  = "$env:ANDROID_SDK_ROOT",
+  [string]$Ndk  = "$env:ANDROID_NDK_ROOT",
+  [string]$Root = "$env:HIBISCUS_ROOT"
+)
+if (-not $Sdk)  { throw 'set ANDROID_SDK_ROOT or pass -Sdk' }
+if (-not $Ndk)  { throw 'set ANDROID_NDK_ROOT or pass -Ndk' }
+if (-not $Root) { throw 'set HIBISCUS_ROOT or pass -Root' }
+
+$NDK  = $Ndk
+$BT   = (Get-ChildItem "$Sdk\build-tools" -Directory | Sort-Object Name | Select-Object -Last 1).FullName
+$JAR  = (Get-ChildItem "$Sdk\platforms\android-*\android.jar" | Sort-Object Name | Select-Object -Last 1).FullName
+$SRC  = "$Root\vrdemo"
+$OUT  = "$Root\vrdemo\out"
+$KS   = "$Root\build\debug.keystore"   # deliberately outside the source dir
 
 $CLANG = "$NDK\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android26-clang++.cmd"
 $CC    = "$NDK\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android26-clang.cmd"
@@ -20,7 +29,7 @@ $GLUE  = "$NDK\sources\android\native_app_glue"
 foreach ($p in @($CLANG, "$GLUE\android_native_app_glue.c", $JAR, "$BT\aapt2.exe")) {
     if (-not (Test-Path $p)) { throw "missing: $p" }
 }
-New-Item -ItemType Directory -Force -Path $OUT, "$OUT\lib\arm64-v8a", 'F:\PN2Lineage\build' | Out-Null
+New-Item -ItemType Directory -Force -Path $OUT, "$OUT\lib\arm64-v8a", "$Root\build" | Out-Null
 
 Write-Host "[1/5] compiling native lib"
 # glue is C and must be built by the C driver; clang++ miscompiles its

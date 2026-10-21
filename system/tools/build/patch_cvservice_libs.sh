@@ -53,7 +53,7 @@
 #   copies into fullstage. Run once after re-pulling stock libs.
 set -euo pipefail
 
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 DIR="${1:-$HIBISCUS_ROOT/pvr_applibs/CVService/lib/arm}"
 
 patch() { # file offset hex-expected hex-new

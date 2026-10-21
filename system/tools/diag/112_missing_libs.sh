@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # lib6DofReset.so exports updateOffsets and I never extracted it. My lib list was
 # hand-written from a grep of the directory listing, so anything not matching
 # pvr|pxr|qvr|pico was invisible - lib6DofReset.so is exactly that.

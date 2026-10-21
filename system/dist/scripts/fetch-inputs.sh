@@ -11,7 +11,7 @@
 # deliberately don't carry it, which is why it travels as packages.
 set -euo pipefail
 
-R="${HIBISCUS_ROOT:-${PN2_ROOT:?}}"
+R="${HIBISCUS_ROOT:?set HIBISCUS_ROOT to a build root - see system/dist/README.md}"
 PID="${GL_PROJECT_ID:?}"
 BASE="https://gitlab.com/api/v4/projects/$PID/packages/generic"
 SELF="$(cd "$(dirname "$0")/.." && pwd)"

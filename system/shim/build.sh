@@ -10,7 +10,7 @@
 # records and the forward targets). They are not ours; if notes/qlibs is empty
 # they are pulled off the connected device (which runs the GSI) first.
 set -euo pipefail
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../tools/lib/env.sh"
 Q="${Q:-$HIBISCUS_ROOT/notes/qlibs}"
 mkdir -p "$Q"
 

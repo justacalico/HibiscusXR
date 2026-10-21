@@ -1,5 +1,5 @@
 #!/bin/bash
-HIBISCUS_ROOT="${HIBISCUS_ROOT:-${PN2_ROOT:-$HOME/PN2Lineage}}"
+. "$(dirname "${BASH_SOURCE[0]}")/../lib/env.sh"
 # Which of stock's 22 whitelisted libs can actually link on our system?
 #
 # zygote preloads every entry in public.libraries.txt and aborts the boot if one

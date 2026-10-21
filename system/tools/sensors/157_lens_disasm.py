@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
-HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT") or os.environ.get("PN2_ROOT", os.path.expanduser("~/PN2Lineage"))
+HIBISCUS_ROOT = os.environ.get("HIBISCUS_ROOT")
+if not HIBISCUS_ROOT:
+    raise SystemExit("HIBISCUS_ROOT is not set - point it at a build root")
 """Disassemble the Pico SDK functions that every VR app dies inside.
 
 The crash is SIGSEGV with fault addr 0x10. That is a load at offset 0x10 from a

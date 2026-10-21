@@ -648,5 +648,8 @@ public class ShellBridge {
         nativeQueueLaunch(pkg);
     }
 
+    // service teardown: release anything the pieces hold onto
+    public void close() { qs.close(); }
+
     private static native void nativeQueueLaunch(String pkg);
 }

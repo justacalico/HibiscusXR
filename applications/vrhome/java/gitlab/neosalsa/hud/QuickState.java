@@ -19,8 +19,8 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * The quick panel's platform side. snap() reads everything fresh - the
@@ -53,33 +53,46 @@ public class QuickState {
     }
 
     private final Context ctx;
+    private BluetoothAdapter bt;
     // connected bluetooth names ride the profile proxies, same way the
-    // flutter panel warmed them
-    private final Set<String> btNames = new HashSet<>();
+    // flutter panel warmed them - but the proxies are kept and queried
+    // live in snap(): a name cached on connect went stale the moment the
+    // device dropped or bluetooth turned off
+    private final Map<Integer, BluetoothProfile> proxies = new HashMap<>();
     private final BluetoothProfile.ServiceListener profileListener =
             new BluetoothProfile.ServiceListener() {
         @Override public void onServiceConnected(int p,
                                                  BluetoothProfile proxy) {
-            try {
-                synchronized (btNames) {
-                    for (BluetoothDevice d : proxy.getConnectedDevices())
-                        if (d != null && d.getName() != null)
-                            btNames.add(d.getName());
-                }
-            } catch (Throwable ignored) {}
+            synchronized (proxies) { proxies.put(p, proxy); }
         }
-        @Override public void onServiceDisconnected(int p) {}
+        @Override public void onServiceDisconnected(int p) {
+            synchronized (proxies) { proxies.remove(p); }
+        }
     };
 
     public QuickState(Context c) {
         ctx = c;
         try {
-            BluetoothAdapter a = ((BluetoothManager)
+            bt = ((BluetoothManager)
                     c.getSystemService(Context.BLUETOOTH_SERVICE))
                     .getAdapter();
-            if (a != null) {
-                a.getProfileProxy(c, profileListener, BluetoothProfile.A2DP);
-                a.getProfileProxy(c, profileListener, BluetoothProfile.HEADSET);
+            if (bt != null) {
+                bt.getProfileProxy(c, profileListener, BluetoothProfile.A2DP);
+                bt.getProfileProxy(c, profileListener, BluetoothProfile.HEADSET);
+            }
+        } catch (Throwable ignored) {}
+    }
+
+    // HudService teardown: hand every live proxy back or the service's
+    // binder refs outlive it
+    public void close() {
+        try {
+            if (bt == null) return;
+            synchronized (proxies) {
+                for (Map.Entry<Integer, BluetoothProfile> e
+                        : proxies.entrySet())
+                    bt.closeProfileProxy(e.getKey(), e.getValue());
+                proxies.clear();
             }
         } catch (Throwable ignored) {}
     }
@@ -127,8 +140,15 @@ public class QuickState {
                     ctx.getSystemService(Context.BLUETOOTH_SERVICE))
                     .getAdapter();
             if (a != null && a.isEnabled()) m |= 1 << BLUETOOTH;
-            synchronized (btNames) {
-                if (!btNames.isEmpty()) s.bt = btNames.iterator().next();
+            synchronized (proxies) {
+                for (BluetoothProfile p : proxies.values()) {
+                    if (s.bt != null) break;
+                    for (BluetoothDevice d : p.getConnectedDevices())
+                        if (d != null && d.getName() != null) {
+                            s.bt = d.getName();
+                            break;
+                        }
+                }
             }
         } catch (Throwable ignored) {}
         try {

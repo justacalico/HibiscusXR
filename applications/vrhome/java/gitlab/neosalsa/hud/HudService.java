@@ -142,6 +142,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         instance = null;
         getContentResolver().unregisterContentObserver(debugObs);
         nativeShutdown();
+        if (bridge != null) bridge.close();
         super.onDestroy();
     }
 

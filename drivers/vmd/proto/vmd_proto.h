@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <assert.h>
+#include <stddef.h>
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -33,12 +35,17 @@ struct vmd_pose_packet
 	uint16_t version;
 	uint16_t flags;
 	uint32_t seq;
+	uint32_t reserved;
 	uint64_t host_ts_ns;
 	float quat[4];   // x y z w
 	float pos[3];    // metres
 	float linvel[3]; // m/s
 	float angvel[3]; // rad/s
 };
+
+static_assert(sizeof(struct vmd_pose_packet) == 80, "vmd_pose_packet wire size changed");
+static_assert(offsetof(struct vmd_pose_packet, host_ts_ns) == 16,
+              "vmd_pose_packet layout changed");
 
 #ifdef __cplusplus
 }

@@ -70,7 +70,14 @@ public class SysMsgs {
         pm = ctx.getPackageManager();
         lastMs = ctx.getSharedPreferences("sysmsgs", 0).getLong("lastMs",
                 System.currentTimeMillis() - SEED_BACK_MS);
+        dead = false;
         main.postDelayed(poll, 1500);
+    }
+
+    public static void stop() {
+        dead = true;
+        main.removeCallbacks(poll);
+        listener = null;
     }
 
     public static void onChanged(Runnable r) { listener = r; }

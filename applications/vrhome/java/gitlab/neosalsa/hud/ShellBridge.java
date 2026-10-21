@@ -656,7 +656,15 @@ public class ShellBridge {
     }
 
     // service teardown: release anything the pieces hold onto
-    public void close() { qs.close(); }
+    public void close() {
+        try { ctx.unregisterReceiver(openReq); } catch (Throwable ignored) {}
+        try { ctx.unregisterReceiver(pkgWatch); } catch (Throwable ignored) {}
+        main.removeCallbacks(poll);
+        kbd.close();
+        st.close();
+        qs.close();
+        displays.releaseAll();
+    }
 
     private static native void nativeQueueLaunch(String pkg);
 }

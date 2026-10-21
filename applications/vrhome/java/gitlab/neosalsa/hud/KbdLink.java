@@ -61,6 +61,18 @@ class KbdLink {
                 ShellBridge.PERMISSION_SHELL, null);
     }
 
+    void close() {
+        try { ctx.unregisterReceiver(kbdRecv); } catch (Throwable ignored) {}
+        if (kbdSurf != null) {
+            try { kbdSurf.release(); } catch (Throwable ignored) {}
+            kbdSurf = null;
+        }
+        if (kbdSt != null) {
+            try { kbdSt.release(); } catch (Throwable ignored) {}
+            kbdSt = null;
+        }
+    }
+
     // render thread: create the shared surface; texId is a GL texture in
     // the render context. Idempotent - a HUD restart makes a new one and
     // the next QUERY reply carries it to the IME

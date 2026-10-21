@@ -141,6 +141,17 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     @Override public void onDestroy() {
         instance = null;
         getContentResolver().unregisterContentObserver(debugObs);
+        if (view != null) {
+            view.removeCallbacks(toastOff);
+            view.removeCallbacks(holdFire);
+            if (wm != null) {
+                try { wm.removeView(view); } catch (Throwable ignored) {}
+            }
+        }
+        if (homeLock != null) homeLock.close();
+        SysMsgs.onChanged(null);
+        NotifService.onPosted(null);
+        SysMsgs.stop();
         nativeShutdown();
         if (bridge != null) bridge.close();
         super.onDestroy();

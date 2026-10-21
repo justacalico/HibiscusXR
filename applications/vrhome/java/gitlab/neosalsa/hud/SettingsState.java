@@ -278,6 +278,16 @@ public class SettingsState {
         bump();
     }
 
+    // service teardown: drop the receiver, every settings observer, the
+    // controller bind and the pending scan/poll callbacks
+    public void close() {
+        closed();
+        try { ctx.unregisterReceiver(rx); } catch (Throwable ignored) {}
+        ctx.getContentResolver().unregisterContentObserver(obs);
+        main.removeCallbacks(ctrlPoll);
+        main.removeCallbacks(ctrlScanOff);
+    }
+
     // ----------------------------------------------------- snapshot
 
     public Snap snap() {

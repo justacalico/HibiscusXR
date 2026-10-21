@@ -4,6 +4,9 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
+
+
+## [alpha-v2026.10.21-r23] - 2026-10-21
 - [修复网站测试,解除页面部署阻塞](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/157) (!157)
 - [vmd: 客户机 virtio-gpu 渲染通路](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/158) (!158)
 - [设备无电池时隐藏电量显示](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/159) (!159)
@@ -50,3 +53,5 @@ linked line per MR no matter how many commits it carried.
 - [Documented no-data-loss update path](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/202) (!202)
 - [Device identity moves out of the shared base image](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/203) (!203)
 - [Hold a wakelock while an app owns the display](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/204) (!204)
+
+[alpha-v2026.10.21-r23]: https://gitlab.com/neosalsa/HibiscusXR/-/releases/alpha-v2026.10.21-r23

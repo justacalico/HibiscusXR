@@ -31,6 +31,7 @@ typedef unsigned long size_t;
 #define __NR_nanosleep 101
 
 static inline long sys1(long n,long a){register long x8 asm("x8")=n;register long x0 asm("x0")=a;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0):"memory");return x0;}
+static inline long sys2(long n,long a,long b){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1):"memory");return x0;}
 static inline long sys3(long n,long a,long b,long c){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b,x2 asm("x2")=c;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1),"r"(x2):"memory");return x0;}
 static inline long sys6(long n,long a,long b,long c,long d,long e,long f){register long x8 asm("x8")=n;register long x0 asm("x0")=a,x1 asm("x1")=b,x2 asm("x2")=c,x3 asm("x3")=d,x4 asm("x4")=e,x5 asm("x5")=f;asm volatile("svc 0":"=r"(x0):"r"(x8),"r"(x0),"r"(x1),"r"(x2),"r"(x3),"r"(x4),"r"(x5):"memory");return x0;}
 

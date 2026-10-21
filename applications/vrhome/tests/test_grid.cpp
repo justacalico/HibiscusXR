@@ -1,5 +1,6 @@
 #include "test.h"
 
+#include "grid/dashapps.h"
 #include "grid/layout.h"
 #include "common/config.h"
 #include "math/head.h"
@@ -305,5 +306,46 @@ void testGrid() {
         int idx = -1;
         CHECK(gridZoneAt(ov, cx / kGridHW, mry / kGridHH, &idx) ==
               GZONE_MENU && idx == 0);
+    }
+
+    // dash entries: the registry sits indexed by DashPanel, merges ahead
+    // of the real apps, and resolves back from its pseudo pkgs
+    {
+        for (int p = 0; p < DP_COUNT; ++p)
+            CHECK(dashLibApps()[p].panel == p);
+        CHECK(dashPanelForPkg("dash.settings") == DP_SETTINGS);
+        CHECK(dashPanelForPkg("dash.quick") == DP_QUICK);
+        CHECK(dashPanelForPkg("com.x.app0") == -1);
+        CHECK(dashPanelForPkg("") == -1);
+        auto apps = mkItems(2);
+        const size_t n0 = apps.size();
+        dashLibMerge(&apps);
+        int baked = 0;
+        for (int p = 0; p < DP_COUNT; ++p)
+            if (dashLibApps()[p].canShowInLibrary) ++baked;
+        CHECK(apps.size() == n0 + baked);
+        for (int i = 0; i < baked; ++i) {
+            CHECK(apps[i].dashPanel == i);
+            CHECK(apps[i].pkg == dashLibApps()[i].pkg);
+        }
+        CHECK(apps[baked].pkg == "com.x.app0");
+        CHECK(apps[baked].dashPanel == -1);
+    }
+
+    // a dash cell's dots spot zones as the item itself: dash panels
+    // can't pin or group, so the affordance never arms
+    {
+        auto ov = mkOverlay(4);
+        ov.items[1].dashPanel = DP_SETTINGS;
+        ov.items[1].pkg = "dash.settings";
+        float dx, dy;
+        gridDotsPos(ov.items[1], 0.0f, &dx, &dy);
+        int idx = -1;
+        CHECK(gridZoneAt(ov, dx / kGridHW, dy / kGridHH, &idx) ==
+              GZONE_ITEM && idx == 1);
+        // a real app on the same spot still gets its dots
+        gridDotsPos(ov.items[2], 0.0f, &dx, &dy);
+        CHECK(gridZoneAt(ov, dx / kGridHW, dy / kGridHH, &idx) ==
+              GZONE_DOTS && idx == 2);
     }
 }

@@ -275,7 +275,10 @@ int gridZoneAt(const GridOverlay& g, float u, float v, int* idx) {
     const int i = gridItemAt((int)g.items.size(), u, v, g.scroll);
     if (i >= 0) {
         *idx = i;
-        if (gridDotsHit(g.items[i], g.scroll, x, y)) return GZONE_DOTS;
+        // dash cells can't pin or group, so their dots never arm
+        if (g.items[i].dashPanel < 0 &&
+                gridDotsHit(g.items[i], g.scroll, x, y))
+            return GZONE_DOTS;
         return GZONE_ITEM;
     }
     return GZONE_BODY;

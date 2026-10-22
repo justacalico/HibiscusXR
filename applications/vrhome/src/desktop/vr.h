@@ -46,6 +46,7 @@ struct VrDash {
     uint32_t nimg = 0;
     int img = -1;
     bool drawn = false;
+    bool presented = false;
     int texW = 0, texH = 0;
 
     // actions: one set, per-hand subpaths

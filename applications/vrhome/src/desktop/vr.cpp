@@ -278,6 +278,7 @@ picked:
     v->texH = kVrTexH;
 
     uint32_t n = 0;
+    LOGI("vr: swapchain fmt %lld", (long long)fmt);
     if (xrFail(xrEnumerateSwapchainImages(v->swap, 0, &n, nullptr),
                "swapchain images"))
         return false;
@@ -426,12 +427,14 @@ int vrPoll(VrDash* v) {
         switch (ev.type) {
         case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
             const auto* e = (XrEventDataSessionStateChanged*)&ev;
+            LOGI("vr: session state %d", (int)e->state);
             switch (e->state) {
             case XR_SESSION_STATE_READY: {
                 XrSessionBeginInfo bi{XR_TYPE_SESSION_BEGIN_INFO};
                 bi.primaryViewConfigurationType =
                     XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-                if (xrBeginSession(v->sess, &bi) == XR_SUCCESS)
+                if (xrFail(xrBeginSession(v->sess, &bi),
+                           "begin session") == false)
                     v->running = true;
                 break;
             }
@@ -495,7 +498,11 @@ bool vrBeginFrame(VrDash* v) {
     v->head = locPose(v->view, v->stage, v->predTime);
     XrFrameBeginInfo bi{XR_TYPE_FRAME_BEGIN_INFO};
     xrFail(xrBeginFrame(v->sess, &bi), "begin frame");
-    if (!v->placed && v->head.ok) vrRecenter(v);
+    if (!v->placed) {
+        LOGI("vr: head %s %.2f %.2f %.2f", v->head.ok ? "ok" : "bad",
+             v->head.p[0], v->head.p[1], v->head.p[2]);
+        vrRecenter(v);
+    }
     return v->fs.shouldRender;
 }
 
@@ -587,7 +594,14 @@ void vrInput(VrDash* v, HudEngine* e) {
 }
 
 void vrRecenter(VrDash* v) {
-    vrQuadPlace(v->head, kVrQuadDist, kVrQuadW, kVrQuadH, &v->quad);
+    VrPose head = v->head;
+    if (!head.ok) {
+        // tracking may not feed an overlay session yet - fall back to a
+        // standing pose so the quad still shows instead of never placing
+        head.ok = true;
+        head.p[1] = 1.6f;
+    }
+    vrQuadPlace(head, kVrQuadDist, kVrQuadW, kVrQuadH, &v->quad);
     v->placed = true;
 }
 
@@ -647,6 +661,11 @@ void vrEnd(VrDash* v) {
     ei.environmentBlendMode = v->blend;
     ei.layers = layer ? &layer : nullptr;
     ei.layerCount = layer ? 1 : 0;
+    if (layer && !v->presented) {
+        v->presented = true;
+        LOGI("vr: quad live at %.2f %.2f %.2f yaw %.2f",
+             v->quad.p[0], v->quad.p[1], v->quad.p[2], v->quad.yaw);
+    }
     xrFail(xrEndFrame(v->sess, &ei), "end frame");
 }
 

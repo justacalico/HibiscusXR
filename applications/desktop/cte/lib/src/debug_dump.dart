@@ -40,7 +40,7 @@ const legacyDumpSections = <(String, String)>[
   ('settings_secure.txt', 'settings list secure'),
 ];
 
-/// Default save name for the zip: `hibiscus-dump-PICOA7B10-20261015-121430.zip`.
+/// Default save name for the zip: `hibiscus-dump-SER9-20261015-121430.zip`.
 String dumpFileName(String tag, DateTime now) {
   final dev = tag.isEmpty ? 'headset' : tag;
   final clean = dev.replaceAll(RegExp(r'[^A-Za-z0-9_-]'), '_');

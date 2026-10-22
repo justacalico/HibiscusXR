@@ -6,6 +6,7 @@ import 'package:common/common.dart';
 
 import '../ctrl_share.dart';
 import '../debug_dump.dart';
+import '../device_profile.dart';
 import '../link.dart';
 import '../models.dart';
 import '../pose_log.dart';
@@ -30,14 +31,14 @@ class AdbLink extends HeadsetLink {
     return ((r.stdout as String? ?? '') + (r.stderr as String? ?? '')).trim();
   }
 
-  /// Prepare the device for pose streaming - the posedump prop and the
-  /// drop-in flag file the pn2 driver also polls.
-  Future<void> enablePoseFeed() async {
+  /// Prepare the device for pose streaming - the posedump prop the
+  /// device's profile names plus the drop-in flag file drivers also poll.
+  Future<void> enablePoseFeed(String poseDumpProp) async {
     await _adb.run([
       '-s',
       serial,
       'shell',
-      'setprop debug.pn2.posedump 1;'
+      'setprop $poseDumpProp 1;'
           ' mkdir -p /data/local/tmp/xr;'
           ' touch /data/local/tmp/xr/posedump',
     ]);
@@ -97,9 +98,11 @@ class AdbLink extends HeadsetLink {
 
   @override
   Stream<PoseSample> poses() async* {
-    await enablePoseFeed();
+    final profile = profileForProps(await fetchProps());
+    await enablePoseFeed(profile.poseDumpProp);
     final parser = PoseLogParser();
-    final filter = '${kPoseLogTags.map((t) => '$t:I').join(' ')} *:S';
+    final filter =
+        '${profile.poseLogTags.map((t) => '$t:I').join(' ')} *:S';
     await for (final line in _adb
         .streamLines(serial, ['shell', 'logcat -v brief $filter'])) {
       final s = parser.feed(line);

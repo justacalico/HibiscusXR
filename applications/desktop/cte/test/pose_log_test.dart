@@ -3,7 +3,7 @@ import 'package:hibiscus_cte/src/models.dart';
 import 'package:hibiscus_cte/src/pose_log.dart';
 
 void main() {
-  group('pn2pose dump', () {
+  group('three-line driver dump', () {
     test('emits a sample on the rel line', () {
       final p = PoseLogParser();
       expect(
@@ -37,6 +37,15 @@ void main() {
           '09-28 12:00:00.001 1234 5678 I pn2pose:      rel q=(0 0 0 1) p=(0 0 0) w=(0 0 0) ts=42');
       expect(s, isNotNull);
       expect(s!.timestampNs, 42);
+    });
+
+    test('strips the -v brief header', () {
+      final p = PoseLogParser();
+      p.feed('I/pn2pose(  666): qvr  q=(0 0 0 1) p=(0 0 0) st=3 q=0.9');
+      final s = p.feed(
+          'I/pn2pose(  666):      rel q=(0 0 0 1) p=(0 0 0) w=(0 0 0) ts=43');
+      expect(s, isNotNull);
+      expect(s!.timestampNs, 43);
     });
   });
 

@@ -26,8 +26,9 @@ The wireless connect field tries cted first and falls back to
 `adb connect`, so the same box handles both.
 
 Head-pose data only flows while a VR app is running on the headset -
-poses come out of the driver's posedump path (`debug.pn2.posedump` /
-`hibiscuspose` tag), which only produces output during a session.
+poses come out of the driver's posedump path (the prop and log tag the
+connected device's profile names, `hibiscuspose` being the generic
+feed), which only produces output during a session.
 
 ## Build
 

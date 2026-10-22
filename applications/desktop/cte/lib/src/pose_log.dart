@@ -1,19 +1,16 @@
 import 'models.dart';
 
-/// Tags the app watches on logcat for live pose data.
-/// `pn2pose` is the pn2 driver's raw/served dump; `hibiscuspose` is the
-/// generic single-line feed any driver can emit while posedump is on.
-const kPoseLogTags = ['pn2pose', 'hibiscuspose'];
-
-/// Parses pose log lines into [PoseSample]s.
+/// Parses pose log lines into [PoseSample]s. The parser only cares about
+/// line shape - which tags carry pose lines comes from the connected
+/// device's profile, so it works for any driver feed.
 ///
 /// Two formats:
-///  - pn2pose three-line dump (raw qvr / served rel / imu), emitted ~4Hz:
+///  - three-line driver dump (raw / served rel / imu), emitted ~4Hz:
 ///      qvr  q=(.. .. .. ..) p=(.. .. ..) st=3 q=0.95
 ///           rel q=(.. .. .. ..) p=(.. .. ..) w=(.. .. ..) ts=123
 ///           imu q=(.. .. .. ..) a=(.. .. ..) g=(.. .. ..)
 ///    the `rel` line is what the runtime serves, so it yields the sample.
-///  - hibiscuspose single line:
+///  - hibiscuspose single line, the generic feed any driver can emit:
 ///      HMD ts=123 qx=.. qy=.. qz=.. qw=.. px=.. py=.. pz=.. st=3
 class PoseLogParser {
   int _rawState = 0;
@@ -47,21 +44,24 @@ class PoseLogParser {
     return null;
   }
 
-  /// Drop the `MM-DD HH:MM:SS.mmm pid tid lvl tag:` logcat prefix when present.
+  /// Drop the logcat prefix when present: the timestamped
+  /// `MM-DD HH:MM:SS.mmm pid tid lvl tag:` threadtime form or the
+  /// `lvl/tag(pid):` brief form. Any tag is stripped - the feed was
+  /// already filtered to pose tags by whoever opened it.
+  static final _timeRe = RegExp(
+      r'^\d{2}-\d{2} +\d{2}:\d{2}:\d{2}\.\d{3} +\d+ +\d+ +[VDIWEF] +[^:]+: (.*)$');
+  static final _briefRe = RegExp(
+      r'^[VDIWEF]/[^(:]+\(\s*\d+\): (.*)$');
+
   static String? _stripHeader(String line) {
-    final tagIdx = line.indexOf('pn2pose');
-    final hibIdx = line.indexOf('hibiscuspose');
-    final idx = tagIdx >= 0 ? tagIdx : hibIdx;
-    if (idx < 0) {
-      // may already be a bare line from the CTE socket feed
-      final t = line.trimLeft();
-      return (t.startsWith('qvr') || t.startsWith('rel') || t.startsWith('imu') || t.startsWith('HMD'))
-          ? t
-          : null;
-    }
-    final colon = line.indexOf(':', idx);
-    if (colon < 0) return null;
-    return line.substring(colon + 1).trimLeft();
+    final m = _timeRe.firstMatch(line) ?? _briefRe.firstMatch(line);
+    if (m != null) return m.group(1)!.trimLeft();
+    // may already be a bare line from the CTE socket feed
+    final t = line.trimLeft();
+    return (t.startsWith('qvr') || t.startsWith('rel') ||
+            t.startsWith('imu') || t.startsWith('HMD'))
+        ? t
+        : null;
   }
 
   PoseSample? _parseHibiscusLine(String body) {

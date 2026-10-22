@@ -5,7 +5,7 @@
 // CVService mmaps that file and rewrites two 512-byte blocks per packet:
 // left at 0, right at 512. All fields are big-endian (Java MappedByteBuffer
 // order) and each block is bracketed by a flag byte: 1 while writing, 2 when
-// done. The pn2 monado driver compiles this same file - one decoder, no
+// done. The device monado driver compiles this same file - one decoder, no
 // duplicated layouts. Kept C99 for that reason; it must also compile as C++
 // for the host tests.
 

@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'device_profile.dart';
+
 /// Quaternion + position pair, in the OpenXR view frame the runtime serves.
 class Pose {
   const Pose({
@@ -95,6 +97,7 @@ class DeviceInfo {
     this.serial = '',
     this.address = '',
     this.batteryLevel = -1,
+    this.profile = kGenericDeviceProfile,
   });
 
   final String model, device, brand, manufacturer;
@@ -105,13 +108,14 @@ class DeviceInfo {
   final String serial, address;
   final int batteryLevel;
 
-  /// Display name for the headset: driver label when the device is one of
-  /// the supported targets, otherwise the raw model string.
-  String get headsetName {
-    const known = {
-      'PICOA7B10': 'Pico Neo 2',
-      'A7B10': 'Pico Neo 2',
-    };
-    return known[device] ?? (model.isNotEmpty ? model : 'Unknown headset');
-  }
+  /// Device wiring resolved off the identity props: display label plus
+  /// the prop/log names this device's driver speaks.
+  final DeviceProfile profile;
+
+  /// Display name for the headset: the device profile's label when the
+  /// device is one of the supported targets, otherwise the raw model
+  /// string.
+  String get headsetName => profile.label.isNotEmpty
+      ? profile.label
+      : (model.isNotEmpty ? model : 'Unknown headset');
 }

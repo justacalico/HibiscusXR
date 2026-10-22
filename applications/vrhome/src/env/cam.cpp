@@ -1,5 +1,5 @@
-// Passthrough camera session for the env process. The Pico Neo 2's
-// tracking pair shows up as camera device "0" delivering a single
+// Passthrough camera session for the env process. The tracking
+// camera pair shows up as camera device "0" delivering a single
 // 1280x400 YUV stream: the left eye in x [0,640), the right in
 // [640,1280). The NDK camera2 API drives it into a SurfaceTexture owned
 // by the render thread; scene.cpp warps each half to its eye.

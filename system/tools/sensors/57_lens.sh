@@ -2,8 +2,8 @@
 # Hunt for eyepiece/lens intrinsics. Camera intrinsics we already have; what we
 # need is the display-side distortion polynomial and per-eye projection.
 echo "=== current tuning props ==="
-for p in roll k1 k2 ipd fov sensor; do echo "debug.pn2vr.$p = $(getprop debug.pn2vr.$p)"; done
-echo "persist.pn2.ipd = $(getprop persist.pn2.ipd)   # user setting, metres"
+for p in roll k1 k2 ipd fov sensor; do echo "debug.vrdemo.$p = $(getprop debug.vrdemo.$p)"; done
+echo "persist.hibiscus.ipd = $(getprop persist.hibiscus.ipd)   # user setting, metres"
 echo
 
 echo "=== /vendor/etc/pvr ==="

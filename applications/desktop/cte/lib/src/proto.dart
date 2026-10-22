@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'device_profile.dart';
 import 'models.dart';
 
 /// Wire protocol for the on-headset `cted` daemon (system/cted).
@@ -244,6 +245,10 @@ DeviceInfo deviceInfoFromJson(Map<String, dynamic> j, {String address = ''}) {
     sdkInt: int.tryParse(props['ro.build.version.sdk'] ?? '') ?? 0,
     buildId: props['ro.build.display.id'] ?? '',
     hibiscusVersion: props['ro.hibiscus.version'] ?? '',
+    profile: profileForProps({
+      'ro.product.device': j['device'] as String? ?? '',
+      ...props,
+    }),
     trackingMode: j['tracking'] == 'dof6'
         ? TrackingMode.dof6
         : j['tracking'] == 'dof3'

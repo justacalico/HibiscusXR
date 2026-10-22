@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS" />
 
     <application
-        android:label="Monado (pn2)"
+        android:label="Monado"
         android:hasCode="true"
         android:extractNativeLibs="true">
 

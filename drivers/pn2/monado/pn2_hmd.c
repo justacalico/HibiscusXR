@@ -60,7 +60,7 @@ extern int __system_property_get(const char *, char *);
 // Settings.Global and pn2-ipdd mirrors it here in metres. Polled live so a
 // slider drag takes effect without restarting the app. Setting PN2_IPD pins
 // the value at create time and disables the poll.
-#define PN2_IPD_PROP "persist.pn2.ipd"
+#define PN2_IPD_PROP "persist.hibiscus.ipd"
 #define PN2_IPD_MIN_M 0.040f
 #define PN2_IPD_MAX_M 0.090f
 
@@ -142,7 +142,7 @@ struct pn2_device
 	uint64_t servedump_next;   //!< next served-pose dump print
 	uint64_t ctefeed_next;     //!< next generic hibiscuspose feed line
 
-	float ipd_m;             //!< eye separation in metres (persist.pn2.ipd)
+	float ipd_m;             //!< eye separation in metres (persist.hibiscus.ipd)
 	bool ipd_pinned;         //!< PN2_IPD env set: fixed at create, no poll
 	uint64_t next_ipd_poll;  //!< next property re-read (monotonic ns)
 

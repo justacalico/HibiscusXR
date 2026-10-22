@@ -142,7 +142,7 @@ void main() {
 }
 )";
 
-// Stock Pico lens field: scale = K0 + K2 r^2 + K4 r^4 + K6 r^6 in tan-angle
+// Stock vendor lens field: scale = K0 + K2 r^2 + K4 r^4 + K6 r^6 in tan-angle
 // radius, plus per-channel chromatic scales. r comes out of the 90-degree
 // projection as ndc = 2p and tan(theta) = (aspect*ndc.x, ndc.y). Off-texture
 // samples go black rather than smearing the edge texel.

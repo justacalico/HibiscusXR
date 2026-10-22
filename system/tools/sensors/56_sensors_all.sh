@@ -9,7 +9,7 @@ echo "=== crash timestamps for the sensor abort ==="
 logcat -d -b crash 2>/dev/null | grep -n 'DEVICE_PRIVATE_BASE' | head -20
 echo
 echo "=== is it still happening with nothing of ours running? ==="
-echo "our app pid: $(pidof org.pn2.vrdemo)"
+echo "our app pid: $(pidof org.hibiscus.vrdemo)"
 echo "system_server pid: $(pidof system_server)  uptime $(cut -d. -f1 /proc/uptime)s"
 echo
 echo "=== which sensors are ACTIVE right now ==="

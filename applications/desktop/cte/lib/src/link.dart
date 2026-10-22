@@ -6,7 +6,7 @@ import 'models.dart';
 /// One open channel to a headset - either the adb CLI or the on-device
 /// cted socket. The UI only ever talks to this.
 abstract class HeadsetLink {
-  /// Short human label: `adb:PICOA7B10` or `cte://10.0.0.5`.
+  /// Short human label: `adb:SER9` or `cte://10.0.0.5`.
   String get description;
 
   /// Device properties + battery + tracking mode.

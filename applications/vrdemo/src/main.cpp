@@ -1,11 +1,11 @@
 // Minimal stereo VR renderer for Hibiscus headsets running a plain Android 10 GSI.
 //
-// Deliberately does NOT use the Pico/Qualcomm VR stack. This is the "does the
+// Deliberately does NOT use the stock vendor VR stack. This is the "does the
 // open path work at all" test: standard EGL + GLES2 on a normal fullscreen
 // surface, split into two eye viewports with barrel distortion applied in the
 // fragment shader, and 3DoF orientation pulled from the IMU through the
 // NDK-stable ASensorManager. If this looks right in the lenses then the display,
-// the Adreno driver and the sensor HAL are all usable without any closed
+// the GPU driver and the sensor HAL are all usable without any closed
 // compositor, which is what the port actually needs to prove.
 //
 // Panel is 2160x3840 portrait; forced landscape gives us 3840x2160 and each eye
@@ -32,7 +32,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#define TAG "pn2vr"
+#define TAG "vrdemo"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,  TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 
@@ -40,26 +40,26 @@
 // in a headset is slow - you have to put it on, look, take it off - so a rebuild
 // per candidate value is the wrong loop. Defaults are what the code starts with.
 //
-//   setprop debug.pn2vr.k1     0.22    barrel term
-//   setprop debug.pn2vr.k2     0.24    barrel term
-//   setprop debug.pn2vr.ipd    0.063   metres between eye centres; overrides
-//                                      persist.pn2.ipd (the user setting)
-//   setprop debug.pn2vr.fov    90      vertical degrees
-//   setprop debug.pn2vr.roll     90    in-plane image roll, degrees
-//   setprop debug.pn2vr.worldx   90    Y-up scene -> Android's Z-up ENU world
-//   setprop debug.pn2vr.sensroll 0     spare device-space Z term
-//   setprop debug.pn2vr.sensor   1     0=off 1=game_rv 2=rotation_vector
+//   setprop debug.vrdemo.k1     0.22    barrel term
+//   setprop debug.vrdemo.k2     0.24    barrel term
+//   setprop debug.vrdemo.ipd    0.063   metres between eye centres; overrides
+//                                      persist.hibiscus.ipd (the user setting)
+//   setprop debug.vrdemo.fov    90      vertical degrees
+//   setprop debug.vrdemo.roll     90    in-plane image roll, degrees
+//   setprop debug.vrdemo.worldx   90    Y-up scene -> Android's Z-up ENU world
+//   setprop debug.vrdemo.sensroll 0     spare device-space Z term
+//   setprop debug.vrdemo.sensor   1     0=off 1=game_rv 2=rotation_vector
 //
 // The sensor default is only safe because libsensorservice.so is patched. Stock
 // Android 10 fatally CHECKs on any sensor event type between 36 and 65535, and
-// Pico's HAL emits 57, 58, 126 and 127 - which crash-loops system_server and
-// reboots the device. See overlay/README.md. On an unpatched build set
-// debug.pn2vr.sensor=0.
+// the vendor sensor HAL emits 57, 58, 126 and 127 - which crash-loops
+// system_server and reboots the device. See overlay/README.md. On an
+// unpatched build set debug.vrdemo.sensor=0.
 static float kDistK1 = 0.22f;
 static float kDistK2 = 0.24f;
 static float kIPD    = 0.063f;   // metres between eye centres
 static float kFovY   = 90.0f;    // degrees, vertical
-// Confirmed correct in the headset on the Neo 2: roll 90, sensroll 0, worldx 90.
+// Confirmed correct in the headset: roll 90, sensroll 0, worldx 90.
 static float kRoll     = 90.0f;  // degrees, in-plane roll of the final image
 static float kSensRoll = 0.0f;   // degrees, spare device-space Z term
 static float kWorldX   = 90.0f;  // degrees, Y-up scene -> Android's Z-up world
@@ -81,13 +81,13 @@ static int propI(const char* key, int dflt) {
 }
 
 static void refreshTunables() {
-    kDistK1 = propF("debug.pn2vr.k1",   0.22f);
-    kDistK2 = propF("debug.pn2vr.k2",   0.24f);
-    kIPD    = propF("debug.pn2vr.ipd",  propF("persist.pn2.ipd", 0.063f));
-    kFovY   = propF("debug.pn2vr.fov",  90.0f);
-    kRoll     = propF("debug.pn2vr.roll",     90.0f);
-    kSensRoll = propF("debug.pn2vr.sensroll", 0.0f);
-    kWorldX   = propF("debug.pn2vr.worldx",  90.0f);
+    kDistK1 = propF("debug.vrdemo.k1",   0.22f);
+    kDistK2 = propF("debug.vrdemo.k2",   0.24f);
+    kIPD    = propF("debug.vrdemo.ipd",  propF("persist.hibiscus.ipd", 0.063f));
+    kFovY   = propF("debug.vrdemo.fov",  90.0f);
+    kRoll     = propF("debug.vrdemo.roll",     90.0f);
+    kSensRoll = propF("debug.vrdemo.sensroll", 0.0f);
+    kWorldX   = propF("debug.vrdemo.worldx",  90.0f);
 }
 
 // ---------------------------------------------------------------- math
@@ -458,7 +458,7 @@ static void drawScene(Engine* e, const Mat4& viewProj) {
 // pollAll keeps returning >= 0; if the only place we drain is after the loop,
 // the loop never exits, drawFrame never runs, and the scene freezes while the
 // queue grows. That is a livelock you only see once a sensor is actually
-// attached - with debug.pn2vr.sensor=0 everything renders fine.
+// attached - with debug.vrdemo.sensor=0 everything renders fine.
 static void drainSensor(Engine* e) {
     if (!e->sensorQueue) return;
     ASensorEvent ev;
@@ -594,15 +594,15 @@ void android_main(android_app* app) {
     app->onAppCmd = onAppCmd;
 
     refreshTunables();
-    kSensor = propI("debug.pn2vr.sensor", 0);
+    kSensor = propI("debug.vrdemo.sensor", 0);
 
     // Opt-in only. See the note by the tunables: subscribing to a fused sensor
-    // makes Pico's HAL stream event types 126/127, which Android 10 turns into a
+    // makes the vendor HAL stream event types 126/127, which Android 10 turns into a
     // fatal CHECK inside sensorservice and reboots the device.
     if (kSensor == 0) {
-        LOGI("sensor disabled (debug.pn2vr.sensor=0), running head-locked");
+        LOGI("sensor disabled (debug.vrdemo.sensor=0), running head-locked");
     } else {
-        engine.sensorMgr = ASensorManager_getInstanceForPackage("org.pn2.vrdemo");
+        engine.sensorMgr = ASensorManager_getInstanceForPackage("org.hibiscus.vrdemo");
         if (engine.sensorMgr) {
             const int want = (kSensor == 2) ? ASENSOR_TYPE_ROTATION_VECTOR
                                             : ASENSOR_TYPE_GAME_ROTATION_VECTOR;

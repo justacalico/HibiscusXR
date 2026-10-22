@@ -95,7 +95,7 @@ bool reqNum(const Json& args, const char* k, double* out) {
 }
 
 int keyCode(const std::string& name) {
-    if (name == "confirm") return kPicoConfirm;
+    if (name == "confirm") return kHwConfirm;
     if (name == "enter") return kKeyEnter;
     if (name == "back") return kKeyBack;
     if (name == "dpad_center") return kKeyDpadCenter;

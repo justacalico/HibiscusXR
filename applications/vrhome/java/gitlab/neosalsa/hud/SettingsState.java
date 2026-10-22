@@ -3,11 +3,9 @@ package gitlab.neosalsa.hud;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.net.wifi.ScanResult;
@@ -16,9 +14,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
-import android.os.Parcel;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.util.Log;
@@ -77,20 +73,6 @@ public class SettingsState {
         new XpDef("ffr", R.string.set_xp_ffr_name, R.string.set_xp_ffr_desc),
     };
 
-    private static final String CTRL_SVC_PKG =
-            "com.picovr.picovrlib.cvcontroller";
-    private static final String CTRL_ACTION =
-            "com.picovr.picovrlib.cvcontrollerlib.CVControllerAIDLService";
-    private static final String CTRL_IFACE =
-            "com.picovr.picovrlib.cvcontrollerlib.CVControllerAIDLService";
-    private static final String CTRL_CB_IFACE =
-            "com.picovr.picovrlib.cvcontrollerlib.ICVAIDLServiceCallback";
-    private static final int TR_START_THREAD = 7, TR_STOP_THREAD = 8,
-            TR_REGISTER_CB = 12, TR_CTRL_SN = 18, TR_UNBIND = 19,
-            TR_PAIR_STATE = 25, TR_INTERRUPT_PAIR = 28,
-            TR_DEV_BLE_MAC = 39, TR_CV2_CONN = 45, TR_START_PAIR = 50,
-            TR_STOP_PAIR = 51, TR_CHARGING = 62, TR_BATTERY = 63;
-    private static final int BATTERY_INDEX = 8;
     private static final long POLL_MS = 2000;
     private static final long SCAN_TIMEOUT_MS = 60_000;
 
@@ -139,14 +121,13 @@ public class SettingsState {
     private final Map<String, String> discovered = new LinkedHashMap<>();
     private final java.util.Set<String> aclLinked = new java.util.HashSet<>();
 
-    private IBinder ctrlSvc;
-    private ServiceConnection ctrlConn;
+    private final CtrlService ctrlLink;
     private volatile boolean ctrlScanning;
     private final CtrlSlot[] ctrl = {new CtrlSlot(), new CtrlSlot()};
 
     private final Runnable ctrlPoll = new Runnable() {
         @Override public void run() {
-            if (ctrlSvc == null || section < 0) return;
+            if (!ctrlLink.bound() || section < 0) return;
             pollCtrl();
             main.postDelayed(this, POLL_MS);
         }
@@ -155,12 +136,13 @@ public class SettingsState {
         @Override public void run() { ctrlScanning = false; bump(); }
     };
 
-    private final android.os.Binder ctrlCb = new android.os.Binder() {
-        @Override protected boolean onTransact(int code, Parcel data,
-                Parcel reply, int flags) {
-            try { data.enforceInterface(CTRL_CB_IFACE); }
-            catch (Throwable ignored) {}
-            return true;
+    // a link state change can both refresh the card and (re)start the
+    // poll loop - it self-gates on bound() when the bind drops again
+    private final CtrlService.Listener ctrlListener =
+            new CtrlService.Listener() {
+        @Override public void onChange() {
+            ctrlPoll.run();
+            bump();
         }
     };
 
@@ -219,6 +201,7 @@ public class SettingsState {
 
     SettingsState(Context c) {
         ctx = c;
+        ctrlLink = CtrlService.detect(c);
         IntentFilter f = new IntentFilter();
         f.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
         f.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -265,7 +248,8 @@ public class SettingsState {
 
     public void section(int s) {
         section = s;
-        bindCtrl(s >= 0);
+        if (s >= 0) ctrlLink.attach(ctrlListener);
+        else ctrlLink.detach();
         if (s == SEC_WIFI) wifiScan();
         else if (s == SEC_BT) btScan();
         bump();
@@ -274,7 +258,7 @@ public class SettingsState {
     public void closed() {
         section = -1;
         ctrlScanning = false;
-        bindCtrl(false);
+        ctrlLink.detach();
         bump();
     }
 
@@ -801,136 +785,23 @@ public class SettingsState {
     }
 
     // ----------------------------------------------------- ctrl svc
-
-    private void bindCtrl(boolean on) {
-        if (on && ctrlSvc == null) {
-            ctrlConn = new ServiceConnection() {
-                @Override public void onServiceConnected(
-                        ComponentName n, IBinder b) {
-                    ctrlSvc = b;
-                    registerCb();
-                    ctrlPoll.run();
-                    bump();
-                }
-                @Override public void onServiceDisconnected(
-                        ComponentName n) {
-                    ctrlSvc = null;
-                    bump();
-                }
-            };
-            try {
-                Intent i = new Intent(CTRL_ACTION);
-                i.setPackage(CTRL_SVC_PKG);
-                ctx.bindService(i, ctrlConn, Context.BIND_AUTO_CREATE);
-            } catch (Throwable t) {
-                Log.w(TAG, "ctrl bind failed", t);
-            }
-        } else if (!on && ctrlConn != null) {
-            try { ctx.unbindService(ctrlConn); } catch (Throwable ignored) {}
-            ctrlConn = null;
-            ctrlSvc = null;
-        }
-    }
-
-    private Parcel transact(int code, Parcel in) {
-        Parcel out = Parcel.obtain();
-        try {
-            in.writeInterfaceToken(CTRL_IFACE);
-            ctrlSvc.transact(code, in, out, 0);
-            out.readException();
-            return out;
-        } catch (Throwable t) {
-            out.recycle();
-            return null;
-        }
-    }
-
-    private void registerCb() {
-        Parcel in = Parcel.obtain();
-        try {
-            in.writeInterfaceToken(CTRL_IFACE);
-            in.writeStrongBinder(ctrlCb);
-            ctrlSvc.transact(TR_REGISTER_CB, in, null,
-                    android.os.IBinder.FLAG_ONEWAY);
-        } catch (Throwable ignored) {}
-        in.recycle();
-    }
-
     private void pollCtrl() {
         synchronized (ctrl) {
-            for (int i = 0; i < 2; ++i) {
-                Parcel in = Parcel.obtain();
-                in.writeInt(i);
-                Parcel r = transact(TR_CV2_CONN, in);
-                in.recycle();
-                int st = 0;
-                if (r != null) {
-                    try { st = r.readInt(); } catch (Throwable ignored) {}
-                    r.recycle();
-                }
-                ctrl[i].state = ctrlScanning && st == 0 ? 2 :
-                        st == 0 ? 0 : 1;
-                in = Parcel.obtain();
-                in.writeInt(i);
-                r = transact(TR_DEV_BLE_MAC, in);
-                in.recycle();
-                if (r != null) {
-                    try { ctrl[i].mac = nullToEmpty(r.readString()); }
-                    catch (Throwable ignored) {}
-                    r.recycle();
-                }
-                in = Parcel.obtain();
-                in.writeInt(i);
-                r = transact(TR_CTRL_SN, in);
-                in.recycle();
-                if (r != null) {
-                    try { ctrl[i].serial = nullToEmpty(r.readString()); }
-                    catch (Throwable ignored) {}
-                    r.recycle();
-                }
-                in = Parcel.obtain();
-                in.writeInt(i);
-                r = transact(TR_CHARGING, in);
-                in.recycle();
-                if (r != null) {
-                    try { ctrl[i].chg = r.readInt() != 0; }
-                    catch (Throwable ignored) {}
-                    r.recycle();
-                }
-                in = Parcel.obtain();
-                in.writeInt(i);
-                r = transact(TR_BATTERY, in);
-                in.recycle();
-                if (r != null) {
-                    try {
-                        int[] b = r.createIntArray();
-                        if (b != null && b.length > BATTERY_INDEX)
-                            ctrl[i].batt = b[BATTERY_INDEX];
-                        else if (b != null && b.length > 0)
-                            ctrl[i].batt = b[0];
-                    } catch (Throwable ignored) {}
-                    r.recycle();
-                }
-            }
+            ctrlLink.poll(ctrl);
+            // raw link state to the card's display state: a link scan
+            // turns "not connected" into "pairing" until it finishes
+            for (CtrlSlot c : ctrl)
+                c.state = ctrlScanning && c.state == 0 ? 2 :
+                        c.state == 0 ? 0 : 1;
         }
         bump();
     }
 
-    private static String nullToEmpty(String s) {
-        return s == null ? "" : s;
-    }
-
     public void toggleScan() {
-        if (ctrlSvc == null) return;
+        if (!ctrlLink.bound()) return;
         ctrlScanning = !ctrlScanning;
-        Parcel in = Parcel.obtain();
-        in.writeInt(ctrlScanning ? 1 : 0);
-        Parcel r = transact(ctrlScanning ? TR_START_PAIR : TR_STOP_PAIR, in);
-        if (r != null) r.recycle();
+        ctrlLink.setPairing(ctrlScanning);
         if (ctrlScanning) {
-            Parcel t = Parcel.obtain();
-            Parcel rr = transact(TR_START_THREAD, t);
-            if (rr != null) rr.recycle();
             main.removeCallbacks(ctrlScanOff);
             main.postDelayed(ctrlScanOff, SCAN_TIMEOUT_MS);
         }
@@ -938,10 +809,7 @@ public class SettingsState {
     }
 
     private void unbindAll() {
-        if (ctrlSvc == null) return;
-        Parcel in = Parcel.obtain();
-        Parcel r = transact(TR_UNBIND, in);
-        if (r != null) r.recycle();
+        ctrlLink.unbindAll();
         bump();
     }
 }

@@ -9,7 +9,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 ROOT="$(pwd)"
 MESA_TAG="${MESA_TAG:-mesa-25.2.4}"
-WORK="${PN2XR_WORK:-$ROOT/.work}"
+WORK="${HSVR_WORK:-$ROOT/.work}"
 SRC="$WORK/mesa"
 BUILD="$SRC/build-android"
 OUT="$ROOT/out"

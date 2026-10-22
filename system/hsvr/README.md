@@ -39,7 +39,7 @@ Replaces the vendor's closed application stack with upstream components:
 
 ```sh
 turnip/build.sh      # mesa -> turnip/libvulkan_freedreno.so
-monado/build.sh      # monado + pn2 driver -> libopenxr_monado.so
+monado/build.sh      # monado + device driver -> libopenxr_monado.so
 app-xrtest/build.sh  # test APK bundling the runtime
 ```
 

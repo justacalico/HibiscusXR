@@ -3,7 +3,8 @@
 // The OS palette: one surface ramp and one accent shared by the HUD
 // chrome and the Flutter panel apps, in three tables - dark, light and
 // the true-black OLED variant. The settings app writes the pick into
-// the hibiscus_theme Settings.Global key, pn2-themed mirrors it onto
+// the hibiscus_theme Settings.Global key, the device's theme daemon
+// mirrors it onto
 // persist.hibiscus.theme, and syncPalette() repoints the kPal* globals
 // once a frame so a theme change lands on the next vsync.
 //

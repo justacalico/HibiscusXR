@@ -64,6 +64,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
     private WindowManager.LayoutParams lp;
     private ShellBridge bridge;
     private HomeLock homeLock;
+    private CtrlService ctrlLink;
     private static volatile HudService instance;
 
     // start hidden: the first poll decides; a game booting before the
@@ -120,6 +121,7 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         } catch (Throwable t) {
             Log.e(TAG, "bridge ctor failed", t);
         }
+        ctrlLink = CtrlService.detect(this);
         nativeInit(this, bridge);
         buildWindow();
         enableKeyFilter();
@@ -169,37 +171,11 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         if (bridge != null) bridge.invalidateAppLabels();
     }
 
-    // CVService only streams controller data while its SPI thread runs, and
-    // nothing on this build starts it (stock VRShell used to). The render
-    // thread calls this when the sharemem flags stop flapping - thread
-    // never started, or RemoteService crashed and came back bare. Every
-    // start also restarts a live thread, so the native side only calls it
-    // while the channel is actually quiet.
+    // The render thread calls this when the controller feed's sharemem
+    // flags stop flapping; whatever link service the device image ships
+    // decides what restarts it - on an image without one this no-ops.
     public void pokeCtrlThread() {
-        try {
-            Intent i = new Intent(
-                    "com.picovr.picovrlib.cv.broadcast.start.thread");
-            i.setPackage("com.picovr.picovrlib.cvcontroller");
-            i.putExtra("HeadTrackMode", 1);
-            i.putExtra("CtrlerTrackMode", 1);
-            sendBroadcast(i);
-            // stock fires this when 6dof tracking engages to enable the
-            // controller-side EM ADC stream; nothing on this build does
-            Intent adc = new Intent("android.intent.pvrcon.grapadc");
-            adc.setPackage("com.picovr.picovrlib.cvcontroller");
-            sendBroadcast(adc);
-            // same story for the slpi side - CVService gates its ssc
-            // sensor receive path on this action, so without it the
-            // ndi_fpga stream never starts even when everything is
-            // configured
-            Intent rx = new Intent("pui.settings.action.ENABLE_RX");
-            rx.setPackage("com.picovr.picovrlib.cvcontroller");
-            rx.putExtra("enable", 1);
-            sendBroadcast(rx);
-            Log.i(TAG, "cvservice ctrl thread poked");
-        } catch (Throwable t) {
-            Log.e(TAG, "cvservice poke failed", t);
-        }
+        ctrlLink.poke();
     }
 
     @Override public IBinder onBind(Intent i) { return null; }

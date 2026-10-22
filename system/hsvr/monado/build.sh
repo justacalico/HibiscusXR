@@ -170,7 +170,7 @@ echo "  kit controllers:$CTRL_NAMES"
 
 # the controller sharemem decoder is shared with the vrhome dash - one
 # implementation, copied in at build time so there is no duplicated layout
-CTRL_STATE_SRC="${PN2_VRHOME:-$ROOT/../../vrhome}/src/input"
+CTRL_STATE_SRC="${VRHOME_SRC:-$ROOT/../../vrhome}/src/input"
 # monorepo checkout: applications/vrhome sits three levels above monado/
 if [ ! -f "$CTRL_STATE_SRC/ctrl_state.c" ]; then
     ALT="$ROOT/../../../applications/vrhome/src/input"
@@ -178,7 +178,7 @@ if [ ! -f "$CTRL_STATE_SRC/ctrl_state.c" ]; then
 fi
 for f in ctrl_state.c ctrl_state.h; do
     if [ ! -f "$CTRL_STATE_SRC/$f" ]; then
-        echo "missing shared decoder $CTRL_STATE_SRC/$f (set PN2_VRHOME)" >&2
+        echo "missing shared decoder $CTRL_STATE_SRC/$f (set VRHOME_SRC)" >&2
         exit 1
     fi
     cp "$CTRL_STATE_SRC/$f" "$HSVR_DST/"

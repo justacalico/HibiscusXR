@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:hibiscus_cte/src/device_profile.dart';
 import 'package:hibiscus_cte/src/models.dart';
 import 'package:hibiscus_cte/src/props.dart';
 
@@ -35,10 +36,30 @@ void main() {
   });
 
   test('dof mode from props', () {
-    expect(parseDofMode({'persist.pn2.dof': '6dof'}), TrackingMode.dof6);
-    expect(parseDofMode({'persist.pn2.dof': '3dof'}), TrackingMode.dof3);
-    expect(parseDofMode({'persist.hibiscus.dof': '6dof'}), TrackingMode.dof6);
-    expect(parseDofMode({}), TrackingMode.unknown);
+    final pn2 = profileForDevice('PICOA7B10');
+    expect(parseDofMode({'persist.pn2.dof': '6dof'}, pn2),
+        TrackingMode.dof6);
+    expect(parseDofMode({'persist.pn2.dof': '3dof'}, pn2),
+        TrackingMode.dof3);
+    expect(parseDofMode({'persist.hibiscus.dof': '6dof'}, pn2),
+        TrackingMode.dof6);
+    expect(
+        parseDofMode(
+            {'persist.hibiscus.dof': '6dof'}, kGenericDeviceProfile),
+        TrackingMode.dof6);
+    expect(parseDofMode({}, pn2), TrackingMode.unknown);
+  });
+
+  test('profile lookup resolves on device or name, else generic', () {
+    expect(profileForDevice('PICOA7B10').label, 'Pico Neo 2');
+    expect(profileForDevice('A7B10').label, 'Pico Neo 2');
+    expect(profileForDevice('nope'), kGenericDeviceProfile);
+    expect(
+        profileForProps({'ro.product.device': 'PICOA7B10'}).poseDumpProp,
+        'debug.pn2.posedump');
+    expect(profileForProps({'ro.product.name': 'A7B10'}).label,
+        'Pico Neo 2');
+    expect(profileForProps({}).poseLogTags, ['hibiscuspose']);
   });
 
   test('builds DeviceInfo with known headset name', () {

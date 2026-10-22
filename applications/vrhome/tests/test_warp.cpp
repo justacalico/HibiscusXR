@@ -34,7 +34,7 @@ void testWarp() {
     // degenerate height can't divide by zero
     CHECK_F(makeWarp(100, 0).aspect, 1.0f, 1e-6f);
 
-    // Pico field: 0.74 on the axis magnifies the centre ~1.35x, crosses
+    // Stock field: 0.74 on the axis magnifies the centre ~1.35x, crosses
     // 1.0 mid-field, ends at 1.129 on the top/bottom edge
     const float s0 = warpScale(0.0f, wp.k0, wp.k2, wp.k4, wp.k6);
     CHECK_F(s0, kLensK0, 1e-6f);

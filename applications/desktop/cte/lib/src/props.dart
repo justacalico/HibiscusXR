@@ -1,3 +1,4 @@
+import 'device_profile.dart';
 import 'models.dart';
 
 /// Parse `getprop` output - lines look like `[ro.product.model]: [Pico Neo 2]`.
@@ -17,11 +18,14 @@ int parseBatteryLevel(String dumpsys) {
   return m == null ? -1 : int.parse(m.group(1)!);
 }
 
-TrackingMode parseDofMode(Map<String, String> props) {
-  final raw = (props['persist.pn2.dof'] ?? props['persist.hibiscus.dof'] ?? '')
-      .toLowerCase();
-  if (raw.contains('6')) return TrackingMode.dof6;
-  if (raw.contains('3')) return TrackingMode.dof3;
+TrackingMode parseDofMode(Map<String, String> props,
+    DeviceProfile profile) {
+  for (final key in profile.dofProps) {
+    final raw = (props[key] ?? '').toLowerCase();
+    if (raw.isEmpty) continue;
+    if (raw.contains('6')) return TrackingMode.dof6;
+    if (raw.contains('3')) return TrackingMode.dof3;
+  }
   return TrackingMode.unknown;
 }
 
@@ -31,6 +35,7 @@ DeviceInfo deviceInfoFromProps(
   String address = '',
   int batteryLevel = -1,
 }) {
+  final profile = profileForProps(props);
   return DeviceInfo(
     model: props['ro.product.model'] ?? '',
     device: props['ro.product.device'] ?? '',
@@ -40,9 +45,10 @@ DeviceInfo deviceInfoFromProps(
     sdkInt: int.tryParse(props['ro.build.version.sdk'] ?? '') ?? 0,
     buildId: props['ro.build.display.id'] ?? props['ro.build.id'] ?? '',
     hibiscusVersion: props['ro.hibiscus.version'] ?? '',
-    trackingMode: parseDofMode(props),
+    trackingMode: parseDofMode(props, profile),
     serial: serial,
     address: address,
     batteryLevel: batteryLevel,
+    profile: profile,
   );
 }

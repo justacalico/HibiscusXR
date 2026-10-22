@@ -1,5 +1,5 @@
 // qvrdump: dump qvrservice head tracking poses for axis/calibration work.
-// Reads the shared ring buffer like the pn2 driver does - no VR mode needed.
+// Reads the shared ring buffer like the device driver does - no VR mode needed.
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -43,7 +43,7 @@ void testKeys() {
     CHECK(isConfirm(kKeyEnter));
     CHECK(isConfirm(kKeyDpadCenter));
     CHECK(isConfirm(kKeyButtonA));
-    CHECK(isConfirm(kPicoConfirm));
+    CHECK(isConfirm(kHwConfirm));
     CHECK(!isConfirm(4));    // AKEYCODE_BACK
     CHECK(!isConfirm(3));    // AKEYCODE_HOME
     CHECK(!isConfirm(0));

@@ -50,7 +50,7 @@ class PanelDisplays {
             SurfaceTexture st = new SurfaceTexture(texId);
             st.setDefaultBufferSize(w, h);
             Surface surf = new Surface(st);
-            VirtualDisplay vd = dm.createVirtualDisplay("pn2panel",
+            VirtualDisplay vd = dm.createVirtualDisplay("vrpanel",
                     w, h, dpi, surf, VD_FLAGS);
             if (vd == null) { surf.release(); st.release(); return -1; }
             int id = vd.getDisplay().getDisplayId();

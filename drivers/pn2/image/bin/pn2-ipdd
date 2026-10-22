@@ -1,5 +1,5 @@
 #!/system/bin/sh
-# Bridge the user IPD setting to the persist.pn2.ipd system property.
+# Bridge the user IPD setting to the persist.hibiscus.ipd system property.
 #
 # The settings app writes hibiscus_ipd (millimetres) into Settings.Global.
 # Apps cannot setprop, and the native renderers (pn2 monado driver, vrhome,
@@ -12,7 +12,7 @@
 # prop reads as unset on the consumer side and everyone falls back to 63.5mm.
 
 DB=/data/system/users/0/settings_global.xml
-PROP=persist.pn2.ipd
+PROP=persist.hibiscus.ipd
 
 cur="__boot__"
 while true; do

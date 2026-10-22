@@ -87,7 +87,7 @@ echo "=== cvservice lib patches ==="
 # libCVController calls pvrservice provider pointers that stay null on this
 # stack - unpatched libs crash-loop RemoteService on every controller
 # connect. Patch the staged copy so the shipped image is always fixed.
-"$(dirname "$0")/patch_cvservice_libs.sh" "$STAGE/priv-app/CVService/lib/arm"
+"$(dirname "$0")/patch_cvservice_libs.sh" "$STAGE/priv-app/CVService/lib/arm" || exit 1
 
 echo
 echo "=== libpvrserviceclient BitTube guard ==="

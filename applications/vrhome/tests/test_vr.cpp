@@ -20,7 +20,7 @@ static void testVrQuadPlace() {
     VrQuad q;
     vrQuadPlace(poseAt(0.0f, 1.6f, 0.0f), 1.4f, 1.6f, 0.9f, &q);
     CHECK_F(q.p[0], 0.0f, 1e-4f);
-    CHECK_F(q.p[1], 1.4f, 1e-4f);
+    CHECK_F(q.p[1], 1.5f, 1e-4f);
     CHECK_F(q.p[2], -1.4f, 1e-4f);
     CHECK_F(q.yaw, 0.0f, 1e-4f);
     CHECK_F(q.w, 1.6f, 1e-4f);
@@ -68,7 +68,7 @@ static void testVrQuadHit() {
     // quad at z=-1 facing +Z; a ray straight at its centre hits u=v=0.5
     const float o[3] = {0.0f, 0.0f, 0.0f};
     float u = -1, v = -1, t = -1;
-    const float d0[3] = {0.0f, -0.2f, -1.0f};
+    const float d0[3] = {0.0f, -0.1f, -1.0f};
     CHECK(vrQuadHit(q, o, d0, &u, &v, &t));
     CHECK_F(u, 0.5f, 1e-3f);
     CHECK_F(v, 0.5f, 1e-3f);

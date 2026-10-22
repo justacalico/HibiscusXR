@@ -63,7 +63,7 @@ struct VrDash {
 constexpr int kVrTexW = 1920, kVrTexH = 1080;
 constexpr float kVrQuadDist = 1.4f;
 constexpr float kVrQuadW = 1.6f, kVrQuadH = 0.9f;
-constexpr float kVrFovY = 50.0f;   // dash camera fov inside the texture
+constexpr float kVrFovY = 70.0f;   // dash camera fov inside the texture
 
 // full bring-up: EGL context, instance, overlay session, spaces,
 // swapchain and action set. false = fatal, error already logged

@@ -31,7 +31,7 @@ void vrQuadPlace(const VrPose& head, float dist, float w, float h,
     // the user, so yaw = atan2(-f.x, -f.z) for the horizontal look dir f
     out->yaw = atan2f(-f[0], -f[2]);
     out->p[0] = head.p[0] + f[0] * dist;
-    out->p[1] = head.p[1] - 0.2f;
+    out->p[1] = head.p[1] - 0.1f;
     out->p[2] = head.p[2] + f[2] * dist;
     out->w = w;
     out->h = h;

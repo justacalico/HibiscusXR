@@ -272,6 +272,7 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
     ctrlFlush(e);
     dragTick(e, e->aimO, e->aimD);
     moveTick(e);
+    setDragTick(e);
     dockTick(e);
     const float dtMs = e->animMs ? (float)(now - e->animMs) : 0.0f;
     e->animMs = now;

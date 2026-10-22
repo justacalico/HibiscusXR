@@ -265,7 +265,7 @@ cted-test:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends gcc python3
+    - apt-get install -y --no-install-recommends gcc python3 git
   script:
     - bash system/cted/tests/run.sh
   rules:

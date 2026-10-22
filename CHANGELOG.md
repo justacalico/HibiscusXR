@@ -4,7 +4,7 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
-
+- [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)
 
 ## [alpha-v2026.10.21-r23] - 2026-10-21
 - [修复网站测试,解除页面部署阻塞](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/157) (!157)

@@ -116,7 +116,7 @@ HOST_SRCS := src/common/palette.cpp src/math/mat4.cpp src/math/head.cpp \
              src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
              src/desktop/popuppos.cpp src/desktop/pixconv.cpp \
              src/desktop/sysinfo.cpp src/desktop/cmdline.cpp \
-             src/desktop/proctrack.cpp
+             src/desktop/proctrack.cpp src/desktop/vrmath.cpp
 TEST_SRCS := $(wildcard tests/*.cpp)
 TEST_BIN  := $(OUT)/tests/runtests
 
@@ -149,7 +149,8 @@ DESKTOP_SRCS := src/desktop/preview.cpp src/desktop/harness.cpp \
                 src/input/ctrl.cpp src/input/ctrl_debug.cpp \
                 src/input/ctrl_state.c src/input/pick.cpp \
                 src/mcp/json.cpp src/mcp/enc.cpp src/mcp/server.cpp \
-                src/mcp/tools.cpp
+                src/mcp/tools.cpp \
+                src/desktop/vr.cpp src/desktop/vrmath.cpp
 PREVIEW_BIN := $(OUT)/dash-preview
 
 # dash on desktop linux as a real wayland compositor: same shared code as
@@ -319,7 +320,8 @@ test: $(TEST_BIN)
 $(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	@mkdir -p $(dir $@)
 	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
-	    $(DESKTOP_SRCS) -lglfw -lGLESv2 -lEGL -lz -lm
+	    $(DESKTOP_SRCS) $$(pkg-config --libs --cflags openxr) \
+	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 preview: $(PREVIEW_BIN)
 	./$(PREVIEW_BIN)
@@ -365,7 +367,7 @@ $(WL_BIN): $(WL_SRCS) $(WL_GEN) \
 	    $(OUT)/gen/xdg-activation-v1-protocol.o \
 	    $(OUT)/gen/linux-dmabuf-v1-protocol.o \
 	    $$(pkg-config --libs --cflags wayland-server xkbcommon libpng \
-	            libdrm) \
+	            libdrm openxr) \
 	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 dash-wayland: $(WL_BIN)

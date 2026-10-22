@@ -36,6 +36,7 @@ void testMcp();
 void testPick();
 void testDesktop();
 void testIcons();
+void testVr();
 
 int main() {
     testMat4();
@@ -61,6 +62,7 @@ int main() {
     testGrid();
     testQuick();
     testIcons();
+    testVr();
     testSet();
     testPt();
     testAnim();

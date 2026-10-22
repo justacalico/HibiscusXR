@@ -314,8 +314,14 @@ picked:
 }
 
 bool vrInit(VrDash* v, const char* appName) {
-    if (!xrHasExt(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME)) {
-        LOGE("vr: runtime lacks " XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+    // Monado's GLES binding on desktop is its own XR_MNDX_egl_enable; the
+    // KHR opengl_es_enable binding is only honoured by runtimes that ship
+    // it, so prefer whichever the runtime advertises
+    const bool mndx = xrHasExt(XR_MNDX_EGL_ENABLE_EXTENSION_NAME);
+    const bool khrGles = xrHasExt(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+    if (!mndx && !khrGles) {
+        LOGE("vr: runtime lacks " XR_MNDX_EGL_ENABLE_EXTENSION_NAME
+             " and " XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
         return false;
     }
     if (!xrHasExt(XR_EXTX_OVERLAY_EXTENSION_NAME)) {
@@ -325,8 +331,10 @@ bool vrInit(VrDash* v, const char* appName) {
     }
     if (!eglPick(v)) return false;
 
-    const char* exts[] = {XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
-                          XR_EXTX_OVERLAY_EXTENSION_NAME};
+    const char* exts[] = {
+        mndx ? XR_MNDX_EGL_ENABLE_EXTENSION_NAME
+             : XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
+        XR_EXTX_OVERLAY_EXTENSION_NAME};
     XrInstanceCreateInfo ici{XR_TYPE_INSTANCE_CREATE_INFO};
     strcpy(ici.applicationInfo.applicationName, appName);
     strcpy(ici.applicationInfo.engineName, appName);
@@ -344,6 +352,11 @@ bool vrInit(VrDash* v, const char* appName) {
     XrSessionCreateInfoOverlayEXTX overlay{
         XR_TYPE_SESSION_CREATE_INFO_OVERLAY_EXTX};
     overlay.sessionLayersPlacement = 5;
+    // the MNDX binding carries a getProcAddress on top of the same
+    // display/config/context triple the KHR binding uses
+    XrGraphicsBindingEGLMNDX mndxBind{XR_TYPE_GRAPHICS_BINDING_EGL_MNDX,
+        &overlay, (PFN_xrEglGetProcAddressMNDX)eglGetProcAddress,
+        v->edpy, v->ecfg, v->ectx};
     // openxr 1.0 headers only name the GLES binding's android variant;
     // newer headers renamed it ..._XR_KHR with the same numeric type and
     // an identical layout, so the plain struct is declared here
@@ -353,10 +366,10 @@ bool vrInit(VrDash* v, const char* appName) {
         EGLDisplay display;
         EGLConfig config;
         EGLContext context;
-    } binding{XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
+    } khrBind{XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
               &overlay, v->edpy, v->ecfg, v->ectx};
     XrSessionCreateInfo sci{XR_TYPE_SESSION_CREATE_INFO};
-    sci.next = &binding;
+    sci.next = mndx ? (const void*)&mndxBind : (const void*)&khrBind;
     sci.systemId = v->sys;
     if (xrFail(xrCreateSession(v->inst, &sci, &v->sess),
                "create overlay session"))

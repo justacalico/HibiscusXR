@@ -639,9 +639,7 @@ void vrEnd(VrDash* v) {
         sub.imageRect.offset = {0, 0};
         sub.imageRect.extent = {v->texW, v->texH};
         sub.imageArrayIndex = 0;
-        quad.layerFlags =
-            XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT |
-            XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT;
+        quad.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
         quad.space = v->stage;
         quad.eyeVisibility = XR_EYE_VISIBILITY_BOTH;
         quad.subImage = sub;

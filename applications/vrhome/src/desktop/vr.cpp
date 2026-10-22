@@ -331,15 +331,16 @@ bool vrInit(VrDash* v, const char* appName) {
     }
     if (!eglPick(v)) return false;
 
-    const char* exts[] = {
-        mndx ? XR_MNDX_EGL_ENABLE_EXTENSION_NAME
-             : XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME,
-        XR_EXTX_OVERLAY_EXTENSION_NAME};
+    const char* exts[3];
+    int nexts = 0;
+    if (mndx) exts[nexts++] = XR_MNDX_EGL_ENABLE_EXTENSION_NAME;
+    if (khrGles) exts[nexts++] = XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
+    exts[nexts++] = XR_EXTX_OVERLAY_EXTENSION_NAME;
     XrInstanceCreateInfo ici{XR_TYPE_INSTANCE_CREATE_INFO};
     strcpy(ici.applicationInfo.applicationName, appName);
     strcpy(ici.applicationInfo.engineName, appName);
     ici.applicationInfo.apiVersion = XR_MAKE_VERSION(1, 0, 32);
-    ici.enabledExtensionCount = 2;
+    ici.enabledExtensionCount = (uint32_t)nexts;
     ici.enabledExtensionNames = exts;
     if (xrFail(xrCreateInstance(&ici, &v->inst), "create instance"))
         return false;
@@ -348,6 +349,18 @@ bool vrInit(VrDash* v, const char* appName) {
     sgi.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     if (xrFail(xrGetSystem(v->inst, &sgi, &v->sys), "get system"))
         return false;
+
+    // Monado rejects session create until the app has asked for the GLES
+    // requirements, even when it doesn't need the answer
+    PFN_xrGetOpenGLESGraphicsRequirementsKHR getReq = nullptr;
+    if (khrGles &&
+        xrGetInstanceProcAddr(v->inst,
+            "xrGetOpenGLESGraphicsRequirementsKHR",
+            (PFN_xrVoidFunction*)&getReq) == XR_SUCCESS && getReq) {
+        XrGraphicsRequirementsOpenGLESKHR req{
+            XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
+        getReq(v->inst, v->sys, &req);
+    }
 
     XrSessionCreateInfoOverlayEXTX overlay{
         XR_TYPE_SESSION_CREATE_INFO_OVERLAY_EXTX};

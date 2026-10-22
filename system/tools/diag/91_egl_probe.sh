@@ -13,7 +13,7 @@ echo "=== display layers and their formats ==="
 dumpsys SurfaceFlinger 2>/dev/null | grep -iE '^\s*\+ (Buffer|Color)Layer' | head -10
 echo
 echo "=== our demo picked a config fine - proof EGL works ==="
-logcat -d 2>/dev/null | grep -E 'pn2vr.*(GL_VENDOR|surface|eye targets)' | tail -4
+logcat -d 2>/dev/null | grep -E 'vrdemo.*(GL_VENDOR|surface|eye targets)' | tail -4
 echo
 echo "=== rotation props in play ==="
 for p in ro.surface_flinger.primary_display_orientation ro.sf.hwrotation \

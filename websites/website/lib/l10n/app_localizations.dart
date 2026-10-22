@@ -563,7 +563,7 @@ abstract class AppLocalizations {
   /// No description provided for @repoVrdemo.
   ///
   /// In en, this message translates to:
-  /// **'Minimal native VR test app (pn2vr) used for compositor bring-up.'**
+  /// **'Minimal native VR test app (vrdemo) used for compositor bring-up.'**
   String get repoVrdemo;
 
   /// No description provided for @repoWebsite.

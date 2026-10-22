@@ -249,7 +249,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repoVrhome => '开源 VR 桌面:2D 应用悬浮成窗,原厂 VR 应用全屏运行。';
 
   @override
-  String get repoVrdemo => '最小原生 VR 测试应用(pn2vr),用于合成器通路调试。';
+  String get repoVrdemo => '最小原生 VR 测试应用(vrdemo),用于合成器通路调试。';
 
   @override
   String get repoWebsite => '就是本站。';

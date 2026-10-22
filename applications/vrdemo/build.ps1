@@ -42,11 +42,11 @@ if ($LASTEXITCODE -ne 0) { throw "glue compile failed" }
 & $CLANG `
     -shared -fPIC -O2 -std=c++17 -static-libstdc++ `
     -I "$GLUE" `
-    -o "$OUT\lib\arm64-v8a\libpn2vr.so" `
+    -o "$OUT\lib\arm64-v8a\libvrdemo.so" `
     "$SRC\src\main.cpp" "$OUT\glue.o" `
     -landroid -lEGL -lGLESv2 -llog -lm -u ANativeActivity_onCreate
 if ($LASTEXITCODE -ne 0) { throw "compile failed" }
-Write-Host ("      libpn2vr.so = {0} bytes" -f (Get-Item "$OUT\lib\arm64-v8a\libpn2vr.so").Length)
+Write-Host ("      libvrdemo.so = {0} bytes" -f (Get-Item "$OUT\lib\arm64-v8a\libvrdemo.so").Length)
 
 Write-Host "[2/5] aapt2 link (manifest only, no resources)"
 & "$BT\aapt2.exe" link `
@@ -61,10 +61,10 @@ Copy-Item "$OUT\base.apk" "$OUT\unsigned.apk" -Force
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open("$OUT\unsigned.apk", 'Update')
 try {
-    $existing = $zip.GetEntry('lib/arm64-v8a/libpn2vr.so')
+    $existing = $zip.GetEntry('lib/arm64-v8a/libvrdemo.so')
     if ($existing) { $existing.Delete() }
     [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
-        $zip, "$OUT\lib\arm64-v8a\libpn2vr.so", 'lib/arm64-v8a/libpn2vr.so') | Out-Null
+        $zip, "$OUT\lib\arm64-v8a\libvrdemo.so", 'lib/arm64-v8a/libvrdemo.so') | Out-Null
 } finally { $zip.Dispose() }
 
 Write-Host "[4/5] zipalign"
@@ -74,14 +74,14 @@ if ($LASTEXITCODE -ne 0) { throw "zipalign failed" }
 
 if (-not (Test-Path $KS)) {
     Write-Host "      generating debug keystore (kept out of the source tree)"
-    & keytool -genkeypair -keystore $KS -alias pn2 -storepass android -keypass android `
-        -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=pn2vr, OU=dev, O=dev, C=US" 2>&1 | Out-Null
+    & keytool -genkeypair -keystore $KS -alias vrdemo -storepass android -keypass android `
+        -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=vrdemo, OU=dev, O=dev, C=US" 2>&1 | Out-Null
 }
 
 Write-Host "[5/5] signing"
-Remove-Item "$OUT\pn2vr.apk" -EA SilentlyContinue
+Remove-Item "$OUT\vrdemo.apk" -EA SilentlyContinue
 & "$BT\apksigner.bat" sign --ks $KS --ks-pass pass:android --key-pass pass:android `
-    --out "$OUT\pn2vr.apk" "$OUT\aligned.apk"
+    --out "$OUT\vrdemo.apk" "$OUT\aligned.apk"
 if ($LASTEXITCODE -ne 0) { throw "signing failed" }
 
-Write-Host ("DONE -> {0} ({1} bytes)" -f "$OUT\pn2vr.apk", (Get-Item "$OUT\pn2vr.apk").Length)
+Write-Host ("DONE -> {0} ({1} bytes)" -f "$OUT\vrdemo.apk", (Get-Item "$OUT\vrdemo.apk").Length)

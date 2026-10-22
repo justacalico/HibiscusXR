@@ -258,7 +258,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get repoVrdemo =>
-      'Minimal native VR test app (pn2vr) used for compositor bring-up.';
+      'Minimal native VR test app (vrdemo) used for compositor bring-up.';
 
   @override
   String get repoWebsite => 'This site.';

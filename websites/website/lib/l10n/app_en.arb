@@ -103,7 +103,7 @@
   },
 
   "repoVrhome": "Open VR home: 2D apps as floating windows, stock VR apps fullscreen.",
-  "repoVrdemo": "Minimal native VR test app (pn2vr) used for compositor bring-up.",
+  "repoVrdemo": "Minimal native VR test app (vrdemo) used for compositor bring-up.",
   "repoWebsite": "This site.",
   "repoTools": "Every script for the port, sorted by job: recon, build, flash.",
   "repoAndroid": "LineageOS device tree device/pico/A7B10, read from stock firmware.",

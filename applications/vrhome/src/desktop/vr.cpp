@@ -261,29 +261,37 @@ static bool xrSwapchain(VrDash* v) {
         for (int64_t f : fmts)
             if (f == want) { fmt = f; goto picked; }
 picked:
+    // one stereo swapchain: image arrays, layer 0 = left, 1 = right
+    v->texW = v->cfgv[0].recommendedImageRectWidth >
+                      v->cfgv[1].recommendedImageRectWidth
+                  ? v->cfgv[0].recommendedImageRectWidth
+                  : v->cfgv[1].recommendedImageRectWidth;
+    v->texH = v->cfgv[0].recommendedImageRectHeight >
+                      v->cfgv[1].recommendedImageRectHeight
+                  ? v->cfgv[0].recommendedImageRectHeight
+                  : v->cfgv[1].recommendedImageRectHeight;
     XrSwapchainCreateInfo ci{XR_TYPE_SWAPCHAIN_CREATE_INFO};
     ci.usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT |
                     XR_SWAPCHAIN_USAGE_SAMPLED_BIT;
     ci.format = fmt;
     ci.sampleCount = 1;
-    ci.width = kVrTexW;
-    ci.height = kVrTexH;
+    ci.width = (uint32_t)v->texW;
+    ci.height = (uint32_t)v->texH;
     ci.faceCount = 1;
-    ci.arraySize = 1;
+    ci.arraySize = 2;
     ci.mipCount = 1;
     if (xrFail(xrCreateSwapchain(v->sess, &ci, &v->swap),
                "create swapchain"))
         return false;
-    v->texW = kVrTexW;
-    v->texH = kVrTexH;
 
     uint32_t n = 0;
-    LOGI("vr: swapchain fmt %lld", (long long)fmt);
+    LOGI("vr: swapchain %dx%d fmt %lld", v->texW, v->texH,
+         (long long)fmt);
     if (xrFail(xrEnumerateSwapchainImages(v->swap, 0, &n, nullptr),
                "swapchain images"))
         return false;
-    if (n > sizeof(v->fbo) / sizeof(v->fbo[0])) n =
-        sizeof(v->fbo) / sizeof(v->fbo[0]);
+    if (n > sizeof(v->fbo[0]) / sizeof(v->fbo[0][0]))
+        n = sizeof(v->fbo[0]) / sizeof(v->fbo[0][0]);
     XrSwapchainImageOpenGLESKHR imgs[8];
     for (uint32_t i = 0; i < n; ++i)
         imgs[i].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR;
@@ -293,21 +301,32 @@ picked:
                "swapchain images"))
         return false;
     v->nimg = got;
+    // ES2 headers don't declare it; the driver context resolves it
+    typedef void (*PfnFbtl)(GLenum, GLenum, GLuint, GLint, GLint);
+    const PfnFbtl fbTexLayer =
+        (PfnFbtl)eglGetProcAddress("glFramebufferTextureLayer");
+    if (!fbTexLayer) {
+        LOGE("vr: no glFramebufferTextureLayer");
+        return false;
+    }
     for (uint32_t i = 0; i < got; ++i) {
-        glGenFramebuffers(1, &v->fbo[i]);
-        glBindFramebuffer(GL_FRAMEBUFFER, v->fbo[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                               GL_TEXTURE_2D, imgs[i].image, 0);
-        glGenRenderbuffers(1, &v->depth[i]);
-        glBindRenderbuffer(GL_RENDERBUFFER, v->depth[i]);
-        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16,
-                              v->texW, v->texH);
-        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                  GL_RENDERBUFFER, v->depth[i]);
-        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
-                GL_FRAMEBUFFER_COMPLETE) {
-            LOGE("vr: swapchain fbo %u incomplete", i);
-            return false;
+        for (int e = 0; e < kVrEyes; ++e) {
+            glGenFramebuffers(1, &v->fbo[e][i]);
+            glBindFramebuffer(GL_FRAMEBUFFER, v->fbo[e][i]);
+            fbTexLayer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                       imgs[i].image, 0, e);
+            glGenRenderbuffers(1, &v->depth[e][i]);
+            glBindRenderbuffer(GL_RENDERBUFFER, v->depth[e][i]);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16,
+                                  v->texW, v->texH);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER,
+                                      GL_DEPTH_ATTACHMENT,
+                                      GL_RENDERBUFFER, v->depth[e][i]);
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) !=
+                    GL_FRAMEBUFFER_COMPLETE) {
+                LOGE("vr: swapchain fbo %u eye %d incomplete", i, e);
+                return false;
+            }
         }
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -416,6 +435,17 @@ bool vrInit(VrDash* v, const char* appName) {
             if (m == XR_ENVIRONMENT_BLEND_MODE_ALPHA_BLEND) v->blend = m;
     }
 
+    // per-eye render targets at the runtime's recommended sizes
+    uint32_t nv = 0;
+    for (XrViewConfigurationView& cv : v->cfgv)
+        cv = XrViewConfigurationView{XR_TYPE_VIEW_CONFIGURATION_VIEW};
+    if (xrEnumerateViewConfigurationViews(v->inst, v->sys,
+            XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, kVrEyes, &nv,
+            v->cfgv) != XR_SUCCESS || nv < kVrEyes) {
+        LOGE("vr: no stereo view configuration");
+        return false;
+    }
+
     if (!xrActionSetup(v)) return false;
     if (!xrSwapchain(v)) return false;
     return true;
@@ -496,13 +526,51 @@ bool vrBeginFrame(VrDash* v) {
         return false;
     v->predTime = v->fs.predictedDisplayTime;
     v->head = locPose(v->view, v->stage, v->predTime);
+    if (!v->head.ok) {
+        // tracking may not feed an overlay session yet - keep a standing
+        // pose so the dash and its rays still work while it comes up
+        v->head.p[1] = 1.6f;
+        v->head.ok = true;
+    }
     XrFrameBeginInfo bi{XR_TYPE_FRAME_BEGIN_INFO};
     xrFail(xrBeginFrame(v->sess, &bi), "begin frame");
-    if (!v->placed) {
-        LOGI("vr: head %s %.2f %.2f %.2f", v->head.ok ? "ok" : "bad",
-             v->head.p[0], v->head.p[1], v->head.p[2]);
-        vrRecenter(v);
+
+    XrView views[kVrEyes];
+    for (XrView& vw : views) vw = XrView{XR_TYPE_VIEW};
+    XrViewLocateInfo li{XR_TYPE_VIEW_LOCATE_INFO};
+    li.viewConfigurationType = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+    li.displayTime = v->predTime;
+    li.space = v->stage;
+    XrViewState vs{XR_TYPE_VIEW_STATE};
+    uint32_t nv = 0;
+    const XrViewStateFlags need = XR_VIEW_STATE_POSITION_VALID_BIT |
+                                  XR_VIEW_STATE_ORIENTATION_VALID_BIT;
+    if (xrLocateViews(v->sess, &li, &vs, kVrEyes, &nv, views) ==
+            XR_SUCCESS && nv == kVrEyes &&
+            (vs.viewStateFlags & need) == need) {
+        for (int i = 0; i < kVrEyes; ++i) {
+            v->eyes[i].q[0] = views[i].pose.orientation.x;
+            v->eyes[i].q[1] = views[i].pose.orientation.y;
+            v->eyes[i].q[2] = views[i].pose.orientation.z;
+            v->eyes[i].q[3] = views[i].pose.orientation.w;
+            v->eyes[i].p[0] = views[i].pose.position.x;
+            v->eyes[i].p[1] = views[i].pose.position.y;
+            v->eyes[i].p[2] = views[i].pose.position.z;
+            v->eyes[i].ok = true;
+            v->fovs[i] = views[i].fov;
+        }
+    } else {
+        vrEyesFallback(v->head, kVrIpd, v->eyes);
+        for (int i = 0; i < kVrEyes; ++i) {
+            v->fovs[i].angleLeft = -kVrFovFallback;
+            v->fovs[i].angleRight = kVrFovFallback;
+            v->fovs[i].angleDown = -kVrFovFallback;
+            v->fovs[i].angleUp = kVrFovFallback;
+        }
     }
+    if (!v->presented)
+        LOGI("vr: head %s %.2f %.2f %.2f", vs.viewStateFlags ? "ok" : "bad",
+             v->head.p[0], v->head.p[1], v->head.p[2]);
     return v->fs.shouldRender;
 }
 
@@ -555,69 +623,50 @@ void vrInput(VrDash* v, HudEngine* e) {
     for (int i = 0; i < ev.nKeys; ++i) e->ctrlEv.push_back(ev.keys[i]);
     if (ev.scroll != 0.0f) hudScroll(e, ev.scroll);
 
-    // the pointer: whichever controller owns input, else the head; its
-    // stage-space ray lands on the presentation quad and the hit uv
-    // unprojects into the dash scene
-    memset(e->eyePos, 0, sizeof(e->eyePos));
+    // the dash scene lives in stage space outright, so controller and
+    // gaze rays feed it unmodified - panels pick by real intersection
+    memcpy(e->eyePos, v->head.p, sizeof(e->eyePos));
+    for (int w = 0; w < 2; ++w)
+        if (aimPose[w].ok)
+            vrRay(aimPose[w], e->ctrlPos[w], e->ctrlDir[w]);
     const VrPose* src = nullptr;
     if (ev.active >= 0 && aimPose[ev.active].ok)
         src = &aimPose[ev.active];
     else if (v->head.ok)
         src = &v->head;
-    float ro[3], rd[3], u = 0.5f, hv = 0.5f, t = 0.0f;
-    bool hit = false;
     if (src) {
-        vrRay(*src, ro, rd);
-        hit = vrQuadHit(v->quad, ro, rd, &u, &hv, &t);
-    }
-    if (hit) {
-        vrUvRay(u, hv, kVrFovY, (float)v->texW / v->texH,
-                e->aimO, e->aimD);
-        if (ev.active >= 0) {
-            memcpy(e->ctrlPos[ev.active], e->eyePos,
-                   sizeof(e->ctrlPos[0]));
-            memcpy(e->ctrlDir[ev.active], e->aimD,
-                   sizeof(e->ctrlDir[0]));
-        }
+        vrRay(*src, e->aimO, e->aimD);
     } else {
         memset(e->aimO, 0, sizeof(e->aimO));
-        // off the quad: park the ray where nothing can be picked and drop
-        // the beam for the frame - a miss isn't a pointer
         e->aimD[0] = 0.0f;
         e->aimD[1] = -1.0f;
         e->aimD[2] = 0.0f;
-        e->input.active = -1;
     }
     float ay;
     if (dirYaw(e->aimD, &ay)) e->aimYaw = ay;
     e->aimPitch = dirPitch(e->aimD);
 }
 
-void vrRecenter(VrDash* v) {
-    VrPose head = v->head;
-    if (!head.ok) {
-        // tracking may not feed an overlay session yet - fall back to a
-        // standing pose so the quad still shows instead of never placing
-        head.ok = true;
-        head.p[1] = 1.6f;
+bool vrTarget(VrDash* v, int eye, Mat4* vp) {
+    if (v->img < 0) {
+        uint32_t idx = 0;
+        XrSwapchainImageAcquireInfo ai{
+            XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
+        if (xrAcquireSwapchainImage(v->swap, &ai, &idx) != XR_SUCCESS)
+            return false;
+        XrSwapchainImageWaitInfo wi{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
+        wi.timeout = XR_INFINITE_DURATION;
+        if (xrWaitSwapchainImage(v->swap, &wi) != XR_SUCCESS)
+            return false;
+        v->img = (int)idx;
     }
-    vrQuadPlace(head, kVrQuadDist, kVrQuadW, kVrQuadH, &v->quad);
-    v->placed = true;
-}
-
-bool vrTarget(VrDash* v) {
-    uint32_t idx = 0;
-    XrSwapchainImageAcquireInfo ai{XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO};
-    if (xrAcquireSwapchainImage(v->swap, &ai, &idx) != XR_SUCCESS)
-        return false;
-    XrSwapchainImageWaitInfo wi{XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO};
-    wi.timeout = XR_INFINITE_DURATION;
-    if (xrWaitSwapchainImage(v->swap, &wi) != XR_SUCCESS)
-        return false;
-    v->img = (int)idx;
-    v->drawn = true;
-    glBindFramebuffer(GL_FRAMEBUFFER, v->fbo[idx]);
+    glBindFramebuffer(GL_FRAMEBUFFER, v->fbo[eye][v->img]);
     glViewport(0, 0, v->texW, v->texH);
+    const Mat4 proj = vrFovProj(v->fovs[eye].angleLeft,
+                                v->fovs[eye].angleRight,
+                                v->fovs[eye].angleDown,
+                                v->fovs[eye].angleUp, kVrNear, kVrFar);
+    *vp = multiply(proj, vrView(v->eyes[eye]));
     return true;
 }
 
@@ -628,31 +677,36 @@ void vrEnd(VrDash* v) {
             XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
         xrReleaseSwapchainImage(v->swap, &ri);
         v->img = -1;
+        v->drawn = true;
     }
-    XrCompositionLayerQuad quad{XR_TYPE_COMPOSITION_LAYER_QUAD};
-    XrSwapchainSubImage sub{0};
+    XrCompositionLayerProjectionView pv[kVrEyes];
+    XrCompositionLayerProjection proj{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
     const XrCompositionLayerBaseHeader* layer = nullptr;
-    // the quad keeps its last released image on frames we didn't draw:
-    // dropping the layer whenever shouldRender flickers would blink it
-    if (v->drawn && v->placed) {
-        sub.swapchain = v->swap;
-        sub.imageRect.offset = {0, 0};
-        sub.imageRect.extent = {v->texW, v->texH};
-        sub.imageArrayIndex = 0;
-        quad.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
-        quad.space = v->stage;
-        quad.eyeVisibility = XR_EYE_VISIBILITY_BOTH;
-        quad.subImage = sub;
-        quad.pose.orientation.x = 0.0f;
-        quad.pose.orientation.y = sinf(v->quad.yaw * 0.5f);
-        quad.pose.orientation.z = 0.0f;
-        quad.pose.orientation.w = cosf(v->quad.yaw * 0.5f);
-        quad.pose.position.x = v->quad.p[0];
-        quad.pose.position.y = v->quad.p[1];
-        quad.pose.position.z = v->quad.p[2];
-        quad.size.width = v->quad.w;
-        quad.size.height = v->quad.h;
-        layer = (const XrCompositionLayerBaseHeader*)&quad;
+    // the projection keeps referencing its last released images on frames
+    // we didn't draw: dropping the layer on !shouldRender would blink it
+    if (v->drawn) {
+        for (int i = 0; i < kVrEyes; ++i) {
+            pv[i] = XrCompositionLayerProjectionView{
+                XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+            pv[i].pose.orientation.x = v->eyes[i].q[0];
+            pv[i].pose.orientation.y = v->eyes[i].q[1];
+            pv[i].pose.orientation.z = v->eyes[i].q[2];
+            pv[i].pose.orientation.w = v->eyes[i].q[3];
+            pv[i].pose.position.x = v->eyes[i].p[0];
+            pv[i].pose.position.y = v->eyes[i].p[1];
+            pv[i].pose.position.z = v->eyes[i].p[2];
+            pv[i].fov = v->fovs[i];
+            pv[i].subImage.swapchain = v->swap;
+            pv[i].subImage.imageRect.offset = {0, 0};
+            pv[i].subImage.imageRect.extent = {v->texW, v->texH};
+            pv[i].subImage.imageArrayIndex = (uint32_t)i;
+        }
+        proj.layerFlags =
+            XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+        proj.space = v->stage;
+        proj.viewCount = kVrEyes;
+        proj.views = pv;
+        layer = (const XrCompositionLayerBaseHeader*)&proj;
     }
     XrFrameEndInfo ei{XR_TYPE_FRAME_END_INFO};
     ei.displayTime = v->predTime;
@@ -661,17 +715,19 @@ void vrEnd(VrDash* v) {
     ei.layerCount = layer ? 1 : 0;
     if (layer && !v->presented) {
         v->presented = true;
-        LOGI("vr: quad live at %.2f %.2f %.2f yaw %.2f",
-             v->quad.p[0], v->quad.p[1], v->quad.p[2], v->quad.yaw);
+        LOGI("vr: projection live at %.2f %.2f %.2f",
+             v->eyes[0].p[0], v->eyes[0].p[1], v->eyes[0].p[2]);
     }
     xrFail(xrEndFrame(v->sess, &ei), "end frame");
 }
 
 void vrShutdown(VrDash* v) {
-    for (uint32_t i = 0; i < v->nimg; ++i) {
-        if (v->fbo[i]) glDeleteFramebuffers(1, &v->fbo[i]);
-        if (v->depth[i]) glDeleteRenderbuffers(1, &v->depth[i]);
-    }
+    for (int e = 0; e < kVrEyes; ++e)
+        for (uint32_t i = 0; i < v->nimg; ++i) {
+            if (v->fbo[e][i]) glDeleteFramebuffers(1, &v->fbo[e][i]);
+            if (v->depth[e][i])
+                glDeleteRenderbuffers(1, &v->depth[e][i]);
+        }
     if (v->swap != XR_NULL_HANDLE) xrDestroySwapchain(v->swap);
     for (int h = 0; h < 2; ++h)
         if (v->aimSpace[h] != XR_NULL_HANDLE)

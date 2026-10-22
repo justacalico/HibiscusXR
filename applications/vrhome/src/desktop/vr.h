@@ -12,11 +12,12 @@
 
 struct HudEngine;
 
-// the -vr overlay session: a WayVR-style OpenXR overlay. The dash renders
-// to one swapchain texture submitted as a world-locked quad layer under
-// XR_EXTX_overlay, so it composes over whatever the runtime's main session
-// shows (WiVRn/Monado; SteamVR titles included when they run on WiVRn).
-// All decisions live in vrmath - this is EGL/OpenXR glue only.
+// the -vr overlay session: an XR_EXTX_overlay session that renders the
+// dash per-eye into swapchain images and submits a projection layer, so
+// panels live in real 3D stage space instead of a flat window. Composes
+// over whatever the runtime's main session shows (WiVRn/Monado; SteamVR
+// titles included when they run on WiVRn). All decisions live in vrmath -
+// this file is EGL/OpenXR glue only.
 struct VrDash {
     EGLDisplay edpy = EGL_NO_DISPLAY;
     EGLConfig  ecfg = nullptr;
@@ -37,17 +38,21 @@ struct VrDash {
     XrTime predTime = 0;
     VrPose head;
 
-    // the presented quad and its swapchain (the dash's render target)
-    VrQuad quad;
-    bool placed = false;
+    // per-eye state: poses+fovs for this frame's render and submission.
+    // While xrLocateViews has no tracking, eyes[] holds the fallback pair
+    // straddling the head. swap is one stereo texture-array swapchain;
+    // fbo[eye][i] binds layer eye of image i
+    XrViewConfigurationView cfgv[2] = {};
+    VrPose eyes[2];
+    XrFovf fovs[2] = {};
+    int texW = 0, texH = 0;
     XrSwapchain swap = XR_NULL_HANDLE;
-    GLuint fbo[8] = {0};
-    GLuint depth[8] = {0};
+    GLuint fbo[2][8] = {{0}};
+    GLuint depth[2][8] = {{0}};
     uint32_t nimg = 0;
     int img = -1;
     bool drawn = false;
     bool presented = false;
-    int texW = 0, texH = 0;
 
     // actions: one set, per-hand subpaths
     XrActionSet aset = XR_NULL_HANDLE;
@@ -59,14 +64,15 @@ struct VrDash {
     VrInput prev;
 };
 
-// render size the quad layer presents; 16:9 like the desktop window
-constexpr int kVrTexW = 1920, kVrTexH = 1080;
-constexpr float kVrQuadDist = 1.4f;
-constexpr float kVrQuadW = 1.6f, kVrQuadH = 0.9f;
-constexpr float kVrFovY = 70.0f;   // dash camera fov inside the texture
+constexpr int kVrEyes = 2;
+constexpr float kVrIpd = 0.064f;
+constexpr float kVrNear = 0.05f, kVrFar = 100.0f;
+// fallback fov for frames where the runtime reports no view state: a
+// symmetric 90deg cone keeps the projection sane until tracking lands
+constexpr float kVrFovFallback = 0.7853981634f;   // 45deg in radians
 
 // full bring-up: EGL context, instance, overlay session, spaces,
-// swapchain and action set. false = fatal, error already logged
+// per-eye swapchains and action set. false = fatal, error already logged
 bool vrInit(VrDash* v, const char* appName);
 void vrShutdown(VrDash* v);
 
@@ -74,23 +80,20 @@ void vrShutdown(VrDash* v);
 // (caller should sleep briefly), -1 runtime asked us to exit
 int vrPoll(VrDash* v);
 
-// xrWaitFrame + xrBeginFrame and locate the head/view at the predicted
-// time. Returns fs.shouldRender; vrEnd must follow either way
+// xrWaitFrame + xrBeginFrame, locate the head and both views at the
+// predicted time. Returns fs.shouldRender; vrEnd must follow either way
 bool vrBeginFrame(VrDash* v);
 
 // sync actions, update hud->input/ctrlPos/ctrlDir/eyePos/aimO/aimD and
 // push key edges onto the hud's ctrlEv queue. Call after vrBeginFrame
 void vrInput(VrDash* v, HudEngine* e);
 
-// place the quad in front of the current head pose (first frame and
-// whenever the dash recenters)
-void vrRecenter(VrDash* v);
+// acquire one eye's swapchain image, bind its framebuffer and write the
+// eye's view-projection matrix. false = no free image, skip that eye's
+// draw. Both eyes still release in vrEnd
+bool vrTarget(VrDash* v, int eye, Mat4* vp);
 
-// acquire the swapchain image and bind its framebuffer; returns false if
-// the runtime has no free image this frame (skip the draw, still vrEnd)
-bool vrTarget(VrDash* v);
-
-// release the image and end the frame. Once a frame has been released the
-// quad layer resubmits itself automatically, so stale frames stay visible
-// through !shouldRender gaps
+// release acquired images and end the frame, submitting a projection
+// layer for the located views. Released images keep presenting through
+// !shouldRender gaps so the dash doesn't blink
 void vrEnd(VrDash* v);

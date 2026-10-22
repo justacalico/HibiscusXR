@@ -12,31 +12,6 @@ constexpr float kStickDead = 0.25f;
 // desktop path and a held stick should sit just under that cadence
 constexpr float kStickScroll = 0.05f;
 
-void vrQuadPlace(const VrPose& head, float dist, float w, float h,
-                 VrQuad* out) {
-    const float fwd[3] = {0.0f, 0.0f, -1.0f};
-    float f[3];
-    quatRotate(head.q, fwd, f);
-    float hl = sqrtf(f[0] * f[0] + f[2] * f[2]);
-    // looking straight up or down leaves no usable heading: face -Z in
-    // stage space rather than recentering on noise
-    if (hl < 1e-4f) {
-        f[0] = 0.0f;
-        f[2] = -1.0f;
-        hl = 1.0f;
-    }
-    f[0] /= hl;
-    f[2] /= hl;
-    // the quad's +Z (its front face in XR quad-layer terms) points back at
-    // the user, so yaw = atan2(-f.x, -f.z) for the horizontal look dir f
-    out->yaw = atan2f(-f[0], -f[2]);
-    out->p[0] = head.p[0] + f[0] * dist;
-    out->p[1] = head.p[1] - 0.1f;
-    out->p[2] = head.p[2] + f[2] * dist;
-    out->w = w;
-    out->h = h;
-}
-
 Mat4 vrView(const VrPose& p) {
     Mat4 v = quatToMat(p.q, true);
     for (int i = 0; i < 3; ++i)
@@ -51,40 +26,33 @@ void vrRay(const VrPose& p, float o[3], float d[3]) {
     quatRotate(p.q, fwd, d);
 }
 
-bool vrQuadHit(const VrQuad& qd, const float o[3], const float d[3],
-               float* u, float* v, float* t) {
-    const float cy = cosf(qd.yaw), sy = sinf(qd.yaw);
-    // front-face normal is the quad's local +Z - it points at the user, so
-    // an incoming ray must travel against it
-    const float nx = sy, nz = cy;
-    const float denom = d[0] * nx + d[2] * nz;
-    if (denom > -1e-6f) return false;
-    const float dx = qd.p[0] - o[0], dz = qd.p[2] - o[2];
-    const float ht = (dx * nx + dz * nz) / denom;
-    if (ht < 0.0f) return false;
-    const float hx = o[0] + d[0] * ht - qd.p[0];
-    const float hy = o[1] + d[1] * ht - qd.p[1];
-    const float hz = o[2] + d[2] * ht - qd.p[2];
-    // local right = (cos yaw, 0, -sin yaw) for a yaw-only quad
-    const float lu = hx * cy - hz * sy;
-    if (lu < -qd.w * 0.5f || lu > qd.w * 0.5f) return false;
-    if (hy < -qd.h * 0.5f || hy > qd.h * 0.5f) return false;
-    *u = lu / qd.w + 0.5f;
-    *v = 0.5f - hy / qd.h;
-    *t = ht;
-    return true;
+Mat4 vrFovProj(float angL, float angR, float angD, float angU,
+               float zn, float zf) {
+    const float tl = tanf(angL), tr = tanf(angR);
+    const float td = tanf(angD), tu = tanf(angU);
+    const float w = tr - tl, h = tu - td;
+    Mat4 r{};
+    r.m[0] = 2.0f / w;
+    r.m[5] = 2.0f / h;
+    r.m[8] = (tr + tl) / w;
+    r.m[9] = (tu + td) / h;
+    r.m[10] = (zf + zn) / (zn - zf);
+    r.m[11] = -1.0f;
+    r.m[14] = (2.0f * zf * zn) / (zn - zf);
+    return r;
 }
 
-void vrUvRay(float u, float v, float fovYDeg, float aspect,
-             float o[3], float d[3]) {
-    const float t = tanf(fovYDeg * (float)M_PI / 360.0f);
-    const float nx = (u * 2.0f - 1.0f) * t * aspect;
-    const float ny = (1.0f - v * 2.0f) * t;
-    const float il = 1.0f / sqrtf(nx * nx + ny * ny + 1.0f);
-    o[0] = o[1] = o[2] = 0.0f;
-    d[0] = nx * il;
-    d[1] = ny * il;
-    d[2] = -il;
+void vrEyesFallback(const VrPose& head, float ipd, VrPose eyes[2]) {
+    const float right[3] = {1.0f, 0.0f, 0.0f};
+    float r[3];
+    quatRotate(head.q, right, r);
+    for (int i = 0; i < 2; ++i) {
+        eyes[i] = head;
+        const float s = (i == 0 ? -0.5f : 0.5f) * ipd;
+        eyes[i].p[0] += r[0] * s;
+        eyes[i].p[1] += r[1] * s;
+        eyes[i].p[2] += r[2] * s;
+    }
 }
 
 static void pushKey(VrEvents* ev, int code, int action) {

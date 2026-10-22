@@ -4,9 +4,9 @@
 #include "../math/mat4.h"
 
 // Pure math and arbitration behind the -vr overlay path: pose transforms,
-// the presentation quad's placement and hit test, and the per-frame
-// controller sample -> dash event diff. No OpenXR/GL includes so the host
-// unit tests exercise every decision; src/desktop/vr.cpp is glue only.
+// the per-eye projection the runtime's fov reports, tracking fallbacks and
+// the controller sample -> dash event diff. No OpenXR/GL includes so the
+// host unit tests exercise every decision; src/desktop/vr.cpp is glue only.
 
 // a tracked pose in OpenXR stage space: meters, Y up, -Z forward
 struct VrPose {
@@ -15,20 +15,6 @@ struct VrPose {
     bool ok = false;
 };
 
-// the quad the dash texture is presented on: world-locked, yaw-only, so
-// panels stay upright when the user pitches
-struct VrQuad {
-    float p[3] = {0.0f, 0.0f, 0.0f};
-    float yaw = 0.0f;
-    float w = 0.0f, h = 0.0f;   // meters
-};
-
-// put the quad in front of the head: horizontal forward at dist, centered
-// a touch below eye height so the frame isn't in the face. The quad's own
-// -Z faces the user
-void vrQuadPlace(const VrPose& head, float dist, float w, float h,
-                 VrQuad* out);
-
 // view matrix for a tracked pose (its inverse rigid transform)
 Mat4 vrView(const VrPose& p);
 
@@ -36,17 +22,15 @@ Mat4 vrView(const VrPose& p);
 // rotated -Z axis (the XR aim convention)
 void vrRay(const VrPose& p, float o[3], float d[3]);
 
-// intersect a ray with the quad's front face. Fills u/v (0..1, u left to
-// right, v top to bottom) and the ray distance t. false: miss or behind
-bool vrQuadHit(const VrQuad& qd, const float o[3], const float d[3],
-               float* u, float* v, float* t);
+// projection matrix from the runtime's per-eye fov, given as the four
+// tangent half-angles OpenXR reports (radians). Same clip-space layout
+// as perspective(): -Z forward, GL depth range
+Mat4 vrFovProj(float angL, float angR, float angD, float angU,
+               float zn, float zf);
 
-// the aim ray inside the dash scene for a uv on the presented quad: the
-// quad shows what the fixed dash camera renders, so (u,v) unprojects
-// through a camera at the origin facing -Z with the given vertical fov
-// and aspect. The dash scene camera never moves in vr mode
-void vrUvRay(float u, float v, float fovYDeg, float aspect,
-             float o[3], float d[3]);
+// eye poses when xrLocateViews has no tracking yet: straddle the head
+// pose along its own right axis so the stereo pair stays coherent
+void vrEyesFallback(const VrPose& head, float ipd, VrPose eyes[2]);
 
 // one frame of controller state per hand (CTRL_LEFT/CTRL_RIGHT index)
 struct VrInput {

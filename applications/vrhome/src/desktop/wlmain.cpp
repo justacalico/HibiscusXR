@@ -128,8 +128,8 @@ int main(int argc, char** argv) {
     if (mcp) dashStartMcp(&app);
 
     // -vr: the same compositor and dash, presented as an OpenXR overlay
-    // quad. XR pacing replaces the window's draw throttle; the wayland fd
-    // still gets serviced every frame
+    // projection layer in stage space. XR pacing replaces the window's
+    // draw throttle; the wayland fd still gets serviced every frame
     if (vr) {
         while (!app.quit) {
             const int st = vrPoll(&xr);
@@ -143,14 +143,16 @@ int main(int argc, char** argv) {
             const bool draw = vrBeginFrame(&xr);
             vrInput(&xr, &hud);
             const long long now = dashNowMs();
-            if (takeWantRecenter()) { wantRecenter(); vrRecenter(&xr); }
-            tickDash(&hud, identity(), now);
-            if (draw && vrTarget(&xr)) {
-                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                const Mat4 proj = perspective(kVrFovY,
-                    (float)xr.texW / xr.texH, 0.05f, 100.0f);
-                drawDashScene(&hud, proj);
+            if (takeWantRecenter()) wantRecenter();
+            tickDash(&hud, vrView(xr.head), now);
+            if (draw) {
+                for (int eye = 0; eye < kVrEyes; ++eye) {
+                    Mat4 vp;
+                    if (!vrTarget(&xr, eye, &vp)) continue;
+                    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                    drawDashScene(&hud, vp);
+                }
             }
             dashDrainPost();
             vrEnd(&xr);

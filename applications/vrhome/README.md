@@ -202,22 +202,25 @@ way - its Wayland socket still accepts clients.
 ### VR overlay mode
 
 Pass `-vr` and either binary presents the dash inside the headset instead
-of a window, the same way WayVR works: an `XR_EXTX_overlay` session renders
-the dash to a world-locked quad layer composited over whatever the
-runtime's main session is doing.
+of a window: an `XR_EXTX_overlay` session renders the dash per-eye at the
+runtime's reported fov and submits a stereo projection layer composited
+over whatever the runtime's main session is doing. The dash scene lives in
+stage space outright, so panels sit at real depth around you instead of
+being flattened into a quad.
 
 ```bash
 ./out/dash-wayland -vr     # wayland clients still connect the same way
 ./out/dash-preview -vr     # the fixture dash in the HMD
 ```
 
-The runtime must offer `XR_EXTX_overlay` and `XR_KHR_opengl_es_enable` -
-WiVRn/Monado carry both (that also covers SteamVR titles launched through
-WiVRn). SteamVR itself has no OpenXR overlay support, so under its runtime
-`-vr` exits with an error; a dedicated OpenVR backend can hang off the same
-hooks later if it's wanted.
+The runtime must offer `XR_EXTX_overlay` plus an EGL binding
+(`XR_MNDX_egl_enable` or `XR_KHR_opengl_es_enable`) - WiVRn/Monado carry
+both (that also covers SteamVR titles launched through WiVRn). SteamVR
+itself has no OpenXR overlay support, so under its runtime `-vr` exits
+with an error; a dedicated OpenVR backend can hang off the same hooks
+later if it's wanted.
 
-Point a controller at the quad and the laser lands as the dash cursor:
+Point a controller at a panel and the laser lands as the dash cursor:
 trigger/select is confirm, squeeze is the secondary click, the secondary
 button (A/X, stick or trackpad click) is back/park, the menu button
 re-centres the dash in front of you, and the stick scrolls. With no

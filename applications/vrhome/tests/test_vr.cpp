@@ -15,30 +15,41 @@ static VrPose poseAt(float x, float y, float z) {
     return p;
 }
 
-static void testVrQuadPlace() {
-    // identity head at origin facing -Z: quad lands ahead, facing back
-    VrQuad q;
-    vrQuadPlace(poseAt(0.0f, 1.6f, 0.0f), 1.4f, 1.6f, 0.9f, &q);
-    CHECK_F(q.p[0], 0.0f, 1e-4f);
-    CHECK_F(q.p[1], 1.5f, 1e-4f);
-    CHECK_F(q.p[2], -1.4f, 1e-4f);
-    CHECK_F(q.yaw, 0.0f, 1e-4f);
-    CHECK_F(q.w, 1.6f, 1e-4f);
-    CHECK_F(q.h, 0.9f, 1e-4f);
+static void testVrFovProj() {
+    // a symmetric fov must match perspective()'s output exactly: the two
+    // feed the same shaders and the same clip space
+    const float a = 0.65f;
+    const Mat4 s = vrFovProj(-a, a, -a, a, 0.05f, 100.0f);
+    const Mat4 p = perspective(2.0f * a * 180.0f / (float)M_PI, 1.0f,
+                               0.05f, 100.0f);
+    for (int i = 0; i < 16; ++i)
+        CHECK_F(s.m[i], p.m[i], 1e-5f);
 
-    // yaw 90deg left (head facing -X): quad ahead in -X, +Z back at user
+    // an asymmetric fov shifts the image centre off the axis
+    const Mat4 o = vrFovProj(-0.4f, 0.9f, -0.5f, 0.6f, 0.05f, 100.0f);
+    CHECK_F(o.m[0], 2.0f / (tanf(0.9f) + tanf(0.4f)), 1e-4f);
+    CHECK(o.m[8] > 0.0f);   // right angle wider: frustum skews +X
+    CHECK(o.m[9] > 0.0f);
+}
+
+static void testVrEyesFallback() {
+    // identity head facing -Z: eyes straddle on world X
+    VrPose eyes[2];
+    vrEyesFallback(poseAt(0.0f, 1.6f, 0.0f), 0.064f, eyes);
+    CHECK_F(eyes[0].p[0], -0.032f, 1e-4f);
+    CHECK_F(eyes[1].p[0], 0.032f, 1e-4f);
+    CHECK_F(eyes[0].p[1], 1.6f, 1e-4f);
+    CHECK_F(eyes[1].p[1], 1.6f, 1e-4f);
+    CHECK(eyes[0].ok && eyes[1].ok);
+
+    // head turned 90deg left (facing -X): the split axis turns with it
     VrPose h = poseAt(0.0f, 1.6f, 0.0f);
     const float s = sinf((float)M_PI / 4.0f);
-    h.q[1] = s; h.q[3] = s;      // rotY(90deg): -Z fwd -> -X
-    vrQuadPlace(h, 1.0f, 1.0f, 1.0f, &q);
-    CHECK_F(q.p[0], -1.0f, 1e-4f);
-    CHECK_F(q.p[2], 0.0f, 1e-4f);
-
-    // straight-down gaze: fallback placement instead of NaN
-    VrPose d = poseAt(0.0f, 1.6f, 0.0f);
-    d.q[0] = -s; d.q[3] = s;     // pitch -90
-    vrQuadPlace(d, 1.0f, 1.0f, 1.0f, &q);
-    CHECK(q.p[2] < 0.0f);
+    h.q[1] = s; h.q[3] = s;      // rotY(90deg): right axis -> -Z
+    vrEyesFallback(h, 0.064f, eyes);
+    CHECK_F(eyes[0].p[2], 0.032f, 1e-4f);
+    CHECK_F(eyes[1].p[2], -0.032f, 1e-4f);
+    CHECK_F(eyes[0].p[0], 0.0f, 1e-4f);
 }
 
 static void testVrView() {
@@ -60,45 +71,6 @@ static void testVrRay() {
     CHECK_F(d[0], 0.0f, 1e-5f);
     CHECK_F(d[1], 0.0f, 1e-5f);
     CHECK_F(d[2], -1.0f, 1e-5f);
-}
-
-static void testVrQuadHit() {
-    VrQuad q;
-    vrQuadPlace(poseAt(0.0f, 0.0f, 0.0f), 1.0f, 1.0f, 1.0f, &q);
-    // quad at z=-1 facing +Z; a ray straight at its centre hits u=v=0.5
-    const float o[3] = {0.0f, 0.0f, 0.0f};
-    float u = -1, v = -1, t = -1;
-    const float d0[3] = {0.0f, -0.1f, -1.0f};
-    CHECK(vrQuadHit(q, o, d0, &u, &v, &t));
-    CHECK_F(u, 0.5f, 1e-3f);
-    CHECK_F(v, 0.5f, 1e-3f);
-    CHECK(t > 0.9f && t < 1.1f);
-    // off the right edge: miss
-    const float d1[3] = {2.0f, 0.0f, -1.0f};
-    CHECK(!vrQuadHit(q, o, d1, &u, &v, &t));
-    // behind the ray: miss
-    const float d2[3] = {0.0f, 0.0f, 1.0f};
-    CHECK(!vrQuadHit(q, o, d2, &u, &v, &t));
-    // from behind the quad (ray travels with the normal): miss
-    const float o3[3] = {0.0f, 0.0f, -2.0f};
-    const float d3[3] = {0.0f, 0.0f, 1.0f};
-    CHECK(!vrQuadHit(q, o3, d3, &u, &v, &t));
-}
-
-static void testVrUvRay() {
-    float o[3], d[3];
-    vrUvRay(0.5f, 0.5f, 50.0f, 16.0f / 9.0f, o, d);
-    CHECK_F(o[0], 0.0f, 1e-5f);
-    CHECK_F(d[0], 0.0f, 1e-4f);
-    CHECK_F(d[1], 0.0f, 1e-4f);
-    CHECK_F(d[2], -1.0f, 1e-4f);
-    // uv (1,0) is the top-right corner: +x, +y
-    vrUvRay(1.0f, 0.0f, 50.0f, 16.0f / 9.0f, o, d);
-    CHECK(d[0] > 0.0f);
-    CHECK(d[1] > 0.0f);
-    CHECK(d[2] < 0.0f);
-    // and the ray is normalised
-    CHECK_F(d[0]*d[0] + d[1]*d[1] + d[2]*d[2], 1.0f, 1e-5f);
 }
 
 static const InputEvent* findKey(const VrEvents& ev, int code) {
@@ -185,11 +157,10 @@ static void testVrInputScroll() {
 }
 
 void testVr() {
-    testVrQuadPlace();
+    testVrFovProj();
+    testVrEyesFallback();
     testVrView();
     testVrRay();
-    testVrQuadHit();
-    testVrUvRay();
     testVrInputClick();
     testVrInputArb();
     testVrInputButtons();

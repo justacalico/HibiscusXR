@@ -3,6 +3,7 @@
 #include "cmdline.h"
 #include "dmabuf.h"
 #include "harness.h"
+#include "vr.h"
 #include "wlbackend.h"
 #include "wlcomp.h"
 
@@ -25,6 +26,7 @@
 int main(int argc, char** argv) {
     const bool headless = argFlag(argc, argv, "-headless");
     const bool mcp = headless || argFlag(argc, argv, "-mcp");
+    const bool vr = argFlag(argc, argv, "-vr");
 
     WlComp* comp = WlComp::create();
     if (!comp) {
@@ -34,7 +36,12 @@ int main(int argc, char** argv) {
     LOGI("clients connect with WAYLAND_DISPLAY=%s", comp->sock.c_str());
 
     DashApp app;
-    if (headless) {
+    VrDash xr;
+    if (vr) {
+        // the overlay session's EGL context must be current before
+        // dmabufInit probes the host EGL
+        if (!vrInit(&xr, "vrdash")) return 1;
+    } else if (headless) {
         if (!dashHeadless(&app, 1440, 810)) return 1;
     } else if (!dashWindow(&app, "Hibiscus dash (wayland)", 1440, 810))
         return 1;
@@ -119,6 +126,40 @@ int main(int argc, char** argv) {
         wl_display_get_event_loop(comp->dpy));
 
     if (mcp) dashStartMcp(&app);
+
+    // -vr: the same compositor and dash, presented as an OpenXR overlay
+    // quad. XR pacing replaces the window's draw throttle; the wayland fd
+    // still gets serviced every frame
+    if (vr) {
+        while (!app.quit) {
+            const int st = vrPoll(&xr);
+            if (st < 0) break;
+            pollfd pfd{wfd, POLLIN, 0};
+            poll(&pfd, 1, st ? 0 : 50);
+            comp->dispatch(0);
+            comp->flush();
+            dashDrainPre();
+            if (!st) continue;
+            const bool draw = vrBeginFrame(&xr);
+            vrInput(&xr, &hud);
+            const long long now = dashNowMs();
+            if (takeWantRecenter()) { wantRecenter(); vrRecenter(&xr); }
+            tickDash(&hud, identity(), now);
+            if (draw && vrTarget(&xr)) {
+                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                const Mat4 proj = perspective(kVrFovY,
+                    (float)xr.texW / xr.texH, 0.05f, 100.0f);
+                drawDashScene(&hud, proj);
+            }
+            dashDrainPost();
+            vrEnd(&xr);
+        }
+        vrShutdown(&xr);
+        dashStop(&app);
+        comp->destroy();
+        return 0;
+    }
 
     long long last = dashNowMs();
     long long lastDraw = 0;

@@ -2,6 +2,7 @@
 
 #include "harness.h"
 #include "cmdline.h"
+#include "vr.h"
 
 #include "../anim/anim.h"
 #include "../bridge/bridge.h"
@@ -377,9 +378,13 @@ private:
 int main(int argc, char** argv) {
     const bool headless = argFlag(argc, argv, "-headless");
     const bool mcp = headless || argFlag(argc, argv, "-mcp");
+    const bool vr = argFlag(argc, argv, "-vr");
 
     DashApp app;
-    if (headless) {
+    VrDash xr;
+    if (vr) {
+        if (!vrInit(&xr, "vrdash-preview")) return 1;
+    } else if (headless) {
         if (!dashHeadless(&app, 1440, 810)) return 1;
     } else if (!dashWindow(&app, "Hibiscus dash preview", 1440, 810))
         return 1;
@@ -406,6 +411,35 @@ int main(int argc, char** argv) {
     queueLaunch("preview.settings");
 
     if (mcp) dashStartMcp(&app);
+
+    if (vr) {
+        while (!app.quit) {
+            const int st = vrPoll(&xr);
+            if (st < 0) break;
+            dashDrainPre();
+            if (!st) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(30));
+                continue;
+            }
+            const bool draw = vrBeginFrame(&xr);
+            vrInput(&xr, &hud);
+            const long long now = dashNowMs();
+            if (takeWantRecenter()) { wantRecenter(); vrRecenter(&xr); }
+            tickDash(&hud, identity(), now);
+            if (draw && vrTarget(&xr)) {
+                glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                const Mat4 proj = perspective(kVrFovY,
+                    (float)xr.texW / xr.texH, 0.05f, 100.0f);
+                drawDashScene(&hud, proj);
+            }
+            dashDrainPost();
+            vrEnd(&xr);
+        }
+        vrShutdown(&xr);
+        dashStop(&app);
+        return 0;
+    }
 
     long long last = dashNowMs();
     long long lastDraw = 0;

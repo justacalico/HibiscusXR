@@ -3,7 +3,7 @@
 // Shared constants. All values are compile-time; the runtime overrides for
 // head tracking live behind the debug.vrhome.* system properties.
 
-// Neo 2 lens polynomial from the stock /vendor/etc/qvr/svrapi_config.txt:
+// Headset lens polynomial from the stock /vendor/etc/qvr/svrapi_config.txt:
 // scale(r) = K0 + K2 r^2 + K4 r^4 + K6 r^6, r the tan-angle radius off the
 // lens axis (r = 1 at 45 deg). The old hand-tuned 1 + 0.22 r2 + 0.24 r2^2
 // stayed near 1 across the field, so the lens's own distortion showed
@@ -338,12 +338,12 @@ constexpr bool kHostAndroid = false;
 constexpr bool kHostAndroid = true;
 #endif
 
-// Pico's custom keycodes, installed via the patched libinput + gpio-keys.kl.
+// Device custom keycodes, installed via the patched libinput + gpio-keys.kl.
 // 1003 is the headset home button remapped off HOME (system_server eats
 // KEYCODE_HOME before anything else can see it, so the HUD's summon key
 // must not be HOME at all)
-constexpr int kPicoConfirm = 1001;
-constexpr int kPicoHome = 1003;
+constexpr int kHwConfirm = 1001;
+constexpr int kHwHome = 1003;
 
 // summon-key hold: how long before the recenter fires, and the progress
 // ring's size as a screen-space overlay

@@ -7,10 +7,10 @@ constexpr int kKeyEnter      = 66;   // AKEYCODE_ENTER
 constexpr int kKeyDpadCenter = 23;   // AKEYCODE_DPAD_CENTER
 constexpr int kKeyButtonA    = 96;   // AKEYCODE_BUTTON_A
 constexpr int kKeyBack       = 4;    // AKEYCODE_BACK
-// kPicoConfirm (1001) lives in common/config.h
+// kHwConfirm (1001) lives in common/config.h
 
 constexpr int kKeyMenu       = 82;   // AKEYCODE_MENU; a secondary click
-// kPicoConfirm (1001) lives in common/config.h
+// kHwConfirm (1001) lives in common/config.h
 
 // semantic-only codes hudKey routes like the AKEYCODE_* ones above: no
 // hardware ever emits these

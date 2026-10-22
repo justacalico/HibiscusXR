@@ -197,9 +197,9 @@ void testMcp() {
 
         r = call("\"name\":\"dash_key\",\"arguments\":{\"key\":\"confirm\"}");
         CHECK(d.log.size() == 3);
-        CHECK(d.log[1] == "key " + std::to_string(kPicoConfirm) + " " +
+        CHECK(d.log[1] == "key " + std::to_string(kHwConfirm) + " " +
                           std::to_string(kMcpDown));
-        CHECK(d.log[2] == "key " + std::to_string(kPicoConfirm) + " " +
+        CHECK(d.log[2] == "key " + std::to_string(kHwConfirm) + " " +
                           std::to_string(kMcpUp));
 
         r = call("\"name\":\"dash_key\",\"arguments\":{\"key\":\"back\",\"action\":\"down\"}");

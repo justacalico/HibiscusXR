@@ -1,8 +1,8 @@
 # keyboard
 
 The system input method, and the only one in the image - LatinIME is
-stripped by `tools/build/410_strip_stock_apps.sh`, and `pn2-settings.rc`
-bakes this service in as `default_input_method`.
+stripped by `tools/build/410_strip_stock_apps.sh`, and the device image's
+settings init bakes this service in as `default_input_method`.
 
 Plain Java, no Gradle: `make apk` produces `out/keyboard.apk`
 (javac -> d8 -> aapt2 -> zipalign -> apksigner, same pipeline as vrhome).

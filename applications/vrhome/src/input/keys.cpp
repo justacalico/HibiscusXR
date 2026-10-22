@@ -4,7 +4,7 @@
 
 bool isConfirm(int code) {
     return code == kKeyEnter || code == kKeyDpadCenter ||
-           code == kKeyButtonA || code == kPicoConfirm;
+           code == kKeyButtonA || code == kHwConfirm;
 }
 
 int escAction(bool shiftHeld) {

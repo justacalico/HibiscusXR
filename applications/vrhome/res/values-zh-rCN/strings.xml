@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_label">Hibiscus 主界面</string>
-    <string name="hud_label">PN2 HUD</string>
+    <string name="hud_label">Hibiscus HUD</string>
     <string name="hud_channel">HUD</string>
     <string name="dock_library">应用库</string>
     <string name="qs_title">快捷设置</string>

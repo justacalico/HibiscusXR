@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_label">PN2 Home</string>
-    <string name="hud_label">PN2 HUD</string>
+    <string name="app_label">Hibiscus Home</string>
+    <string name="hud_label">Hibiscus HUD</string>
     <string name="hud_channel">HUD</string>
     <string name="dock_library">Library</string>
     <string name="qs_title">Quick settings</string>

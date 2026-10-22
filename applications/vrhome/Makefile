@@ -75,7 +75,7 @@ HUD_SRCS := src/hud/hud_main.cpp src/hud/dash.cpp src/hud/debug_hooks.cpp \
             src/input/input_state.cpp src/input/aim.cpp src/input/ctrl.cpp \
             src/input/ctrl_debug.cpp src/input/pick.cpp
 
-# pure C, shared verbatim with the pn2 monado driver
+# pure C, shared verbatim with the device monado driver
 HUD_CSRCS := src/input/ctrl_state.c
 
 ENV_OBJS := $(patsubst src/%.cpp,$(OUT)/obj/%.o,$(SHARED_SRCS) $(ENV_SRCS))

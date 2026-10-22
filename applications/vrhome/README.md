@@ -212,7 +212,7 @@ Live-tunable system properties (`setprop` on the headset):
 | `debug.vrhome.worldx` | mount tilt correction |
 | `debug.vrhome.hud` | `0`/`1` overrides the settings card's Debug HUD toggle (unset = follow it) |
 | `debug.vrhome.fov` | vertical render FOV in degrees (default `90`) |
-| `debug.vrhome.k0` / `k2` / `k4` / `k6` | lens warp polynomial (stock Pico coefficients; set `k0` to `1` and the rest to `0` for no distortion) |
+| `debug.vrhome.k0` / `k2` / `k4` / `k6` | lens warp polynomial (stock coefficients; set `k0` to `1` and the rest to `0` for no distortion) |
 | `debug.vrhome.cr` / `debug.vrhome.cb` | chromatic warp scales (default `0.992` / `1.012`) |
 | `debug.vrhome.lensx` | lens centre offset toward the temples in eye uv (default `0.02`) |
 | `debug.vrhome.lensy` | lens centre height in eye uv (default `0.5`) |
@@ -220,7 +220,7 @@ Live-tunable system properties (`setprop` on the headset):
 | `debug.vrhome.launch` | set to a package name to open it on a window (HUD process) |
 | `debug.vrhome.tap` | `"displayId,x,y"` injects a tap (HUD process) |
 | `debug.vrhome.env` | overrides the home environment pick: `passthrough`, `builtin` or an environment id |
-| `persist.hibiscus.environment` | the actual pick, mirrored from the `hibiscus_environment` settings key by `pn2-envd`; custom ids load `/data/local/tmp/hibiscus/envs/<id>.zip` |
+| `persist.hibiscus.environment` | the actual pick, mirrored from the `hibiscus_environment` settings key by the device's env daemon; custom ids load `/data/local/tmp/hibiscus/envs/<id>.zip` |
 
 Logcat tags are `vrhome` (environment) and `vrhud` (HUD).
 

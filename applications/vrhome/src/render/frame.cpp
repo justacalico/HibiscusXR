@@ -17,12 +17,12 @@
 void drawEyes(Engine* e, const Mat4& head, const Mat4& proj, bool translucent,
               bool status, void (*scene)(Engine*, const Mat4&)) {
     static int errTick = 0;
-    // pick up a theme change on this frame: pn2-themed mirrors the
-    // hibiscus_theme setting onto persist.hibiscus.theme
+    // pick up a theme change on this frame: the device's theme daemon
+    // mirrors the hibiscus_theme setting onto persist.hibiscus.theme
     syncPalette();
-    // software IPD: the user setting arrives on persist.pn2.ipd (metres),
+    // software IPD: the user setting arrives on persist.hibiscus.ipd (metres),
     // debug.vrhome.ipd pins it for tuning
-    const float ipd = propF("debug.vrhome.ipd", propF("persist.pn2.ipd", kIPD));
+    const float ipd = propF("debug.vrhome.ipd", propF("persist.hibiscus.ipd", kIPD));
     for (int i = 0; i < 2; ++i) {
         Eye& y = e->eye[i];
         glBindFramebuffer(GL_FRAMEBUFFER, y.fbo);

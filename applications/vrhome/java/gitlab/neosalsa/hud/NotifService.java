@@ -18,7 +18,7 @@ import java.util.List;
  * version counter, cancel() routes a dismiss back to the status bar.
  *
  * Our own foreground-service notification is filtered out - a permanent
- * "PN2 HUD" card on top of the stack would just be noise.
+ * HUD card on top of the stack would just be noise.
  */
 public class NotifService extends NotificationListenerService {
     private static final String TAG = "vrhud.notif";

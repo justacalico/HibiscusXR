@@ -47,7 +47,7 @@ void testPalette() {
 }
 
 void testPaletteThemes() {
-    // name -> table: the prop values pn2-themed writes, dark for
+    // name -> table: the prop values the theme daemon writes, dark for
     // anything unrecognized
     CHECK(&paletteForName("dark") == &kPalDark);
     CHECK(&paletteForName("light") == &kPalLight);

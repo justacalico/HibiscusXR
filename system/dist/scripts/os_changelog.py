@@ -31,6 +31,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 import urllib.parse
 from datetime import datetime, timezone
 
@@ -60,8 +61,13 @@ def project_path():
 
 
 def api(path):
-    out = sh(GLAB, "api", path)
-    return json.loads(out) if out.strip() else []
+    for i in range(4):
+        p = subprocess.run([GLAB, "api", path],
+                           capture_output=True, text=True)
+        if p.returncode == 0:
+            return json.loads(p.stdout) if p.stdout.strip() else []
+        time.sleep(2 ** i)
+    sys.exit(f"glab api {path}: {p.stderr.strip()}")
 
 
 def api_paginated(path):

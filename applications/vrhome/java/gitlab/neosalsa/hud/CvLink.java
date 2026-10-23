@@ -86,10 +86,15 @@ final class CvLink implements CtrlService {
 
     @Override public boolean bound() { return svc != null; }
 
-    private Parcel transact(int code, Parcel in) {
+    // the interface token must lead the parcel: callers never write into
+    // the request themselves, they pass int args here so the token always
+    // lands at offset 0 where the service's enforceInterface reads it
+    private Parcel transact(int code, int... args) {
+        Parcel in = Parcel.obtain();
+        in.writeInterfaceToken(IFACE);
+        for (int a : args) in.writeInt(a);
         Parcel out = Parcel.obtain();
         try {
-            in.writeInterfaceToken(IFACE);
             svc.transact(code, in, out, 0);
             out.readException();
             return out;
@@ -125,42 +130,32 @@ final class CvLink implements CtrlService {
         if (svc == null) return;
         for (int i = 0; i < slots.length; ++i) {
             SettingsState.CtrlSlot c = slots[i];
-            Parcel in = Parcel.obtain();
-            in.writeInt(i);
-            Parcel r = transact(TR_CV2_CONN, in);
+            Parcel r = transact(TR_CV2_CONN, i);
             int st = 0;
             if (r != null) {
                 try { st = r.readInt(); } catch (Throwable ignored) {}
                 r.recycle();
             }
             c.state = st;
-            in = Parcel.obtain();
-            in.writeInt(i);
-            r = transact(TR_DEV_BLE_MAC, in);
+            r = transact(TR_DEV_BLE_MAC, i);
             if (r != null) {
                 try { c.mac = nullToEmpty(r.readString()); }
                 catch (Throwable ignored) {}
                 r.recycle();
             }
-            in = Parcel.obtain();
-            in.writeInt(i);
-            r = transact(TR_CTRL_SN, in);
+            r = transact(TR_CTRL_SN, i);
             if (r != null) {
                 try { c.serial = nullToEmpty(r.readString()); }
                 catch (Throwable ignored) {}
                 r.recycle();
             }
-            in = Parcel.obtain();
-            in.writeInt(i);
-            r = transact(TR_CHARGING, in);
+            r = transact(TR_CHARGING, i);
             if (r != null) {
                 try { c.chg = r.readInt() != 0; }
                 catch (Throwable ignored) {}
                 r.recycle();
             }
-            in = Parcel.obtain();
-            in.writeInt(i);
-            r = transact(TR_BATTERY, in);
+            r = transact(TR_BATTERY, i);
             if (r != null) {
                 try {
                     int[] b = r.createIntArray();
@@ -180,19 +175,17 @@ final class CvLink implements CtrlService {
 
     @Override public void setPairing(boolean on) {
         if (svc == null) return;
-        Parcel in = Parcel.obtain();
-        in.writeInt(on ? 1 : 0);
-        Parcel r = transact(on ? TR_START_PAIR : TR_STOP_PAIR, in);
+        Parcel r = transact(on ? TR_START_PAIR : TR_STOP_PAIR, on ? 1 : 0);
         if (r != null) r.recycle();
         if (on) {
-            Parcel rr = transact(TR_START_THREAD, Parcel.obtain());
+            Parcel rr = transact(TR_START_THREAD, 1, 1);
             if (rr != null) rr.recycle();
         }
     }
 
     @Override public void unbindAll() {
         if (svc == null) return;
-        Parcel r = transact(TR_UNBIND, Parcel.obtain());
+        Parcel r = transact(TR_UNBIND);
         if (r != null) r.recycle();
     }
 

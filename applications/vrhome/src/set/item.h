@@ -207,6 +207,8 @@ struct SetOverlay {
     bool scrollHeld = false;
     float grabV = 0.0f;
     float grabScroll = 0.0f;
+    float scrollVel = 0.0f;          // drag speed while held, the released
+                                     // coast's velocity after (m/s)
     int slideHeld = -1;          // row position of the held slider
     int dlg = DLG_NONE;
     int dlgArg = -1;

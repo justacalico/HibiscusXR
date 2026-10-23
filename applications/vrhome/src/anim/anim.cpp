@@ -35,6 +35,27 @@ float dampMs(float cur, float target, float dtMs, float tauMs) {
     return fabsf(next - target) < 0.001f ? target : next;
 }
 
+float flingTrack(float vel, float dScroll, float dtMs) {
+    if (dtMs <= 0.0f) return vel;
+    return dampMs(vel, dScroll * 1000.0f / dtMs, dtMs, kFlingTrackMs);
+}
+
+float flingKick(float vel) {
+    return fabsf(vel) < kFlingMinVel ? 0.0f : vel;
+}
+
+float flingScroll(float scroll, float* vel, float dtMs, float max) {
+    if (*vel == 0.0f || dtMs <= 0.0f) return scroll;
+    const float k = 1.0f - expf(-dtMs / kFlingTauMs);
+    float next = scroll + *vel * kFlingTauMs * 0.001f * k;
+    *vel *= expf(-dtMs / kFlingTauMs);
+    if (next < 0.0f) next = 0.0f;
+    else if (next > max) next = max;
+    if (next <= 0.0f || next >= max || fabsf(*vel) < kFlingEps)
+        *vel = 0.0f;
+    return next;
+}
+
 void lerp3(const float a[3], const float b[3], float t, float out[3]) {
     for (int i = 0; i < 3; ++i) out[i] = a[i] + (b[i] - a[i]) * t;
 }

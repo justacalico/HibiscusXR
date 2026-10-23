@@ -68,6 +68,8 @@ struct GridOverlay {
     bool scrollHeld = false;        // confirm held and dragging the card
     float grabV = 0.0f;             // card-local v at grab
     float grabScroll = 0.0f;        // scroll offset at grab
+    float scrollVel = 0.0f;         // drag speed while held, the released
+                                    // coast's velocity after (m/s)
 };
 
 // ui strings the card draws on top of the title it already pulls: slots in

@@ -230,6 +230,15 @@ constexpr float kGridMs = 200.0f;       // app-grid card open/close
 constexpr float kGridScale0 = 0.94f;    // card's open-from size share
 constexpr float kGridHoverScale = 1.12f; // cell icon magnification
 
+// scroll fling: a card drag released past kFlingMinVel keeps the list
+// coasting like a touchscreen flick, its velocity decaying with
+// kFlingTauMs until it settles under kFlingEps or the list's edge stops
+// it. kFlingTrackMs smooths the drag velocity the release reads off
+constexpr float kFlingTauMs = 260.0f;
+constexpr float kFlingMinVel = 0.10f;    // metres/s, in card scroll units
+constexpr float kFlingEps = 0.008f;      // metres/s: settle threshold
+constexpr float kFlingTrackMs = 45.0f;   // drag velocity smoothing window
+
 // notification cards: a stack floating above the dock bar (and the
 // minimized shelf when one is up) while the dash is up; over a covered app
 // the toast window draws it alone for kNotifToastMs. The stack rides the

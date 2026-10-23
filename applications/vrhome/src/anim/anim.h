@@ -25,6 +25,16 @@ float stepT(float cur, bool toward, float dtMs, float ms);
 // last epsilon so a settled value compares equal to its target
 float dampMs(float cur, float target, float dtMs, float tauMs);
 
+// scroll fling: a released card drag keeps coasting like a touchscreen
+// flick. flingTrack folds each drag frame's scroll delta into a smoothed
+// velocity in metres/s; flingKick turns it into the carry-on velocity on
+// release (0 when the flick is too weak); flingScroll advances the offset
+// one coasting frame, decaying *vel until it settles or the 0..max edge
+// stops it - a stopped coast zeroes *vel exactly
+float flingTrack(float vel, float dScroll, float dtMs);
+float flingKick(float vel);
+float flingScroll(float scroll, float* vel, float dtMs, float max);
+
 // point lerp along a flight path
 void lerp3(const float a[3], const float b[3], float t, float out[3]);
 

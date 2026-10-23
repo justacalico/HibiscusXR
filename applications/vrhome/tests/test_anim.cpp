@@ -71,6 +71,61 @@ void testAnim() {
         CHECK(v < kHoverScale && v > 1.0f);
     }
 
+    // scroll fling: the tracker converges on a steady drag's speed and
+    // holds on a dead frame; a weak release stops dead, a real flick
+    // coasts and decays, and either edge or a settle zeroes it exactly
+    {
+        float vel = 0.0f;
+        for (int i = 0; i < 60; ++i)
+            vel = flingTrack(vel, 0.02f, 16.0f);   // steady 1.25 m/s drag
+        CHECK_F(vel, 1.25f, 1e-3f);
+        CHECK_F(flingTrack(vel, 0.0f, 0.0f), vel, 1e-6f);
+        CHECK_F(flingTrack(0.0f, -0.01f, 16.0f), -0.187f, 1e-3f);
+        CHECK_F(flingKick(vel), vel, 1e-6f);
+        CHECK_F(flingKick(kFlingMinVel), kFlingMinVel, 1e-6f);
+        CHECK_F(flingKick(kFlingMinVel * 0.5f), 0.0f, 1e-6f);
+        CHECK_F(flingKick(-kFlingMinVel * 0.5f), 0.0f, 1e-6f);
+
+        // a 1 m/s coast decays the velocity while it advances, covering
+        // roughly vel * tau of ground before it settles out
+        float s = 0.0f, v = 1.0f;
+        const float s1 = flingScroll(s, &v, 16.0f, 10.0f);
+        CHECK(s1 > 0.0f && s1 < 0.016f);    // decay eats part of the step
+        CHECK(v < 1.0f && v > 0.9f);
+        s = s1;
+        int frames = 0;
+        while (v != 0.0f && frames < 2000) {
+            s = flingScroll(s, &v, 16.0f, 10.0f);
+            ++frames;
+        }
+        CHECK(v == 0.0f);
+        CHECK(s > 0.15f && s < 0.40f);
+
+        // the list's edge stops the coast on the frame it lands, and a
+        // backward flick clamps at the top the same way
+        s = 0.0f; v = 4.0f;
+        s = flingScroll(s, &v, 16.0f, 0.05f);
+        CHECK_F(s, 0.05f, 1e-6f);
+        CHECK_F(v, 0.0f, 1e-6f);
+        s = 0.03f; v = -4.0f;
+        s = flingScroll(s, &v, 16.0f, 10.0f);
+        CHECK_F(s, 0.0f, 1e-6f);
+        CHECK_F(v, 0.0f, 1e-6f);
+
+        // under the settle epsilon the coast dies in one frame; a zero
+        // velocity or dead frame moves nothing
+        s = 0.0f; v = kFlingEps * 0.5f;
+        CHECK_F(flingScroll(s, &v, 16.0f, 10.0f),
+                kFlingEps * 0.5f * kFlingTauMs * 0.001f *
+                    (1.0f - expf(-16.0f / kFlingTauMs)), 1e-6f);
+        CHECK_F(v, 0.0f, 1e-6f);
+        v = 0.0f;
+        CHECK_F(flingScroll(0.5f, &v, 16.0f, 10.0f), 0.5f, 1e-6f);
+        v = 1.0f;
+        CHECK_F(flingScroll(0.5f, &v, 0.0f, 10.0f), 0.5f, 1e-6f);
+        CHECK_F(v, 1.0f, 1e-6f);
+    }
+
     // lerp3 endpoints and midpoint
     {
         const float a[3] = {1.0f, 2.0f, 3.0f}, b[3] = {3.0f, 0.0f, -1.0f};

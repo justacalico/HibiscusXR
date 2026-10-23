@@ -141,7 +141,7 @@ void testGrid() {
     // nearer than the windows, just behind the dock strip
     {
         float c[3], r[3], up[3];
-        gridCenter(0.0f, 0.0f, o0, c, r, up);
+        gridCenter(0.0f, 0.0f, kPanelDist, o0, c, r, up);
         CHECK_F(c[2], -kGridDist, 1e-6f);
         CHECK(kGridDist < kPanelDist && kGridDist > kDockDist);
         float d[3] = {c[0], c[1], c[2]};
@@ -149,16 +149,16 @@ void testGrid() {
         d[0] /= dl; d[1] /= dl; d[2] /= dl;
         // a ray at the card centre hits it; aim off the card misses
         auto ov = mkOverlay(3);
-        GridPick pk = pickGridRay(ov, 0.0f, 0.0f, o0, o0, d);
+        GridPick pk = pickGridRay(ov, 0.0f, 0.0f, kPanelDist, o0, o0, d);
         CHECK(pk.hit);
         float c2[3], r2[3], u2[3];
-        gridCenter(0.0f, 0.0f, o0, c2, r2, u2);
+        gridCenter(0.0f, 0.0f, kPanelDist, o0, c2, r2, u2);
         const float off[3] = {c2[0] + r2[0] * (kGridHW + 0.4f), c2[1],
                               c2[2] + r2[2] * (kGridHW + 0.4f)};
         float d2[3] = {off[0], off[1], off[2]};
         const float dl2 = sqrtf(d2[0]*d2[0] + d2[1]*d2[1] + d2[2]*d2[2]);
         d2[0] /= dl2; d2[1] /= dl2; d2[2] /= dl2;
-        pk = pickGridRay(ov, 0.0f, 0.0f, o0, o0, d2);
+        pk = pickGridRay(ov, 0.0f, 0.0f, kPanelDist, o0, o0, d2);
         CHECK(!pk.hit);
         // a ray onto the first cell picks the item
         float d3[3] = {c[0] + r[0]*ov.items[0].x + up[0]*ov.items[0].y,
@@ -166,7 +166,7 @@ void testGrid() {
                        c[2] + r[2]*ov.items[0].x + up[2]*ov.items[0].y};
         const float dl3 = sqrtf(d3[0]*d3[0] + d3[1]*d3[1] + d3[2]*d3[2]);
         d3[0] /= dl3; d3[1] /= dl3; d3[2] /= dl3;
-        pk = pickGridRay(ov, 0.0f, 0.0f, o0, o0, d3);
+        pk = pickGridRay(ov, 0.0f, 0.0f, kPanelDist, o0, o0, d3);
         CHECK(pk.hit && pk.zone == GZONE_ITEM && pk.idx == 0);
     }
 

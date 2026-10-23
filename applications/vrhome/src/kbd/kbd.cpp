@@ -20,12 +20,14 @@ void kbdCenter(const Panel& p, const float origin[3], float offYaw,
     panelCenter(p, origin, pc, r, up);
     // the quad is its own window: it keeps the host's yaw and up, drops
     // under the host's bottom edge and the chrome pill hanging there, then
-    // pulls toward the viewer until it sits at kKbdDist - closer than the
-    // dock, so the strip can never cover the lower rows
+    // pulls toward the viewer until it sits at the keyboard's share of the
+    // host's ring radius - nearer than the dock at every dash depth, so
+    // the strip can never cover the lower rows
+    const float kd = p.dist * (kKbdDist / kPanelDist);
     float n[3] = {origin[0] - pc[0], origin[1] - pc[1], origin[2] - pc[2]};
     const float nl = sqrtf(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
     const float inv = nl > 1e-6f ? 1.0f / nl : 0.0f;
-    const float pull = nl > kKbdDist ? nl - kKbdDist : 0.0f;
+    const float pull = nl > kd ? nl - kd : 0.0f;
     const float drop = kPanelH * 0.5f + kPillGap + kPillH + kKbdGap + kKbdHH;
     for (int i = 0; i < 3; ++i)
         c[i] = pc[i] - up[i] * drop + n[i] * inv * pull;

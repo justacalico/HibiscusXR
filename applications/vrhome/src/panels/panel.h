@@ -32,6 +32,8 @@ struct Panel {
     float stMat[16] = {};
     float yaw = 0;            // world yaw of panel centre
     float pitch = 0;          // elevation on the ring; plane tilts to face you
+    float dist = kPanelDist;  // ring radius in metres: a floating window's
+                              // own depth; a docked one rides e->dashDist
     float scale = 1.0f;       // quad size multiplier in world metres
     int dispW = kVdW;         // display px the app lays out at: on a resize
     int dispH = kVdH;         // commit these follow the scale so the app

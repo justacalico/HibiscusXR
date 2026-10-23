@@ -113,10 +113,10 @@ void testNotif() {
         const float origin[3] = {0.0f, 0.0f, 0.0f};
         const float lift = notifLift(2);
         float c[3], r[3], up[3];
-        notifCenter(0.0f, kDockPitchRest, lift, origin, c, r, up);
+        notifCenter(0.0f, kDockPitchRest, lift, kPanelDist, origin, c, r, up);
         // the centre sits `lift` metres off the dock bar's centre
         float dc[3], dr[3], dup[3];
-        dockCenter(0.0f, kDockPitchRest, origin, dc, dr, dup);
+        dockCenter(0.0f, kDockPitchRest, kPanelDist, origin, dc, dr, dup);
         const float dd = sqrtf((c[0]-dc[0])*(c[0]-dc[0]) +
                                (c[1]-dc[1])*(c[1]-dc[1]) +
                                (c[2]-dc[2])*(c[2]-dc[2]));
@@ -127,7 +127,7 @@ void testNotif() {
         const float len = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= len; d[1] /= len; d[2] /= len;
         float u, v, t;
-        CHECK(rayNotif(0.0f, kDockPitchRest, lift, origin, o, d, 2,
+        CHECK(rayNotif(0.0f, kDockPitchRest, lift, kPanelDist, origin, o, d, 2,
                        &u, &v, &t));
         CHECK(fabsf(u) < 1e-4f && fabsf(v) < 1e-4f);
         CHECK(t > 0.5f && t < 3.0f);
@@ -145,7 +145,7 @@ void testNotif() {
         // off a slightly pitched head is overkill; verify the miss/hit
         // contract only
         const float lift = notifLift((int)items.size());
-        NotifPick pk = pickNotif(items, 0.0f, kDockPitchRest, lift, head,
+        NotifPick pk = pickNotif(items, 0.0f, kDockPitchRest, lift, kPanelDist, head,
                                  o0, o0);
         // stack is below the horizon at kDockPitchRest: a level gaze misses
         CHECK(!pk.stack);
@@ -156,7 +156,7 @@ void testShade() {
     // geometry: the card rides the shared card anchor plane at ring pitch
     {
         float c[3], r[3], up[3];
-        shadeCenter(0.0f, 0.0f, o0, c, r, up);
+        shadeCenter(0.0f, 0.0f, kPanelDist, o0, c, r, up);
         CHECK_F(c[2], -kShadeDist, 1e-5f);
         CHECK_F(r[0], 1.0f, 1e-6f);
     }
@@ -265,16 +265,16 @@ void testShade() {
     {
         std::vector<NotifItem> items = {mkNotif("a", "com.a", 200)};
         float c[3], r[3], up[3];
-        shadeCenter(0.0f, 0.0f, o0, c, r, up);
+        shadeCenter(0.0f, 0.0f, kPanelDist, o0, c, r, up);
         float d[3] = {c[0], c[1], c[2]};
         const float len = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= len; d[1] /= len; d[2] /= len;
-        ShadePick pk = pickShadeRay(items, 0.0f, 0.05f, 0.0f, 0.0f,
+        ShadePick pk = pickShadeRay(items, 0.0f, 0.05f, 0.0f, 0.0f, kPanelDist,
                                     o0, o0, d);
         CHECK(pk.hit && pk.u == 0.0f && pk.v == 0.0f);
         CHECK_F(pk.t, len, 1e-4f);
         const float away[3] = {0.0f, 0.0f, 1.0f};
-        pk = pickShadeRay(items, 0.0f, 0.05f, 0.0f, 0.0f, o0, o0, away);
+        pk = pickShadeRay(items, 0.0f, 0.05f, 0.0f, 0.0f, kPanelDist, o0, o0, away);
         CHECK(!pk.hit);
     }
 }

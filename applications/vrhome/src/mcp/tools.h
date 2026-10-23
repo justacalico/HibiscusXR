@@ -10,11 +10,13 @@ struct McpPanelInfo {
     std::string pkg, label;
     bool minimized = false, floating = false;
     float yawDeg = 0.0f, pitchDeg = 0.0f, scale = 1.0f;
+    float dist = 0.0f;              // ring radius the window rides, metres
 };
 
 struct McpState {
     float pos[3] = {0.0f, 0.0f, 0.0f};
     float yawDeg = 0.0f, pitchDeg = 0.0f;
+    float dashDist = 0.0f;          // the dash ring's current radius
     int hover = -1;
     int hoverZone = 0;
     bool grid = false, kbd = false, settings = false;

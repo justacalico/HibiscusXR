@@ -137,7 +137,7 @@ void dockActivate(HudEngine* e, int idx) {
         return;
     case DOP_FOCUS_PANEL:
         restorePanel(e->panels, act.panelIdx, e->dockYaw,
-                     dashRingPitch(e->panels, e->dockPitch));
+                     dashRingPitch(e->panels, e->dockPitch), e->dashDist);
         if (act.taskId >= 0) focusTask(e, act.taskId);
         if (e->set.shown) setClose(e);
         return;
@@ -183,7 +183,7 @@ void shelfActivate(HudEngine* e, int idx) {
     const DockAction act = shelfActivateAction(e->shelf[idx], e->panels);
     if (act.op != DOP_FOCUS_PANEL) return;
     restorePanel(e->panels, act.panelIdx, e->dockYaw,
-                 dashRingPitch(e->panels, e->dockPitch));
+                 dashRingPitch(e->panels, e->dockPitch), e->dashDist);
     if (e->backend && act.taskId >= 0) focusTask(e, act.taskId);
     if (e->set.shown) setClose(e);
 }
@@ -326,7 +326,8 @@ void drawDock(HudEngine* e, const Mat4& vp) {
     const float a = dashAlpha(sumT);
     const float drop = dashDrop(sumT);
     float c[3], r[3], up[3];
-    dockCenterDrop(e->dockYaw, e->dockPitch, drop, e->ringPos, c, r, up);
+    dockCenterDrop(e->dockYaw, e->dockPitch, drop, e->dashDist,
+                      e->ringPos, c, r, up);
     const float hw = e->dockHW, hh = kDockBarH * 0.5f;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
@@ -628,7 +629,8 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
     const float a = dashAlpha(sumT);
     const float drop = dashDrop(sumT);
     float c[3], r[3], up[3];
-    shelfCenterDrop(e->dockYaw, e->dockPitch, drop, e->ringPos, c, r, up);
+    shelfCenterDrop(e->dockYaw, e->dockPitch, drop, e->dashDist,
+                       e->ringPos, c, r, up);
     const float hw = e->shelfHW;
     glEnable(GL_BLEND);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,

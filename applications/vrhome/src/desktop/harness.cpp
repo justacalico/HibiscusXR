@@ -400,6 +400,7 @@ public:
             out->grid = hud->grid.shown;
             out->kbd = hud->kbd.shown;
             out->settings = hud->set.shown;
+            out->dashDist = hud->dashDist;
             out->panels.clear();
             for (const Panel& p : hud->panels) {
                 McpPanelInfo pi;
@@ -412,6 +413,7 @@ public:
                 pi.yawDeg = p.yaw * 180.0f / (float)M_PI;
                 pi.pitchDeg = p.pitch * 180.0f / (float)M_PI;
                 pi.scale = p.scale;
+                pi.dist = p.dist;
                 out->panels.push_back(pi);
             }
         });

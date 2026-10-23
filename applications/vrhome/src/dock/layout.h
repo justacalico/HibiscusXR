@@ -11,14 +11,16 @@
 // JNI - so ordering, layout and hit testing all run in the host tests.
 
 // dock quad on the same anchor cylinder the panel ring rides, at its own
-// distance and elevation
-void dockCenter(float yaw, float pitch, const float origin[3],
+// distance and elevation. `dist` is the ring's radius in metres - the
+// strip sits at its fixed share of it so a depth push carries the whole
+// dash evenly
+void dockCenter(float yaw, float pitch, float dist, const float origin[3],
                 float c[3], float r[3], float up[3]);
 
 // the summon slide: drop shifts the strip down its own up axis while the
 // fade-in runs, and the pick path takes the same value so a hit always
 // lands where the strip is actually drawn
-void dockCenterDrop(float yaw, float pitch, float drop,
+void dockCenterDrop(float yaw, float pitch, float drop, float dist,
                     const float origin[3], float c[3], float r[3],
                     float up[3]);
 
@@ -71,7 +73,8 @@ int dockItemAt(const std::vector<DockItem>& items, const DockStatus& st,
 
 // gaze ray vs the dock plane; u,v in bar coords, may fall outside -1..1.
 // drop is the strip's summon-slide offset (see dockCenterDrop)
-bool rayDock(float yaw, float pitch, float drop, const float origin[3],
+bool rayDock(float yaw, float pitch, float drop, float dist,
+             const float origin[3],
              const float o[3], const float d[3], float halfW,
              float* u, float* v, float* t);
 
@@ -79,14 +82,14 @@ bool rayDock(float yaw, float pitch, float drop, const float origin[3],
 // lands on the strip between icons, so the bar body still blocks clicks
 DockPick pickDockRay(const std::vector<DockItem>& items,
                      const DockStatus& st, float halfW,
-                     float yaw, float pitch, float drop,
+                     float yaw, float pitch, float drop, float dist,
                      const float origin[3], const float o[3],
                      const float d[3]);
 
 // the dock item under the gaze ray
 DockPick pickDock(const std::vector<DockItem>& items, const DockStatus& st,
                   float halfW, float yaw, float pitch, float drop,
-                  const Mat4& head, const float origin[3],
+                  float dist, const Mat4& head, const float origin[3],
                   const float o[3]);
 
 // can a long-press pin this item: only real app entries qualify
@@ -127,11 +130,11 @@ float shelfLift();
 float shelfTop();
 
 // shelf quad on the dock's anchor plane, raised shelfLift along its up
-void shelfCenter(float yaw, float pitch, const float origin[3],
+void shelfCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]);
 
 // the pill rides the strip's summon slide with it
-void shelfCenterDrop(float yaw, float pitch, float drop,
+void shelfCenterDrop(float yaw, float pitch, float drop, float dist,
                      const float origin[3], float c[3], float r[3],
                      float up[3]);
 
@@ -141,20 +144,22 @@ int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
 
 // gaze ray vs the shelf plane; u,v in pill coords, may fall outside -1..1.
 // drop matches rayDock's: the pill slides with the strip on summon
-bool rayShelf(float yaw, float pitch, float drop, const float origin[3],
+bool rayShelf(float yaw, float pitch, float drop, float dist,
+              const float origin[3],
               const float o[3], const float d[3], float halfW,
               float* u, float* v, float* t);
 
 // the shelf icon under an arbitrary ray; hit is set even on the pill body
 // between icons, so the shelf blocks clicks like the dock bar does
 ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
-                       float yaw, float pitch, float drop,
+                       float yaw, float pitch, float drop, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]);
 
 // the shelf icon under the gaze ray
 ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
-                    float yaw, float pitch, float drop, const Mat4& head,
+                    float yaw, float pitch, float drop, float dist,
+                    const Mat4& head,
                     const float origin[3], const float o[3]);
 
 // what an activate/close resolves to, computed off plain data so the

@@ -14,9 +14,9 @@
 // scrolling row pane on the right. Dialogs are modal: while one is up,
 // hits only resolve inside its rect.
 
-// card centre + basis on the ring's anchor cylinder, at the grid's own
-// distance and the window row's elevation
-void setCenter(float yaw, float pitch, const float origin[3],
+// card centre + basis on the ring's anchor cylinder, at the card's
+// share of the ring's radius `dist` and the window row's elevation
+void setCenter(float yaw, float pitch, float dist, const float origin[3],
                float c[3], float r[3], float up[3]);
 
 // the content row list for a section against a snap: list-backed sections
@@ -139,5 +139,5 @@ int setZoneAt(const SetOverlay& ov, float u, float v, int* idx, int* aux);
 // arbitrary ray vs the card; hit is set on any card hit so the body still
 // blocks the windows behind it
 SetHit pickSetRay(const SetOverlay& ov, float yaw, float pitch,
-                  const float origin[3], const float o[3],
+                  float dist, const float origin[3], const float o[3],
                   const float d[3]);

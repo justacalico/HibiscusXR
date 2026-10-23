@@ -57,6 +57,7 @@ Json stateJson(const McpState& s) {
     cam.set("yawDeg", Json::num(s.yawDeg));
     cam.set("pitchDeg", Json::num(s.pitchDeg));
     j.set("camera", cam);
+    j.set("dashDist", Json::num(s.dashDist));
     j.set("grid", Json::boolean(s.grid));
     j.set("keyboard", Json::boolean(s.kbd));
     j.set("settings", Json::boolean(s.settings));
@@ -74,6 +75,7 @@ Json stateJson(const McpState& s) {
         pj.set("yawDeg", Json::num(p.yawDeg));
         pj.set("pitchDeg", Json::num(p.pitchDeg));
         pj.set("scale", Json::num(p.scale));
+        pj.set("dist", Json::num(p.dist));
         ps.push(pj);
     }
     j.set("panels", ps);

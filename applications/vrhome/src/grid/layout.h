@@ -12,9 +12,9 @@
 // of kGridHeadH caps the top; cells flow left-to-right in kGridCols columns
 // starting under it and scroll vertically inside the rest of the card.
 
-// card centre + basis on the ring's anchor cylinder, at the grid's own
-// distance and the window row's elevation
-void gridCenter(float yaw, float pitch, const float origin[3],
+// card centre + basis on the ring's anchor cylinder, at the card's
+// share of the ring's radius `dist` and the window row's elevation
+void gridCenter(float yaw, float pitch, float dist, const float origin[3],
                 float c[3], float r[3], float up[3]);
 
 // place every cell in card-local metres (pre-scroll) and return the total
@@ -117,5 +117,5 @@ int gridZoneAt(const GridOverlay& g, float u, float v, int* idx);
 // arbitrary ray vs the card; hit is set on any card hit so the body still
 // blocks the windows behind it
 GridPick pickGridRay(const GridOverlay& g, float yaw, float pitch,
-                     const float origin[3], const float o[3],
+                     float dist, const float origin[3], const float o[3],
                      const float d[3]);

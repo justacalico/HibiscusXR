@@ -46,6 +46,10 @@ enum CtrlBtn {
 
 uint32_t ctrlButtonMask(const ctrl_keys& k);
 
+// a touchpad axis as a deadzoned -1..1 deflection off the 0..255 wire
+// value; the pad doubles as the scroll input while a move drag is held
+float ctrlPadAxis(int32_t v);
+
 // one input event to feed onward: a KeyEvent-style code + action
 // (0 = up, 1 = down)
 struct InputEvent {

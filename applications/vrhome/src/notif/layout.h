@@ -31,8 +31,10 @@ float notifLift(int count);
 // top edge while minimized windows are parked above the bar
 float notifLiftAbove(int count, float clear);
 
-// stack quad on the dock's anchor cylinder, raised `lift` along its up
-void notifCenter(float yaw, float pitch, float lift, const float origin[3],
+// stack quad on the dock's anchor cylinder, raised `lift` along its up;
+// `dist` is the ring's radius - the stack shares the strip's share of it
+void notifCenter(float yaw, float pitch, float lift, float dist,
+                 const float origin[3],
                  float c[3], float r[3], float up[3]);
 
 // card i's centre offset along +up inside the stack, metres; i=0 is the
@@ -46,20 +48,21 @@ void notifBadgeAt(float* bx, float* by);
 int notifAt(float u, float v, int count, int* zone);
 
 // gaze ray vs the stack plane; u,v in stack coords, may fall outside -1..1
-bool rayNotif(float yaw, float pitch, float lift, const float origin[3],
+bool rayNotif(float yaw, float pitch, float lift, float dist,
+              const float origin[3],
               const float o[3], const float d[3], int count,
               float* u, float* v, float* t);
 
 // the card under an arbitrary ray; stack is set even between cards so the
 // region blocks clicks like the dock bar does
 NotifPick pickNotifRay(const std::vector<NotifItem>& items,
-                       float yaw, float pitch, float lift,
+                       float yaw, float pitch, float lift, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]);
 
 // the card under the gaze ray
 NotifPick pickNotif(const std::vector<NotifItem>& items,
-                    float yaw, float pitch, float lift,
+                    float yaw, float pitch, float lift, float dist,
                     const Mat4& head, const float origin[3],
                     const float o[3]);
 
@@ -70,9 +73,9 @@ NotifPick pickNotif(const std::vector<NotifItem>& items,
 // a title band of kShadeHeadH caps the top and the row list scrolls
 // inside the band under it.
 
-// card centre + basis on the ring's anchor cylinder, at the shared card
-// distance and the window row's elevation
-void shadeCenter(float yaw, float pitch, const float origin[3],
+// card centre + basis on the ring's anchor cylinder, at the card's share
+// of the ring's radius `dist` and the window row's elevation
+void shadeCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]);
 
 // the y-band rows must stay inside: clipped to under the title band.
@@ -124,6 +127,6 @@ int shadeZoneAt(const std::vector<NotifItem>& items, float u, float v,
 // arbitrary ray vs the card; hit is set on any card hit so the body still
 // blocks the windows behind it
 ShadePick pickShadeRay(const std::vector<NotifItem>& items, float scroll,
-                       float clearHW, float yaw, float pitch,
+                       float clearHW, float yaw, float pitch, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]);

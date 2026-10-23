@@ -7,9 +7,10 @@
 
 #include <cmath>
 
-void sysMsgCenter(float yaw, float pitch, float lift, const float origin[3],
+void sysMsgCenter(float yaw, float pitch, float lift, float dist,
+                  const float origin[3],
                   float c[3], float r[3], float up[3]) {
-    dockCenter(yaw, pitch, origin, c, r, up);
+    dockCenter(yaw, pitch, dist, origin, c, r, up);
     for (int i = 0; i < 3; ++i) c[i] += up[i] * lift;
 }
 
@@ -58,23 +59,25 @@ int sysMsgAt(float u, float v, int nbtn, int* btn) {
     return MZONE_BODY;
 }
 
-bool raySysMsg(float yaw, float pitch, float lift, const float origin[3],
+bool raySysMsg(float yaw, float pitch, float lift, float dist,
+               const float origin[3],
                const float o[3], const float d[3],
                float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    sysMsgCenter(yaw, pitch, lift, origin, c, r, up);
+    sysMsgCenter(yaw, pitch, lift, dist, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, kSysMsgW * 0.5f,
                    kSysMsgH * 0.5f, u, v, t);
 }
 
 SysMsgPick pickSysMsgRay(const std::vector<SysMsgItem>& items,
-                         float yaw, float pitch, float lift,
+                         float yaw, float pitch, float lift, float dist,
                          const float origin[3], const float o[3],
                          const float d[3]) {
     SysMsgPick pk;
     if (items.empty()) return pk;
     float u, v, t;
-    if (!raySysMsg(yaw, pitch, lift, origin, o, d, &u, &v, &t)) return pk;
+    if (!raySysMsg(yaw, pitch, lift, dist, origin, o, d, &u, &v, &t))
+        return pk;
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.hit = true;
     pk.t = t;
@@ -83,10 +86,10 @@ SysMsgPick pickSysMsgRay(const std::vector<SysMsgItem>& items,
 }
 
 SysMsgPick pickSysMsg(const std::vector<SysMsgItem>& items,
-                      float yaw, float pitch, float lift,
+                      float yaw, float pitch, float lift, float dist,
                       const Mat4& head, const float origin[3],
                       const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickSysMsgRay(items, yaw, pitch, lift, origin, o, d);
+    return pickSysMsgRay(items, yaw, pitch, lift, dist, origin, o, d);
 }

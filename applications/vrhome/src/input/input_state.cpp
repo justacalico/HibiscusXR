@@ -32,6 +32,20 @@ static int codeFor(int btn) {
     }
 }
 
+// pad deflection reads as a centred 0..255 axis with a sloppy rest, so a
+// band around the middle counts as untouched; the wire tops out one count
+// under +-1, so the dead band rescales against that real reach
+constexpr float kPadDead = 0.16f;
+constexpr float kPadMax = 127.0f / 128.0f;
+
+float ctrlPadAxis(int32_t v) {
+    const float d = (float)(v - 128) / 128.0f;
+    const float span = kPadMax - kPadDead;
+    const float a = d > kPadDead ? (d - kPadDead) / span
+                  : d < -kPadDead ? (d + kPadDead) / span : 0.0f;
+    return a < -1.0f ? -1.0f : a > 1.0f ? 1.0f : a;
+}
+
 static void emit(InputEvent* ev, int* n, int cap, int code, int action) {
     if (code && *n < cap) {
         ev[*n].code = code;

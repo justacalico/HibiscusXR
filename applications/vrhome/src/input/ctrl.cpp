@@ -22,6 +22,10 @@ constexpr long long kCtrlRetryMs = 2000;
 // while the channel is actually quiet
 constexpr long long kCtrlQuietMs = 3000;
 constexpr long long kCtrlPokeMs = 30000;
+// scroll units per frame at full pad deflection, in hudScroll's scale -
+// the pad is the scroll input on-device: it rolls open cards, and while a
+// move drag is held it pushes/pulls the dash in depth
+constexpr float kPadScroll = 0.06f;
 
 static void pokeCtrlThread(HudEngine* e) {
     if (e->backend) e->backend->pokeCtrlThread();
@@ -68,6 +72,7 @@ void ctrlTick(HudEngine* e, const Mat4& head, float sensRoll, float worldX,
                                  CTRL_PROBE_SPIN_NS);
             }
             bool wrote = wire > 0;
+            float pad = 0.0f;
             for (int w = 0; w < CTRL_COUNT; ++w) {
                 const bool was = ctrlConnected(e->input, w);
                 ctrl_state_decode(buf, w, &e->ctrl[w]);
@@ -85,6 +90,11 @@ void ctrlTick(HudEngine* e, const Mat4& head, float sensRoll, float worldX,
                          e->ctrl[w].keys.battery);
                 for (int i = 0; i < n; ++i) e->ctrlEv.push_back(ev[i]);
 
+                // the touchpad is the on-device scroll axis: both pads
+                // contribute, hudScroll routes it by what's held
+                if (conn && e->ctrl[w].keys_ok)
+                    pad += ctrlPadAxis(e->ctrl[w].keys.touch_y);
+
                 if (ctrlConnected(e->input, w) && e->ctrl[w].pose_ok) {
                     const ctrl_pose& p = e->ctrl[w].fuse;
                     const float q[4] = {p.qx, p.qy, p.qz, p.q0};
@@ -95,6 +105,7 @@ void ctrlTick(HudEngine* e, const Mat4& head, float sensRoll, float worldX,
                             &e->ctrlMat[w]);
                 }
             }
+            if (pad != 0.0f) hudScroll(e, pad * kPadScroll);
 
             // nothing on this build starts CVService's controller thread -
             // stock VRShell used to - so when the wire goes quiet (thread

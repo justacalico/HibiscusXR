@@ -76,7 +76,8 @@ void pumpBridge(HudEngine* e) {
         if (e->backend->isVrApp(pkg)) { e->backend->launchVrApp(pkg); continue; }
         const int mi = minimizedIndex(e->panels, pkg);
         if (mi >= 0) {
-            restorePanel(e->panels, mi, e->dockYaw, ringPitchNow(e));
+            restorePanel(e->panels, mi, e->dockYaw, ringPitchNow(e),
+                     e->dashDist);
             if (e->panels[mi].taskId >= 0)
                 e->backend->focusTask(e->panels[mi].taskId);
             continue;

@@ -28,11 +28,13 @@ const QsSpec& quickSpec(int i) {
     return kSpecs[i];
 }
 
-void quickCenter(float yaw, float pitch, const float origin[3],
+void quickCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]) {
     // same anchor cylinder the windows and the app grid ride: the card
-    // hangs in front of the window slots, just behind the dock strip
-    ringPoint(yaw, pitch, kQuickDist, kPanelY, origin, c, r, up);
+    // hangs at its share of the ring's radius, in front of the window
+    // slots and just behind the dock strip
+    ringPoint(yaw, pitch, dist * (kQuickDist / kPanelDist), kPanelY,
+              origin, c, r, up);
 }
 
 // vertical chain under the title band: slider rows, the large row, then
@@ -188,11 +190,12 @@ int quickZoneAt(float u, float v, int* idx, int* slider) {
     return QZONE_BODY;
 }
 
-QsPick pickQuickRay(float yaw, float pitch, const float origin[3],
+QsPick pickQuickRay(float yaw, float pitch, float dist,
+                    const float origin[3],
                     const float o[3], const float d[3]) {
     QsPick pk;
     float c[3], r[3], up[3];
-    quickCenter(yaw, pitch, origin, c, r, up);
+    quickCenter(yaw, pitch, dist, origin, c, r, up);
     if (!rayQuad(c, r, up, origin, o, d, kQuickHW, kQuickHH,
                  &pk.u, &pk.v, &pk.t)) return pk;
     if (fabsf(pk.u) > 1.0f || fabsf(pk.v) > 1.0f) return pk;

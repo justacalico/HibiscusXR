@@ -167,13 +167,13 @@ void testQuick() {
     // a ray at its centre hits, off-card rays miss, a tile ray picks it
     {
         float c[3], r[3], up[3];
-        quickCenter(0.0f, 0.0f, o0, c, r, up);
+        quickCenter(0.0f, 0.0f, kPanelDist, o0, c, r, up);
         CHECK_F(c[2], -kQuickDist, 1e-6f);
         CHECK(kQuickDist < kPanelDist && kQuickDist > kDockDist);
         float d[3] = {c[0], c[1], c[2]};
         const float dl = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= dl; d[1] /= dl; d[2] /= dl;
-        QsPick pk = pickQuickRay(0.0f, 0.0f, o0, o0, d);
+        QsPick pk = pickQuickRay(0.0f, 0.0f, kPanelDist, o0, o0, d);
         // dead centre lands in the large row's tile gap: card body
         CHECK(pk.hit && pk.zone == QZONE_BODY);
         float tx, ty, thw, thh;
@@ -183,13 +183,13 @@ void testQuick() {
                        c[2] + r[2]*tx + up[2]*ty};
         const float dl2 = sqrtf(d2[0]*d2[0] + d2[1]*d2[1] + d2[2]*d2[2]);
         d2[0] /= dl2; d2[1] /= dl2; d2[2] /= dl2;
-        pk = pickQuickRay(0.0f, 0.0f, o0, o0, d2);
+        pk = pickQuickRay(0.0f, 0.0f, kPanelDist, o0, o0, d2);
         CHECK(pk.hit && pk.zone == QZONE_TILE && pk.idx == QS_WIFI);
         float d3[3] = {c[0] + r[0] * (kQuickHW + 0.4f), c[1],
                        c[2] + r[2] * (kQuickHW + 0.4f)};
         const float dl3 = sqrtf(d3[0]*d3[0] + d3[1]*d3[1] + d3[2]*d3[2]);
         d3[0] /= dl3; d3[1] /= dl3; d3[2] /= dl3;
-        pk = pickQuickRay(0.0f, 0.0f, o0, o0, d3);
+        pk = pickQuickRay(0.0f, 0.0f, kPanelDist, o0, o0, d3);
         CHECK(!pk.hit);
     }
 }

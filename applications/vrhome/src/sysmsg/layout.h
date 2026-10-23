@@ -10,8 +10,10 @@
 // card rides the dock's anchor plane lifted to eye level in the dash, or
 // the summon yaw at eye level while a covered app owns the display.
 
-// card quad on the dock's anchor cylinder, raised `lift` along its up
-void sysMsgCenter(float yaw, float pitch, float lift, const float origin[3],
+// card quad on the dock's anchor cylinder, raised `lift` along its up;
+// `dist` is the ring's radius - the card shares the strip's share of it
+void sysMsgCenter(float yaw, float pitch, float lift, float dist,
+                  const float origin[3],
                   float c[3], float r[3], float up[3]);
 
 // modal rule: while a card is live the rest of the dash stays hidden and
@@ -36,19 +38,20 @@ float sysMsgBtnY();
 int sysMsgAt(float u, float v, int nbtn, int* btn);
 
 // gaze ray vs the card plane; u,v in card coords, may fall outside -1..1
-bool raySysMsg(float yaw, float pitch, float lift, const float origin[3],
+bool raySysMsg(float yaw, float pitch, float lift, float dist,
+               const float origin[3],
                const float o[3], const float d[3],
                float* u, float* v, float* t);
 
 // the card under an arbitrary ray; only the front card is drawn so only
 // it picks
 SysMsgPick pickSysMsgRay(const std::vector<SysMsgItem>& items,
-                         float yaw, float pitch, float lift,
+                         float yaw, float pitch, float lift, float dist,
                          const float origin[3], const float o[3],
                          const float d[3]);
 
 // the card under the gaze ray
 SysMsgPick pickSysMsg(const std::vector<SysMsgItem>& items,
-                      float yaw, float pitch, float lift,
+                      float yaw, float pitch, float lift, float dist,
                       const Mat4& head, const float origin[3],
                       const float o[3]);

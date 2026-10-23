@@ -310,6 +310,8 @@ public class ShellBridge {
         st.ctrlTransact(code, arg);
     }
 
+    public void ctrlUnbind() { st.unbindAll(); }
+
     public void wifiJoin(String ssid, int sec, String pw) {
         st.wifiJoin(ssid, sec, pw);
     }

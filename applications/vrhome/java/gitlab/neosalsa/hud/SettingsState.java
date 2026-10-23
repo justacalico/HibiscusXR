@@ -830,7 +830,7 @@ public class SettingsState {
         if (ctrlLink.bound()) ctrlLink.debugTransact(code, arg);
     }
 
-    private void unbindAll() {
+    public void unbindAll() {
         ctrlLink.unbindAll();
         bump();
     }

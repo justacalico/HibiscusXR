@@ -143,6 +143,15 @@ static void debugCtrlTransactHook(HudEngine* e) {
     }
 }
 
+// setprop debug.vrhome.ctrlunbind <n> runs the settings card's unpair
+// row, clearing every station-side bind record
+static void debugCtrlUnbindHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (e->ctx && propChanged("debug.vrhome.ctrlunbind", last, tb))
+        callCtx(e, "debugCtrlUnbind", "()V");
+}
+
 void runDebugHooks(HudEngine* e) {
     debugLaunchHook(e);
     debugTapHook(e);
@@ -150,6 +159,7 @@ void runDebugHooks(HudEngine* e) {
     debugHoldHook(e);
     debugCtrlScanHook(e);
     debugCtrlTransactHook(e);
+    debugCtrlUnbindHook(e);
     debugDockTapHook(e);
     debugDockCloseHook(e);
     debugDockPinHook(e);

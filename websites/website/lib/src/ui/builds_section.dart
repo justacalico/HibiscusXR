@@ -47,11 +47,6 @@ class _BuildsSectionState extends State<BuildsSection> {
         Text(l10n.buildsSubtitle,
             style: context.text.bodyMedium!.copyWith(fontSize: 15)),
         const SizedBox(height: 24),
-        _ChannelSelector(
-          channel: _channel,
-          onChanged: (c) => setState(() => _channel = c),
-        ),
-        const SizedBox(height: 24),
         FutureBuilder<List<BuildRelease>>(
           future: _future,
           builder: (context, snapshot) {
@@ -65,12 +60,27 @@ class _BuildsSectionState extends State<BuildsSection> {
             if (!snapshot.hasData) {
               return BuildsLoading(message: l10n.buildsLoading);
             }
-            final latest =
-                latestInChannel(osReleases(snapshot.data!), _channel);
-            if (latest == null) {
+            final releases = osReleases(snapshot.data!);
+            final channels = populatedChannels(releases);
+            if (channels.isEmpty) {
               return BuildsEmpty(message: l10n.buildsEmpty);
             }
-            return _BuildCard(release: latest, device: widget.device);
+            final channel = channelOrFallback(releases, _channel);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ChannelSelector(
+                  channel: channel,
+                  channels: channels,
+                  onChanged: (c) => setState(() => _channel = c),
+                ),
+                const SizedBox(height: 24),
+                _BuildCard(
+                  release: latestInChannel(releases, channel)!,
+                  device: widget.device,
+                ),
+              ],
+            );
           },
         ),
       ],
@@ -81,10 +91,12 @@ class _BuildsSectionState extends State<BuildsSection> {
 class _ChannelSelector extends StatelessWidget {
   const _ChannelSelector({
     required this.channel,
+    required this.channels,
     required this.onChanged,
   });
 
   final BuildChannel channel;
+  final List<BuildChannel> channels;
   final ValueChanged<BuildChannel> onChanged;
 
   @override
@@ -97,7 +109,7 @@ class _ChannelSelector extends StatelessWidget {
     };
     return SegmentedButton<BuildChannel>(
       segments: [
-        for (final ch in BuildChannel.values)
+        for (final ch in channels)
           ButtonSegment(value: ch, label: Text(labels[ch]!)),
       ],
       selected: {channel},

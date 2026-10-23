@@ -826,6 +826,10 @@ public class SettingsState {
         if (ctrlScanning != on) toggleScan();
     }
 
+    public void ctrlTransact(int code, int arg) {
+        if (ctrlLink.bound()) ctrlLink.debugTransact(code, arg);
+    }
+
     private void unbindAll() {
         ctrlLink.unbindAll();
         bump();

@@ -306,6 +306,10 @@ public class ShellBridge {
 
     public void ctrlScan(boolean on) { st.ctrlScan(on); }
 
+    public void ctrlTransact(int code, int arg) {
+        st.ctrlTransact(code, arg);
+    }
+
     public void wifiJoin(String ssid, int sec, String pw) {
         st.wifiJoin(ssid, sec, pw);
     }

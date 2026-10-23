@@ -126,12 +126,30 @@ static void debugCtrlScanHook(HudEngine* e) {
         callCtx(e, "debugCtrlScan", "(I)V", atoi(tb) != 0 ? 1 : 0);
 }
 
+// setprop debug.vrhome.ctrltransact <code>,<arg> fires a raw binder
+// transaction at the controller link service and logs the reply ints
+static void debugCtrlTransactHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    int code, arg;
+    if (e->ctx && propChanged("debug.vrhome.ctrltransact", last, tb)
+            && sscanf(tb, "%d,%d", &code, &arg) == 2) {
+        JNIEnv* env = threadEnv(e->vm);
+        jclass c = env->GetObjectClass(e->ctx);
+        jmethodID m = env->GetMethodID(c, "debugCtrlTransact", "(II)V");
+        if (m) env->CallVoidMethod(e->ctx, m, code, arg);
+        if (env->ExceptionCheck()) env->ExceptionClear();
+        env->DeleteLocalRef(c);
+    }
+}
+
 void runDebugHooks(HudEngine* e) {
     debugLaunchHook(e);
     debugTapHook(e);
     debugSummonHook(e);
     debugHoldHook(e);
     debugCtrlScanHook(e);
+    debugCtrlTransactHook(e);
     debugDockTapHook(e);
     debugDockCloseHook(e);
     debugDockPinHook(e);

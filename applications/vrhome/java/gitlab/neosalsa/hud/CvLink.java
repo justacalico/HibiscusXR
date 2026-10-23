@@ -190,6 +190,16 @@ final class CvLink implements CtrlService {
         }
     }
 
+    @Override public void debugTransact(int code, int arg) {
+        if (svc == null) return;
+        Parcel r = transact(code, arg);
+        if (r == null) { Log.i(TAG, "tr " + code + " -> null"); return; }
+        StringBuilder sb = new StringBuilder();
+        while (r.dataAvail() >= 4) sb.append(r.readInt()).append(' ');
+        Log.i(TAG, "tr " + code + " -> " + sb);
+        r.recycle();
+    }
+
     @Override public void unbindAll() {
         if (svc == null) return;
         Parcel r = transact(TR_UNBIND);

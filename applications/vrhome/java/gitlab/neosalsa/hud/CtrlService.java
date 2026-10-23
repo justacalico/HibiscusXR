@@ -27,4 +27,5 @@ interface CtrlService {
     void setPairing(boolean on);
     void unbindAll();
     void poke();
+    default void debugTransact(int code, int arg) {}
 }

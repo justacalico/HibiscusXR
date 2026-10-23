@@ -13,6 +13,7 @@
 #include "../hud/engine.h"
 #include "../input/input.h"
 #include "../input/keys.h"
+#include "../render/icons.h"
 #include "../render/resources.h"
 
 #include <GLFW/glfw3.h>
@@ -121,6 +122,7 @@ int main(int argc, char** argv) {
     hud.dockAnchored = false;
     hud.summonMs = dashNowMs();
     if (initGlResources(&hud) != 0) return 1;
+    loadGlyphs(&hud);
 
     const int wfd = wl_event_loop_get_fd(
         wl_display_get_event_loop(comp->dpy));

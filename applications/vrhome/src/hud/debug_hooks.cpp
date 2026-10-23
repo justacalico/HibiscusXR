@@ -117,11 +117,21 @@ static void debugSysMsgHook(HudEngine* e) {
         sysMsgBtnClick(e, atoi(tb));
 }
 
+// setprop debug.vrhome.ctrlscan <n> toggles the controller link scan, same
+// as tapping the settings card's scan row
+static void debugCtrlScanHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    if (e->ctx && propChanged("debug.vrhome.ctrlscan", last, tb))
+        callCtx(e, "debugCtrlScan", "()V");
+}
+
 void runDebugHooks(HudEngine* e) {
     debugLaunchHook(e);
     debugTapHook(e);
     debugSummonHook(e);
     debugHoldHook(e);
+    debugCtrlScanHook(e);
     debugDockTapHook(e);
     debugDockCloseHook(e);
     debugDockPinHook(e);

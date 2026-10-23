@@ -142,9 +142,15 @@ public class SettingsState {
             new CtrlService.Listener() {
         @Override public void onChange() {
             ctrlPoll.run();
+            if (pendingScan && ctrlLink.bound()) {
+                pendingScan = false;
+                toggleScan();
+            }
             bump();
         }
     };
+
+    private volatile boolean pendingScan;
 
     private final BroadcastReceiver rx = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
@@ -806,6 +812,15 @@ public class SettingsState {
             main.postDelayed(ctrlScanOff, SCAN_TIMEOUT_MS);
         }
         bump();
+    }
+
+    // fires the scan toggle even with the card closed: the bind is async,
+    // so when the service is not up yet the pending flag lets the attach
+    // listener run it the moment the binder lands
+    public void ctrlScanNow() {
+        if (ctrlLink.bound()) { toggleScan(); return; }
+        pendingScan = true;
+        ctrlLink.attach(ctrlListener);
     }
 
     private void unbindAll() {

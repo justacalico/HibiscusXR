@@ -437,6 +437,12 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         });
     }
 
+    // debug.vrhome.ctrlscan drives the settings card's controller scan
+    // toggle so pairing is drivable from adb without a working controller
+    public void debugCtrlScan() {
+        if (bridge != null) bridge.ctrlScanNow();
+    }
+
     // HudView.KeySink: keys that reached the focused HUD window
     @Override public boolean onKey(int code, int action, int repeat) {
         if (code == K_SUMMON) return true;   // the monitor owns this one

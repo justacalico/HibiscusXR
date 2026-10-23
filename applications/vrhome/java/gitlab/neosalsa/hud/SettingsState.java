@@ -144,7 +144,7 @@ public class SettingsState {
             ctrlPoll.run();
             if (pendingScan && ctrlLink.bound()) {
                 pendingScan = false;
-                toggleScan();
+                ctrlScan(true);
             }
             bump();
         }
@@ -814,13 +814,16 @@ public class SettingsState {
         bump();
     }
 
-    // fires the scan toggle even with the card closed: the bind is async,
+    // drives the scan state even with the card closed: the bind is async,
     // so when the service is not up yet the pending flag lets the attach
     // listener run it the moment the binder lands
-    public void ctrlScanNow() {
-        if (ctrlLink.bound()) { toggleScan(); return; }
-        pendingScan = true;
-        ctrlLink.attach(ctrlListener);
+    public void ctrlScan(boolean on) {
+        if (!ctrlLink.bound()) {
+            pendingScan = on;
+            if (on) ctrlLink.attach(ctrlListener);
+            return;
+        }
+        if (ctrlScanning != on) toggleScan();
     }
 
     private void unbindAll() {

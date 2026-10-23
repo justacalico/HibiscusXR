@@ -304,7 +304,7 @@ public class ShellBridge {
 
     public void settingsToggleScan() { st.toggleScan(); }
 
-    public void ctrlScanNow() { st.ctrlScanNow(); }
+    public void ctrlScan(boolean on) { st.ctrlScan(on); }
 
     public void wifiJoin(String ssid, int sec, String pw) {
         st.wifiJoin(ssid, sec, pw);

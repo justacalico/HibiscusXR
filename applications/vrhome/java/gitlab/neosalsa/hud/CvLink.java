@@ -66,6 +66,13 @@ final class CvLink implements CtrlService {
                 svc = null;
                 if (listener != null) listener.onChange();
             }
+            @Override public void onBindingDied(ComponentName n) {
+                svc = null;
+                if (listener != null) listener.onChange();
+            }
+            @Override public void onNullBinding(ComponentName n) {
+                svc = null;
+            }
         };
         try {
             Intent i = new Intent(ACTION);

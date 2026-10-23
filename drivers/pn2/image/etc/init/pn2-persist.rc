@@ -1,0 +1,8 @@
+# libCVController.so hardcodes /mnt/vendor/persist/ndi/* for controller
+# bind state, IMU calibration and station data. Stock init created that
+# link; without it every station query falls back to an empty path and
+# the pair state never resolves.
+
+on early-init
+    mkdir /mnt/vendor 0771 root root
+    symlink /persist /mnt/vendor/persist

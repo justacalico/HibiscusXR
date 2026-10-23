@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.Parcel;
+import android.os.PowerManager;
 import android.util.Log;
 
 /*
@@ -41,6 +42,7 @@ final class CvLink implements CtrlService {
     private IBinder svc;
     private ServiceConnection conn;
     private Listener listener;
+    private PowerManager.WakeLock wakeLock;
 
     private CvLink(Context c) { ctx = c; }
 
@@ -66,8 +68,11 @@ final class CvLink implements CtrlService {
                 svc = null;
                 if (listener != null) listener.onChange();
             }
+            // a dead binding never reconnects on its own: drop the conn so
+            // the next attach() binds fresh instead of returning early on a
+            // zombie connection
             @Override public void onBindingDied(ComponentName n) {
-                svc = null;
+                releaseConn();
                 if (listener != null) listener.onChange();
             }
             @Override public void onNullBinding(ComponentName n) {
@@ -77,7 +82,8 @@ final class CvLink implements CtrlService {
         try {
             Intent i = new Intent(ACTION);
             i.setPackage(PKG);
-            ctx.bindService(i, conn, Context.BIND_AUTO_CREATE);
+            if (ctx.bindService(i, conn, Context.BIND_AUTO_CREATE))
+                holdDisplay();
         } catch (Throwable t) {
             conn = null;
             Log.w(TAG, "ctrl bind failed", t);
@@ -85,10 +91,32 @@ final class CvLink implements CtrlService {
     }
 
     @Override public void detach() {
-        if (conn == null) return;
-        try { ctx.unbindService(conn); } catch (Throwable ignored) {}
-        conn = null;
+        releaseConn();
+    }
+
+    private void releaseConn() {
         svc = null;
+        if (conn != null) {
+            try { ctx.unbindService(conn); } catch (Throwable ignored) {}
+            conn = null;
+        }
+        if (wakeLock != null && wakeLock.isHeld()) wakeLock.release();
+    }
+
+    // the CV service powers its station on SCREEN_ON; nothing keeps a
+    // head-worn build from sleeping, so while the link is wanted we hold
+    // the display up - same end state stock's session lock produces
+    private void holdDisplay() {
+        if (wakeLock == null) {
+            PowerManager pm =
+                    (PowerManager) ctx.getSystemService(Context.POWER_SERVICE);
+            wakeLock = pm.newWakeLock(
+                    PowerManager.SCREEN_BRIGHT_WAKE_LOCK
+                            | PowerManager.ACQUIRE_CAUSES_WAKEUP,
+                    "vrhud:ctrl");
+            wakeLock.setReferenceCounted(false);
+        }
+        if (!wakeLock.isHeld()) wakeLock.acquire();
     }
 
     @Override public boolean bound() { return svc != null; }

@@ -11,6 +11,7 @@ linked line per MR no matter how many commits it carried.
 - [vrhome: 关闭窗口加收缩吸入动画](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/209) (!209)
 - [网站刷机指南补 unxz 解压步骤](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/210) (!210)
 - [网站构建下载隐藏没有构建的通道](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/211) (!211)
+- [修复控制器配对的 binder 调用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/212) (!212)
 
 ## [alpha-v2026.10.21-r23] - 2026-10-21
 - [修复网站测试,解除页面部署阻塞](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/157) (!157)

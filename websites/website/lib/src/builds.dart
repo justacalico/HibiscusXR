@@ -110,3 +110,20 @@ BuildRelease? latestInChannel(List<BuildRelease> all, BuildChannel ch) {
   final builds = releasesInChannel(all, ch);
   return builds.isEmpty ? null : builds.first;
 }
+
+/// Channels that have at least one release, in tab order. Empty lanes
+/// get no selector button.
+List<BuildChannel> populatedChannels(List<BuildRelease> all) => [
+      for (final ch in BuildChannel.values)
+        if (all.any((r) => r.channel == ch)) ch,
+    ];
+
+/// The channel the selector shows: [selected] while its lane has
+/// builds, otherwise the first populated lane (or [selected] back when
+/// every lane is empty).
+BuildChannel channelOrFallback(
+    List<BuildRelease> all, BuildChannel selected) {
+  final populated = populatedChannels(all);
+  if (populated.isEmpty || populated.contains(selected)) return selected;
+  return populated.first;
+}

@@ -198,6 +198,60 @@ void main() {
     });
   });
 
+  group('populatedChannels', () {
+    final releases = parseReleases([
+      {
+        'tag_name': 'alpha-v2026.09.15-r7',
+        'created_at': '2026-09-15T17:00:00.000Z',
+        'assets': {'links': []},
+      },
+      {
+        'tag_name': 'alpha-v2026.09.14-r3',
+        'created_at': '2026-09-14T10:00:00.000Z',
+        'assets': {'links': []},
+      },
+      {
+        'tag_name': 'v2026.09.15-r6',
+        'created_at': '2026-09-15T16:00:00.000Z',
+        'assets': {'links': []},
+      },
+    ]);
+
+    test('lists only lanes with builds, in tab order', () {
+      expect(populatedChannels(releases),
+          [BuildChannel.release, BuildChannel.alpha]);
+    });
+
+    test('empty when there are no builds', () {
+      expect(populatedChannels(const []), isEmpty);
+    });
+  });
+
+  group('channelOrFallback', () {
+    final releases = parseReleases([
+      {
+        'tag_name': 'beta-v2026.09.15-r5',
+        'created_at': '2026-09-15T15:00:00.000Z',
+        'assets': {'links': []},
+      },
+    ]);
+
+    test('keeps the selected channel while its lane has builds', () {
+      expect(channelOrFallback(releases, BuildChannel.beta),
+          BuildChannel.beta);
+    });
+
+    test('falls back to the first populated lane', () {
+      expect(channelOrFallback(releases, BuildChannel.release),
+          BuildChannel.beta);
+    });
+
+    test('returns selected when every lane is empty', () {
+      expect(channelOrFallback(const [], BuildChannel.alpha),
+          BuildChannel.alpha);
+    });
+  });
+
   test('parseReleases handles missing name and assets', () {
     final releases = parseReleases([
       {'tag_name': 'v2026.01.01-r1', 'created_at': '2026-01-01T00:00:00.000Z'},

@@ -1,6 +1,7 @@
 #include "input.h"
 
 #include "keys.h"
+#include "../anim/anim.h"
 #include "../dock/dock.h"
 #include "../dock/layout.h"
 #include "../grid/grid.h"
@@ -83,6 +84,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->shade.pressZone = SHZONE_NONE;
             e->shade.pressKey.clear();
             e->shade.scrollHeld = false;
+            e->shade.scrollVel = 0.0f;
             e->notifPress = -1;
             e->notifPressZone = NZONE_NONE;
             e->shelfPress = -1;
@@ -96,6 +98,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->grid.press = -1;
             e->grid.pressZone = GZONE_NONE;
             e->grid.scrollHeld = false;
+            e->grid.scrollVel = 0.0f;
             e->quick.press = -1;
             e->quick.pressZone = QZONE_NONE;
             e->quick.slideHeld = -1;
@@ -293,6 +296,9 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
             e->moveHeld = false;
             e->kbd.moveHeld = false;
             e->grid.scrollHeld = false;
+            // a drag released mid-flick keeps coasting off its tracked
+            // speed; a held-but-still release stops dead
+            e->grid.scrollVel = flingKick(e->grid.scrollVel);
             if (e->grid.pressZone == GZONE_ITEM ||
                     e->grid.pressZone == GZONE_CLOSE ||
                     e->grid.pressZone == GZONE_DOTS) {
@@ -373,6 +379,8 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 e->shade.pressZone = SHZONE_NONE;
                 e->shade.pressKey.clear();
                 e->shade.scrollHeld = false;
+                // same flick-release rule the grid's scroll gets
+                e->shade.scrollVel = flingKick(e->shade.scrollVel);
             } else if (e->kbd.pressed) {
                 // key tap: the UP lands where the DOWN did - the aim may
                 // have drifted off the key while the button was held
@@ -567,8 +575,13 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 // sees motion events on-device (NOT_TOUCHABLE), so this arrives from the
 // desktop harness and the debug tools
 void hudScroll(HudEngine* e, float delta) {
-    if (e->set.shown) { setScroll(e, delta); return; }
+    if (e->set.shown) {
+        e->set.scrollVel = 0.0f;
+        setScroll(e, delta);
+        return;
+    }
     if (e->shade.shown) {
+        e->shade.scrollVel = 0.0f;
         e->shade.scroll = shadeScrollBy(e->shade.scroll, delta,
                                         (int)e->notifsAll.size());
         return;
@@ -581,6 +594,7 @@ void hudScroll(HudEngine* e, float delta) {
         e->grid.grpOpen = false;
         return;
     }
+    e->grid.scrollVel = 0.0f;
     e->grid.scroll = gridScrollBy(e->grid.scroll, delta,
                                   (int)e->grid.items.size());
 }
@@ -674,18 +688,24 @@ void moveTick(HudEngine* e) {
         }
     }
     // a held drag on the grid's body scrolls it: the card-local v delta
-    // from the grab slides the cells
+    // from the grab slides the cells. The frame's scroll delta folds into
+    // scrollVel so the release can read a flick off it - a stuck or
+    // edge-pinned drag decays toward 0 like a finger pressing the list
     if (e->grid.scrollHeld && e->confirmHeld && e->grid.shown) {
         float c[3], r[3], up[3];
         gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
                    c, r, up);
         float u, v, t;
+        const float prev = e->grid.scroll;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                     kGridHW, kGridHH, &u, &v, &t)) {
             e->grid.scroll = gridClampScroll(
                 e->grid.grabScroll + (v - e->grid.grabV) * kGridHH,
                 (int)e->grid.items.size());
         }
+        e->grid.scrollVel = flingTrack(
+            e->grid.scrollVel, e->grid.scroll - prev,
+            e->animMs ? (float)(e->frameMs - e->animMs) : 0.0f);
     }
     // a held press on a quick-panel slider keeps the value tracking the
     // aim's card-local u until the release
@@ -699,18 +719,22 @@ void moveTick(HudEngine* e) {
             quickSliderTo(e, e->quick.slideHeld, u);
     }
     // a held drag on the shade scrolls the row list: the card-local v
-    // delta from the grab slides the rows
+    // delta from the grab slides the rows, tracked like the grid's
     if (e->shade.scrollHeld && e->confirmHeld && e->shade.shown) {
         float c[3], r[3], up[3];
         shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
                     c, r, up);
         float u, v, t;
+        const float prev = e->shade.scroll;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                     kShadeHW, kShadeHH, &u, &v, &t)) {
             e->shade.scroll = shadeClampScroll(
                 e->shade.grabScroll + (v - e->shade.grabV) * kShadeHH,
                 (int)e->notifsAll.size());
         }
+        e->shade.scrollVel = flingTrack(
+            e->shade.scrollVel, e->shade.scroll - prev,
+            e->animMs ? (float)(e->frameMs - e->animMs) : 0.0f);
     }
     if (e->kbd.moveHeld) {
         e->kbd.offYaw = wrapPi(e->kbd.grabOffYaw +

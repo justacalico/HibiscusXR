@@ -30,6 +30,7 @@ void setOpen(HudEngine* e, int section) {
     e->set.shown = true;
     e->set.dlg = DLG_NONE;
     e->set.scroll = 0.0f;
+    e->set.scrollVel = 0.0f;
     e->set.rowsDirty = true;
     e->set.snapVer = -1;
     e->grid.shown = false;
@@ -42,6 +43,7 @@ void setClose(HudEngine* e) {
     e->set.shown = false;
     e->set.dlg = DLG_NONE;
     e->set.scrollHeld = false;
+    e->set.scrollVel = 0.0f;
     e->set.slideHeld = -1;
     if (e->backend) e->backend->settingsClose();
 }
@@ -255,6 +257,7 @@ void setPress(HudEngine* e) {
         st.scrollHeld = st.zone == SZONE_BODY || st.zone == SZONE_ROW;
         st.grabV = st.v;
         st.grabScroll = st.scroll;
+        st.scrollVel = 0.0f;    // a fresh grab kills a running coast
     }
 }
 
@@ -268,6 +271,8 @@ void setRelease(HudEngine* e) {
     st.pressAux = -1;
     st.slideHeld = -1;
     st.scrollHeld = false;
+    // a drag released mid-flick keeps coasting off its tracked speed
+    st.scrollVel = flingKick(st.scrollVel);
     if (!same) return;
     switch (pz) {
     case SZONE_CLOSE:
@@ -277,6 +282,7 @@ void setRelease(HudEngine* e) {
         if (pi != st.section) {
             st.section = pi;
             st.scroll = 0.0f;
+            st.scrollVel = 0.0f;
             st.rowsDirty = true;
             if (e->backend) e->backend->settingsSection(pi);
         }
@@ -328,9 +334,15 @@ void setDragTick(HudEngine* e) {
         st.grabV = v;
         st.grabScroll = st.scroll;
     }
-    if (st.scrollHeld)
+    if (st.scrollHeld) {
+        const float prev = st.scroll;
         st.scroll = setClampScroll(st, st.grabScroll +
                                    (v - st.grabV) * kSetHH);
+        // the frame's scroll delta feeds the flick's release velocity
+        st.scrollVel = flingTrack(
+            st.scrollVel, st.scroll - prev,
+            e->animMs ? (float)(e->frameMs - e->animMs) : 0.0f);
+    }
     if (st.slideHeld >= 0 && st.slideHeld < (int)st.rows.size()) {
         const SetRow& row = st.rows[st.slideHeld];
         if (row.kind == RK_SLIDER) {

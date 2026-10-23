@@ -295,6 +295,19 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
         e->set.openT = stepT(e->set.openT, e->set.shown, dtMs, kSetMs);
         e->shade.openT = stepT(e->shade.openT, e->shade.shown, dtMs,
                                kShadeMs);
+        // released scroll drags coast on their tracked speed; a held one
+        // belongs to the drag ticks above and stays put here
+        if (!e->grid.scrollHeld)
+            e->grid.scroll = flingScroll(e->grid.scroll,
+                &e->grid.scrollVel, dtMs,
+                gridScrollMax((int)e->grid.items.size()));
+        if (!e->shade.scrollHeld)
+            e->shade.scroll = flingScroll(e->shade.scroll,
+                &e->shade.scrollVel, dtMs,
+                shadeScrollMax((int)e->notifsAll.size()));
+        if (!e->set.scrollHeld)
+            e->set.scroll = flingScroll(e->set.scroll, &e->set.scrollVel,
+                                        dtMs, setScrollMax(e->set));
     }
     updatePanels(e);
     kbdTick(e);

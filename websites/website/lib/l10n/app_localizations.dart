@@ -1723,6 +1723,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it.'**
   String get flashdocsVmdAdbNote;
+
+  /// No description provided for @flashdocsShellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shell'**
+  String get flashdocsShellTitle;
+
+  /// No description provided for @flashdocsEnvNav.
+  ///
+  /// In en, this message translates to:
+  /// **'Home environment'**
+  String get flashdocsEnvNav;
+
+  /// No description provided for @flashdocsEnvTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The home environment'**
+  String get flashdocsEnvTitle;
+
+  /// No description provided for @flashdocsEnvIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The scene you stand in while windows and menus float in front of you: the passthrough camera feed, the built-in sky dome, or a custom pack. Picking, installing and removing all happens in Settings on the headset.'**
+  String get flashdocsEnvIntro;
+
+  /// No description provided for @flashdocsEnvPickTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an environment'**
+  String get flashdocsEnvPickTitle;
+
+  /// No description provided for @flashdocsEnvPickBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings and go to Home environment. The list starts with Passthrough - the live view from the tracking cameras - and Built-in - the default sky dome and floor grid - then every installed pack. Tap a row to switch; the change applies live and the active pick gets a check mark. With nothing picked the default is Passthrough.'**
+  String get flashdocsEnvPickBody;
+
+  /// No description provided for @flashdocsEnvInstallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Install a custom pack'**
+  String get flashdocsEnvInstallTitle;
+
+  /// No description provided for @flashdocsEnvInstallBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A pack is one zip named after its environment id: letters, digits, dots, dashes and underscores, 64 characters at most. Push it to the envs directory and it appears in the list:'**
+  String get flashdocsEnvInstallBody;
+
+  /// No description provided for @flashdocsEnvInstallCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'adb push my-space.zip /data/local/tmp/hibiscus/envs/'**
+  String get flashdocsEnvInstallCmd1;
+
+  /// No description provided for @flashdocsEnvInstallNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The id is the file name minus .zip, so my-space.zip lists as \"my-space\". Keep the zip under 64 MB - anything larger is refused at load.'**
+  String get flashdocsEnvInstallNote;
+
+  /// No description provided for @flashdocsEnvFormatTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pack format'**
+  String get flashdocsEnvFormatTitle;
+
+  /// No description provided for @flashdocsEnvFormatBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The only required entry is map.obj: plain Wavefront geometry, triangulated on load. v lines may carry a vertex colour (v x y z r g b, 0 to 1); uncoloured exports get a neutral base, and every face bakes a fixed key light so unlit maps still read as geometry. Name an object or group SpawnUser and its faces are not drawn - their bounding box marks where you stand, and the world shifts so the box\'s bottom centre lands on the floor under you. Maps without a SpawnUser part fall back to their whole bounds. A meta.ini marks the file as a pack for error reporting; map.png and map.json ride along for tooling.'**
+  String get flashdocsEnvFormatBody;
+
+  /// No description provided for @flashdocsEnvFixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix a broken pack'**
+  String get flashdocsEnvFixTitle;
+
+  /// No description provided for @flashdocsEnvFixBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A pack the shell cannot use says so in its row - \"Not a readable zip\" or \"No map.obj inside\" - and stays untappable. When a selected pack fails to load the scene drops back to the built-in sky instead of leaving you in the void, and the loader retries every few seconds: push a fixed zip under the same id and it recovers without a reboot.'**
+  String get flashdocsEnvFixBody;
+
+  /// No description provided for @flashdocsEnvRemoveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove a pack'**
+  String get flashdocsEnvRemoveTitle;
+
+  /// No description provided for @flashdocsEnvRemoveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the trash icon on a pack\'s row and confirm. The zip is deleted from the headset; the built-in picks cannot be removed.'**
+  String get flashdocsEnvRemoveBody;
+
+  /// No description provided for @flashdocsEnvDebugTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Override for tuning'**
+  String get flashdocsEnvDebugTitle;
+
+  /// No description provided for @flashdocsEnvDebugBody.
+  ///
+  /// In en, this message translates to:
+  /// **'While building a pack, the debug.vrhome.env property overrides the saved pick, handy for A/B checks without opening Settings:'**
+  String get flashdocsEnvDebugBody;
+
+  /// No description provided for @flashdocsEnvDebugCmd1.
+  ///
+  /// In en, this message translates to:
+  /// **'adb shell setprop debug.vrhome.env my-space'**
+  String get flashdocsEnvDebugCmd1;
+
+  /// No description provided for @flashdocsEnvDebugCmd2.
+  ///
+  /// In en, this message translates to:
+  /// **'adb shell setprop debug.vrhome.env builtin'**
+  String get flashdocsEnvDebugCmd2;
+
+  /// No description provided for @flashdocsEnvDebugNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Takes passthrough, builtin or an environment id. The saved pick lives in persist.hibiscus.environment, mirrored from the Settings list.'**
+  String get flashdocsEnvDebugNote;
 }
 
 class _AppLocalizationsDelegate

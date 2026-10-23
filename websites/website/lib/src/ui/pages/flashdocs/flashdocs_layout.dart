@@ -94,6 +94,20 @@ class _SideNav extends StatelessWidget {
               depth: 1,
             ),
         ],
+        const SizedBox(height: 20),
+        Text(
+          l10n.flashdocsShellTitle.toUpperCase(),
+          style: context.text.labelSmall!.copyWith(
+            letterSpacing: 1.4,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        _SideItem(
+          label: l10n.flashdocsEnvNav,
+          path: Routes.flashdocsEnv,
+          active: active == Routes.flashdocsEnv,
+        ),
       ],
     );
   }

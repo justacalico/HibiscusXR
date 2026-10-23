@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -928,4 +929,79 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get flashdocsVmdAdbNote =>
       'Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it.';
+
+  @override
+  String get flashdocsShellTitle => 'Shell';
+
+  @override
+  String get flashdocsEnvNav => 'Home environment';
+
+  @override
+  String get flashdocsEnvTitle => 'The home environment';
+
+  @override
+  String get flashdocsEnvIntro =>
+      'The scene you stand in while windows and menus float in front of you: the passthrough camera feed, the built-in sky dome, or a custom pack. Picking, installing and removing all happens in Settings on the headset.';
+
+  @override
+  String get flashdocsEnvPickTitle => 'Pick an environment';
+
+  @override
+  String get flashdocsEnvPickBody =>
+      'Open Settings and go to Home environment. The list starts with Passthrough - the live view from the tracking cameras - and Built-in - the default sky dome and floor grid - then every installed pack. Tap a row to switch; the change applies live and the active pick gets a check mark. With nothing picked the default is Passthrough.';
+
+  @override
+  String get flashdocsEnvInstallTitle => 'Install a custom pack';
+
+  @override
+  String get flashdocsEnvInstallBody =>
+      'A pack is one zip named after its environment id: letters, digits, dots, dashes and underscores, 64 characters at most. Push it to the envs directory and it appears in the list:';
+
+  @override
+  String get flashdocsEnvInstallCmd1 =>
+      'adb push my-space.zip /data/local/tmp/hibiscus/envs/';
+
+  @override
+  String get flashdocsEnvInstallNote =>
+      'The id is the file name minus .zip, so my-space.zip lists as \"my-space\". Keep the zip under 64 MB - anything larger is refused at load.';
+
+  @override
+  String get flashdocsEnvFormatTitle => 'Pack format';
+
+  @override
+  String get flashdocsEnvFormatBody =>
+      'The only required entry is map.obj: plain Wavefront geometry, triangulated on load. v lines may carry a vertex colour (v x y z r g b, 0 to 1); uncoloured exports get a neutral base, and every face bakes a fixed key light so unlit maps still read as geometry. Name an object or group SpawnUser and its faces are not drawn - their bounding box marks where you stand, and the world shifts so the box\'s bottom centre lands on the floor under you. Maps without a SpawnUser part fall back to their whole bounds. A meta.ini marks the file as a pack for error reporting; map.png and map.json ride along for tooling.';
+
+  @override
+  String get flashdocsEnvFixTitle => 'Fix a broken pack';
+
+  @override
+  String get flashdocsEnvFixBody =>
+      'A pack the shell cannot use says so in its row - \"Not a readable zip\" or \"No map.obj inside\" - and stays untappable. When a selected pack fails to load the scene drops back to the built-in sky instead of leaving you in the void, and the loader retries every few seconds: push a fixed zip under the same id and it recovers without a reboot.';
+
+  @override
+  String get flashdocsEnvRemoveTitle => 'Remove a pack';
+
+  @override
+  String get flashdocsEnvRemoveBody =>
+      'Tap the trash icon on a pack\'s row and confirm. The zip is deleted from the headset; the built-in picks cannot be removed.';
+
+  @override
+  String get flashdocsEnvDebugTitle => 'Override for tuning';
+
+  @override
+  String get flashdocsEnvDebugBody =>
+      'While building a pack, the debug.vrhome.env property overrides the saved pick, handy for A/B checks without opening Settings:';
+
+  @override
+  String get flashdocsEnvDebugCmd1 =>
+      'adb shell setprop debug.vrhome.env my-space';
+
+  @override
+  String get flashdocsEnvDebugCmd2 =>
+      'adb shell setprop debug.vrhome.env builtin';
+
+  @override
+  String get flashdocsEnvDebugNote =>
+      'Takes passthrough, builtin or an environment id. The saved pick lives in persist.hibiscus.environment, mirrored from the Settings list.';
 }

@@ -16,6 +16,7 @@ void main() {
       Routes.faq,
       Routes.about,
       Routes.flashdocs,
+      Routes.flashdocsEnv,
       Routes.flashdocsDevice('pico-neo-2'),
       Routes.flashdocsGuide('pico-neo-2', 'linux'),
     ];

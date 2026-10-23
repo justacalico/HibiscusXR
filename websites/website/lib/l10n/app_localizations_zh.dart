@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -867,4 +868,79 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get flashdocsVmdAdbNote =>
       '局域网里谁也看不到这个 guest——只有 15555(adb)和 17340(cted)两个回环转发口能进去。';
+
+  @override
+  String get flashdocsShellTitle => '系统界面';
+
+  @override
+  String get flashdocsEnvNav => '主环境';
+
+  @override
+  String get flashdocsEnvTitle => '主环境';
+
+  @override
+  String get flashdocsEnvIntro =>
+      '主环境就是窗口和菜单浮在你面前时你所处的场景:透视相机画面、内置天空穹顶,或者自定义环境包。环境的选取、安装和删除都在头显的\"设置\"里完成。';
+
+  @override
+  String get flashdocsEnvPickTitle => '选择环境';
+
+  @override
+  String get flashdocsEnvPickBody =>
+      '打开\"设置\",进入\"主环境\"。列表最前面是\"透视\"(追踪相机的实时画面)和\"内置\"(默认的天空穹顶与地板网格),之后是已安装的环境包。点按某一行即可切换,改动即时生效,当前选中的环境带对勾。什么都没选时默认是透视。';
+
+  @override
+  String get flashdocsEnvInstallTitle => '安装自定义环境包';
+
+  @override
+  String get flashdocsEnvInstallBody =>
+      '环境包就是一个以环境 id 命名的 zip:id 只能包含字母、数字、点、横线和下划线,最长 64 个字符。把它推到 envs 目录就会出现在列表里:';
+
+  @override
+  String get flashdocsEnvInstallCmd1 =>
+      'adb push my-space.zip /data/local/tmp/hibiscus/envs/';
+
+  @override
+  String get flashdocsEnvInstallNote =>
+      'id 就是去掉 .zip 的文件名,所以 my-space.zip 在列表里显示为\"my-space\"。zip 不能超过 64 MB,更大的包加载时会被拒绝。';
+
+  @override
+  String get flashdocsEnvFormatTitle => '环境包格式';
+
+  @override
+  String get flashdocsEnvFormatBody =>
+      '唯一必需的条目是 map.obj:普通的 Wavefront 几何体,加载时三角化。v 行可以带顶点色(v x y z r g b,取值 0 到 1);没有颜色的导出会拿到一个中性基色,而且每个面都会烘焙一个固定主光源,无光照的地图也看得出几何结构。把某个 object 或 group 命名为 SpawnUser,它的面不会被绘制:它的包围盒用来标记你站的位置,世界会平移使包围盒的底部中心落在你脚下的地面上。没有 SpawnUser 部分的地图退而求其次用整体包围盒。meta.ini 用来标记这是个环境包以便报错;map.png 和 map.json 留给工具链备用。';
+
+  @override
+  String get flashdocsEnvFixTitle => '修复坏包';
+
+  @override
+  String get flashdocsEnvFixBody =>
+      '无法使用的包会在行内标出原因:\"不是可读的 zip\"或\"包里没有 map.obj\",这一行点不动。如果选中的包加载失败,场景会退回内置天空,而不是把你丢进虚空;加载器每隔几秒重试一次,用同一个 id 推一个修好的 zip,不用重启就能恢复。';
+
+  @override
+  String get flashdocsEnvRemoveTitle => '删除环境包';
+
+  @override
+  String get flashdocsEnvRemoveBody =>
+      '点按包那一行的垃圾桶图标并确认,zip 就会从头显上删除;内置的两个选项不能删除。';
+
+  @override
+  String get flashdocsEnvDebugTitle => '调试用覆盖';
+
+  @override
+  String get flashdocsEnvDebugBody =>
+      '做包的时候可以用 debug.vrhome.env 属性覆盖保存的选项,不用打开\"设置\"就能对比:';
+
+  @override
+  String get flashdocsEnvDebugCmd1 =>
+      'adb shell setprop debug.vrhome.env my-space';
+
+  @override
+  String get flashdocsEnvDebugCmd2 =>
+      'adb shell setprop debug.vrhome.env builtin';
+
+  @override
+  String get flashdocsEnvDebugNote =>
+      '取值 passthrough、builtin 或环境 id。保存的选项在 persist.hibiscus.environment 里,由设置界面同步。';
 }

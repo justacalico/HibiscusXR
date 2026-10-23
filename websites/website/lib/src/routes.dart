@@ -12,6 +12,10 @@ abstract final class Routes {
   static const about = '/about';
   static const flashdocs = '/flashdocs';
 
+  /// Home-environment guide under the docs - a literal segment, so it
+  /// sits next to the device pages without reading as a device slug.
+  static const flashdocsEnv = '$flashdocs/home-environment';
+
   /// Device page under the flashing docs, e.g. /flashdocs/pico-neo-2.
   static String flashdocsDevice(String device) => '$flashdocs/$device';
 

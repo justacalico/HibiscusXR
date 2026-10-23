@@ -692,4 +692,12 @@ void testLayout() {
     CHECK(minimizedIndex(ps, "com.y.other") == -1);
     ps[0].minimized = false;
     CHECK(minimizedIndex(ps, "com.x.app") == -1);
+
+    // a closing window is dead to the lookups too: a relaunch of its pkg
+    // opens a fresh panel rather than focusing the corpse
+    CHECK(panelIndex(ps, "com.x.app") == 0);
+    ps[0].closing = true;
+    CHECK(panelIndex(ps, "com.x.app") == -1);
+    ps[0].minimized = true;
+    CHECK(minimizedIndex(ps, "com.x.app") == -1);
 }

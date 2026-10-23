@@ -31,7 +31,7 @@ static bool panelVis(HudEngine* e, int i, const float shc[3],
                      const float shr[3], float c[3], float r[3],
                      float up[3], float* sc, float* a) {
     Panel& p = e->panels[i];
-    if (p.minT >= 1.0f) return false;
+    if (p.minT >= 1.0f || p.closeT >= 1.0f) return false;
     panelCenter(p, e->ringPos, c, r, up);
     const float st = progT(p.bornMs, e->frameMs, kSpawnMs);
     *sc = spawnScale(st);
@@ -45,6 +45,18 @@ static bool panelVis(HudEngine* e, int i, const float shc[3],
         lerp3(c, ic, mt, c);
         *sc *= minScale(mt);
         *a *= minAlpha(mt);
+    }
+    if (p.closeT > 0.0f) {
+        // close flight: the window dives onto its own pill spot while
+        // shrinking out, the whole chrome assembly collapsing with it -
+        // the macOS suck, aimed at the bar under the window
+        const float ct = closeEase(p.closeT);
+        const float drp = pillDrop(panelHH(p));
+        const float tc[3] = {c[0] - up[0] * drp, c[1] - up[1] * drp,
+                             c[2] - up[2] * drp};
+        lerp3(c, tc, ct, c);
+        *sc *= closeScale(p.closeT);
+        *a *= closeAlpha(p.closeT);
     }
     return true;
 }

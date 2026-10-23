@@ -496,11 +496,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                         continue;
                     if (e->pressZone == ZONE_CLOSE) {
                         LOGI("bar close disp %d", p.displayId);
-                        if (e->backend && p.displayId >= 0) {
-                            e->backend->removeTasksOnDisplay(
-                                                p.displayId);
-                        }
-                        closePanel(e, i);
+                        requestClose(e, i);
                     } else if (e->pressZone == ZONE_MIN) {
                         LOGI("bar minimize disp %d", p.displayId);
                         p.minimized = true;
@@ -551,13 +547,8 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
         // over a covered app the service consumes BACK itself to dismiss
         // the menu, so closing only ever runs in home space
         if (dropTopOverlay(e)) return;
-        if (e->backend && !e->panels.empty()) {
-            Panel& p = e->panels.back();
-            if (p.displayId >= 0) {
-                e->backend->removeTasksOnDisplay( p.displayId);
-            }
-            closePanel(e, (int)e->panels.size() - 1);
-        }
+        if (e->backend && !e->panels.empty())
+            requestClose(e, (int)e->panels.size() - 1);
         return;
     }
     // minimize parks the newest window on the shelf instead of closing it;

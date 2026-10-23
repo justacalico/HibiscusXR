@@ -292,8 +292,10 @@ void resizeDispSize(float scale, int* w, int* h) {
 }
 
 void tickPanels(std::vector<Panel>& panels, float dtMs) {
-    for (auto& p : panels)
+    for (auto& p : panels) {
         p.minT = stepT(p.minT, p.minimized, dtMs, kMinMs);
+        p.closeT = stepT(p.closeT, p.closing, dtMs, kCloseMs);
+    }
 }
 
 void grabRing(std::vector<Panel>& panels) {
@@ -311,13 +313,14 @@ void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch) {
 
 int panelIndex(const std::vector<Panel>& panels, const std::string& pkg) {
     for (int i = 0; i < (int)panels.size(); ++i)
-        if (panels[i].pkg == pkg) return i;
+        if (!panels[i].closing && panels[i].pkg == pkg) return i;
     return -1;
 }
 
 int minimizedIndex(const std::vector<Panel>& panels, const std::string& pkg) {
     for (int i = 0; i < (int)panels.size(); ++i)
-        if (panels[i].minimized && panels[i].pkg == pkg) return i;
+        if (!panels[i].closing && panels[i].minimized &&
+            panels[i].pkg == pkg) return i;
     return -1;
 }
 
@@ -358,8 +361,9 @@ Pick pickPanelRay(const std::vector<Panel>& panels, const float origin[3],
     for (int i = 0; i < (int)panels.size(); ++i) {
         const Panel& p = panels[i];
         // parked or mid-flight either way: a window that's still shrinking
-        // or growing back isn't interactive until it lands
-        if (p.minimized || p.minT > 0.0f) continue;
+        // or growing back isn't interactive until it lands, and a closing
+        // window never takes input again
+        if (p.minimized || p.minT > 0.0f || p.closing) continue;
         const float hw = panelHW(p), hh = panelHH(p);
         float u, v, t;
         if (!rayPanel(p, origin, o, d, &u, &v, &t)) continue;

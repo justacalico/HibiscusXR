@@ -8,6 +8,15 @@ int  openPanel(HudEngine* e, float yaw, float pitch);
 
 void closePanel(HudEngine* e, int idx);
 
+// user-initiated close: flags the close flight; the task dies and the
+// panel erases when the flight lands (see reapClosed). A fully parked
+// window has nothing on screen to fly, so it closes on the spot
+void requestClose(HudEngine* e, int idx);
+
+// erase every panel whose close flight landed, killing its task through
+// the display first - the same teardown a click used to do up front
+void reapClosed(HudEngine* e);
+
 // drop the oldest app window when the ring is full; the library panel is the
 // shell's launcher and never gets evicted. returns false if nothing could go
 bool evictOldestApp(HudEngine* e);

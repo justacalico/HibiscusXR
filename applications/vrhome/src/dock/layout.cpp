@@ -295,7 +295,9 @@ std::vector<std::string> pinToggle(const std::vector<std::string>& pins,
 std::vector<ShelfItem> buildShelf(const std::vector<Panel>& panels) {
     std::vector<ShelfItem> out;
     for (int i = 0; i < (int)panels.size(); ++i) {
-        // minimized parks; a restore keeps the slot until the flight lands
+        // minimized parks; a restore keeps the slot until the flight
+        // lands; a closing panel drops its icon as the flight starts
+        if (panels[i].closing) continue;
         if (!panels[i].minimized && panels[i].minT <= 0.0f) continue;
         ShelfItem it;
         it.panelIdx = i;
@@ -432,7 +434,8 @@ DockAction dockActivateAction(const DockItem& it,
         a.op = DOP_FOCUS_XR;
         a.taskId = it.taskId;
     } else if (it.panelIdx >= 0 && it.panelIdx < (int)panels.size()) {
-        if (panels[it.panelIdx].pkg == it.pkg) {
+        if (panels[it.panelIdx].pkg == it.pkg &&
+            !panels[it.panelIdx].closing) {
             a.op = DOP_FOCUS_PANEL;
             a.panelIdx = it.panelIdx;
             a.taskId = panels[it.panelIdx].taskId;
@@ -466,7 +469,7 @@ DockAction shelfActivateAction(const ShelfItem& it,
     DockAction a;
     if (it.panelIdx < 0 || it.panelIdx >= (int)panels.size()) return a;
     const Panel& p = panels[it.panelIdx];
-    if (!p.minimized || p.pkg != it.pkg) return a;
+    if (!p.minimized || p.closing || p.pkg != it.pkg) return a;
     a.op = DOP_FOCUS_PANEL;
     a.panelIdx = it.panelIdx;
     a.taskId = p.taskId;

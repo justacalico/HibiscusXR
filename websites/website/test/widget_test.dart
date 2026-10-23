@@ -218,6 +218,28 @@ void main() {
     expect(find.text('Available builds'), findsOneWidget);
   });
 
+  testWidgets('flashdocs home-environment page renders the env guide',
+      (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    _routerOf(tester).go('/flashdocs/home-environment');
+    await tester.pumpAndSettle();
+
+    expect(find.text('The home environment'), findsOneWidget);
+    expect(find.text('Pick an environment'), findsOneWidget);
+    expect(find.text('Install a custom pack'), findsOneWidget);
+    expect(find.text('Pack format'), findsOneWidget);
+    expect(find.text('Override for tuning'), findsOneWidget);
+    expect(
+      find.text('adb push my-space.zip /data/local/tmp/hibiscus/envs/'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('flashdocs rejects unknown device and OS slugs',
       (tester) async {
     tester.view.physicalSize = const Size(1440, 900);

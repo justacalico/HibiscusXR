@@ -9,6 +9,7 @@ import 'ui/pages/app_downloads_page.dart';
 import 'ui/pages/cte_page.dart';
 import 'ui/pages/faq_page.dart';
 import 'ui/pages/flashdocs/device_page.dart';
+import 'ui/pages/flashdocs/env_page.dart';
 import 'ui/pages/flashdocs/guide_page.dart';
 import 'ui/pages/flashdocs/home_page.dart';
 import 'ui/pages/flashdocs/vmd_guide_page.dart';
@@ -67,6 +68,11 @@ GoRouter buildRouter() => GoRouter(
             GoRoute(
               path: Routes.flashdocs,
               pageBuilder: _fade(const FlashDocsHomePage()),
+            ),
+            // literal doc pages beat the :device parameter route
+            GoRoute(
+              path: Routes.flashdocsEnv,
+              pageBuilder: _fade(const FlashDocsEnvPage()),
             ),
             GoRoute(
               path: '${Routes.flashdocs}/:device',

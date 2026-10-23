@@ -321,5 +321,27 @@
   "flashdocsVmdAdbBody": "The VM forwards adb and cted to loopback ports, and the vmd image enables wireless adb by default - once it is up, the whole headset toolchain works against it.",
   "flashdocsVmdAdbCmd1": "adb connect localhost:15555",
   "flashdocsVmdAdbCmd2": "adb shell su -c 'setprop persist.hibiscus.cted 1'",
-  "flashdocsVmdAdbNote": "Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it."
+  "flashdocsVmdAdbNote": "Nothing on the LAN can see the guest - only the loopback forwards 15555 (adb) and 17340 (cted) reach it.",
+
+  "flashdocsShellTitle": "Shell",
+  "flashdocsEnvNav": "Home environment",
+  "flashdocsEnvTitle": "The home environment",
+  "flashdocsEnvIntro": "The scene you stand in while windows and menus float in front of you: the passthrough camera feed, the built-in sky dome, or a custom pack. Picking, installing and removing all happens in Settings on the headset.",
+  "flashdocsEnvPickTitle": "Pick an environment",
+  "flashdocsEnvPickBody": "Open Settings and go to Home environment. The list starts with Passthrough - the live view from the tracking cameras - and Built-in - the default sky dome and floor grid - then every installed pack. Tap a row to switch; the change applies live and the active pick gets a check mark. With nothing picked the default is Passthrough.",
+  "flashdocsEnvInstallTitle": "Install a custom pack",
+  "flashdocsEnvInstallBody": "A pack is one zip named after its environment id: letters, digits, dots, dashes and underscores, 64 characters at most. Push it to the envs directory and it appears in the list:",
+  "flashdocsEnvInstallCmd1": "adb push my-space.zip /data/local/tmp/hibiscus/envs/",
+  "flashdocsEnvInstallNote": "The id is the file name minus .zip, so my-space.zip lists as \"my-space\". Keep the zip under 64 MB - anything larger is refused at load.",
+  "flashdocsEnvFormatTitle": "Pack format",
+  "flashdocsEnvFormatBody": "The only required entry is map.obj: plain Wavefront geometry, triangulated on load. v lines may carry a vertex colour (v x y z r g b, 0 to 1); uncoloured exports get a neutral base, and every face bakes a fixed key light so unlit maps still read as geometry. Name an object or group SpawnUser and its faces are not drawn - their bounding box marks where you stand, and the world shifts so the box's bottom centre lands on the floor under you. Maps without a SpawnUser part fall back to their whole bounds. A meta.ini marks the file as a pack for error reporting; map.png and map.json ride along for tooling.",
+  "flashdocsEnvFixTitle": "Fix a broken pack",
+  "flashdocsEnvFixBody": "A pack the shell cannot use says so in its row - \"Not a readable zip\" or \"No map.obj inside\" - and stays untappable. When a selected pack fails to load the scene drops back to the built-in sky instead of leaving you in the void, and the loader retries every few seconds: push a fixed zip under the same id and it recovers without a reboot.",
+  "flashdocsEnvRemoveTitle": "Remove a pack",
+  "flashdocsEnvRemoveBody": "Tap the trash icon on a pack's row and confirm. The zip is deleted from the headset; the built-in picks cannot be removed.",
+  "flashdocsEnvDebugTitle": "Override for tuning",
+  "flashdocsEnvDebugBody": "While building a pack, the debug.vrhome.env property overrides the saved pick, handy for A/B checks without opening Settings:",
+  "flashdocsEnvDebugCmd1": "adb shell setprop debug.vrhome.env my-space",
+  "flashdocsEnvDebugCmd2": "adb shell setprop debug.vrhome.env builtin",
+  "flashdocsEnvDebugNote": "Takes passthrough, builtin or an environment id. The saved pick lives in persist.hibiscus.environment, mirrored from the Settings list."
 }

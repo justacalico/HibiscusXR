@@ -281,6 +281,7 @@ void tickDash(HudEngine* e, const Mat4& head, long long now) {
     e->animMs = now;
     if (dtMs > 0.0f) {
         tickPanels(e->panels, dtMs);
+        reapClosed(e);
         tickDockHover(e->dock, e->dockHover, dtMs);
         tickShelfHover(e->shelf, e->shelfHover, dtMs);
         // hover on a popup row or pill isn't a cell: keep the cell the

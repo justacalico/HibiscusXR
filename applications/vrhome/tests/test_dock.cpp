@@ -377,6 +377,12 @@ void testDock() {
         a = dockActivateAction(stale, panels);
         CHECK(a.op == DOP_LAUNCH && a.pkg == "com.gone");
 
+        // a dying window's icon relaunches instead of focusing the corpse
+        panels[0].closing = true;
+        a = dockActivateAction(live, panels);
+        CHECK(a.op == DOP_LAUNCH && a.pkg == "com.b.busy");
+        panels[0].closing = false;
+
         DockItem vr; vr.kind = DK_RUN; vr.pkg = "com.d.vr"; vr.vr = true;
         vr.running = true; vr.taskId = 21;
         a = dockActivateAction(vr, panels);
@@ -416,6 +422,9 @@ void testDock() {
         panels[0].minimized = false;
         CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
         panels[0].minimized = true;
+        panels[0].closing = true;
+        CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
+        panels[0].closing = false;
         it.pkg = "com.other";
         CHECK(shelfActivateAction(it, panels).op == DOP_NONE);
         it.panelIdx = 9; it.pkg = "com.b.busy";

@@ -131,7 +131,9 @@ void dragRing(std::vector<Panel>& panels, float dYaw, float dPitch);
 
 // per-frame transition driver: every panel's park progress chases its
 // minimized flag over kMinMs, so minimize flies the window to its shelf
-// slot and a restore is the same flight in reverse
+// slot and a restore is the same flight in reverse. The close progress
+// chases the closing flag over kCloseMs; a landed flight (closeT at 1)
+// sits until panels.cpp's reapClosed erases it
 void tickPanels(std::vector<Panel>& panels, float dtMs);
 
 // first panel running pkg, or -1: one window per package

@@ -47,6 +47,10 @@ struct Panel {
     float minT = 0.0f;        // park flight 0..1: chases `minimized`, so a
                               // restore is just the flag dropping early.
                               // 1 = fully shrunk onto the shelf slot
+    bool closing = false;     // close requested: the flight plays out,
+                              // then reapClosed kills the task + panel
+    float closeT = 0.0f;      // close flight 0..1: chases `closing`. 1 =
+                              // gone - the window already drew alpha 0
     float grabYaw = 0;        // yaw snapped when a drag grabbed
     float grabPitch = 0;      // pitch snapped when a drag grabbed
     float grabScale = 0.0f;   // scale snapped when a resize drag grabbed

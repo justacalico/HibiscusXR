@@ -56,6 +56,14 @@ float minEase(float t);
 float minScale(float t);
 float minAlpha(float t);
 
+// the close flight. t is Panel::closeT; the dive accelerates like a suck
+// (t^3) so the window pulls away rather than sliding, and the fade runs a
+// softer symmetric curve so it still reads while small - at t=1 both are
+// 0 and the panel is reaped
+float closeEase(float t);
+float closeScale(float t);
+float closeAlpha(float t);
+
 // the dash summon: the strip slides up from kDashDrop below its anchor
 // while fading in. dashDrop returns the remaining downward offset in
 // metres - draws shift the plane down by it and the picks take the same

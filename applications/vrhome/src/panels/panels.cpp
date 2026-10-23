@@ -55,6 +55,28 @@ void closePanel(HudEngine* e, int idx) {
     else if (e->hover > idx) e->hover--;
 }
 
+void requestClose(HudEngine* e, int idx) {
+    Panel& p = e->panels[idx];
+    if (p.minT >= 1.0f) {
+        if (e->backend && p.displayId >= 0)
+            e->backend->removeTasksOnDisplay(p.displayId);
+        closePanel(e, idx);
+        return;
+    }
+    p.closing = true;
+    if (e->hover == idx) { e->hover = -1; e->hoverZone = ZONE_NONE; }
+}
+
+void reapClosed(HudEngine* e) {
+    for (int i = (int)e->panels.size() - 1; i >= 0; --i) {
+        Panel& p = e->panels[i];
+        if (!p.closing || p.closeT < 1.0f) continue;
+        if (e->backend && p.displayId >= 0)
+            e->backend->removeTasksOnDisplay(p.displayId);
+        closePanel(e, i);
+    }
+}
+
 bool evictOldestApp(HudEngine* e) {
     const int i = evictIndex(e->panels);
     if (i < 0) return false;

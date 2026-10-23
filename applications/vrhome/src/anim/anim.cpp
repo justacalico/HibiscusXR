@@ -86,6 +86,19 @@ float minAlpha(float t) {
     return 1.0f - clamp01((easeInOutCubic(t) - 0.55f) / 0.45f);
 }
 
+float closeEase(float t) {
+    t = clamp01(t);
+    return t * t * t;
+}
+
+float closeScale(float t) {
+    return 1.0f - closeEase(t);
+}
+
+float closeAlpha(float t) {
+    return 1.0f - easeInOutCubic(t);
+}
+
 float dashDrop(float t) {
     return kDashDrop * (1.0f - easeOutCubic(t));
 }

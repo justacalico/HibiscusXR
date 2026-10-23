@@ -171,6 +171,22 @@ void testAnim() {
         CHECK(minScale(0.5f) < 0.6f && minScale(0.5f) > 0.4f);
     }
 
+    // close flight: the dive accelerates (t^3) so the window pulls away,
+    // and the fade runs ahead of the shrink so it still reads while small
+    {
+        CHECK_F(closeEase(0.0f), 0.0f, 1e-6f);
+        CHECK_F(closeEase(1.0f), 1.0f, 1e-6f);
+        CHECK_F(closeEase(0.5f), 0.125f, 1e-6f);   // behind schedule early
+        CHECK(closeEase(0.5f) < minEase(0.5f));
+        CHECK_F(closeScale(0.0f), 1.0f, 1e-6f);
+        CHECK_F(closeScale(1.0f), 0.0f, 1e-6f);
+        CHECK_F(closeAlpha(0.0f), 1.0f, 1e-6f);
+        CHECK_F(closeAlpha(1.0f), 0.0f, 1e-6f);
+        CHECK_F(closeAlpha(0.5f), 0.5f, 1e-6f);    // half gone at mid-flight
+        CHECK(closeScale(0.5f) > closeAlpha(0.5f));
+        CHECK(closeScale(0.5f) < 1.0f && closeScale(0.5f) > 0.5f);
+    }
+
     // summon: the strip's remaining drop drains to zero while alpha lands
     {
         CHECK_F(dashDrop(0.0f), kDashDrop, 1e-6f);
@@ -211,6 +227,25 @@ void testAnim() {
         ps[0].minimized = true; ps[0].minT = 0.2f;   // shrinking out
         pk = pickPanel(ps, I, o0, o0);
         CHECK(pk.idx == -1);
+        ps[0].minimized = false; ps[0].minT = 0.0f;
+        ps[0].closing = true;                       // dying, never picks
+        pk = pickPanel(ps, I, o0, o0);
+        CHECK(pk.idx == -1);
+    }
+
+    // tickPanels: closeT chases the closing flag over kCloseMs, then a
+    // landed flight sits at 1 for reapClosed to erase
+    {
+        std::vector<Panel> ps = {mkPanel("a"), mkPanel("b")};
+        ps[0].closing = true;
+        tickPanels(ps, kCloseMs * 0.5f);
+        CHECK_F(ps[0].closeT, 0.5f, 1e-4f);
+        CHECK_F(ps[1].closeT, 0.0f, 1e-6f);
+        tickPanels(ps, kCloseMs);
+        CHECK_F(ps[0].closeT, 1.0f, 1e-6f);
+        tickPanels(ps, kCloseMs);
+        CHECK_F(ps[0].closeT, 1.0f, 1e-6f);
+        CHECK(ps[0].closing);
     }
 
     // buildShelf parks a restoring panel too, so the flight grows out of a
@@ -223,6 +258,9 @@ void testAnim() {
         CHECK(items.size() == 1);
         CHECK(items[0].panelIdx == 1 && items[0].pkg == "b");
         ps[1].minT = 0.0f;
+        CHECK(buildShelf(ps).empty());
+        ps[1].minimized = true;
+        ps[1].closing = true;               // dying icon drops at once
         CHECK(buildShelf(ps).empty());
     }
 

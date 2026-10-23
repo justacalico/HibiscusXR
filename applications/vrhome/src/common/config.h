@@ -228,6 +228,7 @@ constexpr float kShelfGapY = 0.016f;    // between bar top and pill bottom
 constexpr float kSpawnMs = 240.0f;      // panel scale/fade-in
 constexpr float kSpawnScale0 = 0.82f;   // launch size as a share of final
 constexpr float kMinMs = 260.0f;        // minimize/restore flight, one way
+constexpr float kCloseMs = 280.0f;      // close flight: shrink-dive-fade
 constexpr float kDashMs = 220.0f;       // strip slide/fade-in on summon
 constexpr float kDashDrop = 0.07f;      // metres the strip rises in from
 constexpr float kHoverScale = 1.14f;    // dock/shelf icon magnification

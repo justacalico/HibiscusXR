@@ -8,6 +8,7 @@
 #include "../common/log.h"
 #include "../common/palette.h"
 #include "../panels/layout.h"
+#include "../panels/panels.h"
 #include "../pill/pill.h"
 #include "../render/chrome.h"
 #include "../render/icons.h"
@@ -173,7 +174,7 @@ void dockClose(HudEngine* e, int idx) {
     if (!e->backend || idx < 0 || idx >= (int)e->dock.size()) return;
     const DockAction act = dockCloseAction(e->dock[idx], e->panels);
     if (act.op == DOP_CLOSE_PANEL)
-        e->backend->removeTasksOnDisplay(act.displayId);
+        requestClose(e, act.panelIdx);
     else if (act.op == DOP_CLOSE_TASK)
         e->backend->removeTask(act.taskId);
 }

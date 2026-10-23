@@ -96,6 +96,7 @@ class FlashDocsGuidePage extends StatelessWidget {
             l10n.flashdocsNeo2FlashCmd2,
             l10n.flashdocsNeo2FlashCmd3,
             l10n.flashdocsNeo2FlashCmd4,
+            l10n.flashdocsNeo2FlashCmd5,
           ]),
           const SizedBox(height: 14),
           GuideNote(text: l10n.flashdocsNeo2FlashNote),

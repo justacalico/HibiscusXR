@@ -1565,26 +1565,32 @@ abstract class AppLocalizations {
   /// No description provided for @flashdocsNeo2FlashCmd1.
   ///
   /// In en, this message translates to:
-  /// **'adb reboot bootloader'**
+  /// **'unxz system-hibiscus-full-neo2.img.xz'**
   String get flashdocsNeo2FlashCmd1;
 
   /// No description provided for @flashdocsNeo2FlashCmd2.
   ///
   /// In en, this message translates to:
-  /// **'fastboot oem pico unlock'**
+  /// **'adb reboot bootloader'**
   String get flashdocsNeo2FlashCmd2;
 
   /// No description provided for @flashdocsNeo2FlashCmd3.
   ///
   /// In en, this message translates to:
-  /// **'fastboot -S 128M flash system system-hibiscus-full-neo2.img'**
+  /// **'fastboot oem pico unlock'**
   String get flashdocsNeo2FlashCmd3;
 
   /// No description provided for @flashdocsNeo2FlashCmd4.
   ///
   /// In en, this message translates to:
-  /// **'fastboot reboot'**
+  /// **'fastboot -S 128M flash system system-hibiscus-full-neo2.img'**
   String get flashdocsNeo2FlashCmd4;
+
+  /// No description provided for @flashdocsNeo2FlashCmd5.
+  ///
+  /// In en, this message translates to:
+  /// **'fastboot reboot'**
+  String get flashdocsNeo2FlashCmd5;
 
   /// No description provided for @flashdocsNeo2FlashNote.
   ///

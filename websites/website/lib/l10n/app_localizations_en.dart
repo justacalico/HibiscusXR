@@ -835,17 +835,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'With the full system image downloaded, put the headset back into fastboot and run:';
 
   @override
-  String get flashdocsNeo2FlashCmd1 => 'adb reboot bootloader';
+  String get flashdocsNeo2FlashCmd1 => 'unxz system-hibiscus-full-neo2.img.xz';
 
   @override
-  String get flashdocsNeo2FlashCmd2 => 'fastboot oem pico unlock';
+  String get flashdocsNeo2FlashCmd2 => 'adb reboot bootloader';
 
   @override
-  String get flashdocsNeo2FlashCmd3 =>
+  String get flashdocsNeo2FlashCmd3 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2FlashCmd4 =>
       'fastboot -S 128M flash system system-hibiscus-full-neo2.img';
 
   @override
-  String get flashdocsNeo2FlashCmd4 => 'fastboot reboot';
+  String get flashdocsNeo2FlashCmd5 => 'fastboot reboot';
 
   @override
   String get flashdocsNeo2FlashNote =>

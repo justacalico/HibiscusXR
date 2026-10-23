@@ -777,17 +777,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get flashdocsNeo2FlashBody => '下载好完整系统镜像后,让头显重新进 fastboot,执行:';
 
   @override
-  String get flashdocsNeo2FlashCmd1 => 'adb reboot bootloader';
+  String get flashdocsNeo2FlashCmd1 => 'unxz system-hibiscus-full-neo2.img.xz';
 
   @override
-  String get flashdocsNeo2FlashCmd2 => 'fastboot oem pico unlock';
+  String get flashdocsNeo2FlashCmd2 => 'adb reboot bootloader';
 
   @override
-  String get flashdocsNeo2FlashCmd3 =>
+  String get flashdocsNeo2FlashCmd3 => 'fastboot oem pico unlock';
+
+  @override
+  String get flashdocsNeo2FlashCmd4 =>
       'fastboot -S 128M flash system system-hibiscus-full-neo2.img';
 
   @override
-  String get flashdocsNeo2FlashCmd4 => 'fastboot reboot';
+  String get flashdocsNeo2FlashCmd5 => 'fastboot reboot';
 
   @override
   String get flashdocsNeo2FlashNote => '-S 128M 分块是硬性要求:更大的块会在刷到一半时弄断 USB 连接。';

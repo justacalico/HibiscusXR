@@ -56,7 +56,7 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
     const int n = (int)e->notifs.size();
     if (n <= 0) return;
     float c[3], r[3], up[3];
-    notifCenter(yaw, pitch, lift, e->ringPos, c, r, up);
+    notifCenter(yaw, pitch, lift, e->dashDist, e->ringPos, c, r, up);
     const float hw = kNotifCardW * 0.5f;
     const float hh = kNotifCardH * 0.5f;
     glEnable(GL_BLEND);

@@ -60,7 +60,7 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
     if (e->sysMsgs.empty()) return;
     const SysMsgItem& it = e->sysMsgs.front();
     float cc[3], r[3], up[3];
-    sysMsgCenter(yaw, pitch, lift, e->ringPos, cc, r, up);
+    sysMsgCenter(yaw, pitch, lift, e->dashDist, e->ringPos, cc, r, up);
     const float hw = kSysMsgW * 0.5f;
     const float hh = kSysMsgH * 0.5f;
     glEnable(GL_BLEND);

@@ -307,14 +307,14 @@ void testAnim() {
     // draws and picks agree because both take the same drop
     {
         float c[3], r[3], up[3], dc[3];
-        dockCenter(0.0f, -0.55f, o0, c, r, up);
-        dockCenterDrop(0.0f, -0.55f, 0.05f, o0, dc, r, up);
+        dockCenter(0.0f, -0.55f, kPanelDist, o0, c, r, up);
+        dockCenterDrop(0.0f, -0.55f, 0.05f, kPanelDist, o0, dc, r, up);
         CHECK_F(dc[1], c[1] - up[1] * 0.05f, 1e-5f);
         float d[3] = {c[0], c[1], c[2]};
         const float dl = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= dl; d[1] /= dl; d[2] /= dl;
         float u, v, t;
-        CHECK(rayDock(0.0f, -0.55f, 0.05f, o0, o0, d, 0.4f, &u, &v, &t));
+        CHECK(rayDock(0.0f, -0.55f, 0.05f, kPanelDist, o0, o0, d, 0.4f, &u, &v, &t));
         CHECK(v > 0.3f);      // the bar moved down: the ray lands high
         CHECK_F(v, 0.05f / (kDockBarH * 0.5f), 0.35f);
     }

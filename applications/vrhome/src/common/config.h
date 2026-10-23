@@ -85,6 +85,12 @@ constexpr float kPanelMinGap = 0.82f;
 constexpr float kScaleMin = 0.45f, kScaleMax = 1.9f;
 // resize grip: a small hot zone on the window's bottom-right corner
 constexpr float kResizeR = 0.055f;   // corner hit radius, world units
+// depth push/pull: a scroll-axis nudge while a move drag is held carries
+// the ring (or the grabbed floating window) along the view axis. Every
+// shell element's distance is a fixed share of the ring's - dock, cards,
+// shelf and stack all derive off it - so the dash scales as one assembly
+constexpr float kRingDistMin = 0.7f, kRingDistMax = 4.0f;
+constexpr float kDepthStep = 0.12f;    // metres per scroll unit
 
 // floating keyboard: the IME app draws into a texture the HUD owns, shown
 // as its own window under the one holding the text field. It rides nearer

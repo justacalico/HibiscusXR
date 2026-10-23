@@ -104,6 +104,8 @@ struct HudEngine : Engine {
     int dockXrVer = -1;
     std::map<std::string, DockIcon> dockIcons;
     float dockYaw = 0.0f, dockPitch = kDockPitchRest;
+    float dashDist = kPanelDist;   // the ring's radius in metres; the scroll
+                                   // axis during a move drag pushes/pulls it
     float dockGrabYaw = 0.0f;      // dockYaw snapshot when a ring drag grabs
     float dockGrabPitch = 0.0f;    // dockPitch snapshot on the same grab
     float ringGrabPitch = 0.0f;    // the ring's elevation at the grab

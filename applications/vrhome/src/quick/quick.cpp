@@ -214,7 +214,8 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     const float gs = kQuickScale0 + (1.0f - kQuickScale0) * qt;
     const float ga = qt;
     float c[3], r[3], up[3];
-    quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+    quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                e->ringPos,
                 c, r, up);
     const float hw = kQuickHW * gs, hh = kQuickHH * gs;
 

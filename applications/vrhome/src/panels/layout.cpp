@@ -29,7 +29,23 @@ void ringPoint(float yaw, float pitch, float dist, float y0,
 
 void panelCenter(const Panel& p, const float origin[3], float out[3],
                  float right[3], float up[3]) {
-    ringPoint(p.yaw, p.pitch, kPanelDist, kPanelY, origin, out, right, up);
+    ringPoint(p.yaw, p.pitch, p.dist, kPanelY, origin, out, right, up);
+}
+
+float clampRingDist(float d) {
+    return d < kRingDistMin ? kRingDistMin
+         : d > kRingDistMax ? kRingDistMax : d;
+}
+
+float pushDash(std::vector<Panel>& panels, float ringDist, float d) {
+    // shift the ring by what the clamp actually lets through: docked
+    // windows land exactly on the new radius, floaters ride the same
+    // delta so the assembly keeps its depth offsets
+    const float nd = clampRingDist(ringDist + d);
+    const float applied = nd - ringDist;
+    for (auto& p : panels)
+        p.dist = clampRingDist(p.dist + applied);
+    return nd;
 }
 
 float panelHW(const Panel& p) { return kPanelW * 0.5f * p.scale; }
@@ -97,12 +113,13 @@ float centreSlotYaw(std::vector<Panel>& panels, float centre) {
 }
 
 void restorePanel(std::vector<Panel>& panels, int self, float centre,
-                  float pitch) {
+                  float pitch, float dist) {
     if (self < 0 || self >= (int)panels.size()) return;
     Panel& p = panels[self];
     p.minimized = false;
     p.yaw = dockSlotYaw(panels, self, centre);
     p.pitch = pitch;
+    p.dist = dist;
 }
 
 float ringPitch(const std::vector<Panel>& panels) {

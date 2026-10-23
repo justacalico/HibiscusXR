@@ -59,6 +59,15 @@ void testKbd() {
     CHECK_F(dlen, kKbdDist, 1e-4f);
     CHECK(kKbdDist < kDockDist);
 
+    // the pull target rides the host's ring radius: a window pushed out
+    // in depth keeps the quad at its share of the host's distance
+    p.dist = kPanelDist * 2.0f;
+    panelCenter(p, o0, pc, pr, pu);
+    kbdCenter(p, o0, 0.0f, 0.0f, c, r, up);
+    for (int i = 0; i < 3; ++i) dc[i] = c[i] + up[i] * drop;
+    const float dlen2 = sqrtf(dc[0]*dc[0] + dc[1]*dc[1] + dc[2]*dc[2]);
+    CHECK_F(dlen2, kKbdDist * 2.0f, 1e-4f);
+
     // the pill's own placement: offYaw swings the frame around the viewer
     // like a ring move (centre lands where a yaw+offYaw point on the same
     // ring would), offY slides it along its up

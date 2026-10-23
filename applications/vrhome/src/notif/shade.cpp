@@ -172,7 +172,8 @@ void drawShade(HudEngine* e, const Mat4& vp) {
     const float gs = kShadeScale0 + (1.0f - kShadeScale0) * qt;
     const float ga = qt;
     float c[3], r[3], up[3];
-    shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+    shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                e->ringPos,
                 c, r, up);
     const float hw = kShadeHW * gs, hh = kShadeHH * gs;
 

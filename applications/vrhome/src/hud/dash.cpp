@@ -108,7 +108,8 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
                  &mYaw, &mPitch, &mLift);
     const bool msgModal = sysMsgModal(e->sysMsgOnly, e->sysMsgs);
     const SysMsgPick mp = pickSysMsgRay(e->sysMsgs, mYaw, mPitch, mLift,
-                                      e->ringPos, e->aimO, e->aimD);
+                                      e->dashDist, e->ringPos, e->aimO,
+                                      e->aimD);
     const Pick pk = pickPanelRay(e->panels, e->ringPos, e->aimO, e->aimD);
     float kU = 0.0f, kV = 0.0f, kT = -1.0f;
     int kZone = KZONE_KEY;
@@ -129,28 +130,30 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
     const float dDrop = dashDrop(progT(e->summonMs, now, kDashMs));
     const DockPick dp = pickDockRay(e->dock, e->dockSys, e->dockHW,
                                     e->dockYaw, e->dockPitch, dDrop,
-                                    e->ringPos, e->aimO, e->aimD);
+                                    e->dashDist, e->ringPos, e->aimO,
+                                    e->aimD);
     const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
-                                      e->dockPitch, dDrop, e->ringPos,
-                                      e->aimO, e->aimD);
-    const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
+                                      e->dockPitch, dDrop, e->dashDist,
                                       e->ringPos, e->aimO, e->aimD);
+    const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
+                                      e->dashDist, e->ringPos, e->aimO,
+                                      e->aimD);
     const GridPick gp = e->grid.shown
         ? pickGridRay(e->grid, e->dockYaw, ringPitchFor(e->dockPitch),
-                      e->ringPos, e->aimO, e->aimD)
+                      e->dashDist, e->ringPos, e->aimO, e->aimD)
         : GridPick{};
     const QsPick qp = e->quick.shown
         ? pickQuickRay(e->dockYaw, ringPitchFor(e->dockPitch),
-                       e->ringPos, e->aimO, e->aimD)
+                       e->dashDist, e->ringPos, e->aimO, e->aimD)
         : QsPick{};
     const SetHit s5 = e->set.shown
         ? pickSetRay(e->set, e->dockYaw, ringPitchFor(e->dockPitch),
-                     e->ringPos, e->aimO, e->aimD)
+                     e->dashDist, e->ringPos, e->aimO, e->aimD)
         : SetHit{};
     const ShadePick hp = e->shade.shown
         ? pickShadeRay(e->notifsAll, e->shade.scroll, e->shade.clearHW,
                        e->dockYaw, ringPitchFor(e->dockPitch),
-                       e->ringPos, e->aimO, e->aimD)
+                       e->dashDist, e->ringPos, e->aimO, e->aimD)
         : ShadePick{};
     e->grid.hover = -1;
     e->grid.zone = GZONE_NONE;

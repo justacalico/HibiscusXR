@@ -43,9 +43,10 @@ float notifLiftAbove(int count, float clear) {
     return clear + kNotifGap + notifStackHH(count);
 }
 
-void notifCenter(float yaw, float pitch, float lift, const float origin[3],
+void notifCenter(float yaw, float pitch, float lift, float dist,
+                 const float origin[3],
                  float c[3], float r[3], float up[3]) {
-    dockCenter(yaw, pitch, origin, c, r, up);
+    dockCenter(yaw, pitch, dist, origin, c, r, up);
     for (int i = 0; i < 3; ++i) c[i] += up[i] * lift;
 }
 
@@ -82,24 +83,25 @@ int notifAt(float u, float v, int count, int* zone) {
     return -1;
 }
 
-bool rayNotif(float yaw, float pitch, float lift, const float origin[3],
+bool rayNotif(float yaw, float pitch, float lift, float dist,
+              const float origin[3],
               const float o[3], const float d[3], int count,
               float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    notifCenter(yaw, pitch, lift, origin, c, r, up);
+    notifCenter(yaw, pitch, lift, dist, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, kNotifCardW * 0.5f,
                    notifStackHH(count), u, v, t);
 }
 
 NotifPick pickNotifRay(const std::vector<NotifItem>& items,
-                       float yaw, float pitch, float lift,
+                       float yaw, float pitch, float lift, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]) {
     NotifPick pk;
     if (items.empty()) return pk;
     float u, v, t;
-    if (!rayNotif(yaw, pitch, lift, origin, o, d, (int)items.size(),
-                  &u, &v, &t))
+    if (!rayNotif(yaw, pitch, lift, dist, origin, o, d,
+                  (int)items.size(), &u, &v, &t))
         return pk;
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.stack = true;
@@ -109,20 +111,22 @@ NotifPick pickNotifRay(const std::vector<NotifItem>& items,
 }
 
 NotifPick pickNotif(const std::vector<NotifItem>& items,
-                    float yaw, float pitch, float lift,
+                    float yaw, float pitch, float lift, float dist,
                     const Mat4& head, const float origin[3],
                     const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickNotifRay(items, yaw, pitch, lift, origin, o, d);
+    return pickNotifRay(items, yaw, pitch, lift, dist, origin, o, d);
 }
 
 // --------------------------------------------------------- the shade
 
-void shadeCenter(float yaw, float pitch, const float origin[3],
+void shadeCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]) {
-    // same anchor cylinder the windows and the other cards ride
-    ringPoint(yaw, pitch, kShadeDist, kPanelY, origin, c, r, up);
+    // same anchor cylinder the windows and the other cards ride, at the
+    // card's share of the ring's radius
+    ringPoint(yaw, pitch, dist * (kShadeDist / kPanelDist), kPanelY,
+              origin, c, r, up);
 }
 
 void shadeClipBand(float* lo, float* hi) {
@@ -230,12 +234,12 @@ int shadeZoneAt(const std::vector<NotifItem>& items, float u, float v,
 }
 
 ShadePick pickShadeRay(const std::vector<NotifItem>& items, float scroll,
-                       float clearHW, float yaw, float pitch,
+                       float clearHW, float yaw, float pitch, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]) {
     ShadePick pk;
     float c[3], r[3], up[3];
-    shadeCenter(yaw, pitch, origin, c, r, up);
+    shadeCenter(yaw, pitch, dist, origin, c, r, up);
     if (!rayQuad(c, r, up, origin, o, d, kShadeHW, kShadeHH,
                  &pk.u, &pk.v, &pk.t)) return pk;
     if (fabsf(pk.u) > 1.0f || fabsf(pk.v) > 1.0f) return pk;

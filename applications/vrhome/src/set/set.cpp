@@ -322,7 +322,8 @@ void setDragTick(HudEngine* e) {
     SetOverlay& st = e->set;
     if (!e->confirmHeld || !st.shown) return;
     float c[3], r[3], up[3];
-    setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos, c, r, up);
+    setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+               e->ringPos, c, r, up);
     float u, v, t;
     if (!rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                  kSetHW, kSetHH, &u, &v, &t)) return;
@@ -1075,7 +1076,8 @@ void drawSet(HudEngine* e, const Mat4& vp) {
     const float gs = kSetScale0 + (1.0f - kSetScale0) * qt;
     const float ga = qt;
     float c[3], r[3], up[3];
-    setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos, c, r, up);
+    setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+               e->ringPos, c, r, up);
     const float hw = kSetHW * gs, hh = kSetHH * gs;
 
     glEnable(GL_BLEND);

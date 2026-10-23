@@ -58,7 +58,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
     // the park flight's target frame: the shelf pill's anchor, shared by
     // every window in transit
     float shc[3], shr[3], shu[3];
-    shelfCenter(e->dockYaw, e->dockPitch, e->ringPos, shc, shr, shu);
+    shelfCenter(e->dockYaw, e->dockPitch, e->dashDist, e->ringPos,
+                shc, shr, shu);
 
     for (int i = 0; i < (int)e->panels.size(); ++i) {
         Panel& p = e->panels[i];
@@ -408,22 +409,22 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         // dot rides the strip while it settles
         dockCenterDrop(e->dockYaw, e->dockPitch,
                        dashDrop(progT(e->summonMs, e->frameMs, kDashMs)),
-                       e->ringPos, c, r, up);
+                       e->dashDist, e->ringPos, c, r, up);
         const float hw = e->dockHW, hh = kDockBarH * 0.5f;
         pos[0] = c[0] + r[0]*e->dockU*hw + up[0]*e->dockV*hh;
         pos[1] = c[1] + r[1]*e->dockU*hw + up[1]*e->dockV*hh;
         pos[2] = c[2] + r[2]*e->dockU*hw + up[2]*e->dockV*hh;
     } else if (e->set.zone != SZONE_NONE) {
         // on the settings card the dot lands on the card's own plane
-        setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                  c, r, up);
+        setCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                  e->ringPos, c, r, up);
         pos[0] = c[0] + r[0]*e->set.u*kSetHW + up[0]*e->set.v*kSetHH;
         pos[1] = c[1] + r[1]*e->set.u*kSetHW + up[1]*e->set.v*kSetHH;
         pos[2] = c[2] + r[2]*e->set.u*kSetHW + up[2]*e->set.v*kSetHH;
     } else if (e->quick.zone != QZONE_NONE) {
         // on the quick-panel card the dot lands on the card's own plane
-        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                    c, r, up);
+        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                    e->ringPos, c, r, up);
         pos[0] = c[0] + r[0]*e->quick.u*kQuickHW +
                  up[0]*e->quick.v*kQuickHH;
         pos[1] = c[1] + r[1]*e->quick.u*kQuickHW +
@@ -432,8 +433,8 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
                  up[2]*e->quick.v*kQuickHH;
     } else if (e->shade.zone != SHZONE_NONE) {
         // on the notification shade the dot lands on the card's own plane
-        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                    c, r, up);
+        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                    e->ringPos, c, r, up);
         pos[0] = c[0] + r[0]*e->shade.u*kShadeHW +
                  up[0]*e->shade.v*kShadeHH;
         pos[1] = c[1] + r[1]*e->shade.u*kShadeHW +
@@ -442,8 +443,8 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
                  up[2]*e->shade.v*kShadeHH;
     } else if (e->grid.zone != GZONE_NONE) {
         // on the app-grid card the dot lands on the card's own plane
-        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                   c, r, up);
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                   e->ringPos, c, r, up);
         pos[0] = c[0] + r[0]*e->grid.u*kGridHW + up[0]*e->grid.v*kGridHH;
         pos[1] = c[1] + r[1]*e->grid.u*kGridHW + up[1]*e->grid.v*kGridHH;
         pos[2] = c[2] + r[2]*e->grid.u*kGridHW + up[2]*e->grid.v*kGridHH;

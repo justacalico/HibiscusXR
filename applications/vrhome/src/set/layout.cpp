@@ -25,9 +25,10 @@ static float rowH(int kind) {
 static float paneL() { return setSideR() + kSetPad; }
 static float paneR() { return kSetHW - kSetPad; }
 
-void setCenter(float yaw, float pitch, const float origin[3],
+void setCenter(float yaw, float pitch, float dist, const float origin[3],
                float c[3], float r[3], float up[3]) {
-    ringPoint(yaw, pitch, kSetDist, kPanelY, origin, c, r, up);
+    ringPoint(yaw, pitch, dist * (kSetDist / kPanelDist), kPanelY,
+              origin, c, r, up);
 }
 
 // ------------------------------------------------------------- catalog
@@ -605,11 +606,11 @@ int setZoneAt(const SetOverlay& ov, float u, float v, int* idx, int* aux) {
 }
 
 SetHit pickSetRay(const SetOverlay& ov, float yaw, float pitch,
-                  const float origin[3], const float o[3],
+                  float dist, const float origin[3], const float o[3],
                   const float d[3]) {
     SetHit pk;
     float c[3], r[3], up[3];
-    setCenter(yaw, pitch, origin, c, r, up);
+    setCenter(yaw, pitch, dist, origin, c, r, up);
     if (!rayQuad(c, r, up, origin, o, d, kSetHW, kSetHH,
                  &pk.u, &pk.v, &pk.t)) return pk;
     if (fabsf(pk.u) > 1.0f || fabsf(pk.v) > 1.0f) return pk;

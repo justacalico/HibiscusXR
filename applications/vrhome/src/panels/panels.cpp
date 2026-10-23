@@ -34,6 +34,7 @@ int openPanel(HudEngine* e, float yaw, float pitch) {
     memset(p.stMat, 0, sizeof(p.stMat));
     p.yaw = yaw;
     p.pitch = pitch;
+    p.dist = e->dashDist;
     p.grabYaw = yaw;
     p.grabPitch = pitch;
     struct timespec ts;

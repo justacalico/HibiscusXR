@@ -229,7 +229,7 @@ void testLayout() {
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps.push_back(mkPanel(kSlotYaw[2]));
     ps[0].minimized = true;
-    restorePanel(ps, 0, 0.0f, 0.3f);
+    restorePanel(ps, 0, 0.0f, 0.3f, kPanelDist);
     CHECK(!ps[0].minimized);
     CHECK_F(ps[0].yaw, kSlotYaw[1], 1e-6f);
     CHECK_F(ps[0].pitch, 0.3f, 1e-6f);
@@ -238,7 +238,7 @@ void testLayout() {
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps.push_back(mkPanel(kSlotYaw[1]));
     ps[0].minimized = true;
-    restorePanel(ps, 0, 0.0f, 0.0f);
+    restorePanel(ps, 0, 0.0f, 0.0f, kPanelDist);
     CHECK_F(ps[0].yaw, kSlotYaw[0], 1e-6f);
 
     // eviction prefers a parked window over a live one, whatever the
@@ -586,6 +586,41 @@ void testLayout() {
     grabRing(ps);
     dragRing(ps, 0.20f, 0.0f);
     CHECK_F(ps[0].yaw, -(float)M_PI + 0.15f, 1e-5f);
+
+    // a panel's own ring radius places it: dist is the metres it sits off
+    // the anchor along its yaw/pitch ray
+    Panel pd = mkPanel(0.0f);
+    pd.dist = 2.5f;
+    panelCenter(pd, o0, c, r, up);
+    CHECK_F(c[2], -2.5f, 1e-5f);
+    CHECK_F(c[1], kPanelY, 1e-6f);
+
+    // the ring-radius clamp keeps a window off the face and in reach
+    CHECK_F(clampRingDist(kPanelDist), kPanelDist, 1e-6f);
+    CHECK_F(clampRingDist(0.0f), kRingDistMin, 1e-6f);
+    CHECK_F(clampRingDist(9.0f), kRingDistMax, 1e-6f);
+
+    // pushDash: the ring takes the clamped delta and every panel shifts by
+    // what was applied, floaters keeping their offset from the ring
+    ps.clear();
+    ps.push_back(mkPanel(0.0f));
+    ps.push_back(mkPanel(kSlotYaw[1]));
+    ps[1].floating = true;
+    ps[1].dist = kPanelDist + 0.6f;
+    const float nd = pushDash(ps, kPanelDist, 1.0f);
+    CHECK_F(nd, kPanelDist + 1.0f, 1e-6f);
+    CHECK_F(ps[0].dist, kPanelDist + 1.0f, 1e-6f);
+    CHECK_F(ps[1].dist, kPanelDist + 1.6f, 1e-6f);
+    // past the limit the clamp eats the delta; panels only take what
+    // the ring actually gained, so a floater already out ahead just
+    // keeps its edge instead of snapping to the limit
+    const float nd2 = pushDash(ps, kRingDistMax - 0.1f, 5.0f);
+    CHECK_F(nd2, kRingDistMax, 1e-6f);
+    CHECK_F(ps[0].dist, kPanelDist + 1.0f + 0.1f, 1e-4f);
+    CHECK_F(ps[1].dist, kPanelDist + 1.6f + 0.1f, 1e-4f);
+    // pulling in past the floor clamps the same way
+    const float nd3 = pushDash(ps, kRingDistMin + 0.05f, -9.0f);
+    CHECK_F(nd3, kRingDistMin, 1e-6f);
 
     // docked-window pill drag: a small pull keeps the window on its own
     // slot, crossing the midpoint hops it to the next space and the

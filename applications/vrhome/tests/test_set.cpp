@@ -518,16 +518,16 @@ void testSet() {
     const float origin[3] = {0.0f, 0.0f, 0.0f};
     // aim straight at the card's centre on the anchor cylinder
     float c[3], r[3], up[3];
-    setCenter(0.0f, 0.0f, origin, c, r, up);
+    setCenter(0.0f, 0.0f, kPanelDist, origin, c, r, up);
     float d[3] = {c[0] - origin[0], c[1] - origin[1], c[2] - origin[2]};
     const float len = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
     d[0] /= len; d[1] /= len; d[2] /= len;
-    SetHit pk = pickSetRay(ov, 0.0f, 0.0f, origin, origin, d);
+    SetHit pk = pickSetRay(ov, 0.0f, 0.0f, kPanelDist, origin, origin, d);
     CHECK(pk.hit);
     CHECK(pk.zone != SZONE_NONE);
     // a ray off the card misses
     float d2[3] = {d[0], d[1] + 2.0f, d[2]};
-    SetHit miss = pickSetRay(ov, 0.0f, 0.0f, origin, origin, d2);
+    SetHit miss = pickSetRay(ov, 0.0f, 0.0f, kPanelDist, origin, origin, d2);
     CHECK(!miss.hit);
     }
 }

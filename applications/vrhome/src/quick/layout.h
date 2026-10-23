@@ -25,9 +25,9 @@ struct QsSpec {
 // the catalog: indexed by tile position, ids in QsId display order
 const QsSpec& quickSpec(int i);
 
-// card centre + basis on the ring's anchor cylinder, at the grid's own
-// distance and the window row's elevation
-void quickCenter(float yaw, float pitch, const float origin[3],
+// card centre + basis on the ring's anchor cylinder, at the card's
+// share of the ring's radius `dist` and the window row's elevation
+void quickCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]);
 
 // tile i's centre and half extents in card-local metres
@@ -92,5 +92,6 @@ int quickZoneAt(float u, float v, int* idx, int* slider);
 
 // arbitrary ray vs the card; hit is set on any card hit so the body still
 // blocks the windows behind it
-QsPick pickQuickRay(float yaw, float pitch, const float origin[3],
+QsPick pickQuickRay(float yaw, float pitch, float dist,
+                    const float origin[3],
                     const float o[3], const float d[3]);

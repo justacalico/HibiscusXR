@@ -8,15 +8,16 @@
 
 #include <cmath>
 
-void dockCenter(float yaw, float pitch, const float origin[3],
+void dockCenter(float yaw, float pitch, float dist, const float origin[3],
                 float c[3], float r[3], float up[3]) {
-    ringPoint(yaw, pitch, kDockDist, 0.0f, origin, c, r, up);
+    ringPoint(yaw, pitch, dist * (kDockDist / kPanelDist), 0.0f, origin,
+              c, r, up);
 }
 
-void dockCenterDrop(float yaw, float pitch, float drop,
+void dockCenterDrop(float yaw, float pitch, float drop, float dist,
                     const float origin[3], float c[3], float r[3],
                     float up[3]) {
-    dockCenter(yaw, pitch, origin, c, r, up);
+    dockCenter(yaw, pitch, dist, origin, c, r, up);
     for (int i = 0; i < 3; ++i) c[i] -= up[i] * drop;
 }
 
@@ -228,24 +229,25 @@ int dockItemAt(const std::vector<DockItem>& items, const DockStatus& st,
     return -1;
 }
 
-bool rayDock(float yaw, float pitch, float drop, const float origin[3],
+bool rayDock(float yaw, float pitch, float drop, float dist,
+             const float origin[3],
              const float o[3], const float d[3], float halfW,
              float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    dockCenterDrop(yaw, pitch, drop, origin, c, r, up);
+    dockCenterDrop(yaw, pitch, drop, dist, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, halfW, kDockBarH * 0.5f,
                    u, v, t);
 }
 
 DockPick pickDockRay(const std::vector<DockItem>& items,
                      const DockStatus& st, float halfW,
-                     float yaw, float pitch, float drop,
+                     float yaw, float pitch, float drop, float dist,
                      const float origin[3], const float o[3],
                      const float d[3]) {
     DockPick pk;
     if (items.empty() || halfW <= 0.0f) return pk;
     float u, v, t;
-    if (!rayDock(yaw, pitch, drop, origin, o, d, halfW, &u, &v, &t))
+    if (!rayDock(yaw, pitch, drop, dist, origin, o, d, halfW, &u, &v, &t))
         return pk;
     // the move handle hangs under the strip: it lives outside the bar box
     // so it checks before the in-bar bounds
@@ -264,11 +266,12 @@ DockPick pickDockRay(const std::vector<DockItem>& items,
 
 DockPick pickDock(const std::vector<DockItem>& items, const DockStatus& st,
                   float halfW, float yaw, float pitch, float drop,
-                  const Mat4& head, const float origin[3],
+                  float dist, const Mat4& head, const float origin[3],
                   const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickDockRay(items, st, halfW, yaw, pitch, drop, origin, o, d);
+    return pickDockRay(items, st, halfW, yaw, pitch, drop, dist,
+                       origin, o, d);
 }
 
 bool dockPinnable(const DockItem& it) {
@@ -361,16 +364,16 @@ float shelfTop() {
     return shelfLift() + kShelfHH;
 }
 
-void shelfCenter(float yaw, float pitch, const float origin[3],
+void shelfCenter(float yaw, float pitch, float dist, const float origin[3],
                  float c[3], float r[3], float up[3]) {
-    dockCenter(yaw, pitch, origin, c, r, up);
+    dockCenter(yaw, pitch, dist, origin, c, r, up);
     for (int i = 0; i < 3; ++i) c[i] += up[i] * shelfLift();
 }
 
-void shelfCenterDrop(float yaw, float pitch, float drop,
+void shelfCenterDrop(float yaw, float pitch, float drop, float dist,
                      const float origin[3], float c[3], float r[3],
                      float up[3]) {
-    shelfCenter(yaw, pitch, origin, c, r, up);
+    shelfCenter(yaw, pitch, dist, origin, c, r, up);
     for (int i = 0; i < 3; ++i) c[i] -= up[i] * drop;
 }
 
@@ -386,22 +389,23 @@ int shelfItemAt(const std::vector<ShelfItem>& items, float halfW,
     return -1;
 }
 
-bool rayShelf(float yaw, float pitch, float drop, const float origin[3],
+bool rayShelf(float yaw, float pitch, float drop, float dist,
+              const float origin[3],
               const float o[3], const float d[3], float halfW,
               float* u, float* v, float* t) {
     float c[3], r[3], up[3];
-    shelfCenterDrop(yaw, pitch, drop, origin, c, r, up);
+    shelfCenterDrop(yaw, pitch, drop, dist, origin, c, r, up);
     return rayQuad(c, r, up, origin, o, d, halfW, kShelfHH, u, v, t);
 }
 
 ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
-                       float yaw, float pitch, float drop,
+                       float yaw, float pitch, float drop, float dist,
                        const float origin[3], const float o[3],
                        const float d[3]) {
     ShelfPick pk;
     if (items.empty() || halfW <= 0.0f) return pk;
     float u, v, t;
-    if (!rayShelf(yaw, pitch, drop, origin, o, d, halfW, &u, &v, &t))
+    if (!rayShelf(yaw, pitch, drop, dist, origin, o, d, halfW, &u, &v, &t))
         return pk;
     if (fabsf(u) > 1.0f || fabsf(v) > 1.0f) return pk;
     pk.hit = true;
@@ -411,11 +415,12 @@ ShelfPick pickShelfRay(const std::vector<ShelfItem>& items, float halfW,
 }
 
 ShelfPick pickShelf(const std::vector<ShelfItem>& items, float halfW,
-                    float yaw, float pitch, float drop, const Mat4& head,
+                    float yaw, float pitch, float drop, float dist,
+                    const Mat4& head,
                     const float origin[3], const float o[3]) {
     float d[3];
     gazeDir(head, d);
-    return pickShelfRay(items, halfW, yaw, pitch, drop, origin, o, d);
+    return pickShelfRay(items, halfW, yaw, pitch, drop, dist, origin, o, d);
 }
 
 DockAction dockActivateAction(const DockItem& it,

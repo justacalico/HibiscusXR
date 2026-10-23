@@ -47,6 +47,17 @@ void testInput() {
     mkBlock(buf, CTRL_RIGHT, 100.0f, 93, 0);
 
     ctrl_state st;
+    // the pad axis reads centred at 128: deadzone around rest, full
+    // deflection at the edges, rescaled so deflection past the dead band
+    // still reaches +-1
+    CHECK_F(ctrlPadAxis(128), 0.0f, 1e-6f);
+    CHECK_F(ctrlPadAxis(129), 0.0f, 1e-6f);
+    CHECK_F(ctrlPadAxis(110), 0.0f, 1e-6f);
+    CHECK_F(ctrlPadAxis(0), -1.0f, 1e-5f);
+    CHECK_F(ctrlPadAxis(255), 1.0f, 1e-5f);
+    CHECK(ctrlPadAxis(200) > 0.0f && ctrlPadAxis(200) < 1.0f);
+    CHECK(ctrlPadAxis(56) < 0.0f && ctrlPadAxis(56) > -1.0f);
+
     ctrl_state_decode(buf, CTRL_LEFT, &st);
     CHECK(st.pose_ok && st.keys_ok);
     CHECK_F(st.fixed.x, -100.0f, 1e-5f);

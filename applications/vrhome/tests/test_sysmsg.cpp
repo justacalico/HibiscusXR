@@ -66,9 +66,9 @@ void testSysMsg() {
     {
         const float origin[3] = {0.0f, 0.0f, 0.0f};
         float c[3], r[3], up[3];
-        sysMsgCenter(0.0f, kDockPitchRest, kSysMsgLift, origin, c, r, up);
+        sysMsgCenter(0.0f, kDockPitchRest, kSysMsgLift, kPanelDist, origin, c, r, up);
         float dc[3], dr[3], dup[3];
-        dockCenter(0.0f, kDockPitchRest, origin, dc, dr, dup);
+        dockCenter(0.0f, kDockPitchRest, kPanelDist, origin, dc, dr, dup);
         const float dd = sqrtf((c[0]-dc[0])*(c[0]-dc[0]) +
                                (c[1]-dc[1])*(c[1]-dc[1]) +
                                (c[2]-dc[2])*(c[2]-dc[2]));
@@ -79,7 +79,7 @@ void testSysMsg() {
         const float len = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= len; d[1] /= len; d[2] /= len;
         float u, v, t;
-        CHECK(raySysMsg(0.0f, kDockPitchRest, kSysMsgLift, origin, o, d,
+        CHECK(raySysMsg(0.0f, kDockPitchRest, kSysMsgLift, kPanelDist, origin, o, d,
                         &u, &v, &t));
         CHECK(fabsf(u) < 1e-4f && fabsf(v) < 1e-4f);
         CHECK(t > 0.5f && t < 3.0f);
@@ -90,17 +90,17 @@ void testSysMsg() {
         std::vector<SysMsgItem> items = {mkMsg("a keeps stopping", 2),
                                          mkMsg("b keeps stopping", 2)};
         float c[3], r[3], up[3];
-        sysMsgCenter(0.0f, kDockPitchRest, kSysMsgLift, o0, c, r, up);
+        sysMsgCenter(0.0f, kDockPitchRest, kSysMsgLift, kPanelDist, o0, c, r, up);
         float d[3] = {c[0], c[1], c[2]};
         const float len = sqrtf(d[0]*d[0] + d[1]*d[1] + d[2]*d[2]);
         d[0] /= len; d[1] /= len; d[2] /= len;
         SysMsgPick pk = pickSysMsgRay(items, 0.0f, kDockPitchRest,
-                                      kSysMsgLift, o0, o0, d);
+                                      kSysMsgLift, kPanelDist, o0, o0, d);
         CHECK(pk.hit && pk.zone == MZONE_BODY && pk.btn == -1);
         // no cards: no pick
         std::vector<SysMsgItem> none;
         pk = pickSysMsgRay(none, 0.0f, kDockPitchRest, kSysMsgLift,
-                           o0, o0, d);
+                           kPanelDist, o0, o0, d);
         CHECK(!pk.hit);
     }
 
@@ -109,7 +109,7 @@ void testSysMsg() {
     {
         std::vector<SysMsgItem> items = {mkMsg("a keeps stopping", 1)};
         Mat4 head = identity();
-        SysMsgPick pk = pickSysMsg(items, 0.0f, kSysMsgPitch, 0.0f,
+        SysMsgPick pk = pickSysMsg(items, 0.0f, kSysMsgPitch, 0.0f, kPanelDist,
                                    head, o0, o0);
         // the card hovers just above eye level: a level gaze passes under
         // its centre but still clips the card or misses cleanly - verify

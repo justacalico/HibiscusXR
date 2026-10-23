@@ -299,7 +299,8 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     const float gs = kGridScale0 + (1.0f - kGridScale0) * gt;
     const float ga = gt;
     float c[3], r[3], up[3];
-    gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
+    gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+               e->ringPos,
                c, r, up);
     const float hw = kGridHW * gs, hh = kGridHH * gs;
 

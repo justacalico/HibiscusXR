@@ -23,6 +23,15 @@ void ringPoint(float yaw, float pitch, float dist, float y0,
 void panelCenter(const Panel& p, const float origin[3], float out[3],
                  float right[3], float up[3]);
 
+// ring-radius clamp for the depth push/pull: a window never lands inside
+// the viewer's face or out past comfortable reach
+float clampRingDist(float d);
+
+// depth push on the whole dash: the ring's radius gains `d` clamped to the
+// limits, and every panel - docked or floating - shifts by the amount the
+// clamp actually applied. Returns the new ring radius
+float pushDash(std::vector<Panel>& panels, float ringDist, float d);
+
 // the window's half extents with its user scale folded in
 float panelHW(const Panel& p);
 float panelHH(const Panel& p);
@@ -39,9 +48,9 @@ float freeSlotYaw(const std::vector<Panel>& panels, float centre);
 float centreSlotYaw(std::vector<Panel>& panels, float centre);
 
 // bring a parked window back onto the ring: the free slot nearest its old
-// yaw, sharing the row's elevation
+// yaw, sharing the row's elevation and the ring's current radius
 void restorePanel(std::vector<Panel>& panels, int self, float centre,
-                  float pitch);
+                  float pitch, float dist);
 
 // the ring's current elevation: docked panels share one pitch
 float ringPitch(const std::vector<Panel>& panels);

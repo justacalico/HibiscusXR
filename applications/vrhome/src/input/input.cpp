@@ -517,6 +517,7 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                             p.yaw = dockSlotYaw(e->panels, i, e->dockYaw);
                             p.pitch = dashRingPitch(e->panels,
                                                     e->dockPitch);
+                            p.dist = e->dashDist;
                         }
                     } else if (e->pressZone == ZONE_LABEL && e->backend &&
                                p.taskId >= 0 &&
@@ -575,6 +576,23 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
 // sees motion events on-device (NOT_TOUCHABLE), so this arrives from the
 // desktop harness and the debug tools
 void hudScroll(HudEngine* e, float delta) {
+    // a held move drag turns the scroll axis into depth: a nudge away from
+    // the body (wheel up, stick or pad pushed forward) carries the dash
+    // farther out, toward the body pulls it in. A floating window's own
+    // pill push/pulls just that window
+    const float dd = -delta * kDepthStep;
+    if (e->confirmHeld && e->moveHeld) {
+        e->dashDist = pushDash(e->panels, e->dashDist, dd);
+        return;
+    }
+    if (e->confirmHeld && e->pressZone == ZONE_PILL && e->pressDisp >= 0) {
+        for (auto& p : e->panels)
+            if (p.displayId == e->pressDisp) {
+                p.dist = clampRingDist(p.dist + dd);
+                break;
+            }
+        return;
+    }
     if (e->set.shown) {
         e->set.scrollVel = 0.0f;
         setScroll(e, delta);
@@ -673,8 +691,8 @@ void moveTick(HudEngine* e) {
          e->grid.pressZone == GZONE_DOTS) && e->confirmHeld &&
             e->grid.shown) {
         float c[3], r[3], up[3];
-        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                   c, r, up);
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                   e->ringPos, c, r, up);
         float u, v, t;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                     kGridHW, kGridHH, &u, &v, &t) &&
@@ -693,8 +711,8 @@ void moveTick(HudEngine* e) {
     // edge-pinned drag decays toward 0 like a finger pressing the list
     if (e->grid.scrollHeld && e->confirmHeld && e->grid.shown) {
         float c[3], r[3], up[3];
-        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                   c, r, up);
+        gridCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                   e->ringPos, c, r, up);
         float u, v, t;
         const float prev = e->grid.scroll;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
@@ -711,8 +729,8 @@ void moveTick(HudEngine* e) {
     // aim's card-local u until the release
     if (e->quick.slideHeld >= 0 && e->confirmHeld && e->quick.shown) {
         float c[3], r[3], up[3];
-        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                    c, r, up);
+        quickCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                    e->ringPos, c, r, up);
         float u, v, t;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,
                     kQuickHW, kQuickHH, &u, &v, &t))
@@ -722,8 +740,8 @@ void moveTick(HudEngine* e) {
     // delta from the grab slides the rows, tracked like the grid's
     if (e->shade.scrollHeld && e->confirmHeld && e->shade.shown) {
         float c[3], r[3], up[3];
-        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->ringPos,
-                    c, r, up);
+        shadeCenter(e->dockYaw, ringPitchFor(e->dockPitch), e->dashDist,
+                    e->ringPos, c, r, up);
         float u, v, t;
         const float prev = e->shade.scroll;
         if (rayQuad(c, r, up, e->ringPos, e->aimO, e->aimD,

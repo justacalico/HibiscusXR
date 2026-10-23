@@ -5,6 +5,11 @@ linked line per MR no matter how many commits it carried.
 
 ## Unreleased
 - [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)
+- [vrdash -vr：以 OpenXR overlay 呈现面板](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/206) (!206)
+- [Dash 卡片滚动惯性](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/207) (!207)
+- [feat: dash 与浮动窗口支持深度推拉](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/208) (!208)
+- [vrhome: 关闭窗口加收缩吸入动画](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/209) (!209)
+- [网站刷机指南补 unxz 解压步骤](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/210) (!210)
 
 ## [alpha-v2026.10.21-r23] - 2026-10-21
 - [修复网站测试,解除页面部署阻塞](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/157) (!157)

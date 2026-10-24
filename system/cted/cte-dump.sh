@@ -111,15 +111,20 @@ cap ctrl/queries.txt sh -c 'input keyevent KEYCODE_WAKEUP; sleep 1;
   done; sleep 2; logcat -d -s vrhud.cvlink:* | tail -60'
 cap ctrl/wire.txt sh -c 'input keyevent KEYCODE_WAKEUP; sleep 1;
   svc=$(pidof com.picovr.picovrlib.cvcontroller:RemoteService);
-  [ -z "$svc" ] && { setprop debug.vrhome.ctrlscan 1; sleep 8;
+  [ -z "$svc" ] && { setprop debug.vrhome.ctrlscan 0; sleep 1;
+    setprop debug.vrhome.ctrlscan 1; sleep 8;
     svc=$(pidof com.picovr.picovrlib.cvcontroller:RemoteService); }
   if [ -z "$svc" ]; then echo "no RemoteService"; exit 0; fi
   strace -p $svc -f -tt -s 300 -e trace=read,write,openat \
     -e read=40,41,42,43,44,45 -e write=40,41,42,43,44,45 \
     -o /data/local/tmp/cte-wire.$$.txt & spid=$!; sleep 1;
-  setprop debug.vrhome.ctrlscan 1; sleep 25;
+  setprop debug.vrhome.ctrlscan 0; sleep 1;
+  setprop debug.vrhome.ctrlscan 1; sleep 8;
+  setprop debug.vrhome.ctrltransact 57,0; sleep 4;
+  setprop debug.vrhome.ctrltransact 45,0; sleep 8;
   setprop debug.vrhome.ctrlscan 0; sleep 2;
-  kill $spid 2>/dev/null; cat /data/local/tmp/cte-wire.$$.txt;
+  kill $spid 2>/dev/null; wait $spid 2>/dev/null;
+  cat /data/local/tmp/cte-wire.$$.txt;
   rm -f /data/local/tmp/cte-wire.$$.txt'
 
 cap ctrlshare.bin cat /sdcard/CtrlShareMem

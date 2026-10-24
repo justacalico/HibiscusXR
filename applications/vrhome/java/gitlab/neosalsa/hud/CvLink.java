@@ -72,6 +72,8 @@ final class CvLink implements CtrlService {
     // last service push (or start request we should give time to land);
     // the poke restart gate runs off this
     private volatile long lastBeatMs;
+    // the station bond-table seed only needs to go out once per bind
+    private volatile boolean seedTried;
 
     private CvLink(Context c) {
         ctx = c;
@@ -95,6 +97,7 @@ final class CvLink implements CtrlService {
                     ComponentName n, IBinder b) {
                 svc = b;
                 threadUp = false;
+                seedTried = false;
                 work.post(new Runnable() {
                     @Override public void run() {
                         // the stock client announces itself with a 4-part
@@ -252,7 +255,55 @@ final class CvLink implements CtrlService {
             work.post(new Runnable() {
                 @Override public void run() { pairNow(); }
             });
+        else if (!seedTried) {
+            seedTried = true;
+            work.post(new Runnable() {
+                @Override public void run() { seedWhitelist(); }
+            });
+        }
         if (listener != null) listener.onChange();
+    }
+
+    // the station's bond table is RAM: a power-cycled station forgets
+    // every wand the service ever bonded. The service keeps the last
+    // bonds in its own persist files, so once the thread is up the
+    // whitelist gets pushed back and a stored wand can reconnect on
+    // wake instead of needing a fresh scan pair
+    private void seedWhitelist() {
+        String m1 = readMac("/persist/ndi/ctr1BleMac");
+        String m2 = readMac("/persist/ndi/ctr2BleMac");
+        if (m1 == null || m2 == null || svc == null) return;
+        Parcel in = Parcel.obtain();
+        in.writeInterfaceToken(IFACE);
+        in.writeString(m1);
+        in.writeString(m2);
+        Parcel out = Parcel.obtain();
+        try {
+            svc.transact(TR_USB_PAIR, in, out, 0);
+            out.readException();
+            out.recycle();
+        } catch (Throwable t) {
+            out.recycle();
+        } finally {
+            in.recycle();
+        }
+    }
+
+    // the file's first six bytes are the raw MAC, the rest is an
+    // ASCII id suffix the station doesn't want
+    private static String readMac(String path) {
+        try {
+            java.io.RandomAccessFile f =
+                    new java.io.RandomAccessFile(path, "r");
+            byte[] b = new byte[6];
+            int n = f.read(b);
+            f.close();
+            if (n < 6) return null;
+            return String.format("%02x:%02x:%02x:%02x:%02x:%02x",
+                    b[0], b[1], b[2], b[3], b[4], b[5]);
+        } catch (Throwable t) {
+            return null;
+        }
     }
 
     private void registerCb() {

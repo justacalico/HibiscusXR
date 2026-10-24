@@ -71,7 +71,8 @@ private:
     struct Slot {
         int displayId = -1;
         unsigned tex = 0;
-        int w = 0, h = 0;   // px size the panel's display runs at
+        int w = 0, h = 0;      // px size the panel's display runs at
+        int texW = 0, texH = 0; // size the texture is allocated at
         WlTask* task = nullptr;
         pid_t pid = -1;
         std::string wmClass;
@@ -92,6 +93,7 @@ private:
     long long sysPollAt = 0;
     int sysWifi = 0, sysEth = 0, sysBatt = -1, sysChg = 0;
     std::string sysSsid;
+    float sysVol = 0.0f, sysBri = 0.5f;
     bool pinsSent = false;
     bool groupsSent = false;
     std::vector<LibGroup> groups;

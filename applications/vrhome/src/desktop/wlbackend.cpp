@@ -171,6 +171,14 @@ void WlBackend::pollSys() {
         sysChg = parseCharging(st) ? 1 : 0;
         break;
     }
+    const std::string v =
+        runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
+    sysVol = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);
+    if (sysVol < 0.0f) sysVol = 0.0f;
+    // -c backlight: unfiltered -m can lead with a keyboard led
+    sysBri = parseBrightness(
+        runOut("brightnessctl -m -c backlight 2>/dev/null"));
+    if (sysBri < 0.0f) sysBri = 0.5f;
 }
 
 const DeskEntry* WlBackend::entry(const std::string& pkg) {
@@ -233,6 +241,8 @@ int WlBackend::createPanel(Panel* p, unsigned tex, int w, int h, int) {
     s.tex = tex;
     s.w = w;
     s.h = h;
+    s.texW = w;
+    s.texH = h;
     s.bornMs = dashNowMs();
     p->displayId = id;
     p->st = &slots[id];
@@ -287,21 +297,26 @@ void WlBackend::updatePanel(Panel* p) {
             releases.push_back(p->displayId);
         return;
     }
-    if (!t->mapped) return;
-    if (t->dirty && c->taskGpuBind(t, p->tex)) t->dirty = false;
+    if (!t->mapped || !t->dirty) return;
+    if (c->taskGpuBind(t, p->tex)) { t->dirty = false; return; }
+    // commits only dirtied rects: repaint the union once per update,
+    // then push just the changed rows - GLES2 has no unpack row
+    // length, so sub uploads run at full texture width
+    c->recompose(t);
     if (!t->dirty || t->img.rgba.empty()) return;
     glBindTexture(GL_TEXTURE_2D, p->tex);
-    if (t->img.w != t->bufW || t->img.h != t->bufH ||
-            t->dx0 == 0 && t->dy0 == 0 && t->dx1 == t->img.w &&
-            t->dy1 == t->img.h) {
+    if (s->texW != t->img.w || s->texH != t->img.h) {
+        s->texW = t->img.w;
+        s->texH = t->img.h;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, t->img.w, t->img.h, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, t->img.rgba.data());
     } else {
-        glTexSubImage2D(GL_TEXTURE_2D, 0, t->dx0, t->dy0,
-                        t->dx1 - t->dx0, t->dy1 - t->dy0,
+        int y0 = t->dy0, y1 = t->dy1;
+        if (y0 < 0) y0 = 0;
+        if (y1 > t->img.h) y1 = t->img.h;
+        glTexSubImage2D(GL_TEXTURE_2D, 0, 0, y0, t->img.w, y1 - y0,
                         GL_RGBA, GL_UNSIGNED_BYTE,
-                        t->img.rgba.data() +
-                            ((size_t)t->dy0 * t->img.w + t->dx0) * 4);
+                        t->img.rgba.data() + (size_t)y0 * t->img.w * 4);
     }
     t->dirty = false;
 }
@@ -436,15 +451,10 @@ void WlBackend::quickStatus(QsStatus* out) {
     out->toggles = qsMask;
     if (sysWifi) out->toggles |= (1u << QS_WIFI);
     out->net = sysEth ? DNET_ETH : sysWifi ? DNET_WIFI : DNET_NONE;
-    const std::string v =
-        runOut("wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null");
-    out->volume = parseWpctlMuted(v) ? 0.0f : parseWpctlVol(v);
-    if (out->volume < 0.0f) out->volume = 0.0f;
-    // -c backlight: unfiltered -m can lead with a keyboard led
-    const std::string b =
-        runOut("brightnessctl -m -c backlight 2>/dev/null");
-    out->brightness = parseBrightness(b);
-    if (out->brightness < 0.0f) out->brightness = 0.5f;
+    // vol/brightness ride the 2s pollSys cache: spawning the probes
+    // every tick was hundreds of forks a second with the panel open
+    out->volume = sysVol;
+    out->brightness = sysBri;
     out->batt = sysBatt;
     out->chg = sysChg;
     out->ssid = sysSsid;
@@ -460,12 +470,13 @@ void WlBackend::quickToggle(int id, bool on) {
 
 void WlBackend::quickSetSlider(int slider, float v) {
     if (slider == QSLIDER_VOLUME) {
+        sysVol = v < 0.0f ? 0.0f : v > 1.0f ? 1.0f : v;
         char cmd[128];
         snprintf(cmd, sizeof(cmd),
-                 "wpctl set-volume @DEFAULT_AUDIO_SINK@ %.2f",
-                 v < 0.0f ? 0.0f : v > 1.0f ? 1.0f : v);
+                 "wpctl set-volume @DEFAULT_AUDIO_SINK@ %.2f", sysVol);
         runBg(cmd);
     } else if (slider == QSLIDER_BRIGHTNESS) {
+        sysBri = v;
         char cmd[128];
         snprintf(cmd, sizeof(cmd), "brightnessctl set %.0f%%",
                  v * 100.0f);

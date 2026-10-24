@@ -172,7 +172,7 @@ int main(int argc, char** argv) {
         else
             poll(&pfd, 1, 4);
         comp->dispatch(0);
-        comp->flush();
+        comp->flushEvents();
         if (!app.headless) glfwPollEvents();
         dashDrainPre();
         const long long now = dashNowMs();
@@ -195,6 +195,9 @@ int main(int argc, char** argv) {
             drawDashScene(&hud, vp);
             dashDrainPost();
             dashPresent(&app);
+            // frame callbacks land after the frame: clients pace their
+            // renders to presented frames, not to the poll loop's spin
+            comp->flush();
         }
     }
     dashStop(&app);

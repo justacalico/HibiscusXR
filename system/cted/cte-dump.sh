@@ -86,6 +86,42 @@ cap sys/sensors.txt sh -c 'ls -lR /sys/class/sensors;
 cap sys/pstore.txt sh -c 'ls -l /sys/fs/pstore;
   for f in /sys/fs/pstore/*; do echo "== $f"; cat "$f"; done'
 
+cap ctrl/sysfs.txt sh -c 'for f in /sys/kernel/debug/mcu52840/* \
+    /sys/bus/spi/devices/spi1.0/picovr_*; do
+    echo "== $f"; cat "$f"; done; ls -l /dev/spi*'
+cap ctrl/persist.txt sh -c 'ls -l /persist/ndi;
+  for f in /persist/ndi/*; do echo "== $f"; xxd "$f" | head -8; done'
+cap ctrl/hw.txt sh -c 'cat /persist/vendorhw/pxr/pxr_product;
+  cat /sys/bus/platform/drivers/hw_version/soc:hw_version/version;
+  getprop persist.pvr.mainmci.extflag ro.product.device ro.product.name'
+cap ctrl/services.txt sh -c 'service list | grep -iE "cv|controller|hb|humming";
+  service check hbservice; service check CVControllerService'
+cap ctrl/proc.txt sh -c 'ps -A | grep -iE "cvcontroller|picovr|neosalsa.hud";
+  for p in $(pidof com.picovr.picovrlib.cvcontroller:RemoteService); do
+    echo "== fds $p";
+    ls -l /proc/$p/fd | grep -vE "jar|apk|socket|pipe|null|anon";
+    for t in /proc/$p/task/*; do printf "%s %s: " ${t##*/} \
+      "$(cat $t/comm)"; cat $t/wchan; echo; done; done'
+cap ctrl/logcat.txt sh -c 'logcat -d -v threadtime -s CVControllerService:* \
+    cvcontrollerService:* VrApi:* SpiSensor:* CVSPI:* em-decode-imu:* \
+    vrhud.cvlink:* vrhome:*'
+cap ctrl/queries.txt sh -c 'input keyevent KEYCODE_WAKEUP; sleep 1;
+  for q in 5,0 6,0 25,0 45,0 45,1 47,0 57,0 58,0 58,1 61,0 63,0 63,1; do
+    setprop debug.vrhome.ctrltransact "$q"; sleep 2;
+  done; sleep 2; logcat -d -s vrhud.cvlink:* | tail -60'
+cap ctrl/wire.txt sh -c 'input keyevent KEYCODE_WAKEUP; sleep 1;
+  svc=$(pidof com.picovr.picovrlib.cvcontroller:RemoteService);
+  [ -z "$svc" ] && { setprop debug.vrhome.ctrlscan 1; sleep 8;
+    svc=$(pidof com.picovr.picovrlib.cvcontroller:RemoteService); }
+  if [ -z "$svc" ]; then echo "no RemoteService"; exit 0; fi
+  strace -p $svc -f -tt -s 300 -e trace=read,write,openat \
+    -e read=40,41,42,43,44,45 -e write=40,41,42,43,44,45 \
+    -o /data/local/tmp/cte-wire.$$.txt & spid=$!; sleep 1;
+  setprop debug.vrhome.ctrlscan 1; sleep 25;
+  setprop debug.vrhome.ctrlscan 0; sleep 2;
+  kill $spid 2>/dev/null; cat /data/local/tmp/cte-wire.$$.txt;
+  rm -f /data/local/tmp/cte-wire.$$.txt'
+
 cap ctrlshare.bin cat /sdcard/CtrlShareMem
 cap hibiscus.txt sh -c 'ls -laR /data/local/tmp/hibiscus /data/local/tmp/xr;
   getprop | grep -iE "hibiscus|pvr|pico"'

@@ -246,6 +246,7 @@ static void ptDump(Engine* e) {
     glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), 1.0f, 1.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), 0.0f);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), 1.0f);
     const float id[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1};
     glUniformMatrix4fv(glGetUniformLocation(e->floatProg, "uMVP"),
                        1, GL_FALSE, id);

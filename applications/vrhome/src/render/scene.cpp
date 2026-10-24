@@ -73,6 +73,9 @@ static void drawPt(Engine* e, float fovY, float aspect) {
     glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), 1.0f, 1.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), 0.0f);
+    // uAlpha multiplies rgb since the shader went premultiplied - the
+    // feed draws at full strength, nothing here sets it per-frame
+    glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), 1.0f);
     const Mat4 id = identity();
     glUniformMatrix4fv(glGetUniformLocation(e->floatProg, "uMVP"),
                        1, GL_FALSE, id.m);
@@ -103,6 +106,7 @@ static void drawPtRaw(Engine* e) {
     glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), 1.0f, 1.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadius"), 0.0f);
     glUniform1f(glGetUniformLocation(e->floatProg, "uRadiusB"), 0.0f);
+    glUniform1f(glGetUniformLocation(e->floatProg, "uAlpha"), 1.0f);
     const Mat4 id = identity();
     glUniformMatrix4fv(glGetUniformLocation(e->floatProg, "uMVP"),
                        1, GL_FALSE, id.m);

@@ -33,7 +33,9 @@ void main() { vUV = aUV; gl_Position = uMVP * vec4(aPos, 1.0); }
 // app panel: samples an external OES texture fed by the virtual display,
 // corners rounded off in panel space. uRadius rounds the top corners,
 // uRadiusB the bottom ones - the bound top bar wants a square top edge.
-// uAlpha fades the whole surface for spawn-in and the park flight
+// uAlpha fades the whole surface for spawn-in and the park flight.
+// Source textures are premultiplied (OES feeds, wayland shm composites)
+// and the output stays premultiplied for the panel's GL_ONE blend
 const char* const kFloatFS = R"(
 #extension GL_OES_EGL_image_external : require
 precision mediump float;
@@ -53,8 +55,9 @@ void main() {
     vec2 q = abs(p) - uHalf + vec2(r);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
-    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0)));
-    gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
+    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0))) * c.a;
+    float f = a * uAlpha;
+    gl_FragColor = vec4(c.rgb * f, c.a * f);
 }
 )";
 
@@ -76,8 +79,9 @@ void main() {
     vec2 q = abs(p) - uHalf + vec2(r);
     float d = min(max(q.x, q.y), 0.0) + length(max(q, vec2(0.0))) - r;
     float a = 1.0 - smoothstep(-0.0015, 0.0015, d);
-    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0)));
-    gl_FragColor = vec4(c.rgb, c.a * a * uAlpha);
+    c.rgb += vec3(uSheen * (0.30 * vUV.y + 0.70 * pow(vUV.y, 8.0))) * c.a;
+    float f = a * uAlpha;
+    gl_FragColor = vec4(c.rgb * f, c.a * f);
 }
 )";
 

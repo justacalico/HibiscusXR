@@ -64,7 +64,9 @@ static bool panelVis(HudEngine* e, int i, const float shc[3],
 void drawPanels(HudEngine* e, const Mat4& viewProj) {
     if (e->panels.empty()) return;
     glEnable(GL_BLEND);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    // panel textures are premultiplied: OES feeds and the wayland shm
+    // composite both are, and floatProg keeps the output that way
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
     // the park flight's target frame: the shelf pill's anchor, shared by
@@ -291,7 +293,7 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     const bool hov = e->kbd.hover;
 
     glEnable(GL_BLEND);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
     // the IME's surface, rounded on all corners

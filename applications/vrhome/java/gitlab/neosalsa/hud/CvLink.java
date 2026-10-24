@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Parcel;
@@ -44,9 +45,13 @@ final class CvLink implements CtrlService {
 
     private final Context ctx;
     private final Handler main = new Handler(Looper.getMainLooper());
-    private IBinder svc;
-    private ServiceConnection conn;
-    private Listener listener;
+    // binder calls to the link can block for as long as the remote end
+    // stalls - none of them may run on the main or render threads, so
+    // every transact goes through this worker
+    private final Handler work;
+    private volatile IBinder svc;
+    private volatile ServiceConnection conn;
+    private volatile Listener listener;
     private PowerManager.WakeLock wakeLock;
     // set by the service's callback pushes: any inbound frame means the
     // SPI worker is alive, which is the only time pair/query calls land
@@ -55,7 +60,12 @@ final class CvLink implements CtrlService {
     // first callback lands
     private volatile boolean wantPair;
 
-    private CvLink(Context c) { ctx = c; }
+    private CvLink(Context c) {
+        ctx = c;
+        HandlerThread t = new HandlerThread("vrhud.cvlink");
+        t.start();
+        work = new Handler(t.getLooper());
+    }
 
     static CvLink probe(Context ctx) {
         Intent i = new Intent(ACTION);
@@ -72,17 +82,25 @@ final class CvLink implements CtrlService {
                     ComponentName n, IBinder b) {
                 svc = b;
                 threadUp = false;
-                // the stock client announces itself with a 4-part version;
-                // anything >= 2.8.0.0 flips the service into CV2
-                // per-controller reporting
-                transactStr(TR_SET_UNITY, "3.0.0.0");
-                registerCb();
-                // the SPI link to the RF station only exists while this
-                // worker runs, so pair/query calls are no-ops until the
-                // first callback push marks it up
-                Parcel r = transact(TR_START_THREAD, 1, 1);
-                if (r != null) r.recycle();
-                if (listener != null) listener.onChange();
+                work.post(new Runnable() {
+                    @Override public void run() {
+                        // the stock client announces itself with a 4-part
+                        // version; anything >= 2.8.0.0 flips the service
+                        // into CV2 per-controller reporting
+                        transactStr(TR_SET_UNITY, "3.0.0.0");
+                        registerCb();
+                        // the SPI link to the RF station only exists while
+                        // this worker runs, so pair/query calls are no-ops
+                        // until the first callback push marks it up
+                        Parcel r = transact(TR_START_THREAD, 1, 1);
+                        if (r != null) r.recycle();
+                        if (listener != null) main.post(new Runnable() {
+                            @Override public void run() {
+                                if (listener != null) listener.onChange();
+                            }
+                        });
+                    }
+                });
             }
             @Override public void onServiceDisconnected(
                     ComponentName n) {
@@ -195,7 +213,10 @@ final class CvLink implements CtrlService {
     private void onPush() {
         if (!threadUp) {
             threadUp = true;
-            if (wantPair && svc != null) pairNow();
+            if (wantPair && svc != null)
+                work.post(new Runnable() {
+                    @Override public void run() { pairNow(); }
+                });
         }
         if (listener != null) listener.onChange();
     }
@@ -261,25 +282,29 @@ final class CvLink implements CtrlService {
         return s == null ? "" : s;
     }
 
-    @Override public void setPairing(boolean on) {
+    @Override public void setPairing(final boolean on) {
         wantPair = on;
-        if (svc == null) return;
-        if (!on) {
-            // interrupt closes the native scan; stop clears the
-            // service's needstartpairing latch, which interrupt alone
-            // leaves set
-            Parcel r = transact(TR_INTERRUPT_PAIR);
-            if (r != null) r.recycle();
-            r = transact(TR_STOP_PAIR, 0);
-            if (r != null) r.recycle();
-            return;
-        }
-        if (!threadUp) {
-            Parcel r = transact(TR_START_THREAD, 1, 1);
-            if (r != null) r.recycle();
-            return;   // onPush() fires pairNow() once the worker is up
-        }
-        pairNow();
+        work.post(new Runnable() {
+            @Override public void run() {
+                if (svc == null) return;
+                if (!on) {
+                    // interrupt closes the native scan; stop clears the
+                    // service's needstartpairing latch, which interrupt
+                    // alone leaves set
+                    Parcel r = transact(TR_INTERRUPT_PAIR);
+                    if (r != null) r.recycle();
+                    r = transact(TR_STOP_PAIR, 0);
+                    if (r != null) r.recycle();
+                    return;
+                }
+                if (!threadUp) {
+                    Parcel r = transact(TR_START_THREAD, 1, 1);
+                    if (r != null) r.recycle();
+                    return;   // onPush() fires pairNow() once up
+                }
+                pairNow();
+            }
+        });
     }
 
     // the service latches needstartpairing and ignores every later start
@@ -293,18 +318,34 @@ final class CvLink implements CtrlService {
         if (r != null) r.recycle();
     }
 
-    @Override public void debugTransact(int code, int arg) {
-        if (svc == null) return;
-        Parcel r = transact(code, arg);
-        if (r == null) { Log.i(TAG, "tr " + code + " -> null"); return; }
-        StringBuilder sb = new StringBuilder();
-        while (r.dataAvail() >= 4) sb.append(r.readInt()).append(' ');
-        Log.i(TAG, "tr " + code + " -> " + sb);
-        r.recycle();
+    @Override public void debugTransact(final int code, final int arg) {
+        work.post(new Runnable() {
+            @Override public void run() {
+                if (svc == null) return;
+                Parcel r = transact(code, arg);
+                if (r == null) {
+                    Log.i(TAG, "tr " + code + " -> null");
+                    return;
+                }
+                StringBuilder sb = new StringBuilder();
+                while (r.dataAvail() >= 4)
+                    sb.append(r.readInt()).append(' ');
+                Log.i(TAG, "tr " + code + " -> " + sb);
+                r.recycle();
+            }
+        });
     }
 
     @Override public void unbindAll() {
-        if (svc == null) return;
+        work.post(new Runnable() {
+            @Override public void run() {
+                if (svc == null) return;
+                unbindAllNow();
+            }
+        });
+    }
+
+    private void unbindAllNow() {
         // setControllerUnbind takes the slot index; clear both
         for (int i = 0; i < 2; ++i) {
             Parcel r = transact(TR_UNBIND, i);
@@ -319,35 +360,43 @@ final class CvLink implements CtrlService {
     // Every start also restarts a live thread, so the native side only
     // calls while the channel is actually quiet.
     @Override public void poke() {
-        try {
-            // a scan window keeps the sharemem quiet by itself, so the
-            // quiet-detector fires during pairing - but every start is a
-            // full ~5s thread re-init that kills the window, so only the
-            // plain enables go out while a scan is open
-            if (!wantPair) {
-                Intent i = new Intent(
-                        "com.picovr.picovrlib.cv.broadcast.start.thread");
-                i.setPackage(PKG);
-                i.putExtra("HeadTrackMode", 1);
-                i.putExtra("CtrlerTrackMode", 1);
-                ctx.sendBroadcast(i);
+        work.post(new Runnable() {
+            @Override public void run() {
+                try {
+                    // a scan window keeps the sharemem quiet by itself, so
+                    // the quiet-detector fires during pairing - but every
+                    // start is a full ~5s thread re-init that kills the
+                    // window, so only the plain enables go out while a
+                    // scan is open
+                    if (!wantPair) {
+                        Intent i = new Intent(
+                                "com.picovr.picovrlib.cv.broadcast.start.thread");
+                        i.setPackage(PKG);
+                        i.putExtra("HeadTrackMode", 1);
+                        i.putExtra("CtrlerTrackMode", 1);
+                        ctx.sendBroadcast(i);
+                    }
+                    // stock fires this when 6dof tracking engages to
+                    // enable the controller-side EM ADC stream; nothing
+                    // on this build does
+                    Intent adc = new Intent(
+                            "android.intent.pvrcon.grapadc");
+                    adc.setPackage(PKG);
+                    ctx.sendBroadcast(adc);
+                    // same story for the slpi side - the service gates its
+                    // ssc sensor receive path on this action, so without
+                    // it the ndi_fpga stream never starts even when
+                    // everything is configured
+                    Intent rx = new Intent(
+                            "pui.settings.action.ENABLE_RX");
+                    rx.setPackage(PKG);
+                    rx.putExtra("enable", 1);
+                    ctx.sendBroadcast(rx);
+                    Log.i(TAG, "ctrl thread poked");
+                } catch (Throwable t) {
+                    Log.e(TAG, "ctrl poke failed", t);
+                }
             }
-            // stock fires this when 6dof tracking engages to enable the
-            // controller-side EM ADC stream; nothing on this build does
-            Intent adc = new Intent("android.intent.pvrcon.grapadc");
-            adc.setPackage(PKG);
-            ctx.sendBroadcast(adc);
-            // same story for the slpi side - the service gates its ssc
-            // sensor receive path on this action, so without it the
-            // ndi_fpga stream never starts even when everything is
-            // configured
-            Intent rx = new Intent("pui.settings.action.ENABLE_RX");
-            rx.setPackage(PKG);
-            rx.putExtra("enable", 1);
-            ctx.sendBroadcast(rx);
-            Log.i(TAG, "ctrl thread poked");
-        } catch (Throwable t) {
-            Log.e(TAG, "ctrl poke failed", t);
-        }
+        });
     }
 }

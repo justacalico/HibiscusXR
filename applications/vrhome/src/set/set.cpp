@@ -439,7 +439,7 @@ static void sText(HudEngine* e, const Mat4& vp, const float c[3],
     float o[3] = {c[0] + r[0]*xo + up[0]*yo,
                   c[1] + r[1]*xo + up[1]*yo,
                   c[2] + r[2]*xo + up[2]*yo};
-    o[0] -= c[0] * 0.010f; o[1] -= c[1] * 0.010f; o[2] -= c[2] * 0.010f;
+    o[0] -= o[0] * 0.010f; o[1] -= o[1] * 0.010f; o[2] -= o[2] * 0.010f;
     const float* tc = dim ? kPalTextDim : kPalText;
     glUseProgram(e->textProg);
     glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),

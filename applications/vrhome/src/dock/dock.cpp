@@ -411,7 +411,7 @@ void drawDock(HudEngine* e, const Mat4& vp) {
         float co[3] = {c[0] + r[0] * st.clockX + up[0] * yo,
                        c[1] + r[1] * st.clockX + up[1] * yo,
                        c[2] + r[2] * st.clockX + up[2] * yo};
-        co[0] -= c[0] * 0.010f; co[1] -= c[1] * 0.010f; co[2] -= c[2] * 0.010f;
+        co[0] -= co[0] * 0.010f; co[1] -= co[1] * 0.010f; co[2] -= co[2] * 0.010f;
         glUseProgram(e->textProg);
         glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                            1, GL_FALSE, vp.m);
@@ -599,9 +599,9 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             float o[3] = {c[0] + r[0]*(it.x - tw) + up[0]*(hh + 0.05f),
                           c[1] + r[1]*(it.x - tw) + up[1]*(hh + 0.05f),
                           c[2] + r[2]*(it.x - tw) + up[2]*(hh + 0.05f)};
-            o[0] -= c[0] * 0.010f;
-            o[1] -= c[1] * 0.010f;
-            o[2] -= c[2] * 0.010f;
+            o[0] -= o[0] * 0.010f;
+            o[1] -= o[1] * 0.010f;
+            o[2] -= o[2] * 0.010f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);
@@ -701,9 +701,9 @@ void drawShelf(HudEngine* e, const Mat4& vp) {
                           up[1]*(kShelfHH + 0.04f),
                           c[2] + r[2]*(it.x - tw) +
                           up[2]*(kShelfHH + 0.04f)};
-            o[0] -= c[0] * 0.010f;
-            o[1] -= c[1] * 0.010f;
-            o[2] -= c[2] * 0.010f;
+            o[0] -= o[0] * 0.010f;
+            o[1] -= o[1] * 0.010f;
+            o[2] -= o[2] * 0.010f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);

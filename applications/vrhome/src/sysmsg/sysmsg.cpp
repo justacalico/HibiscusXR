@@ -123,8 +123,8 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
     float to[3] = {cc[0] + r[0]*tx + up[0]*(iy + 0.010f),
                    cc[1] + r[1]*tx + up[1]*(iy + 0.010f),
                    cc[2] + r[2]*tx + up[2]*(iy + 0.010f)};
-    to[0] -= cc[0] * 0.010f; to[1] -= cc[1] * 0.010f;
-    to[2] -= cc[2] * 0.010f;
+    to[0] -= to[0] * 0.010f; to[1] -= to[1] * 0.010f;
+    to[2] -= to[2] * 0.010f;
     msgText(e, vp, it.title.c_str(), to, r, up, 0.0019f, textMax,
             kPalText[0], kPalText[1], kPalText[2]);
 
@@ -141,8 +141,8 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         float bo[3] = {cc[0] + r[0]*lx + up[0]*ly,
                        cc[1] + r[1]*lx + up[1]*ly,
                        cc[2] + r[2]*lx + up[2]*ly};
-        bo[0] -= cc[0] * 0.010f; bo[1] -= cc[1] * 0.010f;
-        bo[2] -= cc[2] * 0.010f;
+        bo[0] -= bo[0] * 0.010f; bo[1] -= bo[1] * 0.010f;
+        bo[2] -= bo[2] * 0.010f;
         msgText(e, vp, line.c_str(), bo, r, up, 0.0015f, bodyMax,
                 kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
         if (nl == std::string::npos) break;
@@ -175,9 +175,11 @@ void drawSysMsg(HudEngine* e, const Mat4& vp, float yaw, float pitch,
             float yo = -kSysMsgBtnHH * 0.32f;
             if (textBounds(e->font.set, lab.c_str(), ts, &gt, &gb))
                 yo = -(gt + gb) * 0.5f;
-            float o[3] = {bc[0] - r[0]*tw + up[0]*yo - cc[0]*0.008f,
-                          bc[1] - r[1]*tw + up[1]*yo - cc[1]*0.008f,
-                          bc[2] - r[2]*tw + up[2]*yo - cc[2]*0.008f};
+            float o[3] = {bc[0] - r[0]*tw + up[0]*yo,
+                          bc[1] - r[1]*tw + up[1]*yo,
+                          bc[2] - r[2]*tw + up[2]*yo};
+            o[0] -= o[0] * 0.008f; o[1] -= o[1] * 0.008f;
+            o[2] -= o[2] * 0.008f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);

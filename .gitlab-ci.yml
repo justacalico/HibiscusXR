@@ -235,7 +235,7 @@ apps-test:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ python3 pkg-config ca-certificates libglu1-mesa zlib1g-dev libglfw3-dev libgles2-mesa-dev libegl1-mesa-dev libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev
+    - apt-get install -y --no-install-recommends curl git xz-utils unzip zip file make g++ python3 pkg-config ca-certificates libglu1-mesa zlib1g-dev libglfw3-dev libgles2-mesa-dev libegl1-mesa-dev libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libopenxr-dev
     - curl -fsSL -o /tmp/flutter.tar.xz "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_${FLUTTER_VERSION}-stable.tar.xz"
     - tar -xJf /tmp/flutter.tar.xz -C /opt
     - export PATH="/opt/flutter/bin:$PATH"

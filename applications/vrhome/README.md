@@ -149,6 +149,10 @@ make dash-wayland
 
 Panels are toplevels the compositor spawns per launch (matched to their
 display by pid or app_id; stray toplevels adopt onto their own panels).
+Spawned clients are confined to the dash's session: they get its Wayland
+socket and a private session bus, while the host's display sockets, bus
+address and startup tokens are cut and `env`/`flatpak run` Exec wrappers
+get rewritten so they can't re-point an app back at the host.
 Confirm presses become `wl_pointer` input at the panel-local point, focus
 drives `xdg_toplevel` activation and `wl_keyboard` enter, and keys the dash
 doesn't own are forwarded to the focused app. `` ` `` grabs the focused

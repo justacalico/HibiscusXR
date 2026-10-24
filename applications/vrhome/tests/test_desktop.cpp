@@ -430,6 +430,120 @@ static void testArgFlag() {
     CHECK(!argFlag(1, b, "-headless"));
 }
 
+static void testSpawnEnvAssigns() {
+    CHECK(confinedEnvName("DISPLAY"));
+    CHECK(confinedEnvName("DBUS_SESSION_BUS_ADDRESS"));
+    CHECK(confinedEnvName("WAYLAND_DISPLAY"));
+    CHECK(confinedEnvName("GDK_BACKEND"));
+    CHECK(!confinedEnvName("HOME"));
+    CHECK(!confinedEnvName("PATH"));
+    CHECK(!confinedEnvName(""));
+
+    const std::vector<std::string> a = spawnEnvAssigns("wl-4", "");
+    auto has = [&](const std::vector<std::string>& v,
+                   const std::string& s) {
+        for (const std::string& e : v) if (e == s) return true;
+        return false;
+    };
+    CHECK(has(a, "WAYLAND_DISPLAY=wl-4"));
+    CHECK(has(a, "DISPLAY="));
+    CHECK(has(a, "XAUTHORITY="));
+    CHECK(has(a, "DBUS_SESSION_BUS_ADDRESS="));
+    CHECK(has(a, "MOZ_ENABLE_WAYLAND=1"));
+    CHECK(has(a, "MOZ_DISABLE_WAYLAND="));
+    CHECK(has(a, "QT_QPA_PLATFORM=wayland"));
+    const std::vector<std::string> b =
+        spawnEnvAssigns("wl-9", "unix:abstract=/tmp/dbus-x");
+    CHECK(has(b, "DBUS_SESSION_BUS_ADDRESS=unix:abstract=/tmp/dbus-x"));
+}
+
+static void testSessionBusAddr() {
+    pid_t pid = 0;
+    CHECK(sessionBusAddr("unix:abstract=/tmp/dbus-aaa,guid=x\n4321\n",
+                         &pid) == "unix:abstract=/tmp/dbus-aaa,guid=x");
+    CHECK(pid == 4321);
+    CHECK(sessionBusAddr("", &pid).empty());
+    CHECK(pid == -1);
+    CHECK(sessionBusAddr("not an address\n", &pid) == "not an address");
+    CHECK(pid == -1);
+    // pid first still parses
+    CHECK(sessionBusAddr("77\nunix:path=/run/bus\n", &pid) ==
+          "unix:path=/run/bus");
+    CHECK(pid == 77);
+}
+
+static void testConfineExec() {
+    const std::vector<std::string> env = spawnEnvAssigns("wl-2", "");
+    // plain argv passes through untouched
+    const std::vector<std::string> plain = {"zen", "--new-window"};
+    CHECK(confineExec(plain, env) == plain);
+    CHECK(confineExec({}, env).empty());
+
+    // env prefix: user assigns kept, forced assigns land before the cmd
+    std::vector<std::string> b =
+        confineExec({"env", "FOO=bar", "zen"}, env);
+    CHECK(b.size() == 3 + env.size());
+    CHECK(b[0] == "env" && b[1] == "FOO=bar");
+    CHECK(b[2 + env.size()] == "zen");
+    // a confined assign in the Exec line gets dropped outright
+    b = confineExec({"env", "DISPLAY=:0", "FOO=bar", "zen"}, env);
+    CHECK(b.size() == 3 + env.size());
+    CHECK(b[1] == "FOO=bar");
+    CHECK(b.back() == "zen");
+    // -u of a confined var goes too
+    b = confineExec({"env", "-u", "WAYLAND_DISPLAY", "app"}, env);
+    CHECK(b.size() == 1 + env.size() + 1);
+    CHECK(b.back() == "app");
+    CHECK(b[1].rfind("WAYLAND_DISPLAY=", 0) == 0);
+    // -u of a foreign var survives
+    b = confineExec({"env", "-u", "FOO", "app"}, env);
+    CHECK(b[1] == "-u" && b[2] == "FOO");
+    // -i keeps its meaning and the session vars still reach the cmd
+    b = confineExec({"env", "-i", "app"}, env);
+    CHECK(b.size() == 3 + env.size());
+    CHECK(b[1] == "-i");
+    CHECK(b.back() == "app");
+    // -S payloads are spliced before the scan
+    b = confineExec({"env", "-S", "FOO=bar app --x"}, env);
+    CHECK(b[1] == "FOO=bar");
+    CHECK(b[b.size() - 2] == "app" && b.back() == "--x");
+    // a confined assign inside -S is dropped too
+    b = confineExec({"env", "-S", "DISPLAY=:0 app"}, env);
+    CHECK(b.back() == "app");
+    for (const std::string& s : b) CHECK(s != "DISPLAY=:0");
+
+    // flatpak run gets the wayland socket pinned
+    b = confineExec({"flatpak", "run", "app.zen_browser.zen"}, env);
+    CHECK(b.size() == 6);
+    CHECK(b[0] == "flatpak" && b[1] == "run");
+    CHECK(b[2] == "--socket=wayland" && b[3] == "--nosocket=x11");
+    CHECK(b[4] == "--nosocket=fallback-x11" &&
+          b[5] == "app.zen_browser.zen");
+    // socket and env flags that name routing vars are dropped, others
+    // stay - even when they sit after the app id
+    b = confineExec({"flatpak", "run", "--env=FOO=1", "app.id",
+                     "--env=DISPLAY=:0", "--socket=x11"}, env);
+    CHECK(b.size() == 5 + 1 + 1);
+    CHECK(b[5] == "--env=FOO=1" && b[6] == "app.id");
+    for (const std::string& s : b) CHECK(s != "--env=DISPLAY=:0");
+    for (const std::string& s : b) CHECK(s != "--socket=x11");
+    // args after -- belong to the app and are left alone
+    b = confineExec({"flatpak", "run", "app.id", "--",
+                     "--env=DISPLAY=:0"}, env);
+    CHECK(b.back() == "--env=DISPLAY=:0");
+    CHECK(b[b.size() - 2] == "--");
+    // split-form option value gets filtered too
+    b = confineExec({"flatpak", "run", "--env", "DISPLAY=:0",
+                     "app.id"}, env);
+    for (const std::string& s : b) CHECK(s != "DISPLAY=:0");
+    // not `run`: untouched
+    const std::vector<std::string> inst = {"flatpak", "install", "x"};
+    CHECK(confineExec(inst, env) == inst);
+    // absolute path still matches
+    b = confineExec({"/usr/bin/flatpak", "run", "a.b"}, env);
+    CHECK(b[2] == "--socket=wayland");
+}
+
 static void testSpawnGone() {
     pid_t p = fork();
     if (p == 0) _exit(0);
@@ -475,5 +589,8 @@ void testDesktop() {
     testTerminalWrap();
     testFindTerminal();
     testArgFlag();
+    testSpawnEnvAssigns();
+    testSessionBusAddr();
+    testConfineExec();
     testSpawnGone();
 }

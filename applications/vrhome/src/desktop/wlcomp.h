@@ -44,6 +44,13 @@ struct WlComp {
     wl_event_loop* loop = nullptr;
     std::string sock;
 
+    // private session bus shared by every spawned client: remoting and
+    // activation traffic (browsers, gtk single-instance apps) stays
+    // inside the session because the host bus address never reaches them
+    std::string busAddr;
+    pid_t busPid = -1;
+    bool busTried = false;
+
     std::vector<WlTask*> tasks;         // in creation order
     std::function<void(WlTask*)> onTaskMap;
     std::function<void(WlTask*)> onTaskDead;

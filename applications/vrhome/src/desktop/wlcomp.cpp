@@ -1068,6 +1068,7 @@ WlComp* WlComp::create() {
 }
 
 void WlComp::destroy() {
+    if (busPid > 0) kill(busPid, SIGTERM);
     if (dpy) {
         wl_display_destroy_clients(dpy);
         wl_display_destroy(dpy);
@@ -1124,22 +1125,52 @@ void WlComp::flush() {
     flushEvents();
 }
 
+// lazily starts the session-private bus launched clients share; a host
+// without dbus-daemon just leaves the address unset and clients get no
+// bus at all, which is still confined
+static void sessionBusStart(WlComp* c) {
+    if (c->busTried) return;
+    c->busTried = true;
+    FILE* p = popen("dbus-daemon --session --fork --print-address=1 "
+                    "--print-pid=1 2>/dev/null", "r");
+    if (!p) return;
+    std::string out;
+    char buf[512];
+    // the daemon prints both lines before it detaches
+    for (int i = 0; i < 2 && fgets(buf, sizeof(buf), p); ++i)
+        out += buf;
+    pclose(p);
+    c->busAddr = sessionBusAddr(out, &c->busPid);
+    if (!c->busAddr.empty())
+        LOGI("private session bus on %s (pid %d)", c->busAddr.c_str(),
+             (int)c->busPid);
+}
+
 pid_t WlComp::spawn(const std::vector<std::string>& argv,
                     const std::vector<std::string>& extraEnv) {
     if (argv.empty()) return -1;
+    sessionBusStart(this);
+    const std::vector<std::string> assigns = spawnEnvAssigns(sock,
+                                                             busAddr);
+    const std::vector<std::string> run = confineExec(argv, assigns);
     const pid_t pid = fork();
     if (pid != 0) return pid;
     setsid();
     sigset_t set;
     sigemptyset(&set);
     sigprocmask(SIG_SETMASK, &set, nullptr);
-    setenv("WAYLAND_DISPLAY", sock.c_str(), 1);
-    unsetenv("DISPLAY");
-    setenv("GDK_BACKEND", "wayland", 0);
-    setenv("QT_QPA_PLATFORM", "wayland", 0);
-    setenv("MOZ_ENABLE_WAYLAND", "1", 0);
-    setenv("SDL_VIDEODRIVER", "wayland", 0);
-    setenv("XDG_SESSION_TYPE", "wayland", 1);
+    // every spawned client lands on this compositor's socket; the host
+    // session's display sockets, its session bus and its startup tokens
+    // are unreachable from here, so no exec line or toolkit fallback can
+    // route a window back to the host
+    for (const std::string& e : assigns) {
+        const size_t eq = e.find('=');
+        if (eq == std::string::npos) continue;
+        const std::string name = e.substr(0, eq);
+        const std::string val = e.substr(eq + 1);
+        if (val.empty()) unsetenv(name.c_str());
+        else setenv(name.c_str(), val.c_str(), 1);
+    }
     for (const std::string& e : extraEnv) {
         const size_t eq = e.find('=');
         if (eq != std::string::npos)
@@ -1152,7 +1183,7 @@ pid_t WlComp::spawn(const std::vector<std::string>& argv,
         dup2(dn, STDERR_FILENO);
         if (dn > STDERR_FILENO) close(dn);
     }
-    const std::string cmd = shellJoin(argv);
+    const std::string cmd = shellJoin(run);
     execl("/bin/sh", "sh", "-c", cmd.c_str(), (char*)nullptr);
     _exit(127);
 }

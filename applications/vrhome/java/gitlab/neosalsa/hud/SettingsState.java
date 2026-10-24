@@ -133,7 +133,14 @@ public class SettingsState {
         }
     };
     private final Runnable ctrlScanOff = new Runnable() {
-        @Override public void run() { ctrlScanning = false; bump(); }
+        @Override public void run() {
+            ctrlScanning = false;
+            // the service's own pair latch survives the timeout, so the
+            // scan has to be closed there too or a later tap lands on
+            // "already in startPairingMode" and never re-opens the window
+            ctrlLink.setPairing(false);
+            bump();
+        }
     };
 
     // a link state change can both refresh the card and (re)start the
@@ -264,6 +271,9 @@ public class SettingsState {
     public void closed() {
         section = -1;
         ctrlScanning = false;
+        // drop the service-side pair latch as well - the binder lives past
+        // the card, and a scan left open would swallow the next tap
+        ctrlLink.setPairing(false);
         ctrlLink.detach();
         bump();
     }

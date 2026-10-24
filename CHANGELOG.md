@@ -12,6 +12,8 @@ linked line per MR no matter how many commits it carried.
 - [网站刷机指南补 unxz 解压步骤](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/210) (!210)
 - [网站构建下载隐藏没有构建的通道](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/211) (!211)
 - [修复控制器配对的 binder 调用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/212) (!212)
+- [docs(website): 新增主环境指南页](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/214) (!214)
+- [修复环境应用 loadGlyphs 符号缺失崩溃](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/213) (!213)
 
 ## [alpha-v2026.10.21-r23] - 2026-10-21
 - [修复网站测试,解除页面部署阻塞](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/157) (!157)

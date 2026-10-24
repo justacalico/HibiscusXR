@@ -117,11 +117,11 @@ See `AGENTS.md` for the testing and file-size rules this repo follows.
 
 ### Desktop mode
 
-`make preview` builds `out/dash-preview` and opens the real dash renderer in
-a desktop window. The host only needs a C++ toolchain, Python 3, GLFW 3,
-GLESv2 and zlib; no Android SDK or NDK. Fixture data fills it in - a grid of
-apps with generated icons, dock pins and a notification - so dash changes can
-be tried without a headset.
+`make preview` builds `out/dash-preview`; running it opens the real dash
+renderer in a desktop window. The host only needs a C++ toolchain, Python 3,
+GLFW 3, GLESv2 and zlib; no Android SDK or NDK. Fixture data fills it in - a
+grid of apps with generated icons, dock pins and a notification - so dash
+changes can be tried without a headset.
 
 The mouse controls the gaze direction, WASD moves the free camera, Q/E move
 vertically, Shift moves faster, left click is confirm, Esc parks the window
@@ -143,7 +143,7 @@ reads the host's `.desktop` files, icons come from the freedesktop icon
 theme, and window content is live, not fixtures.
 
 ```bash
-make out/dash-wayland
+make dash-wayland
 ./out/dash-wayland          # prints WAYLAND_DISPLAY=wayland-N for clients
 ```
 

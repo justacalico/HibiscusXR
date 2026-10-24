@@ -4,6 +4,9 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
+
+
+## [alpha-v2026.10.24-r24] - 2026-10-24
 - [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)
 - [vrdash -vr：以 OpenXR overlay 呈现面板](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/206) (!206)
 - [Dash 卡片滚动惯性](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/207) (!207)
@@ -64,3 +67,4 @@ linked line per MR no matter how many commits it carried.
 - [Hold a wakelock while an app owns the display](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/204) (!204)
 
 [alpha-v2026.10.21-r23]: https://gitlab.com/neosalsa/HibiscusXR/-/releases/alpha-v2026.10.21-r23
+[alpha-v2026.10.24-r24]: https://gitlab.com/neosalsa/HibiscusXR/-/releases/alpha-v2026.10.24-r24

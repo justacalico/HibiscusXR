@@ -125,15 +125,15 @@ void drawNotifStack(HudEngine* e, const Mat4& vp, float yaw, float pitch,
         float to[3] = {cc[0] + r[0]*tx + up[0]*0.012f,
                        cc[1] + r[1]*tx + up[1]*0.012f,
                        cc[2] + r[2]*tx + up[2]*0.012f};
-        to[0] -= cc[0] * 0.010f; to[1] -= cc[1] * 0.010f;
-        to[2] -= cc[2] * 0.010f;
+        to[0] -= to[0] * 0.010f; to[1] -= to[1] * 0.010f;
+        to[2] -= to[2] * 0.010f;
         cardText(e, vp, title, to, r, up, 0.0018f, textMax,
                  kPalText[0], kPalText[1], kPalText[2]);
         float bo[3] = {cc[0] + r[0]*tx - up[0]*0.026f,
                        cc[1] + r[1]*tx - up[1]*0.026f,
                        cc[2] + r[2]*tx - up[2]*0.026f};
-        bo[0] -= cc[0] * 0.010f; bo[1] -= cc[1] * 0.010f;
-        bo[2] -= cc[2] * 0.010f;
+        bo[0] -= bo[0] * 0.010f; bo[1] -= bo[1] * 0.010f;
+        bo[2] -= bo[2] * 0.010f;
         cardText(e, vp, it.text.c_str(), bo, r, up, 0.0014f, textMax,
                  kPalTextDim[0], kPalTextDim[1], kPalTextDim[2]);
 

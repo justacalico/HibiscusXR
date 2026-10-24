@@ -261,8 +261,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
             float to[3] = {c[0] + r[0] * tx + up[0] * boff,
                            c[1] + r[1] * tx + up[1] * boff,
                            c[2] + r[2] * tx + up[2] * boff};
-            to[0] -= c[0] * 0.010f; to[1] -= c[1] * 0.010f;
-            to[2] -= c[2] * 0.010f;
+            to[0] -= to[0] * 0.010f; to[1] -= to[1] * 0.010f;
+            to[2] -= to[2] * 0.010f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, viewProj.m);

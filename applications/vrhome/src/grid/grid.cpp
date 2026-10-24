@@ -200,7 +200,7 @@ static void gridText(HudEngine* e, const Mat4& vp, const float c[3],
     float o[3] = {c[0] + r[0]*xo + up[0]*yo,
                   c[1] + r[1]*xo + up[1]*yo,
                   c[2] + r[2]*xo + up[2]*yo};
-    o[0] -= c[0] * 0.010f; o[1] -= c[1] * 0.010f; o[2] -= c[2] * 0.010f;
+    o[0] -= o[0] * 0.010f; o[1] -= o[1] * 0.010f; o[2] -= o[2] * 0.010f;
     const float* tc = dim ? kPalTextDim : kPalText;
     glUseProgram(e->textProg);
     glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
@@ -384,8 +384,8 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
         float to[3] = {c[0] + r[0]*(-hw + kGridSidePad * gs) + up[0]*yo,
                        c[1] + r[1]*(-hw + kGridSidePad * gs) + up[1]*yo,
                        c[2] + r[2]*(-hw + kGridSidePad * gs) + up[2]*yo};
-        to[0] -= c[0] * 0.010f; to[1] -= c[1] * 0.010f;
-        to[2] -= c[2] * 0.010f;
+        to[0] -= to[0] * 0.010f; to[1] -= to[1] * 0.010f;
+        to[2] -= to[2] * 0.010f;
         glUseProgram(e->textProg);
         glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                            1, GL_FALSE, vp.m);
@@ -498,8 +498,8 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
             float lo3[3] = {c[0] + r[0]*(it.x*gs - lw2) + up[0]*ly,
                             c[1] + r[1]*(it.x*gs - lw2) + up[1]*ly,
                             c[2] + r[2]*(it.x*gs - lw2) + up[2]*ly};
-            lo3[0] -= c[0] * 0.010f; lo3[1] -= c[1] * 0.010f;
-            lo3[2] -= c[2] * 0.010f;
+            lo3[0] -= lo3[0] * 0.010f; lo3[1] -= lo3[1] * 0.010f;
+            lo3[2] -= lo3[2] * 0.010f;
             glUseProgram(e->textProg);
             glUniformMatrix4fv(glGetUniformLocation(e->textProg, "uMVP"),
                                1, GL_FALSE, vp.m);

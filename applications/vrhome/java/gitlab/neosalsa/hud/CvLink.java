@@ -42,6 +42,16 @@ final class CvLink implements CtrlService {
             TR_SET_UNITY = 54, TR_CHARGING = 62;
     private static final int CB_THREAD_STARTED = 4;
     private static final int BATTERY_INDEX = 8;
+    private static final String ACTION_SCREEN_ON =
+            "android.intent.action.SCREEN_ON";
+    private static final String ACTION_START_THREAD =
+            "com.picovr.picovrlib.cv.broadcast.start.thread";
+    // the only pushes that arrive unprompted are start-acks and live
+    // controller traffic - an idle station says nothing, so "dead" can
+    // only mean a very long silence. A restart on a live worker is a
+    // ~8ms sensor toggle, on a dead one it's the ~28s re-init that
+    // brings the station back, so err on the long side
+    private static final long THREAD_DEAD_MS = 300000;
 
     private final Context ctx;
     private final Handler main = new Handler(Looper.getMainLooper());
@@ -59,6 +69,9 @@ final class CvLink implements CtrlService {
     // a pair request made before the thread was up - fired when the
     // first callback lands
     private volatile boolean wantPair;
+    // last service push (or start request we should give time to land);
+    // the poke restart gate runs off this
+    private volatile long lastBeatMs;
 
     private CvLink(Context c) {
         ctx = c;
@@ -89,11 +102,21 @@ final class CvLink implements CtrlService {
                         // into CV2 per-controller reporting
                         transactStr(TR_SET_UNITY, "3.0.0.0");
                         registerCb();
+                        // the service powers and wakes the station off
+                        // cvReceiver's SCREEN_ON, but the display was up
+                        // long before this process existed so the real
+                        // broadcast was missed - fire it again or the
+                        // station never leaves reset
+                        Intent on = new Intent(ACTION_SCREEN_ON);
+                        on.setPackage(PKG);
+                        ctx.sendBroadcast(on);
+                        feedStreams();
                         // the SPI link to the RF station only exists while
                         // this worker runs, so pair/query calls are no-ops
                         // until the first callback push marks it up
                         Parcel r = transact(TR_START_THREAD, 1, 1);
                         if (r != null) r.recycle();
+                        lastBeatMs = android.os.SystemClock.uptimeMillis();
                         if (listener != null) main.post(new Runnable() {
                             @Override public void run() {
                                 if (listener != null) listener.onChange();
@@ -122,8 +145,13 @@ final class CvLink implements CtrlService {
         try {
             Intent i = new Intent(ACTION);
             i.setPackage(PKG);
-            if (ctx.bindService(i, conn, Context.BIND_AUTO_CREATE))
+            if (ctx.bindService(i, conn, Context.BIND_AUTO_CREATE)) {
                 holdDisplay();
+            } else {
+                // a refused bind leaves conn set forever - drop it or no
+                // later attach can ever retry
+                conn = null;
+            }
         } catch (Throwable t) {
             conn = null;
             Log.w(TAG, "ctrl bind failed", t);
@@ -204,6 +232,7 @@ final class CvLink implements CtrlService {
                 Parcel reply, int flags) {
             try { data.enforceInterface(CB_IFACE); }
             catch (Throwable t) { return false; }
+            lastBeatMs = android.os.SystemClock.uptimeMillis();
             if (!threadUp)
                 main.post(new Runnable() {
                     @Override public void run() { onPush(); }
@@ -316,6 +345,7 @@ final class CvLink implements CtrlService {
                 if (!threadUp) {
                     Parcel r = transact(TR_START_THREAD, 1, 1);
                     if (r != null) r.recycle();
+                    lastBeatMs = android.os.SystemClock.uptimeMillis();
                     return;   // onPush() fires pairNow() once up
                 }
                 pairNow();
@@ -369,6 +399,21 @@ final class CvLink implements CtrlService {
         }
     }
 
+    // the two enables stock fires once when 6dof tracking engages: the
+    // controller-side EM ADC stream (grapadc) and the slpi ssc sensor
+    // receive path (ENABLE_RX) - without them the ndi_fpga stream never
+    // starts even when everything else is configured. Sent once per
+    // bind; they are per-service-life flags, not per-frame
+    private void feedStreams() {
+        Intent adc = new Intent("android.intent.pvrcon.grapadc");
+        adc.setPackage(PKG);
+        ctx.sendBroadcast(adc);
+        Intent rx = new Intent("pui.settings.action.ENABLE_RX");
+        rx.setPackage(PKG);
+        rx.putExtra("enable", 1);
+        ctx.sendBroadcast(rx);
+    }
+
     // The service only streams controller data while its SPI thread
     // runs, and nothing on this build starts it (the stock shell used
     // to). The render loop pokes when the sharemem flags stop flapping -
@@ -379,35 +424,29 @@ final class CvLink implements CtrlService {
         work.post(new Runnable() {
             @Override public void run() {
                 try {
-                    // a scan window keeps the sharemem quiet by itself, so
-                    // the quiet-detector fires during pairing - but every
-                    // start is a full ~5s thread re-init that kills the
-                    // window, so only the plain enables go out while a
-                    // scan is open
-                    if (!wantPair) {
-                        Intent i = new Intent(
-                                "com.picovr.picovrlib.cv.broadcast.start.thread");
+                    // a dead RemoteService never gets re-bound by the
+                    // settings card alone; re-attach so the service's
+                    // init sequence (SCREEN_ON + thread start) replays
+                    if (svc == null && conn == null) attach(listener);
+                    // the sharemem stays quiet whenever no controller is
+                    // linked, so "quiet" alone can't tell a dead SPI
+                    // worker from an idle one - only a long push silence
+                    // (and no open scan window) earns a restart
+                    long now = android.os.SystemClock.uptimeMillis();
+                    if (!wantPair && now - lastBeatMs > THREAD_DEAD_MS) {
+                        lastBeatMs = now;
+                        // restart kills the worker - drop the flag so the
+                        // first push of the new thread re-fires pairNow
+                        threadUp = false;
+                        Intent on = new Intent(ACTION_SCREEN_ON);
+                        on.setPackage(PKG);
+                        ctx.sendBroadcast(on);
+                        Intent i = new Intent(ACTION_START_THREAD);
                         i.setPackage(PKG);
                         i.putExtra("HeadTrackMode", 1);
                         i.putExtra("CtrlerTrackMode", 1);
                         ctx.sendBroadcast(i);
                     }
-                    // stock fires this when 6dof tracking engages to
-                    // enable the controller-side EM ADC stream; nothing
-                    // on this build does
-                    Intent adc = new Intent(
-                            "android.intent.pvrcon.grapadc");
-                    adc.setPackage(PKG);
-                    ctx.sendBroadcast(adc);
-                    // same story for the slpi side - the service gates its
-                    // ssc sensor receive path on this action, so without
-                    // it the ndi_fpga stream never starts even when
-                    // everything is configured
-                    Intent rx = new Intent(
-                            "pui.settings.action.ENABLE_RX");
-                    rx.setPackage(PKG);
-                    rx.putExtra("enable", 1);
-                    ctx.sendBroadcast(rx);
                     Log.i(TAG, "ctrl thread poked");
                 } catch (Throwable t) {
                     Log.e(TAG, "ctrl poke failed", t);

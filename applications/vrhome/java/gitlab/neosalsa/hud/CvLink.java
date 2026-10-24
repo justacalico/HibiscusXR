@@ -38,8 +38,8 @@ final class CvLink implements CtrlService {
     private static final int TR_KEY_EVENT = 2, TR_START_THREAD = 7,
             TR_REGISTER_CB = 12, TR_CTRL_SN = 18, TR_UNBIND = 19,
             TR_INTERRUPT_PAIR = 28, TR_DEV_BLE_MAC = 39,
-            TR_CV2_CONN = 45, TR_START_PAIR = 50, TR_STOP_PAIR = 51,
-            TR_SET_UNITY = 54, TR_CHARGING = 62;
+            TR_USB_PAIR = 43, TR_CV2_CONN = 45, TR_START_PAIR = 50,
+            TR_STOP_PAIR = 51, TR_SET_UNITY = 54, TR_CHARGING = 62;
     private static final int CB_THREAD_STARTED = 4;
     private static final int BATTERY_INDEX = 8;
     private static final String ACTION_SCREEN_ON =
@@ -378,6 +378,31 @@ final class CvLink implements CtrlService {
                     sb.append(r.readInt()).append(' ');
                 Log.i(TAG, "tr " + code + " -> " + sb);
                 r.recycle();
+            }
+        });
+    }
+
+    // opcode 0x11 pushes two BLE MACs into the station's bond table -
+    // the whitelist is RAM state, so a station that lost power comes
+    // back empty and only this (or a fresh scan bond) refills it
+    @Override public void usbPair(final String mac1, final String mac2) {
+        work.post(new Runnable() {
+            @Override public void run() {
+                if (svc == null) return;
+                Parcel in = Parcel.obtain();
+                in.writeInterfaceToken(IFACE);
+                in.writeString(mac1);
+                in.writeString(mac2);
+                Parcel out = Parcel.obtain();
+                try {
+                    svc.transact(TR_USB_PAIR, in, out, 0);
+                    out.readException();
+                    out.recycle();
+                } catch (Throwable t) {
+                    out.recycle();
+                } finally {
+                    in.recycle();
+                }
             }
         });
     }

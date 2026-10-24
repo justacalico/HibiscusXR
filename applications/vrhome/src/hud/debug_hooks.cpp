@@ -152,6 +152,30 @@ static void debugCtrlUnbindHook(HudEngine* e) {
         callCtx(e, "debugCtrlUnbind", "()V");
 }
 
+// setprop debug.vrhome.usbpair "mac1,mac2" pushes both BLE MACs into the
+// station bond table, the same op the USB pairing path uses
+static void debugCtrlUsbPairHook(HudEngine* e) {
+    static char last[PROP_VALUE_MAX] = "";
+    char tb[PROP_VALUE_MAX];
+    char m1[32], m2[32];
+    if (e->ctx && propChanged("debug.vrhome.usbpair", last, tb)
+            && sscanf(tb, "%17[^,],%17s", m1, m2) == 2) {
+        JNIEnv* env = threadEnv(e->vm);
+        jclass c = env->GetObjectClass(e->ctx);
+        jmethodID m = env->GetMethodID(c, "debugCtrlUsbPair",
+                                       "(Ljava/lang/String;Ljava/lang/String;)V");
+        if (m) {
+            jstring j1 = env->NewStringUTF(m1);
+            jstring j2 = env->NewStringUTF(m2);
+            env->CallVoidMethod(e->ctx, m, j1, j2);
+            env->DeleteLocalRef(j1);
+            env->DeleteLocalRef(j2);
+        }
+        if (env->ExceptionCheck()) env->ExceptionClear();
+        env->DeleteLocalRef(c);
+    }
+}
+
 void runDebugHooks(HudEngine* e) {
     debugLaunchHook(e);
     debugTapHook(e);
@@ -160,6 +184,7 @@ void runDebugHooks(HudEngine* e) {
     debugCtrlScanHook(e);
     debugCtrlTransactHook(e);
     debugCtrlUnbindHook(e);
+    debugCtrlUsbPairHook(e);
     debugDockTapHook(e);
     debugDockCloseHook(e);
     debugDockPinHook(e);

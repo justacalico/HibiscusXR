@@ -312,6 +312,10 @@ public class ShellBridge {
 
     public void ctrlUnbind() { st.unbindAll(); }
 
+    public void ctrlUsbPair(String mac1, String mac2) {
+        st.ctrlUsbPair(mac1, mac2);
+    }
+
     public void wifiJoin(String ssid, int sec, String pw) {
         st.wifiJoin(ssid, sec, pw);
     }

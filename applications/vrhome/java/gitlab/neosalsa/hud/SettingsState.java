@@ -885,6 +885,10 @@ public class SettingsState {
         if (ctrlLink.bound()) ctrlLink.debugTransact(code, arg);
     }
 
+    public void ctrlUsbPair(String mac1, String mac2) {
+        if (ctrlLink.bound()) ctrlLink.usbPair(mac1, mac2);
+    }
+
     public void unbindAll() {
         ctrlLink.unbindAll();
         bump();

@@ -451,6 +451,10 @@ public class HudService extends Service implements SurfaceHolder.Callback,
         if (bridge != null) bridge.ctrlUnbind();
     }
 
+    public void debugCtrlUsbPair(String mac1, String mac2) {
+        if (bridge != null) bridge.ctrlUsbPair(mac1, mac2);
+    }
+
     // HudView.KeySink: keys that reached the focused HUD window
     @Override public boolean onKey(int code, int action, int repeat) {
         if (code == K_SUMMON) return true;   // the monitor owns this one

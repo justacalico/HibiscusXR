@@ -16,15 +16,16 @@ bool pxSupported(uint32_t fmt);
 int pxStrideAlign(uint32_t fmt);
 
 // Copies the src rect (sx,sy,w,h) into dst at (dx,dy), clipped to dst's
-// w/h, converting to straight-alpha RGBA. dst is premultiply-free: ARGB
-// sources get unpremultiplied so the dash's stock alpha blend stays right.
+// w/h. Both sides stay premultiplied: wl_shm comes in premult and the
+// dash's panel blend expects premult, so this is a swizzle, not a
+// conversion.
 void pxBlit(const unsigned char* src, int srcStride, uint32_t fmt,
             int sx, int sy,
             unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h);
 
 // same as pxBlit but alpha-composites over dst instead of copying:
-// src is premultiplied wl_shm, dst stays straight-alpha
+// src is premultiplied wl_shm, dst stays premultiplied
 void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
              int sx, int sy,
              unsigned char* dst, int dstStride, int dstW, int dstH,

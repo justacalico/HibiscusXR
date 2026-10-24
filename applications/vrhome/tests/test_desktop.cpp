@@ -229,7 +229,7 @@ static void testPixconv() {
     CHECK(dst[20] == 30); CHECK(dst[21] == 20); CHECK(dst[22] == 10);
     CHECK(dst[23] == 255);
 
-    // ABGR: a=128 r=40 g=50 b=60 premultiplied by a/255
+    // ABGR stays premultiplied: the bytes only get swizzled to RGBA
     unsigned char p2[4];
     const unsigned a = 128;
     p2[0] = (unsigned char)(60 * a / 255);
@@ -238,9 +238,9 @@ static void testPixconv() {
     p2[3] = a;
     unsigned char d2[4] = {};
     pxBlit(p2, 4, PX_ABGR8888, 0, 0, d2, 4, 1, 1, 0, 0, 1, 1);
-    // unpremultiplied values, ABGR->RGBA order
-    CHECK(abs(d2[0] - 60) <= 2);
-    CHECK(abs(d2[2] - 40) <= 2);
+    CHECK(d2[0] == p2[0]);
+    CHECK(d2[1] == p2[1]);
+    CHECK(d2[2] == p2[2]);
     CHECK(d2[3] == 128);
 
     // clip: blit overhanging the dst right edge drops the extra column
@@ -248,6 +248,29 @@ static void testPixconv() {
     unsigned char d3[4] = {};
     pxBlit(s3, 8, PX_XRGB8888, 0, 0, d3, 4, 1, 1, 0, 0, 2, 1);
     CHECK(d3[0] == 3);   // xrgb -> r
+
+    // ARGB blit is a straight row copy
+    unsigned char s4[8] = {9, 8, 7, 6, 5, 4, 3, 2};
+    unsigned char d4[8] = {};
+    pxBlit(s4, 8, PX_ARGB8888, 0, 0, d4, 8, 2, 1, 0, 0, 2, 1);
+    CHECK(d4[0] == 9); CHECK(d4[7] == 2);
+
+    // premult over: half-alpha red (ARGB = B,G,R,A bytes) above opaque
+    // blue leaves dst's share under the blend
+    unsigned char bs[4] = {0, 0, 128, 128};
+    unsigned char bd[4] = {0, 0, 200, 255};
+    pxBlend(bs, 4, PX_ARGB8888, 0, 0, bd, 4, 1, 1, 0, 0, 1, 1);
+    CHECK(bd[0] == 128);
+    CHECK(bd[2] == 99);
+    CHECK(bd[3] == 255);
+
+    // transparent src leaves dst alone; opaque src overwrites it
+    unsigned char ts[4] = {0, 0, 0, 0};
+    pxBlend(ts, 4, PX_ARGB8888, 0, 0, bd, 4, 1, 1, 0, 0, 1, 1);
+    CHECK(bd[0] == 128 && bd[2] == 99 && bd[3] == 255);
+    unsigned char os[4] = {11, 22, 33, 255};
+    pxBlend(os, 4, PX_ARGB8888, 0, 0, bd, 4, 1, 1, 0, 0, 1, 1);
+    CHECK(bd[0] == 33 && bd[1] == 22 && bd[2] == 11 && bd[3] == 255);
 
     unsigned char fill[16] = {};
     pxFill(fill, 16, 2, 2, 0, 0, 2, 2, 9, 8, 7, 6);

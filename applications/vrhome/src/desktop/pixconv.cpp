@@ -1,5 +1,7 @@
 #include "pixconv.h"
 
+#include <cstring>
+
 bool pxSupported(uint32_t fmt) {
     return fmt == PX_ARGB8888 || fmt == PX_XRGB8888 ||
            fmt == PX_ABGR8888 || fmt == PX_XBGR8888;
@@ -10,10 +12,14 @@ int pxStrideAlign(uint32_t fmt) {
     return 4;
 }
 
-static inline unsigned char unpremul(unsigned char c, unsigned char a) {
-    if (!a) return 0;
-    const unsigned v = (unsigned)c * 255u / a;
-    return v > 255 ? 255 : (unsigned char)v;
+static inline void clipRect(int* sx, int* sy, int* dx, int* dy,
+                            int* w, int* h, int dstW, int dstH) {
+    if (*dx < 0) { *sx -= *dx; *w += *dx; *dx = 0; }
+    if (*dy < 0) { *sy -= *dy; *h += *dy; *dy = 0; }
+    if (*sx < 0) { *w += *sx; *sx = 0; }
+    if (*sy < 0) { *h += *sy; *sy = 0; }
+    if (*dx + *w > dstW) *w = dstW - *dx;
+    if (*dy + *h > dstH) *h = dstH - *dy;
 }
 
 void pxBlit(const unsigned char* src, int srcStride, uint32_t fmt,
@@ -21,31 +27,34 @@ void pxBlit(const unsigned char* src, int srcStride, uint32_t fmt,
             unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h) {
     if (!pxSupported(fmt)) return;
-    if (dx < 0) { sx -= dx; w += dx; dx = 0; }
-    if (dy < 0) { sy -= dy; h += dy; dy = 0; }
-    if (sx < 0) { w += sx; sx = 0; }
-    if (sy < 0) { h += sy; sy = 0; }
-    if (dx + w > dstW) w = dstW - dx;
-    if (dy + h > dstH) h = dstH - dy;
+    clipRect(&sx, &sy, &dx, &dy, &w, &h, dstW, dstH);
     if (w <= 0 || h <= 0) return;
     const bool swapRB = fmt == PX_ABGR8888 || fmt == PX_XBGR8888;
     const bool hasAlpha = fmt == PX_ARGB8888 || fmt == PX_ABGR8888;
+    if (!swapRB && hasAlpha) {
+        for (int y = 0; y < h; ++y)
+            memcpy(dst + (size_t)(dy + y) * dstStride + (size_t)dx * 4,
+                   src + (size_t)(sy + y) * srcStride + (size_t)sx * 4,
+                   (size_t)w * 4);
+        return;
+    }
     for (int y = 0; y < h; ++y) {
         const unsigned char* s = src + (size_t)(sy + y) * srcStride +
                                  (size_t)sx * 4;
         unsigned char* d = dst + (size_t)(dy + y) * dstStride +
                            (size_t)dx * 4;
         for (int x = 0; x < w; ++x, s += 4, d += 4) {
-            const unsigned char a = hasAlpha ? s[3] : 255;
-            // wl_shm is premultiplied: undo so GL's stock blend works
-            d[0] = hasAlpha ? unpremul(s[swapRB ? 0 : 2], a)
-                            : s[swapRB ? 0 : 2];
-            d[1] = hasAlpha ? unpremul(s[1], a) : s[1];
-            d[2] = hasAlpha ? unpremul(s[swapRB ? 2 : 0], a)
-                            : s[swapRB ? 2 : 0];
-            d[3] = a;
+            d[0] = s[swapRB ? 0 : 2];
+            d[1] = s[1];
+            d[2] = s[swapRB ? 2 : 0];
+            d[3] = hasAlpha ? s[3] : 255;
         }
     }
+}
+
+// v*(1/255) with the divide approximated: exact for v <= 65535
+static inline unsigned div255(unsigned v) {
+    return (v + (v >> 8) + 1) >> 8;
 }
 
 void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
@@ -53,12 +62,7 @@ void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
              unsigned char* dst, int dstStride, int dstW, int dstH,
              int dx, int dy, int w, int h) {
     if (!pxSupported(fmt)) return;
-    if (dx < 0) { sx -= dx; w += dx; dx = 0; }
-    if (dy < 0) { sy -= dy; h += dy; dy = 0; }
-    if (sx < 0) { w += sx; sx = 0; }
-    if (sy < 0) { h += sy; sy = 0; }
-    if (dx + w > dstW) w = dstW - dx;
-    if (dy + h > dstH) h = dstH - dy;
+    clipRect(&sx, &sy, &dx, &dy, &w, &h, dstW, dstH);
     if (w <= 0 || h <= 0) return;
     const bool swapRB = fmt == PX_ABGR8888 || fmt == PX_XBGR8888;
     const bool hasAlpha = fmt == PX_ARGB8888 || fmt == PX_ABGR8888;
@@ -67,25 +71,34 @@ void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
                                  (size_t)sx * 4;
         unsigned char* d = dst + (size_t)(dy + y) * dstStride +
                            (size_t)dx * 4;
+        if (!hasAlpha) {
+            for (int x = 0; x < w; ++x, s += 4, d += 4) {
+                d[0] = s[swapRB ? 0 : 2];
+                d[1] = s[1];
+                d[2] = s[swapRB ? 2 : 0];
+                d[3] = 255;
+            }
+            continue;
+        }
         for (int x = 0; x < w; ++x, s += 4, d += 4) {
-            const unsigned sa = hasAlpha ? s[3] : 255;
+            const unsigned sa = s[3];
+            if (!sa) continue;
             const unsigned sp0 = s[swapRB ? 0 : 2];
             const unsigned sp1 = s[1];
             const unsigned sp2 = s[swapRB ? 2 : 0];
-            const unsigned da = d[3];
-            const unsigned oa = sa + da * (255 - sa) / 255;
-            if (!oa) { d[0] = d[1] = d[2] = d[3] = 0; continue; }
-            // out premult = sp + dp*(1-sa), then divide by out alpha
-            const unsigned i0 = sp0 + (unsigned)d[0] * da * (255 - sa)
-                                    / 255 / 255;
-            const unsigned i1 = sp1 + (unsigned)d[1] * da * (255 - sa)
-                                    / 255 / 255;
-            const unsigned i2 = sp2 + (unsigned)d[2] * da * (255 - sa)
-                                    / 255 / 255;
-            d[0] = (unsigned char)((i0 * 255 + oa / 2) / oa);
-            d[1] = (unsigned char)((i1 * 255 + oa / 2) / oa);
-            d[2] = (unsigned char)((i2 * 255 + oa / 2) / oa);
-            d[3] = (unsigned char)oa;
+            if (sa == 255) {
+                d[0] = (unsigned char)sp0;
+                d[1] = (unsigned char)sp1;
+                d[2] = (unsigned char)sp2;
+                d[3] = 255;
+                continue;
+            }
+            // premult "over": out = sp + dp*(1 - sa), no division
+            const unsigned inv = 255 - sa;
+            d[0] = (unsigned char)(sp0 + div255(d[0] * inv));
+            d[1] = (unsigned char)(sp1 + div255(d[1] * inv));
+            d[2] = (unsigned char)(sp2 + div255(d[2] * inv));
+            d[3] = (unsigned char)(sa + div255(d[3] * inv));
         }
     }
 }

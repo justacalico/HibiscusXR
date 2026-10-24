@@ -7,6 +7,7 @@ linked line per MR no matter how many commits it carried.
 - [make preview 和 dash-wayland 只构建不自动运行](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/215) (!215)
 - [dash-wayland: 修复合成器性能问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/216) (!216)
 - [dash-wayland: 阻止启动的应用逃逸到宿主会话](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/217) (!217)
+- [修复弹出菜单文字在行内偏高](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/218) (!218)
 
 ## [alpha-v2026.10.24-r24] - 2026-10-24
 - [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)

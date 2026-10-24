@@ -324,7 +324,6 @@ $(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 preview: $(PREVIEW_BIN)
-	./$(PREVIEW_BIN)
 
 $(OUT)/gen/xdg-shell-server-protocol.h: $(XDG_XML)
 	@mkdir -p $(OUT)/gen
@@ -371,7 +370,6 @@ $(WL_BIN): $(WL_SRCS) $(WL_GEN) \
 	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 dash-wayland: $(WL_BIN)
-	./$(WL_BIN)
 
 install: $(APK) $(HUD_APK)
 	adb install -r $(APK)

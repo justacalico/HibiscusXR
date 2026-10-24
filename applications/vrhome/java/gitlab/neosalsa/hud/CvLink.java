@@ -116,6 +116,7 @@ final class CvLink implements CtrlService {
             }
             @Override public void onNullBinding(ComponentName n) {
                 svc = null;
+                releaseConn();
             }
         };
         try {
@@ -203,21 +204,25 @@ final class CvLink implements CtrlService {
                 Parcel reply, int flags) {
             try { data.enforceInterface(CB_IFACE); }
             catch (Throwable t) { return false; }
-            main.post(new Runnable() {
-                @Override public void run() { onPush(); }
-            });
+            if (!threadUp)
+                main.post(new Runnable() {
+                    @Override public void run() { onPush(); }
+                });
             return true;
         }
     };
 
     private void onPush() {
-        if (!threadUp) {
-            threadUp = true;
-            if (wantPair && svc != null)
-                work.post(new Runnable() {
-                    @Override public void run() { pairNow(); }
-                });
-        }
+        // busy pushes arrive at ~100Hz while the station works; the
+        // listener only cares that the SPI worker exists, which is
+        // decided by the first push - firing it per push would churn the
+        // card's version and stall the render thread on snapshot calls
+        if (threadUp) return;
+        threadUp = true;
+        if (wantPair && svc != null)
+            work.post(new Runnable() {
+                @Override public void run() { pairNow(); }
+            });
         if (listener != null) listener.onChange();
     }
 

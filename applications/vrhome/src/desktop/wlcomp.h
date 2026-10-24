@@ -12,7 +12,7 @@ struct wl_resource;
 struct WlSurf;
 struct WlCompIn;
 
-// straight-alpha RGBA image of one toplevel, composited out of the
+// premultiplied RGBA image of one toplevel, composited out of the
 // client's shared-memory buffers
 struct WlImage {
     int w = 0, h = 0;
@@ -36,8 +36,9 @@ struct WlTask {
 };
 
 // A minimal Wayland compositor: SHM surfaces, xdg-shell toplevels and
-// popups, subsurfaces, one seat, one output. No dmabuf - clients fall
-// back to wl_shm and we copy pixels into per-task images for the dash.
+// popups, subsurfaces, one seat, one output. dmabuf buffers land in
+// EGLImages; wl_shm buffers get composited into per-task images, which
+// is the only CPU path - everything else is just bookkeeping.
 struct WlComp {
     wl_display* dpy = nullptr;
     wl_event_loop* loop = nullptr;
@@ -61,7 +62,14 @@ struct WlComp {
     static WlComp* create();
     void destroy();
     void dispatch(int timeoutMs);   // pump client requests
-    void flush();                   // push out events + frame callbacks
+    // push out replies, input events and queued fds. Runs every loop
+    // turn so client requests never wait on a draw
+    void flushEvents();
+    // answer the queued frame callbacks: sent only after a presented
+    // frame so clients pace their renders to our draw rate instead of
+    // free-running against the poll loop
+    void flushFrames();
+    void flush();                   // flushEvents + flushFrames
 
     pid_t spawn(const std::vector<std::string>& argv,
                 const std::vector<std::string>& extraEnv);
@@ -79,6 +87,9 @@ struct WlComp {
     // size already matches
     void configureTask(WlTask* t, int w, int h);
     void taskDirtyRect(WlTask* t, int x, int y, int w, int h);
+    // repaint the task's dirty region into img. Deferred work: commits
+    // only dirty rects, the caller recomposes once per update so a
+    // burst of commits costs one blend, not one blend each
     void recompose(WlTask* t);
     // dmabuf task: retarget tex at its buffer's EGLImage. False for shm
     // tasks - those upload pixels into tex instead

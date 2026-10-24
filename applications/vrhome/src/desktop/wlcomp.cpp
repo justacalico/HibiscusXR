@@ -84,9 +84,11 @@ struct SeatRes {
     std::vector<wl_resource*> keyboards;
 };
 
+struct PendFrame;
+
 struct WlCompIn {
     std::map<wl_client*, SeatRes> seats;
-    std::vector<wl_resource*> pendingFrames;
+    std::vector<PendFrame*> pendingFrames;
     std::vector<int> pendingFds;
     std::set<wl_client*> kmSent;
     std::set<std::string> actTokens;
@@ -99,6 +101,32 @@ struct WlCompIn {
     WlSurf* ptrGrab = nullptr;
     int nextTaskId = 1;
 };
+
+// a queued frame callback: the client can destroy the wl_callback
+// underneath us (surface teardown, disconnect), so each entry rides a
+// destroy listener that pulls it back out of the queue
+struct PendFrame {
+    WlCompIn* in = nullptr;
+    wl_resource* res = nullptr;
+    wl_listener gone;
+};
+
+static void pendFrameGone(wl_listener* lis, void*) {
+    PendFrame* pf = wl_container_of(lis, pf, gone);
+    auto& v = pf->in->pendingFrames;
+    for (size_t i = 0; i < v.size(); ++i)
+        if (v[i] == pf) { v.erase(v.begin() + i); break; }
+    delete pf;
+}
+
+static void queueFrame(WlComp* c, wl_resource* res) {
+    PendFrame* pf = new PendFrame;
+    pf->in = c->in;
+    pf->res = res;
+    pf->gone.notify = pendFrameGone;
+    wl_resource_add_destroy_listener(res, &pf->gone);
+    c->in->pendingFrames.push_back(pf);
+}
 
 static uint32_t nowMs() {
     timespec ts;
@@ -227,6 +255,8 @@ static void surfApplyDamage(WlSurf* s, bool forceFull) {
 static void commitSurf(WlSurf* s) {
     if (s->pendAttach) {
         s->pendAttach = false;
+        const int ow = s->buf ? s->buf->w : 0;
+        const int oh = s->buf ? s->buf->h : 0;
         releaseBuf(s);
         if (s->pendBuf) {
             WlBuf* b = new WlBuf;
@@ -247,7 +277,22 @@ static void commitSurf(WlSurf* s) {
             s->buf = b;
         }
         s->pendBuf = nullptr;
-        surfApplyDamage(s, true);
+        const int nw = s->buf ? s->buf->w : 0;
+        const int nh = s->buf ? s->buf->h : 0;
+        if (nw == ow && nh == oh) {
+            // footprint kept: the client's damage rects say what to
+            // repaint - the per-commit cost drops to the damaged band
+            surfApplyDamage(s, false);
+        } else {
+            // footprint moved: repaint where it was and where it is
+            WlSurf* top = surfTop(s);
+            if (top && top->task) {
+                int ox, oy;
+                surfOrigin(s, &ox, &oy);
+                s->c->taskDirtyRect(top->task, ox, oy, ow, oh);
+                s->c->taskDirtyRect(top->task, ox, oy, nw, nh);
+            }
+        }
     } else {
         surfApplyDamage(s, false);
     }
@@ -265,15 +310,15 @@ static void commitSurf(WlSurf* s) {
         if (s->c->onTaskDead) s->c->onTaskDead(s->task);
     }
     if (!s->frames.empty()) {
-        for (wl_resource* f : s->frames) s->c->in->pendingFrames.push_back(f);
+        for (wl_resource* f : s->frames) queueFrame(s->c, f);
         s->frames.clear();
     }
     if (s->task && s->buf) {
         s->task->bufW = s->buf->w;
         s->task->bufH = s->buf->h;
     }
-    WlSurf* top = surfTop(s);
-    if (top && top->task) s->c->recompose(top->task);
+    // no recompose here: the update pass repaints the dirty union once,
+    // so a burst of commits costs one blend instead of one each
 }
 
 static void unlinkKid(WlSurf* s) {
@@ -289,7 +334,6 @@ static void unlinkKid(WlSurf* s) {
         const int w = s->buf ? s->buf->w : 0;
         const int h = s->buf ? s->buf->h : 0;
         s->c->taskDirtyRect(top->task, ox, oy, w, h);
-        s->c->recompose(top->task);
     }
     drop(s->parent->below);
     drop(s->parent->above);
@@ -326,6 +370,9 @@ static void freeSurf(WlSurf* s) {
     if (s->c->pointerFocus == s) s->c->pointerFocus = nullptr;
     if (s->c->kbdFocus == s) s->c->kbdFocus = nullptr;
     if (s->c->in->ptrGrab == s) s->c->in->ptrGrab = nullptr;
+    // frame callbacks the surface never got answered die with it, same
+    // as a presented callback would
+    for (wl_resource* f : s->frames) wl_resource_destroy(f);
     releaseBuf(s);
     delete s;
 }
@@ -508,7 +555,6 @@ static void reqSubSetPos(wl_client*, wl_resource* res,
         surfOrigin(s, &ox, &oy);
         s->c->taskDirtyRect(top->task, ox, oy,
                             s->buf->w, s->buf->h);
-        s->c->recompose(top->task);
     }
 }
 static void moveSub(WlSurf* s, WlSurf* sib, bool below) {
@@ -535,7 +581,6 @@ static void moveSub(WlSurf* s, WlSurf* sib, bool below) {
         surfOrigin(s, &ox, &oy);
         s->c->taskDirtyRect(top->task, ox, oy,
                             s->buf->w, s->buf->h);
-        s->c->recompose(top->task);
     }
 }
 static void reqSubAbove(wl_client*, wl_resource* res, wl_resource* sib) {
@@ -733,6 +778,11 @@ static void reqPopupRepos(wl_client*, wl_resource* res,
         s->c->taskDirtyRect(top->task, ox, oy, s->buf->w, s->buf->h);
     }
     s->offX = x; s->offY = y;
+    if (top && top->task && s->buf) {
+        int ox, oy;
+        surfOrigin(s, &ox, &oy);
+        s->c->taskDirtyRect(top->task, ox, oy, s->buf->w, s->buf->h);
+    }
     xdg_popup_send_configure(s->roleRes, x, y, p->w, p->h);
     sendXdgCfg(s);
 }
@@ -1049,17 +1099,29 @@ void WlComp::dispatch(int timeoutMs) {
     wl_display_flush_clients(dpy);
 }
 
-void WlComp::flush() {
+void WlComp::flushEvents() {
     if (!dpy) return;
-    const uint32_t t = nowMs();
-    for (wl_resource* f : in->pendingFrames) {
-        wl_callback_send_done(f, t);
-        wl_resource_destroy(f);
-    }
-    in->pendingFrames.clear();
     wl_display_flush_clients(dpy);
     for (int fd : in->pendingFds) close(fd);
     in->pendingFds.clear();
+}
+
+void WlComp::flushFrames() {
+    if (!dpy) return;
+    const uint32_t t = nowMs();
+    std::vector<PendFrame*> fs;
+    fs.swap(in->pendingFrames);
+    for (PendFrame* pf : fs) {
+        wl_list_remove(&pf->gone.link);
+        wl_callback_send_done(pf->res, t);
+        wl_resource_destroy(pf->res);
+        delete pf;
+    }
+}
+
+void WlComp::flush() {
+    flushFrames();
+    flushEvents();
 }
 
 pid_t WlComp::spawn(const std::vector<std::string>& argv,

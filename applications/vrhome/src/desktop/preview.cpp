@@ -13,6 +13,7 @@
 #include "../input/input.h"
 #include "../input/keys.h"
 #include "../panels/panel.h"
+#include "../render/icons.h"
 #include "../render/resources.h"
 #include "../shell/backend.h"
 #include "../set/set.h"
@@ -406,6 +407,7 @@ int main(int argc, char** argv) {
     hud.dockAnchored = false;
     hud.summonMs = dashNowMs();
     if (initGlResources(&hud) != 0) return 1;
+    loadGlyphs(&hud);
     queueLaunch("preview.browser");
     queueLaunch("preview.files");
     queueLaunch("preview.settings");

@@ -1,0 +1,15 @@
+# Controller RF station power. libCVController.so powers the nordic link
+# chip by writing the eeprom driver's temp_gpio129 attribute, but that
+# node lives on i2c@89c000 which this kernel tree keeps disabled - the
+# write silently fails and the station never leaves reset, so no pair
+# scan can ever see a wand.
+#
+# The same pin is exposed by the picovr SPI driver on spi1.0 as
+# picovr_gpio129; stock init only chmod'd it because stock's eeprom node
+# existed. Drive it here instead, once userspace is far enough along that
+# the SPI driver has probed.
+
+on property:sys.boot_completed=1
+    write /sys/kernel/debug/mcu52840/mcu_power 1
+    chmod 0666 /sys/bus/spi/devices/spi1.0/picovr_gpio129
+    write /sys/bus/spi/devices/spi1.0/picovr_gpio129 1

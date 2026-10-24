@@ -38,6 +38,7 @@
 #include "../render/ctrl_render.h"
 #include "../render/egl.h"
 #include "../render/frame.h"
+#include "../render/icons.h"
 #include "../render/warp.h"
 #include "../sensor/sensor.h"
 #include "../sensor/qvr.h"
@@ -123,7 +124,10 @@ static void hudFrame(HudEngine* e) {
         const bool wasReady = e->ready;
         if (e->ready) termWindow(e);
         if (initWindow(e, nw) != 0) LOGE("initWindow failed");
-        else if (!wasReady) e->summonMs = now;
+        else {
+            loadGlyphs(e);
+            if (!wasReady) e->summonMs = now;
+        }
         ANativeWindow_release(nw);
     }
     if (e->windowGone.exchange(false)) termWindow(e);

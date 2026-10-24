@@ -27,4 +27,6 @@ interface CtrlService {
     void setPairing(boolean on);
     void unbindAll();
     void poke();
+    default void debugTransact(int code, int arg) {}
+    default void usbPair(String mac1, String mac2) {}
 }

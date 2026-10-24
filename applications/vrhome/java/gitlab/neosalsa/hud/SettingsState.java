@@ -14,6 +14,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -113,8 +114,13 @@ public class SettingsState {
 
     private final Context ctx;
     private final Handler main = new Handler(Looper.getMainLooper());
+    // system and link calls all ride this worker - the methods that
+    // reach them can be invoked from the render thread, and a stalled
+    // service must never stall the frame loop or the key filter's main
+    // thread
+    private final Handler work;
     private volatile int ver;
-    private int section = -1;
+    private volatile int section = -1;
 
     private volatile boolean wifiScanning;
     private volatile boolean btDiscovering;
@@ -129,11 +135,18 @@ public class SettingsState {
         @Override public void run() {
             if (!ctrlLink.bound() || section < 0) return;
             pollCtrl();
-            main.postDelayed(this, POLL_MS);
+            work.postDelayed(this, POLL_MS);
         }
     };
     private final Runnable ctrlScanOff = new Runnable() {
-        @Override public void run() { ctrlScanning = false; bump(); }
+        @Override public void run() {
+            ctrlScanning = false;
+            // the service's own pair latch survives the timeout, so the
+            // scan has to be closed there too or a later tap lands on
+            // "already in startPairingMode" and never re-opens the window
+            ctrlLink.setPairing(false);
+            bump();
+        }
     };
 
     // a link state change can both refresh the card and (re)start the
@@ -141,10 +154,16 @@ public class SettingsState {
     private final CtrlService.Listener ctrlListener =
             new CtrlService.Listener() {
         @Override public void onChange() {
-            ctrlPoll.run();
+            work.post(ctrlPoll);
+            if (pendingScan && ctrlLink.bound()) {
+                pendingScan = false;
+                ctrlScan(true);
+            }
             bump();
         }
     };
+
+    private volatile boolean pendingScan;
 
     private final BroadcastReceiver rx = new BroadcastReceiver() {
         @Override public void onReceive(Context c, Intent i) {
@@ -201,6 +220,9 @@ public class SettingsState {
 
     SettingsState(Context c) {
         ctx = c;
+        HandlerThread wt = new HandlerThread("vrhud.set");
+        wt.start();
+        work = new Handler(wt.getLooper());
         ctrlLink = CtrlService.detect(c);
         IntentFilter f = new IntentFilter();
         f.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
@@ -242,23 +264,35 @@ public class SettingsState {
                     android.net.Uri.parse(u), true, obs);
     }
 
-    private void bump() { ver++; }
+    private synchronized void bump() { ver++; }
 
     public int version() { return ver; }
 
-    public void section(int s) {
+    public void section(final int s) {
         section = s;
-        if (s >= 0) ctrlLink.attach(ctrlListener);
-        else ctrlLink.detach();
-        if (s == SEC_WIFI) wifiScan();
-        else if (s == SEC_BT) btScan();
+        work.post(new Runnable() {
+            @Override public void run() {
+                if (s >= 0) ctrlLink.attach(ctrlListener);
+                else ctrlLink.detach();
+                if (s == SEC_WIFI) wifiScan();
+                else if (s == SEC_BT) btScan();
+            }
+        });
         bump();
     }
 
     public void closed() {
         section = -1;
         ctrlScanning = false;
-        ctrlLink.detach();
+        work.post(new Runnable() {
+            @Override public void run() {
+                // drop the service-side pair latch as well - the binder
+                // lives past the card, and a scan left open would
+                // swallow the next tap
+                ctrlLink.setPairing(false);
+                ctrlLink.detach();
+            }
+        });
         bump();
     }
 
@@ -268,7 +302,7 @@ public class SettingsState {
         closed();
         try { ctx.unregisterReceiver(rx); } catch (Throwable ignored) {}
         ctx.getContentResolver().unregisterContentObserver(obs);
-        main.removeCallbacks(ctrlPoll);
+        work.removeCallbacks(ctrlPoll);
         main.removeCallbacks(ctrlScanOff);
     }
 
@@ -321,8 +355,7 @@ public class SettingsState {
 
     private static CtrlSlot copy(CtrlSlot c) {
         CtrlSlot o = new CtrlSlot();
-        o.state = c.state; o.batt = c.batt; o.chg = c.chg;
-        o.mac = c.mac; o.serial = c.serial;
+        copyInto(o, c);
         return o;
     }
 
@@ -786,15 +819,39 @@ public class SettingsState {
 
     // ----------------------------------------------------- ctrl svc
     private void pollCtrl() {
+        final CtrlSlot[] next = new CtrlSlot[ctrl.length];
         synchronized (ctrl) {
-            ctrlLink.poll(ctrl);
+            for (int i = 0; i < ctrl.length; ++i) next[i] = copy(ctrl[i]);
+        }
+        ctrlLink.poll(next);
+        boolean dirty = false;
+        synchronized (ctrl) {
             // raw link state to the card's display state: a link scan
             // turns "not connected" into "pairing" until it finishes
-            for (CtrlSlot c : ctrl)
-                c.state = ctrlScanning && c.state == 0 ? 2 :
-                        c.state == 0 ? 0 : 1;
+            for (int i = 0; i < ctrl.length; ++i) {
+                CtrlSlot n = next[i];
+                n.state = ctrlScanning && n.state == 0 ? 2 :
+                        n.state == 0 ? 0 : 1;
+                if (!sameCtrl(ctrl[i], n)) dirty = true;
+                copyInto(ctrl[i], n);
+            }
         }
-        bump();
+        if (dirty) bump();
+    }
+
+    private static void copyInto(CtrlSlot dst, CtrlSlot src) {
+        dst.state = src.state; dst.batt = src.batt; dst.chg = src.chg;
+        dst.mac = src.mac; dst.serial = src.serial;
+    }
+
+    private static boolean sameCtrl(CtrlSlot a, CtrlSlot b) {
+        return a.state == b.state && a.batt == b.batt &&
+                a.chg == b.chg && eqStr(a.mac, b.mac) &&
+                eqStr(a.serial, b.serial);
+    }
+
+    private static boolean eqStr(String a, String b) {
+        return a == null ? b == null : a.equals(b);
     }
 
     public void toggleScan() {
@@ -808,7 +865,31 @@ public class SettingsState {
         bump();
     }
 
-    private void unbindAll() {
+    // drives the scan state even with the card closed: the bind is async,
+    // so when the service is not up yet the pending flag lets the attach
+    // listener run it the moment the binder lands
+    public void ctrlScan(final boolean on) {
+        if (!ctrlLink.bound()) {
+            pendingScan = on;
+            if (on) work.post(new Runnable() {
+                @Override public void run() {
+                    ctrlLink.attach(ctrlListener);
+                }
+            });
+            return;
+        }
+        if (ctrlScanning != on) toggleScan();
+    }
+
+    public void ctrlTransact(int code, int arg) {
+        if (ctrlLink.bound()) ctrlLink.debugTransact(code, arg);
+    }
+
+    public void ctrlUsbPair(String mac1, String mac2) {
+        if (ctrlLink.bound()) ctrlLink.usbPair(mac1, mac2);
+    }
+
+    public void unbindAll() {
         ctrlLink.unbindAll();
         bump();
     }

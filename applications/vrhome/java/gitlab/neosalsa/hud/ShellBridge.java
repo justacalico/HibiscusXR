@@ -304,6 +304,18 @@ public class ShellBridge {
 
     public void settingsToggleScan() { st.toggleScan(); }
 
+    public void ctrlScan(boolean on) { st.ctrlScan(on); }
+
+    public void ctrlTransact(int code, int arg) {
+        st.ctrlTransact(code, arg);
+    }
+
+    public void ctrlUnbind() { st.unbindAll(); }
+
+    public void ctrlUsbPair(String mac1, String mac2) {
+        st.ctrlUsbPair(mac1, mac2);
+    }
+
     public void wifiJoin(String ssid, int sec, String pw) {
         st.wifiJoin(ssid, sec, pw);
     }

@@ -237,6 +237,8 @@ final class CvLink implements CtrlService {
         in.recycle();
     }
 
+    private final int[] prevState = {-1, -1};
+
     @Override public void poll(SettingsState.CtrlSlot[] slots) {
         if (svc == null || !threadUp) return;
         for (int i = 0; i < slots.length; ++i) {
@@ -248,19 +250,28 @@ final class CvLink implements CtrlService {
                 r.recycle();
             }
             c.state = st;
-            // the service numbers the two stations 1,2 - left, right
-            r = transact(TR_DEV_BLE_MAC, i + 1);
-            if (r != null) {
-                try { c.mac = nullToEmpty(r.readString()); }
-                catch (Throwable ignored) {}
-                r.recycle();
+            // identity rides the connect edge, not the poll: the MAC/SN
+            // queries spawn real station tasks and keeping them in the
+            // 2s loop starves an open scan window
+            if (st == 1 && prevState[i] != 1) {
+                // the service numbers the two stations 1,2 - left, right
+                r = transact(TR_DEV_BLE_MAC, i + 1);
+                if (r != null) {
+                    try { c.mac = nullToEmpty(r.readString()); }
+                    catch (Throwable ignored) {}
+                    r.recycle();
+                }
+                r = transact(TR_CTRL_SN, i);
+                if (r != null) {
+                    try { c.serial = nullToEmpty(r.readString()); }
+                    catch (Throwable ignored) {}
+                    r.recycle();
+                }
+            } else if (st == 0) {
+                c.mac = "";
+                c.serial = "";
             }
-            r = transact(TR_CTRL_SN, i);
-            if (r != null) {
-                try { c.serial = nullToEmpty(r.readString()); }
-                catch (Throwable ignored) {}
-                r.recycle();
-            }
+            prevState[i] = c.state;
             r = transact(TR_CHARGING, i);
             if (r != null) {
                 try { c.chg = r.readInt() != 0; }

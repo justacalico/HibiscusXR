@@ -113,6 +113,16 @@ Platform-independent logic (matrix math, the head-tracking transform, panel slot
 make test
 ```
 
+`make test` also renders the dash's goldens: each scene in
+`tests/goldens/scenes.json` is a list of MCP tool calls replayed through
+the headless preview. A frame that drifts rewrites its PNG, so goldens
+always track the code and reviewers see image diffs in the MR; scenes
+themselves are manifest lines, not test code. Renders pin UTC,
+`debug.vrhome.clock` and llvmpipe so they are deterministic. `make
+goldens` runs the same pass on its own, `make goldens-check` verifies
+without writing and fails on any diff, and hosts without GLFW/EGL skip
+the pass.
+
 See `AGENTS.md` for the testing and file-size rules this repo follows.
 
 ### Desktop mode

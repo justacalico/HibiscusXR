@@ -12,7 +12,9 @@ that can.
 ## Tests
 
 `make test` must pass before a change is called done. No exceptions, no
-"should work". New logic ships with new coverage in tests/.
+"should work". New logic ships with new coverage in tests/. Goldens
+under tests/goldens/ re-render and rewrite themselves on that pass -
+commit the changed PNGs with the code that moved the pixels.
 
 ## File size
 

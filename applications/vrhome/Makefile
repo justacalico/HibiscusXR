@@ -178,7 +178,8 @@ WL_GEN := $(OUT)/gen/xdg-shell-server-protocol.h \
           $(OUT)/gen/xdg-activation-v1-protocol.o \
           $(OUT)/gen/linux-dmabuf-v1-protocol.o
 
-.PHONY: all apk test preview dash-wayland install clean toolcheck
+.PHONY: all apk test preview dash-wayland install clean toolcheck \
+        goldens goldens-check
 
 all: apk
 apk: $(APK) $(HUD_APK)
@@ -318,6 +319,22 @@ $(TEST_BIN): $(TEST_SRCS) $(HOST_SRCS) tests/test.h
 
 test: $(TEST_BIN)
 	./$(TEST_BIN)
+	@if pkg-config --exists glfw3 egl glesv2 openxr 2>/dev/null; then \
+	    $(MAKE) --no-print-directory goldens; \
+	else \
+	    echo "goldens skipped: glfw3/egl/glesv2/openxr dev packages missing"; \
+	fi
+
+# self-updating goldens: each scene in tests/goldens/scenes.json renders
+# through the headless preview and its PNG rewrites itself when the frame
+# drifts, so the files always track the code and reviewers see image diffs
+# in the MR. goldens-check verifies instead - it fails on any diff and
+# writes nothing.
+goldens: $(PREVIEW_BIN)
+	python3 tools/goldens.py
+
+goldens-check: $(PREVIEW_BIN)
+	python3 tools/goldens.py --check
 
 $(PREVIEW_BIN): $(DESKTOP_SRCS) $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	@mkdir -p $(dir $@)

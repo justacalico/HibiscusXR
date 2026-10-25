@@ -58,6 +58,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'No adb devices. Plug a headset in, or connect over Wi-Fi.';
 
   @override
+  String get connectAdbPathSection => 'adb executable';
+
+  @override
+  String get connectAdbPathHint => 'adb';
+
+  @override
+  String get connectAdbPathBrowse => 'Browse';
+
+  @override
+  String get connectAdbPathNote =>
+      'Point at a specific adb binary when it is not on PATH - applies on Enter.';
+
+  @override
   String get connectWirelessNote =>
       'Tries the on-device CTE service first, then wireless adb.';
 

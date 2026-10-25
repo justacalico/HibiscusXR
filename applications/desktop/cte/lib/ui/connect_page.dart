@@ -1,4 +1,5 @@
 import 'package:common/common.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import '../l10n/app_localizations.dart';
@@ -16,16 +17,19 @@ class ConnectPage extends StatefulWidget {
 
 class _ConnectPageState extends State<ConnectPage> {
   final _host = TextEditingController();
+  final _adbPath = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _adbPath.text = widget.state.adbPath;
     scanAfterFirstFrame(widget.state.scanAdb);
   }
 
   @override
   void dispose() {
     _host.dispose();
+    _adbPath.dispose();
     super.dispose();
   }
 
@@ -63,6 +67,8 @@ class _ConnectPageState extends State<ConnectPage> {
           ),
         ),
         const SizedBox(height: 16),
+        _AdbPathCard(l10n: l10n, state: s, field: _adbPath),
+        const SizedBox(height: 16),
         _WirelessCard(l10n: l10n, state: s, host: _host),
       ],
     );
@@ -93,6 +99,63 @@ class _Header extends StatelessWidget {
         Text(l10n.connectTitle,
             style: Theme.of(context).textTheme.titleMedium),
       ],
+    );
+  }
+}
+
+class _AdbPathCard extends StatelessWidget {
+  const _AdbPathCard(
+      {required this.l10n, required this.state, required this.field});
+  final AppLocalizations l10n;
+  final AppState state;
+  final TextEditingController field;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.connectAdbPathSection,
+                style: Theme.of(context).textTheme.titleSmall),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: field,
+                    decoration: InputDecoration(
+                      hintText: l10n.connectAdbPathHint,
+                      isDense: true,
+                      border: const OutlineInputBorder(),
+                    ),
+                    onSubmitted: state.setAdbPath,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.folder_open, size: 18),
+                  tooltip: l10n.connectAdbPathBrowse,
+                  onPressed: () async {
+                    final f = await FilePicker.pickFile();
+                    final p = f?.path;
+                    if (p == null) return;
+                    field.text = p;
+                    state.setAdbPath(p);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(l10n.connectAdbPathNote,
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: Colors.white54)),
+          ],
+        ),
+      ),
     );
   }
 }

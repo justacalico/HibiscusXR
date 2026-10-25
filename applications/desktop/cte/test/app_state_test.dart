@@ -185,6 +185,22 @@ void main() {
     expect(state.connState, ConnState.idle);
   });
 
+  test('setAdbPath swaps the binary scans spawn', () async {
+    final state = fakeState();
+    expect(state.adbPath, 'adb');
+    await state.scanAdb();
+    expect(state.adbDevices.single.serial, 'SER9');
+
+    state.setAdbPath(' echo ');
+    expect(state.adbPath, 'echo');
+    // `echo devices -l` parses back as one row: serial "devices"
+    await state.scanAdb();
+    expect(state.adbDevices.single.serial, 'devices');
+
+    state.setAdbPath('');
+    expect(state.adbPath, 'adb');
+  });
+
   test('install logs output lines', () async {
     final fake = FakeLink(
         description: 'adb:F',

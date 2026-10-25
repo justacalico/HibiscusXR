@@ -10,6 +10,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('HCTE'), findsOneWidget);
     expect(find.text('Connect to a headset'), findsOneWidget);
+    expect(find.text('adb executable'), findsOneWidget);
     expect(find.text('Wireless'), findsOneWidget);
   });
 

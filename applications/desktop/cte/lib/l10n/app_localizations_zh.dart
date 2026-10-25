@@ -57,6 +57,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get connectNoDevices => '没有 adb 设备。插入头显,或通过 Wi-Fi 连接。';
 
   @override
+  String get connectAdbPathSection => 'adb 可执行文件';
+
+  @override
+  String get connectAdbPathHint => 'adb';
+
+  @override
+  String get connectAdbPathBrowse => '浏览';
+
+  @override
+  String get connectAdbPathNote => 'adb 不在 PATH 时指定具体路径,回车生效。';
+
+  @override
   String get connectWirelessNote => '先尝试设备上的 CTE 服务,再退回无线 adb。';
 
   @override

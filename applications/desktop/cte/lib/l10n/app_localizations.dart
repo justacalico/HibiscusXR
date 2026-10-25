@@ -194,6 +194,30 @@ abstract class AppLocalizations {
   /// **'No adb devices. Plug a headset in, or connect over Wi-Fi.'**
   String get connectNoDevices;
 
+  /// No description provided for @connectAdbPathSection.
+  ///
+  /// In en, this message translates to:
+  /// **'adb executable'**
+  String get connectAdbPathSection;
+
+  /// No description provided for @connectAdbPathHint.
+  ///
+  /// In en, this message translates to:
+  /// **'adb'**
+  String get connectAdbPathHint;
+
+  /// No description provided for @connectAdbPathBrowse.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse'**
+  String get connectAdbPathBrowse;
+
+  /// No description provided for @connectAdbPathNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Point at a specific adb binary when it is not on PATH - applies on Enter.'**
+  String get connectAdbPathNote;
+
   /// No description provided for @connectWirelessNote.
   ///
   /// In en, this message translates to:

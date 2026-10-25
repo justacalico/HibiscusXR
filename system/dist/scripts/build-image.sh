@@ -158,6 +158,14 @@ for pair in $(device_outputs "$DEVICE"); do
   echo "  $src.img: $(stat -c%s "$IMG") bytes, fsck clean"
 done
 if [ "$DEVICE" = "neo2" ]; then
+  # These properties decide which device-specific init services start. Check
+  # both final images after all writers have run, so malformed appends cannot
+  # silently publish an image without a usable device identity.
+  "$SELF/scripts/verify-build-props.sh" "$R/out/system-base.img" || \
+    fail "system-base.img has missing or malformed build properties"
+  "$SELF/scripts/verify-build-props.sh" "$R/out/system-pn2-full.img" || \
+    fail "system-pn2-full.img has missing or malformed build properties"
+
   sz=$(stat -c%s "$R/out/system-pn2-full.img")
   [ "$sz" -le 3943694336 ] || fail "full image $sz > partition 3943694336"
 fi

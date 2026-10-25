@@ -44,3 +44,15 @@ std::string findIconFile(const std::vector<std::string>& roots,
                          const char* ext = nullptr);
 
 std::vector<std::string> iconSearchRoots();
+
+// ini-file key read: finds "key=" inside the [group] section, returns
+// the value trimmed and unquoted. "" group matches lines before the
+// first section header (gtkrc-2.0 style). Empty on miss.
+std::string confGroupValue(const std::string& text,
+                           const std::string& group,
+                           const std::string& key);
+
+// the icon themes to search, user-configured first: kdeglobals
+// [Icons]/Theme (KDE), gtk settings.ini gtk-icon-theme-name, then the
+// built-in fallbacks. findIconFile still appends hicolor last.
+std::vector<std::string> iconThemeNames();

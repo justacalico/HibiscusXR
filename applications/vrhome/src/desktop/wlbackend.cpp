@@ -5,6 +5,7 @@
 
 #include "harness.h"
 #include "icontheme.h"
+#include "svgicon.h"
 #include "sysinfo.h"
 #include "../common/config.h"
 #include "../common/log.h"
@@ -395,18 +396,25 @@ void WlBackend::sysStatus(int out[3]) {
     out[1] = sysBatt; out[2] = sysChg;
 }
 
+// xpm and anything else undecodable still falls back to the generated
+// letter tile
+static bool decodeIconFile(const std::string& p, int size,
+                           IconPixels* out) {
+    if (p.size() > 4 && p.compare(p.size() - 4, 4, ".svg") == 0)
+        return decodeSvgFile(p, size, out);
+    return decodePng(p, out);
+}
+
 bool WlBackend::iconPixels(const std::string& pkg, IconPixels* out) {
     const DeskEntry* e = entry(pkg);
     const std::string icon =
         e && !e->icon.empty() ? e->icon : pkg;
-    if (icon.front() == '/' && decodePng(icon, out)) return true;
-    static const char* kThemes[] = {"Papirus", "Adwaita"};
-    const std::vector<std::string> themes(std::begin(kThemes),
-                                          std::end(kThemes));
-    // libpng only: svg/xpm icons fall through to the generated look
+    if (icon.front() == '/' && decodeIconFile(icon, 96, out))
+        return true;
+    static const std::vector<std::string> themes = iconThemeNames();
     const std::string p = findIconFile(iconSearchRoots(), themes,
-                                       icon, 96, ".png");
-    return !p.empty() && decodePng(p, out);
+                                       icon, 96);
+    return !p.empty() && decodeIconFile(p, 96, out);
 }
 
 std::string WlBackend::appLabel(const std::string& pkg) {

@@ -263,6 +263,83 @@ static std::string envOr(const char* var, const std::string& fallback) {
     return (v && *v) ? v : fallback;
 }
 
+static bool readText(const std::string& path, std::string* out) {
+    FILE* f = fopen(path.c_str(), "rb");
+    if (!f) return false;
+    char buf[4096];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), f)) > 0) out->append(buf, n);
+    fclose(f);
+    return true;
+}
+
+std::string confGroupValue(const std::string& text,
+                           const std::string& group,
+                           const std::string& key) {
+    auto trim = [](std::string s) {
+        const size_t b = s.find_first_not_of(" \t\r");
+        const size_t e = s.find_last_not_of(" \t\r");
+        return b == std::string::npos ? "" : s.substr(b, e - b + 1);
+    };
+    std::string cur;
+    size_t at = 0;
+    while (at <= text.size()) {
+        size_t eol = text.find('\n', at);
+        if (eol == std::string::npos) eol = text.size();
+        const std::string line = trim(text.substr(at, eol - at));
+        at = eol + 1;
+        if (line.empty() || line[0] == '#') continue;
+        if (line.front() == '[' && line.back() == ']') {
+            cur = line.substr(1, line.size() - 2);
+            continue;
+        }
+        if (cur != group) continue;
+        const size_t eq = line.find('=');
+        if (eq == std::string::npos || trim(line.substr(0, eq)) != key)
+            continue;
+        std::string v = trim(line.substr(eq + 1));
+        if (v.size() > 1 &&
+                ((v.front() == '"' && v.back() == '"') ||
+                 (v.front() == '\'' && v.back() == '\'')))
+            v = v.substr(1, v.size() - 2);
+        return v;
+    }
+    return "";
+}
+
+// kdeglobals, gtk3/4 settings.ini and .gtkrc-2.0 all carry the icon
+// theme under their own key; first hit wins, then the built-in
+// fallbacks fill out the rest of the chain
+std::vector<std::string> iconThemeNames() {
+    std::vector<std::string> names;
+    auto add = [&names](const std::string& t) {
+        if (t.empty()) return;
+        for (const std::string& x : names) if (x == t) return;
+        names.push_back(t);
+    };
+    const std::string cfg = envOr("XDG_CONFIG_HOME",
+                                  envOr("HOME", "/tmp") + "/.config");
+    const std::string home = envOr("HOME", "/tmp");
+    const char* spots[][3] = {
+        {"/kdeglobals", "Icons", "Theme"},
+        {"/gtk-4.0/settings.ini", "Settings", "gtk-icon-theme-name"},
+        {"/gtk-3.0/settings.ini", "Settings", "gtk-icon-theme-name"},
+    };
+    std::string text;
+    for (const auto& s : spots) {
+        text.clear();
+        if (readText(cfg + s[0], &text))
+            add(confGroupValue(text, s[1], s[2]));
+    }
+    text.clear();
+    if (readText(home + "/.gtkrc-2.0", &text))
+        add(confGroupValue(text, "", "gtk-icon-theme-name"));
+    add("Papirus");
+    add("Adwaita");
+    add("breeze");
+    return names;
+}
+
 std::vector<std::string> iconSearchRoots() {
     std::vector<std::string> roots;
     const std::string homeDir = envOr("HOME", "/tmp");

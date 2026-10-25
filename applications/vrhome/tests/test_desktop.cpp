@@ -3,10 +3,12 @@
 #include "../src/desktop/cmdline.h"
 #include "../src/desktop/desktopfile.h"
 #include "../src/desktop/icontheme.h"
+#include "../src/desktop/svgicon.h"
 #include "../src/desktop/popuppos.h"
 #include "../src/desktop/pixconv.h"
 #include "../src/desktop/proctrack.h"
 #include "../src/desktop/sysinfo.h"
+#include "../src/shell/backend.h"
 
 #include <signal.h>
 #include <sys/stat.h>
@@ -194,6 +196,60 @@ static void testIndexlessTheme() {
     CHECK(findIconFile({root}, {"Test"}, "foo", 32) ==
           root + "/hicolor/32x32/apps/foo.png");
     fs::remove_all(root);
+}
+
+static void testConfGroup() {
+    const std::string kde =
+        "[General]\nName=x\n[Icons]\nTheme=breeze\nColor=y\n";
+    CHECK(confGroupValue(kde, "Icons", "Theme") == "breeze");
+    CHECK(confGroupValue(kde, "Icons", "Missing").empty());
+    CHECK(confGroupValue(kde, "General", "Theme").empty());
+
+    // gtkrc-2.0 has no sections and double-quoted values
+    const std::string rc =
+        "gtk-theme-name=\"Breeze\"\n"
+        "gtk-icon-theme-name=\"Papirus-Dark\"\n";
+    CHECK(confGroupValue(rc, "", "gtk-icon-theme-name") ==
+          "Papirus-Dark");
+
+    const std::string ini =
+        "[Settings]\ngtk-icon-theme-name=Adwaita\n"
+        "[Other]\ngtk-icon-theme-name=Wrong\n";
+    CHECK(confGroupValue(ini, "Settings", "gtk-icon-theme-name") ==
+          "Adwaita");
+    CHECK(confGroupValue("", "Settings", "x").empty());
+}
+
+static void testSvgIcon() {
+    const std::string dir = "/tmp/dash-test-svg";
+    fs::remove_all(dir);
+    putFile(dir + "/red.svg",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" "
+            "height=\"48\"><rect width=\"48\" height=\"48\" "
+            "fill=\"#ff0000\"/></svg>");
+    putFile(dir + "/wide.svg",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"48\" "
+            "height=\"24\"><rect width=\"48\" height=\"24\" "
+            "fill=\"#00ff00\"/></svg>");
+    putFile(dir + "/bad.svg", "not xml at all");
+
+    IconPixels px;
+    CHECK(decodeSvgFile(dir + "/red.svg", 32, &px));
+    CHECK(px.w == 32 && px.h == 32 && px.rgba.size() == 32 * 32 * 4);
+    const unsigned char* c = px.rgba.data() + (16 * 32 + 16) * 4;
+    CHECK(c[0] == 255 && c[1] == 0 && c[2] == 0 && c[3] == 255);
+
+    // non-square art letterboxes into the square output
+    CHECK(decodeSvgFile(dir + "/wide.svg", 48, &px));
+    const unsigned char* top = px.rgba.data() + (4 * 48 + 24) * 4;
+    const unsigned char* mid = px.rgba.data() + (24 * 48 + 24) * 4;
+    CHECK(top[3] == 0);
+    CHECK(mid[0] == 0 && mid[1] == 255 && mid[3] == 255);
+
+    CHECK(!decodeSvgFile(dir + "/bad.svg", 32, &px));
+    CHECK(!decodeSvgFile(dir + "/nope.svg", 32, &px));
+    CHECK(!decodeSvgFile(dir + "/red.svg", 0, &px));
+    fs::remove_all(dir);
 }
 
 static void testPopupPos() {
@@ -581,6 +637,8 @@ void testDesktop() {
     testFindIconFile();
     testSubdirFromName();
     testIndexlessTheme();
+    testConfGroup();
+    testSvgIcon();
     testPopupPos();
     testPixconv();
     testSysinfo();

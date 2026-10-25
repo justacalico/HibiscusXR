@@ -143,6 +143,7 @@
     <string name="set_v_env_builtin_d">默认天空穹顶和地面网格</string>
     <string name="set_v_env_bad">无法读取的 zip 文件</string>
     <string name="set_v_env_nomap">内部没有 map.obj</string>
+    <string name="set_v_env_pt_vr">仅在 WiVRn 等 VR 运行时中可用</string>
     <string name="set_v_ime_active">使用中</string>
     <string name="set_v_batt_fmt">电量 %d/5</string>
     <string name="set_v_ctrl_chg">充电中</string>

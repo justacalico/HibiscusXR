@@ -295,6 +295,23 @@ void testSet() {
     CHECK(setEnvActive(snap, 0));          // empty means passthrough
     }
 
+    // ---- envSubs
+    {
+    SetSnap snap;
+    SetEnvOpt ok;  ok.id = "alpine";
+    SetEnvOpt bad; bad.id = "bad"; bad.st = 1;
+    SetEnvOpt nom; nom.id = "nom"; nom.st = 2;
+    snap.envs = {ok, bad, nom};
+    CHECK(setEnvSub(true, snap, 0) == UISET_ENV_PT_D);
+    CHECK(setEnvSub(false, snap, 0) == UISET_ENV_PT_VR);   // no feed on host
+    CHECK(setEnvSub(true, snap, 1) == UISET_ENV_BUILTIN_D);
+    CHECK(setEnvSub(false, snap, 1) == UISET_ENV_BUILTIN_D);
+    CHECK(setEnvSub(true, snap, 2) == -1);   // ok zip draws its own id
+    CHECK(setEnvSub(true, snap, 3) == UISET_ENV_BAD);
+    CHECK(setEnvSub(true, snap, 4) == UISET_ENV_NOMAP);
+    CHECK(setEnvSub(true, snap, 9) == -1);
+    }
+
     // ---- btConfirm
     {
     SetBtDev d;

@@ -114,6 +114,13 @@ bool setWifiNeedsPw(const SetWifi& n);
 const char* setEnvId(const SetSnap& snap, int aux);
 bool setEnvActive(const SetSnap& snap, int aux);
 
+// an env row's subtitle string slot, or -1 when the row draws the zip's
+// own id. On a desktop host there is no tracking-camera feed - the pick
+// only does anything under -vr where the runtime's environment (WiVRn's
+// passthrough, say) shows through - so the row says so instead of
+// promising a live view
+int setEnvSub(bool android, const SetSnap& snap, int aux);
+
 // a bt row tap: unbonded pairs at once, bonded asks through DLG_BT
 bool setBtNeedsConfirm(const SetBtDev& d);
 

@@ -143,6 +143,7 @@
     <string name="set_v_env_builtin_d">The default sky dome and floor grid</string>
     <string name="set_v_env_bad">Not a readable zip</string>
     <string name="set_v_env_nomap">No map.obj inside</string>
+    <string name="set_v_env_pt_vr">Only works in VR runtimes like WiVRn</string>
     <string name="set_v_ime_active">In use</string>
     <string name="set_v_batt_fmt">Battery %d/5</string>
     <string name="set_v_ctrl_chg">Charging</string>

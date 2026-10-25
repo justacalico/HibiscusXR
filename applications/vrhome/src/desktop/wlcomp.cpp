@@ -996,6 +996,7 @@ static void bindSeat(wl_client* cl, void* data, uint32_t ver,
     wl_resource_set_implementation(r, &seatImpl, data, nullptr);
     wl_seat_send_capabilities(r, WL_SEAT_CAPABILITY_POINTER |
                                  WL_SEAT_CAPABILITY_KEYBOARD);
+    if (ver > 1) wl_seat_send_name(r, "dash");
 }
 static void bindOut(wl_client* cl, void* data, uint32_t ver,
                     uint32_t id) {

@@ -419,7 +419,8 @@ static const char* kSetFallback[UISET_COUNT] = {
     "English", "简体中文",
     "Passthrough", "Live view from the tracking cameras",
     "Built-in", "The default sky dome and floor grid",
-    "Not a readable zip", "No map.obj inside", "In use",
+    "Not a readable zip", "No map.obj inside",
+    "Only works in VR runtimes like WiVRn", "In use",
     "Battery %d/5", "Charging", "space",
 };
 
@@ -841,13 +842,9 @@ static void drawRowBody(HudEngine* e, const Mat4& vp, const float c[3],
                          : st.snap.envs[row.aux - 2].name.empty()
                            ? st.snap.envs[row.aux - 2].id.c_str()
                            : st.snap.envs[row.aux - 2].name.c_str();
-        const char* sub = row.aux == 0 ? setStr(e, UISET_ENV_PT_D)
-                        : row.aux == 1 ? setStr(e, UISET_ENV_BUILTIN_D)
-                        : st.snap.envs[row.aux - 2].st == 1
-                          ? setStr(e, UISET_ENV_BAD)
-                        : st.snap.envs[row.aux - 2].st == 2
-                          ? setStr(e, UISET_ENV_NOMAP)
-                          : st.snap.envs[row.aux - 2].id.c_str();
+        const int subId = setEnvSub(st.android, st.snap, row.aux);
+        const char* sub = subId >= 0 ? setStr(e, subId)
+                                     : st.snap.envs[row.aux - 2].id.c_str();
         const float* np = active ? kPalAccent : kPalText;
         const float ncol[4] = {np[0], np[1], np[2], ga};
         glUseProgram(e->textProg);

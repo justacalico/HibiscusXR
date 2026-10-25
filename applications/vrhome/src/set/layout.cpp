@@ -328,6 +328,16 @@ bool setEnvActive(const SetSnap& snap, int aux) {
     return !strcmp(sel, setEnvId(snap, aux));
 }
 
+int setEnvSub(bool android, const SetSnap& snap, int aux) {
+    if (aux == 0) return android ? UISET_ENV_PT_D : UISET_ENV_PT_VR;
+    if (aux == 1) return UISET_ENV_BUILTIN_D;
+    const int i = aux - 2;
+    if (i < 0 || i >= (int)snap.envs.size()) return -1;
+    if (snap.envs[i].st == 1) return UISET_ENV_BAD;
+    if (snap.envs[i].st == 2) return UISET_ENV_NOMAP;
+    return -1;
+}
+
 bool setBtNeedsConfirm(const SetBtDev& d) { return d.bonded; }
 
 // ------------------------------------------------------------- dialog

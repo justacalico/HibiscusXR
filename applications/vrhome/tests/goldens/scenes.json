@@ -1,0 +1,43 @@
+{
+    "scenes": {
+        "dash": [],
+        "grid": [
+            {"tool": "dash_grid", "arguments": {"shown": true}}
+        ],
+        "grid-scroll": [
+            {"tool": "dash_grid", "arguments": {"shown": true}},
+            {"tool": "dash_scroll", "arguments": {"delta": 3.0}}
+        ],
+        "keyboard": [
+            {"tool": "dash_keyboard", "arguments": {"shown": true}}
+        ],
+        "quick": [
+            {"tool": "dash_quick", "arguments": {"shown": true}}
+        ],
+        "settings": [
+            {"tool": "dash_settings", "arguments": {"shown": true}}
+        ],
+        "shade": [
+            {"tool": "dash_shade", "arguments": {"shown": true}}
+        ],
+        "look-left": [
+            {"tool": "dash_look", "arguments": {"yaw": -35, "pitch": 0}}
+        ],
+        "look-down": [
+            {"tool": "dash_look", "arguments": {"yaw": 0, "pitch": -25}}
+        ],
+        "launch": [
+            {"tool": "dash_launch", "arguments": {"package": "preview.music"}}
+        ],
+        "recenter": [
+            {"tool": "dash_look", "arguments": {"yaw": -35, "pitch": 0}},
+            {"tool": "dash_recenter"}
+        ],
+        "back": [
+            {"tool": "dash_key", "arguments": {"key": "back"}}
+        ],
+        "moved": [
+            {"tool": "dash_move", "arguments": {"x": 0.5, "y": 0.15, "z": 0.4}}
+        ]
+    }
+}

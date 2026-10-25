@@ -7,6 +7,7 @@
 #include "../common/config.h"
 #include "../common/log.h"
 #include "../common/palette.h"
+#include "../common/props.h"
 #include "../panels/layout.h"
 #include "../panels/panels.h"
 #include "../pill/pill.h"
@@ -82,9 +83,13 @@ void syncDock(HudEngine* e) {
         pullXr(e);
         pullSys(e);
     }
-    std::time_t tt = std::time(nullptr);
-    std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
-                  std::localtime(&tt));
+    // debug.vrhome.clock pins the dock clock for deterministic renders
+    // (the golden harness sets it); unset means the real wall clock
+    if (!propS("debug.vrhome.clock", e->sysClock, sizeof(e->sysClock))) {
+        std::time_t tt = std::time(nullptr);
+        std::strftime(e->sysClock, sizeof(e->sysClock), "%H:%M",
+                      std::localtime(&tt));
+    }
     e->dockSys.clockW = measureText(e, e->sysClock, kSysPx);
     e->dockSys.hasBatt = e->sysBatt >= 0;
     std::vector<DockItem> prevDock;

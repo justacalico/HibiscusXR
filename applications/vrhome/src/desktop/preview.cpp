@@ -81,6 +81,9 @@ public:
             "Browser", "Files", "Settings", "Store", "Notes",
             "Camera", "Music", "Video", "Terminal", "Maps",
             "Calendar", "Photos", "Mail", "Chat", "Games",
+            "Weather", "Clock", "Books", "Radio", "Podcasts",
+            "Recorder", "Gallery", "Contacts", "Compass",
+            "Flashlight", "Editor",
         };
         out->clear();
         for (const char* n : names) {

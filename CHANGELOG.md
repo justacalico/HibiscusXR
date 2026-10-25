@@ -4,16 +4,16 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
-- [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)
-- [dash-wayland: 面板内渲染指针光标并支持悬停](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/224) (!224)
 - [make preview 和 dash-wayland 只构建不自动运行](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/215) (!215)
 - [dash-wayland: 修复合成器性能问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/216) (!216)
 - [dash-wayland: 阻止启动的应用逃逸到宿主会话](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/217) (!217)
 - [修复弹出菜单文字在行内偏高](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/218) (!218)
 - [桌面 dash 透视环境项标注仅 VR 运行时可用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/219) (!219)
 - [dash-wayland: 修复应用图标缺失](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/220) (!220)
-- [dash-wayland: 补发 seat name 修复应用无指针输入](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/221) (!221)
 - [fix: preserve device identity properties in system image](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/222) (!222)
+- [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)
+- [dash-wayland: 面板内渲染指针光标并支持悬停](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/224) (!224)
+- [dash-wayland: 补发 seat name 修复应用无指针输入](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/221) (!221)
 
 ## [alpha-v2026.10.24-r24] - 2026-10-24
 - [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)

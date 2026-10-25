@@ -22,12 +22,13 @@ class AppState extends ChangeNotifier {
     Future<HeadsetLink?> Function(String host)? socketFactory,
     HeadsetLink? Function(String serial)? adbLinkFactory,
   })  : _adb = adb ?? AdbRunner(),
-        _socketFactory = socketFactory ?? CteLink.probe,
-        _adbLinkFactory = adbLinkFactory ?? ((s) => AdbLink(adb ?? AdbRunner(), s));
+        _socketFactory = socketFactory ?? CteLink.probe {
+    _adbLinkFactory = adbLinkFactory ?? ((s) => AdbLink(_adb, s));
+  }
 
-  final AdbRunner _adb;
+  AdbRunner _adb;
   final Future<HeadsetLink?> Function(String host) _socketFactory;
-  final HeadsetLink? Function(String serial) _adbLinkFactory;
+  late final HeadsetLink? Function(String serial) _adbLinkFactory;
 
   ConnState connState = ConnState.idle;
   LinkKind? linkKind;
@@ -73,6 +74,17 @@ class AppState extends ChangeNotifier {
     final l = link;
     if (l == null) return '';
     return '${deviceInfo?.headsetName ?? 'headset'} via ${l.description}';
+  }
+
+  /// The adb binary every scan/connect spawns - `adb` means the PATH
+  /// lookup. Setting a custom path covers installs where adb never
+  /// landed on PATH; blank resets to the default.
+  String get adbPath => _adb.adbPath;
+
+  void setAdbPath(String path) {
+    final p = path.trim();
+    _adb = AdbRunner(adbPath: p.isEmpty ? 'adb' : p);
+    notifyListeners();
   }
 
   Future<void> scanAdb() async {

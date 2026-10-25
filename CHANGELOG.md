@@ -5,6 +5,7 @@ linked line per MR no matter how many commits it carried.
 
 ## Unreleased
 - [dash: 自更新 goldens](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/226) (!226)
+- [fix: 修复 cte-dump ctrl 目录缺失和 dumpsys 列表解析](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/227) (!227)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

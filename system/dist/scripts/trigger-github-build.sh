@@ -13,6 +13,7 @@ REF="${1:-main}"
 PUSH_REF="${2:-}"
 CHANNEL="${CHANNEL:-release}"
 DEVICE="${DEVICE:-neo2}"
+PUBLISH="${PUBLISH:-true}"
 
 if [ -n "$PUSH_REF" ]; then
   echo "Pushing $PUSH_REF to GitHub branch $REF..."
@@ -31,8 +32,8 @@ if [ -n "$PUSH_REF" ]; then
 fi
 
 TS=$(( $(date +%s) - 60 ))
-echo "Triggering $WORKFLOW @ $REF (channel: $CHANNEL, device: $DEVICE)"
-INPUTS=(-f channel="$CHANNEL" -f device="$DEVICE")
+echo "Triggering $WORKFLOW @ $REF (channel: $CHANNEL, device: $DEVICE, publish: $PUBLISH)"
+INPUTS=(-f channel="$CHANNEL" -f device="$DEVICE" -f publish="$PUBLISH")
 # a cog-tagged release pins the version so the GitHub release tag, the
 # image's ro.hibiscus.version and the changelog section all agree
 [ -n "${RELEASE_VERSION:-}" ] && INPUTS+=(-f version="$RELEASE_VERSION")

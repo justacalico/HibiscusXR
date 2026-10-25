@@ -1,3 +1,10 @@
+spec:
+  inputs:
+    release_and_publish:
+      description: "Publish the images as GitHub + GitLab releases - off builds and packages the image only, for debug runs"
+      type: boolean
+      default: false
+---
 # Monorepo CI, gated by folder group - a push only runs the CI for the group
 # that changed, plus the changelog housekeeping jobs which always run:
 #
@@ -10,7 +17,9 @@
 #
 # The dist lane: "Run pipeline" (web/api) pushes main to the GitHub mirror,
 # dispatches the image build there, and pulls the release back through the
-# package registry. With CHANNEL=release it also versions the OS first:
+# package registry. The release_and_publish input gates the release half -
+# off builds and packages the image only. With CHANNEL=release it also
+# versions the OS first:
 # os-bump writes the changelog from merged MRs (never commits), cuts the
 # os-v* tag and pushes both back; the build then stamps and releases that
 # tag. os-changelog is the only cog job allowed to run unattended - it
@@ -86,7 +95,7 @@ os-bump:
   resource_group: os-release
   timeout: 15m
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && $CHANNEL == "release" && $RELEASE_TAG !~ /^(cte|hbsup)-/
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && $CHANNEL == "release" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.release_and_publish ]]" == "true"
   variables:
     COCOGITTO_VERSION: "7.0.0"
     GLAB_VERSION: "1.113.0"
@@ -122,6 +131,7 @@ github-dispatch:
   # negotiation ("did not receive expected object").
   variables:
     GIT_DEPTH: "0"
+    PUBLISH: "$[[ inputs.release_and_publish ]]"
   needs:
     # when os-bump ran this waits for it and picks up os-release.env;
     # on alpha/beta runs the job does not exist and this starts at once
@@ -150,9 +160,9 @@ github-release-sync:
   stage: release
   image: alpine:3.20
   rules:
-    - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/
+    - if: $CI_PIPELINE_SOURCE == "web" && "$[[ inputs.release_and_publish ]]" == "true"
+    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.release_and_publish ]]" == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.release_and_publish ]]" == "true"
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
     GLAB_VERSION: "1.113.0"

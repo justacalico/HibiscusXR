@@ -25,6 +25,11 @@ on:
           - neo2
           - vmd
         default: neo2
+      publish:
+        description: 'Create the GitHub release - off builds the image only'
+        required: false
+        type: boolean
+        default: true
 
 env:
   HIBISCUS_ROOT: /home/runner/hibiscus
@@ -155,7 +160,18 @@ jobs:
       - name: package outputs
         run: bash system/dist/scripts/package-outputs.sh dist-out
 
+      # debug runs skip the release - the images land on the run as a
+      # short-lived artifact instead so they are still downloadable
+      - name: debug image artifacts
+        if: inputs.publish == false
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-images
+          path: dist-out/
+          retention-days: 3
+
       - name: github release
+        if: inputs.publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

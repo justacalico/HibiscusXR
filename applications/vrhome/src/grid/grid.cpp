@@ -318,7 +318,7 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.66f * ga};
+                              0.94f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
               0.14f);
@@ -470,15 +470,14 @@ void drawGrid(HudEngine* e, const Mat4& vp) {
             float dx, dy;
             gridDotsPos(it, e->grid.scroll, &dx, &dy);
             dy *= gs; dx *= gs;
-            if (dy + 0.020f < bhi && dy - 0.020f > blo) {
-                const bool dhov = e->grid.zone == GZONE_DOTS &&
-                                  e->grid.hover == i;
+            const bool dhov = e->grid.zone == GZONE_DOTS &&
+                              e->grid.hover == i;
+            if (dhov && dy + 0.020f < bhi && dy - 0.020f > blo) {
                 const float dc[3] = {c[0] + r[0]*dx + up[0]*dy,
                                      c[1] + r[1]*dx + up[1]*dy,
                                      c[2] + r[2]*dx + up[2]*dy};
                 const float icol[4] = {kPalText[0], kPalText[1],
-                                       kPalText[2],
-                                       (dhov ? 0.95f : 0.42f) * ga};
+                                       kPalText[2], 0.95f * ga};
                 drawGlyph(e, vp, GI_MORE_VERT, dc, r, up,
                           0.011f * gs, 0.008f, icol);
             }

@@ -44,6 +44,7 @@ bool loadFont(Engine* e) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     e->font.ok = true;
+    fontGlyph(e, 0x2026);
     return true;
 }
 

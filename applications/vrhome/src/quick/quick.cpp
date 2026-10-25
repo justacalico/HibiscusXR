@@ -65,7 +65,7 @@ void quickSliderTo(HudEngine* e, int slider, float u) {
 // same English the resources ship
 static const char* kQsFallback[UIQS_COUNT] = {
     "Quick settings", "On", "Off", "Not connected",
-    "Wi-Fi", "Boundary", "Bluetooth", "Seethrough",
+    "Wi-Fi", "Boundary", "Bluetooth", "Passthrough",
     "Microphone", "Reset view", "Night mode", "Do Not Disturb",
     "Airplane mode", "Battery saver", "Report problem",
     "About device", "Ethernet",
@@ -138,7 +138,7 @@ static void drawSlider(HudEngine* e, const Mat4& vp, const float c[3],
                              c[1] + r[1]*(tl + fw * 0.5f) * gs + up[1]*y,
                              c[2] + r[2]*(tl + fw * 0.5f) * gs + up[2]*y};
         const float fcol[4] = {kPalAccent[0], kPalAccent[1], kPalAccent[2],
-                               0.90f * ga};
+                               0.94f * ga};
         const float fhw = fw * 0.5f * gs;
         shapeQuad(e, vp, fc, r, up, 0.007f, 0.0f, fhw,
                   kQuickTrackHH * gs, fhw, kQuickTrackHH * gs,
@@ -178,7 +178,7 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     shapeQuad(e, vp, tc, r, up, 0.006f, 0.0f, thw, thh, thw, thh,
               thh * 0.34f, 0.0f, 0.002f, bgc, -1.0f, 0.0f, 0.0f, 0.0f,
               0.0f, 0.06f);
-    const float dead = s.implemented ? 1.0f : 0.45f;
+    const float dead = s.implemented ? 1.0f : 0.55f;
     const float* icp = on ? kPalText : kPalTextDim;
     const float icol[4] = {icp[0], icp[1], icp[2],
                            (0.92f + 0.08f * hp) * dead * ga};
@@ -194,16 +194,22 @@ static void drawTile(HudEngine* e, const Mat4& vp, const float c[3],
     float labelY, subY;
     quickTileTextY(s.large, &labelY, &subY);
     const char* label = qsStr(e, quickTileLabel(e->quick.st, s.id));
+    const float textW = (thw - 0.010f) * 2.0f;
+    const std::string lt =
+        clipText(e->font.set, label, 0.0010f * gs, textW);
     cardText(e, vp, c, r, up, tcx, tcy + labelY * thh,
-             label, 0.0010f * gs, dead * ga, true, !on);
+             lt.c_str(), 0.0010f * gs, dead * ga, true, !on);
     if (s.large) {
         const QsSub sub = quickSubtitle(e->quick.st, s.id);
         const char* st_ = sub.kind == QSUB_ON ? qsStr(e, UIQS_ON)
                       : sub.kind == QSUB_OFF ? qsStr(e, UIQS_OFF)
                       : sub.kind == QSUB_NOTCONN ? qsStr(e, UIQS_NOTCONN)
                       : sub.text;
-        cardText(e, vp, c, r, up, tcx, tcy + subY * thh, st_,
-                 0.00085f * gs, dead * ga, true, true);
+        const std::string st2 =
+            clipText(e->font.set, st_, 0.00085f * gs, textW);
+        cardText(e, vp, c, r, up, tcx, tcy + subY * thh, st2.c_str(),
+                 0.00085f * gs, dead * ga * (on ? 0.85f : 1.0f), true,
+                 !on);
     }
 }
 
@@ -233,7 +239,7 @@ void drawQuick(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.66f * ga};
+                              0.94f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
               0.14f);

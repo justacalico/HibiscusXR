@@ -565,8 +565,9 @@ void drawDock(HudEngine* e, const Mat4& vp) {
             const float* dc2 = it.vr ? kPalWarn : kPalText;
             const float dcol[4] = {dc2[0], dc2[1], dc2[2],
                                    (it.minimized ? 0.4f : 0.85f) * a};
-            shapeQuad(e, vp, dc, r, up, 0.008f, 0.0f, 0.007f, 0.007f,
-                      0.007f, 0.007f, 0.007f, 0.0f, 0.0015f, dcol);
+            shapeQuad(e, vp, dc, r, up, 0.008f, 0.0f, kDockDotR,
+                      kDockDotR, kDockDotR, kDockDotR, kDockDotR,
+                      0.0f, 0.0015f, dcol);
         }
 
         // close badge on a live immersive item: a disc off the icon's

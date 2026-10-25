@@ -154,7 +154,7 @@ constexpr float kSysPillPad = 0.014f; // pill inset around its slots
 constexpr float kSysPillGap = 0.022f; // between the two pills
 constexpr float kSysPillHH = 0.056f;  // pill half-height
 constexpr float kDockBadgeR = 0.024f; // XR close badge radius
-constexpr float kDockDotR = 0.007f;   // running-dot radius under an icon
+constexpr float kDockDotR = 0.009f;   // running-dot radius under an icon
 constexpr int   kDockPinMs = 600;     // confirm hold that toggles a pin
 // dock elevation: scaled with the recenter pitch but clamped so the strip
 // always lands below eye level - never over the windows, never overhead
@@ -204,7 +204,8 @@ constexpr float kQuickKnobR = 0.020f;  // slider knob disc radius
 constexpr float kQuickTrackHH = 0.010f;// slider track half-height
 constexpr int   kQuickLargeCols = 4;   // the wide toggle row
 constexpr float kQuickLargeH = 0.125f; // large tile height
-constexpr int   kQuickCols = 5;        // small tile columns
+constexpr int   kQuickCols = 4;        // small tile columns: matches the
+                                       // large row so the grid lines up
 constexpr float kQuickCellH = 0.115f;  // small tile row pitch
 constexpr float kQuickCloseR = 0.024f; // close disc radius on the title row
 constexpr float kQuickGearR = 0.024f;  // settings gear disc radius, matches close

@@ -59,6 +59,10 @@ struct WlComp {
     WlSurf* pointerFocus = nullptr;
     WlSurf* kbdFocus = nullptr;
     WlTask* active = nullptr;
+    // task the pointer currently sits in plus its task-local point: the
+    // composited cursor draws there (grabbed tasks use grabX/grabY)
+    WlTask* ptrTask = nullptr;
+    float ptrX = 0.0f, ptrY = 0.0f;
     // input grab: while set every key and pointer event goes straight
     // to this task's toplevel; grabX/grabY is the synthetic cursor in
     // buffer coords
@@ -83,6 +87,9 @@ struct WlComp {
 
     uint32_t nextSerial();
     void pointerEvent(WlTask* t, float x, float y, int action);
+    // drop pointer focus outright: the aim left every window, so the
+    // focused surface gets its wl_pointer.leave and the cursor hides
+    void pointerLeave();
     void keyEvent(uint32_t evdev, bool down);
     void setActive(WlTask* t, bool on);
     void setGrab(WlTask* t);

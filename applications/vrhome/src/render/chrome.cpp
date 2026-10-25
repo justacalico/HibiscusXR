@@ -473,6 +473,11 @@ void drawCursor(HudEngine* e, const Mat4& viewProj) {
         pos[2] = c[2] + r[2]*e->kbd.u*kKbdHW + up[2]*e->kbd.v*kKbdHH;
     } else if (e->hover >= 0 && e->hover < (int)e->panels.size()) {
         const Panel& p = e->panels[e->hover];
+        // a backend that paints a cursor inside window content owns the
+        // pointer there - the dot would just stack on it
+        if (e->hoverZone == ZONE_WINDOW && p.taskId >= 0 &&
+                e->backend && e->backend->hasAppCursor())
+            return;
         panelCenter(p, e->ringPos, c, r, up);
         const float u = e->hitU, v = e->hitV;
         const float hw = panelHW(p), hh = panelHH(p);

@@ -36,3 +36,7 @@ void pxFill(unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h,
             unsigned char r, unsigned char g, unsigned char b,
             unsigned char a);
+
+// built-in pointer image for clients that never call set_cursor:
+// premultiplied PX_ARGB8888 bytes, hotspot at 0,0
+const unsigned char* cursorDefaultPx(int* w, int* h);

@@ -62,6 +62,8 @@ public:
     void removeTasksOnDisplay(int displayId) override;
     void injectTouch(int displayId, float x, float y, int action) override;
     void injectTap(int displayId, float x, float y) override;
+    void injectPointerLeave(int displayId) override;
+    bool hasAppCursor() override { return true; }
     bool takePendingAdopt(PendingPanel* out) override;
     int takePendingRelease() override;
 

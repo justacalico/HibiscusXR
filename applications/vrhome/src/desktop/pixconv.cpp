@@ -103,6 +103,45 @@ void pxBlend(const unsigned char* src, int srcStride, uint32_t fmt,
     }
 }
 
+const unsigned char* cursorDefaultPx(int* w, int* h) {
+    // black-edged white arrow: X outline, o fill, . transparent
+    static const char* const kRows[] = {
+        "X...........",
+        "XX..........",
+        "XoX.........",
+        "XooX........",
+        "XoooX.......",
+        "XooooX......",
+        "XoooooX.....",
+        "XooooooX....",
+        "XoooooooX...",
+        "XooooooooX..",
+        "XoooooooooX.",
+        "XoooooXXXXX.",
+        "XooXoooX....",
+        "XoX.XoooX...",
+        "XX..XoooX...",
+        "X...XoooX...",
+        "....XoooX...",
+        ".....XXXX...",
+    };
+    static const int kW = 12, kH = 18;
+    static unsigned char px[kW * kH * 4];
+    static bool built = false;
+    if (!built) {
+        built = true;
+        for (int y = 0; y < kH; ++y)
+            for (int x = 0; x < kW; ++x) {
+                const char c = kRows[y][x];
+                unsigned char* d = px + (size_t)(y * kW + x) * 4;
+                if (c == 'X') { d[3] = 255; }
+                else if (c == 'o') { d[0] = d[1] = d[2] = d[3] = 255; }
+            }
+    }
+    *w = kW; *h = kH;
+    return px;
+}
+
 void pxFill(unsigned char* dst, int dstStride, int dstW, int dstH,
             int dx, int dy, int w, int h,
             unsigned char r, unsigned char g, unsigned char b,

@@ -331,6 +331,16 @@ static void testPixconv() {
     unsigned char fill[16] = {};
     pxFill(fill, 16, 2, 2, 0, 0, 2, 2, 9, 8, 7, 6);
     CHECK(fill[0] == 9); CHECK(fill[3] == 6);
+
+    int cw = 0, ch = 0;
+    const unsigned char* cur = cursorDefaultPx(&cw, &ch);
+    CHECK(cur && cw > 0 && ch > 0);
+    CHECK(cur[3] == 255);              // the hotspot tip is solid
+    CHECK(cur[(ch - 1) * cw * 4 + 3] == 0);  // bottom-left stays clear
+    bool solid = true;
+    for (int i = 0; i < cw * ch; ++i)
+        if (cur[i * 4 + 3] != 0 && cur[i * 4 + 3] != 255) solid = false;
+    CHECK(solid);                      // hard-edged shape, no fringe
 }
 
 static void testSysinfo() {

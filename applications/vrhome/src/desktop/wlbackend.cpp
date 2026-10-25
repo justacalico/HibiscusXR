@@ -718,6 +718,12 @@ void WlBackend::injectTap(int displayId, float x, float y) {
     injectTouch(displayId, x, y, kTouchUp);
 }
 
+void WlBackend::injectPointerLeave(int displayId) {
+    Slot* s = slotOf(displayId);
+    if (!s || !s->task) return;
+    c->pointerLeave();
+}
+
 bool WlBackend::takePendingAdopt(PendingPanel* out) {
     if (adopts.empty()) return false;
     *out = adopts.front();

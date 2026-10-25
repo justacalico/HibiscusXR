@@ -82,6 +82,9 @@ struct WlPoser {                 // xdg_positioner
 struct SeatRes {
     std::vector<wl_resource*> pointers;
     std::vector<wl_resource*> keyboards;
+    WlSurf* cursor = nullptr;    // surface the last set_cursor handed us
+    int curHotX = 0, curHotY = 0;
+    bool curSet = false;         // a set_cursor request arrived
 };
 
 struct PendFrame;
@@ -155,6 +158,46 @@ static WlSurf* surfTop(WlSurf* s) {
     return s;
 }
 
+// the image a task's pointer draws: the client's own cursor surface when
+// it set one, the built-in arrow when it never called set_cursor, and
+// nothing when it explicitly hid the pointer or hasn't committed pixels
+struct CursorSrc {
+    const unsigned char* px = nullptr;
+    int w = 0, h = 0, stride = 0;
+    uint32_t fmt = 0;
+    int hotX = 0, hotY = 0;
+};
+
+static bool cursorSrcOf(WlComp* c, WlTask* t, CursorSrc* out) {
+    wl_client* cl = wl_resource_get_client(t->surf->res);
+    const SeatRes& seat = c->in->seats[cl];
+    if (seat.curSet) {
+        const WlBuf* b = seat.cursor ? seat.cursor->buf : nullptr;
+        if (!b || !b->data) return false;
+        out->px = (const unsigned char*)b->data;
+        out->w = b->w; out->h = b->h;
+        out->stride = b->stride; out->fmt = b->fmt;
+        out->hotX = seat.curHotX; out->hotY = seat.curHotY;
+        return true;
+    }
+    out->px = cursorDefaultPx(&out->w, &out->h);
+    out->stride = out->w * 4;
+    out->fmt = PX_ARGB8888;
+    return true;
+}
+
+// mark the spot the cursor occupies dirty; called before and after
+// anything that moves or reshapes it
+static void dirtyCursorAt(WlComp* c, WlTask* t) {
+    if (!t) return;
+    CursorSrc cs;
+    if (!cursorSrcOf(c, t, &cs)) return;
+    const float px = c->grabTask == t ? c->grabX : c->ptrX;
+    const float py = c->grabTask == t ? c->grabY : c->ptrY;
+    c->taskDirtyRect(t, (int)px - cs.hotX, (int)py - cs.hotY,
+                     cs.w, cs.h);
+}
+
 uint32_t WlComp::nextSerial() { return wl_display_next_serial(dpy); }
 
 void WlComp::taskDirtyRect(WlTask* t, int x, int y, int w, int h) {
@@ -214,6 +257,26 @@ void WlComp::recompose(WlTask* t) {
                 s->buf->fmt, sx0 - ox, sy0 - oy,
                 t->img.rgba.data(), bw * 4, bw, bh,
                 sx0, sy0, sx1 - sx0, sy1 - sy0);
+    }
+    // the cursor goes last so it sits over everything, clipped to the
+    // same dirty band as the surface repaint
+    if (ptrTask == t) {
+        CursorSrc cs;
+        if (cursorSrcOf(this, t, &cs)) {
+            const float px = grabTask == t ? grabX : ptrX;
+            const float py = grabTask == t ? grabY : ptrY;
+            const int cx = (int)px - cs.hotX, cy = (int)py - cs.hotY;
+            const int x0 = cx > rc.x ? cx : rc.x;
+            const int y0 = cy > rc.y ? cy : rc.y;
+            const int x1 = cx + cs.w < rc.x + rc.w ? cx + cs.w
+                                                 : rc.x + rc.w;
+            const int y1 = cy + cs.h < rc.y + rc.h ? cy + cs.h
+                                                 : rc.y + rc.h;
+            if (x1 > x0 && y1 > y0)
+                pxBlend(cs.px, cs.stride, cs.fmt, x0 - cx, y0 - cy,
+                        t->img.rgba.data(), bw * 4, bw, bh,
+                        x0, y0, x1 - x0, y1 - y0);
+        }
     }
 }
 
@@ -317,6 +380,11 @@ static void commitSurf(WlSurf* s) {
         s->task->bufW = s->buf->w;
         s->task->bufH = s->buf->h;
     }
+    // a cursor image landed or moved: repaint the spot it sits at
+    if (s->role == ROLE_CURSOR && s->c->ptrTask &&
+            wl_resource_get_client(s->c->ptrTask->surf->res) ==
+            wl_resource_get_client(s->res))
+        dirtyCursorAt(s->c, s->c->ptrTask);
     // no recompose here: the update pass repaints the dirty union once,
     // so a burst of commits costs one blend instead of one each
 }
@@ -370,6 +438,8 @@ static void freeSurf(WlSurf* s) {
     if (s->c->pointerFocus == s) s->c->pointerFocus = nullptr;
     if (s->c->kbdFocus == s) s->c->kbdFocus = nullptr;
     if (s->c->in->ptrGrab == s) s->c->in->ptrGrab = nullptr;
+    for (auto& kv : s->c->in->seats)
+        if (kv.second.cursor == s) kv.second.cursor = nullptr;
     // frame callbacks the surface never got answered die with it, same
     // as a presented callback would
     for (wl_resource* f : s->frames) wl_resource_destroy(f);
@@ -453,9 +523,26 @@ static const struct wl_compositor_interface compImpl = {
 static void reqPtrRelease(wl_client*, wl_resource* res) {
     wl_resource_destroy(res);
 }
-static void reqPtrSetCursor(wl_client*, wl_resource*, uint32_t,
-                            wl_resource* surfRes, int32_t, int32_t) {
-    if (surfRes) surfOf(surfRes)->role = ROLE_CURSOR;
+static void reqPtrSetCursor(wl_client* cl, wl_resource* res, uint32_t,
+                            wl_resource* surfRes, int32_t hx, int32_t hy) {
+    WlComp* c = compOf(res);
+    SeatRes& seat = c->in->seats[cl];
+    WlSurf* ns = surfRes ? surfOf(surfRes) : nullptr;
+    // the pointer point gets repainted with the new shape: old spot
+    // first, then the resized one after the swap
+    if (c->ptrTask &&
+            wl_resource_get_client(c->ptrTask->surf->res) == cl)
+        dirtyCursorAt(c, c->ptrTask);
+    if (seat.cursor && seat.cursor != ns &&
+            seat.cursor->role == ROLE_CURSOR)
+        seat.cursor->role = ROLE_NONE;
+    seat.cursor = ns;
+    seat.curHotX = hx; seat.curHotY = hy;
+    seat.curSet = true;
+    if (ns) ns->role = ROLE_CURSOR;
+    if (c->ptrTask &&
+            wl_resource_get_client(c->ptrTask->surf->res) == cl)
+        dirtyCursorAt(c, c->ptrTask);
 }
 static const struct wl_pointer_interface ptrImpl = {
     reqPtrSetCursor, reqPtrRelease,
@@ -1211,17 +1298,23 @@ static WlSurf* pickSurf(WlTask* t, float x, float y, float* sx,
 static void ptrTo(WlComp* c, WlSurf* s, uint32_t serial,
                   float x, float y) {
     wl_client* cl = wl_resource_get_client(s->res);
-    for (wl_resource* p : c->in->seats[cl].pointers)
+    for (wl_resource* p : c->in->seats[cl].pointers) {
         wl_pointer_send_enter(p, serial, s->res,
                               wl_fixed_from_double(x),
                               wl_fixed_from_double(y));
+        if (wl_resource_get_version(p) >= 5)
+            wl_pointer_send_frame(p);
+    }
 }
 
 static void ptrLeave(WlComp* c, WlSurf* s) {
     wl_client* cl = wl_resource_get_client(s->res);
     const uint32_t ser = c->nextSerial();
-    for (wl_resource* p : c->in->seats[cl].pointers)
+    for (wl_resource* p : c->in->seats[cl].pointers) {
         wl_pointer_send_leave(p, ser, s->res);
+        if (wl_resource_get_version(p) >= 5)
+            wl_pointer_send_frame(p);
+    }
 }
 
 void WlComp::pointerEvent(WlTask* t, float x, float y, int action) {
@@ -1237,6 +1330,12 @@ void WlComp::pointerEvent(WlTask* t, float x, float y, int action) {
         ptrLeave(this, pointerFocus);
         pointerFocus = nullptr;
     }
+    // the cursor rides the pointer point: repaint where it was, then
+    // where it lands on whichever task is under it now
+    if (ptrTask) dirtyCursorAt(this, ptrTask);
+    ptrTask = hit ? t : nullptr;
+    ptrX = x; ptrY = y;
+    if (ptrTask) dirtyCursorAt(this, ptrTask);
     WlSurf* tgt = in->ptrGrab ? in->ptrGrab : hit;
     if (!tgt) return;
     int ox, oy;
@@ -1264,6 +1363,17 @@ void WlComp::pointerEvent(WlTask* t, float x, float y, int action) {
     }
     if (action == 0) in->ptrGrab = tgt;
     else if (action == 1) in->ptrGrab = nullptr;
+}
+
+void WlComp::pointerLeave() {
+    if (ptrTask) {
+        dirtyCursorAt(this, ptrTask);
+        ptrTask = nullptr;
+    }
+    if (pointerFocus) {
+        ptrLeave(this, pointerFocus);
+        pointerFocus = nullptr;
+    }
 }
 
 static void kbdTo(WlComp* c, WlSurf* s, bool enter) {
@@ -1313,6 +1423,10 @@ void WlComp::setActive(WlTask* t, bool on) {
 // until the grab drops
 void WlComp::setGrab(WlTask* t) {
     if (grabTask == t) return;
+    if (ptrTask) {
+        dirtyCursorAt(this, ptrTask);
+        ptrTask = nullptr;
+    }
     if (pointerFocus) {
         ptrLeave(this, pointerFocus);
         pointerFocus = nullptr;
@@ -1321,6 +1435,8 @@ void WlComp::setGrab(WlTask* t) {
     if (!t || !t->surf) return;
     grabX = t->bufW * 0.5f;
     grabY = t->bufH * 0.5f;
+    ptrTask = t;
+    dirtyCursorAt(this, t);
     ptrTo(this, t->surf, nextSerial(), grabX, grabY);
     pointerFocus = t->surf;
     setActive(t, true);
@@ -1328,12 +1444,14 @@ void WlComp::setGrab(WlTask* t) {
 
 void WlComp::grabMotion(float dx, float dy) {
     if (!grabTask || !grabTask->surf) return;
+    dirtyCursorAt(this, grabTask);
     grabX += dx;
     grabY += dy;
     if (grabX < 0.0f) grabX = 0.0f;
     if (grabY < 0.0f) grabY = 0.0f;
     if (grabX > grabTask->bufW) grabX = grabTask->bufW;
     if (grabY > grabTask->bufH) grabY = grabTask->bufH;
+    dirtyCursorAt(this, grabTask);
     wl_client* cl = wl_resource_get_client(grabTask->surf->res);
     const uint32_t ms = nowMs();
     for (wl_resource* p : in->seats[cl].pointers) {

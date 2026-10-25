@@ -5,19 +5,15 @@
 # scan can ever see a wand.
 #
 # The same pin is exposed by the picovr SPI driver on spi1.0 as
-# picovr_gpio129; stock init only chmod'd it and let the lib drive it on
-# demand once the stack attached. Driving it from init is what bricked
-# the boot: a sysfs store that stalls on the SPI bus blocks init's
-# action queue (init runs writes inline), and a board-level fault there
-# panics the kernel - either way the device resets the moment
-# sys.boot_completed fires. The MCU rail keeps stock's early timing and
-# init only leaves the pin writable; the station itself is powered by
-# the shell's link layer when it attaches, after the bus has settled and
-# where a hang costs one shell thread instead of the boot.
-
-on boot
-    write /sys/kernel/debug/mcu52840/mcu_power 1
-    chmod 0666 /sys/bus/spi/devices/spi1.0/picovr_gpio129
+# picovr_gpio129. The stock vendor rc (init.picovr.rc) already powers
+# the MCU and chmods this pin at on boot, so init here only re-chmods
+# once the SPI device is definitely up - it must never write the pin.
+# The boot loop came from init driving these nodes at a property
+# trigger: a sysfs store that stalls blocks init's action queue
+# (watchdog reset), and re-powering the MCU underneath its own driver
+# sequence faults the bus. The station pin itself is powered by the
+# shell's link layer when it attaches - the same point stock's lib
+# wrote temp_gpio129, once everything has settled.
 
 on property:sys.boot_completed=1
     chmod 0666 /sys/bus/spi/devices/spi1.0/picovr_gpio129

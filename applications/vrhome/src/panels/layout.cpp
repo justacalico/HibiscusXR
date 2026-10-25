@@ -173,6 +173,38 @@ void slotDrag(std::vector<Panel>& panels, int self, float centre, float yaw) {
     p.yaw = target;
 }
 
+void pillDrag(Panel& p, const float origin[3], const float o[3],
+              const float d[3]) {
+    // where the beam wants the grabbed spot this frame
+    const float dst[3] = {o[0] + d[0] * p.grabT,
+                          o[1] + d[1] * p.grabT,
+                          o[2] + d[2] * p.grabT};
+    const float hw = panelHW(p), hh = panelHH(p);
+    // the spot sits u*hw off centre along the right edge and v*hh along
+    // up, and both vectors turn with the pose being solved - a short
+    // fixed-point walk closes the loop
+    for (int i = 0; i < 3; ++i) {
+        float c[3], r[3], up[3];
+        panelCenter(p, origin, c, r, up);
+        const float dc[3] = {
+            dst[0] - p.grabU * hw * r[0] - p.grabV * hh * up[0],
+            dst[1] - p.grabU * hw * r[1] - p.grabV * hh * up[1],
+            dst[2] - p.grabU * hw * r[2] - p.grabV * hh * up[2]};
+        const float vx = dc[0] - origin[0],
+                    vy = dc[1] - origin[1] - kPanelY,
+                    vz = dc[2] - origin[2];
+        const float dh = sqrtf(vx * vx + vz * vz);
+        if (dh < 1e-4f) break;   // dead over the anchor: keep the pose
+        p.yaw = atan2f(vx, -vz);
+        p.dist = clampRingDist(dh);
+        float sp = vy / p.dist;
+        sp = sp < -1.0f ? -1.0f : sp > 1.0f ? 1.0f : sp;
+        const float np = asinf(sp);
+        p.pitch = np > kPitchMax ? kPitchMax
+                  : np < -kPitchMax ? -kPitchMax : np;
+    }
+}
+
 void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
                    float prevCentre) {
     const float ep = pitch > kPitchMax ? kPitchMax

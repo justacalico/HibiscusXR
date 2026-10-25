@@ -55,4 +55,8 @@ struct Panel {
     float grabPitch = 0;      // pitch snapped when a drag grabbed
     float grabScale = 0.0f;   // scale snapped when a resize drag grabbed
     float grabR = 0.0f;       // hit's distance from centre at grab, metres
+    float grabU = 0.0f;       // panel coords of the spot a pill drag
+    float grabV = 0.0f;       // grabbed
+    float grabT = 0.0f;       // that spot's ray distance at grab: the drag
+                              // holds it glued this far along the beam
 };

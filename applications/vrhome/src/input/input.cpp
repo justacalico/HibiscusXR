@@ -228,12 +228,12 @@ void hudKey(HudEngine* e, int code, int action, int repeat) {
                 Panel& p = e->panels[e->hover];
                 e->pressDisp = p.displayId;
                 if (e->hoverZone == ZONE_PILL) {
-                    // a floating window's own move pill: grab the aim and
-                    // the panel's spot so moveTick can apply the delta
-                    p.grabYaw = p.yaw;
-                    p.grabPitch = p.pitch;
-                    e->moveGrabYaw = e->aimYaw;
-                    e->moveGrabPitch = e->aimPitch;
+                    // a floating window's own move pill: grab the hit
+                    // spot and its ray distance so moveTick can hold it
+                    // glued to the beam at that depth
+                    p.grabU = e->hitU;
+                    p.grabV = e->hitV;
+                    p.grabT = e->aimHitT;
                     LOGI("pill drag grab disp %d", p.displayId);
                 } else if (e->hoverZone == ZONE_LABEL) {
                     // a docked window's pill body is its drag handle too:
@@ -579,7 +579,11 @@ void hudScroll(HudEngine* e, float delta) {
     if (e->confirmHeld && e->pressZone == ZONE_PILL && e->pressDisp >= 0) {
         for (auto& p : e->panels)
             if (p.displayId == e->pressDisp) {
-                p.dist = clampRingDist(p.dist + dd);
+                // the drag holds the grabbed spot this far along the
+                // beam: nudge the depth and the window follows
+                const float nt = p.grabT + dd;
+                p.grabT = nt < kGrabTMin ? kGrabTMin
+                          : nt > kRingDistMax ? kRingDistMax : nt;
                 break;
             }
         return;
@@ -636,15 +640,13 @@ void dragTick(HudEngine* e, const float o[3], const float d[3]) {
 // drag still carries it (the offset rides the ring) while the pill moves it
 // alone
 void moveTick(HudEngine* e) {
-    // a floating window's own pill drags it alone: its yaw/pitch chase the
-    // aim delta from the grab, the rest of the dash stays put
+    // a floating window's own pill drags it alone: the grabbed spot stays
+    // glued to the beam at its grab depth, so the window swings, tilts
+    // and moves in and out with the pointer while the dash stays put
     if (e->pressZone == ZONE_PILL && e->confirmHeld && e->pressDisp >= 0) {
         for (auto& p : e->panels) {
             if (p.displayId != e->pressDisp || !p.floating) continue;
-            p.yaw = wrapPi(p.grabYaw + wrapPi(e->aimYaw - e->moveGrabYaw));
-            const float np = p.grabPitch + (e->aimPitch - e->moveGrabPitch);
-            p.pitch = np > kPitchMax ? kPitchMax
-                      : np < -kPitchMax ? -kPitchMax : np;
+            pillDrag(p, e->ringPos, e->aimO, e->aimD);
             break;
         }
     }

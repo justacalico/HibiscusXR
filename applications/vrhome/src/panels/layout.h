@@ -71,6 +71,14 @@ void recenterSlots(std::vector<Panel>& panels, float centre, float pitch,
 // current yaw, falling back to the first free one
 float dockSlotYaw(const std::vector<Panel>& panels, int self, float centre);
 
+// floating-window pill drag tick: the grabbed spot stays glued to the aim
+// ray grabT metres along it, so the beam carries the window through yaw,
+// pitch and depth - pushing the pointer out moves the window away and
+// pulling it back brings it in. grabU/grabV/grabT are the pill hit's panel
+// coords and ray distance, snapshotted when the drag grabbed
+void pillDrag(Panel& p, const float origin[3], const float o[3],
+              const float d[3]);
+
 // docked-window pill drag tick: snap the grabbed window onto the ring slot
 // nearest `yaw` around `centre`. A window already on that slot trades
 // places with it, so dragging through the row swaps the two instead of

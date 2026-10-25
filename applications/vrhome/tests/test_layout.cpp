@@ -622,6 +622,70 @@ void testLayout() {
     const float nd3 = pushDash(ps, kRingDistMin + 0.05f, -9.0f);
     CHECK_F(nd3, kRingDistMin, 1e-6f);
 
+    // a floating window's pill drag: the grabbed spot stays glued to the
+    // aim ray grabT metres along it, so the beam carries the window
+    // through yaw, pitch and depth
+    {
+        Panel pf = mkPanel(0.0f);
+        pf.floating = true;
+        pf.grabU = 0.0f;
+        pf.grabV = pillVC;   // the pill's centre under the window
+        const float hw = panelHW(pf), hh = panelHH(pf);
+        float gc[3], gr[3], gu[3], g[3];
+        panelCenter(pf, o0, gc, gr, gu);
+        for (int i = 0; i < 3; ++i)
+            g[i] = gc[i] + pf.grabU * hw * gr[i] + pf.grabV * hh * gu[i];
+        const float gl = sqrtf(g[0]*g[0] + g[1]*g[1] + g[2]*g[2]);
+        const float gd[3] = {g[0] / gl, g[1] / gl, g[2] / gl};
+        pf.grabT = gl;
+        // the beam that grabbed it: an unmoved ray leaves the pose alone
+        pillDrag(pf, o0, o0, gd);
+        CHECK_F(pf.yaw, 0.0f, 1e-4f);
+        CHECK_F(pf.pitch, 0.0f, 1e-4f);
+        CHECK_F(pf.dist, kPanelDist, 1e-4f);
+        // swinging the beam carries the window: the spot lands on the
+        // ray's new point at the same grab depth
+        const float ry[3] = {sinf(0.3f), 0.0f, -cosf(0.3f)};
+        pillDrag(pf, o0, o0, ry);
+        panelCenter(pf, o0, gc, gr, gu);
+        for (int i = 0; i < 3; ++i)
+            CHECK_F(gc[i] + pf.grabU * hw * gr[i] + pf.grabV * hh * gu[i],
+                    ry[i] * gl, 1e-3f);
+        // pushing the pointer out carries the window deeper: the spot
+        // rides the beam at its grab distance, so dist grows
+        const float fwd[3] = {0.0f, 0.0f, -0.5f};
+        const float deep = pf.dist;
+        pillDrag(pf, o0, fwd, ry);
+        panelCenter(pf, o0, gc, gr, gu);
+        for (int i = 0; i < 3; ++i)
+            CHECK_F(gc[i] + pf.grabU * hw * gr[i] + pf.grabV * hh * gu[i],
+                    fwd[i] + ry[i] * gl, 1e-3f);
+        CHECK(pf.dist > deep + 0.3f);
+        // pulling it back brings the window in the same way
+        const float back[3] = {0.0f, 0.0f, 0.3f};
+        const float dnow = pf.dist;
+        pillDrag(pf, o0, back, ry);
+        panelCenter(pf, o0, gc, gr, gu);
+        for (int i = 0; i < 3; ++i)
+            CHECK_F(gc[i] + pf.grabU * hw * gr[i] + pf.grabV * hh * gu[i],
+                    back[i] + ry[i] * gl, 1e-3f);
+        CHECK(pf.dist < dnow - 0.3f);
+        // a grab far down the beam clamps at the ring limits instead of
+        // flinging the window out of reach
+        pf.grabT = 30.0f;
+        pillDrag(pf, o0, o0, ry);
+        CHECK_F(pf.dist, kRingDistMax, 1e-5f);
+        // a centre spot aimed dead over the anchor has no yaw to solve:
+        // the drag keeps the pose rather than picking a degenerate one
+        pf.yaw = 0.6f;
+        pf.grabU = 0.0f;
+        pf.grabV = 0.0f;
+        pf.grabT = 2.0f;
+        const float upRay[3] = {0.0f, 1.0f, 0.0f};
+        pillDrag(pf, o0, o0, upRay);
+        CHECK_F(pf.yaw, 0.6f, 1e-5f);
+    }
+
     // docked-window pill drag: a small pull keeps the window on its own
     // slot, crossing the midpoint hops it to the next space and the
     // window sitting there trades places with it

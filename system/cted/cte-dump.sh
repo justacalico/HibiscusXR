@@ -20,9 +20,14 @@ D=/data/local/tmp/cte-dump.$$
 rm -rf "$D"
 mkdir -p "$D/dumpsys" "$D/pkg" "$D/proc" "$D/sys" "$D/ctrl" || exit 1
 
-cap() { # cap <relpath> <cmd...>
+cap() { # cap <relpath> <cmd...> - bounded at 90s when timeout(1) exists
   out="$D/$1"; shift
-  ( "$@" ) >"$out" 2>&1
+  echo "== $1" >&2
+  if command -v timeout >/dev/null 2>&1; then
+    timeout 90 "$@" </dev/null >"$out" 2>&1
+  else
+    ( "$@" ) </dev/null >"$out" 2>&1
+  fi
 }
 
 cap meta.txt sh -c 'date; echo; uptime; echo; uname -a; echo;

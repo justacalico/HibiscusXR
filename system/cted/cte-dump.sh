@@ -18,7 +18,7 @@
 set +e
 D=/data/local/tmp/cte-dump.$$
 rm -rf "$D"
-mkdir -p "$D/dumpsys" "$D/pkg" "$D/proc" "$D/sys" || exit 1
+mkdir -p "$D/dumpsys" "$D/pkg" "$D/proc" "$D/sys" "$D/ctrl" || exit 1
 
 cap() { # cap <relpath> <cmd...>
   out="$D/$1"; shift
@@ -47,8 +47,9 @@ cap proc/mounts.txt cat /proc/mounts
 
 cap dumpsys.txt dumpsys
 cap dumpsys/_list.txt dumpsys -l
-for s in $(dumpsys -l 2>/dev/null | tr -cd 'A-Za-z0-9_.-\n'); do
-  cap "dumpsys/$s.txt" dumpsys "$s"
+dumpsys -l 2>/dev/null | while read -r line; do
+  set -- $line
+  [ -n "$1" ] && [ -z "$2" ] && cap "dumpsys/$1.txt" dumpsys "$1"
 done
 
 cap packages.txt pm list packages -f -u

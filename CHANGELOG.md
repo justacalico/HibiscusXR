@@ -4,7 +4,7 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
-
+- [dash: 自更新 goldens](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/226) (!226)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

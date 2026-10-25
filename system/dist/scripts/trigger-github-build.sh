@@ -77,4 +77,13 @@ for attempt in 1 2 3; do
 done
 
 echo "GitHub run finished: $CONCLUSION"
+
+# non-publish runs leave the images as a GitHub artifact - pull it back so
+# they show up as this job's artifacts and stay downloadable from GitLab
+if [ "$CONCLUSION" = "success" ] && [ "$PUBLISH" != "true" ]; then
+  echo "Fetching debug-images artifact from run $RUN_ID..."
+  gh run download "$RUN_ID" -R "$REPO" -n debug-images -D debug-images
+  ls -lh debug-images/
+fi
+
 [ "$CONCLUSION" = "success" ]

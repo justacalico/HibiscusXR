@@ -132,6 +132,13 @@ github-dispatch:
   variables:
     GIT_DEPTH: "0"
     PUBLISH: "$[[ inputs.release_and_publish ]]"
+  # non-publish runs: debug-images/ holds the xz'd images pulled back from
+  # the GitHub run - publish runs leave it absent and this just warns
+  artifacts:
+    when: on_success
+    expire_in: 3 days
+    paths:
+      - debug-images/
   needs:
     # when os-bump ran this waits for it and picks up os-release.env;
     # on alpha/beta runs the job does not exist and this starts at once

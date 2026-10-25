@@ -5,6 +5,7 @@ linked line per MR no matter how many commits it carried.
 
 ## Unreleased
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)
+- [dash-wayland: 面板内渲染指针光标并支持悬停](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/224) (!224)
 - [make preview 和 dash-wayland 只构建不自动运行](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/215) (!215)
 - [dash-wayland: 修复合成器性能问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/216) (!216)
 - [dash-wayland: 阻止启动的应用逃逸到宿主会话](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/217) (!217)

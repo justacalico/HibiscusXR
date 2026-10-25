@@ -10,8 +10,8 @@ linked line per MR no matter how many commits it carried.
 - [修复弹出菜单文字在行内偏高](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/218) (!218)
 - [桌面 dash 透视环境项标注仅 VR 运行时可用](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/219) (!219)
 - [dash-wayland: 修复应用图标缺失](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/220) (!220)
-- [fix: preserve device identity properties in system image](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/222) (!222)
 - [dash-wayland: 补发 seat name 修复应用无指针输入](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/221) (!221)
+- [fix: preserve device identity properties in system image](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/222) (!222)
 
 ## [alpha-v2026.10.24-r24] - 2026-10-24
 - [refactor: 共享代码移除设备标识 (#37)](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/205) (!205)

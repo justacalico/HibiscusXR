@@ -4,6 +4,7 @@ Hibiscus OS image releases. Entries are merge requests, one
 linked line per MR no matter how many commits it carried.
 
 ## Unreleased
+- [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)
 - [make preview 和 dash-wayland 只构建不自动运行](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/215) (!215)
 - [dash-wayland: 修复合成器性能问题](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/216) (!216)
 - [dash-wayland: 阻止启动的应用逃逸到宿主会话](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/217) (!217)

@@ -91,6 +91,10 @@ constexpr float kResizeR = 0.055f;   // corner hit radius, world units
 // shelf and stack all derive off it - so the dash scales as one assembly
 constexpr float kRingDistMin = 0.7f, kRingDistMax = 4.0f;
 constexpr float kDepthStep = 0.12f;    // metres per scroll unit
+// closest a pill drag lets the grabbed spot ride down the beam: a ray
+// distance off the pointer, not the ring - a controller held out in
+// front legitimately grabs nearer than the ring's own floor
+constexpr float kGrabTMin = 0.2f;
 
 // floating keyboard: the IME app draws into a texture the HUD owns, shown
 // as its own window under the one holding the text field. It rides nearer

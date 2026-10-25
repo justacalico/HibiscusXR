@@ -88,10 +88,13 @@ void drawDashScene(Engine* e, const Mat4& vp) {
     drawShade(h, vp);
     drawDock(h, vp);
     drawShelf(h, vp);
-    drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
-                   notifLiftAbove((int)h->notifs.size(),
-                                  h->shelf.empty() ? kDockBarH * 0.5f
-                                                   : shelfTop()));
+    // the shade already lists every live record - a floating stack on top
+    // of it would double-show the same notifications
+    if (!h->shade.shown)
+        drawNotifStack(h, vp, h->dockYaw, h->dockPitch,
+                       notifLiftAbove((int)h->notifs.size(),
+                                      h->shelf.empty() ? kDockBarH * 0.5f
+                                                       : shelfTop()));
     drawControllers(h, vp);
     drawCursor(h, vp);
     drawHoldRing(h);
@@ -135,9 +138,10 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
     const ShelfPick sp = pickShelfRay(e->shelf, e->shelfHW, e->dockYaw,
                                       e->dockPitch, dDrop, e->dashDist,
                                       e->ringPos, e->aimO, e->aimD);
-    const NotifPick np = pickNotifRay(e->notifs, nYaw, nPitch, nLift,
-                                      e->dashDist, e->ringPos, e->aimO,
-                                      e->aimD);
+    const NotifPick np = e->shade.shown
+        ? NotifPick{}
+        : pickNotifRay(e->notifs, nYaw, nPitch, nLift,
+                       e->dashDist, e->ringPos, e->aimO, e->aimD);
     const GridPick gp = e->grid.shown
         ? pickGridRay(e->grid, e->dockYaw, ringPitchFor(e->dockPitch),
                       e->dashDist, e->ringPos, e->aimO, e->aimD)

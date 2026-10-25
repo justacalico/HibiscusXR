@@ -38,7 +38,7 @@ float gridLayout(std::vector<GridItem>& items) {
 }
 
 void gridClipBand(float* lo, float* hi) {
-    *lo = -kGridHH;
+    *lo = -kGridHH + 0.016f;
     *hi = kGridHH - kGridHeadH;
 }
 

@@ -507,7 +507,7 @@ static void drawSliderRow(HudEngine* e, const Mat4& vp, const float c[3],
                              c[1] + r[1]*(tl + fw*0.5f)*gs + up[1]*cy*gs,
                              c[2] + r[2]*(tl + fw*0.5f)*gs + up[2]*cy*gs};
         const float fcol[4] = {kPalAccent[0], kPalAccent[1], kPalAccent[2],
-                               0.90f * ga};
+                               0.94f * ga};
         const float fhw = fw * 0.5f * gs;
         shapeQuad(e, vp, fc, r, up, 0.007f, 0.0f, fhw, kQuickTrackHH * gs,
                   fhw, kQuickTrackHH * gs, kQuickTrackHH * gs, 0.0f,
@@ -1090,7 +1090,7 @@ void drawSet(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.66f * ga};
+                              0.94f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
               0.14f);

@@ -14,9 +14,11 @@
 #include "../input/keys.h"
 #include "../panels/panel.h"
 #include "../render/icons.h"
+#include "../render/iconatlas.h"
 #include "../render/resources.h"
 #include "../shell/backend.h"
 #include "../set/set.h"
+#include "../../third_party/stb_truetype.h"
 
 #include <GLFW/glfw3.h>
 #include <GLES2/gl2.h>
@@ -36,7 +38,7 @@ public:
         p->displayId = nextDisp++;
         p->taskId = p->displayId;
         p->st = (void*)(intptr_t)p->displayId;
-        makePanelTex(tex);
+        makePanelTex(tex, p->displayId);
         return p->displayId;
     }
 
@@ -48,7 +50,7 @@ public:
 
     bool createKbdSurface(Kbd* k, unsigned tex, int w, int h, int) override {
         k->st = this;
-        makeKbdTex(tex, w, h);
+        makeKbdTex(tex, w, h, eng);
         return true;
     }
     void updateKbd(Kbd* k) override {
@@ -78,7 +80,7 @@ public:
     int appsVersion() override { return 1; }
     void launcherApps(std::vector<GridItem>* out) override {
         static const char* names[] = {
-            "Browser", "Files", "Settings", "Store", "Notes",
+            "Browser", "Files", "Calculator", "Store", "Notes",
             "Camera", "Music", "Video", "Terminal", "Maps",
             "Calendar", "Photos", "Mail", "Chat", "Games",
             "Weather", "Clock", "Books", "Radio", "Podcasts",
@@ -281,27 +283,76 @@ public:
 
     std::string appLabel(const std::string& pkg) override {
         const size_t dot = pkg.rfind('.');
-        return dot == std::string::npos ? pkg : pkg.substr(dot + 1);
+        std::string s =
+            dot == std::string::npos ? pkg : pkg.substr(dot + 1);
+        if (!s.empty()) s[0] = (char)toupper((unsigned char)s[0]);
+        return s;
     }
     bool iconPixels(const std::string& pkg, IconPixels* out) override {
+        // per-app launcher art: a tinted tile with the app's atlas glyph -
+        // the same language real icon packs speak, not a debug blob
+        static const struct { const char* app; int glyph; } kMap[] = {
+            {"browser", GI_LANGUAGE},    {"files", GI_FOLDER},
+            {"calculator", GI_CALCULATOR},{"store", GI_BAG},
+            {"notes", GI_EDIT},          {"camera", GI_CAMERA},
+            {"music", GI_MUSIC_NOTE},    {"video", GI_PLAY},
+            {"terminal", GI_TERMINAL},   {"maps", GI_PLACE},
+            {"calendar", GI_CALENDAR},   {"photos", GI_IMAGE},
+            {"mail", GI_MAIL},           {"chat", GI_CHAT},
+            {"games", GI_STADIA_CONTROLLER},
+            {"weather", GI_SUNNY},       {"clock", GI_SCHEDULE},
+            {"books", GI_BOOK},          {"radio", GI_VOLUME_UP},
+            {"podcasts", GI_MIC},        {"recorder", GI_MIC},
+            {"gallery", GI_LANDSCAPE},   {"contacts", GI_PERSON},
+            {"compass", GI_EXPLORE},     {"flashlight", GI_FLASHLIGHT},
+            {"editor", GI_EDIT},         {"settings", GI_SETTINGS},
+            {"messages", GI_CHAT},
+        };
+        const size_t dot = pkg.rfind('.');
+        std::string app = dot == std::string::npos
+            ? pkg : pkg.substr(dot + 1);
+        for (char& c2 : app) c2 = (char)tolower((unsigned char)c2);
+        int glyph = -1;
+        for (const auto& m : kMap)
+            if (app == m.app) { glyph = m.glyph; break; }
         unsigned h = 0;
         for (char c : pkg) h = h * 31 + (unsigned char)c;
         const unsigned char cols[][3] = {
-            {76, 105, 162}, {94, 72, 150}, {54, 124, 136},
-            {118, 82, 92}, {64, 132, 92}, {132, 112, 64},
+            {66, 133, 244}, {148, 96, 220}, {30, 150, 160},
+            {210, 80, 88},  {56, 160, 100}, {225, 150, 55},
+            {215, 100, 130},{90, 120, 200},
         };
-        const unsigned char* c = cols[h % 6];
+        const unsigned char* c = cols[h % 8];
         out->w = out->h = 96;
         out->rgba.resize(96 * 96 * 4);
+        float guv[4] = {0};
+        const bool hasGlyph = glyph >= 0 && iconUv(glyph, guv);
+        const int gw = iconAtlasW(), gh = iconAtlasH();
+        const unsigned char* atlas = iconAtlas();
+        // the cell's ink sits in its middle ~60%: drawing the cell over the
+        // tile's middle 70% lands the ink at ~half the icon
+        const float inset = 96.0f * 0.15f, span = 96.0f - inset * 2.0f;
         for (int y = 0; y < 96; ++y)
             for (int x = 0; x < 96; ++x) {
                 unsigned char* p = out->rgba.data() + (y * 96 + x) * 4;
-                const bool dot = (x - 48) * (x - 48) +
-                                 (y - 48) * (y - 48) < 18 * 18;
-                p[0] = dot ? 245 : c[0];
-                p[1] = dot ? 247 : c[1];
-                p[2] = dot ? 255 : c[2];
+                const float t = y / 95.0f;
+                const float lit = 1.14f - 0.30f * t;
+                p[0] = (unsigned char)(c[0] * lit > 255 ? 255 : c[0] * lit);
+                p[1] = (unsigned char)(c[1] * lit > 255 ? 255 : c[1] * lit);
+                p[2] = (unsigned char)(c[2] * lit > 255 ? 255 : c[2] * lit);
                 p[3] = 255;
+                if (!hasGlyph) continue;
+                const float fx = (x - inset) / span, fy = (y - inset) / span;
+                if (fx < 0.0f || fx >= 1.0f || fy < 0.0f || fy >= 1.0f)
+                    continue;
+                const float u = guv[0] + fx * (guv[2] - guv[0]);
+                const float v = guv[1] + fy * (guv[3] - guv[1]);
+                const int ax = (int)(u * gw), ay = (int)(v * gh);
+                if (ax < 0 || ax >= gw || ay < 0 || ay >= gh) continue;
+                const int a2 = atlas[ay * gw + ax];
+                p[0] += (unsigned char)((245 - p[0]) * a2 / 255);
+                p[1] += (unsigned char)((247 - p[1]) * a2 / 255);
+                p[2] += (unsigned char)((255 - p[2]) * a2 / 255);
             }
         return true;
     }
@@ -311,6 +362,8 @@ public:
     void injectTouch(int displayId, float x, float y, int action) override {
         LOGI("touch disp=%d %.0f,%.0f action=%d", displayId, x, y, action);
     }
+
+    Engine* eng = nullptr;
 
 private:
     int nextDisp = 100;
@@ -347,32 +400,164 @@ private:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    static void makePanelTex(unsigned tex) {
+    // a plausible app surface so the preview windows read like real apps:
+    // app bar with an accent icon, a hero block and a few list rows. The
+    // accent cycles by display so the ring's windows don't look identical
+    static void makePanelTex(unsigned tex, int dispId) {
         const int w = 640, h = 360;
         std::vector<unsigned char> px(w * h * 4);
-        for (int y = 0; y < h; ++y)
-            for (int x = 0; x < w; ++x) {
-                unsigned char* p = px.data() + (y * w + x) * 4;
-                const bool line = x % 64 < 1 || y % 64 < 1;
-                p[0] = line ? 52 : (unsigned char)(30 + x / 14);
-                p[1] = line ? 62 : (unsigned char)(50 + y / 9);
-                p[2] = line ? 78 : 84;
-                p[3] = 255;
-            }
+        static const unsigned char kAcc[][3] = {
+            {66, 133, 244}, {52, 168, 83}, {171, 71, 188},
+            {0, 172, 193}, {234, 88, 96}, {240, 164, 60},
+        };
+        const unsigned char* a = kAcc[((dispId % 6) + 6) % 6];
+        auto box = [&](int x0, int y0, int bw, int bh, int rad,
+                       unsigned char r, unsigned char g, unsigned char b) {
+            for (int y = y0; y < y0 + bh; ++y)
+                for (int x = x0; x < x0 + bw; ++x) {
+                    if (x < 0 || y < 0 || x >= w || y >= h) continue;
+                    const int qx = x < x0 + rad ? x0 + rad - x
+                                     : x > x0 + bw - 1 - rad
+                                       ? x - (x0 + bw - 1 - rad) : 0;
+                    const int qy = y < y0 + rad ? y0 + rad - y
+                                     : y > y0 + bh - 1 - rad
+                                       ? y - (y0 + bh - 1 - rad) : 0;
+                    if (qx * qx + qy * qy > rad * rad) continue;
+                    unsigned char* p = px.data() + (y * w + x) * 4;
+                    p[0] = r; p[1] = g; p[2] = b; p[3] = 255;
+                }
+        };
+        for (int i = 0; i < w * h; ++i) {
+            px[i * 4 + 0] = 22; px[i * 4 + 1] = 25; px[i * 4 + 2] = 33;
+            px[i * 4 + 3] = 255;
+        }
+        box(0, 0, w, 46, 0, 30, 34, 45);
+        box(18, 14, 18, 18, 9, a[0], a[1], a[2]);
+        box(46, 17, 130, 12, 6, 62, 68, 86);
+        box(w - 110, 15, 92, 16, 8, 46, 51, 66);
+        box(18, 60, w - 36, 96, 10,
+            (unsigned char)(28 + a[0] / 5),
+            (unsigned char)(30 + a[1] / 5),
+            (unsigned char)(38 + a[2] / 5));
+        box(36, 84, 170, 14, 7, 90, 96, 120);
+        box(36, 108, 110, 10, 5, 64, 70, 88);
+        for (int r = 0; r < 3; ++r) {
+            const int ry = 172 + r * 58;
+            box(18, ry, w - 36, 48, 8, 30, 34, 45);
+            box(32, ry + 13, 22, 22, 11,
+                (unsigned char)(a[0] * 2 / 3),
+                (unsigned char)(a[1] * 2 / 3),
+                (unsigned char)(a[2] * 2 / 3));
+            box(66, ry + 12, 200, 10, 5, 74, 80, 98);
+            box(66, ry + 28, 140, 8, 4, 52, 57, 73);
+        }
         texParams(tex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, px.data());
     }
 
-    static void makeKbdTex(unsigned tex, int w, int h) {
-        std::vector<unsigned char> px(w * h * 4, 230);
-        for (int y = 0; y < h; ++y)
-            for (int x = 0; x < w; ++x) {
-                unsigned char* p = px.data() + (y * w + x) * 4;
-                const bool key = x % 90 > 8 && y % 80 > 8;
-                p[0] = p[1] = p[2] = key ? 54 : 28;
-                p[3] = 255;
+    // an actual keyboard layout: lettered caps rasterized with the ui
+    // font via stbtt so keys read as a real IME, not a gray grid
+    static void makeKbdTex(unsigned tex, int w, int h, Engine* e) {
+        std::vector<unsigned char> px(w * h * 4);
+        for (int i = 0; i < w * h; ++i) {
+            px[i * 4 + 0] = 18; px[i * 4 + 1] = 20; px[i * 4 + 2] = 27;
+            px[i * 4 + 3] = 255;
+        }
+        struct KRow { const char* keys; int n; float pad; };
+        const KRow rows[] = {
+            {"1234567890", 10, 0.02f},
+            {"qwertyuiop", 10, 0.06f},
+            {"asdfghjkl;", 10, 0.10f},
+            {"zxcvbnm,.?", 10, 0.16f},
+        };
+        const float keyH = h / 5.0f;
+        const bool haveFont = e && e->font.ok && !e->font.data.empty();
+        auto glyph = [&](int cx, int cy, int cp, float pxh) {
+            if (!haveFont) return;
+            const float sc =
+                stbtt_ScaleForPixelHeight(&e->font.info, pxh);
+            int bw, bh, xo, yo;
+            unsigned char* bm = stbtt_GetCodepointBitmap(
+                &e->font.info, sc, sc, cp, &bw, &bh, &xo, &yo);
+            for (int y = 0; y < bh; ++y)
+                for (int x = 0; x < bw; ++x) {
+                    const int tx = cx + xo + x, ty = cy + yo + y;
+                    if (tx < 0 || ty < 0 || tx >= w || ty >= h) continue;
+                    unsigned char* p = px.data() + (ty * w + tx) * 4;
+                    const int a = bm[y * bw + x];
+                    p[0] += (unsigned char)((235 - p[0]) * a / 255);
+                    p[1] += (unsigned char)((237 - p[1]) * a / 255);
+                    p[2] += (unsigned char)((245 - p[2]) * a / 255);
+                }
+            stbtt_FreeBitmap(bm, nullptr);
+        };
+        auto label = [&](int cx, int cy, const char* s, float pxh) {
+            const float sc = stbtt_ScaleForPixelHeight(&e->font.info, pxh);
+            float pen = 0.0f;
+            for (const char* q = s; *q; ++q) {
+                int adv;
+                stbtt_GetCodepointHMetrics(&e->font.info, *q, &adv,
+                                           nullptr);
+                pen += adv * sc;
             }
+            pen = -pen * 0.5f;
+            for (const char* q = s; *q; ++q) {
+                int adv;
+                stbtt_GetCodepointHMetrics(&e->font.info, *q, &adv,
+                                           nullptr);
+                int bw, bh, xo, yo;
+                unsigned char* bm = stbtt_GetCodepointBitmap(
+                    &e->font.info, sc, sc, *q, &bw, &bh, &xo, &yo);
+                for (int y = 0; y < bh; ++y)
+                    for (int x = 0; x < bw; ++x) {
+                        const int tx = cx + (int)pen + xo + x;
+                        const int ty = cy + yo + y;
+                        if (tx < 0 || ty < 0 || tx >= w || ty >= h)
+                            continue;
+                        unsigned char* p = px.data() + (ty * w + tx) * 4;
+                        const int a = bm[y * bw + x];
+                        p[0] += (unsigned char)((235 - p[0]) * a / 255);
+                        p[1] += (unsigned char)((237 - p[1]) * a / 255);
+                        p[2] += (unsigned char)((245 - p[2]) * a / 255);
+                    }
+                stbtt_FreeBitmap(bm, nullptr);
+                pen += adv * sc;
+            }
+        };
+        auto key = [&](float x0, float x1, float yc, int cp,
+                       const char* lbl) {
+            const int kx0 = (int)(x0 * w) + 5, kx1 = (int)(x1 * w) - 5;
+            const int ky0 = (int)(yc * h - keyH * 0.40f);
+            const int ky1 = (int)(yc * h + keyH * 0.40f);
+            const int rad = 9;
+            for (int y = ky0; y < ky1; ++y)
+                for (int x = kx0; x < kx1; ++x) {
+                    const int qx = x < kx0 + rad ? kx0 + rad - x
+                                     : x >= kx1 - rad ? x - kx1 + rad + 1 : 0;
+                    const int qy = y < ky0 + rad ? ky0 + rad - y
+                                     : y >= ky1 - rad ? y - ky1 + rad + 1 : 0;
+                    if (qx * qx + qy * qy > rad * rad || x < 0 || y < 0 ||
+                        x >= w || y >= h) continue;
+                    unsigned char* p = px.data() + (y * w + x) * 4;
+                    p[0] = 52; p[1] = 56; p[2] = 68;
+                }
+            const int cx = (kx0 + kx1) / 2, cy = (ky0 + ky1) / 2;
+            if (lbl) label(cx, cy, lbl, keyH * 0.34f);
+            else if (cp > 0) glyph(cx, cy, cp, keyH * 0.40f);
+        };
+        for (int r = 0; r < 4; ++r) {
+            const float yc = (r + 0.5f) / 5.0f;
+            const float kw = (1.0f - rows[r].pad * 2.0f) / rows[r].n;
+            for (int k = 0; k < rows[r].n; ++k)
+                key(rows[r].pad + k * kw, rows[r].pad + (k + 1) * kw,
+                    yc, rows[r].keys[k], nullptr);
+        }
+        const float yc = 4.5f / 5.0f;
+        key(0.00f, 0.14f, yc, 0, "?123");
+        key(0.14f, 0.14f + 0.52f, yc, ' ', nullptr);
+        key(0.66f, 0.80f, yc, 0, ".");
+        key(0.80f, 1.00f, yc, 0, "done");
         texParams(tex);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA,
                      GL_UNSIGNED_BYTE, px.data());
@@ -406,6 +591,7 @@ int main(int argc, char** argv) {
         }
     };
     hud.backend = &backend;
+    backend.eng = &hud;
     hud.haveQuat = true;
     hud.dockAnchored = false;
     hud.summonMs = dashNowMs();

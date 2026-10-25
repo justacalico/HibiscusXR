@@ -64,9 +64,11 @@ static bool panelVis(HudEngine* e, int i, const float shc[3],
 void drawPanels(HudEngine* e, const Mat4& viewProj) {
     if (e->panels.empty()) return;
     glEnable(GL_BLEND);
-    // panel textures are premultiplied: OES feeds and the wayland shm
-    // composite both are, and floatProg keeps the output that way
-    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+    // the shape/text/icon shaders output straight alpha; only the app
+    // surface (floatProg) is premultiplied - it flips the blend to GL_ONE
+    // for its quad and straight alpha is restored right after
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
     // the park flight's target frame: the shelf pill's anchor, shared by
@@ -154,7 +156,9 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         }
 
         // the app surface itself: all four corners rounded now that no
-        // chrome is bound to any edge
+        // chrome is bound to any edge. Its texture is premultiplied so
+        // this one quad draws under the GL_ONE blend
+        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         glUseProgram(e->floatProg);
         glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
         glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
@@ -195,6 +199,8 @@ void drawPanels(HudEngine* e, const Mat4& viewProj) {
         glDepthMask(GL_TRUE);
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glDepthMask(GL_FALSE);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                            GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
         // hairline border around the window alone - the pill floats free
         // underneath and needs no outline of its own
@@ -296,7 +302,8 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glDepthMask(GL_FALSE);
 
-    // the IME's surface, rounded on all corners
+    // the IME's surface, rounded on all corners - premultiplied like the
+    // app windows
     glUseProgram(e->floatProg);
     glUniform1i(glGetUniformLocation(e->floatProg, "uTex"), 0);
     glUniform2f(glGetUniformLocation(e->floatProg, "uHalf"), hw, hh);
@@ -337,6 +344,8 @@ void drawKbd(HudEngine* e, const Mat4& viewProj) {
     glDepthMask(GL_TRUE);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glDepthMask(GL_FALSE);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA,
+                        GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
     // hairline border, brightened under the aim like the window frames
     glUseProgram(e->shapeProg);

@@ -191,7 +191,7 @@ void drawShade(HudEngine* e, const Mat4& vp) {
     shapeQuad(e, vp, shc, r, up, -0.03f, 0.0f, hw + 0.06f, hh + 0.06f,
               hw, hh, 0.06f, -1.0f, 0.06f, shCol);
     const float cardCol[4] = {kPalPanel[0], kPalPanel[1], kPalPanel[2],
-                              0.66f * ga};
+                              0.94f * ga};
     shapeQuad(e, vp, c, r, up, 0.004f, 0.0f, hw, hh, hw, hh, 0.06f,
               0.0f, 0.003f, cardCol, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
               0.14f);

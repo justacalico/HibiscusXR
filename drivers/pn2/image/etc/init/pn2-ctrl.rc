@@ -5,11 +5,15 @@
 # scan can ever see a wand.
 #
 # The same pin is exposed by the picovr SPI driver on spi1.0 as
-# picovr_gpio129; stock init only chmod'd it because stock's eeprom node
-# existed. Drive it here instead, once userspace is far enough along that
-# the SPI driver has probed.
+# picovr_gpio129. The stock vendor rc (init.picovr.rc) already powers
+# the MCU and chmods this pin at on boot, so init here only re-chmods
+# once the SPI device is definitely up - it must never write the pin.
+# The boot loop came from init driving these nodes at a property
+# trigger: a sysfs store that stalls blocks init's action queue
+# (watchdog reset), and re-powering the MCU underneath its own driver
+# sequence faults the bus. The station pin itself is powered by the
+# shell's link layer when it attaches - the same point stock's lib
+# wrote temp_gpio129, once everything has settled.
 
 on property:sys.boot_completed=1
-    write /sys/kernel/debug/mcu52840/mcu_power 1
     chmod 0666 /sys/bus/spi/devices/spi1.0/picovr_gpio129
-    write /sys/bus/spi/devices/spi1.0/picovr_gpio129 1

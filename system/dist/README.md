@@ -27,6 +27,8 @@ through the package registry, so they never expire.
    same-named GitLab release via the `github-release-sync` job. Release
    assets are package-registry backed, so they never expire and download
    without a login.
+5. The final image checks verify that product, device and model properties
+   are present, consistent and not joined onto adjacent properties.
 
 ## Devices
 

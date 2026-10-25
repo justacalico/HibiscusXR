@@ -54,6 +54,10 @@ if [ -s "$TMP/build.prop" ]; then
     # guarantee a trailing newline first or the append glues onto the last line
     [ -n "$(tail -c1 "$TMP/build.prop")" ] && echo "" >> "$TMP/build.prop"
     cat "$P/props.append" >> "$TMP/build.prop"
+    # Keep this writer correct even if a tracked props.append file is missing
+    # its final newline. The following identity properties must start on a
+    # separate line or Android silently drops ro.product.device.
+    [ -n "$(tail -c1 "$TMP/build.prop")" ] && echo "" >> "$TMP/build.prop"
     sed -i 's/^ro\.build\.product=.*/ro.build.product=PICOA7B10/' "$TMP/build.prop"
     grep -q '^ro.product.device=' "$TMP/build.prop" || echo 'ro.product.device=PICOA7B10' >> "$TMP/build.prop"
     grep -q '^ro.product.model='  "$TMP/build.prop" || echo 'ro.product.model=Pico Neo 2' >> "$TMP/build.prop"

@@ -230,6 +230,21 @@ static void pickDash(HudEngine* e, const Mat4& head, long long now) {
         }
         break;
     }
+    // the pointer streams into the window under the aim so clients see
+    // real hover instead of press bursts; while a press is down the
+    // drag owns the motion stream
+    if (e->backend && !e->confirmHeld) {
+        int hd = -1;
+        if (e->hover >= 0 && e->hoverZone == ZONE_WINDOW)
+            hd = e->panels[e->hover].displayId;
+        if (hd != e->ptrDisp && e->ptrDisp >= 0)
+            e->backend->injectPointerLeave(e->ptrDisp);
+        if (hd >= 0 && (hd != e->ptrDisp || e->hitX != e->ptrX ||
+                e->hitY != e->ptrY))
+            e->backend->injectTouch(hd, e->hitX, e->hitY, kTouchMove);
+        e->ptrDisp = hd;
+        e->ptrX = e->hitX; e->ptrY = e->hitY;
+    }
     float gy;
     if (gazeYaw(head, &gy)) e->gazeYaw = gy;
     e->gazePitch = gazePitch(head);

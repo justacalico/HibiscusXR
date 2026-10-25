@@ -128,6 +128,10 @@ public:
     virtual void removeTasksOnDisplay(int displayId) {}
     virtual void injectTouch(int displayId, float x, float y, int action) {}
     virtual void injectTap(int displayId, float x, float y) {}
+    virtual void injectPointerLeave(int displayId) {}
+    // true when the backend paints a pointer inside app windows itself:
+    // the dash hides its gaze dot over window content then
+    virtual bool hasAppCursor() { return false; }
     virtual void dismissMenu() {}
 
     virtual bool isCovered() { return false; }

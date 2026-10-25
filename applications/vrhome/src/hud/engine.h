@@ -73,6 +73,8 @@ struct HudEngine : Engine {
     int hoverZone = ZONE_NONE;   // chrome zone under the gaze ray
     float hitX = 0, hitY = 0;    // display px coords of the hit
     float hitU = 0, hitV = 0;    // raw panel coords of the hit
+    int ptrDisp = -1;            // display the pointer was last streamed to
+    float ptrX = 0, ptrY = 0;    // last streamed pointer point, display px
 
     // the app-grid overlay: opened from the dock's grid button, closes on
     // BACK, its close disc, a re-tap of the button or a launched app

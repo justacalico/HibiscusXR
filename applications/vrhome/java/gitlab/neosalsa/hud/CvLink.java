@@ -100,6 +100,7 @@ final class CvLink implements CtrlService {
                 seedTried = false;
                 work.post(new Runnable() {
                     @Override public void run() {
+                        powerStation();
                         // the stock client announces itself with a 4-part
                         // version; anything >= 2.8.0.0 flips the service
                         // into CV2 per-controller reporting
@@ -472,6 +473,27 @@ final class CvLink implements CtrlService {
         for (int i = 0; i < 2; ++i) {
             Parcel r = transact(TR_UNBIND, i);
             if (r != null) r.recycle();
+        }
+    }
+
+    // stock's lib powered the station through the eeprom driver's
+    // temp_gpio129; that i2c node is disabled on this kernel so the write
+    // lands nowhere and the station never leaves reset. The picovr SPI
+    // device exposes the same pin - init only chmods it (a sysfs write
+    // from an init action can wedge boot; here a stall just costs this
+    // worker), so the drive runs from the link layer at attach, where
+    // stock powered it anyway
+    private static final String STATION_POWER =
+            "/sys/bus/spi/devices/spi1.0/picovr_gpio129";
+
+    private void powerStation() {
+        try {
+            java.io.FileOutputStream f =
+                    new java.io.FileOutputStream(STATION_POWER);
+            f.write('1');
+            f.close();
+        } catch (Throwable t) {
+            Log.w(TAG, "station power write failed", t);
         }
     }
 

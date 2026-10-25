@@ -8,6 +8,7 @@ linked line per MR no matter how many commits it carried.
 - [fix: 修复 cte-dump ctrl 目录缺失和 dumpsys 列表解析](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/227) (!227)
 - [cte: 支持自定义 adb 路径](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/228) (!228)
 - [fix: cte-dump 每节加超时和进度输出](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/229) (!229)
+- [打磨 vrhome 仪表盘界面](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/230) (!230)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

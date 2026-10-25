@@ -36,7 +36,8 @@ final class CvLink implements CtrlService {
     private static final String CB_IFACE =
             "com.picovr.picovrlib.cvcontrollerlib.ICVAIDLServiceCallback";
     private static final int TR_KEY_EVENT = 2, TR_START_THREAD = 7,
-            TR_REGISTER_CB = 12, TR_CTRL_SN = 18, TR_UNBIND = 19,
+            TR_STOP_THREAD = 8, TR_REGISTER_CB = 12, TR_CTRL_SN = 18,
+            TR_UNBIND = 19,
             TR_INTERRUPT_PAIR = 28, TR_DEV_BLE_MAC = 39,
             TR_USB_PAIR = 43, TR_CV2_CONN = 45, TR_START_PAIR = 50,
             TR_STOP_PAIR = 51, TR_SET_UNITY = 54, TR_CHARGING = 62;
@@ -44,8 +45,6 @@ final class CvLink implements CtrlService {
     private static final int BATTERY_INDEX = 8;
     private static final String ACTION_SCREEN_ON =
             "android.intent.action.SCREEN_ON";
-    private static final String ACTION_START_THREAD =
-            "com.picovr.picovrlib.cv.broadcast.start.thread";
     // the only pushes that arrive unprompted are start-acks and live
     // controller traffic - an idle station says nothing, so "dead" can
     // only mean a very long silence. A restart on a live worker is a
@@ -118,8 +117,7 @@ final class CvLink implements CtrlService {
                         // the SPI link to the RF station only exists while
                         // this worker runs, so pair/query calls are no-ops
                         // until the first callback push marks it up
-                        Parcel r = transact(TR_START_THREAD, 1, 1);
-                        if (r != null) r.recycle();
+                        restartThread();
                         lastBeatMs = android.os.SystemClock.uptimeMillis();
                         if (listener != null) main.post(new Runnable() {
                             @Override public void run() {
@@ -405,6 +403,17 @@ final class CvLink implements CtrlService {
         });
     }
 
+    // the service latches "started" on its SPI worker even when the native
+    // thread died or never spawned: bare starts get skipped on the stale
+    // flag and the event stream never comes back. Only a stop clears the
+    // latch, so every start here is preceded by one
+    private void restartThread() {
+        Parcel r = transact(TR_STOP_THREAD);
+        if (r != null) r.recycle();
+        r = transact(TR_START_THREAD, 1, 1);
+        if (r != null) r.recycle();
+    }
+
     // the service latches needstartpairing and ignores every later start
     // while it is set, so a re-tap has to stop first to get a fresh scan
     // window; the arg is the device selector the stock client always
@@ -539,11 +548,10 @@ final class CvLink implements CtrlService {
                         Intent on = new Intent(ACTION_SCREEN_ON);
                         on.setPackage(PKG);
                         ctx.sendBroadcast(on);
-                        Intent i = new Intent(ACTION_START_THREAD);
-                        i.setPackage(PKG);
-                        i.putExtra("HeadTrackMode", 1);
-                        i.putExtra("CtrlerTrackMode", 1);
-                        ctx.sendBroadcast(i);
+                        // the broadcast start gets skipped on the
+                        // service's stale started flag; the binder
+                        // stop+start rebuilds the thread group for real
+                        restartThread();
                     }
                     Log.i(TAG, "ctrl thread poked");
                 } catch (Throwable t) {

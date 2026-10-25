@@ -19,6 +19,21 @@
 #define GL_RGBA8 0x8058
 #endif
 
+// the MNDX egl binding at spec v2: headers before that either lack the
+// extension or carry v1, whose struct has no getProcAddress member. The
+// chain is read by structure type alone, so the v2 layout is declared
+// locally and the name/type stay ABI constants of the extension
+constexpr const char* kMndxExtName = "XR_MNDX_egl_enable";
+constexpr XrStructureType kMndxBindType = (XrStructureType)1000048004;
+struct VrMndxBind {
+    XrStructureType type;
+    const void* next;
+    PFN_xrVoidFunction (*getProcAddress)(const char*);
+    EGLDisplay display;
+    EGLConfig config;
+    EGLContext context;
+};
+
 // one EGL context for the session: the XR runtime hands us swapchain
 // textures inside it, so the dash's whole draw happens on this context.
 // A real display first (EGL_DEFAULT_DISPLAY covers X11 and Wayland), then
@@ -337,11 +352,11 @@ bool vrInit(VrDash* v, const char* appName) {
     // Monado's GLES binding on desktop is its own XR_MNDX_egl_enable; the
     // KHR opengl_es_enable binding is only honoured by runtimes that ship
     // it, so prefer whichever the runtime advertises
-    const bool mndx = xrHasExt(XR_MNDX_EGL_ENABLE_EXTENSION_NAME);
+    const bool mndx = xrHasExt(kMndxExtName);
     const bool khrGles = xrHasExt(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
     if (!mndx && !khrGles) {
-        LOGE("vr: runtime lacks " XR_MNDX_EGL_ENABLE_EXTENSION_NAME
-             " and " XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+        LOGE("vr: runtime lacks %s and %s", kMndxExtName,
+             XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
         return false;
     }
     if (!xrHasExt(XR_EXTX_OVERLAY_EXTENSION_NAME)) {
@@ -353,7 +368,7 @@ bool vrInit(VrDash* v, const char* appName) {
 
     const char* exts[3];
     int nexts = 0;
-    if (mndx) exts[nexts++] = XR_MNDX_EGL_ENABLE_EXTENSION_NAME;
+    if (mndx) exts[nexts++] = kMndxExtName;
     if (khrGles) exts[nexts++] = XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
     exts[nexts++] = XR_EXTX_OVERLAY_EXTENSION_NAME;
     XrInstanceCreateInfo ici{XR_TYPE_INSTANCE_CREATE_INFO};
@@ -387,8 +402,8 @@ bool vrInit(VrDash* v, const char* appName) {
     overlay.sessionLayersPlacement = 5;
     // the MNDX binding carries a getProcAddress on top of the same
     // display/config/context triple the KHR binding uses
-    XrGraphicsBindingEGLMNDX mndxBind{XR_TYPE_GRAPHICS_BINDING_EGL_MNDX,
-        &overlay, (PFN_xrEglGetProcAddressMNDX)eglGetProcAddress,
+    VrMndxBind mndxBind{kMndxBindType,
+        &overlay, (PFN_xrVoidFunction(*)(const char*))eglGetProcAddress,
         v->edpy, v->ecfg, v->ectx};
     // openxr 1.0 headers only name the GLES binding's android variant;
     // newer headers renamed it ..._XR_KHR with the same numeric type and

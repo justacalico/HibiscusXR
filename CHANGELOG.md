@@ -12,6 +12,7 @@ linked line per MR no matter how many commits it carried.
 - [vrhome: 悬浮窗拖动支持远近移动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/231) (!231)
 - [修复控制器配对：SPI 事件线程死寂后强制重建](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/232) (!232)
 - [vrhome: -vr 模式 start 键呼出/收起 overlay](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/233) (!233)
+- [vrhome: -vr 模式应用接管舞台时自动隐藏 overlay](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/234) (!234)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

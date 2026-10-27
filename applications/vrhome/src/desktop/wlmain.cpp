@@ -143,11 +143,11 @@ int main(int argc, char** argv) {
             dashDrainPre();
             if (!st) continue;
             const bool draw = vrBeginFrame(&xr);
-            vrInput(&xr, &hud);
             const long long now = dashNowMs();
+            vrInput(&xr, &hud, now);
             if (takeWantRecenter()) wantRecenter();
             tickDash(&hud, vrView(xr.head), now);
-            if (draw) {
+            if (draw && xr.summon.shown) {
                 for (int eye = 0; eye < kVrEyes; ++eye) {
                     Mat4 vp;
                     if (!vrTarget(&xr, eye, &vp)) continue;

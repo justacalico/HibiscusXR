@@ -1,5 +1,6 @@
 #include "vr.h"
 
+#include "../bridge/bridge.h"
 #include "../common/log.h"
 #include "../hud/engine.h"
 #include "../input/aim.h"
@@ -123,7 +124,7 @@ struct VrBinds {
 };
 
 // per-profile path suggestions. select is the confirm click, squeeze the
-// secondary click, aux the back/park key and menu the recenter key;
+// secondary click, aux the back/park key and menu the summon key;
 // anything a profile lacks is left unbound
 static const VrBinds kBinds[] = {
     {"/interaction_profiles/khr/simple_controller",
@@ -598,7 +599,7 @@ static bool boolState(XrSession sess, XrAction a, XrPath hand) {
     return st.isActive && st.currentState;
 }
 
-void vrInput(VrDash* v, HudEngine* e) {
+void vrInput(VrDash* v, HudEngine* e, long long nowMs) {
     XrActionsSyncInfo si{XR_TYPE_ACTIONS_SYNC_INFO};
     si.countActiveActionSets = 1;
     XrActiveActionSet act{v->aset, XR_NULL_PATH};
@@ -632,8 +633,21 @@ void vrInput(VrDash* v, HudEngine* e) {
             cur.stick[w][1] = vs.currentState.y;
         }
     }
-    const VrEvents ev = vrInputTick(v->prev, cur, e->input.active);
+    const VrEvents ev = vrInputTick(v->prev, cur, e->input.active,
+                                  &v->summon, nowMs);
     v->prev = cur;
+    // the summon key acts on the layer itself whether the dash is up or
+    // not; everything else only matters while it is
+    if (ev.summon & (kSumShow | kSumRecenter)) wantRecenter();
+    if (ev.summon & kSumShow) e->summonMs = nowMs;
+    if ((ev.summon & kSumHide) && e->confirmHeld)
+        e->ctrlEv.push_back({kKeyEnter, kKeyUp});
+    e->holdStartMs = v->summon.downMs && !v->summon.fired
+                     ? v->summon.downMs : 0;
+    if (!v->summon.shown) {
+        e->input.active = -1;
+        return;
+    }
     e->input.active = ev.active;
     for (int i = 0; i < ev.nKeys; ++i) e->ctrlEv.push_back(ev.keys[i]);
     if (ev.scroll != 0.0f) hudScroll(e, ev.scroll);
@@ -698,8 +712,10 @@ void vrEnd(VrDash* v) {
     XrCompositionLayerProjection proj{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
     const XrCompositionLayerBaseHeader* layer = nullptr;
     // the projection keeps referencing its last released images on frames
-    // we didn't draw: dropping the layer on !shouldRender would blink it
-    if (v->drawn) {
+    // we didn't draw: dropping the layer on !shouldRender would blink it.
+    // While the summon key has the dash down, no layer goes out at all -
+    // the main session gets the stage back
+    if (v->drawn && v->summon.shown) {
         for (int i = 0; i < kVrEyes; ++i) {
             pv[i] = XrCompositionLayerProjectionView{
                 XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};

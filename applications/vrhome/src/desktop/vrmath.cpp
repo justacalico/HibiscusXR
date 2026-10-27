@@ -1,5 +1,6 @@
 #include "vrmath.h"
 
+#include "../common/config.h"
 #include "../input/keys.h"
 #include "../shell/backend.h"
 
@@ -63,20 +64,45 @@ static void pushKey(VrEvents* ev, int code, int action) {
     }
 }
 
+int vrSummonStep(VrSummon* s, bool held, long long nowMs) {
+    if (held) {
+        if (!s->downMs) s->downMs = nowMs;
+        if (s->fired || nowMs - s->downMs < kHoldMs) return 0;
+        // the hold filled: re-centre, raising the layer first when down
+        s->fired = true;
+        const int fx = s->shown ? 0 : kSumShow;
+        s->shown = true;
+        return fx | kSumRecenter;
+    }
+    if (!s->downMs) return 0;
+    s->downMs = 0;
+    if (s->fired) {
+        s->fired = false;
+        return 0;
+    }
+    s->shown = !s->shown;
+    return s->shown ? kSumShow : kSumHide;
+}
+
 VrEvents vrInputTick(const VrInput& prev, const VrInput& cur,
-                     int lastActive) {
+                     int lastActive, VrSummon* sum, long long nowMs) {
     VrEvents ev;
+    bool menuHeld = false;
     for (int w = 0; w < 2; ++w) {
         if (!cur.aim[w]) continue;
         ev.conn[w] = true;
+        if (cur.menu[w]) menuHeld = true;
+    }
+    ev.summon = vrSummonStep(sum, menuHeld, nowMs);
+    if (!sum->shown) return ev;
+    for (int w = 0; w < 2; ++w) {
+        if (!cur.aim[w]) continue;
         if (cur.sel[w] != prev.sel[w])
             pushKey(&ev, kKeyEnter, cur.sel[w] ? kKeyDown : kKeyUp);
         if (cur.sq[w] != prev.sq[w])
             pushKey(&ev, kKeyMenu, cur.sq[w] ? kKeyDown : kKeyUp);
         if (cur.aux[w] != prev.aux[w])
             pushKey(&ev, kKeyMinimize, cur.aux[w] ? kKeyDown : kKeyUp);
-        if (cur.menu[w] && !prev.menu[w])
-            pushKey(&ev, kCtrlRecenter, kKeyDown);
         ev.scroll += cur.stick[w][1];
     }
     // a fresh confirm edge hands the pointer to that controller, same as

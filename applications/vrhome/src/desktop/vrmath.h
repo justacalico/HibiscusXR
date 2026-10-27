@@ -40,17 +40,21 @@ struct VrInput {
     bool aux[2] = {false, false};    // aux button -> back/park
     bool menu[2] = {false, false};   // menu/start button -> the summon key
     float stick[2][2] = {{0, 0}, {0, 0}};
+    bool mainUp = false;             // a main session owns the stage
 };
 
 // the overlay's summon key, same shape as the on-device one: a tap toggles
 // the dash layer over the main session, a hold re-centres it (and raises
 // it first when it's down). downMs stamps the press on the caller's
 // monotonic clock (0 = not held); fired marks a press the hold already
-// consumed, so the release afterwards isn't also a tap
+// consumed, so the release afterwards isn't also a tap. mainUp tracks the
+// last applied main-session state: an app claiming the stage parks the
+// layer down until the key or the app's exit raises it again
 struct VrSummon {
     bool shown = true;
     long long downMs = 0;
     bool fired = false;
+    bool mainUp = false;
 };
 
 // vrSummonStep outcomes, OR'd into VrEvents.summon

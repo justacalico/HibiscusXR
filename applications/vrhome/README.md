@@ -241,10 +241,13 @@ button (A/X, stick or trackpad click) is back/park, and the stick
 scrolls. The start button (the menu button on the wand) works like the
 on-device summon key: a tap drops the projection layer so the main
 session has the stage, another raises the dash back over it, and holding
-it re-centres the dash in front of you. With no controllers the head
-gaze aims instead. Everything is handled inside the dash's own scene, so
-grabbing panels, typing on the floating keyboard and the rest of the
-desktop interactions carry over unchanged.
+it re-centres the dash in front of you. The layer also follows the main
+session on its own: a VR app becoming visible parks the dash hidden, and
+the app leaving raises it again, so launching a game never leaves the
+UI floating over it. With no controllers the head gaze aims instead.
+Everything is handled inside the dash's own scene, so grabbing panels,
+typing on the floating keyboard and the rest of the desktop interactions
+carry over unchanged.
 
 ### Debugging on device
 

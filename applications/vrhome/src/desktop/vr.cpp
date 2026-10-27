@@ -503,6 +503,7 @@ int vrPoll(VrDash* v) {
         case XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX: {
             const auto* e =
                 (XrEventDataMainSessionVisibilityChangedEXTX*)&ev;
+            v->mainUp = e->visible;
             LOGI("vr: main session %s", e->visible ? "visible" : "hidden");
             break;
         }
@@ -633,6 +634,7 @@ void vrInput(VrDash* v, HudEngine* e, long long nowMs) {
             cur.stick[w][1] = vs.currentState.y;
         }
     }
+    cur.mainUp = v->mainUp;
     const VrEvents ev = vrInputTick(v->prev, cur, e->input.active,
                                   &v->summon, nowMs);
     v->prev = cur;

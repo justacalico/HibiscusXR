@@ -66,6 +66,9 @@ struct VrDash {
     // the menu/start button raises and drops the projection layer over
     // the main session; down means the app underneath has the stage back
     VrSummon summon;
+    // the runtime's last reported main-session visibility; vrInput feeds
+    // it into the tick as VrInput.mainUp
+    bool mainUp = false;
 };
 
 constexpr int kVrEyes = 2;

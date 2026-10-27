@@ -62,6 +62,10 @@ struct VrDash {
     XrSpace aimSpace[2] = {XR_NULL_HANDLE, XR_NULL_HANDLE};
     XrPath handL = XR_NULL_PATH, handR = XR_NULL_PATH;
     VrInput prev;
+
+    // the menu/start button raises and drops the projection layer over
+    // the main session; down means the app underneath has the stage back
+    VrSummon summon;
 };
 
 constexpr int kVrEyes = 2;
@@ -84,9 +88,11 @@ int vrPoll(VrDash* v);
 // predicted time. Returns fs.shouldRender; vrEnd must follow either way
 bool vrBeginFrame(VrDash* v);
 
-// sync actions, update hud->input/ctrlPos/ctrlDir/eyePos/aimO/aimD and
-// push key edges onto the hud's ctrlEv queue. Call after vrBeginFrame
-void vrInput(VrDash* v, HudEngine* e);
+// sync actions, drive the summon toggle off the menu/start button and -
+// while the layer is up - update hud->input/ctrlPos/ctrlDir/eyePos/
+// aimO/aimD and push key edges onto the hud's ctrlEv queue. Call after
+// vrBeginFrame; nowMs is the CLOCK_MONOTONIC stamp the tick runs on
+void vrInput(VrDash* v, HudEngine* e, long long nowMs);
 
 // acquire one eye's swapchain image, bind its framebuffer and write the
 // eye's view-projection matrix. false = no free image, skip that eye's

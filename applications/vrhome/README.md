@@ -237,11 +237,14 @@ later if it's wanted.
 
 Point a controller at a panel and the laser lands as the dash cursor:
 trigger/select is confirm, squeeze is the secondary click, the secondary
-button (A/X, stick or trackpad click) is back/park, the menu button
-re-centres the dash in front of you, and the stick scrolls. With no
-controllers the head gaze aims instead. Everything is handled inside the
-dash's own scene, so grabbing panels, typing on the floating keyboard and
-the rest of the desktop interactions carry over unchanged.
+button (A/X, stick or trackpad click) is back/park, and the stick
+scrolls. The start button (the menu button on the wand) works like the
+on-device summon key: a tap drops the projection layer so the main
+session has the stage, another raises the dash back over it, and holding
+it re-centres the dash in front of you. With no controllers the head
+gaze aims instead. Everything is handled inside the dash's own scene, so
+grabbing panels, typing on the floating keyboard and the rest of the
+desktop interactions carry over unchanged.
 
 ### Debugging on device
 

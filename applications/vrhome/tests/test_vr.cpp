@@ -1,5 +1,6 @@
 #include "test.h"
 
+#include "common/config.h"
 #include "desktop/vrmath.h"
 #include "input/keys.h"
 #include "input/input_state.h"
@@ -84,18 +85,19 @@ static void testVrInputClick() {
     a.aim[0] = a.aim[1] = true;
     b.aim[0] = b.aim[1] = true;
     b.sel[1] = true;
-    VrEvents ev = vrInputTick(a, b, -1);
+    VrSummon sum;
+    VrEvents ev = vrInputTick(a, b, -1, &sum, 0);
     const InputEvent* k = findKey(ev, kKeyEnter);
     CHECK(k != nullptr && k->action == kKeyDown);
     // the pressing hand takes the pointer
     CHECK(ev.active == CTRL_RIGHT);
     // held -> no new edge next frame
-    ev = vrInputTick(b, b, CTRL_RIGHT);
+    ev = vrInputTick(b, b, CTRL_RIGHT, &sum, 0);
     CHECK(findKey(ev, kKeyEnter) == nullptr);
     // release edge emits up
     VrInput c = b;
     c.sel[1] = false;
-    ev = vrInputTick(b, c, CTRL_RIGHT);
+    ev = vrInputTick(b, c, CTRL_RIGHT, &sum, 0);
     const InputEvent* up = findKey(ev, kKeyEnter);
     CHECK(up != nullptr && up->action == kKeyUp);
 }
@@ -103,18 +105,19 @@ static void testVrInputClick() {
 static void testVrInputArb() {
     VrInput a{};
     a.aim[0] = a.aim[1] = true;
+    VrSummon sum;
     // both connected, nobody pressed: keep the last active hand
-    VrEvents ev = vrInputTick(a, a, CTRL_LEFT);
+    VrEvents ev = vrInputTick(a, a, CTRL_LEFT, &sum, 0);
     CHECK(ev.active == CTRL_LEFT);
     // left goes away: arbitration falls to the connected hand
     VrInput c = a;
     c.aim[0] = false;
-    ev = vrInputTick(a, c, CTRL_LEFT);
+    ev = vrInputTick(a, c, CTRL_LEFT, &sum, 0);
     CHECK(ev.active == CTRL_RIGHT);
     CHECK(ev.conn[0] == false && ev.conn[1] == true);
     // neither connected: no pointer
     VrInput z{};
-    ev = vrInputTick(c, z, CTRL_RIGHT);
+    ev = vrInputTick(c, z, CTRL_RIGHT, &sum, 0);
     CHECK(ev.active == -1);
 }
 
@@ -124,18 +127,71 @@ static void testVrInputButtons() {
     b.aim[0] = true;
     b.sq[0] = true;
     b.aux[0] = true;
-    b.menu[0] = true;
-    VrEvents ev = vrInputTick(a, b, -1);
+    VrSummon sum;
+    VrEvents ev = vrInputTick(a, b, -1, &sum, 0);
     CHECK(findKey(ev, kKeyMenu) != nullptr &&
           findKey(ev, kKeyMenu)->action == kKeyDown);
     CHECK(findKey(ev, kKeyMinimize) != nullptr &&
           findKey(ev, kKeyMinimize)->action == kKeyDown);
-    CHECK(findKey(ev, kCtrlRecenter) != nullptr &&
-          findKey(ev, kCtrlRecenter)->action == kKeyDown);
     // a disconnected hand never emits keys
     VrInput d{};
-    ev = vrInputTick(d, d, -1);
+    ev = vrInputTick(d, d, -1, &sum, 0);
     CHECK(ev.nKeys == 0);
+}
+
+static void testVrInputSummon() {
+    VrInput off{}, on{};
+    off.aim[0] = on.aim[0] = true;
+    on.menu[0] = true;
+    VrSummon sum;
+
+    // the down edge only starts the hold clock
+    VrEvents ev = vrInputTick(off, on, -1, &sum, 1000);
+    CHECK(ev.summon == 0 && sum.shown && sum.downMs == 1000);
+    // a short press releases before the fill: the layer drops
+    ev = vrInputTick(on, off, -1, &sum, 1100);
+    CHECK(ev.summon == kSumHide && !sum.shown);
+    // while the dash is down nothing else reaches it
+    VrInput b = off;
+    b.sel[0] = true;
+    b.stick[0][1] = 1.0f;
+    ev = vrInputTick(off, b, -1, &sum, 1200);
+    CHECK(ev.nKeys == 0 && ev.scroll == 0.0f);
+    // another tap raises it again
+    vrInputTick(off, on, -1, &sum, 2000);
+    ev = vrInputTick(on, off, -1, &sum, 2100);
+    CHECK(ev.summon == kSumShow && sum.shown);
+    // a hold fills the ring and recentres once; the release after it is
+    // inert, not a second toggle
+    vrInputTick(off, on, -1, &sum, 3000);
+    ev = vrInputTick(on, on, -1, &sum, 3000 + kHoldMs);
+    CHECK(ev.summon == kSumRecenter && sum.shown);
+    ev = vrInputTick(on, on, -1, &sum, 3000 + kHoldMs + 200);
+    CHECK(ev.summon == 0);
+    ev = vrInputTick(on, off, -1, &sum, 4000);
+    CHECK(ev.summon == 0 && sum.shown);
+    // holding the key while the dash is down raises it with the recenter
+    vrInputTick(off, on, -1, &sum, 5000);
+    vrInputTick(on, off, -1, &sum, 5100);
+    CHECK(!sum.shown);
+    vrInputTick(off, on, -1, &sum, 6000);
+    ev = vrInputTick(on, on, -1, &sum, 6000 + kHoldMs);
+    CHECK(ev.summon == (kSumShow | kSumRecenter) && sum.shown);
+    ev = vrInputTick(on, off, -1, &sum, 7000);
+    CHECK(ev.summon == 0);
+    // either hand's start button counts as the same key
+    VrInput on2{};
+    on2.aim[1] = true;
+    on2.menu[1] = true;
+    vrInputTick(off, on2, -1, &sum, 8000);
+    ev = vrInputTick(on2, off, -1, &sum, 8100);
+    CHECK(ev.summon == kSumHide && !sum.shown);
+    // a dropped hand mid-press doesn't leave the hold clock stuck
+    VrInput z{};
+    vrInputTick(off, on, -1, &sum, 9000);
+    vrInputTick(on, on, -1, &sum, 9100);
+    ev = vrInputTick(on, z, -1, &sum, 9200);
+    CHECK(ev.summon == kSumShow && sum.shown && sum.downMs == 0);
 }
 
 static void testVrInputScroll() {
@@ -143,16 +199,17 @@ static void testVrInputScroll() {
     a.aim[0] = true;
     b.aim[0] = true;
     b.stick[0][1] = 1.0f;
-    VrEvents ev = vrInputTick(a, b, CTRL_LEFT);
+    VrSummon sum;
+    VrEvents ev = vrInputTick(a, b, CTRL_LEFT, &sum, 0);
     CHECK(ev.scroll < 0.0f);
     // inside the deadzone: still
     b.stick[0][1] = 0.1f;
-    ev = vrInputTick(a, b, CTRL_LEFT);
+    ev = vrInputTick(a, b, CTRL_LEFT, &sum, 0);
     CHECK(ev.scroll == 0.0f);
     // disconnected hands don't scroll
     VrInput z{};
     z.stick[0][1] = 1.0f;
-    ev = vrInputTick(a, z, CTRL_LEFT);
+    ev = vrInputTick(a, z, CTRL_LEFT, &sum, 0);
     CHECK(ev.scroll == 0.0f);
 }
 
@@ -164,5 +221,6 @@ void testVr() {
     testVrInputClick();
     testVrInputArb();
     testVrInputButtons();
+    testVrInputSummon();
     testVrInputScroll();
 }

@@ -38,21 +38,43 @@ struct VrInput {
     bool sel[2] = {false, false};    // trigger/select -> confirm click
     bool sq[2] = {false, false};     // squeeze -> secondary click
     bool aux[2] = {false, false};    // aux button -> back/park
-    bool menu[2] = {false, false};   // menu button -> recenter
+    bool menu[2] = {false, false};   // menu/start button -> the summon key
     float stick[2][2] = {{0, 0}, {0, 0}};
 };
 
+// the overlay's summon key, same shape as the on-device one: a tap toggles
+// the dash layer over the main session, a hold re-centres it (and raises
+// it first when it's down). downMs stamps the press on the caller's
+// monotonic clock (0 = not held); fired marks a press the hold already
+// consumed, so the release afterwards isn't also a tap
+struct VrSummon {
+    bool shown = true;
+    long long downMs = 0;
+    bool fired = false;
+};
+
+// vrSummonStep outcomes, OR'd into VrEvents.summon
+constexpr int kSumHide = 1;      // the layer just dropped
+constexpr int kSumShow = 2;      // the layer just came up
+constexpr int kSumRecenter = 4;  // the hold filled: re-anchor on the head
+
+int vrSummonStep(VrSummon* s, bool held, long long nowMs);
+
 // the semantic diff of two samples: which hand owns the pointer, the key
-// edges to push on the hud's ctrlEv queue and the scroll delta for this
-// frame. keys[] pairs each button edge with its code and down/up action,
-// matching what ctrl.cpp feeds off the controller wire
+// edges to push on the hud's ctrlEv queue, this frame's scroll delta and
+// what the summon key did. keys[] pairs each button edge with its code
+// and down/up action, matching what ctrl.cpp feeds off the controller
+// wire. While the summon state says the layer is down, everything but
+// the summon key itself belongs to the session underneath and nothing
+// but conn/active is filled in
 struct VrEvents {
     InputEvent keys[8];
     int nKeys = 0;
     float scroll = 0.0f;
-    int active = -1;                     // CTRL_LEFT/RIGHT or -1
-    bool conn[2] = {false, false};       // per-hand aim validity
+    int summon = 0;                    // kSum* flags for this tick
+    int active = -1;                   // CTRL_LEFT/RIGHT or -1
+    bool conn[2] = {false, false};     // per-hand aim validity
 };
 
 VrEvents vrInputTick(const VrInput& prev, const VrInput& cur,
-                     int lastActive);
+                     int lastActive, VrSummon* sum, long long nowMs);

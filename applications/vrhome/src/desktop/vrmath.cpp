@@ -94,6 +94,16 @@ VrEvents vrInputTick(const VrInput& prev, const VrInput& cur,
         if (cur.menu[w]) menuHeld = true;
     }
     ev.summon = vrSummonStep(sum, menuHeld, nowMs);
+    // the main session's own transitions move the layer too: an app
+    // coming up parks the dash hidden, the app going away raises it -
+    // applied after the tap so the stage always goes to a fresh app
+    if (cur.mainUp != sum->mainUp) {
+        sum->mainUp = cur.mainUp;
+        if (sum->shown == cur.mainUp) {
+            sum->shown = !cur.mainUp;
+            ev.summon |= cur.mainUp ? kSumHide : kSumShow;
+        }
+    }
     if (!sum->shown) return ev;
     for (int w = 0; w < 2; ++w) {
         if (!cur.aim[w]) continue;

@@ -194,6 +194,44 @@ static void testVrInputSummon() {
     CHECK(ev.summon == kSumShow && sum.shown && sum.downMs == 0);
 }
 
+static void testVrMainSession() {
+    VrInput off{}, app{};
+    off.aim[0] = app.aim[0] = true;
+    app.mainUp = true;
+    VrSummon sum;
+
+    // an app claiming the stage parks the dash hidden on its own
+    VrEvents ev = vrInputTick(off, app, -1, &sum, 0);
+    CHECK(ev.summon == kSumHide && !sum.shown && sum.mainUp);
+    // a steady app is not a new transition
+    ev = vrInputTick(app, app, -1, &sum, 100);
+    CHECK(ev.summon == 0 && !sum.shown);
+    // the start key still raises the dash over the running app
+    VrInput on = app;
+    on.menu[0] = true;
+    vrInputTick(app, on, -1, &sum, 200);
+    ev = vrInputTick(on, app, -1, &sum, 300);
+    CHECK(ev.summon == kSumShow && sum.shown && sum.mainUp);
+    // and parks it again while the app is still up
+    vrInputTick(app, on, -1, &sum, 400);
+    ev = vrInputTick(on, app, -1, &sum, 500);
+    CHECK(ev.summon == kSumHide && !sum.shown);
+    // the app leaving raises the dash again
+    ev = vrInputTick(app, off, -1, &sum, 600);
+    CHECK(ev.summon == kSumShow && sum.shown && !sum.mainUp);
+    // an app arriving while the dash is already parked is a no-op...
+    VrInput men = off;
+    men.menu[0] = true;
+    vrInputTick(off, men, -1, &sum, 700);
+    ev = vrInputTick(men, off, -1, &sum, 800);
+    CHECK(ev.summon == kSumHide && !sum.shown);
+    ev = vrInputTick(off, app, -1, &sum, 900);
+    CHECK(ev.summon == 0 && !sum.shown && sum.mainUp);
+    // ...but its exit still brings the dash back
+    ev = vrInputTick(app, off, -1, &sum, 1000);
+    CHECK(ev.summon == kSumShow && sum.shown);
+}
+
 static void testVrInputScroll() {
     VrInput a{}, b{};
     a.aim[0] = true;
@@ -222,5 +260,6 @@ void testVr() {
     testVrInputArb();
     testVrInputButtons();
     testVrInputSummon();
+    testVrMainSession();
     testVrInputScroll();
 }

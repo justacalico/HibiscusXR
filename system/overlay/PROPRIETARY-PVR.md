@@ -154,8 +154,8 @@ can ship without any of it, and an end user restores it from their own device.
 | `/lib64/pvr_air/libshim_air.so` | Our shim: forwards `BufferItemConsumer::setName` â†’ `ConsumerBase::setName`, `OutputConfiguration(gbp,int,int)` â†’ Q's longer ctor, `tinyxml2::XMLDocument(bool)` â†’ `XMLDocument(bool,Whitespace)`, implements `Fence::~Fence`, and **stubs** `getLockedImageInfo` / `lockImageFromBuffer` (libgui internals deleted in Q). The two stubs log a warning; if the passthrough frame path is ever exercised it will fail visibly rather than silently. |
 | `/lib64/libshim_pvr.so` | Existing shim, now also guarding `__android_log_print` against a null format (pvrservice passes its format in x28, which does not survive a virtual dispatch). |
 | `/etc/init/pn2-airservice.rc` | Starts airservice + virtual_input. Isolates the 8.1 chain via `LD_LIBRARY_PATH=/system/lib64/pvr_air`. |
-| `/etc/init/pn2-qvrd.rc` | Starts Qualcomm's `qvrservice` as **`pn2_qvrd`**. Vendor init defines `qvrd` without a `seclabel`, so init refuses it; a corrected block under the same name is discarded as a duplicate, hence the rename. Socket names are unchanged, which is what clients actually use. |
-| `/etc/init/pn2-adbwifi.rc` | Optional wireless adb, off by default (`persist.pn2.adbwifi=1` to enable). |
+| `/etc/init/pn2-qvrd.rc` | Starts Qualcomm's `qvrservice` as **`hibiscus_qvrd`**. Vendor init defines `qvrd` without a `seclabel`, so init refuses it; a corrected block under the same name is discarded as a duplicate, hence the rename. Socket names are unchanged, which is what clients actually use. |
+| `/etc/init/hibiscus-adbwifi.rc` | Optional wireless adb, off by default (`persist.hibiscus.adbwifi=1` to enable, `persist.pn2.adbwifi` still honoured). |
 
 ## Binary patches (ours, applied to proprietary files)
 

@@ -218,9 +218,9 @@ cmd_info(int fd)
 	prop("ro.product.model", model, sizeof(model));
 	prop("ro.product.device", device, sizeof(device));
 	char dof_pn[64], dof_hib[64];
-	prop("persist.pn2.dof", dof_pn, sizeof(dof_pn));
 	prop("persist.hibiscus.dof", dof_hib, sizeof(dof_hib));
-	snprintf(dof, sizeof(dof), "%s", dof_pn[0] ? dof_pn : dof_hib);
+	prop("persist.pn2.dof", dof_pn, sizeof(dof_pn));
+	snprintf(dof, sizeof(dof), "%s", dof_hib[0] ? dof_hib : dof_pn);
 
 	int battery = -1;
 	char *b = read_cmd("dumpsys battery 2>/dev/null");

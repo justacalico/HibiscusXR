@@ -42,10 +42,10 @@ struct pn2_qvr *
 pn2_qvr_create(void);
 
 /*!
- * True when the device mode allows 6DoF, judged by persist.pn2.dof (the
- * settings-app switch, mirrored by pn2-dofd). Only "6dof" enables the
- * client; an unset prop keeps the pre-setting behaviour on ports that
- * run no bridge.
+ * True when the device mode allows 6DoF, judged by persist.hibiscus.dof
+ * (the settings-app switch, mirrored by pn2-dofd). Only "6dof" enables
+ * the client; an unset prop keeps the pre-setting behaviour on ports
+ * that run no bridge.
  */
 bool
 pn2_qvr_enabled(void);

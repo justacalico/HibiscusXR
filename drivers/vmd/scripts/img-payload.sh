@@ -44,8 +44,8 @@ echo "=== wireless adb on by default ==="
 # reachable through vmd's loopback forwards, so nothing on the LAN sees it.
 T=$(mktemp -d)
 debugfs -R "dump /build.prop $T/build.prop" "$IMG" >/dev/null 2>&1
-grep -q '^persist\.pn2\.adbwifi=' "$T/build.prop" || \
-  echo "persist.pn2.adbwifi=1" >> "$T/build.prop"
+grep -q '^persist\.hibiscus\.adbwifi=' "$T/build.prop" || \
+  echo "persist.hibiscus.adbwifi=1" >> "$T/build.prop"
 debugfs -w -R "rm /build.prop" "$IMG" >/dev/null 2>&1
 debugfs -w -R "write $T/build.prop /build.prop" "$IMG" >/dev/null 2>&1
 debugfs -w -R "sif /build.prop mode 0100600" "$IMG" >/dev/null 2>&1

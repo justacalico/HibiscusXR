@@ -30,7 +30,7 @@ for smoke tests.
 vmd (host)                       Hibiscus in qemu
   pose TCP server :7781  <----   drivers/vmd kit driver (10.0.2.2:7781)
   qemu + QMP screendump  ---->   guest framebuffer -> desktop / HMD
-  hostfwd 15555      ---->       guest adbd :5555 (persist.pn2.adbwifi=1)
+  hostfwd 15555      ---->       guest adbd :5555 (persist.hibiscus.adbwifi=1)
   hostfwd 17340      ---->       guest cted :7340 (persist.hibiscus.cted)
 ```
 

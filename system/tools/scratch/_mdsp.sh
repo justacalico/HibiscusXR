@@ -8,7 +8,7 @@ chcon u:object_r:system_lib_file:s0 /system/lib/libmdsprpc.so /system/lib64/libm
 sync
 ls -l /system/lib/libmdsprpc.so
 echo "--- restart qvrd ---"
-stop pn2_qvrd; sleep 2; start pn2_qvrd; sleep 8
+stop hibiscus_qvrd; sleep 2; start hibiscus_qvrd; sleep 8
 grep VmRSS /proc/$(pidof qvrservice)/status
 echo "=== THE TEST ==="
 logcat -c

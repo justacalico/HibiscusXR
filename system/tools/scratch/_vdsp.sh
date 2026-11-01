@@ -10,7 +10,7 @@ chcon u:object_r:system_lib_file:s0 /system/lib/lib?dsprpc.so /system/lib64/lib?
 sync
 ls -l /system/lib/libcdsprpc.so
 echo "--- restart qvrd ---"
-stop pn2_qvrd; sleep 2; start pn2_qvrd; sleep 8
+stop hibiscus_qvrd; sleep 2; start hibiscus_qvrd; sleep 8
 grep VmRSS /proc/$(pidof qvrservice)/status
 echo "--- test ---"
 logcat -c

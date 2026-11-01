@@ -211,7 +211,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	}
 	// user networking: the guest reaches us at 10.0.2.2 (pose channel,
 	// adb server lookup). hostfwd exposes the guest's own services back:
-	// 15555->adbd once persist.pn2.adbwifi=1, 17340->cted when enabled.
+	// 15555->adbd once persist.hibiscus.adbwifi=1, 17340->cted when enabled.
 	args.insert(args.end(), {"-M", opts.machine, "-cpu", opts.cpu, "-smp", "4",
 	    "-m", "4096",
 	    "-netdev", "user,id=n0,hostfwd=tcp:127.0.0.1:15555-:5555,"

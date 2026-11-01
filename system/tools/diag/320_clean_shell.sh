@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # Clean boot, nothing holding VR mode. Does the shell own VR mode and get to Unity?
 echo "=== services ==="
-for s in pn2_qvrd pvrservice airservice virtual_input; do
+for s in hibiscus_qvrd pvrservice airservice virtual_input; do
   printf "  %-16s %s\n" "$s" "$(getprop init.svc.$s)"
 done
 echo "  6dof.stopped   $(getprop pvr.service.6dof.stopped)"

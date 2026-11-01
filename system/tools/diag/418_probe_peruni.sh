@@ -1,5 +1,5 @@
 #!/system/bin/sh
-HIBISCUS_SERIAL="${HIBISCUS_SERIAL:-${PN2_SERIAL:-PA7B40NGE5300009W}}"
+HIBISCUS_SERIAL="${HIBISCUS_SERIAL:-${PN2_SERIAL:-$(getprop ro.serialno)}}"
 echo "=========== identity: what does this specific unit call itself ==========="
 for p in ro.serialno ro.boot.serialno ro.product.model ro.product.name \
          persist.pvr.sn persist.pvr.pn persist.pvr.hwversion ro.pvr.model \

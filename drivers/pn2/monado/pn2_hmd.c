@@ -133,7 +133,7 @@ struct pn2_device
 	uint64_t qvr_last_ts;      //!< last pose timestamp pushed to history
 	uint64_t qvr_dead_ns;      //!< when the pose stream went dead (0 = alive)
 	uint64_t qvr_retry_at;     //!< next allowed client reconnect attempt
-	bool dof6;                 //!< persist.pn2.dof == 6dof, polled
+	bool dof6;                 //!< persist.hibiscus.dof == 6dof, polled
 	uint64_t next_dof_poll;    //!< next mode prop re-read (monotonic ns)
 
 	bool posedump;             //!< debug.pn2.posedump: log raw vs served pose

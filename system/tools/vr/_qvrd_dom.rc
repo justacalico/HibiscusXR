@@ -19,7 +19,7 @@
 # (tracking cameras, ov6211_stereo eye camera, 800 Hz sensor) and only exits on
 # SIGTERM.
 
-service pn2_qvrd /system/bin/qvrservice
+service hibiscus_qvrd /system/bin/qvrservice
     class main
     user system
     group system camera graphics

@@ -13,9 +13,9 @@ done
 echo
 echo "=== restart qvrservice and watch it look for calibration ==="
 logcat -c
-stop pn2_qvrd 2>/dev/null; stop qvrd 2>/dev/null
+stop hibiscus_qvrd 2>/dev/null; stop pn2_qvrd 2>/dev/null; stop qvrd 2>/dev/null
 sleep 2
-start pn2_qvrd 2>/dev/null || start qvrd 2>/dev/null
+start hibiscus_qvrd 2>/dev/null || start pn2_qvrd 2>/dev/null || start qvrd 2>/dev/null
 sleep 8
 logcat -d | grep -iE "calib|QVRServiceTracker|eeprom|extrinsic|intrinsic" | grep -viE "LockBuffer|sensors-hal" | head -25
 echo

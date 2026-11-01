@@ -28,10 +28,11 @@ Mat4 eyeMatrix(const Mat4& head, float ipd, int eye);
 enum { QVR_DEAD = 0, QVR_DEGRADED = 1, QVR_TRACKED = 3 };
 int qvrClassify(uint32_t state);
 
-// device-mode gate: persist.pn2.dof is the settings switch mirrored by
-// pn2-dofd. only an explicit "6dof" allows the client; anything else set
-// means 3DoF. unset keeps the pre-setting behaviour on ports without the
-// bridge, same convention as the init.svc check
+// device-mode gate: persist.hibiscus.dof is the settings switch mirrored
+// by the device's dof bridge daemon. only an explicit "6dof" allows the
+// client; anything else set means 3DoF. unset keeps the pre-setting
+// behaviour on ports without the bridge, same convention as the init.svc
+// check
 bool qvrDofAllowed(const char* dofProp);
 
 // consecutive-poll stall counter: a live stream's timestamp advances every

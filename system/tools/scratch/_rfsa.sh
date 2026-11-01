@@ -12,7 +12,7 @@ sync
 echo "--- installed ---"
 ls /system/lib/rfsa/adsp/
 echo "--- restart qvrd ---"
-stop pn2_qvrd; sleep 2; start pn2_qvrd; sleep 8
+stop hibiscus_qvrd; sleep 2; start hibiscus_qvrd; sleep 8
 grep VmRSS /proc/$(pidof qvrservice)/status
 echo "--- THE TEST ---"
 logcat -c

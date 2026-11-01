@@ -40,10 +40,14 @@
 #define PN2_QVR_TRACKING_STATE_TRACKING 3
 
 // Device-mode gate: the settings app writes hibiscus_dof into
-// Settings.Global and pn2-dofd mirrors it onto persist.pn2.dof, which is
-// also the trigger that starts pn2_qvrd at all. Only "6dof" means the
-// cameras should be live; anything else is 3DoF.
-#define PN2_QVR_DOF_PROP "persist.pn2.dof"
+// Settings.Global and pn2-dofd mirrors it onto persist.hibiscus.dof, which
+// is also the trigger that starts hibiscus_qvrd at all. Only "6dof" means
+// the cameras should be live; anything else is 3DoF. The persist.pn2.*
+// names are the pre-rename props, still read so older images keep working.
+#define PN2_QVR_DOF_PROP "persist.hibiscus.dof"
+#define PN2_QVR_DOF_PROP_OLD "persist.pn2.dof"
+#define PN2_QVR_SVC_PROP "init.svc.hibiscus_qvrd"
+#define PN2_QVR_SVC_PROP_OLD "init.svc.pn2_qvrd"
 #define PN2_QVR_DOF_6 "6dof"
 
 // Fresh qvr-minus-monotonic bounds kept for the clock fit. At the pose
@@ -116,6 +120,8 @@ pn2_qvr_enabled(void)
 {
 	char v[PROP_VALUE_MAX] = {0};
 	__system_property_get(PN2_QVR_DOF_PROP, v);
+	if (v[0] == '\0')
+		__system_property_get(PN2_QVR_DOF_PROP_OLD, v);
 	// unset on ports without the mode bridge: don't gate those
 	return v[0] == '\0' || strcmp(v, PN2_QVR_DOF_6) == 0;
 }
@@ -124,7 +130,9 @@ bool
 pn2_qvr_service_up(void)
 {
 	char v[PROP_VALUE_MAX] = {0};
-	__system_property_get("init.svc.pn2_qvrd", v);
+	__system_property_get(PN2_QVR_SVC_PROP, v);
+	if (v[0] == '\0')
+		__system_property_get(PN2_QVR_SVC_PROP_OLD, v);
 	// unset on setups that name the service differently: don't gate those
 	return v[0] == '\0' || strcmp(v, "running") == 0;
 }

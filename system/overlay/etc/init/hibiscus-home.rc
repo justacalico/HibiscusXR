@@ -7,8 +7,8 @@
 #
 # The role write alone is a regular preference, and the framework clears
 # regular home prefs the moment another launcher installs - that is what makes
-# the "switch home app" chooser appear. pn2_homelock therefore runs on every
-# boot and pins HOME with `cmd package set-home-activity`, which writes a
+# the "switch home app" chooser appear. hibiscus_homelock therefore runs on
+# every boot and pins HOME with `cmd package set-home-activity`, which writes a
 # persistent preferred activity: the one preference class installs can never
 # clear, so the chooser has no state in which it can come up. At runtime the
 # HUD's HomeLock re-pins the same way whenever the resolved home drifts (the
@@ -24,9 +24,10 @@
 # BluetoothDevice.removeBond for in-app unpairing.
 #
 # It also sweeps the retired Flutter shell apps (settings, quick panel,
-# library) out of /data: pn2-appsweep uninstalls each only when its signing
-# cert matches the platform key, so installs that are not ours are left
-# alone.
+# library) out of /data: hibiscus-appsweep uninstalls each only when its
+# signing cert matches the platform key, so installs that are not ours are
+# left alone. It only exists on images that ship it, so the call is gated on
+# the binary being there.
 #
 # Notification listener access goes through `cmd notification allow_listener`
 # rather than a settings write: this build's NotificationManagerService does
@@ -37,21 +38,21 @@
 # The HUD service is started on every boot, not just the first: it owns the
 # overlay window and the virtual displays, so panel tasks die with it.
 
-service pn2_panels /system/bin/sh -c "if [ ! -f /data/local/.pn2_panels_done_v8 ]; then cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home; pm disable com.pvr.launcher; pm disable com.pvr.home; pm disable com.pvr.vrshell; pm disable com.picovr.provision; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud'; pm grant gitlab.neosalsa.home android.permission.CAMERA; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0; /system/bin/pn2-appsweep; touch /data/local/.pn2_panels_done_v8; fi"
+service hibiscus_panels /system/bin/sh -c "if [ ! -f /data/local/.hibiscus_panels_done_v1 ]; then ok=1; cmd role add-role-holder android.app.role.HOME gitlab.neosalsa.home || ok=0; for p in com.pvr.launcher com.pvr.home com.pvr.vrshell com.picovr.provision; do if pm path $p 2>/dev/null | grep -q .; then pm disable $p || ok=0; fi; done; settings put global hidden_api_blacklist_exemptions 'gitlab.neosalsa.home,gitlab.neosalsa.hud' || ok=0; pm grant gitlab.neosalsa.home android.permission.CAMERA || ok=0; cmd notification allow_listener gitlab.neosalsa.hud/gitlab.neosalsa.hud.NotifService 0 || ok=0; [ ! -x /system/bin/hibiscus-appsweep ] || /system/bin/hibiscus-appsweep; [ $ok = 1 ] && touch /data/local/.hibiscus_panels_done_v1; fi"
     user root
     group root
     seclabel u:r:shell:s0
     oneshot
     disabled
 
-service pn2_homelock /system/bin/cmd package set-home-activity gitlab.neosalsa.home/.PanelActivity
+service hibiscus_homelock /system/bin/cmd package set-home-activity gitlab.neosalsa.home/.PanelActivity
     user root
     group root
     seclabel u:r:shell:s0
     oneshot
     disabled
 
-service pn2_hud /system/bin/am startservice -n gitlab.neosalsa.hud/.HudService
+service hibiscus_hud /system/bin/am startservice -n gitlab.neosalsa.hud/.HudService
     user root
     group root
     seclabel u:r:shell:s0
@@ -59,6 +60,6 @@ service pn2_hud /system/bin/am startservice -n gitlab.neosalsa.hud/.HudService
     disabled
 
 on property:sys.boot_completed=1
-    start pn2_panels
-    start pn2_homelock
-    start pn2_hud
+    start hibiscus_panels
+    start hibiscus_homelock
+    start hibiscus_hud

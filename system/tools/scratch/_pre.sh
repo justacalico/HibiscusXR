@@ -1,8 +1,9 @@
 echo "=== will wireless adb come back after reboot? ==="
+echo "  persist.hibiscus.adbwifi = $(getprop persist.hibiscus.adbwifi)"
 echo "  persist.pn2.adbwifi   = $(getprop persist.pn2.adbwifi)"
 echo "  service.adb.tcp.port  = $(getprop service.adb.tcp.port)"
 echo "  persist.adb.tcp.port  = $(getprop persist.adb.tcp.port)"
-ls -l /system/etc/init/pn2-adbwifi.rc 2>/dev/null || echo "  pn2-adbwifi.rc MISSING"
+ls -l /system/etc/init/hibiscus-adbwifi.rc 2>/dev/null || echo "  hibiscus-adbwifi.rc MISSING"
 echo
 echo "=== is the patched lib really in place? ==="
 md5sum /system/lib/libpvrserviceclient.so

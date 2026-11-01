@@ -17,13 +17,13 @@ am start -n com.pvr.vrshell/.MainActivity >/dev/null 2>&1
 sleep 30
 V=$(pidof com.pvr.vrshell)
 echo "  vrshell pid $V threads=$(ls /proc/$V/task 2>/dev/null | wc -l)"
-echo "  segv=$(logcat -d | grep -c \"exited due to signal 11\")"
-echo "  deleted-maps: $(grep -c \"libpvrserviceclient.so (deleted)\" /proc/$V/maps 2>/dev/null)"
+echo "  segv=$(logcat -d | grep -c 'exited due to signal 11')"
+echo "  deleted-maps: $(grep -c 'libpvrserviceclient.so (deleted)' /proc/$V/maps 2>/dev/null)"
 C=$(pidof com.picovr.picovrlib.cvcontroller:RemoteService)
-echo "  cvservice pid ${C:-none}  deleted-maps: $(grep -c \"libpvrserviceclient.so (deleted)\" /proc/${C%% *}/maps 2>/dev/null)"
+echo "  cvservice pid ${C:-none}  deleted-maps: $(grep -c 'libpvrserviceclient.so (deleted)' /proc/${C%% *}/maps 2>/dev/null)"
 echo
 echo "=== tracking / compositor ==="
-echo "  BadPose=$(logcat -d | grep -c \"Bad Pose\")  kLost=$(logcat -d | grep -c kLostDialog)"
+echo "  BadPose=$(logcat -d | grep -c 'Bad Pose')  kLost=$(logcat -d | grep -c kLostDialog)"
 logcat -d | grep -iE "getTrackingDataExt position" | tail -2
 echo
 echo "=== pvrservice health ==="

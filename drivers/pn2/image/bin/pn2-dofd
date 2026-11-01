@@ -1,17 +1,17 @@
 #!/system/bin/sh
-# Bridge the device-mode setting to the persist.pn2.dof system property.
+# Bridge the device-mode setting to the persist.hibiscus.dof system property.
 #
 # The settings app writes hibiscus_dof ("3dof" or "6dof") into
 # Settings.Global. Apps cannot setprop, and init property triggers are
-# what gate the pn2_qvrd tracking service - so a root daemon is the narrow
-# piece that crosses, same shape as pn2-ipdd. The settings table is polled
-# rather than pushed: `settings get` would spawn a JVM per poll.
+# what gate the hibiscus_qvrd tracking service - so a root daemon is the
+# narrow piece that crosses, same shape as pn2-ipdd. The settings table is
+# polled rather than pushed: `settings get` would spawn a JVM per poll.
 #
 # Missing or unparsable means 3dof: the prop feeds `on property:` triggers
 # that start the tracking cameras, so an unexpected value must fail safe.
 
 DB=/data/system/users/0/settings_global.xml
-PROP=persist.pn2.dof
+PROP=persist.hibiscus.dof
 
 cur="__boot__"
 while true; do

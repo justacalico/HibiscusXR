@@ -19,7 +19,7 @@ sync
 echo "--- installed ---"
 ls -l /system/lib/lib?dsprpc*.so
 echo "--- restarting qvrd ---"
-stop pn2_qvrd; sleep 2; start pn2_qvrd; sleep 8
+stop hibiscus_qvrd; sleep 2; start hibiscus_qvrd; sleep 8
 echo "--- rss (stock ~7.4MB when the tracker is up) ---"
 grep VmRSS /proc/$(pidof qvrservice)/status
 echo "--- QVR now ---"

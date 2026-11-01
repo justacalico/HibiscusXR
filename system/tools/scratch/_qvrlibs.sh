@@ -6,8 +6,8 @@ chcon u:object_r:system_lib_file:s0 /system/lib/libtobii*.so /system/lib/libqti-
 sync
 ls -l /system/lib/libtobii*.so /system/lib/libqti-perfd*.so 2>/dev/null
 echo "--- restarting qvrd ---"
-stop pn2_qvrd; sleep 2; start pn2_qvrd; sleep 6
-getprop init.svc.pn2_qvrd
+stop hibiscus_qvrd; sleep 2; start hibiscus_qvrd; sleep 6
+getprop init.svc.hibiscus_qvrd
 ps -A | grep -i qvrservice
 echo "--- rss (stock is ~7.4MB with plugins) ---"
 grep VmRSS /proc/$(pidof qvrservice)/status

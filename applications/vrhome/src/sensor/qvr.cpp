@@ -97,12 +97,16 @@ static void qvrClose(QvrClient* c) {
 // a differently-named service on another setup - don't gate those. The
 // device-mode prop gates on top: in 3DoF the service never runs, and the
 // client must not even try (connect churn against a missing socket).
+// persist.pn2.* / init.svc.pn2_qvrd are the pre-rename names, kept so the
+// shell still works on images that ship the old service name.
 static bool qvrServiceUp() {
     char dof[PROP_VALUE_MAX] = {0};
-    __system_property_get("persist.pn2.dof", dof);
+    __system_property_get("persist.hibiscus.dof", dof);
+    if (!dof[0]) __system_property_get("persist.pn2.dof", dof);
     if (!qvrDofAllowed(dof)) return false;
     char v[PROP_VALUE_MAX] = {0};
-    __system_property_get("init.svc.pn2_qvrd", v);
+    __system_property_get("init.svc.hibiscus_qvrd", v);
+    if (!v[0]) __system_property_get("init.svc.pn2_qvrd", v);
     return v[0] == '\0' || strcmp(v, "running") == 0;
 }
 

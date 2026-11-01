@@ -332,7 +332,9 @@ void android_main(struct android_app *app) {
         // ---- assemble the debug panel ----
         char ln[160];
         char prop_dof[64], prop_axismap[64], prop_ctrlmap[64];
-        prop_str("persist.pn2.dof", prop_dof, sizeof(prop_dof));
+        prop_str("persist.hibiscus.dof", prop_dof, sizeof(prop_dof));
+        if (!strcmp(prop_dof, "-"))
+            prop_str("persist.pn2.dof", prop_dof, sizeof(prop_dof));
         prop_str("debug.pn2.axismap", prop_axismap, sizeof(prop_axismap));
         prop_str("debug.pn2.ctrlaxismap", prop_ctrlmap, sizeof(prop_ctrlmap));
         XrSpaceLocationFlags vf = vstate.viewStateFlags;

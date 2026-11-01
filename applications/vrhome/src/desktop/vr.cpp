@@ -10,6 +10,7 @@
 #include <EGL/eglext.h>
 
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 #include <vector>
 
@@ -189,8 +190,9 @@ static bool xrActionSetup(VrDash* v) {
     v->handL = hands[0];
     v->handR = hands[1];
     XrActionSetCreateInfo asi{XR_TYPE_ACTION_SET_CREATE_INFO};
-    strcpy(asi.actionSetName, "dash");
-    strcpy(asi.localizedActionSetName, "dash");
+    snprintf(asi.actionSetName, sizeof(asi.actionSetName), "%s", "dash");
+    snprintf(asi.localizedActionSetName, sizeof(asi.localizedActionSetName),
+             "%s", "dash");
     if (xrFail(xrCreateActionSet(v->inst, &asi, &v->aset), "action set"))
         return false;
 
@@ -198,8 +200,9 @@ static bool xrActionSetup(VrDash* v) {
                         XrActionType type) {
         XrActionCreateInfo ai{XR_TYPE_ACTION_CREATE_INFO};
         ai.actionType = type;
-        strcpy(ai.actionName, name);
-        strcpy(ai.localizedActionName, name);
+        snprintf(ai.actionName, sizeof(ai.actionName), "%s", name);
+        snprintf(ai.localizedActionName, sizeof(ai.localizedActionName),
+                 "%s", name);
         ai.countSubactionPaths = 2;
         ai.subactionPaths = hands;
         return xrCreateAction(v->aset, &ai, out) == XR_SUCCESS;
@@ -373,8 +376,10 @@ bool vrInit(VrDash* v, const char* appName) {
     if (khrGles) exts[nexts++] = XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
     exts[nexts++] = XR_EXTX_OVERLAY_EXTENSION_NAME;
     XrInstanceCreateInfo ici{XR_TYPE_INSTANCE_CREATE_INFO};
-    strcpy(ici.applicationInfo.applicationName, appName);
-    strcpy(ici.applicationInfo.engineName, appName);
+    snprintf(ici.applicationInfo.applicationName,
+             sizeof(ici.applicationInfo.applicationName), "%s", appName);
+    snprintf(ici.applicationInfo.engineName,
+             sizeof(ici.applicationInfo.engineName), "%s", appName);
     ici.applicationInfo.apiVersion = XR_MAKE_VERSION(1, 0, 32);
     ici.enabledExtensionCount = (uint32_t)nexts;
     ici.enabledExtensionNames = exts;

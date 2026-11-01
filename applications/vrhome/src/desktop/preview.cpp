@@ -34,7 +34,8 @@ class PreviewBackend : public DashBackend {
 public:
     bool externalPanelTextures() override { return false; }
 
-    int createPanel(Panel* p, unsigned tex, int w, int h, int) override {
+    int createPanel(Panel* p, unsigned tex, int /*w*/, int /*h*/,
+                    int) override {
         p->displayId = nextDisp++;
         p->taskId = p->displayId;
         p->st = (void*)(intptr_t)p->displayId;
@@ -235,7 +236,7 @@ public:
         setCtrl[1].state = setCtrlScan ? 2 : (setCtrl[1].mac.empty() ? 0 : 1);
         ++setVer;
     }
-    void wifiJoin(const std::string& ssid, int sec,
+    void wifiJoin(const std::string& ssid, int /*sec*/,
                   const std::string&) override {
         for (size_t i = 0; i < setWifi.size(); ++i) {
             setWifi[i].conn = setWifi[i].ssid == ssid;

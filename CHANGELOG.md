@@ -25,6 +25,7 @@ linked line per MR no matter how many commits it carried.
 - [新增 hsvc OpenXR 运行时,让 shell 跑在 Linux 发行版上](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/245) (!245)
 - [linux: dash-wayland 按架构构建,镜像装上 shell](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/246) (!246)
 - [linux: monado 运行时支持按架构交叉构建](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/247) (!247)
+- [vmd: dist 增加 aarch64 交叉构建](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/248) (!248)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

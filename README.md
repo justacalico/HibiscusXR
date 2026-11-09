@@ -15,9 +15,10 @@ publish typed streams over the hsvc bus; the OS only ever talks to
 services. See `system/linux/` for the bus, the generic drivers and the
 image build, for x86_64 and aarch64.
 
-This tree also still carries the original Android-based build
-(`system/dist`, `system/hsvr`, `drivers/`) while the Linux base reaches
-parity. It is the reference for the device ports.
+The original Android-based build (`system/dist`, `system/hsvr`,
+`drivers/`) is deprecated and being removed as the Linux base reaches
+parity. New work targets `system/linux/`; the Android tree remains only
+as the reference for the device ports until it is dropped.
 
 **This is an early work in progress, not a finished product.** The tables
 below show what works on each headset under the current build.

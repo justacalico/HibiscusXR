@@ -21,6 +21,7 @@ linked line per MR no matter how many commits it carried.
 - [docs: add Android deprecation warning to README](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/241) (!241)
 - [ci: add build_prealpha_debug_builds pipeline input](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/242) (!242)
 - [ci: add build_android pipeline input](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/243) (!243)
+- [ci: run the linux lanes on every manual pipeline](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/244) (!244)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

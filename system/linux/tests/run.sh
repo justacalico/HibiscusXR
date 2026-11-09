@@ -168,6 +168,30 @@ tar -tf "$img3" | grep -q "hsvc-svc@vmd.service" \
 tar -xOf "$img3" ./etc/hibiscus/svc/vmd.env 2>/dev/null | grep -q "hsvc-vmd" \
 	|| { echo "FAIL: vmd env"; exit 1; }
 
+echo "== image with xr + shell =="
+# the full stack path: when the host carries a matching-arch runtime
+# and the dash's wayland deps, make shell + mkimage must produce an
+# image that enables monado and the shell
+mach="X86-64"; [ "$(uname -m)" = aarch64 ] && mach="AArch64"
+if [ -f out/xr/lib/libopenxr_monado.so ] && \
+	readelf -h out/xr/lib/libopenxr_monado.so | grep -q "Machine:.*$mach" && \
+	command -v pkg-config >/dev/null && \
+	pkg-config --exists wayland-server xkbcommon libpng libdrm openxr; then
+	make -s shell
+	img4="$OUT/img4.tar"
+	bash images/mkimage.sh -a "$(uname -m)" -o "$img4" -d generic >/dev/null
+	tar -tf "$img4" > "$OUT/manifest4"
+	for want in usr/bin/dash-wayland usr/bin/monado-service \
+		usr/lib/libopenxr_monado.so etc/openxr/1/active_runtime.json \
+		etc/systemd/system/multi-user.target.wants/monado.service \
+		etc/systemd/system/multi-user.target.wants/hibiscus-shell.service; do
+		grep -q "$want" "$OUT/manifest4" \
+			|| { echo "FAIL: xr image missing $want"; exit 1; }
+	done
+else
+	echo "skip: no matching-arch runtime or dash deps on host"
+fi
+
 echo "== cross build =="
 if command -v aarch64-linux-gnu-gcc >/dev/null; then
 	SRARG=""

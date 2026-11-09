@@ -119,7 +119,9 @@ main(void)
 			switch (i) {
 			case 0:
 				return run("hmd", HSVC_KIND_HMD,
-				           "kind=1\ndrv=sim\nw=2160\nh=2160\n",
+				           "kind=1\ndrv=sim\nw=2160\nh=2160\n"
+				           "w_mm=119.1\nh_mm=67.0\nipd_mm=63.5\n"
+				           "hz=72\nk0=1\ncr=1\ncb=1\n",
 				           hmd_emit, 0);
 			case 1:
 				return run("ctrl", HSVC_KIND_CTRL,

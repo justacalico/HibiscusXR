@@ -73,6 +73,22 @@ enum hsvc_kind
 	HSVC_KIND_DISP = 6  /* display panel state */
 };
 
+/* INFO descriptor keys the OS understands.
+ *
+ * kind HMD serves the display contract too, so renderers and runtimes
+ * never need device tables:
+ *
+ *   w, h        panel pixels             (required)
+ *   w_mm, h_mm  panel size, millimetres  (default 119.1 x 67.0)
+ *   ipd_mm      lens separation          (default 63.5)
+ *   hz          refresh rate             (default 72)
+ *   k0,k2,k4,k6 lens polynomial          (default 1,0,0,0: no distortion)
+ *   cr, cb      per-channel chroma gain  (default 1.0)
+ *
+ * kind CTRL may publish `n` - the number of controller streams the
+ * service serves; absent means 1. Per-controller services publish one
+ * service each instead, always on stream 0. */
+
 struct hsvc_hdr
 {
 	uint32_t magic;

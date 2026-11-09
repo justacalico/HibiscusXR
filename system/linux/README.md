@@ -31,8 +31,11 @@ drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
                 hsvc-imu     generic IMU over IIO
                 hsvc-ctrl    generic controllers over evdev
 devices/        *.env        device profiles: which services a box runs
-units/          systemd units (hsvcd + the hsvc-svc@ template)
+units/          systemd units (hsvcd + the hsvc-svc@ template,
+                             monado + the shell)
 images/         mkimage.sh, fetch-sysroot.sh
+xr/             build-runtime.sh + drv_hsvc, the monado driver that
+                serves the bus as OpenXR devices
 tests/          run.sh + unit tests
 ```
 
@@ -119,6 +122,42 @@ protocol.
 - `headset-iio-evdev-v4l2` - any standalone headset on stock kernel
   interfaces (IIO + evdev + V4L2)
 
+Every profile also sets `HSVC_XR=1`, which tells mkimage to stage the
+OpenXR runtime and enable the shell when the artifacts exist.
+
+## The runtime
+
+The bus is the device contract; OpenXR is the app contract. `xr/` is
+the piece that joins them: `drv_hsvc` is a monado driver whose
+auto-prober asks the bus what exists and builds an xrt device per
+service - the hmd service's pose stream plus its INFO display keys
+become the head (views, fov, distortion), every ctrl service becomes
+a controller. Nothing in it knows which drivers are running, so a
+sim, a dev PC and a shipping headset all present identically.
+
+`xr/build-runtime.sh` pins the same monado commit the Android stack
+used, applies `xr/patches/hsvc-driver.patch` (cmake registration, no
+android bits), drops in the driver + libhsvc sources, and produces
+`out/xr/`: `libopenxr_monado.so`, `monado-service`, `monado-cli` and
+an `active_runtime.json`. Build flags turn every hardware driver off -
+the bus is the only device contract; `SIMULATED` stays as the fallback
+when nothing serves it.
+
+```
+xr/build-runtime.sh                  # -> out/xr/
+# then the shell, from applications/vrhome:
+make dash-wayland                    # host arch; -vr presents via
+                                     # XR_EXTX_overlay on the runtime
+```
+
+`mkimage -x` (or the default `out/xr` path) stages the runtime at
+`/usr/lib/libopenxr_monado.so` + `/usr/bin/monado-service`, the
+manifest at `/etc/openxr/1/active_runtime.json`, and a `dash-wayland`
+binary when one is dropped into `out/xr/bin/`; the profile's
+`HSVC_XR=1` then enables `monado.service` and
+`hibiscus-shell.service` (`dash-wayland -vr`). The shell is just an
+OpenXR client - the same image also runs any other OpenXR app.
+
 ## Images
 
 ```
@@ -152,5 +191,9 @@ aarch64 cross build when the compiler is installed.
 
 The Android-based tree (`system/dist`, `system/hsvr`, `drivers/pn2`,
 `drivers/vmd`) is the reference implementation this layer replaces.
-Track against it: monado client driver for the bus, shell bring-up on
-wlroots, and real device profiles land next.
+The runtime path now exists end to end: `drv_hsvc` turns the bus into
+OpenXR devices, `monado.service` + `hibiscus-shell.service` run the
+dash on images whose profiles set `HSVC_XR`. Verified on the host:
+hsvcd + hsvc-sim feed a tracked head and two controllers through the
+runtime's OpenXR interface. Still to land: real device profiles, eye
+gaze as an input, and panel tuning keys per device.

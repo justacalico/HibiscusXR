@@ -8,6 +8,10 @@ spec:
       description: "Build and publish as a prealpha prerelease - forces the channel, skips the changelog and version bump entirely"
       type: boolean
       default: false
+    build_android:
+      description: "Build the Android headset images on GitHub - off skips the Android lane and only runs the Linux builds"
+      type: boolean
+      default: true
 ---
 # Monorepo CI, gated by folder group - a push only runs the CI for the group
 # that changed, plus the changelog housekeeping jobs which always run:
@@ -25,8 +29,10 @@ spec:
 # off builds and packages the image only. build_prealpha_debug_builds
 # publishes instead as a prealpha-v<date>-r<run> prerelease - it forces the
 # channel and never touches the changelog or version tags, so it wins over
-# CHANNEL=release too. With CHANNEL=release a release run also versions the
-# OS first:
+# CHANNEL=release too. build_android gates the whole Android lane - off
+# skips os-bump/github-dispatch/github-release-sync and the manual pipeline
+# runs the system/linux lanes only. With CHANNEL=release a release run also
+# versions the OS first:
 # os-bump writes the changelog from merged MRs (never commits), cuts the
 # os-v* tag and pushes both back; the build then stamps and releases that
 # tag. os-changelog is the only cog job allowed to run unattended - it
@@ -102,7 +108,7 @@ os-bump:
   resource_group: os-release
   timeout: 15m
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && $CHANNEL == "release" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.release_and_publish ]]" == "true" && "$[[ inputs.build_prealpha_debug_builds ]]" == "false"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && $CHANNEL == "release" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.release_and_publish ]]" == "true" && "$[[ inputs.build_prealpha_debug_builds ]]" == "false" && "$[[ inputs.build_android ]]" == "true"
   variables:
     COCOGITTO_VERSION: "7.0.0"
     GLAB_VERSION: "1.113.0"
@@ -154,10 +160,10 @@ github-dispatch:
       optional: true
       artifacts: true
   rules:
-    - if: $CI_PIPELINE_SOURCE == "web"
+    - if: $CI_PIPELINE_SOURCE == "web" && "$[[ inputs.build_android ]]" == "true"
     # cte tag triggers carry RELEASE_TAG=cte-v* - not for the dist lane
-    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/
+    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "true"
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "true"
   before_script:
     - apk add --no-cache bash curl jq git github-cli openssh-client
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
@@ -180,9 +186,9 @@ github-release-sync:
   stage: release
   image: alpine:3.20
   rules:
-    - if: $CI_PIPELINE_SOURCE == "web" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true")
-    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true" || $RELEASE_TAG =~ /^prealpha-v/)
-    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true" || $RELEASE_TAG =~ /^prealpha-v/)
+    - if: $CI_PIPELINE_SOURCE == "web" && "$[[ inputs.build_android ]]" == "true" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true")
+    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "true" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true" || $RELEASE_TAG =~ /^prealpha-v/)
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "true" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true" || $RELEASE_TAG =~ /^prealpha-v/)
   variables:
     GLAB_ENABLE_CI_AUTOLOGIN: "true"
     GLAB_VERSION: "1.113.0"
@@ -289,7 +295,9 @@ apps-test:
       changes: *apps-paths
 
 # The Linux OS lane: codec/registry/driver unit tests, a live bus run,
-# the mkimage assembly check and the aarch64 cross build.
+# the mkimage assembly check and the aarch64 cross build. The last rule
+# is the build_android=off manual pipeline: with the Android lane gated
+# out, these are the only builds that run.
 linux-test:
   stage: test
   image: ubuntu:24.04
@@ -305,6 +313,7 @@ linux-test:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "system/linux/**/*"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && "$[[ inputs.build_android ]]" == "false"
 
 # The single-file hsvc-vmd for download-and-run use: one static binary
 # per arch (the aarch64 one is linked 16k-page safe), published as job
@@ -328,6 +337,7 @@ linux-dist:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "system/linux/**/*"
+    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && "$[[ inputs.build_android ]]" == "false"
 
 # Host smoke test for the controller daemon - compiles cted for the
 # runner and exercises the wire protocol the desktop app speaks.

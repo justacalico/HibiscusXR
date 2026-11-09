@@ -11,7 +11,7 @@ spec:
     build_android:
       description: "Build the Android headset images on GitHub - off runs only the Linux lanes"
       type: boolean
-      default: true
+      default: false
 ---
 # Monorepo CI, gated by folder group - a push only runs the CI for the group
 # that changed, plus the changelog housekeeping jobs which always run:

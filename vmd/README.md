@@ -8,6 +8,8 @@ hardware stack.
 
 ```
 make
+make ARCH=aarch64 SYSROOT=<dir>   # arm64 cross build -> out/aarch64/vmd;
+                                  # sysroot: fetch-sysroot.sh --vmd
 out/vmd -desktopsim        # window, mouse + WASD drive the HMD pose
 out/vmd -novr | -pc        # same thing
 out/vmd -openxr            # OpenXR app mode - a WiVRn/Monado runtime

@@ -275,6 +275,24 @@ apps-test:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes: *apps-paths
 
+# The Linux OS lane: codec/registry/driver unit tests, a live bus run,
+# the mkimage assembly check and the aarch64 cross build.
+linux-test:
+  stage: test
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends gcc make python3 git file binutils gcc-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates
+  script:
+    - make -C system/linux test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "system/linux/**/*"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "system/linux/**/*"
+
 # Host smoke test for the controller daemon - compiles cted for the
 # runner and exercises the wire protocol the desktop app speaks.
 cted-test:

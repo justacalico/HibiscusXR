@@ -4,6 +4,10 @@
 #   images/mkimage.sh -a x86_64 -o out.img [-b base.tar.xz] [-d profile]
 #                    [-x xr-dir]
 #
+# For a foreign ARCH on a host with a bare cross gcc, SYSROOT=<dir> in
+# the environment feeds the cross build (images/fetch-sysroot.sh makes
+# one; --shell adds the dep set the shell's cross build wants).
+#
 # The base rootfs comes from -b (any distro tarball: Alpine, Debian,
 # Fedora - anything with systemd); without one, a staging tree with
 # just our binaries, units and profiles is produced, which is what CI
@@ -47,7 +51,7 @@ if [ -n "$BASE" ]; then
 fi
 
 # 2. our userspace
-ARCH="$ARCH" make -C "$ROOT/system/linux" -s
+ARCH="$ARCH" SYSROOT="${SYSROOT:-}" make -C "$ROOT/system/linux" -s
 make -C "$ROOT/system/linux" -s install DESTDIR="$STAGE" PREFIX=/usr ARCH="$ARCH"
 
 # 3. device profile -> /etc/hibiscus/device.env + wanted units
@@ -73,14 +77,21 @@ done
 # artifacts were built. The runtime is the piece that turns the bus
 # into OpenXR devices - monado-service plus the hsvc driver in
 # libopenxr_monado.so - and the shell is the dash's own wayland
-# compositor presenting through XR_EXTX_overlay.
+# compositor presenting through XR_EXTX_overlay. Every staged ELF is
+# checked against -a so a host-arch artifact can never slip into a
+# foreign-arch image.
 XR="${XR:-$ROOT/system/linux/out/xr}"
+want_mach="X86-64"
+[ "$ARCH" = aarch64 ] && want_mach="AArch64"
+is_arch() {
+	readelf -h "$1" 2>/dev/null | grep -q "Machine:.*$want_mach"
+}
 if [ "${HSVC_XR:-0}" = 1 ]; then
-	if [ -f "$XR/lib/libopenxr_monado.so" ]; then
+	rt="$XR/lib/libopenxr_monado.so"
+	if [ -f "$rt" ] && is_arch "$rt" && is_arch "$XR/bin/monado-service"; then
 		install -d "$STAGE/usr/lib" "$STAGE/usr/bin" \
 			"$STAGE/etc/openxr/1"
-		install -m755 "$XR/lib/libopenxr_monado.so" \
-			"$STAGE/usr/lib/"
+		install -m755 "$rt" "$STAGE/usr/lib/"
 		install -m755 "$XR/bin/monado-service" "$STAGE/usr/bin/"
 		install -m755 "$XR/bin/monado-cli" "$STAGE/usr/bin/" 2>/dev/null || true
 		install -m644 "$XR/share/openxr/1/active_runtime.json" \
@@ -88,12 +99,18 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 		ln -sf "/usr/lib/systemd/system/monado.service" \
 			"$wants/monado.service"
 		if [ -f "$XR/bin/dash-wayland" ]; then
-			install -m755 "$XR/bin/dash-wayland" "$STAGE/usr/bin/"
-			ln -sf "/usr/lib/systemd/system/hibiscus-shell.service" \
-				"$wants/hibiscus-shell.service"
+			if is_arch "$XR/bin/dash-wayland"; then
+				install -m755 "$XR/bin/dash-wayland" "$STAGE/usr/bin/"
+				ln -sf "/usr/lib/systemd/system/hibiscus-shell.service" \
+					"$wants/hibiscus-shell.service"
+			else
+				echo "mkimage: dash-wayland is not an $ARCH build, shell not enabled" >&2
+			fi
 		else
 			echo "mkimage: no dash-wayland in $XR/bin, shell not enabled" >&2
 		fi
+	elif [ -f "$rt" ]; then
+		echo "mkimage: $XR runtime is not an $ARCH build, xr not staged" >&2
 	else
 		echo "mkimage: profile wants xr but $XR has no runtime" >&2
 	fi

@@ -9,6 +9,8 @@
 #   make dist          static single-file hsvc-vmd for x86_64 + aarch64
 #                      (aarch64 linked 16k-page safe) into out/dist/
 #   make dist-host     just the host arch's static hsvc-vmd
+#   make shell         build the dash-wayland shell for ARCH into
+#                      out/xr/bin/, staged by mkimage when HSVC_XR=1
 #   make install DESTDIR=/x PREFIX=/usr
 
 ARCH      ?= $(shell uname -m)
@@ -89,6 +91,22 @@ $(DIST)-%: $(VMDSRC) $(VMDHDR)
 test:
 	bash tests/run.sh
 
+# The shell is the dash's own wayland compositor from applications/vrhome
+# built for ARCH, staged at out/xr/bin/dash-wayland where mkimage's xr
+# staging finds it. A cross build wants the matching-arch sysroot:
+#   make shell ARCH=aarch64 SYSROOT=<dir from fetch-sysroot.sh --shell>
+VRHOME  := $(abspath ../../applications/vrhome)
+ifeq ($(ARCH),$(shell uname -m))
+DASHBIN := $(VRHOME)/out/dash-wayland
+else
+DASHBIN := $(VRHOME)/out/$(ARCH)/dash-wayland
+endif
+
+shell:
+	$(MAKE) -C "$(VRHOME)" dash-wayland ARCH=$(ARCH) SYSROOT="$(SYSROOT)"
+	install -d out/xr/bin
+	install -m755 "$(DASHBIN)" out/xr/bin/dash-wayland
+
 install: all
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m755 $(addprefix $(OUT)/bin/,$(BINS)) $(DESTDIR)$(PREFIX)/bin/
@@ -102,4 +120,4 @@ install: all
 clean:
 	rm -rf out
 
-.PHONY: all dist dist-host test install clean
+.PHONY: all dist dist-host test shell install clean

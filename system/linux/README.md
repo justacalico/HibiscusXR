@@ -145,38 +145,49 @@ when nothing serves it.
 
 ```
 xr/build-runtime.sh                  # -> out/xr/
-# then the shell, from applications/vrhome:
-make dash-wayland                    # host arch; -vr presents via
-                                     # XR_EXTX_overlay on the runtime
+make shell                           # builds the dash for ARCH (same
+                                     # aarch64 cross path as `make`)
+                                     # and stages out/xr/bin/dash-wayland
 ```
+
+`make shell` wraps `make dash-wayland` in `applications/vrhome` with the
+same `ARCH`/`SYSROOT` contract as the rest of the tree, so
+`make shell ARCH=aarch64 SYSROOT=<dir>` produces the shell for a
+headset-class image. `fetch-sysroot.sh <dir> --shell` fetches the
+sysroot dep set the dash's cross build needs.
 
 `mkimage -x` (or the default `out/xr` path) stages the runtime at
 `/usr/lib/libopenxr_monado.so` + `/usr/bin/monado-service`, the
 manifest at `/etc/openxr/1/active_runtime.json`, and a `dash-wayland`
 binary when one is dropped into `out/xr/bin/`; the profile's
 `HSVC_XR=1` then enables `monado.service` and
-`hibiscus-shell.service` (`dash-wayland -vr`). The shell is just an
-OpenXR client - the same image also runs any other OpenXR app.
+`hibiscus-shell.service` (`dash-wayland -vr`). Every staged ELF is
+checked against `-a`, so a host-arch runtime or shell can never slip
+into a foreign-arch image - the lane warns and skips instead. The shell
+is just an OpenXR client - the same image also runs any other OpenXR
+app.
 
 ## Images
 
 ```
 images/mkimage.sh -a x86_64 -o hibiscus.tar -d generic
-images/mkimage.sh -a aarch64 -b fedora-base.tar.xz -o hibiscus-arm.tar \
-    -d headset-iio-evdev-v4l2
+SYSROOT=<dir> images/mkimage.sh -a aarch64 -b fedora-base.tar.xz \
+    -o hibiscus-arm.tar -d headset-iio-evdev-v4l2
 ```
 
 `-b` takes any distro rootfs tarball (Alpine, Debian, Fedora - anything
 with systemd); without one the output is a staging tree containing our
-binaries, units and profiles, which is what CI verifies.
+binaries, units and profiles, which is what CI verifies. `SYSROOT` in
+the environment feeds the cross build on hosts with a bare cross gcc.
 `images/fetch-sysroot.sh` produces the pinned Fedora aarch64 sysroot
-used for cross builds.
+used for cross builds; `--shell` adds the dash's dep set.
 
 ```
 make                    host build
 make ARCH=aarch64 SYSROOT=<dir>    cross build
 make test               the whole suite, on the host
 make dist               static single-file hsvc-vmd per arch
+make shell              build + stage the dash-wayland shell for ARCH
 ```
 
 ## Tests

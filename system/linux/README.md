@@ -25,6 +25,8 @@ include/hsvc/   proto.h      the wire protocol: frames + stream types
                 registry.h   hsvcd's pure service table
 src/            hsvc.c, registry.c, hsvcd.c, hsvcctl.c
 drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
+                hsvc-vmd     virtual motion device: a mouse is a 3-dof
+                             headset, click is the trigger
                 hsvc-eye     generic eye tracking camera over V4L2
                 hsvc-imu     generic IMU over IIO
                 hsvc-ctrl    generic controllers over evdev
@@ -82,10 +84,16 @@ layer that turns samples into protocol structs, and `hsvc_publish` +
 - `hsvc-sim` - the virtual headset. Serves hmd, both ctrls and eye
   with synthetic motion; this is what ships on the `generic` profile
   so any PC runs the real stack.
+- `hsvc-vmd` - the virtual motion device. A mouse becomes a 3-dof
+  headset: relative motion steers yaw/pitch, the wheel rolls, the
+  side button recenters, and clicks drive the wand's trigger. Serves
+  `hmd` (orientation-only pose) and `ctrl` (one wand glued to the
+  head). `--evdev auto` finds the first mouse-ish node, `--file`
+  replays "type code value" lines, `--sim` sways.
 
 Pure logic lives in headers (`drivers/gaze.h`, `imuscl.h`,
-`ctrlmap.h`) with zero device code so every line of it is unit tested
-on the host.
+`ctrlmap.h`, `vmdmap.h`) with zero device code so every line of it is
+unit tested on the host.
 
 ## Device profiles
 
@@ -98,6 +106,8 @@ hardware needs it, one more driver binary that speaks the same
 protocol.
 
 - `generic` / `sim` - PC/dev board, virtual headset only
+- `mouse` - PC where a physical mouse drives the virtual 3-dof
+  headset through `hsvc-vmd`
 - `headset-iio-evdev-v4l2` - any standalone headset on stock kernel
   interfaces (IIO + evdev + V4L2)
 

@@ -25,7 +25,7 @@ OUT       := out/$(ARCH)
 
 LIB       := src/hsvc.c src/registry.c
 LIBOBJ    := $(patsubst src/%.c,$(OUT)/obj/%.o,$(LIB))
-BINS      := hsvcd hsvcctl hsvc-sim hsvc-eye hsvc-imu hsvc-ctrl
+BINS      := hsvcd hsvcctl hsvc-sim hsvc-eye hsvc-imu hsvc-ctrl hsvc-vmd
 
 all: $(addprefix $(OUT)/bin/,$(BINS))
 

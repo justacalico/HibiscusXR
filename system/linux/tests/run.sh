@@ -107,6 +107,17 @@ wait_svc eyereplay || { echo "FAIL: eyereplay svc"; exit 1; }
 timeout 3 "$BIN/hsvcctl" cat eyereplay | head -1 | grep -q "stream=0" \
 	|| { echo "FAIL: replay eye stream"; exit 1; }
 
+# vmd: "type code value" evdev lines - move the mouse, left click
+printf '2 0 40\n2 1 -10\n1 272 1\n' > "$OUT/vmd.txt"
+"$BIN/hsvc-vmd" --file "$OUT/vmd.txt" >>"$OUT/sim.log" 2>&1 &
+PIDS="$PIDS $!"
+wait_svc vmd-hmd || { echo "FAIL: vmd-hmd svc"; exit 1; }
+wait_svc vmd-ctrl || { echo "FAIL: vmd-ctrl svc"; exit 1; }
+timeout 3 "$BIN/hsvcctl" cat vmd-hmd | head -1 | grep -q "stream=0" \
+	|| { echo "FAIL: vmd hmd stream"; exit 1; }
+timeout 3 "$BIN/hsvcctl" cat vmd-ctrl | head -1 | grep -q "stream=0" \
+	|| { echo "FAIL: vmd ctrl stream"; exit 1; }
+
 # two services of a kind: first registered still resolves
 [ "$("$BIN/hsvcctl" resolve 3)" = "$HSVC_RUNDIR/svc/eye.sock" ] \
 	|| { echo "FAIL: first eye still owns kind"; exit 1; }
@@ -135,6 +146,14 @@ tar -tf "$img2" | grep -q "hsvc-svc@ctrl1.service" \
 	|| { echo "FAIL: headset profile ctrl1"; exit 1; }
 tar -xOf "$img2" ./etc/hibiscus/svc/imu.env 2>/dev/null | grep -q "hsvc-imu" \
 	|| { echo "FAIL: imu env"; exit 1; }
+
+# mouse profile wires the virtual motion device up
+img3="$OUT/img3.tar"
+bash images/mkimage.sh -a "$(uname -m)" -o "$img3" -d mouse >/dev/null
+tar -tf "$img3" | grep -q "hsvc-svc@vmd.service" \
+	|| { echo "FAIL: mouse profile vmd"; exit 1; }
+tar -xOf "$img3" ./etc/hibiscus/svc/vmd.env 2>/dev/null | grep -q "hsvc-vmd" \
+	|| { echo "FAIL: vmd env"; exit 1; }
 
 echo "== cross build =="
 if command -v aarch64-linux-gnu-gcc >/dev/null; then

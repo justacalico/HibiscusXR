@@ -4,17 +4,23 @@
 
 # Hibiscus
 
-Hibiscus is a custom operating system for standalone VR headsets, built
-on LineageOS 17.1 (Android 10). The idea is one OS that runs on hardware
-from different vendors, with the device-specific drivers kept separate so
-porting to a new headset stays manageable.
+Hibiscus is a Linux distribution for standalone VR headsets. The idea is
+one OS that runs on hardware from different vendors, and on any PC for
+development, with drivers kept as services so porting to a new headset
+stays manageable.
 
-The Pico Neo 2 is the first supported device and where all development
-happens today. Other headsets, like the Oculus Quest 1 and Pico Neo 3, are
-planned once the OS is split from the drivers.
+The hardware rule is one direction: hardware -> service -> OS. Drivers
+are daemons that own devices (cameras, IMUs, controllers, panels) and
+publish typed streams over the hsvc bus; the OS only ever talks to
+services. See `system/linux/` for the bus, the generic drivers and the
+image build, for x86_64 and aarch64.
+
+This tree also still carries the original Android-based build
+(`system/dist`, `system/hsvr`, `drivers/`) while the Linux base reaches
+parity. It is the reference for the device ports.
 
 **This is an early work in progress, not a finished product.** The tables
-below show what works on each headset.
+below show what works on each headset under the current build.
 
 ## Device compatibility
 

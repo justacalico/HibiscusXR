@@ -1,0 +1,14 @@
+[Unit]
+Description=Hibiscus service broker
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target
+
+[Service]
+ExecStart=/usr/bin/hsvcd
+RuntimeDirectory=hibiscus
+RuntimeDirectoryMode=0755
+Restart=always
+
+[Install]
+WantedBy=sysinit.target

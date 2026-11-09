@@ -1,0 +1,137 @@
+# Hibiscus Linux
+
+The Linux distribution half of Hibiscus: an OS for standalone VR
+headsets that also runs on any PC, x86_64 or aarch64.
+
+The rule that shapes everything here is one direction:
+
+```
+hardware -> service -> OS
+```
+
+Drivers are the only code that talks to hardware, and they only talk
+to it through kernel interfaces (V4L2, IIO, evdev, DRM). Each driver is
+a service daemon that publishes a typed interface on the hsvc bus. The
+OS, meaning the runtime, the shell and the tools, links `libhsvc` and
+consumes services by kind. It never opens a device node. Swapping
+hardware means swapping a service, and the `hsvc-sim` virtual headset
+makes the whole stack runnable on any machine.
+
+## Layout
+
+```
+include/hsvc/   proto.h      the wire protocol: frames + stream types
+                hsvc.h       libhsvc: client + service socket helpers
+                registry.h   hsvcd's pure service table
+src/            hsvc.c, registry.c, hsvcd.c, hsvcctl.c
+drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
+                hsvc-eye     generic eye tracking camera over V4L2
+                hsvc-imu     generic IMU over IIO
+                hsvc-ctrl    generic controllers over evdev
+devices/        *.env        device profiles: which services a box runs
+units/          systemd units (hsvcd + the hsvc-svc@ template)
+images/         mkimage.sh, fetch-sysroot.sh
+tests/          run.sh + unit tests
+```
+
+## The bus
+
+`hsvcd` owns `/run/hibiscus` and listens on `daemon.sock`. A driver
+binds its socket under `svc/` and REGISTERs it, holding the control
+connection open for its lifetime, so a dead driver's services drop out
+of the registry on their own. The OS asks the daemon to RESOLVE a kind
+to a socket path, then speaks the frame protocol from
+`include/hsvc/proto.h` directly.
+
+Service kinds (`enum hsvc_kind`):
+
+| kind | serves |
+| --- | --- |
+| `hmd` | head pose + display/lens info (`hsvc_pose`) |
+| `ctrl` | controller pose, buttons, stick, battery (`hsvc_ctrl`) |
+| `eye` | gaze per eye (`hsvc_gaze`) |
+| `imu` | raw gyro/accel in SI units (`hsvc_imu`) |
+| `cam` | camera frames (`hsvc_frame_hdr` + pixels) |
+| `disp` | display panel state |
+
+Resolution is by kind, never by driver name. Two drivers serving the
+same kind is fine: the first registered wins RESOLVE, the rest stay
+listed. That is what makes the drivers generic - the OS cannot tell
+`hsvc-eye` on a real headset's IR camera apart from `hsvc-eye --sim`
+on a laptop.
+
+`HSVC_RUNDIR` overrides `/run/hibiscus` everywhere, which is how the
+test suite and non-root dev runs get a private bus.
+
+## Drivers
+
+Every driver follows the same shape: a backend that yields hardware
+samples (a device node, a replay file, or synthetic data), a thin pure
+layer that turns samples into protocol structs, and `hsvc_publish` +
+`hsvc_serve`.
+
+- `hsvc-eye` - the eye tracking camera service. V4L2 grayscale frames
+  in, pupil centroid per eye half, calibration maps centroid to
+  normalized gaze. `--device /dev/video0` on hardware, `--file` to
+  replay captured frames, `--sim` for synthetic gaze.
+- `hsvc-imu` - IIO inertial sensor. Reads `in_anglvel_*`/`in_accel_*`
+  raw + scale from sysfs, converts to rad/s and m/s^2.
+- `hsvc-ctrl` - evdev pads/wands. Maps the standard gamepad codes to
+  the generic `hsvc_ctrl` button/axis fields; `--index N` selects the
+  stream id.
+- `hsvc-sim` - the virtual headset. Serves hmd, both ctrls and eye
+  with synthetic motion; this is what ships on the `generic` profile
+  so any PC runs the real stack.
+
+Pure logic lives in headers (`drivers/gaze.h`, `imuscl.h`,
+`ctrlmap.h`) with zero device code so every line of it is unit tested
+on the host.
+
+## Device profiles
+
+A device is data, not code: `devices/<name>.env` names the service
+instances the box runs and their arguments. `mkimage` turns that into
+`/etc/hibiscus/device.env`, per-service env files and enabled
+`hsvc-svc@<name>` units. Adding support for a new headset means adding
+a profile that points the generic drivers at its nodes - or, when the
+hardware needs it, one more driver binary that speaks the same
+protocol.
+
+- `generic` / `sim` - PC/dev board, virtual headset only
+- `headset-iio-evdev-v4l2` - any standalone headset on stock kernel
+  interfaces (IIO + evdev + V4L2)
+
+## Images
+
+```
+images/mkimage.sh -a x86_64 -o hibiscus.tar -d generic
+images/mkimage.sh -a aarch64 -b fedora-base.tar.xz -o hibiscus-arm.tar \
+    -d headset-iio-evdev-v4l2
+```
+
+`-b` takes any distro rootfs tarball (Alpine, Debian, Fedora - anything
+with systemd); without one the output is a staging tree containing our
+binaries, units and profiles, which is what CI verifies.
+`images/fetch-sysroot.sh` produces the pinned Fedora aarch64 sysroot
+used for cross builds.
+
+```
+make                    host build
+make ARCH=aarch64 SYSROOT=<dir>    cross build
+make test               the whole suite, on the host
+```
+
+## Tests
+
+`tests/run.sh` is the gate: unit tests over the codec, registry and
+driver pure logic; a live bus run that starts `hsvcd`, the sim
+headset and each driver on file replay and exercises them through
+`hsvcctl` exactly like the OS does; an mkimage assembly check; and the
+aarch64 cross build when the compiler is installed.
+
+## Status
+
+The Android-based tree (`system/dist`, `system/hsvr`, `drivers/pn2`,
+`drivers/vmd`) is the reference implementation this layer replaces.
+Track against it: monado client driver for the bus, shell bring-up on
+wlroots, and real device profiles land next.

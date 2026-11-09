@@ -293,6 +293,29 @@ linux-test:
       changes:
         - "system/linux/**/*"
 
+# The single-file hsvc-vmd for download-and-run use: one static binary
+# per arch (the aarch64 one is linked 16k-page safe), published as job
+# artifacts so a pipeline run hands out a click-and-run file
+linux-dist:
+  stage: build
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends gcc make git file binutils libc6-dev gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+  script:
+    - make -C system/linux dist
+    - file system/linux/out/dist/*
+  artifacts:
+    paths:
+      - system/linux/out/dist/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "system/linux/**/*"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "system/linux/**/*"
+
 # Host smoke test for the controller daemon - compiles cted for the
 # runner and exercises the wire protocol the desktop app speaks.
 cted-test:

@@ -25,7 +25,7 @@ BIN=out/$(uname -m)/bin
 
 $CC $CFLAGS -o "$OUT/bin/test_proto" tests/test_proto.c
 $CC $CFLAGS -o "$OUT/bin/test_registry" tests/test_registry.c src/registry.c
-$CC $CFLAGS -o "$OUT/bin/test_pure" tests/test_pure.c -lm
+$CC $CFLAGS -Ixr/hsvc -o "$OUT/bin/test_pure" tests/test_pure.c -lm
 
 echo "== unit tests =="
 "$OUT/bin/test_proto"

@@ -9,7 +9,7 @@ spec:
       type: boolean
       default: false
     build_android:
-      description: "Build the Android headset images on GitHub - off skips the Android lane and only runs the Linux builds"
+      description: "Build the Android headset images on GitHub - off skips the Android lane and only runs the Linux builds; temporary, the lane is dropped once the switch to Linux is done"
       type: boolean
       default: true
 ---
@@ -31,8 +31,11 @@ spec:
 # channel and never touches the changelog or version tags, so it wins over
 # CHANNEL=release too. build_android gates the whole Android lane - off
 # skips os-bump/github-dispatch/github-release-sync and the manual pipeline
-# runs the system/linux lanes only. With CHANNEL=release a release run also
-# versions the OS first:
+# runs the system/linux lanes only. The linux lanes stay off the default
+# pipeline on purpose: the OS is switching mainly to Linux, so a plain
+# "Run pipeline" is still the Android build until the switch is done and
+# the Android lane (and this input) gets discarded. With CHANNEL=release
+# a release run also versions the OS first:
 # os-bump writes the changelog from merged MRs (never commits), cuts the
 # os-v* tag and pushes both back; the build then stamps and releases that
 # tag. os-changelog is the only cog job allowed to run unattended - it
@@ -297,7 +300,8 @@ apps-test:
 # The Linux OS lane: codec/registry/driver unit tests, a live bus run,
 # the mkimage assembly check and the aarch64 cross build. The last rule
 # is the build_android=off manual pipeline: with the Android lane gated
-# out, these are the only builds that run.
+# out, these are the only builds that run. A default manual pipeline is
+# still the Android build until the Linux switch finishes.
 linux-test:
   stage: test
   image: ubuntu:24.04

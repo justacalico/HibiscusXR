@@ -282,7 +282,7 @@ linux-test:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends gcc make python3 git file binutils gcc-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates
+    - apt-get install -y --no-install-recommends gcc make python3 git file binutils libc6-dev gcc-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates
   script:
     - make -C system/linux test
   rules:

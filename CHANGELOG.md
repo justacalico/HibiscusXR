@@ -28,6 +28,7 @@ linked line per MR no matter how many commits it carried.
 - [vmd: dist 增加 aarch64 交叉构建](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/248) (!248)
 - [ci: build_android 默认关闭](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/249) (!249)
 - [docs: rewrite README for the Linux distro](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/250) (!250)
+- [vmd: 打包并启动 Hibiscus Linux 客户机](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/251) (!251)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

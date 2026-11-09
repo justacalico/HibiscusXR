@@ -229,10 +229,18 @@ mkdir -p "$ST/etc/modules-load.d"
 echo zram > "$ST/etc/modules-load.d/virt.conf"
 
 # --- rootfs image ---------------------------------------------------------
-sz=$(du -sm "$ST" | cut -f1)
+# Size off the staged content, not du: du counts host-side allocated
+# blocks, which fs compression (ZFS/btrfs runners) or sparse extraction
+# shrinks below what mkfs -d must write. Payload is every entry's
+# apparent size rounded up to the 4k fs block; the inode table goes on
+# top and is passed explicitly so the count never starves populate.
+read -r payload inodes < <(find "$ST" -printf '%s\n' |
+	awk '{s += int(($1 + 4095) / 4096) * 4096; n++} END {print s, n}')
+sz=$(( (payload + (inodes + inodes / 4 + 1024) * 256) / 1048576 ))
 sz=$(( sz + sz / 4 + 64 ))
 truncate -s "${sz}M" "$OUT/rootfs.img"
-mkfs.ext4 -q -F -d "$ST" -L hibiscus-root "$OUT/rootfs.img"
+mkfs.ext4 -q -F -d "$ST" -N $((inodes + inodes / 4 + 1024)) \
+	-L hibiscus-root "$OUT/rootfs.img"
 
 # --- manifest --------------------------------------------------------------
 case "$GARCH" in

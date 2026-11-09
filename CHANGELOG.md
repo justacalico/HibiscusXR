@@ -23,6 +23,7 @@ linked line per MR no matter how many commits it carried.
 - [ci: add build_android pipeline input](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/243) (!243)
 - [ci: run the linux lanes on every manual pipeline](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/244) (!244)
 - [新增 hsvc OpenXR 运行时,让 shell 跑在 Linux 发行版上](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/245) (!245)
+- [linux: dash-wayland 按架构构建,镜像装上 shell](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/246) (!246)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

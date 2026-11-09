@@ -1,0 +1,12 @@
+[Unit]
+Description=Hibiscus hardware service %i
+After=hsvcd.service
+Requires=hsvcd.service
+
+[Service]
+EnvironmentFile=/etc/hibiscus/svc/%i.env
+ExecStart=/bin/sh -c 'exec $HSVC_BIN $HSVC_ARGS'
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

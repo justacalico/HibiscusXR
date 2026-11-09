@@ -34,7 +34,12 @@ spec:
 # and the Android lane gets discarded once the switch is done. Until then
 # build_android gates that lane: off skips
 # os-bump/github-dispatch/github-release-sync and the pipeline is Linux
-# only. With CHANNEL=release a release run also versions the OS first:
+# only - linux-test/linux-dist plus linux-image (mkimage tarballs for
+# both arches) and vmd-dist (the qemu host driver), and linux-release
+# stands in for the GitHub release half: when release_and_publish or
+# build_prealpha_debug_builds is set it tags <channel>-v<date>-r<run>
+# and ships the lane's outputs as a GitLab release. With CHANNEL=release
+# a release run also versions the OS first:
 # os-bump writes the changelog from merged MRs (never commits), cuts the
 # os-v* tag and pushes both back; the build then stamps and releases that
 # tag. os-changelog is the only cog job allowed to run unattended - it
@@ -214,6 +219,50 @@ github-release-sync:
   script:
     - bash system/dist/scripts/sync-from-github.sh
 
+# The Linux lane's release half, for build_android=off runs: the GitHub
+# image lane is skipped, so publishing happens straight on GitLab -
+# same <channel>-v<date>-r<run> tag scheme, assets stored as generic
+# packages so they never expire.
+linux-release:
+  stage: release
+  image: alpine:3.20
+  resource_group: os-release
+  timeout: 15m
+  needs:
+    - job: linux-dist
+      artifacts: true
+    - job: linux-image
+      artifacts: true
+    - job: vmd-dist
+      artifacts: true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web" && "$[[ inputs.build_android ]]" == "false" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true")
+    - if: $CI_PIPELINE_SOURCE == "api" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "false" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true")
+    - if: $CI_PIPELINE_SOURCE == "trigger" && $RELEASE_TAG !~ /^(cte|hbsup)-/ && "$[[ inputs.build_android ]]" == "false" && ("$[[ inputs.release_and_publish ]]" == "true" || "$[[ inputs.build_prealpha_debug_builds ]]" == "true")
+  variables:
+    GLAB_ENABLE_CI_AUTOLOGIN: "true"
+    GLAB_VERSION: "1.113.0"
+    PREALPHA: "$[[ inputs.build_prealpha_debug_builds ]]"
+  before_script:
+    - apk add --no-cache bash curl jq git openssh-client python3
+    - bash system/dist/scripts/install-glab.sh
+    - |
+      if [ -n "${CI_SERVER_FQDN:-}" ]; then
+        glab auth login --job-token "$CI_JOB_TOKEN" --hostname "$CI_SERVER_FQDN" --api-protocol "https" --insecure-storage || true
+      fi
+    # the ssh key is for the changelog push - prealpha runs skip the
+    # fold and never touch it
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - cp "$GITLAB_RELEASE_SSH_KEY" ~/.ssh/id_ed25519
+    - echo "" >> ~/.ssh/id_ed25519
+    - chmod 600 ~/.ssh/id_ed25519
+    - ssh-keyscan -t ed25519 gitlab.com > ~/.ssh/known_hosts
+    - git remote set-url origin "git@gitlab.com:${CI_PROJECT_PATH}.git"
+    - git config user.name "GitLab CI"
+    - git config user.email "ci@gitlab.com"
+  script:
+    - bash system/dist/scripts/linux-release.sh
+
 # The one automatic cog job: every push to main refreshes the Unreleased
 # block of CHANGELOG.md from the MRs merged since the last shipped tag.
 # Commits back only when something changed, with ci.skip - version bumps
@@ -298,7 +347,8 @@ apps-test:
 
 # The Linux OS lane: codec/registry/driver unit tests, a live bus run,
 # the mkimage assembly check and the aarch64 cross build. Runs on every
-# manual pipeline too - with build_android=off it is the whole pipeline.
+# manual pipeline too - with build_android=off the linux lanes are the
+# whole pipeline.
 linux-test:
   stage: test
   image: ubuntu:24.04
@@ -338,6 +388,58 @@ linux-dist:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "system/linux/**/*"
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
+
+# The distro image proper: mkimage lays the userspace, units and the
+# generic device profile into a tarball per shipped arch - no base
+# rootfs, the staging tree untars over any systemd distro. aarch64 is
+# a cross build through the fetch-sysroot glibc sysroot.
+linux-image:
+  stage: build
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends gcc make git file binutils libc6-dev gcc-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates xz-utils
+  script:
+    - bash system/linux/images/mkimage.sh -a x86_64 -d generic -o out/images/hibiscus-linux-x86_64-generic.tar
+    - bash system/linux/images/fetch-sysroot.sh system/linux/out/sysroot
+    - SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root" bash system/linux/images/mkimage.sh -a aarch64 -d generic -o out/images/hibiscus-linux-aarch64-generic.tar
+    - xz -T0 system/linux/out/images/*.tar
+  artifacts:
+    paths:
+      - system/linux/out/images/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "system/linux/**/*"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "system/linux/**/*"
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
+
+# The host-side vmd: the qemu VM driver that boots a Hibiscus image on
+# a Linux PC (vmd/). -selftest is a headless pose-channel smoke test -
+# no window, no guest needed.
+vmd-dist:
+  stage: build
+  image: ubuntu:24.04
+  before_script:
+    - apt-get update -qq
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev
+  script:
+    - make -C vmd
+    - ./vmd/out/vmd -selftest
+    - install -Dm755 vmd/out/vmd "vmd/out/dist/vmd-linux-$(uname -m)"
+  artifacts:
+    paths:
+      - vmd/out/dist/
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - "vmd/**/*"
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      changes:
+        - "vmd/**/*"
     - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
 # Host smoke test for the controller daemon - compiles cted for the

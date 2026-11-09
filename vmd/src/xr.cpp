@@ -68,7 +68,10 @@ int
 vmd_xr_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 {
 	// the GL binding talks GLX: force X11 even on a wayland desktop
+	// (glfw 3.3 is X11-only anyway, the hint is 3.4+)
+#if GLFW_VERSION_MAJOR > 3 || GLFW_VERSION_MINOR >= 4
 	glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
+#endif
 	if (!glfwInit()) {
 		fprintf(stderr, "vmd xr: glfwInit failed\n");
 		return 1;

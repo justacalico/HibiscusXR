@@ -9,7 +9,7 @@ spec:
       type: boolean
       default: false
     build_android:
-      description: "Build the Android headset images on GitHub - off skips the Android lane and only runs the Linux builds; temporary, the lane is dropped once the switch to Linux is done"
+      description: "Build the Android headset images on GitHub - off runs only the Linux lanes"
       type: boolean
       default: true
 ---
@@ -29,13 +29,12 @@ spec:
 # off builds and packages the image only. build_prealpha_debug_builds
 # publishes instead as a prealpha-v<date>-r<run> prerelease - it forces the
 # channel and never touches the changelog or version tags, so it wins over
-# CHANNEL=release too. build_android gates the whole Android lane - off
-# skips os-bump/github-dispatch/github-release-sync and the manual pipeline
-# runs the system/linux lanes only. The linux lanes stay off the default
-# pipeline on purpose: the OS is switching mainly to Linux, so a plain
-# "Run pipeline" is still the Android build until the switch is done and
-# the Android lane (and this input) gets discarded. With CHANNEL=release
-# a release run also versions the OS first:
+# CHANNEL=release too. The linux lanes run on every manual pipeline - the
+# OS is switching mainly to Linux, so manual runs exercise them by default
+# and the Android lane gets discarded once the switch is done. Until then
+# build_android gates that lane: off skips
+# os-bump/github-dispatch/github-release-sync and the pipeline is Linux
+# only. With CHANNEL=release a release run also versions the OS first:
 # os-bump writes the changelog from merged MRs (never commits), cuts the
 # os-v* tag and pushes both back; the build then stamps and releases that
 # tag. os-changelog is the only cog job allowed to run unattended - it
@@ -298,10 +297,8 @@ apps-test:
       changes: *apps-paths
 
 # The Linux OS lane: codec/registry/driver unit tests, a live bus run,
-# the mkimage assembly check and the aarch64 cross build. The last rule
-# is the build_android=off manual pipeline: with the Android lane gated
-# out, these are the only builds that run. A default manual pipeline is
-# still the Android build until the Linux switch finishes.
+# the mkimage assembly check and the aarch64 cross build. Runs on every
+# manual pipeline too - with build_android=off it is the whole pipeline.
 linux-test:
   stage: test
   image: ubuntu:24.04
@@ -317,7 +314,7 @@ linux-test:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "system/linux/**/*"
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && "$[[ inputs.build_android ]]" == "false"
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
 # The single-file hsvc-vmd for download-and-run use: one static binary
 # per arch (the aarch64 one is linked 16k-page safe), published as job
@@ -341,7 +338,7 @@ linux-dist:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "system/linux/**/*"
-    - if: ($CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger") && "$[[ inputs.build_android ]]" == "false"
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
 # Host smoke test for the controller daemon - compiles cted for the
 # runner and exercises the wire protocol the desktop app speaks.

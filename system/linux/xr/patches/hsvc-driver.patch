@@ -1,0 +1,91 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -349,6 +349,7 @@
+ # Drivers to build (sorted)
+ option_with_deps(XRT_BUILD_DRIVER_ANDROID "Enable Android sensors driver" DEPENDS ANDROID)
+ option_with_deps(XRT_BUILD_DRIVER_HSVR "Enable Hibiscus VR driver kit" DEPENDS ANDROID)
++option_with_deps(XRT_BUILD_DRIVER_HSVC "Enable Hibiscus hsvc bus driver" DEPENDS XRT_HAVE_LINUX)
+ option_with_deps(XRT_BUILD_DRIVER_ARDUINO "Enable Arduino input device with BLE" DEPENDS XRT_HAVE_DBUS)
+ option_with_deps(XRT_BUILD_DRIVER_BLUBUR_S1 "Enable 3Glasses Blubur S1 device driver" DEPENDS XRT_HAVE_INTERNAL_HID)
+ option_with_deps(XRT_BUILD_DRIVER_CONTACTGLOVE "Enable Melt Interface Technologies ContactGlove (CG2) device driver" DEPENDS XRT_HAVE_LINUX) # only Linux has serial right now
+@@ -478,6 +479,7 @@
+ 	"HANDTRACKING"
+ 	"HDK"
+ 	"HSVR"
++	"HSVC"
+ 	"HYDRA"
+ 	"ILLIXR"
+ 	"NS"
+@@ -736,6 +738,7 @@
+ message(STATUS "#    DRIVER_EUROC:                ${XRT_BUILD_DRIVER_EUROC}")
+ message(STATUS "#    DRIVER_HANDTRACKING:         ${XRT_BUILD_DRIVER_HANDTRACKING}")
+ message(STATUS "#    DRIVER_HDK:                  ${XRT_BUILD_DRIVER_HDK}")
++message(STATUS "#    DRIVER_HSVC:                 ${XRT_BUILD_DRIVER_HSVC}")
+ message(STATUS "#    DRIVER_HYDRA:                ${XRT_BUILD_DRIVER_HYDRA}")
+ message(STATUS "#    DRIVER_ILLIXR:               ${XRT_BUILD_DRIVER_ILLIXR}")
+ message(STATUS "#    DRIVER_NS:                   ${XRT_BUILD_DRIVER_NS}")
+--- a/src/xrt/drivers/CMakeLists.txt
++++ b/src/xrt/drivers/CMakeLists.txt
+@@ -546,6 +546,22 @@
+ 	list(APPEND ENABLED_HEADSET_DRIVERS hsvr)
+ endif()
+ 
++if(XRT_BUILD_DRIVER_HSVC)
++	file(GLOB HSVC_SOURCES hsvc/*.c hsvc/*.h)
++	add_library(drv_hsvc STATIC ${HSVC_SOURCES})
++	target_link_libraries(
++		drv_hsvc
++		PRIVATE
++			xrt-interfaces
++			aux_util
++			aux_os
++			aux_math
++			${CMAKE_DL_LIBS}
++	)
++	target_include_directories(drv_hsvc PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/hsvc)
++	list(APPEND ENABLED_HEADSET_DRIVERS hsvc)
++endif()
++
+ if(XRT_BUILD_DRIVER_ILLIXR)
+ 	add_library(
+ 		drv_illixr STATIC
+--- a/src/xrt/targets/common/CMakeLists.txt
++++ b/src/xrt/targets/common/CMakeLists.txt
+@@ -219,6 +219,10 @@
+ 	target_link_libraries(target_lists PRIVATE drv_hsvr)
+ endif()
+ 
++if(XRT_BUILD_DRIVER_HSVC)
++	target_link_libraries(target_lists PRIVATE drv_hsvc)
++endif()
++
+ if(XRT_BUILD_DRIVER_ILLIXR)
+ 	target_link_libraries(target_lists PRIVATE drv_illixr)
+ endif()
+--- a/src/xrt/targets/common/target_lists.c
++++ b/src/xrt/targets/common/target_lists.c
+@@ -72,6 +72,10 @@
+ #include "hsvr/hsvr_interface.h"
+ #endif
+ 
++#ifdef XRT_BUILD_DRIVER_HSVC
++#include "hsvc/hsvc_interface.h"
++#endif
++
+ #ifdef XRT_BUILD_DRIVER_ILLIXR
+ #include "illixr/illixr_interface.h"
+ #endif
+@@ -232,6 +236,13 @@
+ };
+ 
+ xrt_auto_prober_create_func_t target_auto_list[] = {
++#ifdef XRT_BUILD_DRIVER_HSVC
++    // The bus answers before any hardware prober: a Hibiscus device
++    // always wants the hsvc devices, and on a plain PC the resolve
++    // just fails and probing falls through.
++    hsvc_create_auto_prober,
++#endif
++
+ #ifdef XRT_BUILD_DRIVER_PSVR
+     psvr_create_auto_prober,
+ #endif

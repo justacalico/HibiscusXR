@@ -8,13 +8,17 @@
 // 10.0.2.2 route back to us), and a virtio-gpu whose framebuffer we
 // pull through QMP screendump.
 //
-// The stock sdm845 kernel only runs on Qualcomm hardware, so a virtio
-// kernel is mandatory: bootenv/make-bootenv.sh fetches the GKI 5.4
-// arm64 kernel + virtual-device module set plus the API 29 vendor
-// image and packs a bootstrap ramdisk (vmd-boot.img) that loads the
-// modules, mounts the non-SAR system partition, and execs its own
-// init. vmd -img picks all of it up automatically;
-// -kernel/-initrd/-append/-cpu still override.
+// Two image layouts are picked up automatically under -img (or from
+// the guest set embedded in a dist binary, see src/guest.cpp):
+//
+//   Linux guest set (vmd/vm/make-guest.sh): vmlinuz + initramfs.img +
+//     rootfs.img + guest.env, which names arch/machine/cpu/cmdline -
+//     a Fedora/systemd rootfs with the distro layered on top.
+//   Android tree (bootenv/make-bootenv.sh): kernel-gki + the virtual-
+//     device module set in vmd-boot.img plus vendor.img/userdata.img,
+//     since the stock sdm845 kernel cannot run on qemu's virt machine.
+//
+// -kernel/-initrd/-append/-cpu/-machine/-qemu still override.
 
 #include "vmd.hpp"
 
@@ -41,6 +45,7 @@ struct vmd_vm
 	pid_t pid = -1;
 	std::string qmp;    // unix socket path
 	std::string ppm;    // screendump target
+	std::string gtmp;   // extracted embedded guest dir, or empty
 	int fb_w = 0, fb_h = 0;
 	std::mutex fb_lock;
 	std::vector<uint8_t> fb;
@@ -174,28 +179,81 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	unlink(vm->qmp.c_str());
 
 	// -img selects a guest disk set; with a bare -kernel the image is
-	// optional (kernel bring-up testing, arch-agnostic qemu testing)
+	// optional (kernel bring-up testing, arch-agnostic qemu testing).
+	// A dir with a guest.env manifest is a Hibiscus Linux guest set
+	// (vmd/vm/make-guest.sh); a dist binary with nothing under -img
+	// falls back to the guest set embedded at its own EOF.
+	std::string imgdir = opts.imgdir;
+	vmd_guest_env env;
+	bool linux = vmd_guest_env_read(imgdir, &env);
+
+	auto pick = [&](const char *const *names) -> std::string {
+		for (; *names; names++) {
+			std::string p = imgdir + "/" + *names;
+			if (file_exists(p)) {
+				return p;
+			}
+		}
+		return "";
+	};
+	static const char *const imgs[] = {
+	    "system-hibiscus-vmd.img", "system-hibiscus-full-neo2.img",
+	    "system-hibiscus-full.img", "system-pn2-full.img",
+	    "system.img", "rootfs.img", nullptr};
+	static const char *const kernels[] = {
+	    "vmlinuz", "vmlinuz-virt", "kernel-virt", "kernel-gki",
+	    "kernel-ranchu", "kernel", "boot.img", nullptr};
+	static const char *const initrds[] = {
+	    "initramfs.img", "initramfs", "vmd-boot.img", "ramdisk.img",
+	    nullptr};
+
 	std::string system_img;
-	for (const char *n : {"system-hibiscus-vmd.img",
-	                      "system-hibiscus-full-neo2.img",
-	                      "system-hibiscus-full.img", "system-pn2-full.img",
-	                      "system.img", "rootfs.img"}) {
-		if (file_exists(opts.imgdir + "/" + n)) {
-			system_img = opts.imgdir + "/" + n;
-			break;
+	if (!env.rootfs.empty() && file_exists(imgdir + "/" + env.rootfs)) {
+		system_img = imgdir + "/" + env.rootfs;
+	} else {
+		system_img = pick(imgs);
+	}
+	bool needs_vm_files = opts.kernel.empty() && opts.iso.empty() &&
+	                      opts.disk.empty();
+	if (system_img.empty() && needs_vm_files && !linux) {
+		if (vmd_guest_extract(&vm->gtmp) == 0) {
+			imgdir = vm->gtmp;
+			linux = vmd_guest_env_read(imgdir, &env);
+			if (!env.rootfs.empty() &&
+			    file_exists(imgdir + "/" + env.rootfs)) {
+				system_img = imgdir + "/" + env.rootfs;
+			} else {
+				system_img = pick(imgs);
+			}
 		}
 	}
-	if (system_img.empty() && opts.kernel.empty() && opts.iso.empty()) {
-		fprintf(stderr, "vmd: no system image under %s and no -kernel\n",
-		        opts.imgdir.c_str());
+	if (system_img.empty() && needs_vm_files) {
+		uint64_t bo = 0, bl = 0;
+		fprintf(stderr, "vmd: no system image under %s and no -kernel%s\n",
+		        opts.imgdir.c_str(),
+		        vmd_guest_probe_self(&bo, &bl)
+		            ? " (embedded guest set is unreadable)" : "");
+		vmd_guest_rmtree(vm->gtmp.c_str());
 		delete vm;
 		return nullptr;
 	}
 
-	// virt exposes virtio-mmio transports (-device), pc needs the pci
-	// variants (-pci); the guest side is identical either way
-	std::string t = opts.machine == "virt" ? "-device" : "-pci";
-	std::vector<std::string> args = {opts.qemu};
+	std::string qemu = opts.qemu;
+	if (qemu.empty() && !env.qemu.empty()) {
+		qemu = env.qemu;
+	}
+	if (qemu.empty()) {
+		qemu = "qemu-system-aarch64";
+	}
+	std::string machine = !opts.machine.empty() ? opts.machine
+	                    : !env.machine.empty()   ? env.machine
+	                                             : "virt";
+
+	// virt exposes virtio-mmio transports (-device) which the GKI module
+	// set needed; the linux-virt kernel only has the pci transport, so a
+	// linux guest set gets -pci devices on either machine type
+	std::string t = machine == "virt" && !linux ? "-device" : "-pci";
+	std::vector<std::string> args = {qemu};
 	// kvm only accelerates when the guest arch matches the host cpu -
 	// anything else runs under tcg and -enable-kvm would just fail
 	bool want_kvm = false;
@@ -203,16 +261,25 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		struct utsname un;
 		if (uname(&un) == 0) {
 			std::string h = un.machine;
-			want_kvm = opts.qemu.find(h) != std::string::npos;
+			want_kvm = qemu.find(h) != std::string::npos;
 		}
 	}
-	if (want_kvm && access("/dev/kvm", W_OK) == 0) {
+	bool use_kvm = want_kvm && access("/dev/kvm", W_OK) == 0;
+	if (use_kvm) {
 		args.push_back("-enable-kvm");
+	}
+	// explicit -cpu wins; else the manifest's kvm/tcg pair; else the
+	// cortex-a53 the ranchu kernels needed ('max' hung them)
+	std::string cpu = opts.cpu;
+	if (cpu.empty()) {
+		cpu = use_kvm && !env.cpu_kvm.empty() ? env.cpu_kvm
+		    : !use_kvm && !env.cpu_tcg.empty() ? env.cpu_tcg
+		    : "cortex-a53";
 	}
 	// user networking: the guest reaches us at 10.0.2.2 (pose channel,
 	// adb server lookup). hostfwd exposes the guest's own services back:
 	// 15555->adbd once persist.hibiscus.adbwifi=1, 17340->cted when enabled.
-	args.insert(args.end(), {"-M", opts.machine, "-cpu", opts.cpu, "-smp", "4",
+	args.insert(args.end(), {"-M", machine, "-cpu", cpu, "-smp", "4",
 	    "-m", "4096",
 	    "-netdev", "user,id=n0,hostfwd=tcp:127.0.0.1:15555-:5555,"
 	               "hostfwd=tcp:127.0.0.1:17340-:7340",
@@ -253,7 +320,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 			args.push_back("-device");
 			args.push_back("virtio-blk" + t + ",drive=system");
 		}
-		std::string vendor_img = opts.imgdir + "/vendor.img";
+		std::string vendor_img = imgdir + "/vendor.img";
 		if (file_exists(vendor_img)) {
 			args.push_back("-drive");
 			args.push_back("file=" + vendor_img +
@@ -261,7 +328,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 			args.push_back("-device");
 			args.push_back("virtio-blk" + t + ",drive=vendor");
 		}
-		std::string userdata_img = opts.imgdir + "/userdata.img";
+		std::string userdata_img = imgdir + "/userdata.img";
 		if (file_exists(userdata_img)) {
 			args.push_back("-drive");
 			args.push_back("file=" + userdata_img +
@@ -270,20 +337,29 @@ vmd_vm_start(const vmd_vm_opts &opts)
 			args.push_back("virtio-blk" + t + ",drive=userdata");
 		}
 	}
+	if (linux) {
+		// the guest's evdev nodes, for profiles that drive the headset
+		// off a real mouse (devices/headset profiles over evdev)
+		args.push_back("-device");
+		args.push_back("virtio-keyboard" + t);
+		args.push_back("-device");
+		args.push_back("virtio-tablet" + t);
+	}
 	if (!opts.kernel.empty()) {
 		args.push_back("-kernel");
 		args.push_back(opts.kernel);
 	} else {
-		// bootenv/make-bootenv.sh drops the GKI kernel next to the
-		// system image; boot.img stays the last-resort fallback
-		for (const char *n : {"kernel-gki", "kernel-ranchu", "kernel",
-		                      "boot.img"}) {
-			std::string p = opts.imgdir + "/" + n;
-			if (file_exists(p)) {
-				args.push_back("-kernel");
-				args.push_back(p);
-				break;
-			}
+		std::string k;
+		if (!env.kernel.empty() && file_exists(imgdir + "/" + env.kernel)) {
+			k = imgdir + "/" + env.kernel;
+		} else {
+			// bootenv/make-bootenv.sh drops the GKI kernel next to the
+			// system image; boot.img stays the last-resort fallback
+			k = pick(kernels);
+		}
+		if (!k.empty()) {
+			args.push_back("-kernel");
+			args.push_back(k);
 		}
 	}
 	if (!opts.dtb.empty()) {
@@ -292,14 +368,12 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	}
 	{
 		std::string initrd = opts.initrd;
+		if (initrd.empty() && !env.initrd.empty() &&
+		    file_exists(imgdir + "/" + env.initrd)) {
+			initrd = imgdir + "/" + env.initrd;
+		}
 		if (initrd.empty()) {
-			for (const char *n : {"vmd-boot.img", "ramdisk.img"}) {
-				std::string p = opts.imgdir + "/" + n;
-				if (file_exists(p)) {
-					initrd = p;
-					break;
-				}
-			}
+			initrd = pick(initrds);
 		}
 		if (!initrd.empty()) {
 			args.push_back("-initrd");
@@ -307,7 +381,10 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		}
 	}
 	std::string cmdline = opts.cmdline;
-	if (cmdline.empty() && !system_img.empty()) {
+	if (cmdline.empty()) {
+		cmdline = env.cmdline;
+	}
+	if (cmdline.empty() && !system_img.empty() && !linux) {
 		// defaults for the Android tree: serial console (also the
 		// guest shell via androidboot.console), permissive selinux so
 		// HALs started under the emulator vendor image don't wedge
@@ -338,6 +415,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	}
 	if (pid < 0) {
 		perror("fork");
+		vmd_guest_rmtree(vm->gtmp.c_str());
 		delete vm;
 		return nullptr;
 	}
@@ -376,5 +454,6 @@ vmd_vm_stop(vmd_vm *vm)
 	}
 	unlink(vm->qmp.c_str());
 	unlink(vm->ppm.c_str());
+	vmd_guest_rmtree(vm->gtmp.c_str());
 	delete vm;
 }

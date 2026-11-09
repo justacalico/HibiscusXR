@@ -23,6 +23,32 @@ mkdir -p "$OUT"
     ../drivers/vmd/monado/vmd_chan.c -lpthread
 "$OUT/test_chan_stop"
 
+# embedded guest bundle: trailer probe + guest.env parsing, then a
+# round trip - embed a fake guest set into a real binary and have
+# -guestinfo find it. Needs the glfw/epoxy deps for the make, so it
+# skips where the tool itself cannot build.
+"${CXX:-c++}" -O2 -Wall -Wextra -std=c++17 -Isrc -I../drivers/vmd/proto \
+    -o "$OUT/test_guest" tests/test_guest.cpp src/guest.cpp
+"$OUT/test_guest"
+
+if make -s >/dev/null 2>&1 && [ -x out/vmd ]; then
+    fake="$OUT/fakeguest"
+    mkdir -p "$fake"
+    printf 'GUEST_ARCH=%s\nGUEST_KERNEL=vmlinuz\nGUEST_ROOTFS=rootfs.img\n' \
+        "$(uname -m)" > "$fake/guest.env"
+    echo k > "$fake/vmlinuz"
+    echo r > "$fake/rootfs.img"
+    cp out/vmd "$OUT/vmd-embed"
+    tar -cJf "$OUT/fakeguest.tar.xz" -C "$fake" .
+    bash vm/embed-guest.sh "$OUT/vmd-embed" "$OUT/fakeguest.tar.xz"
+    "$OUT/vmd-embed" -img "$OUT/empty-img" -guestinfo \
+        | grep -q "embedded: guest bundle" \
+        || { echo "FAIL: embedded bundle not found" >&2; exit 1; }
+    echo "embed round trip passed"
+else
+    echo "run.sh: skipping embed test (vmd not buildable here)" >&2
+fi
+
 CC=${VMD_HAL_CC:-aarch64-linux-gnu-gcc}
 QEMU=${QEMU:-$(command -v qemu-aarch64 || command -v qemu-aarch64-static || true)}
 if [ -z "$QEMU" ] || ! command -v "$CC" >/dev/null; then

@@ -35,7 +35,8 @@ spec:
 # build_android gates that lane: off skips
 # os-bump/github-dispatch/github-release-sync and the pipeline is Linux
 # only - linux-test/linux-dist plus linux-image (mkimage tarballs for
-# both arches) and vmd-dist (the qemu host driver), and linux-release
+# both arches) and vmd-dist (the qemu host driver, x86_64 + aarch64),
+# and linux-release
 # stands in for the GitHub release half: when release_and_publish or
 # build_prealpha_debug_builds is set it tags <channel>-v<date>-r<run>
 # and ships the lane's outputs as a GitLab release. With CHANNEL=release
@@ -419,17 +420,24 @@ linux-image:
 
 # The host-side vmd: the qemu VM driver that boots a Hibiscus image on
 # a Linux PC (vmd/). -selftest is a headless pose-channel smoke test -
-# no window, no guest needed.
+# no window, no guest needed. One binary per shipped arch: the aarch64
+# build crosses through the fetch-sysroot --vmd dep set and selftests
+# under qemu-aarch64.
 vmd-dist:
   stage: build
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest
     - install -Dm755 vmd/out/vmd "vmd/out/dist/vmd-linux-$(uname -m)"
+    - bash system/linux/images/fetch-sysroot.sh vmd/out/sysroot --vmd
+    - make -C vmd ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
+    - qemu-aarch64-static -L "$CI_PROJECT_DIR/vmd/out/sysroot/root" ./vmd/out/aarch64/vmd -selftest
+    - install -Dm755 vmd/out/aarch64/vmd vmd/out/dist/vmd-linux-aarch64
+    - file vmd/out/dist/*
   artifacts:
     paths:
       - vmd/out/dist/
@@ -437,9 +445,11 @@ vmd-dist:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       changes:
         - "vmd/**/*"
+        - "system/linux/images/fetch-sysroot.sh"
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       changes:
         - "vmd/**/*"
+        - "system/linux/images/fetch-sysroot.sh"
     - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
 # Host smoke test for the controller daemon - compiles cted for the

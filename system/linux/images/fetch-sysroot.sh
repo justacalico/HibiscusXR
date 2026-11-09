@@ -7,12 +7,15 @@
 #   images/fetch-sysroot.sh <dir> --shell  plus the dash-wayland dep set:
 #                                         wayland/xkbcommon/libpng/drm/
 #                                         glvnd/glfw/openxr/zlib + c++
+#                            --vmd        plus the vmd host driver dep set:
+#                                         epoxy + the X11 link chain;
+#                                         implies --shell for glfw/openxr
 #                            --runtime     plus the monado dep set on top
 #                                         (udev/systemd/dbus/vulkan);
 #                                         implies --shell for wayland+drm
 set -e
 DIR="$1"
-[ -n "$DIR" ] || { echo "usage: fetch-sysroot.sh <dir> [--shell] [--runtime]" >&2; exit 2; }
+[ -n "$DIR" ] || { echo "usage: fetch-sysroot.sh <dir> [--shell] [--vmd] [--runtime]" >&2; exit 2; }
 shift
 mkdir -p "$DIR/root"
 
@@ -26,10 +29,12 @@ l/libatomic-16.0.1-0.10.fc44.aarch64.rpm
 "
 
 SHELL_SET=0
+VMD_SET=0
 RT_SET=0
 for a in "$@"; do
 	case "$a" in
 	--shell) SHELL_SET=1 ;;
+	--vmd) SHELL_SET=1; VMD_SET=1 ;;
 	--runtime) SHELL_SET=1; RT_SET=1 ;;
 	*) echo "unknown flag: $a" >&2; exit 2 ;;
 	esac
@@ -66,6 +71,28 @@ o/openxr-libs-1.1.57-1.fc44.aarch64.rpm
 o/openxr-devel-1.1.57-1.fc44.aarch64.rpm
 z/zlib-ng-compat-2.3.3-3.fc44.aarch64.rpm
 z/zlib-ng-compat-devel-2.3.3-3.fc44.aarch64.rpm
+"
+fi
+
+if [ "$VMD_SET" = 1 ]; then
+	PKGS="$PKGS
+l/libepoxy-1.5.10-12.fc44.aarch64.rpm
+l/libepoxy-devel-1.5.10-12.fc44.aarch64.rpm
+l/libXau-1.0.12-4.fc44.aarch64.rpm
+l/libXau-devel-1.0.12-4.fc44.aarch64.rpm
+l/libXdmcp-1.1.5-5.fc44.aarch64.rpm
+l/libXdmcp-devel-1.1.5-5.fc44.aarch64.rpm
+l/libxcb-1.17.0-7.fc44.aarch64.rpm
+l/libxcb-devel-1.17.0-7.fc44.aarch64.rpm
+l/libX11-1.8.13-1.fc44.aarch64.rpm
+l/libX11-devel-1.8.13-1.fc44.aarch64.rpm
+l/libXext-1.3.6-5.fc44.aarch64.rpm
+l/libXext-devel-1.3.6-5.fc44.aarch64.rpm
+l/libXrender-0.9.12-4.fc44.aarch64.rpm
+l/libXrender-devel-0.9.12-4.fc44.aarch64.rpm
+l/libXrandr-1.5.4-7.fc44.aarch64.rpm
+l/libXrandr-devel-1.5.4-7.fc44.aarch64.rpm
+x/xorg-x11-proto-devel-2025.1-2.fc44.noarch.rpm
 "
 fi
 
@@ -149,4 +176,5 @@ echo "sysroot: $DIR/root"
 echo "use: make ARCH=aarch64 SYSROOT=$DIR/root"
 echo "     make dist A64SYSROOT=$DIR/root"
 echo "     make shell ARCH=aarch64 SYSROOT=$DIR/root     (needs --shell fetch)"
+echo "     make -C vmd ARCH=aarch64 SYSROOT=$DIR/root     (needs --vmd fetch)"
 echo "     ARCH=aarch64 SYSROOT=$DIR/root xr/build-runtime.sh   (needs --runtime fetch)"

@@ -9,6 +9,12 @@ one OS that runs on hardware from different vendors, and on any PC for
 development, with drivers kept as services so porting to a new headset
 stays manageable.
 
+> [!WARNING]
+> The Android-based build is deprecated and being removed as the Linux
+> base reaches parity. New work goes into `system/linux/`; the
+> `system/dist`, `system/hsvr` and `drivers/` trees remain only as a
+> reference for device ports.
+
 The hardware rule is one direction: hardware -> service -> OS. Drivers
 are daemons that own devices (cameras, IMUs, controllers, panels) and
 publish typed streams over the hsvc bus; the OS only ever talks to

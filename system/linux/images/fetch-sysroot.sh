@@ -13,6 +13,7 @@ BASE="https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/aarch
 PKGS="
 g/glibc-2.43-2.fc44.aarch64.rpm
 g/glibc-devel-2.43-2.fc44.aarch64.rpm
+g/glibc-static-2.43-2.fc44.aarch64.rpm
 k/kernel-headers-6.19.6-300.fc44.aarch64.rpm
 l/libatomic-16.0.1-0.10.fc44.aarch64.rpm
 "
@@ -29,12 +30,18 @@ done
 ln -sfn usr/lib64 "$DIR/root/lib64"
 ln -sfn usr/lib "$DIR/root/lib"
 # Fedora gcc specs auto-add -latomic_asneeded; the script ships in the
-# native gcc package so the cross sysroot has to provide it
+# native gcc package so the cross sysroot has to provide it. Static
+# links look for the .a name instead - a bare script keeps the specs
+# satisfied without dragging in a static libatomic nothing needs
 cat > "$DIR/root/usr/lib64/libatomic_asneeded.so" <<'LD'
 OUTPUT_FORMAT(elf64-littleaarch64)
 INPUT ( AS_NEEDED ( -latomic ) )
+LD
+cat > "$DIR/root/usr/lib64/libatomic_asneeded.a" <<'LD'
+OUTPUT_FORMAT(elf64-littleaarch64)
 LD
 ln -sfn libatomic.so.1.2.0 "$DIR/root/usr/lib64/libatomic.so"
 
 echo "sysroot: $DIR/root"
 echo "use: make ARCH=aarch64 SYSROOT=$DIR/root"
+echo "     make dist A64SYSROOT=$DIR/root"

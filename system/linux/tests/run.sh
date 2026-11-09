@@ -118,6 +118,19 @@ timeout 3 "$BIN/hsvcctl" cat vmd-hmd | head -1 | grep -q "stream=0" \
 timeout 3 "$BIN/hsvcctl" cat vmd-ctrl | head -1 | grep -q "stream=0" \
 	|| { echo "FAIL: vmd ctrl stream"; exit 1; }
 
+echo "== standalone vmd =="
+# a fresh rundir with no daemon: the driver embeds the broker and
+# brings its own bus up - that is what makes the single binary the
+# whole stack
+export HSVC_RUNDIR="$OUT/alone"
+"$BIN/hsvc-vmd" --file "$OUT/vmd.txt" >>"$OUT/sim.log" 2>&1 &
+PIDS="$PIDS $!"
+wait_sock daemon.sock || { echo "FAIL: embedded broker"; exit 1; }
+wait_svc vmd-hmd || { echo "FAIL: standalone vmd-hmd"; exit 1; }
+timeout 3 "$BIN/hsvcctl" cat vmd-hmd | head -1 | grep -q "stream=0" \
+	|| { echo "FAIL: standalone stream"; exit 1; }
+export HSVC_RUNDIR="$OUT/run"
+
 # two services of a kind: first registered still resolves
 [ "$("$BIN/hsvcctl" resolve 3)" = "$HSVC_RUNDIR/svc/eye.sock" ] \
 	|| { echo "FAIL: first eye still owns kind"; exit 1; }
@@ -172,8 +185,41 @@ if command -v aarch64-linux-gnu-gcc >/dev/null; then
 	[ -x out/aarch64/bin/hsvcd ] || { echo "FAIL: aarch64 hsvcd"; exit 1; }
 	file out/aarch64/bin/hsvcd | grep -qi aarch64 \
 		|| { echo "FAIL: aarch64 binary"; exit 1; }
+	SRDIR="${SRARG#SYSROOT=}"
 else
 	echo "skip: no aarch64-linux-gnu-gcc"
+fi
+
+echo "== dist =="
+# the single-file build: one static binary per arch, no deps at all.
+# Needs a static libc per toolchain - libc6-dev on debian, glibc-static
+# on fedora, the fetched sysroot for a bare aarch64 cross gcc
+if echo 'int main(void){return 0;}' | \
+	gcc -static -xc - -o "$OUT/st" 2>/dev/null; then
+	make -s dist-host
+	file "out/dist/hsvc-vmd-$(uname -m)" | grep -qi "statically linked" \
+		|| { echo "FAIL: dist binary not static"; exit 1; }
+	export HSVC_RUNDIR="$OUT/dist-run"
+	"out/dist/hsvc-vmd-$(uname -m)" --file "$OUT/vmd.txt" >>"$OUT/sim.log" 2>&1 &
+	PIDS="$PIDS $!"
+	wait_svc vmd-hmd || { echo "FAIL: dist standalone"; exit 1; }
+	export HSVC_RUNDIR="$OUT/run"
+else
+	echo "skip: no host static libc"
+fi
+if command -v aarch64-linux-gnu-gcc >/dev/null && \
+	echo 'int main(void){return 0;}' | \
+	aarch64-linux-gnu-gcc ${SRDIR:+--sysroot=$SRDIR} -static -xc - \
+		-o "$OUT/a64st" 2>/dev/null; then
+	make -s out/dist/hsvc-vmd-aarch64 A64SYSROOT="$SRDIR"
+	file out/dist/hsvc-vmd-aarch64 | grep -qi aarch64 \
+		|| { echo "FAIL: aarch64 dist"; exit 1; }
+	file out/dist/hsvc-vmd-aarch64 | grep -qi "statically linked" \
+		|| { echo "FAIL: aarch64 dist not static"; exit 1; }
+	readelf -lW out/dist/hsvc-vmd-aarch64 | grep -q "LOAD.*0x4000" \
+		|| { echo "FAIL: aarch64 dist not 16k-page safe"; exit 1; }
+else
+	echo "skip: no aarch64 static libc"
 fi
 
 echo "ALL TESTS PASS"

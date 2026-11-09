@@ -23,7 +23,7 @@ makes the whole stack runnable on any machine.
 include/hsvc/   proto.h      the wire protocol: frames + stream types
                 hsvc.h       libhsvc: client + service socket helpers
                 registry.h   hsvcd's pure service table
-src/            hsvc.c, registry.c, hsvcd.c, hsvcctl.c
+src/            hsvc.c, registry.c, broker.c, hsvcd.c, hsvcctl.c
 drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
                 hsvc-vmd     virtual motion device: a mouse is a 3-dof
                              headset, click is the trigger
@@ -88,8 +88,16 @@ layer that turns samples into protocol structs, and `hsvc_publish` +
   headset: relative motion steers yaw/pitch, the wheel rolls, the
   side button recenters, and clicks drive the wand's trigger. Serves
   `hmd` (orientation-only pose) and `ctrl` (one wand glued to the
-  head). `--evdev auto` finds the first mouse-ish node, `--file`
-  replays "type code value" lines, `--sim` sways.
+  head). `--evdev auto` finds the first mouse-ish node (the default),
+  `--file` replays "type code value" lines, `--sim` sways.
+  Standalone: when no hsvcd answers it forks the embedded broker on a
+  private rundir (`$HSVC_RUNDIR`, or `/tmp/hibiscus-$UID` which it
+  prints), so the one binary is the whole stack. `make dist` builds it
+  as a single static file per arch - `out/dist/hsvc-vmd-x86_64` and
+  `out/dist/hsvc-vmd-aarch64`, the latter linked 16k-page safe so it
+  runs on 4k/16k/64k-page kernels. Static linking needs a static libc:
+  libc6-dev (Debian) or glibc-static (Fedora) on the host, and
+  `A64SYSROOT=<dir from fetch-sysroot.sh>` where the cross gcc is bare.
 
 Pure logic lives in headers (`drivers/gaze.h`, `imuscl.h`,
 `ctrlmap.h`, `vmdmap.h`) with zero device code so every line of it is
@@ -129,6 +137,7 @@ used for cross builds.
 make                    host build
 make ARCH=aarch64 SYSROOT=<dir>    cross build
 make test               the whole suite, on the host
+make dist               static single-file hsvc-vmd per arch
 ```
 
 ## Tests

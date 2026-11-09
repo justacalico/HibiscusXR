@@ -425,7 +425,7 @@ vmd-dist:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest

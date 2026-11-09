@@ -41,7 +41,13 @@ fi
 # so the changelog reads per-build and the notes lookup below finds it.
 # os-v* tags already carry their section - os-bump writes it pre-tag. Runs
 # before `glab release create` so the GitLab tag lands on the changelog
-# commit instead of dangling one commit short.
+# commit instead of dangling one commit short. prealpha builds are debug
+# releases - the changelog tracks real release builds only, so the fold
+# and its commit are skipped for them
+case "$RELEASE_TAG" in
+  prealpha-*)
+    echo "prealpha build - changelog untouched" ;;
+  *)
 if git show FETCH_HEAD:CHANGELOG.md 2>/dev/null | grep -qF "[$RELEASE_TAG]"; then
   echo "changelog already has a $RELEASE_TAG section"
 else
@@ -65,6 +71,8 @@ else
     fi
   fi
 fi
+    ;;
+esac
 
 # pull the matching changelog section (MR titles, one per MR) into the
 # release notes

@@ -11,6 +11,7 @@ on:
           - release
           - beta
           - alpha
+          - prealpha
         default: alpha
       version:
         description: 'cog release tag (os-v*) - empty uses the date-run scheme'
@@ -138,8 +139,8 @@ jobs:
           else
             CHANNEL="${{ github.event.inputs.channel }}"
             case "$CHANNEL" in
-              alpha|beta) PREFIX="$CHANNEL-" ;;
-              *)          PREFIX="" ;;
+              alpha|beta|prealpha) PREFIX="$CHANNEL-" ;;
+              *)                   PREFIX="" ;;
             esac
             echo "HIBISCUS_VERSION=${PREFIX}v$(date -u +%Y.%m.%d)-r${GITHUB_RUN_NUMBER}" \
               >> "$GITHUB_ENV"
@@ -177,8 +178,8 @@ jobs:
         run: |
           CHANNEL="${{ github.event.inputs.channel }}"
           case "$CHANNEL" in
-            alpha|beta) PRE="--prerelease" ;;
-            *)          PRE="" ;;
+            alpha|beta|prealpha) PRE="--prerelease" ;;
+            *)                   PRE="" ;;
           esac
           TAG="${HIBISCUS_VERSION:?}"
           {

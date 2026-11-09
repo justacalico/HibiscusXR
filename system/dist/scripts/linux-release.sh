@@ -87,7 +87,8 @@ echo "$NOTES" > notes.md
     case "$n" in
       hibiscus-linux-*.tar.xz) d="distro staging tree - userspace, units and the generic device profile; untar over any systemd rootfs" ;;
       hsvc-vmd-*)              d="static single-file build: a mouse is a 3-dof headset, click is the trigger" ;;
-      vmd-linux-*)             d="qemu host driver - boots a Hibiscus image on a PC (vmd/)" ;;
+      vmd-linux-*)             d="qemu host driver with the Hibiscus Linux guest embedded - boots the OS in a VM, no other files needed" ;;
+      vmd-guest-*.tar.xz)      d="guest image set for 'vmd -img' - untar and point -img at the dir" ;;
       SHA256SUMS.txt)          d="checksums" ;;
       *)                       d="" ;;
     esac

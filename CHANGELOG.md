@@ -16,6 +16,7 @@ linked line per MR no matter how many commits it carried.
 - [共享层审查修复: pn2 命名收尾、首启重试与脚本/C++ 清理](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/236) (!236)
 - [Hibiscus 改为 Linux 发行版:hsvc 服务总线与通用驱动](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/237) (!237)
 - [hsvc-vmd: mouse-driven virtual 3-dof headset](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/238) (!238)
+- [hsvc-vmd 单文件化:内置总线 + 双架构静态构建](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/239) (!239)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

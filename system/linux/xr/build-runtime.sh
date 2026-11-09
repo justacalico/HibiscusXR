@@ -5,6 +5,11 @@
 # bus is the device contract, monado is the runtime.
 #
 #   xr/build-runtime.sh                 build into out/xr
+#   ARCH=aarch64 SYSROOT=<dir>          cross build into out/xr-<arch>;
+#                                       images/fetch-sysroot.sh --runtime
+#                                       makes a sysroot with the dep set
+#   CROSS=aarch64-linux-gnu-            cross toolchain prefix (aarch64
+#                                       default when ARCH=aarch64)
 #   MONADO_SRC=<checkout>               use an existing monado tree
 #                                       (must already carry the hsvr
 #                                       registration patch, like the
@@ -21,7 +26,9 @@ set -e
 cd "$(dirname "$0")/.."
 ROOT=$(git rev-parse --show-toplevel)
 LINUX="$ROOT/system/linux"
+ARCH="${ARCH:-$(uname -m)}"
 OUT="$LINUX/out/xr"
+[ "$ARCH" = "$(uname -m)" ] || OUT="$LINUX/out/xr-$ARCH"
 
 MONADO_REPO="https://gitlab.freedesktop.org/monado/monado.git"
 MONADO_COMMIT="09741cbcb45236f4f4f79790ea133cd90d68d5eb"
@@ -110,8 +117,60 @@ for d in ANDROID HSVR ARDUINO BLUBUR_S1 CONTACTGLOVE DAYDREAM DEPTHAI \
 	FLAGS+=(-DXRT_BUILD_DRIVER_$d=OFF)
 done
 
+# cross build: generate a cmake toolchain file pinning the target
+# toolchain + sysroot, and point pkg-config at the sysroot's .pc files.
+# Host-side tools (python, wayland-scanner, ninja) keep resolving off
+# the host because FIND_ROOT_PATH_MODE_PROGRAM stays NEVER.
+TFLAGS=()
+if [ "$ARCH" != "$(uname -m)" ]; then
+	[ -n "${SYSROOT:-}" ] || { echo "cross build wants SYSROOT=<dir> - see images/fetch-sysroot.sh --runtime" >&2; exit 2; }
+	SYSROOT="$(cd "$SYSROOT" && pwd)"
+	[ "$ARCH" = aarch64 ] && CROSS="${CROSS:-aarch64-linux-gnu-}"
+	[ -n "${CROSS:-}" ] || { echo "need CROSS=<prefix> for ARCH=$ARCH" >&2; exit 2; }
+	command -v "${CROSS}gcc" >/dev/null || { echo "no ${CROSS}gcc on PATH" >&2; exit 1; }
+	TC="$OUT/toolchain-$ARCH.cmake"
+	mkdir -p "$OUT"
+	{
+		cat <<-EOF
+		set(CMAKE_SYSTEM_NAME Linux)
+		set(CMAKE_SYSTEM_PROCESSOR $ARCH)
+		set(CMAKE_C_COMPILER ${CROSS}gcc)
+		set(CMAKE_CXX_COMPILER ${CROSS}g++)
+		set(CMAKE_SYSROOT $SYSROOT)
+		set(CMAKE_FIND_ROOT_PATH $SYSROOT)
+		set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+		set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+		set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+		set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
+		EOF
+		# a bare cross gcc's private limits.h has no include_next into
+		# the libc's, so POSIX extras like PATH_MAX never arrive. Putting
+		# the sysroot's usr/include ahead of gcc's fixes the search order.
+		echo "set(CMAKE_C_FLAGS_INIT \"-isystem $SYSROOT/usr/include\")"
+		# a bare cross g++ ships no c++ headers either; libstdc++-devel
+		# in the sysroot does - arch dir first, then generic
+		cxxvers=("$SYSROOT"/usr/include/c++/*)
+		cxxextra=""
+		if [ -d "${cxxvers[0]}" ]; then
+			cxxver="${cxxvers[0]##*/}"
+			cxxarchs=("$SYSROOT/usr/include/c++/$cxxver"/*-linux)
+			if [ -d "${cxxarchs[0]}" ]; then
+				cxxextra="-isystem $SYSROOT/usr/include/c++/$cxxver/${cxxarchs[0]##*/} -isystem $SYSROOT/usr/include/c++/$cxxver "
+			fi
+		fi
+		echo "set(CMAKE_CXX_FLAGS_INIT \"${cxxextra}-isystem $SYSROOT/usr/include\")"
+	} > "$TC"
+	TFLAGS+=(-DCMAKE_TOOLCHAIN_FILE="$TC")
+	PCDIRS=""
+	for d in usr/lib64/pkgconfig "usr/lib/$ARCH-linux-gnu/pkgconfig" \
+		usr/lib/pkgconfig usr/share/pkgconfig; do
+		[ -d "$SYSROOT/$d" ] && PCDIRS="$PCDIRS:$SYSROOT/$d"
+	done
+	export PKG_CONFIG_SYSROOT_DIR="$SYSROOT" PKG_CONFIG_LIBDIR="${PCDIRS#:}"
+fi
+
 BUILD="$OUT/build"
-cmake -S "$SRC" -B "$BUILD" -G Ninja "${FLAGS[@]}"
+cmake -S "$SRC" -B "$BUILD" -G Ninja "${FLAGS[@]}" "${TFLAGS[@]}"
 ninja -C "$BUILD" openxr_monado monado-service monado-cli
 
 mkdir -p "$OUT/lib" "$OUT/bin" "$OUT/share/openxr/1"

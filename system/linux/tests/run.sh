@@ -214,6 +214,29 @@ else
 	echo "skip: no aarch64-linux-gnu-gcc"
 fi
 
+echo "== cross image with xr + shell =="
+# the full aarch64 path: when out/xr-aarch64 carries a real AArch64
+# runtime and the cross-built shell, mkimage -a aarch64 must assemble
+# an image with monado + the shell enabled
+if [ -f out/xr-aarch64/lib/libopenxr_monado.so ] && \
+	readelf -h out/xr-aarch64/lib/libopenxr_monado.so | grep -q "Machine:.*AArch64" && \
+	readelf -h out/xr-aarch64/bin/dash-wayland 2>/dev/null | grep -q "Machine:.*AArch64" && \
+	command -v aarch64-linux-gnu-gcc >/dev/null; then
+	img5="$OUT/img5.tar"
+	SYSROOT="${SRDIR:-${AARCH64_SYSROOT:-}}" \
+		bash images/mkimage.sh -a aarch64 -o "$img5" -d generic >/dev/null
+	tar -tf "$img5" > "$OUT/manifest5"
+	for want in usr/bin/dash-wayland usr/bin/monado-service \
+		usr/lib/libopenxr_monado.so etc/openxr/1/active_runtime.json \
+		etc/systemd/system/multi-user.target.wants/monado.service \
+		etc/systemd/system/multi-user.target.wants/hibiscus-shell.service; do
+		grep -q "$want" "$OUT/manifest5" \
+			|| { echo "FAIL: aarch64 image missing $want"; exit 1; }
+	done
+else
+	echo "skip: no aarch64 runtime+shell in out/xr-aarch64 or no cross gcc"
+fi
+
 echo "== dist =="
 # the single-file build: one static binary per arch, no deps at all.
 # Needs a static libc per toolchain - libc6-dev on debian, glibc-static

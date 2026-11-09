@@ -7,9 +7,13 @@
 #   images/fetch-sysroot.sh <dir> --shell  plus the dash-wayland dep set:
 #                                         wayland/xkbcommon/libpng/drm/
 #                                         glvnd/glfw/openxr/zlib + c++
+#                            --runtime     plus the monado dep set on top
+#                                         (udev/systemd/dbus/vulkan);
+#                                         implies --shell for wayland+drm
 set -e
 DIR="$1"
-[ -n "$DIR" ] || { echo "usage: fetch-sysroot.sh <dir> [--shell]" >&2; exit 2; }
+[ -n "$DIR" ] || { echo "usage: fetch-sysroot.sh <dir> [--shell] [--runtime]" >&2; exit 2; }
+shift
 mkdir -p "$DIR/root"
 
 BASE="https://dl.fedoraproject.org/pub/fedora/linux/releases/44/Everything/aarch64/os/Packages"
@@ -21,7 +25,17 @@ k/kernel-headers-6.19.6-300.fc44.aarch64.rpm
 l/libatomic-16.0.1-0.10.fc44.aarch64.rpm
 "
 
-if [ "$2" = "--shell" ]; then
+SHELL_SET=0
+RT_SET=0
+for a in "$@"; do
+	case "$a" in
+	--shell) SHELL_SET=1 ;;
+	--runtime) SHELL_SET=1; RT_SET=1 ;;
+	*) echo "unknown flag: $a" >&2; exit 2 ;;
+	esac
+done
+
+if [ "$SHELL_SET" = 1 ]; then
 	PKGS="$PKGS
 l/libgcc-16.0.1-0.10.fc44.aarch64.rpm
 l/libstdc++-16.0.1-0.10.fc44.aarch64.rpm
@@ -52,6 +66,36 @@ o/openxr-libs-1.1.57-1.fc44.aarch64.rpm
 o/openxr-devel-1.1.57-1.fc44.aarch64.rpm
 z/zlib-ng-compat-2.3.3-3.fc44.aarch64.rpm
 z/zlib-ng-compat-devel-2.3.3-3.fc44.aarch64.rpm
+"
+fi
+
+if [ "$RT_SET" = 1 ]; then
+	PKGS="$PKGS
+s/systemd-libs-259.5-1.fc44.aarch64.rpm
+s/systemd-devel-259.5-1.fc44.aarch64.rpm
+d/dbus-libs-1.16.2-1.fc44.aarch64.rpm
+d/dbus-devel-1.16.2-1.fc44.aarch64.rpm
+v/vulkan-headers-1.4.341.0-1.fc44.noarch.rpm
+v/vulkan-loader-1.4.341.0-1.fc44.aarch64.rpm
+v/vulkan-loader-devel-1.4.341.0-1.fc44.aarch64.rpm
+l/libXau-1.0.12-4.fc44.aarch64.rpm
+l/libXau-devel-1.0.12-4.fc44.aarch64.rpm
+l/libXdmcp-1.1.5-5.fc44.aarch64.rpm
+l/libXdmcp-devel-1.1.5-5.fc44.aarch64.rpm
+l/libglvnd-opengl-1.7.0-9.fc44.aarch64.rpm
+l/libglvnd-glx-1.7.0-9.fc44.aarch64.rpm
+l/libxcb-1.17.0-7.fc44.aarch64.rpm
+l/libxcb-devel-1.17.0-7.fc44.aarch64.rpm
+l/libX11-1.8.13-1.fc44.aarch64.rpm
+l/libX11-xcb-1.8.13-1.fc44.aarch64.rpm
+l/libX11-devel-1.8.13-1.fc44.aarch64.rpm
+l/libXext-1.3.6-5.fc44.aarch64.rpm
+l/libXext-devel-1.3.6-5.fc44.aarch64.rpm
+l/libXrender-0.9.12-4.fc44.aarch64.rpm
+l/libXrender-devel-0.9.12-4.fc44.aarch64.rpm
+l/libXrandr-1.5.4-7.fc44.aarch64.rpm
+l/libXrandr-devel-1.5.4-7.fc44.aarch64.rpm
+x/xorg-x11-proto-devel-2025.1-2.fc44.noarch.rpm
 "
 fi
 
@@ -92,7 +136,17 @@ OUTPUT_FORMAT(elf64-littleaarch64)
 LD
 ln -sfn libatomic.so.1.2.0 "$DIR/root/usr/lib64/libatomic.so"
 
+# wayland-scanner in the sysroot is an aarch64 binary, but cmake runs it
+# as a host tool during the runtime's cross build - the generated code
+# is arch-neutral, so point it at the host's scanner when one exists
+if [ -f "$DIR/root/usr/bin/wayland-scanner" ] && \
+	command -v wayland-scanner >/dev/null; then
+	ln -sfn "$(command -v wayland-scanner)" \
+		"$DIR/root/usr/bin/wayland-scanner"
+fi
+
 echo "sysroot: $DIR/root"
 echo "use: make ARCH=aarch64 SYSROOT=$DIR/root"
 echo "     make dist A64SYSROOT=$DIR/root"
-echo "     make shell ARCH=aarch64 SYSROOT=$DIR/root   (needs --shell fetch)"
+echo "     make shell ARCH=aarch64 SYSROOT=$DIR/root     (needs --shell fetch)"
+echo "     ARCH=aarch64 SYSROOT=$DIR/root xr/build-runtime.sh   (needs --runtime fetch)"

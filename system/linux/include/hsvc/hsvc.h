@@ -60,6 +60,11 @@ int hsvc_unregister(const char *name);
 int hsvc_daemon_call(uint32_t op, const void *args, uint32_t args_len,
                      uint8_t **reply, uint32_t *reply_len);
 
+/* The broker loop: hsvcd's whole main, kept callable so a driver can
+ * fork a private bus of its own (hsvc-vmd standalone mode). Listens on
+ * hsvc_rundir()/daemon.sock forever; returns on fatal error. */
+int hsvc_broker_run(void);
+
 /* --------------------- service side --------------------- */
 
 struct hsvc_service;

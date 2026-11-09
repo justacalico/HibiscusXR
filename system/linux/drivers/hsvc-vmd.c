@@ -9,9 +9,15 @@
  *         and its tooling can be driven by hand on any machine.
  *
  *         --evdev P reads input_event structs ("auto" scans for the
- *         first mouse); --file replays "type code value" lines; --sim
- *         sways. The parent pumps events into shared state; one child
- *         per published service, like hsvc-sim.
+ *         first mouse, and is the default); --file replays
+ *         "type code value" lines; --sim sways. The parent pumps events
+ *         into shared state; one child per published service, like
+ *         hsvc-sim.
+ *
+ *         Standalone: when no hsvcd answers, the driver forks the
+ *         embedded broker on a private rundir, so the single binary is
+ *         the whole stack. Point tools at it with the HSVC_RUNDIR it
+ *         prints.
  */
 #include <errno.h>
 #include <fcntl.h>
@@ -151,6 +157,50 @@ ctrl_emit(struct hsvc_service *s, void *ud)
 	hsvc_stream(s, 0, now_ns(), &c, sizeof(c));
 }
 
+/* No daemon answering -> bring a private bus up in-process. With no
+ * HSVC_RUNDIR the bus lives under /tmp/hibiscus-$UID so clients can
+ * find it without root. */
+static int
+ensure_bus(void)
+{
+	char sock[512];
+	snprintf(sock, sizeof(sock), "%s/%s", hsvc_rundir(),
+	         HSVC_DAEMON_SOCK);
+	int fd = hsvc_dial(sock);
+	if (fd >= 0) {
+		close(fd);
+		return 0;
+	}
+	if (!getenv("HSVC_RUNDIR")) {
+		char dir[256];
+		snprintf(dir, sizeof(dir), "/tmp/hibiscus-%d", (int)getuid());
+		setenv("HSVC_RUNDIR", dir, 1);
+	}
+	pid_t p = fork();
+	if (p == 0) {
+		prctl(PR_SET_PDEATHSIG, SIGTERM);
+		_exit(hsvc_broker_run());
+	}
+	if (p < 0)
+		return -1;
+	snprintf(sock, sizeof(sock), "%s/%s", hsvc_rundir(),
+	         HSVC_DAEMON_SOCK);
+	for (int i = 0; i < 100; i++) {
+		fd = hsvc_dial(sock);
+		if (fd >= 0) {
+			close(fd);
+			fprintf(stderr,
+			        "hsvc-vmd: own bus at %s "
+			        "(HSVC_RUNDIR=%s for tools)\n",
+			        hsvc_rundir(), hsvc_rundir());
+			return 0;
+		}
+		usleep(10000);
+	}
+	fprintf(stderr, "hsvc-vmd: embedded bus did not come up\n");
+	return -1;
+}
+
 static int
 run_hmd(struct vmd *v)
 {
@@ -188,6 +238,8 @@ main(int argc, char **argv)
 		else if (!strcmp(argv[i], "--sim"))
 			v.sim = 1;
 	}
+	if (!dev && !file && !v.sim)
+		dev = "auto";
 	if (dev && !strcmp(dev, "auto")) {
 		if (find_mouse(found, sizeof(found)) < 0) {
 			fprintf(stderr, "hsvc-vmd: no mouse node found\n");
@@ -212,6 +264,8 @@ main(int argc, char **argv)
 		        "hsvc-vmd: need --evdev P, --file F or --sim\n");
 		return 2;
 	}
+	if (ensure_bus() < 0)
+		return 1;
 	v.map = mmap(NULL, sizeof(*v.map), PROT_READ | PROT_WRITE,
 	             MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 	if (v.map == MAP_FAILED)

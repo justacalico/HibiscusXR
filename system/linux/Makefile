@@ -37,7 +37,13 @@ $(OUT)/obj/drv/%.o: drivers/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
-$(OUT)/bin/hsvcd: $(LIBOBJ) $(OUT)/obj/hsvcd.o
+$(OUT)/bin/hsvcd: $(LIBOBJ) $(OUT)/obj/broker.o $(OUT)/obj/hsvcd.o
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
+
+# vmd carries the broker too: with no daemon answering it forks its own
+# private bus, which is what makes the single binary the whole stack.
+$(OUT)/bin/hsvc-vmd: $(LIBOBJ) $(OUT)/obj/drv/hsvc-vmd.o $(OUT)/obj/broker.o
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 

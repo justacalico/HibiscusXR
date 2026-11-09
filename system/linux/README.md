@@ -145,21 +145,27 @@ when nothing serves it.
 
 ```
 xr/build-runtime.sh                  # -> out/xr/
+ARCH=aarch64 SYSROOT=<dir> \
+xr/build-runtime.sh                  # cross -> out/xr-aarch64/
 make shell                           # builds the dash for ARCH (same
                                      # aarch64 cross path as `make`)
-                                     # and stages out/xr/bin/dash-wayland
+                                     # and stages the arch's xr dir
 ```
 
-`make shell` wraps `make dash-wayland` in `applications/vrhome` with the
-same `ARCH`/`SYSROOT` contract as the rest of the tree, so
-`make shell ARCH=aarch64 SYSROOT=<dir>` produces the shell for a
-headset-class image. `fetch-sysroot.sh <dir> --shell` fetches the
-sysroot dep set the dash's cross build needs.
+Both sides of the xr dir follow the tree's `ARCH`/`SYSROOT` contract:
+`make shell` wraps `make dash-wayland` in `applications/vrhome`, and
+`build-runtime.sh` takes the same `ARCH` env and cross-builds monado
+with a generated cmake toolchain file + the sysroot's pkg-config set.
+`fetch-sysroot.sh <dir> --runtime` fetches the dep set the runtime's
+cross build needs (udev/systemd/dbus/vulkan + the X11/xcb set on top
+of `--shell`'s). The artifacts for a foreign arch land in
+`out/xr-<arch>/` so a host build in `out/xr/` is never clobbered -
+mkimage defaults to the dir matching `-a`.
 
-`mkimage -x` (or the default `out/xr` path) stages the runtime at
+`mkimage -x` (or the default per-arch xr dir) stages the runtime at
 `/usr/lib/libopenxr_monado.so` + `/usr/bin/monado-service`, the
 manifest at `/etc/openxr/1/active_runtime.json`, and a `dash-wayland`
-binary when one is dropped into `out/xr/bin/`; the profile's
+binary when one is dropped into the xr dir's `bin/`; the profile's
 `HSVC_XR=1` then enables `monado.service` and
 `hibiscus-shell.service` (`dash-wayland -vr`). Every staged ELF is
 checked against `-a`, so a host-arch runtime or shell can never slip
@@ -180,7 +186,8 @@ with systemd); without one the output is a staging tree containing our
 binaries, units and profiles, which is what CI verifies. `SYSROOT` in
 the environment feeds the cross build on hosts with a bare cross gcc.
 `images/fetch-sysroot.sh` produces the pinned Fedora aarch64 sysroot
-used for cross builds; `--shell` adds the dash's dep set.
+used for cross builds; `--shell` adds the dash's dep set, `--runtime`
+adds the monado dep set on top.
 
 ```
 make                    host build

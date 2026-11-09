@@ -80,7 +80,13 @@ done
 # compositor presenting through XR_EXTX_overlay. Every staged ELF is
 # checked against -a so a host-arch artifact can never slip into a
 # foreign-arch image.
-XR="${XR:-$ROOT/system/linux/out/xr}"
+# the runtime + shell for ARCH live in out/xr (host arch) or
+# out/xr-<arch> (cross) - build-runtime.sh and `make shell` both land
+# there; -x overrides
+if [ -z "$XR" ]; then
+	XR="$ROOT/system/linux/out/xr"
+	[ "$ARCH" = "$(uname -m)" ] || XR="$ROOT/system/linux/out/xr-$ARCH"
+fi
 want_mach="X86-64"
 [ "$ARCH" = aarch64 ] && want_mach="AArch64"
 is_arch() {

@@ -157,6 +157,13 @@ PREVIEW_BIN := $(OUT)/dash-preview
 # dash on desktop linux as a real wayland compositor: same shared code as
 # the preview plus the compositor/backend glue. Host needs wayland-server,
 # xkbcommon and libpng on top of the preview's deps.
+#
+#   make dash-wayland                        host build -> out/dash-wayland
+#   make dash-wayland ARCH=aarch64 SYSROOT=<dir>
+#                                            cross -> out/aarch64/dash-wayland
+#
+# A cross SYSROOT wants the target's pkg-config files and libs; the Fedora
+# aarch64 dep set comes from system/linux/images/fetch-sysroot.sh --shell.
 WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
            src/desktop/wlcomp.cpp src/desktop/harness.cpp \
            src/desktop/desktopfile.cpp src/desktop/icontheme.cpp \
@@ -167,16 +174,51 @@ WL_SRCS := src/desktop/wlmain.cpp src/desktop/wlbackend.cpp \
            src/desktop/wlegl.cpp \
            $(filter-out src/desktop/preview.cpp \
              src/desktop/harness.cpp,$(DESKTOP_SRCS))
-WL_BIN := $(OUT)/dash-wayland
-XDG_XML := /usr/share/wayland-protocols/stable/xdg-shell/xdg-shell.xml
-ACT_XML := /usr/share/wayland-protocols/staging/xdg-activation/xdg-activation-v1.xml
-DMA_XML := /usr/share/wayland-protocols/stable/linux-dmabuf/linux-dmabuf-v1.xml
+ARCH    ?= $(shell uname -m)
+ifeq ($(ARCH),aarch64)
+CROSS   ?= aarch64-linux-gnu-
+endif
+WL_CXX  := $(CROSS)c++
+WL_CC   := $(CROSS)gcc
+WL_PC   := pkg-config
+ifneq ($(SYSROOT),)
+empty   :=
+space   := $(empty) $(empty)
+WL_SYSROOT := --sysroot=$(SYSROOT)
+# bare cross g++'s ship no c++ headers; libstdc++-devel in the sysroot
+# provides the generic dir plus the *-linux arch dir, arch dir first
+CXXVER  := $(notdir $(firstword $(wildcard $(SYSROOT)/usr/include/c++/*)))
+ifneq ($(CXXVER),)
+CXXARCH := $(notdir $(firstword $(wildcard \
+            $(SYSROOT)/usr/include/c++/$(CXXVER)/*-linux)))
+WL_SYSROOT += -isystem $(SYSROOT)/usr/include/c++/$(CXXVER)/$(CXXARCH) \
+              -isystem $(SYSROOT)/usr/include/c++/$(CXXVER)
+endif
+PCDIRS  := $(SYSROOT)/usr/lib64/pkgconfig \
+           $(SYSROOT)/usr/lib/$(ARCH)-linux-gnu/pkgconfig \
+           $(SYSROOT)/usr/lib/pkgconfig $(SYSROOT)/usr/share/pkgconfig
+WL_PC   := env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) \
+           PKG_CONFIG_LIBDIR=$(subst $(space),:,$(strip $(PCDIRS))) pkg-config
+endif
+ifeq ($(ARCH),$(shell uname -m))
+WL_BIN  := $(OUT)/dash-wayland
+WL_PDIR := $(OUT)/gen
+else
+WL_BIN  := $(OUT)/$(ARCH)/dash-wayland
+WL_PDIR := $(OUT)/$(ARCH)/gen
+endif
+WPROT   := $(firstword $(wildcard \
+           $(SYSROOT)/usr/share/wayland-protocols \
+           /usr/share/wayland-protocols))
+XDG_XML := $(WPROT)/stable/xdg-shell/xdg-shell.xml
+ACT_XML := $(WPROT)/staging/xdg-activation/xdg-activation-v1.xml
+DMA_XML := $(WPROT)/stable/linux-dmabuf/linux-dmabuf-v1.xml
 WL_GEN := $(OUT)/gen/xdg-shell-server-protocol.h \
           $(OUT)/gen/xdg-activation-v1-server-protocol.h \
           $(OUT)/gen/linux-dmabuf-v1-server-protocol.h \
-          $(OUT)/gen/xdg-shell-protocol.o \
-          $(OUT)/gen/xdg-activation-v1-protocol.o \
-          $(OUT)/gen/linux-dmabuf-v1-protocol.o
+          $(WL_PDIR)/xdg-shell-protocol.o \
+          $(WL_PDIR)/xdg-activation-v1-protocol.o \
+          $(WL_PDIR)/linux-dmabuf-v1-protocol.o
 
 .PHONY: all apk test preview dash-wayland install clean toolcheck \
         goldens goldens-check
@@ -352,8 +394,9 @@ $(OUT)/gen/xdg-shell-protocol.c: $(XDG_XML)
 	@mkdir -p $(OUT)/gen
 	wayland-scanner private-code $< $@
 
-$(OUT)/gen/xdg-shell-protocol.o: $(OUT)/gen/xdg-shell-protocol.c
-	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+$(WL_PDIR)/xdg-shell-protocol.o: $(OUT)/gen/xdg-shell-protocol.c
+	@mkdir -p $(WL_PDIR)
+	$(WL_CC) $(WL_SYSROOT) -O2 -I$(OUT)/gen -c -o $@ $<
 
 $(OUT)/gen/xdg-activation-v1-server-protocol.h: $(ACT_XML)
 	@mkdir -p $(OUT)/gen
@@ -363,8 +406,9 @@ $(OUT)/gen/xdg-activation-v1-protocol.c: $(ACT_XML)
 	@mkdir -p $(OUT)/gen
 	wayland-scanner private-code $< $@
 
-$(OUT)/gen/xdg-activation-v1-protocol.o: $(OUT)/gen/xdg-activation-v1-protocol.c
-	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+$(WL_PDIR)/xdg-activation-v1-protocol.o: $(OUT)/gen/xdg-activation-v1-protocol.c
+	@mkdir -p $(WL_PDIR)
+	$(WL_CC) $(WL_SYSROOT) -O2 -I$(OUT)/gen -c -o $@ $<
 
 $(OUT)/gen/linux-dmabuf-v1-server-protocol.h: $(DMA_XML)
 	@mkdir -p $(OUT)/gen
@@ -374,17 +418,18 @@ $(OUT)/gen/linux-dmabuf-v1-protocol.c: $(DMA_XML)
 	@mkdir -p $(OUT)/gen
 	wayland-scanner private-code $< $@
 
-$(OUT)/gen/linux-dmabuf-v1-protocol.o: $(OUT)/gen/linux-dmabuf-v1-protocol.c
-	$(CC) -O2 -I$(OUT)/gen -c -o $@ $<
+$(WL_PDIR)/linux-dmabuf-v1-protocol.o: $(OUT)/gen/linux-dmabuf-v1-protocol.c
+	@mkdir -p $(WL_PDIR)
+	$(WL_CC) $(WL_SYSROOT) -O2 -I$(OUT)/gen -c -o $@ $<
 
 $(WL_BIN): $(WL_SRCS) $(WL_GEN) \
            $(OUT)/gen/ctrl_l.inc $(OUT)/gen/ctrl_r.inc
 	@mkdir -p $(dir $@)
-	$(CXX) $(HOST_CXXFLAGS) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
-	    $(WL_SRCS) $(OUT)/gen/xdg-shell-protocol.o \
-	    $(OUT)/gen/xdg-activation-v1-protocol.o \
-	    $(OUT)/gen/linux-dmabuf-v1-protocol.o \
-	    $$(pkg-config --libs --cflags wayland-server xkbcommon libpng \
+	$(WL_CXX) $(HOST_CXXFLAGS) $(WL_SYSROOT) -DVRHOME_DESKTOP -I$(OUT)/gen -o $@ \
+	    $(WL_SRCS) $(WL_PDIR)/xdg-shell-protocol.o \
+	    $(WL_PDIR)/xdg-activation-v1-protocol.o \
+	    $(WL_PDIR)/linux-dmabuf-v1-protocol.o \
+	    $$($(WL_PC) --libs --cflags wayland-server xkbcommon libpng \
 	            libdrm openxr) \
 	    -lglfw -lGLESv2 -lEGL -lz -lm
 

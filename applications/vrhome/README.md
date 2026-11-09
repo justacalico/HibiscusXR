@@ -186,6 +186,14 @@ advertised, so every toolkit falls back to `wl_shm`. The `-mcp` flag serves
 the same MCP tools as the preview, so a headless shell can launch apps and
 grab screenshots for testing.
 
+Cross builds take `ARCH` and `SYSROOT` like `system/linux` does:
+`make dash-wayland ARCH=aarch64 SYSROOT=<dir>` produces
+`out/aarch64/dash-wayland`, resolving its deps from the sysroot's
+pkg-config files. `system/linux/images/fetch-sysroot.sh --shell` builds a
+matching Fedora aarch64 sysroot, and `make -C system/linux shell` runs
+this target for you and stages the binary where `mkimage` picks it up.
+That is how the shell lands on non-host-arch images.
+
 Known gaps for later work: popups clip to the window edge instead of
 sliding, clipboard/DnD are stubs, scroll arrives as a drag rather than an
 axis, and presentation is the GLFW window - an OpenXR presenter can hang off

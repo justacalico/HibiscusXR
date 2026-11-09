@@ -419,24 +419,28 @@ linux-image:
     - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
 # The host-side vmd: the qemu VM driver that boots a Hibiscus image on
-# a Linux PC (vmd/). -selftest is a headless pose-channel smoke test -
-# no window, no guest needed. One binary per shipped arch: the aarch64
-# build crosses through the fetch-sysroot --vmd dep set and selftests
-# under qemu-aarch64.
+# a Linux PC (vmd/). The dist binaries carry the matching-arch guest set
+# embedded (kernel + initramfs + a Fedora/systemd rootfs layered with
+# the distro) so they boot the OS with no other files; -selftest and
+# -guestinfo are headless and run under qemu-aarch64 for the cross one.
 vmd-dist:
   stage: build
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest
-    - install -Dm755 vmd/out/vmd "vmd/out/dist/vmd-linux-$(uname -m)"
+    - make -C vmd guest GUEST_ARCH=x86_64
+    - make -C vmd dist
+    - ./vmd/out/dist/vmd-linux-x86_64 -guestinfo
     - bash system/linux/images/fetch-sysroot.sh vmd/out/sysroot --vmd
     - make -C vmd ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
-    - qemu-aarch64-static -L "$CI_PROJECT_DIR/vmd/out/sysroot/root" ./vmd/out/aarch64/vmd -selftest
-    - install -Dm755 vmd/out/aarch64/vmd vmd/out/dist/vmd-linux-aarch64
+    - make -C vmd guest GUEST_ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
+    - make -C vmd dist ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
+    - qemu-aarch64-static -L "$CI_PROJECT_DIR/vmd/out/sysroot/root" ./vmd/out/dist/vmd-linux-aarch64 -selftest
+    - qemu-aarch64-static -L "$CI_PROJECT_DIR/vmd/out/sysroot/root" ./vmd/out/dist/vmd-linux-aarch64 -guestinfo
     - file vmd/out/dist/*
   artifacts:
     paths:

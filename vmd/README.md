@@ -1,30 +1,76 @@
 # vmd
 
-Virtual machine driver for Hibiscus: runs the OS in qemu on a Linux PC so
-changes can be tested without a headset. `vmd` is its own build device -
-the dist pipeline publishes `system-hibiscus-vmd.img.xz` next to the
-headset images: same GSI base and the same shell/userspace, just no Pico
-hardware stack.
+Virtual machine driver for Hibiscus: runs the OS in qemu on a Linux PC
+so changes can be tested without a headset. The dist binaries carry
+the guest set embedded - a single `vmd-linux-<arch>` file is the whole
+VM, run it and the Hibiscus Linux image boots.
 
 ```
-make
+make                   build out/vmd
 make ARCH=aarch64 SYSROOT=<dir>   # arm64 cross build -> out/aarch64/vmd;
                                   # sysroot: fetch-sysroot.sh --vmd
+make guest             build the guest set -> out/guest-<arch>/
+make dist              embed it -> out/dist/vmd-linux-<arch>
+                       (EMBED=0 ships the guest as vmd-guest-<arch>.tar.xz)
+
+out/dist/vmd-linux-x86_64    # boots the embedded guest, no args needed
+out/vmd -img out/guest-x86_64 # same thing from a plain build
 out/vmd -desktopsim        # window, mouse + WASD drive the HMD pose
 out/vmd -novr | -pc        # same thing
 out/vmd -openxr            # OpenXR app mode - a WiVRn/Monado runtime
                            # feeds a real HMD's pose in, and vmd submits
                            # the guest framebuffer to its swapchains
 out/vmd -selftest          # pose channel smoke test
+out/vmd -guestinfo         # what guest this binary would boot
 ```
 
 Options: `-img <dir>` (default `$HIBISCUS_ROOT/out`), `-novm`,
-`-kernel/-dtb/-initrd/-append/-cpu` to override what vmd picks up from
-the image dir.
+`-kernel/-dtb/-initrd/-append/-cpu/-machine/-qemu` to override what
+vmd picks up from the image dir or its `guest.env` manifest.
 
-The guest is aarch64 like every shipped image. On an aarch64 host KVM
-accelerates it; on x86_64 it runs under TCG - correct but slow, usable
-for smoke tests.
+The guest arch matches the binary arch, so on an aarch64 or x86_64
+host KVM accelerates it; a foreign-arch guest set still boots under
+TCG, just slower.
+
+## The guest set
+
+`vmd/vm/make-guest.sh` assembles everything a Hibiscus Linux boot
+needs into four files:
+
+```
+vmlinuz        Alpine linux-virt kernel for the guest arch
+initramfs.img  busybox + the virtio_blk/ext4 module set; loads the
+               modules, mounts /dev/vda, switch_roots into systemd
+rootfs.img     ext4 rootfs: Fedora userspace (systemd, dnf, udev,
+               NetworkManager) + the system/linux staging tree -
+               our daemons, units and the device profile
+guest.env      manifest vmd reads: arch, qemu, machine, cpu, cmdline
+```
+
+- `-a` guest arch (default host), `-o` output dir, `-d` device
+  profile (default `generic`), `-b` a local base tarball instead of
+  the Fedora download.
+- The kernel + busybox come from Alpine v3.20 packages, resolved
+  through APKINDEX; the base is Fedora's WSL rootfs from
+  releases.json, sha256-verified (the container bases ship no init,
+  the WSL one is a real install).
+- Assembly runs under `unshare -r` when not root so the 000-mode and
+  suid files and the image's uid 0 ownership come out right.
+- Downloads cache under `vmd/out/cache/<arch>` (VMD_GUEST_CACHE
+  overrides); the staging tree comes from `system/linux` via
+  mkimage, so `SYSROOT` feeds the aarch64 cross build.
+
+On boot: kernel -> initramfs -> virtio-blk mount -> systemd, with a
+serial console root login (empty root password, autologin drop-in)
+and DHCP on the virtio nic. The serial log lands in
+`/tmp/vmd-serial-<pid>.log`; the guest framebuffer is pulled through
+QMP screendump like before.
+
+`make dist` appends the guest set to the binary as
+`<tar.xz><u64 size><HIBGUEST>`; at startup vmd extracts it under
+`/var/tmp/vmd-guest-*` (`VMD_GUEST_TMPDIR` overrides) and boots that.
+An `-img` dir with a real image set always wins over the embedded
+bundle, so day-to-day dev keeps using `out/guest-<arch>`.
 
 ## How it connects to the OS
 
@@ -36,42 +82,33 @@ vmd (host)                       Hibiscus in qemu
   hostfwd 17340      ---->       guest cted :7340 (persist.hibiscus.cted)
 ```
 
-The in-OS side is a normal hsvr kit driver (`drivers/vmd/`). It is in the
-image like every other driver - on a headset image it only activates
-while the host channel answers, on the vmd image it is the device driver.
+The in-OS side of the pose channel is a normal hsvr kit driver
+(`drivers/vmd/`) on the Android tree; the Linux guest runs its own
+profiles instead - `generic` (default) feeds the runtime a simulated
+headset, `mouse`/`headset-*` profiles can drive the stack off the
+virtio-input devices vmd attaches.
 
-## Building the vmd image
+## The Android bootenv (legacy)
 
-```
-DEVICE=vmd bash system/dist/scripts/build-image.sh
-```
-
-same inputs as usual minus the Pico stack (`gsi` + `blobs` only). The
-GitHub workflow takes `device: vmd` from the dispatch form.
-
-## Booting the guest all the way
-
-The stock sdm845 kernel cannot run on qemu's virt machine, and the vmd
-system image is a bare non-SAR partition with no init of its own.
-`bootenv/make-bootenv.sh` assembles what a generic PC boot needs next
-to the image:
+`bootenv/make-bootenv.sh` is the Android-tree path: it fetches the
+GKI 5.4 arm64 kernel + virtual-device module set and the API 29
+vendor partition (dynamic-partition fstab stripped), packs
+`bootenv/ramdisk/` into `vmd-boot.img` - a busybox bootstrap that
+loads the modules, finds the disks by content, mounts
+system/vendor/data, then execs the image's own `/system/bin/init` -
+and writes `kernel-gki`, `vendor.img`, `vmd-boot.img`,
+`userdata.img` next to `system-hibiscus-*.img`. `vmd -img` picks all
+four up automatically; `-kernel/-initrd/-append/-cpu` still
+override.
 
     vmd/bootenv/make-bootenv.sh -o <image-dir>
-    # writes kernel-gki, vendor.img, vmd-boot.img, userdata.img
+    DEVICE=vmd bash system/dist/scripts/build-image.sh
 
-It fetches the GKI 5.4 arm64 kernel + the virtual-device module set
-(virtio blk/net/gpu/pci/...) and the API 29 vendor partition - with
-the dynamic-partition fstab stripped, since a virtio disk has no
-`super` - and packs `bootenv/ramdisk/` into `vmd-boot.img`: a busybox
-bootstrap that loads the modules, finds the disks by content, mounts
-system/vendor/data, then execs the image's own `/system/bin/init`.
-`vmd -img` picks all four files up automatically.
-
-Verified path: kernel + vmd-boot.img + the three virtio-blk disks gets
-the real vmd image through first-stage init, SELinux, binderfs, apex
-activation and userspace services; adbd listens on guest :5555 and
-answers `adb connect localhost:15555` with a root shell. Under TCG on
-x86_64 full boot takes a few minutes.
+Verified path on the Android tree: kernel + vmd-boot.img + the three
+virtio-blk disks gets the image through first-stage init, SELinux,
+binderfs, apex activation and userspace services; adbd listens on
+guest :5555 and answers `adb connect localhost:15555` with a root
+shell.
 
 ## Display
 

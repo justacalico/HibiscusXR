@@ -34,15 +34,35 @@ struct vmd_vm;
 struct vmd_vm_opts
 {
 	std::string imgdir;              // dir holding the image set
-	std::string qemu = "qemu-system-aarch64"; // VMD_QEMU or -qemu overrides
-	std::string machine = "virt";    // -machine
-	std::string cpu = "cortex-a53";  // -cpu: ranchu kernels hang on 'max'
+	std::string qemu;                // VMD_QEMU or -qemu; else the
+	                                 // guest.env value or the old
+	                                 // aarch64 default
+	std::string machine;             // -machine
+	std::string cpu;                 // -cpu
 	std::string kernel, dtb, cmdline;
 	std::string initrd;              // -initrd: guest ramdisk image
 	std::string disk;                // -disk: single GPT disk image
 	std::string serial;              // -serial: null|stdio|file:<path>
 	std::string iso;                 // -iso: attach as -cdrom + -boot d
 };
+
+// guest.cpp: the Linux guest set - manifest parsing and the embedded
+// bundle a dist binary carries at EOF.
+struct vmd_guest_env
+{
+	std::string arch, qemu, machine, cpu_kvm, cpu_tcg;
+	std::string kernel, initrd, rootfs, cmdline;
+};
+
+// probe a file for the appended bundle trailer: <tar><u64le><HIBGUEST>
+bool vmd_guest_probe(FILE *f, uint64_t *off, uint64_t *len);
+bool vmd_guest_probe_self(uint64_t *off, uint64_t *len);
+// parse <dir>/guest.env; false when missing or unusable
+bool vmd_guest_env_read(const std::string &dir, vmd_guest_env *env);
+// extract this binary's embedded guest set into a fresh dir (caller
+// frees with vmd_guest_rmtree); -1 when there is no bundle or it fails
+int vmd_guest_extract(std::string *dir_out);
+void vmd_guest_rmtree(const char *dir);
 
 vmd_vm *vmd_vm_start(const vmd_vm_opts &opts);
 // newest guest framebuffer as RGB888, or false when nothing has arrived yet

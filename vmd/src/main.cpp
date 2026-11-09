@@ -82,7 +82,7 @@ selftest(vmd_pose_state *state)
 int
 main(int argc, char **argv)
 {
-	enum { SIM, XR, SELFTEST } mode = SIM;
+	enum { SIM, XR, SELFTEST, GUESTINFO } mode = SIM;
 	vmd_vm_opts opts;
 	bool novm = false;
 
@@ -97,6 +97,7 @@ main(int argc, char **argv)
 		if (a == "-openxr") mode = XR;
 		else if (a == "-desktopsim" || a == "-novr" || a == "-pc") mode = SIM;
 		else if (a == "-selftest") mode = SELFTEST;
+		else if (a == "-guestinfo") mode = GUESTINFO;
 		else if (a == "-novm") novm = true;
 		else if (a == "-img" && i + 1 < argc) opts.imgdir = argv[++i];
 		else if (a == "-kernel" && i + 1 < argc) opts.kernel = argv[++i];
@@ -110,10 +111,10 @@ main(int argc, char **argv)
 		else if (a == "-machine" && i + 1 < argc) opts.machine = argv[++i];
 		else if (a == "-cpu" && i + 1 < argc) opts.cpu = argv[++i];
 		else {
-			fprintf(stderr, "usage: vmd [-openxr|-desktopsim|-novr|-pc|-selftest] "
-			        "[-img dir] [-novm] [-qemu bin] [-machine m] [-cpu c] "
-			        "[-kernel k] [-dtb d] [-initrd r] [-disk f] "
-			        "[-serial s] [-append c]\n");
+			fprintf(stderr, "usage: vmd [-openxr|-desktopsim|-novr|-pc|-selftest|"
+			        "-guestinfo] [-img dir] [-novm] [-qemu bin] "
+			        "[-machine m] [-cpu c] [-kernel k] [-dtb d] [-initrd r] "
+			        "[-disk f] [-serial s] [-append c]\n");
 			return a == "-h" || a == "--help" ? 0 : 2;
 		}
 	}
@@ -121,6 +122,25 @@ main(int argc, char **argv)
 	vmd_pose_state state;
 	if (mode == SELFTEST) {
 		return selftest(&state);
+	}
+	if (mode == GUESTINFO) {
+		vmd_guest_env env;
+		if (vmd_guest_env_read(opts.imgdir, &env)) {
+			printf("guest: %s guest.env (arch=%s machine=%s kernel=%s "
+			       "rootfs=%s)\n", opts.imgdir.c_str(), env.arch.c_str(),
+			       env.machine.c_str(), env.kernel.c_str(),
+			       env.rootfs.c_str());
+		} else {
+			printf("guest: no guest.env under %s\n", opts.imgdir.c_str());
+		}
+		uint64_t off = 0, len = 0;
+		if (vmd_guest_probe_self(&off, &len)) {
+			printf("embedded: guest bundle %llu bytes at +%llu\n",
+			       (unsigned long long)len, (unsigned long long)off);
+		} else {
+			printf("embedded: none\n");
+		}
+		return 0;
 	}
 
 	signal(SIGINT, on_sigint);

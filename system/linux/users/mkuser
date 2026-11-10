@@ -1,0 +1,55 @@
+#!/bin/sh
+# Create the default hibiscus login: empty password, no sudo, in the
+# device-access groups the base rootfs offers. Runs once per image -
+# a stamp in /var marks it done so a deleted account stays deleted.
+# hibiscus-user.service runs this on the booted system; image
+# assembly and the test suite pass a root dir as $1.
+set -e
+root=${1:-}
+etc="$root/etc"
+if [ ! -f "$etc/passwd" ] || [ ! -f "$etc/group" ]; then
+	echo "mkuser: $etc has no passwd/group" >&2
+	exit 1
+fi
+stamp="$root/var/lib/hibiscus/mkuser.done"
+if [ -f "$stamp" ]; then
+	exit 0
+fi
+
+taken() { awk -F: -v n="$2" '$3 == n { f = 1 } END { exit !f }' "$1"; }
+
+if ! grep -q '^hibiscus:' "$etc/passwd"; then
+	uid=1000
+	while taken "$etc/passwd" "$uid"; do uid=$((uid + 1)); done
+	gid=$uid
+	while taken "$etc/group" "$gid"; do gid=$((gid + 1)); done
+	if [ -f "$root/bin/bash" ]; then shell=/bin/bash; else shell=/bin/sh; fi
+	if [ -f "$etc/shadow" ]; then pw=x; else pw=; fi
+	echo "hibiscus:$pw:$uid:$gid:Hibiscus:/home/hibiscus:$shell" >> "$etc/passwd"
+	echo "hibiscus:x:$gid:" >> "$etc/group"
+	if [ -f "$etc/shadow" ]; then
+		echo "hibiscus::$(($(date +%s) / 86400)):0:99999:7:::" >> "$etc/shadow"
+	fi
+	if [ -f "$etc/gshadow" ]; then
+		echo 'hibiscus:!::' >> "$etc/gshadow"
+	fi
+	awk -F: -v u=hibiscus 'BEGIN {
+			OFS = ":"
+			n = split("video audio input render tty", w, " ")
+		} {
+			for (i = 1; i <= n; i++)
+				if ($1 == w[i]) $4 = ($4 == "") ? u : $4 "," u
+			print
+		}' "$etc/group" > "$etc/group.mkuser"
+	cat "$etc/group.mkuser" > "$etc/group"
+	rm "$etc/group.mkuser"
+	mkdir -p "$root/home/hibiscus"
+	chmod 700 "$root/home/hibiscus"
+	chown "$uid:$gid" "$root/home/hibiscus" 2>/dev/null || true
+fi
+
+mkdir -p "$(dirname "$stamp")" 2>/dev/null || true
+if ! : > "$stamp" 2>/dev/null; then
+	echo "mkuser: could not write $stamp" >&2
+fi
+exit 0

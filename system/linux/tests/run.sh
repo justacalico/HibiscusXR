@@ -143,11 +143,18 @@ tar -tf "$img" > "$OUT/manifest"
 for want in usr/bin/hsvcd usr/bin/hsvc-sim usr/bin/hsvcctl \
 	usr/lib/systemd/system/hsvcd.service \
 	usr/lib/systemd/system/hsvc-svc@.service \
+	usr/lib/systemd/system/hibiscus-user.service \
+	usr/lib/hibiscus/mkuser usr/bin/hibiscus-mkadmin \
 	etc/hibiscus/device.env etc/hibiscus/svc/sim.env \
 	etc/hibiscus-release etc/systemd/system/multi-user.target.wants/hsvcd.service \
+	etc/systemd/system/multi-user.target.wants/hibiscus-user.service \
 	etc/systemd/system/multi-user.target.wants/hsvc-svc@sim.service; do
 	grep -q "$want" "$OUT/manifest" || { echo "FAIL: image missing $want"; exit 1; }
 done
+# the admin helper only works setuid root - the tar must carry the bit
+# and root ownership so untarring over any base keeps both
+tar -tvf "$img" | grep hibiscus-mkadmin | grep -q 'rwsr-xr-x 0/0' \
+	|| { echo "FAIL: mkadmin not a root-owned setuid in image"; exit 1; }
 grep -q "hibiscus-linux-$(uname -m)-generic" \
 	<(tar -xOf "$img" ./etc/hibiscus-release 2>/dev/null || tar -xOf "$img" etc/hibiscus-release) \
 	|| { echo "FAIL: release stamp"; exit 1; }
@@ -167,6 +174,62 @@ tar -tf "$img3" | grep -q "hsvc-svc@vmd.service" \
 	|| { echo "FAIL: mouse profile vmd"; exit 1; }
 tar -xOf "$img3" ./etc/hibiscus/svc/vmd.env 2>/dev/null | grep -q "hsvc-vmd" \
 	|| { echo "FAIL: vmd env"; exit 1; }
+
+echo "== default account =="
+# mkuser against a fake root: hibiscus lands with an empty shadow
+# field, a seat-less device group, and a stamp so it never runs twice
+fk="$OUT/fake"
+mkdir -p "$fk/etc" "$fk/bin"
+printf 'root:x:0:0:root:/root:/bin/sh\ndaemon:x:1:1:d:/:/bin/sh\ntaken:x:1000:1000:t:/home/taken:/bin/sh\n' \
+	> "$fk/etc/passwd"
+printf 'root:x:0:\ndaemon:x:1:\nwheel:x:10:\nvideo:x:39:\naudio:x:63:pulse\n' \
+	> "$fk/etc/group"
+printf 'root:!:19000:0:99999:7:::\n' > "$fk/etc/shadow"
+printf 'wheel:!::\n' > "$fk/etc/gshadow"
+sh users/mkuser "$fk"
+grep -q '^hibiscus:x:1001:1001:Hibiscus:/home/hibiscus:' "$fk/etc/passwd" \
+	|| { echo "FAIL: mkuser passwd"; exit 1; }
+grep -q '^hibiscus::[0-9]*:0:99999:7:::$' "$fk/etc/shadow" \
+	|| { echo "FAIL: mkuser shadow not empty"; exit 1; }
+grep -q '^hibiscus:x:1001:$' "$fk/etc/group" \
+	|| { echo "FAIL: mkuser group"; exit 1; }
+grep -q '^video:x:39:hibiscus$' "$fk/etc/group" \
+	|| { echo "FAIL: mkuser video group"; exit 1; }
+grep -q '^audio:x:63:pulse,hibiscus$' "$fk/etc/group" \
+	|| { echo "FAIL: mkuser audio group"; exit 1; }
+grep -q '^wheel:x:10:$' "$fk/etc/group" \
+	|| { echo "FAIL: hibiscus must not join wheel"; exit 1; }
+[ -d "$fk/home/hibiscus" ] || { echo "FAIL: mkuser home"; exit 1; }
+[ -f "$fk/var/lib/hibiscus/mkuser.done" ] \
+	|| { echo "FAIL: mkuser stamp"; exit 1; }
+sh users/mkuser "$fk"
+[ "$(grep -c '^hibiscus:' "$fk/etc/passwd")" = 1 ] \
+	|| { echo "FAIL: mkuser not idempotent"; exit 1; }
+
+# mkadmin against the same fake root: the empty admin group means the
+# first account is a bootstrap any local login may run
+HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" alice
+grep -q '^alice:x:1002:1002:Hibiscus admin:/home/alice:' "$fk/etc/passwd" \
+	|| { echo "FAIL: mkadmin passwd"; exit 1; }
+grep -q '^wheel:x:10:alice$' "$fk/etc/group" \
+	|| { echo "FAIL: mkadmin wheel member"; exit 1; }
+grep -q '^alice::[0-9]*:0:99999:7:::$' "$fk/etc/shadow" \
+	|| { echo "FAIL: mkadmin shadow"; exit 1; }
+[ -d "$fk/home/alice" ] || { echo "FAIL: mkadmin home"; exit 1; }
+HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" alice \
+	&& { echo "FAIL: mkadmin took a taken name"; exit 1; }
+HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" 0bad \
+	&& { echo "FAIL: mkadmin took a bad name"; exit 1; }
+# once wheel has a member a plain login cannot mint another admin
+HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" bob \
+	&& { echo "FAIL: mkadmin minted a second admin"; exit 1; }
+# no admin group at all: nothing grants sudo, refuse
+fk2="$OUT/fake2"
+mkdir -p "$fk2/etc"
+printf 'root:x:0:0:root:/root:/bin/sh\n' > "$fk2/etc/passwd"
+printf 'root:x:0:\n' > "$fk2/etc/group"
+HIBISCUS_MKADMIN_ROOT="$fk2" "$BIN/hibiscus-mkadmin" alice \
+	&& { echo "FAIL: mkadmin with no admin group"; exit 1; }
 
 echo "== image with xr + shell =="
 # the full stack path: when the host carries a matching-arch runtime

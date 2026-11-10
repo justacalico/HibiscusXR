@@ -32,8 +32,13 @@ OUT       := out/$(ARCH)
 LIB       := src/hsvc.c src/registry.c
 LIBOBJ    := $(patsubst src/%.c,$(OUT)/obj/%.o,$(LIB))
 BINS      := hsvcd hsvcctl hsvc-sim hsvc-eye hsvc-imu hsvc-ctrl hsvc-vmd
+ADMIN     := $(OUT)/bin/hibiscus-mkadmin
 
-all: $(addprefix $(OUT)/bin/,$(BINS))
+all: $(addprefix $(OUT)/bin/,$(BINS)) $(ADMIN)
+
+$(ADMIN): users/mkadmin.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -o $@ $< $(LDLIBS)
 
 $(OUT)/obj/%.o: src/%.c
 	@mkdir -p $(dir $@)
@@ -121,6 +126,9 @@ install: all
 	install -m644 devices/*.env $(DESTDIR)$(PREFIX)/share/hibiscus/devices/
 	install -d $(DESTDIR)$(PREFIX)/include/hsvc
 	install -m644 include/hsvc/*.h $(DESTDIR)$(PREFIX)/include/hsvc/
+	install -d $(DESTDIR)$(PREFIX)/lib/hibiscus
+	install -m755 users/mkuser $(DESTDIR)$(PREFIX)/lib/hibiscus/
+	install -m4755 $(ADMIN) $(DESTDIR)$(PREFIX)/bin/
 
 clean:
 	rm -rf out

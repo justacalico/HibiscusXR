@@ -45,7 +45,11 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 		return 1;
 	}
 	glfwMakeContextCurrent(win);
-	glfwSwapInterval(1);
+	// no vsync: eglSwapBuffers waits on compositor frame callbacks, and
+	// a host that stops issuing them (occluded window, stalled
+	// compositor) freezes the event pump past its ping timeout - the
+	// window gets flagged not-responding while the VM runs fine
+	glfwSwapInterval(0);
 
 	GLuint tex = 0;
 	glGenTextures(1, &tex);
@@ -59,7 +63,9 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 
 	auto last = std::chrono::steady_clock::now();
 	while (!glfwWindowShouldClose(win) && !stop->load()) {
-		glfwPollEvents();
+		// the event wait is the frame cap now that nothing throttles
+		// the swap: ~60fps, input still dispatches the moment it lands
+		glfwWaitEventsTimeout(1.0 / 60.0);
 		auto now = std::chrono::steady_clock::now();
 		float dt = std::chrono::duration<float>(now - last).count();
 		last = now;

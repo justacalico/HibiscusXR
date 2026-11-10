@@ -428,14 +428,14 @@ vmd-dist:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates cmake ninja-build libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3 libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest
     - make -C vmd guest GUEST_ARCH=x86_64
     - make -C vmd dist
     - ./vmd/out/dist/vmd-linux-x86_64 -guestinfo
-    - bash system/linux/images/fetch-sysroot.sh vmd/out/sysroot --vmd
+    - bash system/linux/images/fetch-sysroot.sh vmd/out/sysroot --vmd --runtime
     - make -C vmd ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
     - make -C vmd guest GUEST_ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"
     - make -C vmd dist ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/vmd/out/sysroot/root"

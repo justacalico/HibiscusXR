@@ -31,6 +31,29 @@ mkdir -p "$OUT"
     -o "$OUT/test_guest" tests/test_guest.cpp src/guest.cpp
 "$OUT/test_guest"
 
+# guest-user.sh: a staged root gets the hibiscus account baked in plus
+# the console getty autologin drop-in, so the guest never sits on a
+# login prompt
+fk="$OUT/fakeroot"
+mkdir -p "$fk/etc" "$fk/bin"
+printf 'root:x:0:0:root:/root:/bin/sh\ndaemon:x:1:1:d:/:/bin/sh\n' \
+    > "$fk/etc/passwd"
+printf 'root:x:0:\ndaemon:x:1:\nvideo:x:39:\ninput:x:104:\n' \
+    > "$fk/etc/group"
+printf 'root:!:19000:0:99999:7:::\n' > "$fk/etc/shadow"
+bash vm/guest-user.sh "$fk"
+grep -q '^hibiscus:x:1000:1000:Hibiscus:/home/hibiscus:' \
+    "$fk/etc/passwd" || { echo "FAIL: guest-user passwd"; exit 1; }
+grep -q '^video:x:39:hibiscus$' "$fk/etc/group" \
+    || { echo "FAIL: guest-user video group"; exit 1; }
+grep -q 'autologin hibiscus' \
+    "$fk/etc/systemd/system/getty@.service.d/autologin.conf" \
+    || { echo "FAIL: guest-user getty drop-in"; exit 1; }
+bash vm/guest-user.sh "$fk"
+[ "$(grep -c '^hibiscus:' "$fk/etc/passwd")" = 1 ] \
+    || { echo "FAIL: guest-user not idempotent"; exit 1; }
+echo "guest-user passed"
+
 if make -s >/dev/null 2>&1 && [ -x out/vmd ]; then
     fake="$OUT/fakeguest"
     mkdir -p "$fake"

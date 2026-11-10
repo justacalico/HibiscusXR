@@ -170,6 +170,43 @@ for e in json.load(sys.stdin):
 	BASE="$cached"
 fi
 
+# --- xr stack for the guest arch ------------------------------------------
+# Profiles with HSVC_XR boot into the dash, so the guest set wants the
+# runtime + shell artifacts staged under out/xr (-$GARCH for cross)
+# before mkimage runs. Build whatever is missing; a host that cannot
+# (no cmake/ninja, no cross sysroot) still gets a console guest and
+# mkimage's skip note either way.
+prof="$ROOT/system/linux/devices/$PROFILE.env"
+[ -f "$prof" ] || { echo "make-guest: no profile $PROFILE" >&2; exit 1; }
+HSVC_XR=0
+. "$prof"
+LINUX="$ROOT/system/linux"
+XRD="$LINUX/out/xr"
+[ "$GARCH" = "$(uname -m)" ] || XRD="$LINUX/out/xr-$GARCH"
+if [ "$HSVC_XR" = 1 ] && { [ ! -f "$XRD/lib/libopenxr_monado.so" ] ||
+	[ ! -f "$XRD/bin/monado-service" ] ||
+	[ ! -f "$XRD/bin/dash-wayland" ]; }; then
+	if [ "$GARCH" != "$(uname -m)" ] && [ -z "${SYSROOT:-}" ]; then
+		echo "make-guest: $GARCH xr stack missing, cross builds want" \
+			"SYSROOT - guest boots to a console" >&2
+	else
+		if [ ! -f "$XRD/lib/libopenxr_monado.so" ] || \
+			[ ! -f "$XRD/bin/monado-service" ]; then
+			ARCH=$GARCH SYSROOT="${SYSROOT:-}" \
+				bash "$LINUX/xr/build-runtime.sh" ||
+				echo "make-guest: xr runtime build failed -" \
+					"guest boots to a console" >&2
+		fi
+		if [ -f "$XRD/lib/libopenxr_monado.so" ] && \
+			[ ! -f "$XRD/bin/dash-wayland" ]; then
+			make -C "$LINUX" -s shell ARCH=$GARCH \
+				SYSROOT="${SYSROOT:-}" ||
+				echo "make-guest: shell build failed -" \
+					"guest boots to a console" >&2
+		fi
+	fi
+fi
+
 # --- distro staging tree over the base ----------------------------------
 # The base is extracted directly here rather than via mkimage -b so the
 # VM fixups below can run before mkfs; the distro's own files come from
@@ -227,6 +264,11 @@ fi
 # nothing loads it, which costs a device timeout at boot
 mkdir -p "$ST/etc/modules-load.d"
 echo zram > "$ST/etc/modules-load.d/virt.conf"
+
+# the login story: the hibiscus account baked in now, and any console
+# getty that still comes up drops straight into it - the guest never
+# sits on a login prompt
+bash "$ROOT/vmd/vm/guest-user.sh" "$ST"
 
 # --- rootfs image ---------------------------------------------------------
 # Size off the staged content, not du: du counts host-side allocated

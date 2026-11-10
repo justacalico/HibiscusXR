@@ -30,6 +30,7 @@ linked line per MR no matter how many commits it carried.
 - [docs: rewrite README for the Linux distro](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/250) (!250)
 - [vmd: 打包并启动 Hibiscus Linux 客户机](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/251) (!251)
 - [vmd: 缺少 qemu 或客户机文件时明确报错](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/252) (!252)
+- [linux: 默认 hibiscus 账户与 mkadmin 提权工具](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/253) (!253)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

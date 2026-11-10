@@ -33,6 +33,7 @@ linked line per MR no matter how many commits it carried.
 - [linux: 默认 hibiscus 账户与 mkadmin 提权工具](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/253) (!253)
 - [test: 以非 root 校验 mkadmin 拒绝二次提权](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/254) (!254)
 - [linux: 修复 dash 自启,镜像补 openxr loader 别名](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/255) (!255)
+- [linux: xr 组件自带共享库,镜像不依赖底座发行版](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/256) (!256)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

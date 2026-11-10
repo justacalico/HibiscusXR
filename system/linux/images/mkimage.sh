@@ -100,6 +100,13 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 		install -d "$STAGE/usr/lib" "$STAGE/usr/bin" \
 			"$STAGE/etc/openxr/1"
 		install -m755 "$rt" "$STAGE/usr/lib/"
+		# libopenxr_monado.so is a drop-in loader + runtime; the name
+		# aliases keep clients (the dash links libopenxr_loader.so.1)
+		# resolving on a base rootfs that never shipped the Khronos
+		# loader
+		ln -sf "libopenxr_monado.so" \
+			"$STAGE/usr/lib/libopenxr_loader.so.1"
+		ln -sf "libopenxr_monado.so" "$STAGE/usr/lib/libopenxr.so.1"
 		install -m755 "$XR/bin/monado-service" "$STAGE/usr/bin/"
 		install -m755 "$XR/bin/monado-cli" "$STAGE/usr/bin/" 2>/dev/null || true
 		install -m644 "$XR/share/openxr/1/active_runtime.json" \

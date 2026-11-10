@@ -252,11 +252,20 @@ if [ -f out/xr/lib/libopenxr_monado.so ] && \
 	bash images/mkimage.sh -a "$(uname -m)" -o "$img4" -d generic >/dev/null
 	tar -tf "$img4" > "$OUT/manifest4"
 	for want in usr/bin/dash-wayland usr/bin/monado-service \
-		usr/lib/libopenxr_monado.so etc/openxr/1/active_runtime.json \
+		usr/lib/libopenxr_monado.so usr/lib/libopenxr_loader.so.1 \
+		usr/lib/libopenxr.so.1 etc/openxr/1/active_runtime.json \
 		etc/systemd/system/multi-user.target.wants/monado.service \
 		etc/systemd/system/multi-user.target.wants/hibiscus-shell.service; do
 		grep -q "$want" "$OUT/manifest4" \
 			|| { echo "FAIL: xr image missing $want"; exit 1; }
+	done
+	tar -xOf "$img4" ./usr/lib/systemd/system/hibiscus-shell.service \
+		> "$OUT/shell-unit"
+	for env in "XDG_RUNTIME_DIR=/run/hibiscus-shell" \
+		"XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json" \
+		"RuntimeDirectory=hibiscus-shell"; do
+		grep -q "$env" "$OUT/shell-unit" \
+			|| { echo "FAIL: shell unit missing $env"; exit 1; }
 	done
 else
 	echo "skip: no matching-arch runtime or dash deps on host"
@@ -297,7 +306,8 @@ if [ -f out/xr-aarch64/lib/libopenxr_monado.so ] && \
 		bash images/mkimage.sh -a aarch64 -o "$img5" -d generic >/dev/null
 	tar -tf "$img5" > "$OUT/manifest5"
 	for want in usr/bin/dash-wayland usr/bin/monado-service \
-		usr/lib/libopenxr_monado.so etc/openxr/1/active_runtime.json \
+		usr/lib/libopenxr_monado.so usr/lib/libopenxr_loader.so.1 \
+		usr/lib/libopenxr.so.1 etc/openxr/1/active_runtime.json \
 		etc/systemd/system/multi-user.target.wants/monado.service \
 		etc/systemd/system/multi-user.target.wants/hibiscus-shell.service; do
 		grep -q "$want" "$OUT/manifest5" \

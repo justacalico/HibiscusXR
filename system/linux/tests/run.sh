@@ -267,6 +267,27 @@ if [ -f out/xr/lib/libopenxr_monado.so ] && \
 		grep -q "$env" "$OUT/shell-unit" \
 			|| { echo "FAIL: shell unit missing $env"; exit 1; }
 	done
+	# the image is self-sufficient: every shared lib the staged xr
+	# binaries need is either vendored under usr/lib/hibiscus, aliased
+	# in usr/lib, or the glibc baseline any systemd base carries
+	mkdir -p "$OUT/img4x"
+	tar -xf "$img4" -C "$OUT/img4x" ./usr/bin/dash-wayland \
+		./usr/bin/monado-service ./usr/lib/libopenxr_monado.so
+	for elf in "$OUT/img4x/usr/bin/dash-wayland" \
+		"$OUT/img4x/usr/bin/monado-service" \
+		"$OUT/img4x/usr/lib/libopenxr_monado.so"; do
+		for n in $(readelf -d "$elf" | \
+			sed -n 's/.*Shared library: \[\(.*\)\].*/\1/p'); do
+			case "$n" in
+			libc.so.*|libm.so.*|libdl.so.*|librt.so.*| \
+			libpthread.so.*|libresolv.so.*|ld-linux*|linux-vdso*)
+				continue ;;
+			esac
+			grep -q "usr/lib.*/$n\$" "$OUT/manifest4" || {
+				echo "FAIL: $elf dep $n not vendored in image"
+				exit 1; }
+		done
+	done
 else
 	echo "skip: no matching-arch runtime or dash deps on host"
 fi
@@ -312,6 +333,24 @@ if [ -f out/xr-aarch64/lib/libopenxr_monado.so ] && \
 		etc/systemd/system/multi-user.target.wants/hibiscus-shell.service; do
 		grep -q "$want" "$OUT/manifest5" \
 			|| { echo "FAIL: aarch64 image missing $want"; exit 1; }
+	done
+	mkdir -p "$OUT/img5x"
+	tar -xf "$img5" -C "$OUT/img5x" ./usr/bin/dash-wayland \
+		./usr/bin/monado-service ./usr/lib/libopenxr_monado.so
+	for elf in "$OUT/img5x/usr/bin/dash-wayland" \
+		"$OUT/img5x/usr/bin/monado-service" \
+		"$OUT/img5x/usr/lib/libopenxr_monado.so"; do
+		for n in $(readelf -d "$elf" | \
+			sed -n 's/.*Shared library: \[\(.*\)\].*/\1/p'); do
+			case "$n" in
+			libc.so.*|libm.so.*|libdl.so.*|librt.so.*| \
+			libpthread.so.*|libresolv.so.*|ld-linux*|linux-vdso*)
+				continue ;;
+			esac
+			grep -q "usr/lib.*/$n\$" "$OUT/manifest5" || {
+				echo "FAIL: $elf dep $n not vendored in image"
+				exit 1; }
+		done
 	done
 else
 	echo "skip: no aarch64 runtime+shell in out/xr-aarch64 or no cross gcc"

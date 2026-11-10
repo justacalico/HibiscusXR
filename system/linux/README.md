@@ -168,17 +168,24 @@ mkimage defaults to the dir matching `-a`.
 manifest at `/etc/openxr/1/active_runtime.json`, and a `dash-wayland`
 binary when one is dropped into the xr dir's `bin/`; the profile's
 `HSVC_XR=1` then enables `monado.service` and
-`hibiscus-shell.service` (`dash-wayland -vr`). The monado library is
-a drop-in loader + runtime, so `libopenxr_loader.so.1` and
-`libopenxr.so.1` symlink to it and OpenXR clients resolve even on a
-base that never shipped the Khronos loader. The shell unit runs the
-dash as a system service with its own runtime dir
-(`XDG_RUNTIME_DIR=/run/hibiscus-shell`, where its wayland socket and
-the clients it spawns live) and pins `XR_RUNTIME_JSON` at the staged
-manifest. Every staged ELF is checked against `-a`, so a host-arch
-runtime or shell can never slip into a foreign-arch image - the lane
-warns and skips instead. The shell is just an OpenXR client - the same
-image also runs any other OpenXR app.
+`hibiscus-shell.service` (`dash-wayland -vr`). Nothing xr ships asks
+the base for shared libs: the staged binaries carry an `RPATH` of
+`/usr/lib/hibiscus` (old-style, so it covers their transitive deps
+too) and mkimage vendors their whole DT_NEEDED closure there - `ldd`
+on host-arch builds, a `readelf` walk over `SYSROOT`'s lib dirs for
+cross. Only the glibc baseline stays on the base. The monado
+library is a drop-in loader + runtime, so
+`libopenxr_loader.so.1` and `libopenxr.so.1` symlink to it, in
+`/usr/lib` for the manifest clients and inside `/usr/lib/hibiscus`
+where the rpath finds it on bases whose default search skips
+`/usr/lib`. The shell unit runs the dash as a system service with
+its own runtime dir (`XDG_RUNTIME_DIR=/run/hibiscus-shell`, where its
+wayland socket and the clients it spawns live) and pins
+`XR_RUNTIME_JSON` at the staged manifest. Every staged ELF is
+checked against `-a`, so a host-arch runtime or shell can never slip
+into a foreign-arch image - the lane warns and skips instead. The
+shell is just an OpenXR client - the same image also runs any other
+OpenXR app.
 
 ## Accounts
 

@@ -96,6 +96,8 @@ fi
 FLAGS=(
 	-DEigen3_DIR="$EIGEN_CFG"
 	-DCMAKE_BUILD_TYPE=Release
+	-DCMAKE_EXE_LINKER_FLAGS=-Wl,--disable-new-dtags,-rpath,\''$ORIGIN/../lib/hibiscus'\'
+	-DCMAKE_SHARED_LINKER_FLAGS=-Wl,--disable-new-dtags,-rpath,\''$ORIGIN/../lib/hibiscus'\'
 	-DXRT_BUILD_DRIVER_HSVC=ON
 	-DBUILD_TESTING=OFF
 	-DXRT_MODULE_MONADO_GUI=OFF

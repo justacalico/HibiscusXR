@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <sys/stat.h>
 #include <unistd.h>
 
 
@@ -94,6 +95,32 @@ main()
 	      "env cmdline keeps spaces");
 	CHECK(!vmd_guest_env_read("/nonexistent", &env), "env missing");
 	vmd_guest_rmtree(dir);
+
+	// PATH resolution: a private PATH dir with one executable and one
+	// non-executable entry covers hit, miss, X_OK and absolute paths
+	char pdir[] = "/tmp/vmd-which-XXXXXX";
+	CHECK(mkdtemp(pdir) != nullptr, "mkdtemp which");
+	std::string tool = std::string(pdir) + "/fakeqemu";
+	f = fopen(tool.c_str(), "w");
+	fputs("#!/bin/sh\n", f);
+	fclose(f);
+	CHECK(chmod(tool.c_str(), 0755) == 0, "chmod tool");
+	std::string noexec = std::string(pdir) + "/noexec";
+	f = fopen(noexec.c_str(), "w");
+	fputs("x", f);
+	fclose(f);
+	CHECK(chmod(noexec.c_str(), 0644) == 0, "chmod noexec");
+
+	std::string oldpath = getenv("PATH") ? getenv("PATH") : "";
+	setenv("PATH", pdir, 1);
+	CHECK(vmd_which("fakeqemu") == tool, "which hits PATH");
+	CHECK(vmd_which("noexec").empty(), "which skips non-executable");
+	CHECK(vmd_which("nothere").empty(), "which misses PATH");
+	setenv("PATH", oldpath.c_str(), 1);
+	CHECK(vmd_which(tool) == tool, "which absolute executable");
+	CHECK(vmd_which(noexec).empty(), "which absolute non-executable");
+	CHECK(vmd_which("").empty(), "which empty");
+	vmd_guest_rmtree(pdir);
 
 	if (fails == 0) {
 		printf("test_guest: all passed\n");

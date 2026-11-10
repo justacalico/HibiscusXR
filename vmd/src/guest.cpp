@@ -167,6 +167,33 @@ vmd_guest_extract(std::string *dir_out)
 	return 0;
 }
 
+std::string
+vmd_which(const std::string &prog)
+{
+	if (prog.empty()) {
+		return "";
+	}
+	if (prog.find('/') != std::string::npos) {
+		return access(prog.c_str(), X_OK) == 0 ? prog : "";
+	}
+	const char *env = getenv("PATH");
+	std::string path = env && *env ? env : "/bin:/usr/bin";
+	size_t at = 0;
+	while (true) {
+		size_t end = path.find(':', at);
+		std::string dir = path.substr(at, end - at);
+		std::string p = (dir.empty() ? "." : dir) + "/" + prog;
+		if (access(p.c_str(), X_OK) == 0) {
+			return p;
+		}
+		if (end == std::string::npos) {
+			break;
+		}
+		at = end + 1;
+	}
+	return "";
+}
+
 static int
 rm_cb(const char *p, const struct stat *, int, struct FTW *)
 {

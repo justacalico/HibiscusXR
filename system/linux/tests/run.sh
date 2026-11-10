@@ -220,8 +220,15 @@ HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" alice \
 	&& { echo "FAIL: mkadmin took a taken name"; exit 1; }
 HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" 0bad \
 	&& { echo "FAIL: mkadmin took a bad name"; exit 1; }
-# once wheel has a member a plain login cannot mint another admin
-HIBISCUS_MKADMIN_ROOT="$fk" "$BIN/hibiscus-mkadmin" bob \
+# once wheel has a member a plain login cannot mint another admin -
+# the suite runs as root in CI where mkadmin skips that check, so
+# this one call drops to nobody first
+as_nobody=()
+if [ "$(id -u)" = 0 ]; then
+	chmod a+x "$OUT"
+	as_nobody=(setpriv --reuid 65534 --regid 65534 --clear-groups)
+fi
+HIBISCUS_MKADMIN_ROOT="$fk" "${as_nobody[@]}" "$BIN/hibiscus-mkadmin" bob \
 	&& { echo "FAIL: mkadmin minted a second admin"; exit 1; }
 # no admin group at all: nothing grants sudo, refuse
 fk2="$OUT/fake2"

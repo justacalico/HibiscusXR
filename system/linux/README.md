@@ -32,7 +32,8 @@ drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
                 hsvc-ctrl    generic controllers over evdev
 devices/        *.env        device profiles: which services a box runs
 units/          systemd units (hsvcd + the hsvc-svc@ template,
-                             monado + the shell)
+                             monado + the shell + the default account)
+users/          mkuser + mkadmin.c, the account layer
 images/         mkimage.sh, fetch-sysroot.sh
 xr/             build-runtime.sh + drv_hsvc, the monado driver that
                 serves the bus as OpenXR devices
@@ -172,6 +173,27 @@ checked against `-a`, so a host-arch runtime or shell can never slip
 into a foreign-arch image - the lane warns and skips instead. The shell
 is just an OpenXR client - the same image also runs any other OpenXR
 app.
+
+## Accounts
+
+Every image boots into a single login: `hibiscus`, empty password, no
+sudo - a session that cannot hurt the system. `hibiscus-user.service`
+materializes it on the booted rootfs (`/usr/lib/hibiscus/mkuser`, once,
+stamped under /var so a deleted account stays deleted), which is what
+lets the staging tree land on any base: no account rows ship in the
+tarball to clobber whatever passwd the base already has. The login
+joins the device-access groups the base offers (video, audio, input,
+render, tty) so session apps reach /dev without seat daemons.
+
+A sudo-capable account is opt-in:
+
+    hibiscus-mkadmin <name>
+
+The helper is setuid and hands the account to `passwd` for a real
+password. It mints the first admin for any local login (the bootstrap
+an out-of-box setup wants); once wheel - or `sudo` on bases without
+wheel - has a member, further admins have to come from root or an
+existing member.
 
 ## Images
 

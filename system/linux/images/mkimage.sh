@@ -63,6 +63,8 @@ cp "$prof" "$STAGE/etc/hibiscus/device.env"
 wants="$STAGE/etc/systemd/system/multi-user.target.wants"
 mkdir -p "$wants" "$STAGE/etc/hibiscus/svc"
 ln -sf "/usr/lib/systemd/system/hsvcd.service" "$wants/hsvcd.service"
+ln -sf "/usr/lib/systemd/system/hibiscus-user.service" \
+	"$wants/hibiscus-user.service"
 for svc in $HSVC_SVC_NAMES; do
 	var="HSVC_$(echo "$svc" | tr a-z A-Z)_BIN"
 	bin="${!var:?mkimage: profile missing $var}"
@@ -127,5 +129,5 @@ echo "hibiscus-linux-$ARCH-$PROFILE" > "$STAGE/etc/hibiscus-release"
 
 # 5. output
 mkdir -p "$(dirname "$OUT")"
-tar -cf "$OUT" -C "$STAGE" .
+tar -cf "$OUT" --numeric-owner --owner=0 --group=0 -C "$STAGE" .
 echo "mkimage: $OUT ($ARCH/$PROFILE)"

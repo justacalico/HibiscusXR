@@ -146,6 +146,10 @@ vendor_elf() {
 			[ "$arrow" = "=>" ] || continue
 			case "$p" in /*) ;; *) continue ;; esac
 			core_dep "$n" && continue
+			# a dep vendored for an earlier elf resolves back into
+			# $VDIR through the binary's own rpath - cp would fail on
+			# same-file, it is already where it needs to be
+			[ "$p" -ef "$VDIR/$n" ] && continue
 			mkdir -p "$VDIR" && cp -L "$p" "$VDIR/$n"
 		done
 		miss=$(ldd "$1" 2>/dev/null | \

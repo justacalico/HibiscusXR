@@ -45,6 +45,7 @@ struct vmd_vm
 	pid_t pid = -1;
 	std::string qmp;    // unix socket path
 	std::string ppm;    // screendump target
+	std::string qlog;   // qemu stderr log
 	std::string gtmp;   // extracted embedded guest dir, or empty
 	int fb_w = 0, fb_h = 0;
 	std::mutex fb_lock;
@@ -58,6 +59,21 @@ file_exists(const std::string &p)
 {
 	struct stat st;
 	return stat(p.c_str(), &st) == 0;
+}
+
+// the distro package most likely to ship a given qemu-system-* binary
+static const char *
+qemu_pkg_hint(const std::string &qemu)
+{
+	if (qemu.find("aarch64") != std::string::npos ||
+	    qemu.find("-arm") != std::string::npos) {
+		return "qemu-system-aarch64 (dnf) or qemu-system-arm (apt)";
+	}
+	if (qemu.find("x86_64") != std::string::npos ||
+	    qemu.find("i386") != std::string::npos) {
+		return "qemu-system-x86";
+	}
+	return "your distro's qemu system emulator";
 }
 
 // minimal QMP exchange: handshake, then one command; returns reply text
@@ -133,6 +149,20 @@ static void
 vmd_vm_poll(vmd_vm *vm)
 {
 	while (!vm->poll_stop.load()) {
+		// a qemu that died at startup never opens the qmp socket -
+		// say so once instead of logging connect failures forever
+		int st = 0;
+		if (vm->pid > 0 && waitpid(vm->pid, &st, WNOHANG) == vm->pid) {
+			if (WIFEXITED(st)) {
+				fprintf(stderr, "vmd: qemu exited with status %d "
+				        "- see %s\n", WEXITSTATUS(st), vm->qlog.c_str());
+			} else {
+				fprintf(stderr, "vmd: qemu died on signal %d "
+				        "- see %s\n", WTERMSIG(st), vm->qlog.c_str());
+			}
+			vm->pid = -1;
+			break;
+		}
 		int fd = qmp_open(vm->qmp);
 		if (fd < 0) {
 			static int conn_err = 0;
@@ -176,6 +206,7 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	vmd_vm *vm = new vmd_vm();
 	vm->qmp = "/tmp/vmd-qmp-" + std::to_string(getpid()) + ".sock";
 	vm->ppm = "/tmp/vmd-fb-" + std::to_string(getpid()) + ".ppm";
+	vm->qlog = "/tmp/vmd-qemu-" + std::to_string(getpid()) + ".log";
 	unlink(vm->qmp.c_str());
 
 	// -img selects a guest disk set; with a bare -kernel the image is
@@ -237,6 +268,26 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		delete vm;
 		return nullptr;
 	}
+	if (linux) {
+		// a manifest that names files that are not there boots
+		// nothing - fail now and say which ones
+		bool bad = false;
+		auto want = [&](const std::string &f, const char *what) {
+			if (!f.empty() && !file_exists(imgdir + "/" + f)) {
+				fprintf(stderr, "vmd: guest.env %s '%s' is missing "
+				        "under %s\n", what, f.c_str(), imgdir.c_str());
+				bad = true;
+			}
+		};
+		want(env.kernel, "kernel");
+		want(env.initrd, "initrd");
+		want(env.rootfs, "rootfs");
+		if (bad) {
+			vmd_guest_rmtree(vm->gtmp.c_str());
+			delete vm;
+			return nullptr;
+		}
+	}
 
 	std::string qemu = opts.qemu;
 	if (qemu.empty() && !env.qemu.empty()) {
@@ -244,6 +295,17 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	}
 	if (qemu.empty()) {
 		qemu = "qemu-system-aarch64";
+	}
+	std::string qemu_bin = vmd_which(qemu);
+	if (qemu_bin.empty()) {
+		// the #1 black-window cause: exec fails after stderr was
+		// already redirected, so nothing ever said why
+		fprintf(stderr, "vmd: qemu binary '%s' is not installed - install "
+		        "%s or pass -qemu <path>\n", qemu.c_str(),
+		        qemu_pkg_hint(qemu));
+		vmd_guest_rmtree(vm->gtmp.c_str());
+		delete vm;
+		return nullptr;
 	}
 	std::string machine = !opts.machine.empty() ? opts.machine
 	                    : !env.machine.empty()   ? env.machine
@@ -360,6 +422,9 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		if (!k.empty()) {
 			args.push_back("-kernel");
 			args.push_back(k);
+		} else if (linux) {
+			fprintf(stderr, "vmd: no kernel found under %s - qemu will "
+			        "boot to an empty SeaBIOS screen\n", imgdir.c_str());
 		}
 	}
 	if (!opts.dtb.empty()) {
@@ -378,6 +443,12 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		if (!initrd.empty()) {
 			args.push_back("-initrd");
 			args.push_back(initrd);
+		} else if (linux) {
+			// the guest kernel needs the initramfs to load virtio_blk
+			// before root=/dev/vda can mount - a bare vmlinuz panics
+			fprintf(stderr, "vmd: no initramfs found under %s - the "
+			        "guest kernel cannot mount its rootfs\n",
+			        imgdir.c_str());
 		}
 	}
 	std::string cmdline = opts.cmdline;
@@ -407,10 +478,13 @@ vmd_vm_start(const vmd_vm_opts &opts)
 	if (pid == 0) {
 		int devnull = open("/dev/null", O_WRONLY);
 		dup2(devnull, STDOUT_FILENO);
-		int logfd = open("/tmp/vmd-qemu.log", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		int logfd = open(vm->qlog.c_str(),
+		                 O_WRONLY | O_CREAT | O_TRUNC, 0644);
 		dup2(logfd >= 0 ? logfd : devnull, STDERR_FILENO);
 		close(0);
-		execvp(argv[0], argv.data());
+		execv(qemu_bin.c_str(), argv.data());
+		dprintf(STDERR_FILENO, "vmd: exec %s: %s\n", qemu_bin.c_str(),
+		        strerror(errno));
 		_exit(127);
 	}
 	if (pid < 0) {
@@ -420,7 +494,8 @@ vmd_vm_start(const vmd_vm_opts &opts)
 		return nullptr;
 	}
 	vm->pid = pid;
-	fprintf(stderr, "vmd: qemu pid %d, qmp %s\n", (int)pid, vm->qmp.c_str());
+	fprintf(stderr, "vmd: qemu pid %d, qmp %s, log %s\n", (int)pid,
+	        vm->qmp.c_str(), vm->qlog.c_str());
 	vm->poll_thread = std::thread(vmd_vm_poll, vm);
 	return vm;
 }

@@ -63,8 +63,11 @@ guest.env      manifest vmd reads: arch, qemu, machine, cpu, cmdline
 On boot: kernel -> initramfs -> virtio-blk mount -> systemd, with a
 serial console root login (empty root password, autologin drop-in)
 and DHCP on the virtio nic. The serial log lands in
-`/tmp/vmd-serial-<pid>.log`; the guest framebuffer is pulled through
-QMP screendump like before.
+`/tmp/vmd-serial-<pid>.log` and qemu's own stderr in
+`/tmp/vmd-qemu-<pid>.log`; the guest framebuffer is pulled through
+QMP screendump like before. If the qemu binary or a file the
+manifest names is missing vmd says so and exits instead of sitting
+on a black window.
 
 `make dist` appends the guest set to the binary as
 `<tar.xz><u64 size><HIBGUEST>`; at startup vmd extracts it under

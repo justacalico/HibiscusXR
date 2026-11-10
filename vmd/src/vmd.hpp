@@ -63,6 +63,10 @@ bool vmd_guest_env_read(const std::string &dir, vmd_guest_env *env);
 // frees with vmd_guest_rmtree); -1 when there is no bundle or it fails
 int vmd_guest_extract(std::string *dir_out);
 void vmd_guest_rmtree(const char *dir);
+// resolve a program the way execvp would: the path that would run, or
+// "" when PATH has no executable by that name (absolute paths need
+// only exist and be executable)
+std::string vmd_which(const std::string &prog);
 
 vmd_vm *vmd_vm_start(const vmd_vm_opts &opts);
 // newest guest framebuffer as RGB888, or false when nothing has arrived yet

@@ -96,9 +96,23 @@ echo "$NOTES" > notes.md
   done
 } >> notes.md
 
+# Uploads go to the package registry before the release exists - glab
+# release create would open the release first and upload one file at a
+# time, leaving the page listing files that are not linked yet
+PKG_PATH="$CI_SERVER_URL/api/v4/projects/${CI_PROJECT_PATH//\//%2F}/packages/generic/release-assets"
+TAG_ENC=${TAG//./%2E}
+LINKS="[]"
+for f in release-assets/*; do
+  n=$(basename "$f")
+  n_enc=${n//./%2E}
+  curl -fsS --retry 3 --header "JOB-TOKEN: $CI_JOB_TOKEN" --upload-file "$f" \
+    "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/release-assets/$TAG_ENC/$n_enc" >/dev/null
+  LINKS=$(jq -c --arg n "$n" --arg u "$PKG_PATH/$TAG_ENC/$n_enc" \
+    '. + [{name: $n, url: $u, link_type: "other"}]' <<<"$LINKS")
+done
+
 glab release create "$TAG" \
   --name "Hibiscus Linux $TAG" \
   --notes-file notes.md \
   --ref "$REF_SHA" \
-  --use-package-registry \
-  "$PWD/release-assets"/*
+  --assets-links "$LINKS"

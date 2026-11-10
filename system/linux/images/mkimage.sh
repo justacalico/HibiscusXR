@@ -94,6 +94,68 @@ want_mach="X86-64"
 is_arch() {
 	readelf -h "$1" 2>/dev/null | grep -q "Machine:.*$want_mach"
 }
+
+# Vendoring: the staged xr binaries' shared-lib closure lands in
+# /usr/lib/hibiscus and their rpaths point there, so the shell and the
+# runtime run on a base that never shipped the deps. The glibc
+# baseline, the dynamic loader and the openxr names (mkimage aliases
+# them to the monado library) stay unvendored - anything running
+# systemd carries the rest
+core_dep() {
+	case "$1" in
+	libc.so.*|libm.so.*|libdl.so.*|librt.so.*|libpthread.so.*| \
+	libresolv.so.*|ld-linux*|linux-vdso*| \
+	libopenxr.so.*|libopenxr_loader.so.*) return 0 ;;
+	esac
+	return 1
+}
+elf_deps() {
+	readelf -d "$1" 2>/dev/null | \
+		sed -n 's/.*Shared library: \[\([^]]*\)\].*/\1/p'
+}
+VDIR=""
+VMISS=""
+find_lib() {
+	local d
+	for d in "${VLIBDIRS[@]}"; do
+		[ -e "$d/$1" ] && { echo "$d/$1"; return 0; }
+	done
+	return 1
+}
+vendor_walk() {
+	local n p
+	for n in $(elf_deps "$1"); do
+		core_dep "$n" && continue
+		case " $VDONE " in *" $n "*) continue ;; esac
+		VDONE="$VDONE$n "
+		if p=$(find_lib "$n"); then
+			mkdir -p "$VDIR"
+			cp -L "$p" "$VDIR/$n"
+			vendor_walk "$p"
+		else
+			VMISS="$VMISS $n"
+		fi
+	done
+}
+vendor_elf() {
+	# host arch resolves through ldd (the real loader); a foreign arch
+	# walks DT_NEEDED against the SYSROOT lib dirs recursively
+	if [ "$ARCH" = "$(uname -m)" ]; then
+		local n arrow p miss
+		ldd "$1" 2>/dev/null | while read -r n arrow p _; do
+			[ "$arrow" = "=>" ] || continue
+			case "$p" in /*) ;; *) continue ;; esac
+			core_dep "$n" && continue
+			mkdir -p "$VDIR" && cp -L "$p" "$VDIR/$n"
+		done
+		miss=$(ldd "$1" 2>/dev/null | \
+			awk '/not found/{c++} END{print c+0}')
+		[ "$miss" != 0 ] && VMISS="$VMISS $1($miss missing)"
+		return 0
+	fi
+	vendor_walk "$1"
+	return 0
+}
 if [ "${HSVC_XR:-0}" = 1 ]; then
 	rt="$XR/lib/libopenxr_monado.so"
 	if [ -f "$rt" ] && is_arch "$rt" && is_arch "$XR/bin/monado-service"; then
@@ -124,6 +186,33 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 		else
 			echo "mkimage: no dash-wayland in $XR/bin, shell not enabled" >&2
 		fi
+		VDIR="$STAGE/usr/lib/hibiscus"
+		VLIBDIRS=()
+		if [ "$ARCH" != "$(uname -m)" ]; then
+			for d in "$SYSROOT/usr/lib64" "$SYSROOT/lib64" \
+					"$SYSROOT/usr/lib" "$SYSROOT/lib" \
+					"$SYSROOT/usr/lib/$ARCH-linux-gnu"; do
+				[ -d "$d" ] && VLIBDIRS+=("$d")
+			done
+			[ ${#VLIBDIRS[@]} -eq 0 ] && echo \
+				"mkimage: no sysroot lib dirs, xr deps not vendored" >&2
+		fi
+		VDONE=" "
+		for elf in "$STAGE/usr/bin/dash-wayland" \
+				"$STAGE/usr/bin/monado-service" \
+				"$STAGE/usr/bin/monado-cli" \
+				"$STAGE/usr/lib/libopenxr_monado.so"; do
+			if [ -f "$elf" ]; then vendor_elf "$elf"; fi
+		done
+		if [ -n "$VMISS" ]; then
+			echo "mkimage: deps left to the base:$VMISS" >&2
+		fi
+		# the openxr names again inside the rpath dir: /usr/lib is not
+		# in every base's default search path (Fedora looks at lib64),
+		# so the dash's libopenxr_loader.so.1 has to resolve here
+		mkdir -p "$VDIR"
+		ln -sf "../libopenxr_monado.so" "$VDIR/libopenxr_loader.so.1"
+		ln -sf "../libopenxr_monado.so" "$VDIR/libopenxr.so.1"
 	elif [ -f "$rt" ]; then
 		echo "mkimage: $XR runtime is not an $ARCH build, xr not staged" >&2
 	else

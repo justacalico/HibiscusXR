@@ -431,6 +431,7 @@ $(WL_BIN): $(WL_SRCS) $(WL_GEN) \
 	    $(WL_PDIR)/linux-dmabuf-v1-protocol.o \
 	    $$($(WL_PC) --libs --cflags wayland-server xkbcommon libpng \
 	            libdrm openxr) \
+	    -Wl,--disable-new-dtags -Wl,-rpath,'$$ORIGIN/../lib/hibiscus' \
 	    -lglfw -lGLESv2 -lEGL -lz -lm
 
 dash-wayland: $(WL_BIN)

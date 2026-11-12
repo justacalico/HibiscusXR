@@ -1,0 +1,1046 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 04146bdc..578c5c64 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -257,6 +257,7 @@ option_with_deps(XRT_HAVE_XRANDR "Enable xlib-xrandr support" DEPENDS XRANDR_FOU
+ option_with_deps(XRT_HAVE_BIGCERES "Enable full non-vendored Ceres support for non-linear optimization" DEPENDS CERES_FOUND)
+ option_with_deps(XRT_HAVE_DBUS "Enable dbus support (for BLE support)" DEPENDS DBUS_FOUND)
+ option_with_deps(XRT_HAVE_LIBBSD "Enable libbsd support" DEPENDS LIBBSD_FOUND)
++option_with_deps(XRT_HAVE_LIBDRM "Enable libdrm (used for the DRM/KMS compositor target)" DEPENDS LIBDRM_FOUND)
+ option_with_deps(XRT_HAVE_LIBUDEV "Enable libudev (used for device probing on Linux)" DEPENDS UDEV_FOUND)
+ option_with_deps(XRT_HAVE_OPENCV "Enable OpenCV backend" DEPENDS OpenCV_FOUND)
+ option_with_deps(XRT_HAVE_PERCETTO "Enable percetto support" DEPENDS PERCETTO_FOUND)
+diff --git a/src/xrt/compositor/main/CMakeLists.txt b/src/xrt/compositor/main/CMakeLists.txt
+index cc7d3b52..a8e32853 100644
+--- a/src/xrt/compositor/main/CMakeLists.txt
++++ b/src/xrt/compositor/main/CMakeLists.txt
+@@ -62,6 +62,10 @@ endif()
+ if(VK_USE_PLATFORM_DISPLAY_KHR OR XRT_HAVE_XCB)
+ 	target_sources(comp_main PRIVATE comp_window_direct.c)
+ endif()
++if(XRT_HAVE_LIBDRM)
++	target_sources(comp_main PRIVATE comp_window_drm.c)
++	target_link_libraries(comp_main PRIVATE PkgConfig::LIBDRM)
++endif()
+ 
+ # generate wayland protocols
+ if(XRT_HAVE_WAYLAND)
+diff --git a/src/xrt/compositor/main/comp_compositor.c b/src/xrt/compositor/main/comp_compositor.c
+index 9379a74f..14def899 100644
+--- a/src/xrt/compositor/main/comp_compositor.c
++++ b/src/xrt/compositor/main/comp_compositor.c
+@@ -837,6 +837,9 @@ const struct comp_target_factory *ctfs[] = {
+ #endif
+ #ifdef VK_USE_PLATFORM_DISPLAY_KHR
+     &comp_target_factory_vk_display,
++#endif
++#ifdef XRT_HAVE_LIBDRM
++    &comp_target_factory_drm,
+ #endif
+     &comp_target_factory_debug_image,
+ };
+diff --git a/src/xrt/compositor/main/comp_window.h b/src/xrt/compositor/main/comp_window.h
+index eb41c3c3..2c189088 100644
+--- a/src/xrt/compositor/main/comp_window.h
++++ b/src/xrt/compositor/main/comp_window.h
+@@ -15,6 +15,7 @@
+ #include "main/comp_compositor.h"
+ 
+ #include "xrt/xrt_config_os.h"
++#include "xrt/xrt_config_have.h"
+ 
+ #ifdef __cplusplus
+ extern "C" {
+@@ -34,6 +35,17 @@ extern "C" {
+  */
+ extern const struct comp_target_factory comp_target_factory_debug_image;
+ 
++#ifdef XRT_HAVE_LIBDRM
++
++/*!
++ * Displays composited frames on a DRM/KMS connector.
++ *
++ * @ingroup comp_main
++ */
++extern const struct comp_target_factory comp_target_factory_drm;
++
++#endif // XRT_HAVE_LIBDRM
++
+ #ifdef VK_USE_PLATFORM_XCB_KHR
+ 
+ /*!
+diff --git a/src/xrt/compositor/main/comp_window_drm.c b/src/xrt/compositor/main/comp_window_drm.c
+new file mode 100644
+index 00000000..7bf2b408
+--- /dev/null
++++ b/src/xrt/compositor/main/comp_window_drm.c
+@@ -0,0 +1,957 @@
++// Copyright 2026, HibiscusXR contributors
++// SPDX-License-Identifier: BSL-1.0
++/*!
++ * @file
++ * @brief Displays composited frames on a DRM/KMS connector.
++ * @ingroup comp_main
++ */
++
++#include "main/comp_compositor.h"
++#include "main/comp_target.h"
++
++#include "util/u_debug.h"
++#include "util/u_pacing.h"
++#include "util/u_var.h"
++
++#include "util/comp_scratch.h"
++
++#include "vk/vk_cmd.h"
++#include "vk/vk_cmd_pool.h"
++#include "vk/vk_helpers.h"
++
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/mman.h>
++#include <unistd.h>
++
++#include <drm_mode.h>
++#include <xf86drm.h>
++#include <xf86drmMode.h>
++
++
++/*
++ *
++ * Structs and defines.
++ *
++ */
++
++DEBUG_GET_ONCE_OPTION(kms_card, "XRT_KMS_CARD", NULL)
++
++struct comp_window_drm
++{
++	//! Base "class", so that we are a target the compositor can use.
++	struct comp_target base;
++
++	//! For error checking.
++	int64_t index;
++
++	//! Used to create the Vulkan resources, also manages index.
++	struct comp_scratch_single_images target;
++
++	//! Storage for 'exported' images.
++	struct comp_target_image images[COMP_SCRATCH_NUM_IMAGES];
++
++	//! Compositor frame pacing helper.
++	struct u_pacing_compositor *upc;
++
++	//! DRM node and mode info, probed in create().
++	char card[64];
++	int fd;
++	uint32_t conn_id;
++	uint32_t crtc_id;
++	drmModeModeInfo mode;
++
++	//! Dumb scanout buffer at the connector mode, allocated with the
++	//! images; the compositor renders at the hmd panel size so frames
++	//! are blitted down to the mode.
++	uint32_t fb_id;
++	uint32_t fb_handle;
++	uint32_t fb_pitch;
++	uint64_t fb_size;
++	uint8_t *fb_map;
++	bool crtc_set;
++
++	//! Mode sized intermediate the composited image is blitted into.
++	VkImage dst_image;
++	VkDeviceMemory dst_mem;
++	VkImageLayout dst_layout;
++
++	//! Host visible staging buffer for the GPU copy.
++	VkBuffer staging;
++	VkDeviceMemory staging_mem;
++	uint8_t *staging_map;
++	VkDeviceSize staging_size;
++
++	struct vk_cmd_pool pool;
++	VkCommandBuffer cmd;
++	VkFence fence;
++
++	bool has_init_vulkan;
++	bool have_fb;
++};
++
++
++/*
++ *
++ * DRM probing.
++ *
++ */
++
++static bool
++probe_card(struct comp_compositor *c,
++           const char *path,
++           int *out_fd,
++           uint32_t *out_conn,
++           uint32_t *out_crtc,
++           drmModeModeInfo *out_mode)
++{
++	int fd = open(path, O_RDWR | O_CLOEXEC);
++	if (fd < 0) {
++		return false;
++	}
++
++	// Needed for mode setting when we are not the session master yet.
++	if (drmSetMaster(fd) != 0) {
++		COMP_DEBUG(c, "drmSetMaster(%s) failed, not usable", path);
++		close(fd);
++		return false;
++	}
++
++	drmModeRes *res = drmModeGetResources(fd);
++	if (res == NULL) {
++		close(fd);
++		return false;
++	}
++
++	for (int i = 0; i < res->count_connectors; i++) {
++		drmModeConnector *conn = drmModeGetConnector(fd, res->connectors[i]);
++		if (conn == NULL) {
++			continue;
++		}
++		if (conn->connection != DRM_MODE_CONNECTED || conn->count_modes == 0) {
++			drmModeFreeConnector(conn);
++			continue;
++		}
++
++		uint32_t crtc_id = 0;
++		if (conn->encoder_id != 0) {
++			drmModeEncoder *enc = drmModeGetEncoder(fd, conn->encoder_id);
++			if (enc != NULL) {
++				crtc_id = enc->crtc_id;
++				drmModeFreeEncoder(enc);
++			}
++		}
++		if (crtc_id == 0 && res->count_crtcs > 0) {
++			crtc_id = res->crtcs[0];
++		}
++		if (crtc_id == 0) {
++			drmModeFreeConnector(conn);
++			continue;
++		}
++
++		*out_fd = fd;
++		*out_conn = conn->connector_id;
++		*out_crtc = crtc_id;
++		*out_mode = conn->modes[0];
++
++		drmModeFreeConnector(conn);
++		drmModeFreeResources(res);
++
++		return true;
++	}
++
++	drmModeFreeResources(res);
++	close(fd);
++
++	return false;
++}
++
++static bool
++probe_any_card(struct comp_compositor *c,
++               char *out_card,
++               int *out_fd,
++               uint32_t *out_conn,
++               uint32_t *out_crtc,
++               drmModeModeInfo *out_mode)
++{
++	const char *env_card = debug_get_option_kms_card();
++	if (env_card != NULL) {
++		snprintf(out_card, 64, "%s", env_card);
++		return probe_card(c, out_card, out_fd, out_conn, out_crtc, out_mode);
++	}
++
++	for (int i = 0; i < 8; i++) {
++		snprintf(out_card, 64, "/dev/dri/card%d", i);
++		if (probe_card(c, out_card, out_fd, out_conn, out_crtc, out_mode)) {
++			return true;
++		}
++	}
++
++	return false;
++}
++
++
++/*
++ *
++ * Scanout buffer.
++ *
++ */
++
++static void
++free_fb(struct comp_window_drm *w)
++{
++	if (w->fb_map != NULL && w->fb_map != MAP_FAILED) {
++		munmap(w->fb_map, w->fb_size);
++		w->fb_map = NULL;
++	}
++	if (w->fb_id != 0) {
++		drmModeRmFB(w->fd, w->fb_id);
++		w->fb_id = 0;
++	}
++	if (w->fb_handle != 0) {
++		struct drm_mode_destroy_dumb dreq = {0};
++		dreq.handle = w->fb_handle;
++		drmIoctl(w->fd, DRM_IOCTL_MODE_DESTROY_DUMB, &dreq);
++		w->fb_handle = 0;
++	}
++	w->have_fb = false;
++}
++
++static bool
++create_fb(struct comp_window_drm *w, uint32_t width, uint32_t height)
++{
++	struct drm_mode_create_dumb creq = {0};
++	creq.width = width;
++	creq.height = height;
++	creq.bpp = 32;
++	if (drmIoctl(w->fd, DRM_IOCTL_MODE_CREATE_DUMB, &creq) != 0) {
++		return false;
++	}
++
++	uint32_t fb_id = 0;
++	if (drmModeAddFB(w->fd, width, height, 24, 32, creq.pitch, creq.handle, &fb_id) != 0) {
++		struct drm_mode_destroy_dumb dreq = {0};
++		dreq.handle = creq.handle;
++		drmIoctl(w->fd, DRM_IOCTL_MODE_DESTROY_DUMB, &dreq);
++		return false;
++	}
++
++	struct drm_mode_map_dumb mreq = {0};
++	mreq.handle = creq.handle;
++	if (drmIoctl(w->fd, DRM_IOCTL_MODE_MAP_DUMB, &mreq) != 0) {
++		drmModeRmFB(w->fd, fb_id);
++		struct drm_mode_destroy_dumb dreq = {0};
++		dreq.handle = creq.handle;
++		drmIoctl(w->fd, DRM_IOCTL_MODE_DESTROY_DUMB, &dreq);
++		return false;
++	}
++
++	void *map = mmap(NULL, creq.size, PROT_READ | PROT_WRITE, MAP_SHARED, w->fd, mreq.offset);
++	if (map == MAP_FAILED) {
++		drmModeRmFB(w->fd, fb_id);
++		struct drm_mode_destroy_dumb dreq = {0};
++		dreq.handle = creq.handle;
++		drmIoctl(w->fd, DRM_IOCTL_MODE_DESTROY_DUMB, &dreq);
++		return false;
++	}
++
++	w->fb_id = fb_id;
++	w->fb_handle = creq.handle;
++	w->fb_pitch = creq.pitch;
++	w->fb_size = creq.size;
++	w->fb_map = map;
++	w->have_fb = true;
++
++	return true;
++}
++
++
++/*
++ *
++ * Target members.
++ *
++ */
++
++static bool
++target_init_pre_vulkan(struct comp_target *ct)
++{
++	return true; // No-op
++}
++
++static bool
++target_init_post_vulkan(struct comp_target *ct, uint32_t preferred_width, uint32_t preferred_height)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++	struct vk_bundle *vk = &w->base.c->base.vk;
++	VkResult ret;
++
++	w->has_init_vulkan = true;
++
++	VkFenceCreateInfo fence_info = {
++	    .sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO,
++	};
++	ret = vk->vkCreateFence(vk->device, &fence_info, NULL, &w->fence);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vkCreateFence: %s", vk_result_string(ret));
++		return false;
++	}
++
++	ret = vk_cmd_pool_init(vk, &w->pool, VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vk_cmd_pool_init: %s", vk_result_string(ret));
++		return false;
++	}
++
++	vk_cmd_pool_lock(&w->pool);
++	ret = vk_cmd_pool_create_cmd_buffer_locked(vk, &w->pool, &w->cmd);
++	vk_cmd_pool_unlock(&w->pool);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vk_cmd_pool_create_cmd_buffer_locked: %s", vk_result_string(ret));
++		return false;
++	}
++
++	VkSemaphoreCreateInfo sem_info = {
++	    .sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO,
++	};
++	ret = vk->vkCreateSemaphore(vk->device, &sem_info, NULL, &ct->semaphores.render_complete);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vkCreateSemaphore: %s", vk_result_string(ret));
++		return false;
++	}
++	ct->semaphores.render_complete_is_timeline = false;
++
++	return true;
++}
++
++static bool
++target_check_ready(struct comp_target *ct)
++{
++	return true; // Always ready.
++}
++
++static void
++target_create_images(struct comp_target *ct,
++                     const struct comp_target_create_images_info *create_info,
++                     struct vk_bundle_queue *present_queue)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++	struct vk_bundle *vk = &w->base.c->base.vk;
++	bool use_unorm = false, use_srgb = false, maybe_convert = false;
++
++	assert(present_queue != NULL);
++	(void)present_queue;
++
++	assert(w->has_init_vulkan);
++
++	for (uint32_t i = 0; i < create_info->format_count; i++) {
++		VkFormat format = create_info->formats[i];
++
++		if (!maybe_convert && format == VK_FORMAT_B8G8R8A8_UNORM) {
++			use_unorm = true;
++			maybe_convert = true;
++			continue;
++		}
++		if (!maybe_convert && format == VK_FORMAT_B8G8R8A8_SRGB) {
++			use_srgb = true;
++			maybe_convert = true;
++			continue;
++		}
++
++		if (format == VK_FORMAT_R8G8B8A8_UNORM) {
++			use_unorm = true;
++			maybe_convert = false;
++			break;
++		}
++		if (format == VK_FORMAT_R8G8B8A8_SRGB) {
++			use_srgb = true;
++			maybe_convert = false;
++			break;
++		}
++	}
++
++	assert(use_unorm || use_srgb);
++	if (maybe_convert) {
++		COMP_WARN(ct->c, "Ignoring the format and picking something we use.");
++	}
++
++	comp_scratch_single_images_ensure_mutable(&w->target, vk, create_info->extent);
++
++	for (uint32_t i = 0; i < COMP_SCRATCH_NUM_IMAGES; i++) {
++		w->images[i].handle = w->target.images[i].image;
++		if (use_unorm) {
++			w->images[i].view = w->target.images[i].unorm_view;
++		}
++		if (use_srgb) {
++			w->images[i].view = w->target.images[i].srgb_view;
++		}
++	}
++
++	w->base.image_count = COMP_SCRATCH_NUM_IMAGES;
++	w->base.images = &w->images[0];
++	w->base.width = create_info->extent.width;
++	w->base.height = create_info->extent.height;
++	if (use_unorm) {
++		w->base.format = VK_FORMAT_R8G8B8A8_UNORM;
++	}
++	if (use_srgb) {
++		w->base.format = VK_FORMAT_R8G8B8A8_SRGB;
++	}
++	w->base.final_layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
++
++	// Scanout buffer at the connector mode; the composited image is
++	// the hmd panel size, scaled into the mode sized image at present.
++	uint32_t mode_w = w->mode.hdisplay;
++	uint32_t mode_h = w->mode.vdisplay;
++
++	free_fb(w);
++	if (!create_fb(w, mode_w, mode_h)) {
++		COMP_ERROR(ct->c, "Could not create dumb framebuffer on %s", w->card);
++		return;
++	}
++
++	if (w->dst_image != VK_NULL_HANDLE) {
++		vk->vkDestroyImage(vk->device, w->dst_image, NULL);
++		vk->vkFreeMemory(vk->device, w->dst_mem, NULL);
++		w->dst_image = VK_NULL_HANDLE;
++	}
++	if (w->staging != VK_NULL_HANDLE) {
++		vk->vkDestroyBuffer(vk->device, w->staging, NULL);
++		vk->vkFreeMemory(vk->device, w->staging_mem, NULL);
++		w->staging = VK_NULL_HANDLE;
++	}
++
++	VkImageCreateInfo image_info = {
++	    .sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO,
++	    .imageType = VK_IMAGE_TYPE_2D,
++	    .format = w->base.format,
++	    .extent = {mode_w, mode_h, 1},
++	    .mipLevels = 1,
++	    .arrayLayers = 1,
++	    .samples = VK_SAMPLE_COUNT_1_BIT,
++	    .tiling = VK_IMAGE_TILING_OPTIMAL,
++	    .usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
++	    .sharingMode = VK_SHARING_MODE_EXCLUSIVE,
++	    .initialLayout = VK_IMAGE_LAYOUT_UNDEFINED,
++	};
++	VkResult ret = vk->vkCreateImage(vk->device, &image_info, NULL, &w->dst_image);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vkCreateImage: %s", vk_result_string(ret));
++		return;
++	}
++	VkMemoryRequirements mem_reqs;
++	vk->vkGetImageMemoryRequirements(vk->device, w->dst_image, &mem_reqs);
++	VkMemoryAllocateInfo alloc_info = {
++	    .sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
++	    .allocationSize = mem_reqs.size,
++	};
++	if (!vk_get_memory_type(vk, mem_reqs.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
++	                        &alloc_info.memoryTypeIndex) ||
++	    vk->vkAllocateMemory(vk->device, &alloc_info, NULL, &w->dst_mem) != VK_SUCCESS ||
++	    vk->vkBindImageMemory(vk->device, w->dst_image, w->dst_mem, 0) != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "Could not allocate mode sized image");
++		return;
++	}
++	w->dst_layout = VK_IMAGE_LAYOUT_UNDEFINED;
++
++	w->staging_size = (VkDeviceSize)mode_w * mode_h * 4;
++	if (!vk_buffer_init(vk,                            //
++	                    w->staging_size,               //
++	                    VK_BUFFER_USAGE_TRANSFER_DST_BIT, //
++	                    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, //
++	                    &w->staging,                   //
++	                    &w->staging_mem)) {
++		COMP_ERROR(ct->c, "Could not create staging buffer");
++		return;
++	}
++	vk->vkMapMemory(vk->device, w->staging_mem, 0, w->staging_size, 0, (void **)&w->staging_map);
++}
++
++static bool
++target_has_images(struct comp_target *ct)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++
++	return w->base.images != NULL;
++}
++
++static VkResult
++target_acquire(struct comp_target *ct, uint32_t *out_index)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++
++	assert(w->index == -1);
++
++	uint32_t index = 0;
++	comp_scratch_single_images_get(&w->target, &index);
++
++	w->index = index;
++	*out_index = index;
++
++	return VK_SUCCESS;
++}
++
++static VkResult
++target_present(struct comp_target *ct,
++               struct vk_bundle_queue *present_queue,
++               uint32_t index,
++               uint64_t timeline_semaphore_value,
++               int64_t desired_present_time_ns,
++               int64_t present_slop_ns)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++	struct vk_bundle *vk = &w->base.c->base.vk;
++	VkResult ret;
++
++	assert(present_queue != NULL);
++	assert(index == w->index);
++
++	comp_scratch_single_images_done(&w->target);
++	w->index = -1;
++
++	if (!w->have_fb || w->staging == VK_NULL_HANDLE || w->dst_image == VK_NULL_HANDLE) {
++		return VK_ERROR_OUT_OF_DATE_KHR;
++	}
++
++	VkImage src = w->target.images[index].image;
++
++	VkImageSubresourceRange range = {
++	    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
++	    .baseMipLevel = 0,
++	    .levelCount = 1,
++	    .baseArrayLayer = 0,
++	    .layerCount = 1,
++	};
++
++	vk_cmd_pool_lock(&w->pool);
++
++	VkCommandBufferBeginInfo begin_info = {
++	    .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO,
++	};
++	ret = vk->vkBeginCommandBuffer(w->cmd, &begin_info);
++	if (ret != VK_SUCCESS) {
++		vk_cmd_pool_unlock(&w->pool);
++		return ret;
++	}
++
++	vk_cmd_image_barrier_locked(                        //
++	    vk,                                             //
++	    w->cmd,                                         //
++	    src,                                            //
++	    VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,           //
++	    VK_ACCESS_TRANSFER_READ_BIT,                    //
++	    w->base.final_layout,                           //
++	    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,           //
++	    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,  //
++	    VK_PIPELINE_STAGE_TRANSFER_BIT,                 //
++	    range);                                         //
++
++	vk_cmd_image_barrier_locked(                        //
++	    vk,                                             //
++	    w->cmd,                                         //
++	    w->dst_image,                                   //
++	    0,                                              //
++	    VK_ACCESS_TRANSFER_WRITE_BIT,                   //
++	    w->dst_layout,                                  //
++	    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,           //
++	    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,              //
++	    VK_PIPELINE_STAGE_TRANSFER_BIT,                 //
++	    range);                                         //
++
++	VkImageBlit blit = {
++	    .srcSubresource =
++	        {
++	            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
++	            .layerCount = 1,
++	        },
++	    .dstSubresource =
++	        {
++	            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
++	            .layerCount = 1,
++	        },
++	};
++	blit.srcOffsets[1].x = w->base.width;
++	blit.srcOffsets[1].y = w->base.height;
++	blit.srcOffsets[1].z = 1;
++	blit.dstOffsets[1].x = w->mode.hdisplay;
++	blit.dstOffsets[1].y = w->mode.vdisplay;
++	blit.dstOffsets[1].z = 1;
++	vk->vkCmdBlitImage(                           //
++	    w->cmd,                                   //
++	    src,                                      //
++	    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,     //
++	    w->dst_image,                             //
++	    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,     //
++	    1,                                        //
++	    &blit,                                    //
++	    VK_FILTER_LINEAR);                        //
++
++	vk_cmd_image_barrier_locked(                        //
++	    vk,                                             //
++	    w->cmd,                                         //
++	    w->dst_image,                                   //
++	    VK_ACCESS_TRANSFER_WRITE_BIT,                   //
++	    VK_ACCESS_TRANSFER_READ_BIT,                    //
++	    VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,           //
++	    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,           //
++	    VK_PIPELINE_STAGE_TRANSFER_BIT,                 //
++	    VK_PIPELINE_STAGE_TRANSFER_BIT,                 //
++	    range);                                         //
++
++	VkBufferImageCopy region = {
++	    .bufferOffset = 0,
++	    .bufferRowLength = 0,
++	    .bufferImageHeight = 0,
++	    .imageSubresource =
++	        {
++	            .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
++	            .mipLevel = 0,
++	            .baseArrayLayer = 0,
++	            .layerCount = 1,
++	        },
++	    .imageExtent = {w->mode.hdisplay, w->mode.vdisplay, 1},
++	};
++	vk->vkCmdCopyImageToBuffer(                  //
++	    w->cmd,                                  //
++	    w->dst_image,                            //
++	    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,    //
++	    w->staging,                              //
++	    1,                                       //
++	    &region);                                //
++
++	vk_cmd_image_barrier_locked(                        //
++	    vk,                                             //
++	    w->cmd,                                         //
++	    src,                                            //
++	    VK_ACCESS_TRANSFER_READ_BIT,                    //
++	    0,                                              //
++	    VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,           //
++	    w->base.final_layout,                           //
++	    VK_PIPELINE_STAGE_TRANSFER_BIT,                 //
++	    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,              //
++	    range);                                         //
++
++	ret = vk->vkEndCommandBuffer(w->cmd);
++	if (ret != VK_SUCCESS) {
++		vk_cmd_pool_unlock(&w->pool);
++		return ret;
++	}
++
++	VkPipelineStageFlags wait_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
++	VkSubmitInfo submit_info = {
++	    .sType = VK_STRUCTURE_TYPE_SUBMIT_INFO,
++	    .waitSemaphoreCount = 1,
++	    .pWaitSemaphores = &ct->semaphores.render_complete,
++	    .pWaitDstStageMask = &wait_stage,
++	    .commandBufferCount = 1,
++	    .pCommandBuffers = &w->cmd,
++	};
++
++	vk_queue_lock(present_queue);
++	ret = vk->vkQueueSubmit(present_queue->queue, 1, &submit_info, w->fence);
++	vk_queue_unlock(present_queue);
++
++	vk_cmd_pool_unlock(&w->pool);
++	if (ret != VK_SUCCESS) {
++		COMP_ERROR(ct->c, "vkQueueSubmit: %s", vk_result_string(ret));
++		return ret;
++	}
++	w->dst_layout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
++
++	ret = vk->vkWaitForFences(vk->device, 1, &w->fence, VK_TRUE, UINT64_MAX);
++	if (ret != VK_SUCCESS) {
++		return ret;
++	}
++	vk->vkResetFences(vk->device, 1, &w->fence);
++
++	// Swizzle to the XRGB8888 scanout buffer, honoring its pitch.
++	uint32_t mode_h = w->mode.vdisplay;
++	uint32_t src_stride = w->mode.hdisplay * 4;
++	bool swap_rb = w->base.format == VK_FORMAT_R8G8B8A8_UNORM || w->base.format == VK_FORMAT_R8G8B8A8_SRGB;
++	for (uint32_t y = 0; y < mode_h; y++) {
++		const uint8_t *srow = w->staging_map + y * src_stride;
++		uint8_t *drow = w->fb_map + y * w->fb_pitch;
++		for (uint32_t x = 0; x < w->mode.hdisplay; x++) {
++			drow[x * 4 + 0] = srow[x * 4 + (swap_rb ? 2 : 0)];
++			drow[x * 4 + 1] = srow[x * 4 + 1];
++			drow[x * 4 + 2] = srow[x * 4 + (swap_rb ? 0 : 2)];
++			drow[x * 4 + 3] = 0xff;
++		}
++	}
++
++	if (!w->crtc_set) {
++		if (drmModeSetCrtc(w->fd, w->crtc_id, w->fb_id, 0, 0, &w->conn_id, 1, &w->mode) == 0) {
++			w->crtc_set = true;
++		} else {
++			COMP_ERROR(ct->c, "drmModeSetCrtc failed on %s: %s", w->card, strerror(errno));
++			return VK_ERROR_OUT_OF_DATE_KHR;
++		}
++	} else {
++		drmModeDirtyFB(w->fd, w->fb_id, NULL, 0);
++	}
++
++	return VK_SUCCESS;
++}
++
++static VkResult
++target_wait_for_present(struct comp_target *ct, time_duration_ns timeout_ns)
++{
++	return VK_ERROR_EXTENSION_NOT_PRESENT;
++}
++
++static void
++target_flush(struct comp_target *ct)
++{
++	// No-op
++}
++
++static void
++target_calc_frame_pacing(struct comp_target *ct,
++                         int64_t *out_frame_id,
++                         int64_t *out_wake_up_time_ns,
++                         int64_t *out_desired_present_time_ns,
++                         int64_t *out_present_slop_ns,
++                         int64_t *out_predicted_display_time_ns)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++
++	int64_t frame_id = -1;
++	int64_t wake_up_time_ns = 0;
++	int64_t desired_present_time_ns = 0;
++	int64_t present_slop_ns = 0;
++	int64_t predicted_display_time_ns = 0;
++	int64_t predicted_display_period_ns = 0;
++	int64_t min_display_period_ns = 0;
++	int64_t now_ns = os_monotonic_get_ns();
++
++	u_pc_predict(w->upc,                     //
++	             now_ns,                     //
++	             &frame_id,                  //
++	             &wake_up_time_ns,           //
++	             &desired_present_time_ns,   //
++	             &present_slop_ns,           //
++	             &predicted_display_time_ns, //
++	             &predicted_display_period_ns, //
++	             &min_display_period_ns);    //
++
++	*out_frame_id = frame_id;
++	*out_wake_up_time_ns = wake_up_time_ns;
++	*out_desired_present_time_ns = desired_present_time_ns;
++	*out_predicted_display_time_ns = predicted_display_time_ns;
++	*out_present_slop_ns = present_slop_ns;
++}
++
++static void
++target_mark_timing_point(struct comp_target *ct, enum comp_target_timing_point point, int64_t frame_id, int64_t when_ns)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++
++	switch (point) {
++	case COMP_TARGET_TIMING_POINT_WAKE_UP:
++		u_pc_mark_point(w->upc, U_TIMING_POINT_WAKE_UP, frame_id, when_ns);
++		break;
++	case COMP_TARGET_TIMING_POINT_BEGIN:
++		u_pc_mark_point(w->upc, U_TIMING_POINT_BEGIN, frame_id, when_ns);
++		break;
++	case COMP_TARGET_TIMING_POINT_SUBMIT_BEGIN:
++		u_pc_mark_point(w->upc, U_TIMING_POINT_SUBMIT_BEGIN, frame_id, when_ns);
++		break;
++	case COMP_TARGET_TIMING_POINT_SUBMIT_END:
++		u_pc_mark_point(w->upc, U_TIMING_POINT_SUBMIT_END, frame_id, when_ns);
++		break;
++	default: assert(false);
++	}
++}
++
++static VkResult
++target_update_timings(struct comp_target *ct)
++{
++	return VK_SUCCESS; // No-op
++}
++
++static void
++target_info_gpu(struct comp_target *ct, int64_t frame_id, int64_t gpu_start_ns, int64_t gpu_end_ns, int64_t when_ns)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++
++	u_pc_info_gpu(w->upc, frame_id, gpu_start_ns, gpu_end_ns, when_ns);
++}
++
++static VkResult
++target_queue_supports_present(struct comp_target *ct, struct vk_bundle_queue *queue, VkBool32 *out_supported)
++{
++	(void)queue;
++	*out_supported = VK_TRUE;
++	return VK_SUCCESS;
++}
++
++static void
++target_set_title(struct comp_target *ct, const char *title)
++{
++	// No-op
++}
++
++static bool
++target_is_shared_presentable_image(struct comp_target *ct)
++{
++	return false;
++}
++
++static void
++target_destroy(struct comp_target *ct)
++{
++	struct comp_window_drm *w = (struct comp_window_drm *)ct;
++	struct vk_bundle *vk = &w->base.c->base.vk;
++
++	u_var_remove_root(w);
++
++	if (w->has_init_vulkan) {
++		vk->vkDeviceWaitIdle(vk->device);
++
++		if (w->staging_map != NULL) {
++			vk->vkUnmapMemory(vk->device, w->staging_mem);
++		}
++		if (w->staging != VK_NULL_HANDLE) {
++			vk->vkDestroyBuffer(vk->device, w->staging, NULL);
++			vk->vkFreeMemory(vk->device, w->staging_mem, NULL);
++		}
++		if (w->dst_image != VK_NULL_HANDLE) {
++			vk->vkDestroyImage(vk->device, w->dst_image, NULL);
++			vk->vkFreeMemory(vk->device, w->dst_mem, NULL);
++		}
++		if (ct->semaphores.render_complete != VK_NULL_HANDLE) {
++			vk->vkDestroySemaphore(vk->device, ct->semaphores.render_complete, NULL);
++		}
++		if (w->fence != VK_NULL_HANDLE) {
++			vk->vkDestroyFence(vk->device, w->fence, NULL);
++		}
++		vk_cmd_pool_destroy(vk, &w->pool);
++
++		comp_scratch_single_images_free(&w->target, vk);
++		w->has_init_vulkan = false;
++		w->base.image_count = 0;
++		w->base.images = NULL;
++	}
++
++	if (w->fd >= 0) {
++		free_fb(w);
++		close(w->fd);
++	}
++
++	comp_scratch_single_images_destroy(&w->target);
++	u_pc_destroy(&w->upc);
++
++	free(w);
++}
++
++static struct comp_target *
++target_create(struct comp_compositor *c, int fd, uint32_t conn_id, uint32_t crtc_id, drmModeModeInfo mode, const char *card)
++{
++	struct comp_window_drm *w = U_TYPED_CALLOC(struct comp_window_drm);
++
++	w->base.name = "drm";
++	w->base.init_pre_vulkan = target_init_pre_vulkan;
++	w->base.init_post_vulkan = target_init_post_vulkan;
++	w->base.check_ready = target_check_ready;
++	w->base.create_images = target_create_images;
++	w->base.has_images = target_has_images;
++	w->base.acquire = target_acquire;
++	w->base.present = target_present;
++	w->base.wait_for_present = target_wait_for_present;
++	w->base.flush = target_flush;
++	w->base.calc_frame_pacing = target_calc_frame_pacing;
++	w->base.mark_timing_point = target_mark_timing_point;
++	w->base.update_timings = target_update_timings;
++	w->base.info_gpu = target_info_gpu;
++	w->base.set_title = target_set_title;
++	w->base.queue_supports_present = target_queue_supports_present;
++	w->base.is_shared_presentable_image = target_is_shared_presentable_image;
++	w->base.destroy = target_destroy;
++	w->base.c = c;
++
++	w->base.wait_for_present_supported = false;
++	w->base.present_load_op = VK_ATTACHMENT_LOAD_OP_CLEAR;
++
++	w->fd = fd;
++	w->conn_id = conn_id;
++	w->crtc_id = crtc_id;
++	w->mode = mode;
++	snprintf(w->card, sizeof(w->card), "%s", card);
++
++	int64_t now_ns = os_monotonic_get_ns();
++	u_pc_fake_create(c->settings.nominal_frame_interval_ns, now_ns, &w->upc);
++
++	comp_scratch_single_images_init(&w->target);
++
++	w->index = -1;
++
++	u_var_add_root(w, "Compositor output", true);
++	u_var_add_native_images_debug(w, &w->target.unid, "Image");
++
++	return &w->base;
++}
++
++
++/*
++ *
++ * Factory
++ *
++ */
++
++static bool
++factory_detect(const struct comp_target_factory *ctf, struct comp_compositor *c)
++{
++	char card[64];
++	int fd = -1;
++	uint32_t conn_id = 0, crtc_id = 0;
++	drmModeModeInfo mode = {0};
++
++	if (!probe_any_card(c, card, &fd, &conn_id, &crtc_id, &mode)) {
++		return false;
++	}
++	close(fd);
++
++	return true;
++}
++
++static bool
++factory_create_target(const struct comp_target_factory *ctf, struct comp_compositor *c, struct comp_target **out_ct)
++{
++	char card[64];
++	int fd = -1;
++	uint32_t conn_id = 0, crtc_id = 0;
++	drmModeModeInfo mode = {0};
++
++	if (!probe_any_card(c, card, &fd, &conn_id, &crtc_id, &mode)) {
++		return false;
++	}
++
++	struct comp_target *ct = target_create(c, fd, conn_id, crtc_id, mode, card);
++	if (ct == NULL) {
++		close(fd);
++		return false;
++	}
++
++	COMP_INFO(c, "Using DRM/KMS target on %s connector %u (%ux%u)", card, conn_id, mode.hdisplay,
++	          mode.vdisplay);
++
++	*out_ct = ct;
++
++	return true;
++}
++
++const struct comp_target_factory comp_target_factory_drm = {
++    .name = "DRM/KMS",
++    .identifier = "drm",
++    .requires_vulkan_for_create = false,
++    .is_deferred = false,
++    .required_instance_version = 0,
++    .required_instance_extensions = NULL,
++    .required_instance_extension_count = 0,
++    .optional_device_extensions = NULL,
++    .optional_device_extension_count = 0,
++    .detect = factory_detect,
++    .create_target = factory_create_target,
++};
+diff --git a/src/xrt/include/xrt/xrt_config_have.h.cmake_in b/src/xrt/include/xrt/xrt_config_have.h.cmake_in
+index bed0af0d..8a608172 100644
+--- a/src/xrt/include/xrt/xrt_config_have.h.cmake_in
++++ b/src/xrt/include/xrt/xrt_config_have.h.cmake_in
+@@ -22,6 +22,7 @@
+ #cmakedefine XRT_HAVE_HIDAPI
+ #cmakedefine XRT_HAVE_JPEG
+ #cmakedefine XRT_HAVE_LIBBSD
++#cmakedefine XRT_HAVE_LIBDRM
+ #cmakedefine XRT_HAVE_LIBUDEV
+ #cmakedefine XRT_HAVE_LIBUSB
+ #cmakedefine XRT_HAVE_LIBUVC

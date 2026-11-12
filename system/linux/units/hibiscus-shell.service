@@ -4,9 +4,11 @@ After=monado.service
 Requires=monado.service
 
 [Service]
-Environment=XDG_RUNTIME_DIR=/run/hibiscus-shell
+Environment=XDG_RUNTIME_DIR=/run/hibiscus
 Environment=XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json
-RuntimeDirectory=hibiscus-shell
+Environment=LIBGL_DRIVERS_PATH=/usr/lib/hibiscus/dri
+RuntimeDirectory=hibiscus
+RuntimeDirectoryMode=0755
 ExecStart=/usr/bin/dash-wayland -vr
 Restart=on-failure
 RestartSec=1

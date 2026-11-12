@@ -125,7 +125,10 @@ The guest drives QEMU's virtio-gpu through `/dev/dri/card0`
 (`virtio-gpu-pci`, since the GKI module will not bind the mmio
 transport). A DRM modeset flips the scanout to the guest framebuffer
 and vmd pulls it through QMP screendump - guest-drawn pixels reach the
-host window.
+host window. For the Linux guest the xr stack lands on the same path:
+lavapipe renders for monado, and the compositor's `drm` target
+modesets the connector and copies each composited frame into a dumb
+scanout buffer, so the dash is what the screendump picks up.
 
 Stock QEMU has no `/dev/qemu_pipe`, so the ranchu graphics HALs in the
 emulator vendor image can never present. The bootenv instead ships a

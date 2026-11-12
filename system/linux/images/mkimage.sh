@@ -104,8 +104,7 @@ is_arch() {
 core_dep() {
 	case "$1" in
 	libc.so.*|libm.so.*|libdl.so.*|librt.so.*|libpthread.so.*| \
-	libresolv.so.*|ld-linux*|linux-vdso*| \
-	libopenxr.so.*|libopenxr_loader.so.*) return 0 ;;
+	libresolv.so.*|ld-linux*|linux-vdso*) return 0 ;;
 	esac
 	return 1
 }
@@ -166,13 +165,6 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 		install -d "$STAGE/usr/lib" "$STAGE/usr/bin" \
 			"$STAGE/etc/openxr/1"
 		install -m755 "$rt" "$STAGE/usr/lib/"
-		# libopenxr_monado.so is a drop-in loader + runtime; the name
-		# aliases keep clients (the dash links libopenxr_loader.so.1)
-		# resolving on a base rootfs that never shipped the Khronos
-		# loader
-		ln -sf "libopenxr_monado.so" \
-			"$STAGE/usr/lib/libopenxr_loader.so.1"
-		ln -sf "libopenxr_monado.so" "$STAGE/usr/lib/libopenxr.so.1"
 		install -m755 "$XR/bin/monado-service" "$STAGE/usr/bin/"
 		install -m755 "$XR/bin/monado-cli" "$STAGE/usr/bin/" 2>/dev/null || true
 		install -m644 "$XR/share/openxr/1/active_runtime.json" \
@@ -192,14 +184,26 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 		fi
 		VDIR="$STAGE/usr/lib/hibiscus"
 		VLIBDIRS=()
+		VSHAREDIRS=()
 		if [ "$ARCH" != "$(uname -m)" ]; then
 			for d in "$SYSROOT/usr/lib64" "$SYSROOT/lib64" \
 					"$SYSROOT/usr/lib" "$SYSROOT/lib" \
 					"$SYSROOT/usr/lib/$ARCH-linux-gnu"; do
 				[ -d "$d" ] && VLIBDIRS+=("$d")
 			done
+			for d in "$SYSROOT/usr/share" "$SYSROOT/usr/local/share"; do
+				[ -d "$d" ] && VSHAREDIRS+=("$d")
+			done
 			[ ${#VLIBDIRS[@]} -eq 0 ] && echo \
 				"mkimage: no sysroot lib dirs, xr deps not vendored" >&2
+		else
+			for d in /usr/lib64 /usr/lib /lib64 \
+					/usr/lib/"$(uname -m)"-linux-gnu; do
+				[ -d "$d" ] && VLIBDIRS+=("$d")
+			done
+			for d in /usr/share /usr/local/share; do
+				[ -d "$d" ] && VSHAREDIRS+=("$d")
+			done
 		fi
 		VDONE=" "
 		for elf in "$STAGE/usr/bin/dash-wayland" \
@@ -208,15 +212,118 @@ if [ "${HSVC_XR:-0}" = 1 ]; then
 				"$STAGE/usr/lib/libopenxr_monado.so"; do
 			if [ -f "$elf" ]; then vendor_elf "$elf"; fi
 		done
+		mkdir -p "$VDIR"
+		# openxr clients (the dash links libopenxr_loader.so.1) resolve
+		# through the vendored Khronos loader - the runtime library only
+		# exports xrNegotiateLoaderRuntimeInterface, aliasing it under
+		# the loader names left clients with unresolved xr* symbols.
+		# /usr/lib is not in every base's default search path (Fedora
+		# looks at lib64), so the loader names get aliases in both
+		# places pointing at the vendored loader
+		if [ -f "$VDIR/libopenxr_loader.so.1" ]; then
+			ln -sf "hibiscus/libopenxr_loader.so.1" \
+				"$STAGE/usr/lib/libopenxr_loader.so.1"
+			ln -sf "hibiscus/libopenxr_loader.so.1" \
+				"$STAGE/usr/lib/libopenxr.so.1"
+			ln -sf "libopenxr_loader.so.1" "$VDIR/libopenxr.so.1"
+		else
+			echo "mkimage: no libopenxr_loader.so.1 vendored," \
+				"openxr clients cannot link" >&2
+		fi
+
+		# Drivers the DT_NEEDED walk cannot see: the Vulkan loader finds
+		# ICDs by json, mesa EGL its DRI driver by dir, glvnd its vendor
+		# lib by json. Stage the software set (lavapipe for the
+		# compositor, swrast for the shell's GLES) off the host libdirs
+		# or SYSROOT when cross, so a base without GL still runs the
+		# shell; a base or profile that ships real drivers keeps them,
+		# the loaders just see one more ICD.
+		find_in() {
+			local p d
+			for p in "$@"; do
+				for d in "${VLIBDIRS[@]}"; do
+					[ -e "$d/$p" ] && { echo "$d/$p"; return 0; }
+				done
+			done
+			return 0
+		}
+		find_data() {
+			local p d
+			for p in "$@"; do
+				for d in "${VSHAREDIRS[@]}"; do
+					[ -e "$d/$p" ] && { echo "$d/$p"; return 0; }
+				done
+			done
+			return 0
+		}
+		vendor_file() {
+			local dst="$VDIR/$2"
+			mkdir -p "$(dirname "$dst")"
+			cp -L "$1" "$dst"
+			vendor_elf "$dst"
+		}
+
+		icd=$(find_data "vulkan/icd.d/lvp_icd.$ARCH.json" \
+				"vulkan/icd.d/lvp_icd.json")
+		if [ -n "$icd" ]; then
+			lvp_name=$(sed -n \
+				's/.*"library_path"[^"]*"\([^"]*\)".*/\1/p' \
+				"$icd" | head -1)
+			lvp_name="${lvp_name##*/}"
+			lvp_src=$(find_in "dri-freeworld/$lvp_name" "$lvp_name")
+			if [ -n "$lvp_src" ]; then
+				vendor_file "$lvp_src" "$lvp_name"
+				install -d "$STAGE/etc/vulkan/icd.d"
+				sed 's|"library_path"[^,}]*|"library_path": "/usr/lib/hibiscus/'"$lvp_name"'"|' \
+					"$icd" > \
+					"$STAGE/etc/vulkan/icd.d/lvp_icd.$ARCH.json"
+			else
+				echo "mkimage: lvp icd names $lvp_name, not found" >&2
+			fi
+		else
+			echo "mkimage: no lavapipe icd found," \
+				"compositor has no vulkan device" >&2
+		fi
+
+		swr=$(find_in "dri/swrast_dri.so")
+		if [ -n "$swr" ]; then
+			mkdir -p "$VDIR/dri"
+			if [ -L "$swr" ]; then
+				dril=$(basename "$(readlink -f "$swr")")
+				vendor_file "$(readlink -f "$swr")" "dri/$dril"
+				ln -sf "$dril" "$VDIR/dri/swrast_dri.so"
+			else
+				vendor_file "$swr" "dri/swrast_dri.so"
+			fi
+		else
+			echo "mkimage: no swrast dri driver found," \
+				"shell GLES may not run" >&2
+		fi
+
+		eglmesa=$(find_in "libEGL_mesa.so.0")
+		if [ -n "$eglmesa" ]; then
+			vendor_file "$eglmesa" "libEGL_mesa.so.0"
+			egljson=$(find_data "glvnd/egl_vendor.d/50_mesa.json")
+			if [ -n "$egljson" ]; then
+				install -d "$STAGE/usr/share/glvnd/egl_vendor.d"
+				sed 's|"library_path"[^,}]*|"library_path" : "/usr/lib/hibiscus/libEGL_mesa.so.0"|' \
+					"$egljson" > \
+					"$STAGE/usr/share/glvnd/egl_vendor.d/50_mesa.json"
+			fi
+		else
+			echo "mkimage: no libEGL_mesa.so.0 found," \
+				"shell GLES may not run" >&2
+		fi
+
+		# the vendored dir on the dynamic linker's map: dlopened vendor
+		# and driver libs pull their own deps out of it (Fedora's
+		# ldconfig.service rebuilds the cache at boot)
+		install -d "$STAGE/etc/ld.so.conf.d"
+		echo "/usr/lib/hibiscus" > "$STAGE/etc/ld.so.conf.d/hibiscus.conf"
+
 		if [ -n "$VMISS" ]; then
 			echo "mkimage: deps left to the base:$VMISS" >&2
 		fi
-		# the openxr names again inside the rpath dir: /usr/lib is not
-		# in every base's default search path (Fedora looks at lib64),
-		# so the dash's libopenxr_loader.so.1 has to resolve here
-		mkdir -p "$VDIR"
-		ln -sf "../libopenxr_monado.so" "$VDIR/libopenxr_loader.so.1"
-		ln -sf "../libopenxr_monado.so" "$VDIR/libopenxr.so.1"
 	elif [ -f "$rt" ]; then
 		echo "mkimage: $XR runtime is not an $ARCH build, xr not staged" >&2
 	else

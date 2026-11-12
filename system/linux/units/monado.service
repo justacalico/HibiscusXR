@@ -6,6 +6,10 @@ Requires=hsvcd.service
 [Service]
 ExecStart=/usr/bin/monado-service
 Environment=XRT_NO_STDIN=1
+Environment=XDG_RUNTIME_DIR=/run/hibiscus
+Environment=XDG_CONFIG_HOME=/run/hibiscus
+RuntimeDirectory=hibiscus
+RuntimeDirectoryMode=0755
 Restart=on-failure
 RestartSec=1
 

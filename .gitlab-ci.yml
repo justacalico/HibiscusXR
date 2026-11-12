@@ -400,7 +400,7 @@ linux-image:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends gcc g++ make git file binutils libc6-dev g++-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates xz-utils cmake ninja-build pkg-config python3 glslang-tools libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev libglfw3-dev libopenxr-dev mesa-vulkan-drivers libgl1-mesa-dri zlib1g-dev
+    - apt-get install -y --no-install-recommends gcc g++ make git file binutils libc6-dev g++-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates xz-utils cmake ninja-build pkg-config python3 glslang-tools libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libudev-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev libglfw3-dev libopenxr-dev mesa-vulkan-drivers libgl1-mesa-dri zlib1g-dev
   script:
     # the generic profile wants the xr stack - build it for both arches
     # before mkimage so the staging tars ship the runtime + shell, then
@@ -440,7 +440,7 @@ vmd-dist:
     VMD_GUEST_REQUIRE_XR: "1"
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates cmake ninja-build glslang-tools libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3 libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev mesa-vulkan-drivers libgl1-mesa-dri
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates cmake ninja-build glslang-tools libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3 libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libudev-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev mesa-vulkan-drivers libgl1-mesa-dri
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest

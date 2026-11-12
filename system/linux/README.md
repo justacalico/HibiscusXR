@@ -173,15 +173,25 @@ the base for shared libs: the staged binaries carry an `RPATH` of
 `/usr/lib/hibiscus` (old-style, so it covers their transitive deps
 too) and mkimage vendors their whole DT_NEEDED closure there - `ldd`
 on host-arch builds, a `readelf` walk over `SYSROOT`'s lib dirs for
-cross. Only the glibc baseline stays on the base. The monado
-library is a drop-in loader + runtime, so
-`libopenxr_loader.so.1` and `libopenxr.so.1` symlink to it, in
-`/usr/lib` for the manifest clients and inside `/usr/lib/hibiscus`
-where the rpath finds it on bases whose default search skips
-`/usr/lib`. The shell unit runs the dash as a system service with
-its own runtime dir (`XDG_RUNTIME_DIR=/run/hibiscus-shell`, where its
-wayland socket and the clients it spawns live) and pins
-`XR_RUNTIME_JSON` at the staged manifest. Every staged ELF is
+cross. Only the glibc baseline stays on the base. The Khronos
+loader is vendored too: the monado library is only a runtime
+(exports `xrNegotiateLoaderRuntimeInterface`), so
+`libopenxr_loader.so.1` and `libopenxr.so.1` resolve to the real
+loader staged in `/usr/lib/hibiscus`, with name aliases in
+`/usr/lib` for bases whose default search skips `/usr/lib`. The
+software graphics stack ships alongside: the lavapipe ICD under
+`/etc/vulkan/icd.d`, swrast under `/usr/lib/hibiscus/dri`, and the
+mesa EGL vendor json under `/usr/share/glvnd`, so a base with no
+GL drivers still runs the compositor and the shell's GLES.
+monado and the shell share one runtime dir
+(`XDG_RUNTIME_DIR=/run/hibiscus`) because that is where both sides
+of the hsvc/monado IPC socket look; `XR_RUNTIME_JSON` pins the
+staged manifest. On a bare KMS console with no window system -
+the vmd guest, a device panel before its lease stack - the
+compositor's `drm` target (`XRT_HAVE_LIBDRM`, in the hsvr patch
+set) blits the composited frame into a dumb scanout buffer at the
+connector mode and flips it; windowed and direct targets are
+still preferred when present. Every staged ELF is
 checked against `-a`, so a host-arch runtime or shell can never slip
 into a foreign-arch image - the lane warns and skips instead. The
 shell is just an OpenXR client - the same image also runs any other
@@ -246,7 +256,10 @@ The Android-based tree (`system/dist`, `system/hsvr`, `drivers/pn2`,
 `drivers/vmd`) is the reference implementation this layer replaces.
 The runtime path now exists end to end: `drv_hsvc` turns the bus into
 OpenXR devices, `monado.service` + `hibiscus-shell.service` run the
-dash on images whose profiles set `HSVC_XR`. Verified on the host:
+dash on images whose profiles set `HSVC_XR`. The compositor presents
+on bare KMS through its `drm` target, so the vmd guest and any
+console-only session reach the rendered dash. Verified on the host:
 hsvcd + hsvc-sim feed a tracked head and two controllers through the
-runtime's OpenXR interface. Still to land: real device profiles, eye
-gaze as an input, and panel tuning keys per device.
+runtime's OpenXR interface, and the vmd guest's window shows the dash.
+Still to land: real device profiles, eye gaze as an input, and panel
+tuning keys per device.

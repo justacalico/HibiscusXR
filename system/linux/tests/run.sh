@@ -261,9 +261,9 @@ if [ -f out/xr/lib/libopenxr_monado.so ] && \
 	done
 	tar -xOf "$img4" ./usr/lib/systemd/system/hibiscus-shell.service \
 		> "$OUT/shell-unit"
-	for env in "XDG_RUNTIME_DIR=/run/hibiscus-shell" \
+	for env in "XDG_RUNTIME_DIR=/run/hibiscus" \
 		"XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json" \
-		"RuntimeDirectory=hibiscus-shell"; do
+		"RuntimeDirectory=hibiscus"; do
 		grep -q "$env" "$OUT/shell-unit" \
 			|| { echo "FAIL: shell unit missing $env"; exit 1; }
 	done

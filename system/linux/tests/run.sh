@@ -262,11 +262,16 @@ if [ -f out/xr/lib/libopenxr_monado.so ] && \
 	tar -xOf "$img4" ./usr/lib/systemd/system/hibiscus-shell.service \
 		> "$OUT/shell-unit"
 	for env in "XDG_RUNTIME_DIR=/run/hibiscus" \
-		"XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json" \
-		"RuntimeDirectory=hibiscus"; do
+		"XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json"; do
 		grep -q "$env" "$OUT/shell-unit" \
 			|| { echo "FAIL: shell unit missing $env"; exit 1; }
 	done
+	grep -q "RuntimeDirectory" "$OUT/shell-unit" \
+		&& { echo "FAIL: shell must not own /run/hibiscus"; exit 1; }
+	tar -xOf "$img4" ./usr/lib/systemd/system/monado.service \
+		> "$OUT/monado-unit"
+	grep -q "RuntimeDirectory=hibiscus" "$OUT/monado-unit" \
+		|| { echo "FAIL: monado unit must own /run/hibiscus"; exit 1; }
 	# the image is self-sufficient: every shared lib the staged xr
 	# binaries need is either vendored under usr/lib/hibiscus, aliased
 	# in usr/lib, or the glibc baseline any systemd base carries

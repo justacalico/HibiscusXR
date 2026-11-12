@@ -7,8 +7,10 @@ Requires=monado.service
 Environment=XDG_RUNTIME_DIR=/run/hibiscus
 Environment=XR_RUNTIME_JSON=/etc/openxr/1/active_runtime.json
 Environment=LIBGL_DRIVERS_PATH=/usr/lib/hibiscus/dri
-RuntimeDirectory=hibiscus
-RuntimeDirectoryMode=0755
+Environment=EGL_PLATFORM=surfaceless
+Environment=LIBGL_ALWAYS_SOFTWARE=1
+DevicePolicy=closed
+DeviceAllow=/dev/dri/renderD128 rw
 ExecStart=/usr/bin/dash-wayland -vr
 Restart=on-failure
 RestartSec=1

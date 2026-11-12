@@ -55,6 +55,17 @@ else
 	git -C "$SRC" apply "$LINUX/xr/patches/hsvc-driver.patch"
 fi
 
+# the drm/kms compositor target: presents frames on a bare kms
+# connector for sessions with no window system, like a vm guest
+if ! git -C "$SRC" apply --check \
+	"$ROOT/system/hsvr/monado/patches/hsvr-drm-kms-target.patch" \
+	>/dev/null 2>&1; then
+	echo "drm target patch already applied or does not apply to $SRC" >&2
+else
+	git -C "$SRC" apply \
+		"$ROOT/system/hsvr/monado/patches/hsvr-drm-kms-target.patch"
+fi
+
 # drop the driver sources + the libhsvc client into the driver dir; the
 # cmake glob picks them up
 DRV="$SRC/src/xrt/drivers/hsvc"

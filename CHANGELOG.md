@@ -37,6 +37,7 @@ linked line per MR no matter how many commits it carried.
 - [vmd: 客户机免登录直达会话,sim 窗口不再误报未响应](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/257) (!257)
 - [linux: vmd 客户机与独立启动显示 dash](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/258) (!258)
 - [Fix QEMU guest not displaying the dashboard](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/259) (!259)
+- [网站加主线 Linux 移植公告条](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/260) (!260)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

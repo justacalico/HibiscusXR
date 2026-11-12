@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hibiscusxr_website/main.dart';
 import 'package:hibiscusxr_website/src/settings.dart';
 import 'package:hibiscusxr_website/src/ui/hero_shot.dart';
+import 'package:hibiscusxr_website/src/ui/shell.dart';
 import 'package:hibiscusxr_website/src/ui/widgets.dart';
 
 Future<Widget> _app() async {
@@ -30,6 +31,20 @@ void main() {
     expect(find.text('Repos'), findsWidgets);
     expect(find.text('Guide'), findsWidgets);
     expect(find.text('Read the docs'), findsOneWidget);
+  });
+
+  testWidgets('site shell shows the linux port banner', (tester) async {
+    tester.view.physicalSize = const Size(1440, 900);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(await _app());
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SiteBanner), findsOneWidget);
+    expect(
+      find.text("We're working on a mainline Linux port."),
+      findsOneWidget,
+    );
   });
 
   testWidgets('home hero draws the project mark', (tester) async {

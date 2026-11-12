@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -44,6 +43,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get languageLabel => 'Language';
+
+  @override
+  String get siteBanner => 'We\'re working on a mainline Linux port.';
 
   @override
   String get heroEyebrow => 'Standalone VR · LineageOS 17.1';

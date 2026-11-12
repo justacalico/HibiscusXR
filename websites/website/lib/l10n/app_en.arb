@@ -19,6 +19,8 @@
 
   "languageLabel": "Language",
 
+  "siteBanner": "We're working on a mainline Linux port.",
+
   "heroEyebrow": "Standalone VR · LineageOS 17.1",
   "heroTitle": "Android back, in VR.",
   "heroSubtitle": "A custom operating system for standalone VR headsets, built on LineageOS 17.1.",

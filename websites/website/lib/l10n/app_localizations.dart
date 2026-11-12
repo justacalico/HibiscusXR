@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Language'**
   String get languageLabel;
 
+  /// No description provided for @siteBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re working on a mainline Linux port.'**
+  String get siteBanner;
+
   /// No description provided for @heroEyebrow.
   ///
   /// In en, this message translates to:

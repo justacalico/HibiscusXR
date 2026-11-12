@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -44,6 +43,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get languageLabel => '语言';
+
+  @override
+  String get siteBanner => '主线 Linux 移植正在进行中。';
 
   @override
   String get heroEyebrow => 'VR 一体机 · LineageOS 17.1';

@@ -41,9 +41,17 @@ if [ ! -d "$SRC/src/xrt" ]; then
 		git clone --filter=blob:none "$MONADO_REPO" "$SRC"
 		git -C "$SRC" checkout "$MONADO_COMMIT"
 	fi
-	echo "applying hsvr registration + hsvc driver patches"
-	git -C "$SRC" apply "$ROOT/system/hsvr/monado/patches/hsvr-driver-registration.patch"
-	git -C "$SRC" apply "$LINUX/xr/patches/hsvc-driver.patch"
+	# the clone is shared across arch builds, so check before applying -
+	# an unconditional apply dies on hunks that already landed
+	if ! git -C "$SRC" apply --check \
+		"$ROOT/system/hsvr/monado/patches/hsvr-driver-registration.patch" \
+		>/dev/null 2>&1; then
+		echo "hsvr registration patch already applied or does not apply to $SRC" >&2
+	else
+		echo "applying hsvr registration patch"
+		git -C "$SRC" apply \
+			"$ROOT/system/hsvr/monado/patches/hsvr-driver-registration.patch"
+	fi
 fi
 
 # our patch is written against the tree the hsvr kit patch produces;
@@ -119,6 +127,11 @@ FLAGS=(
 	-DXRT_HAVE_SDL2=OFF
 	-DXRT_HAVE_OPENCV=OFF
 	-DXRT_FEATURE_SLAM=OFF
+	-DXRT_HAVE_WAYLAND=OFF
+	-DXRT_HAVE_WAYLAND_DIRECT=OFF
+	-DXRT_HAVE_XCB=OFF
+	-DXRT_HAVE_XLIB=OFF
+	-DXRT_HAVE_XRANDR=OFF
 )
 # every stock hardware driver off: the bus is the only device contract.
 # SIMULATED stays as the fallback when nothing serves the bus.

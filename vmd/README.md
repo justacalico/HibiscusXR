@@ -68,7 +68,9 @@ when the profile's xr stack is staged the shell comes up on its own
 whatever xr pieces the guest arch is missing first, so the image
 arrives at the dash instead of a bare console; a host that cannot
 build them still gets the console guest, and the serial keeps a
-root autologin for debug either way. The serial log lands in
+root autologin for debug either way. `VMD_GUEST_REQUIRE_XR=1`
+(release pipelines set it) turns the console fallback into a hard
+failure so a broken xr build can never ship inside a dist binary. The serial log lands in
 `/tmp/vmd-serial-<pid>.log` and qemu's own stderr in
 `/tmp/vmd-qemu-<pid>.log`; the guest framebuffer is pulled through
 QMP screendump like before. If the qemu binary or a file the

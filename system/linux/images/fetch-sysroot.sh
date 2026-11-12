@@ -11,7 +11,10 @@
 #                                         epoxy + the X11 link chain;
 #                                         implies --shell for glfw/openxr
 #                            --runtime     plus the monado dep set on top
-#                                         (udev/systemd/dbus/vulkan);
+#                                         (udev/systemd/dbus/vulkan) and
+#                                         the mesa software drivers
+#                                         (lavapipe/swrast/EGL) mkimage
+#                                         vendors into the image;
 #                                         implies --shell for wayland+drm
 set -e
 DIR="$1"
@@ -105,6 +108,22 @@ d/dbus-devel-1.16.2-1.fc44.aarch64.rpm
 v/vulkan-headers-1.4.341.0-1.fc44.noarch.rpm
 v/vulkan-loader-1.4.341.0-1.fc44.aarch64.rpm
 v/vulkan-loader-devel-1.4.341.0-1.fc44.aarch64.rpm
+e/elfutils-libelf-0.194-5.fc44.aarch64.rpm
+e/expat-2.7.3-2.fc44.aarch64.rpm
+l/libdisplay-info-0.3.0-1.fc44.aarch64.rpm
+l/lm_sensors-libs-3.6.0-24.fc44.aarch64.rpm
+l/libedit-3.1-58.20251016cvs.fc44.aarch64.rpm
+l/libxshmfence-1.3.2-8.fc44.aarch64.rpm
+l/libxml2-2.12.10-6.fc44.aarch64.rpm
+l/libzstd-1.5.7-5.fc44.aarch64.rpm
+l/llvm-libs-22.1.1-2.fc44.aarch64.rpm
+n/ncurses-libs-6.6-1.fc44.aarch64.rpm
+x/xz-libs-5.8.2-2.fc44.aarch64.rpm
+m/mesa-dri-drivers-26.0.3-4.fc44.aarch64.rpm
+m/mesa-libEGL-26.0.3-4.fc44.aarch64.rpm
+m/mesa-libgbm-26.0.3-4.fc44.aarch64.rpm
+m/mesa-vulkan-drivers-26.0.3-4.fc44.aarch64.rpm
+s/spirv-tools-libs-2026.1-1.fc44.aarch64.rpm
 l/libXau-1.0.12-4.fc44.aarch64.rpm
 l/libXau-devel-1.0.12-4.fc44.aarch64.rpm
 l/libXdmcp-1.1.5-5.fc44.aarch64.rpm

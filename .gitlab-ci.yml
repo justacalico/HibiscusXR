@@ -400,11 +400,21 @@ linux-image:
   image: ubuntu:24.04
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends gcc make git file binutils libc6-dev gcc-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates xz-utils
+    - apt-get install -y --no-install-recommends gcc g++ make git file binutils libc6-dev g++-aarch64-linux-gnu libc6-dev-arm64-cross rpm2cpio cpio curl ca-certificates xz-utils cmake ninja-build pkg-config python3 glslang-tools libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev libglfw3-dev libopenxr-dev mesa-vulkan-drivers libgl1-mesa-dri zlib1g-dev
   script:
+    # the generic profile wants the xr stack - build it for both arches
+    # before mkimage so the staging tars ship the runtime + shell, then
+    # check the shell actually landed instead of trusting mkimage's
+    # warn-only "profile wants xr" note
+    - bash system/linux/xr/build-runtime.sh
+    - make -C system/linux shell
+    - bash system/linux/images/fetch-sysroot.sh system/linux/out/sysroot --runtime
+    - ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root" bash system/linux/xr/build-runtime.sh
+    - make -C system/linux shell ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root"
     - bash system/linux/images/mkimage.sh -a x86_64 -d generic -o out/images/hibiscus-linux-x86_64-generic.tar
-    - bash system/linux/images/fetch-sysroot.sh system/linux/out/sysroot
     - SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root" bash system/linux/images/mkimage.sh -a aarch64 -d generic -o out/images/hibiscus-linux-aarch64-generic.tar
+    - tar -tf system/linux/out/images/hibiscus-linux-x86_64-generic.tar | grep -q './usr/bin/dash-wayland'
+    - tar -tf system/linux/out/images/hibiscus-linux-aarch64-generic.tar | grep -q './usr/bin/dash-wayland'
     - xz -T0 system/linux/out/images/*.tar
   artifacts:
     paths:
@@ -426,9 +436,11 @@ linux-image:
 vmd-dist:
   stage: build
   image: ubuntu:24.04
+  variables:
+    VMD_GUEST_REQUIRE_XR: "1"
   before_script:
     - apt-get update -qq
-    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates cmake ninja-build libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3 libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev
+    - apt-get install -y --no-install-recommends g++ make git file pkg-config g++-aarch64-linux-gnu qemu-user-static rpm2cpio cpio curl ca-certificates cmake ninja-build glslang-tools libglfw3-dev libepoxy-dev libopenxr-dev libx11-dev libxrandr-dev e2fsprogs kmod xz-utils python3 libwayland-dev libwayland-bin wayland-protocols libxkbcommon-dev libpng-dev libdrm-dev libegl1-mesa-dev libgles2-mesa-dev libvulkan-dev libsystemd-dev libdbus-1-dev libglvnd-dev libxcb1-dev libx11-xcb-dev libxext-dev libxrender-dev mesa-vulkan-drivers libgl1-mesa-dri
   script:
     - make -C vmd
     - ./vmd/out/vmd -selftest

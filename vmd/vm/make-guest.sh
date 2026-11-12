@@ -206,6 +206,24 @@ if [ "$HSVC_XR" = 1 ] && { [ ! -f "$XRD/lib/libopenxr_monado.so" ] ||
 		fi
 	fi
 fi
+# release pipelines set VMD_GUEST_REQUIRE_XR=1: a profile that wants the
+# xr stack fails here instead of shipping a console-only guest - the
+# "boots to a console" notes above are easy to miss in a job log
+if [ "$HSVC_XR" = 1 ] && [ -n "${VMD_GUEST_REQUIRE_XR:-}" ]; then
+	want_mach="X86-64"
+	[ "$GARCH" = aarch64 ] && want_mach="AArch64"
+	for f in "$XRD/lib/libopenxr_monado.so" "$XRD/bin/monado-service" \
+		"$XRD/bin/dash-wayland"; do
+		if [ ! -f "$f" ]; then
+			echo "make-guest: profile wants xr but $f is missing" >&2
+			exit 1
+		fi
+		readelf -h "$f" | grep -q "Machine:.*$want_mach" || {
+			echo "make-guest: $f is not a $GARCH build" >&2
+			exit 1
+		}
+	done
+fi
 
 # --- distro staging tree over the base ----------------------------------
 # The base is extracted directly here rather than via mkimage -b so the

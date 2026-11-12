@@ -9,7 +9,8 @@
  *         and its tooling can be driven by hand on any machine.
  *
  *         --evdev P reads input_event structs ("auto" scans for the
- *         first mouse, and is the default); --file replays
+ *         first mouse, and is the default - none found sways like
+ *         --sim); --file replays
  *         "type code value" lines; --sim sways. The parent pumps events
  *         into shared state; one child per published service, like
  *         hsvc-sim.
@@ -242,10 +243,13 @@ main(int argc, char **argv)
 		dev = "auto";
 	if (dev && !strcmp(dev, "auto")) {
 		if (find_mouse(found, sizeof(found)) < 0) {
-			fprintf(stderr, "hsvc-vmd: no mouse node found\n");
-			return 1;
+			fprintf(stderr, "hsvc-vmd: no mouse node found - "
+			        "swaying on its own like --sim\n");
+			v.sim = 1;
+			dev = NULL;
+		} else {
+			dev = found;
 		}
-		dev = found;
 	}
 	if (dev) {
 		v.fd = open(dev, O_RDONLY);

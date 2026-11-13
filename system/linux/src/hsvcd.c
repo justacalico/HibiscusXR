@@ -3,7 +3,7 @@
 /*!
  * @file
  * @brief  hsvcd - the service broker daemon. The loop itself lives in
- *         broker.c so drivers (hsvc-vmd standalone) can embed it.
+ *         broker.c so it can be embedded elsewhere.
  */
 #include "hsvc/hsvc.h"
 

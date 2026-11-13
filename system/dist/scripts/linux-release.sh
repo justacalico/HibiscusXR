@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Publish the Linux lane's outputs as a GitLab release. With
 # build_android=off the GitHub image lane never runs, so this is the
-# release half: the mkimage tarballs, the static hsvc-vmd binaries and
-# the host vmd ship as generic packages linked from the release, which
+# release half: the mkimage tarballs and the host vmd ship as generic
+# packages linked from the release, which
 # never expire (unlike job artifacts).
 #
 # Tag scheme matches the GitHub lane: prealpha-v<date>-r<run> for
@@ -25,7 +25,6 @@ echo "Releasing Linux build as $TAG"
 rm -rf release-assets SHA256SUMS.txt
 mkdir -p release-assets
 cp system/linux/out/images/hibiscus-linux-*.tar.xz release-assets/
-cp system/linux/out/dist/hsvc-vmd-* release-assets/
 cp vmd/out/dist/* release-assets/
 (cd release-assets && for f in *; do
   [ -f "$f" ] || continue
@@ -86,7 +85,6 @@ echo "$NOTES" > notes.md
     n=$(basename "$f")
     case "$n" in
       hibiscus-linux-*.tar.xz) d="distro staging tree - userspace, units and the generic device profile; untar over any systemd rootfs" ;;
-      hsvc-vmd-*)              d="static single-file build: a mouse is a 3-dof headset, click is the trigger" ;;
       vmd-linux-*)             d="qemu host driver with the Hibiscus Linux guest embedded - boots the OS in a VM, no other files needed" ;;
       vmd-guest-*.tar.xz)      d="guest image set for 'vmd -img' - untar and point -img at the dir" ;;
       SHA256SUMS.txt)          d="checksums" ;;

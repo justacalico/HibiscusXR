@@ -31,6 +31,18 @@ mkdir -p "$OUT"
     -o "$OUT/test_guest" tests/test_guest.cpp src/guest.cpp
 "$OUT/test_guest"
 
+# the mouse -> wand mapping is pure, like the in-guest vmdmap.h was
+"${CXX:-c++}" -O2 -Wall -Wextra -std=c++17 -Isrc -I../drivers/vmd/proto \
+    -o "$OUT/test_mousemap" tests/test_mousemap.cpp
+"$OUT/test_mousemap"
+
+# the hsvc service endpoint: loopback client speaks HELLO/INFO/SUB and
+# reads hsvc_pose + hsvc_ctrl frames off the wire
+"${CXX:-c++}" -O2 -Wall -Wextra -std=c++17 -Isrc -I../drivers/vmd/proto \
+    -I../system/linux/include \
+    -o "$OUT/test_svc" tests/test_svc.cpp src/svc.cpp -lpthread
+"$OUT/test_svc"
+
 # guest-user.sh: a staged root gets the hibiscus account baked in plus
 # the console getty autologin drop-in, so the guest never sits on a
 # login prompt

@@ -62,11 +62,12 @@ PC      = env PKG_CONFIG_SYSROOT_DIR=$(SYSROOT) \
 endif
 
 CFLAGS = -O2 -g -Wall -Wextra -std=c++17 $(SYSFLAGS) \
-         -I../drivers/vmd/proto $(shell $(PC) --cflags $(PKGS))
+         -I../drivers/vmd/proto -I../system/linux/include \
+         $(shell $(PC) --cflags $(PKGS))
 LIBS = $(shell $(PC) --libs $(PKGS)) -lX11 -lpthread
 
-SRC = src/main.cpp src/pose.cpp src/vm.cpp src/sim.cpp src/xr.cpp \
-      src/guest.cpp
+SRC = src/main.cpp src/pose.cpp src/svc.cpp src/vm.cpp src/sim.cpp \
+      src/xr.cpp src/guest.cpp
 ifeq ($(ARCH),$(shell uname -m))
 OUT = out/vmd
 else

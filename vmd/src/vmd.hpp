@@ -22,11 +22,26 @@ struct vmd_pose_state
 	float angvel[3] = {0.0f, 0.0f, 0.0f};
 	float linvel[3] = {0.0f, 0.0f, 0.0f};
 	bool position_valid = true;
+	// the wand the host is also playing, for the vmd-ctrl stream
+	float cquat[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+	float cpos[3] = {0.0f, 0.0f, -0.3f};
+	float cstick[2] = {0.0f, 0.0f};
+	float ctrigger = 0.0f;
+	float cgrip = 0.0f;
+	uint32_t cbuttons = 0; // VMD_BTN_*
+	bool cconnected = false;
 };
 
 // pose.cpp: TCP server on VMD_PROTO_PORT, streams packets at ~72Hz to
 // whatever guest connects. Runs until stop is set.
 int vmd_pose_serve(vmd_pose_state *state, std::atomic<bool> *stop);
+
+// svc.cpp: the hsvc service endpoint on VMD_SVC_PORT - speaks the hsvc
+// frame protocol so a Linux guest's drv_hsvc takes the host's hmd and
+// wand like any bus service. *port is the requested port (0 picks a
+// free one) and returns the bound port. Runs until stop is set.
+int vmd_svc_serve(vmd_pose_state *state, std::atomic<bool> *stop,
+                  uint16_t *port);
 
 // vm.cpp: qemu launcher + QMP screendump framebuffer reader.
 struct vmd_vm;

@@ -2,10 +2,13 @@
 // SPDX-License-Identifier: BSL-1.0
 //
 // Desktop sim: a window that shows the VM's framebuffer while the mouse
-// and WASD pretend to be the headset. Drag to look (or hold RMB), WASD to
-// move, Q/E roll, F toggles position tracking, Esc quits.
+// and WASD pretend to be the headset - and the wand. Drag to look (or
+// hold RMB), WASD to move, wheel or Q/E roll, left click is the trigger,
+// right A, middle menu, the side button or R recenters, F toggles
+// position tracking, Esc quits.
 
 #include "vmd.hpp"
+#include "mousemap.hpp"
 
 #include <epoxy/gl.h>
 #define GLFW_INCLUDE_NONE
@@ -18,17 +21,12 @@
 #include <cstring>
 
 
+static double g_scroll = 0;
+
 static void
-quat_from_angles(float yaw, float pitch, float roll, float out[4])
+on_scroll(GLFWwindow *, double, double y)
 {
-	float cy = cosf(yaw * 0.5f), sy = sinf(yaw * 0.5f);
-	float cp = cosf(pitch * 0.5f), sp = sinf(pitch * 0.5f);
-	float cr = cosf(roll * 0.5f), sr = sinf(roll * 0.5f);
-	// YXZ order: yaw around +Y, pitch around +X, roll around +Z
-	out[3] = cy * cp * cr + sy * sp * sr;
-	out[0] = cy * sp * cr + sy * cp * sr;
-	out[1] = sy * cp * cr - cy * sp * sr;
-	out[2] = cy * cp * sr - sy * sp * cr;
+	g_scroll += y;
 }
 
 int
@@ -50,6 +48,7 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	// compositor) freezes the event pump past its ping timeout - the
 	// window gets flagged not-responding while the VM runs fine
 	glfwSwapInterval(0);
+	glfwSetScrollCallback(win, on_scroll);
 
 	GLuint tex = 0;
 	glGenTextures(1, &tex);
@@ -57,7 +56,8 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	float yaw = 0, pitch = 0, roll = 0;
+	struct vmd_mm mm = {};
+	static int btn_prev[4] = {};
 	double lx = 0, ly = 0;
 	glfwGetCursorPos(win, &lx, &ly);
 
@@ -77,16 +77,30 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 		ly = my;
 		if (glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS ||
 		    glfwGetMouseButton(win, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
-			yaw -= dx * 0.004f;
-			pitch -= dy * 0.004f;
-			pitch = fmaxf(-1.45f, fminf(1.45f, pitch));
+			vmd_mm_move(&mm, dx, dy);
 		}
-		if (glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS) roll += dt;
-		if (glfwGetKey(win, GLFW_KEY_E) == GLFW_PRESS) roll -= dt;
+		vmd_mm_scroll(&mm, (float)g_scroll);
+		g_scroll = 0;
+		if (glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS) mm.roll += dt;
+		if (glfwGetKey(win, GLFW_KEY_E) == GLFW_PRESS) mm.roll -= dt;
+		if (glfwGetKey(win, GLFW_KEY_R) == GLFW_PRESS) {
+			mm.yaw = mm.pitch = mm.roll = 0;
+		}
 		if (glfwGetKey(win, GLFW_KEY_ESCAPE) == GLFW_PRESS) break;
 
+		for (int b = 0; b < 4; b++) {
+			int down = glfwGetMouseButton(win, b) == GLFW_PRESS;
+			if (down == btn_prev[b]) {
+				continue;
+			}
+			btn_prev[b] = down;
+			if (vmd_mm_button(&mm, b, down)) {
+				fprintf(stderr, "vmd: recentered\n");
+			}
+		}
+
 		float q[4];
-		quat_from_angles(yaw, pitch, roll, q);
+		vmd_mm_quat(&mm, q);
 
 		// WASD moves the head in the yaw-facing plane
 		float fx = 0, fz = 0;
@@ -95,8 +109,8 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 		if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) fx -= 1;
 		if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) fx += 1;
 		float speed = 1.7f * dt;
-		float wx = (fx * cosf(yaw) - fz * sinf(yaw)) * speed;
-		float wz = (fx * sinf(yaw) + fz * cosf(yaw)) * speed;
+		float wx = (fx * cosf(mm.yaw) - fz * sinf(mm.yaw)) * speed;
+		float wz = (fx * sinf(mm.yaw) + fz * cosf(mm.yaw)) * speed;
 
 		static bool f_down = false;
 		if (glfwGetKey(win, GLFW_KEY_F) == GLFW_PRESS && !f_down) {
@@ -109,19 +123,24 @@ vmd_sim_run(vmd_vm *vm, vmd_pose_state *state, std::atomic<bool> *stop)
 
 		{
 			std::lock_guard<std::mutex> g(state->lock);
-			float pq[4];
-			memcpy(pq, state->quat, sizeof(pq));
-			float pp[3];
-			memcpy(pp, state->pos, sizeof(pp));
 			memcpy(state->quat, q, sizeof(q));
 			state->pos[0] += wx;
 			state->pos[2] += wz;
 			// cheap finite-diff velocities for prediction
 			state->angvel[0] = 0;
-			state->angvel[1] = -dx * 0.004f / fmaxf(dt, 1e-3f);
+			state->angvel[1] = -dx * VMD_MM_SENS / fmaxf(dt, 1e-3f);
 			state->angvel[2] = 0;
 			state->linvel[0] = wx / fmaxf(dt, 1e-3f);
 			state->linvel[2] = wz / fmaxf(dt, 1e-3f);
+			// the wand follows the head so the trigger ray tracks gaze
+			memcpy(state->cquat, q, sizeof(q));
+			vmd_mm_wand(&mm, state->pos, state->cpos);
+			state->ctrigger = mm.trigger;
+			state->cgrip = mm.grip;
+			state->cstick[0] = mm.stick[0];
+			state->cstick[1] = mm.stick[1];
+			state->cbuttons = mm.buttons;
+			state->cconnected = true;
 		}
 
 		int w = 0, h = 0;

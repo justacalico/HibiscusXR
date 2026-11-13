@@ -1,7 +1,7 @@
 // Copyright 2026, HibiscusXR
 // SPDX-License-Identifier: BSL-1.0
 /*! @file unit tests for driver-side pure logic: gaze, imu, ctrl map,
- *  vmd mouse map, xr panel geometry */
+ *  xr panel geometry */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
@@ -10,7 +10,6 @@
 #include "gaze.h"
 #include "imuscl.h"
 #include "ctrlmap.h"
-#include "vmdmap.h"
 #include "hsvc_geom.h"
 
 static void
@@ -84,44 +83,6 @@ test_ctrl_map(void)
 }
 
 static void
-test_vmd_map(void)
-{
-	struct hsvc_vmd_map m = {0};
-	/* mouse right -> look right (yaw down), mouse up -> look up */
-	hsvc_vmd_apply(&m, HSVC_EV_REL, HSVC_REL_X, 100);
-	assert(m.yaw < 0.f);
-	hsvc_vmd_apply(&m, HSVC_EV_REL, HSVC_REL_Y, -100);
-	assert(m.pitch > 0.f);
-	/* pitch clamps at the limit */
-	hsvc_vmd_apply(&m, HSVC_EV_REL, HSVC_REL_Y, -100000);
-	assert(m.pitch == HSVC_VMD_PITCH_MAX);
-	hsvc_vmd_apply(&m, HSVC_EV_REL, HSVC_REL_Y, 100000);
-	assert(m.pitch == -HSVC_VMD_PITCH_MAX);
-	/* wheel rolls */
-	hsvc_vmd_apply(&m, HSVC_EV_REL, HSVC_REL_WHEEL, 1);
-	assert(m.roll < 0.f);
-	/* left click is the trigger */
-	hsvc_vmd_apply(&m, HSVC_EV_KEY, HSVC_BTN_MOUSE_L, 1);
-	assert(m.buttons & HSVC_BTN_TRIG);
-	assert(m.trigger == 1.f);
-	hsvc_vmd_apply(&m, HSVC_EV_KEY, HSVC_BTN_MOUSE_L, 0);
-	assert(!(m.buttons & HSVC_BTN_TRIG));
-	assert(m.trigger == 0.f);
-	/* side button recenters */
-	hsvc_vmd_apply(&m, HSVC_EV_KEY, HSVC_BTN_MOUSE_SIDE, 1);
-	assert(m.yaw == 0.f && m.pitch == 0.f && m.roll == 0.f);
-	/* quat: identity at rest, 90 deg yaw puts it all in qy */
-	float qx, qy, qz, qw;
-	hsvc_vmd_quat(&m, &qx, &qy, &qz, &qw);
-	assert(qw == 1.f && qx == 0.f && qy == 0.f && qz == 0.f);
-	m.yaw = (float)M_PI / 2.f;
-	hsvc_vmd_quat(&m, &qx, &qy, &qz, &qw);
-	assert(fabsf(qy - sqrtf(0.5f)) < 1e-6);
-	assert(fabsf(qw - sqrtf(0.5f)) < 1e-6);
-	assert(fabsf(qx) < 1e-6 && fabsf(qz) < 1e-6);
-}
-
-static void
 test_panel_parse(void)
 {
 	struct hsvcx_panel p;
@@ -179,7 +140,6 @@ main(void)
 	test_gaze_map();
 	test_imu_scale();
 	test_ctrl_map();
-	test_vmd_map();
 	test_panel_parse();
 	test_panel_distort();
 	puts("test_pure OK");

@@ -413,8 +413,9 @@ linux-image:
     - make -C system/linux shell ARCH=aarch64 SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root"
     - bash system/linux/images/mkimage.sh -a x86_64 -d generic -o out/images/hibiscus-linux-x86_64-generic.tar
     - SYSROOT="$CI_PROJECT_DIR/system/linux/out/sysroot/root" bash system/linux/images/mkimage.sh -a aarch64 -d generic -o out/images/hibiscus-linux-aarch64-generic.tar
-    - tar -tf system/linux/out/images/hibiscus-linux-x86_64-generic.tar | grep -q './usr/bin/dash-wayland'
-    - tar -tf system/linux/out/images/hibiscus-linux-aarch64-generic.tar | grep -q './usr/bin/dash-wayland'
+    # no grep -q: exiting on first match SIGPIPEs tar into a pipefail 141
+    - tar -tf system/linux/out/images/hibiscus-linux-x86_64-generic.tar | grep -F './usr/bin/dash-wayland' >/dev/null
+    - tar -tf system/linux/out/images/hibiscus-linux-aarch64-generic.tar | grep -F './usr/bin/dash-wayland' >/dev/null
     - xz -T0 system/linux/out/images/*.tar
   artifacts:
     paths:

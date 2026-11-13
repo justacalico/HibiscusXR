@@ -172,19 +172,36 @@ if [ "$ARCH" != "$(uname -m)" ]; then
 		# a bare cross gcc's private limits.h has no include_next into
 		# the libc's, so POSIX extras like PATH_MAX never arrive. Putting
 		# the sysroot's usr/include ahead of gcc's fixes the search order.
-		echo "set(CMAKE_C_FLAGS_INIT \"-isystem $SYSROOT/usr/include\")"
-		# a bare cross g++ ships no c++ headers either; libstdc++-devel
-		# in the sysroot does - arch dir first, then generic
-		cxxvers=("$SYSROOT"/usr/include/c++/*)
+		# Ubuntu's cross ld searches only the multiarch dirs under the
+		# sysroot: the Fedora libdir needs a -L for bare -lfoo names like
+		# -ldbus-1 and an -rpath-link for deps of the shared libs being
+		# linked (libEGL pulling libGLdispatch). -lgcc at the end of the
+		# link line pulls the outlined LSE helpers (__aarch64_ldadd*)
+		# out of the static libgcc.a: Fedora's spec always links -lgcc,
+		# Ubuntu's emits only -lgcc_s for -shared objects and the shared
+		# libgcc_s keeps those symbols local.
+		echo "set(CMAKE_C_FLAGS_INIT \"-isystem $SYSROOT/usr/include -L$SYSROOT/usr/lib64 -Wl,-rpath-link,$SYSROOT/usr/lib64\")"
+		echo "set(CMAKE_C_STANDARD_LIBRARIES_INIT -lgcc)"
+		# a bare cross g++ ships no c++ headers either (Fedora's); when
+		# the compiler cannot parse <string> on its own, libstdc++-devel
+		# in the sysroot does - arch dir first, then generic. A cross
+		# g++ with its own headers keeps them: the sysroot's can be
+		# newer than the compiler understands
 		cxxextra=""
-		if [ -d "${cxxvers[0]}" ]; then
-			cxxver="${cxxvers[0]##*/}"
-			cxxarchs=("$SYSROOT/usr/include/c++/$cxxver"/*-linux)
-			if [ -d "${cxxarchs[0]}" ]; then
-				cxxextra="-isystem $SYSROOT/usr/include/c++/$cxxver/${cxxarchs[0]##*/} -isystem $SYSROOT/usr/include/c++/$cxxver "
+		if ! printf '#include <string>\n' | \
+			"${CROSS}g++" --sysroot="$SYSROOT" -x c++ -fsyntax-only - \
+			>/dev/null 2>&1; then
+			cxxvers=("$SYSROOT"/usr/include/c++/*)
+			if [ -d "${cxxvers[0]}" ]; then
+				cxxver="${cxxvers[0]##*/}"
+				cxxarchs=("$SYSROOT/usr/include/c++/$cxxver"/*-linux)
+				if [ -d "${cxxarchs[0]}" ]; then
+					cxxextra="-isystem $SYSROOT/usr/include/c++/$cxxver/${cxxarchs[0]##*/} -isystem $SYSROOT/usr/include/c++/$cxxver "
+				fi
 			fi
 		fi
-		echo "set(CMAKE_CXX_FLAGS_INIT \"${cxxextra}-isystem $SYSROOT/usr/include\")"
+		echo "set(CMAKE_CXX_FLAGS_INIT \"${cxxextra}-isystem $SYSROOT/usr/include -L$SYSROOT/usr/lib64 -Wl,-rpath-link,$SYSROOT/usr/lib64\")"
+		echo "set(CMAKE_CXX_STANDARD_LIBRARIES_INIT -lgcc)"
 	} > "$TC"
 	TFLAGS+=(-DCMAKE_TOOLCHAIN_FILE="$TC")
 	PCDIRS=""

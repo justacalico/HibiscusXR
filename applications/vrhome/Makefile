@@ -178,21 +178,38 @@ ARCH    ?= $(shell uname -m)
 ifeq ($(ARCH),aarch64)
 CROSS   ?= aarch64-linux-gnu-
 endif
-WL_CXX  := $(CROSS)c++
+WL_CXX  := $(CROSS)g++
 WL_CC   := $(CROSS)gcc
 WL_PC   := pkg-config
 ifneq ($(SYSROOT),)
 empty   :=
 space   := $(empty) $(empty)
-WL_SYSROOT := --sysroot=$(SYSROOT)
-# bare cross g++'s ship no c++ headers; libstdc++-devel in the sysroot
-# provides the generic dir plus the *-linux arch dir, arch dir first
+# Ubuntu's cross ld searches only the multiarch dirs under the sysroot:
+# the Fedora libdir needs a -L for bare -lfoo names like -lglfw and an
+# -rpath-link for deps of the shared libs being linked (libEGL pulling
+# libGLdispatch)
+WL_SYSROOT := --sysroot=$(SYSROOT) -L$(SYSROOT)/usr/lib64 \
+              -Wl,-rpath-link,$(SYSROOT)/usr/lib64
+# -lgcc at the end of the link line pulls the outlined LSE helpers
+# (__aarch64_ldadd*) out of the static libgcc.a: Fedora's spec always
+# links -lgcc, Ubuntu's emits only -lgcc_s for -shared objects and the
+# shared libgcc_s keeps those symbols local
+WL_LDEXTRA := -lgcc
+# a bare cross g++ ships no c++ headers (Fedora's); when the compiler
+# cannot parse <string> on its own, libstdc++-devel in the sysroot
+# provides the generic dir plus the *-linux arch dir, arch dir first.
+# A cross g++ with its own headers keeps them: the sysroot's headers
+# can be newer than the compiler understands
+ifeq ($(shell printf '#include <string>\n' | \
+        $(WL_CXX) --sysroot=$(SYSROOT) -x c++ -fsyntax-only - 2>/dev/null \
+        && echo yes),)
 CXXVER  := $(notdir $(firstword $(wildcard $(SYSROOT)/usr/include/c++/*)))
 ifneq ($(CXXVER),)
 CXXARCH := $(notdir $(firstword $(wildcard \
             $(SYSROOT)/usr/include/c++/$(CXXVER)/*-linux)))
 WL_SYSROOT += -isystem $(SYSROOT)/usr/include/c++/$(CXXVER)/$(CXXARCH) \
               -isystem $(SYSROOT)/usr/include/c++/$(CXXVER)
+endif
 endif
 PCDIRS  := $(SYSROOT)/usr/lib64/pkgconfig \
            $(SYSROOT)/usr/lib/$(ARCH)-linux-gnu/pkgconfig \
@@ -432,7 +449,7 @@ $(WL_BIN): $(WL_SRCS) $(WL_GEN) \
 	    $$($(WL_PC) --libs --cflags wayland-server xkbcommon libpng \
 	            libdrm openxr) \
 	    -Wl,--disable-new-dtags -Wl,-rpath,'$$ORIGIN/../lib/hibiscus' \
-	    -lglfw -lGLESv2 -lEGL -lz -lm
+	    -lglfw -lGLESv2 -lEGL -lz -lm $(WL_LDEXTRA)
 
 dash-wayland: $(WL_BIN)
 

@@ -3,8 +3,7 @@
 /*!
  * @file
  * @brief  The hsvcd broker loop, callable so it can be embedded:
- *         hsvcd's main is a one-liner over this, and hsvc-vmd forks it
- *         when no daemon answers so the driver stays a single binary.
+ *         hsvcd's main is a one-liner over this.
  *         Owns the rundir, listens on daemon.sock, and answers:
  *         REGISTER, UNREGISTER, RESOLVE, LIST, WATCH. Drivers register
  *         their svc socket; the OS resolves kinds to sockets; watchers

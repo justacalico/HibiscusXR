@@ -33,6 +33,14 @@ struct hsvcx_svc
  * as the OS). Reads the INFO blob into desc. 0 ok, -1 absent. */
 int hsvcx_connect_kind(enum hsvc_kind kind, struct hsvcx_conn *out);
 int hsvcx_connect_path(const char *path, struct hsvcx_conn *out);
+
+/* Dial the vmd host's hsvc endpoint for the named service (one of the
+ * VMD_SVC_* names in vmd_proto.h) and read its INFO, same shape as a
+ * bus conn. Address order: VMD_ADDR, then the qemu user-net host, then
+ * localhost - a vmd running on the same box answers the same way.
+ * 0 ok, -1 when no host channel answers. */
+int hsvcx_vmd_dial(const char *name, struct hsvcx_conn *out);
+
 int hsvcx_sub(struct hsvcx_conn *c, uint32_t stream);
 
 /* List every registered service of `kind`, up to `max`. Returns count. */

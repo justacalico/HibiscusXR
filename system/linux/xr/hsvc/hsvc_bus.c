@@ -8,25 +8,27 @@
 
 #include "hsvc_bus.h"
 
+#include "vmd_proto.h"
+
+#include <errno.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <poll.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-int
-hsvcx_connect_path(const char *path, struct hsvcx_conn *out)
+/* services send INFO on accept; tolerate a stray frame first */
+static int
+hsvcx_read_info(int fd, struct hsvcx_conn *out)
 {
-	int fd = hsvc_dial(path);
-	if (fd < 0)
-		return -1;
 	struct hsvc_hdr hdr;
 	uint8_t *pl = NULL;
-	/* services send INFO on accept; tolerate a stray frame first */
 	for (int i = 0; i < 8; i++) {
-		if (hsvc_recv_frame(fd, &hdr, &pl) < 0) {
-			close(fd);
+		if (hsvc_recv_frame(fd, &hdr, &pl) < 0)
 			return -1;
-		}
 		if (hdr.type == HSVC_MSG_INFO)
 			break;
 		free(pl);
@@ -34,7 +36,6 @@ hsvcx_connect_path(const char *path, struct hsvcx_conn *out)
 	}
 	if (pl == NULL || hdr.type != HSVC_MSG_INFO) {
 		free(pl);
-		close(fd);
 		return -1;
 	}
 	char *desc = malloc(hdr.len + 1);
@@ -43,6 +44,19 @@ hsvcx_connect_path(const char *path, struct hsvcx_conn *out)
 	free(pl);
 	out->fd = fd;
 	out->desc = desc;
+	return 0;
+}
+
+int
+hsvcx_connect_path(const char *path, struct hsvcx_conn *out)
+{
+	int fd = hsvc_dial(path);
+	if (fd < 0)
+		return -1;
+	if (hsvcx_read_info(fd, out) < 0) {
+		close(fd);
+		return -1;
+	}
 	return 0;
 }
 
@@ -142,4 +156,108 @@ hsvcx_close(struct hsvcx_conn *c)
 	free(c->desc);
 	c->fd = -1;
 	c->desc = NULL;
+}
+
+/* one nonblocking connect with a deadline; a guest that can never
+ * route to the host must fail fast, not park the prober */
+static int
+hsvcx_tcp_dial(const char *host, const char *port, int timeout_ms)
+{
+	struct addrinfo hints = {0}, *res = NULL;
+	hints.ai_family = AF_INET;
+	hints.ai_socktype = SOCK_STREAM;
+	if (getaddrinfo(host, port, &hints, &res) != 0)
+		return -1;
+	int fd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+	if (fd < 0) {
+		freeaddrinfo(res);
+		return -1;
+	}
+	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) | O_NONBLOCK);
+	if (connect(fd, res->ai_addr, res->ai_addrlen) != 0 &&
+	    errno != EINPROGRESS) {
+		freeaddrinfo(res);
+		close(fd);
+		return -1;
+	}
+	freeaddrinfo(res);
+	struct pollfd pfd = {fd, POLLOUT, 0};
+	if (poll(&pfd, 1, timeout_ms) <= 0 || !(pfd.revents & POLLOUT)) {
+		close(fd);
+		return -1;
+	}
+	int err = 0;
+	socklen_t len = sizeof(err);
+	if (getsockopt(fd, SOL_SOCKET, SO_ERROR, &err, &len) != 0 ||
+	    err != 0) {
+		close(fd);
+		return -1;
+	}
+	fcntl(fd, F_SETFL, fcntl(fd, F_GETFL) & ~O_NONBLOCK);
+	return fd;
+}
+
+/* "host[:port]" -> host + port strings (port defaults to the service
+ * endpoint's) */
+static void
+hsvcx_addr_split(const char *addr, char *host, size_t hlen, char *port,
+                 size_t plen)
+{
+	snprintf(port, plen, "%d", VMD_SVC_PORT);
+	const char *colon = strrchr(addr, ':');
+	if (colon == NULL) {
+		snprintf(host, hlen, "%s", addr);
+		return;
+	}
+	snprintf(host, hlen, "%.*s", (int)(colon - addr), addr);
+	snprintf(port, plen, "%s", colon + 1);
+}
+
+static int
+hsvcx_vmd_dial_addr(const char *addr, const char *name,
+                    struct hsvcx_conn *out)
+{
+	char host[64], port[8];
+	hsvcx_addr_split(addr, host, sizeof(host), port, sizeof(port));
+	int fd = hsvcx_tcp_dial(host, port, 150);
+	if (fd < 0)
+		return -1;
+	if (hsvc_send_frame(fd, HSVC_MSG_HELLO, 1, name,
+	                    (uint32_t)strlen(name)) < 0 ||
+	    hsvcx_read_info(fd, out) < 0) {
+		close(fd);
+		return -1;
+	}
+	return 0;
+}
+
+/* the last address that answered, so later dials skip the dead
+ * guesses */
+static char vmd_addr_hit[80];
+
+int
+hsvcx_vmd_dial(const char *name, struct hsvcx_conn *out)
+{
+	const char *env = getenv("VMD_ADDR");
+	char addrs[3][80];
+	int na = 0;
+	if (env != NULL && env[0] != '\0') {
+		snprintf(addrs[na++], sizeof(addrs[0]), "%s", env);
+	} else {
+		if (vmd_addr_hit[0] != '\0')
+			snprintf(addrs[na++], sizeof(addrs[0]), "%s",
+			         vmd_addr_hit);
+		snprintf(addrs[na++], sizeof(addrs[0]), "%s:%d",
+		         VMD_PROTO_HOST, VMD_SVC_PORT);
+		snprintf(addrs[na++], sizeof(addrs[0]), "127.0.0.1:%d",
+		         VMD_SVC_PORT);
+	}
+	for (int i = 0; i < na; i++) {
+		if (hsvcx_vmd_dial_addr(addrs[i], name, out) == 0) {
+			snprintf(vmd_addr_hit, sizeof(vmd_addr_hit), "%s",
+			         addrs[i]);
+			return 0;
+		}
+	}
+	return -1;
 }

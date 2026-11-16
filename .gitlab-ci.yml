@@ -367,30 +367,6 @@ linux-test:
         - "system/linux/**/*"
     - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
 
-# The single-file hsvc-vmd for download-and-run use: one static binary
-# per arch (the aarch64 one is linked 16k-page safe), published as job
-# artifacts so a pipeline run hands out a click-and-run file
-linux-dist:
-  stage: build
-  image: ubuntu:24.04
-  before_script:
-    - apt-get update -qq
-    - apt-get install -y --no-install-recommends gcc make git file binutils libc6-dev gcc-aarch64-linux-gnu libc6-dev-arm64-cross
-  script:
-    - make -C system/linux dist
-    - file system/linux/out/dist/*
-  artifacts:
-    paths:
-      - system/linux/out/dist/
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        - "system/linux/**/*"
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - "system/linux/**/*"
-    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "api" || $CI_PIPELINE_SOURCE == "trigger"
-
 # The distro image proper: mkimage lays the userspace, units and the
 # generic device profile into a tarball per shipped arch - no base
 # rootfs, the staging tree untars over any systemd distro. aarch64 is

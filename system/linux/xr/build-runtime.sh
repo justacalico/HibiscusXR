@@ -75,12 +75,14 @@ else
 fi
 
 # drop the driver sources + the libhsvc client into the driver dir; the
-# cmake glob picks them up
+# cmake glob picks them up. vmd_proto.h carries the host channel's port
+# and service names the prober dials.
 DRV="$SRC/src/xrt/drivers/hsvc"
 mkdir -p "$DRV/hsvc"
 cp "$LINUX"/xr/hsvc/*.c "$LINUX"/xr/hsvc/*.h "$DRV/"
 cp "$LINUX/src/hsvc.c" "$DRV/"
 cp "$LINUX"/include/hsvc/*.h "$DRV/hsvc/"
+cp "$ROOT/drivers/vmd/proto/vmd_proto.h" "$DRV/"
 
 # eigen: reuse the repo's stub config + checkout when present, else
 # write one under out/

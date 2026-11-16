@@ -26,8 +26,30 @@ extern "C" {
 #define VMD_PROTO_PORT 7781
 #define VMD_PROTO_HOST "10.0.2.2"
 
+/*
+ * The hsvc service endpoint: the host also speaks the hsvc frame
+ * protocol (system/linux/include/hsvc/proto.h) on this port, so a
+ * Linux guest's drv_hsvc consumes the host's virtual motion device
+ * exactly like a bus service - no driver daemon needed inside the
+ * guest. The client sends HELLO carrying the service name below, the
+ * host answers that service's INFO, then SUB/STREAM proceed as usual.
+ */
+#define VMD_SVC_PORT 7782
+#define VMD_SVC_HMD "vmd-hmd"
+#define VMD_SVC_CTRL "vmd-ctrl"
+
 #define VMD_POSE_POSITION_VALID 0x1
 #define VMD_POSE_TRACKED 0x2
+
+/* wand button bits the host packs into the hsvc_ctrl stream - the
+ * values are the HSVC_BTN_* ones so no translation is needed */
+#define VMD_BTN_A (1u << 0)
+#define VMD_BTN_B (1u << 1)
+#define VMD_BTN_MENU (1u << 2)
+#define VMD_BTN_SYS (1u << 3)
+#define VMD_BTN_STICK (1u << 4)
+#define VMD_BTN_TRIG (1u << 5)
+#define VMD_BTN_GRIP (1u << 6)
 
 struct vmd_pose_packet
 {

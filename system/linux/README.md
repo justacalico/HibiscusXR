@@ -25,8 +25,6 @@ include/hsvc/   proto.h      the wire protocol: frames + stream types
                 registry.h   hsvcd's pure service table
 src/            hsvc.c, registry.c, broker.c, hsvcd.c, hsvcctl.c
 drivers/        hsvc-sim     virtual headset (hmd + 2 ctrls + eye)
-                hsvc-vmd     virtual motion device: a mouse is a 3-dof
-                             headset, click is the trigger
                 hsvc-eye     generic eye tracking camera over V4L2
                 hsvc-imu     generic IMU over IIO
                 hsvc-ctrl    generic controllers over evdev
@@ -88,23 +86,8 @@ layer that turns samples into protocol structs, and `hsvc_publish` +
 - `hsvc-sim` - the virtual headset. Serves hmd, both ctrls and eye
   with synthetic motion; this is what ships on the `generic` profile
   so any PC runs the real stack.
-- `hsvc-vmd` - the virtual motion device. A mouse becomes a 3-dof
-  headset: relative motion steers yaw/pitch, the wheel rolls, the
-  side button recenters, and clicks drive the wand's trigger. Serves
-  `hmd` (orientation-only pose) and `ctrl` (one wand glued to the
-  head). `--evdev auto` finds the first mouse-ish node (the default),
-  `--file` replays "type code value" lines, `--sim` sways.
-  Standalone: when no hsvcd answers it forks the embedded broker on a
-  private rundir (`$HSVC_RUNDIR`, or `/tmp/hibiscus-$UID` which it
-  prints), so the one binary is the whole stack. `make dist` builds it
-  as a single static file per arch - `out/dist/hsvc-vmd-x86_64` and
-  `out/dist/hsvc-vmd-aarch64`, the latter linked 16k-page safe so it
-  runs on 4k/16k/64k-page kernels. Static linking needs a static libc:
-  libc6-dev (Debian) or glibc-static (Fedora) on the host, and
-  `A64SYSROOT=<dir from fetch-sysroot.sh>` where the cross gcc is bare.
-
 Pure logic lives in headers (`drivers/gaze.h`, `imuscl.h`,
-`ctrlmap.h`, `vmdmap.h`) with zero device code so every line of it is
+`ctrlmap.h`) with zero device code so every line of it is
 unit tested on the host.
 
 ## Device profiles
@@ -118,13 +101,24 @@ hardware needs it, one more driver binary that speaks the same
 protocol.
 
 - `generic` / `sim` - PC/dev board, virtual headset only
-- `mouse` - PC where a physical mouse drives the virtual 3-dof
-  headset through `hsvc-vmd`
+- `mouse` - runs under the vmd host tool, which serves the hmd and
+  wand itself over the service channel (see "The vmd host channel")
 - `headset-iio-evdev-v4l2` - any standalone headset on stock kernel
   interfaces (IIO + evdev + V4L2)
 
 Every profile also sets `HSVC_XR=1`, which tells mkimage to stage the
 OpenXR runtime and enable the shell when the artifacts exist.
+
+## The vmd host channel
+
+The `vmd` host tool (the `vmd-linux` binary in `vmd/`) serves the
+same frame protocol on TCP :7782, no guest-side driver needed: a
+client sends HELLO naming a service (`vmd-hmd` or `vmd-ctrl`), gets
+its INFO back, and SUB'd STREAM frames carry `hsvc_pose`/`hsvc_ctrl`
+samples like any bus service. `drv_hsvc` dials it before asking the
+bus - when the channel answers, the host drives the session. Address
+order is `VMD_ADDR`, then the qemu user-net gateway (10.0.2.2), then
+localhost, so `vmd -novm` on the same box feeds a PC install too.
 
 ## The runtime
 
@@ -238,7 +232,6 @@ adds the monado dep set on top.
 make                    host build
 make ARCH=aarch64 SYSROOT=<dir>    cross build
 make test               the whole suite, on the host
-make dist               static single-file hsvc-vmd per arch
 make shell              build + stage the dash-wayland shell for ARCH
 ```
 

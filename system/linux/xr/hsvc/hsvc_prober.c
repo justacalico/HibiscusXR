@@ -13,6 +13,8 @@
 #include "hsvc_interface.h"
 #include "hsvc_internal.h"
 
+#include "vmd_proto.h"
+
 #include "util/u_debug.h"
 
 #include <stdlib.h>
@@ -77,6 +79,35 @@ hsvcx_prober_ctrls(struct xrt_device **out_xdevs, int *io_n)
 	return idx;
 }
 
+/* A vmd host serves the hmd and wand itself over TCP - when the
+ * channel answers it drives the whole session, outscoring whatever the
+ * profile staged on the bus (same as drv_vmd on the Android tree). */
+static int
+hsvcx_prober_vmd(struct xrt_device **out_xdevs, bool no_hmds)
+{
+	int n = 0;
+	struct hsvcx_conn conn;
+	if (!no_hmds) {
+		if (hsvcx_vmd_dial(VMD_SVC_HMD, &conn) < 0)
+			return 0;
+		struct xrt_device *hmd = hsvcx_hmd_create(&conn);
+		if (hmd != NULL) {
+			out_xdevs[n++] = hmd;
+		} else {
+			hsvcx_close(&conn);
+		}
+	}
+	if (hsvcx_vmd_dial(VMD_SVC_CTRL, &conn) == 0) {
+		struct xrt_device *dev = hsvcx_ctrl_create(&conn, 0, 0);
+		if (dev != NULL) {
+			out_xdevs[n++] = dev;
+		} else {
+			hsvcx_close(&conn);
+		}
+	}
+	return n;
+}
+
 static int
 hsvcx_prober_autoprobe(struct xrt_auto_prober *xap,
                        cJSON *attached_data,
@@ -84,7 +115,10 @@ hsvcx_prober_autoprobe(struct xrt_auto_prober *xap,
                        struct xrt_prober *xp,
                        struct xrt_device **out_xdevs)
 {
-	int n = 0;
+	int n = hsvcx_prober_vmd(out_xdevs, no_hmds);
+	if (n > 0) {
+		return n;
+	}
 	if (!no_hmds) {
 		struct hsvcx_conn conn;
 		if (hsvcx_connect_kind(HSVC_KIND_HMD, &conn) == 0) {

@@ -155,10 +155,13 @@ main(int argc, char **argv)
 	}
 
 	std::thread pose_thread(vmd_pose_serve, &state, &g_stop);
+	uint16_t svc_port = VMD_SVC_PORT;
+	std::thread svc_thread(vmd_svc_serve, &state, &g_stop, &svc_port);
 	int rc = mode == XR ? vmd_xr_run(vm, &state, &g_stop)
 	                    : vmd_sim_run(vm, &state, &g_stop);
 	g_stop.store(true);
 	pose_thread.join();
+	svc_thread.join();
 	vmd_vm_stop(vm);
 	return rc;
 }

@@ -16,6 +16,8 @@ make dist              embed it -> out/dist/vmd-linux-<arch>
 out/dist/vmd-linux-x86_64    # boots the embedded guest, no args needed
 out/vmd -img out/guest-x86_64 # same thing from a plain build
 out/vmd -desktopsim        # window, mouse + WASD drive the HMD pose
+                           # and the wand (click = trigger, wheel =
+                           # roll, side button or R = recenter)
 out/vmd -novr | -pc        # same thing
 out/vmd -openxr            # OpenXR app mode - a WiVRn/Monado runtime
                            # feeds a real HMD's pose in, and vmd submits
@@ -88,16 +90,21 @@ bundle, so day-to-day dev keeps using `out/guest-<arch>`.
 ```
 vmd (host)                       Hibiscus in qemu
   pose TCP server :7781  <----   drivers/vmd kit driver (10.0.2.2:7781)
+  hsvc service   :7782   <----   drv_hsvc dials it like a bus service
   qemu + QMP screendump  ---->   guest framebuffer -> desktop / HMD
   hostfwd 15555      ---->       guest adbd :5555 (persist.hibiscus.adbwifi=1)
   hostfwd 17340      ---->       guest cted :7340 (persist.hibiscus.cted)
 ```
 
 The in-OS side of the pose channel is a normal hsvr kit driver
-(`drivers/vmd/`) on the Android tree; the Linux guest runs its own
-profiles instead - `generic` (default) feeds the runtime a simulated
-headset, `mouse`/`headset-*` profiles can drive the stack off the
-virtio-input devices vmd attaches.
+(`drivers/vmd/`) on the Android tree. The Linux guest gets its hmd and
+wand over the hsvc service endpoint instead: `drv_hsvc` HELLOs
+`vmd-hmd`/`vmd-ctrl` on :7782 and streams the same `hsvc_pose` and
+`hsvc_ctrl` payloads a bus service would send, so the host tool is the
+whole virtual motion device - nothing extra runs inside the guest.
+When no host channel answers, the profiles behave as before: `generic`
+(default) feeds the runtime a simulated headset, `headset-*` profiles
+can drive the stack off the virtio-input devices vmd attaches.
 
 ## The Android bootenv (legacy)
 

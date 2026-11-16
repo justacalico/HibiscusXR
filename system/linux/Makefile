@@ -6,9 +6,6 @@
 #   make               host arch build into out/
 #   make ARCH=aarch64  cross build via aarch64-linux-gnu-
 #   make test          build + run the whole suite on the host
-#   make dist          static single-file hsvc-vmd for x86_64 + aarch64
-#                      (aarch64 linked 16k-page safe) into out/dist/
-#   make dist-host     just the host arch's static hsvc-vmd
 #   make shell         build the dash-wayland shell for ARCH into the
 #                      arch's out/xr*/bin/, staged by mkimage when
 #                      HSVC_XR=1
@@ -31,7 +28,7 @@ OUT       := out/$(ARCH)
 
 LIB       := src/hsvc.c src/registry.c
 LIBOBJ    := $(patsubst src/%.c,$(OUT)/obj/%.o,$(LIB))
-BINS      := hsvcd hsvcctl hsvc-sim hsvc-eye hsvc-imu hsvc-ctrl hsvc-vmd
+BINS      := hsvcd hsvcctl hsvc-sim hsvc-eye hsvc-imu hsvc-ctrl
 ADMIN     := $(OUT)/bin/hibiscus-mkadmin
 
 all: $(addprefix $(OUT)/bin/,$(BINS)) $(ADMIN)
@@ -52,12 +49,6 @@ $(OUT)/bin/hsvcd: $(LIBOBJ) $(OUT)/obj/broker.o $(OUT)/obj/hsvcd.o
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
 
-# vmd carries the broker too: with no daemon answering it forks its own
-# private bus, which is what makes the single binary the whole stack.
-$(OUT)/bin/hsvc-vmd: $(LIBOBJ) $(OUT)/obj/drv/hsvc-vmd.o $(OUT)/obj/broker.o
-	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
-
 $(OUT)/bin/hsvcctl: $(LIBOBJ) $(OUT)/obj/hsvcctl.o
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
@@ -65,34 +56,6 @@ $(OUT)/bin/hsvcctl: $(LIBOBJ) $(OUT)/obj/hsvcctl.o
 $(OUT)/bin/hsvc-%: $(LIBOBJ) $(OUT)/obj/drv/hsvc-%.o
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDLIBS)
-
-# Single static binaries, one per shipped arch: no runtime deps, no
-# install, just run it. The aarch64 one gets max-page-size=16384 so the
-# same ELF loads on 4k/16k/64k-page kernels. Needs a static libc for
-# each toolchain: libc6-dev / glibc-static on the host, and on hosts
-# with a bare cross gcc A64SYSROOT=<dir from fetch-sysroot.sh>.
-X86CC   ?= gcc
-A64CC   ?= aarch64-linux-gnu-gcc
-A64SYSROOT ?=
-ifneq ($(A64SYSROOT),)
-A64CC   += --sysroot=$(A64SYSROOT)
-endif
-DIST    := out/dist/hsvc-vmd
-VMDSRC  := src/hsvc.c src/registry.c src/broker.c drivers/hsvc-vmd.c
-VMDHDR  := include/hsvc/proto.h include/hsvc/hsvc.h include/hsvc/registry.h \
-           drivers/vmdmap.h
-
-dist: $(DIST)-x86_64 $(DIST)-aarch64
-
-dist-host: $(DIST)-$(ARCH)
-
-$(DIST)-x86_64: XCC := $(X86CC)
-$(DIST)-aarch64: XCC := $(A64CC)
-$(DIST)-aarch64: XPAGE := -Wl,-z,max-page-size=16384
-
-$(DIST)-%: $(VMDSRC) $(VMDHDR)
-	@mkdir -p $(dir $@)
-	$(XCC) $(CFLAGS) $(XPAGE) -static -o $@ $(VMDSRC) $(LDLIBS)
 
 test:
 	bash tests/run.sh
@@ -133,4 +96,4 @@ install: all
 clean:
 	rm -rf out
 
-.PHONY: all dist dist-host test shell install clean
+.PHONY: all test shell install clean

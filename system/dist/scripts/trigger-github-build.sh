@@ -56,8 +56,13 @@ fi
 
 echo "Watching GitHub run $RUN_ID..."
 CONCLUSION="failure"
-for attempt in 1 2 3; do
-  if gh run watch "$RUN_ID" -R "$REPO" --exit-status 2>&1; then
+# watch exits nonzero on a real failure and on transient API errors alike,
+# so the conclusion query is what tells them apart. A run takes ~20m and a
+# rate-limit window can last an hour - keep reconnecting as long as the run
+# is still in progress. The slower poll interval also keeps the token well
+# under its hourly API budget.
+for attempt in $(seq 60); do
+  if gh run watch "$RUN_ID" -R "$REPO" --exit-status --interval 30 2>&1; then
     CONCLUSION="success"
     break
   fi
@@ -72,7 +77,7 @@ for attempt in 1 2 3; do
       CONCLUSION="$C"; break ;;
     *)
       echo "gh run watch lost connection (attempt $attempt), retrying..."
-      sleep 10 ;;
+      sleep 60 ;;
   esac
 done
 

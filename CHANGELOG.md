@@ -42,6 +42,7 @@ linked line per MR no matter how many commits it carried.
 - [vmd: 弃用 hsvc-vmd,主机端内置虚拟设备服务](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/262) (!262)
 - [ci: 修复 linux-release 对 linux-dist 的失效 needs](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/265) (!265)
 - [修复 monado drm/kms 补丁上下文冲突](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/266) (!266)
+- [修复 github watch 遇 API 限流误判失败](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/267) (!267)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)

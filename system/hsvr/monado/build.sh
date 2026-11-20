@@ -80,6 +80,7 @@ rm -f src/xrt/auxiliary/util/u_foveation.h \
 git apply "$ROOT/patches/hsvr-foveated-rendering.patch"
 rm -f src/xrt/state_trackers/oxr/oxr_shell.h
 git apply "$ROOT/patches/hsvr-shell-recenter.patch"
+rm -f src/xrt/compositor/main/comp_window_drm.c
 git apply "$ROOT/patches/hsvr-drm-kms-target.patch"
 
 # drv_hsvr builds from one directory: the kit, the hsvr prober shim, every

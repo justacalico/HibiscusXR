@@ -34,7 +34,7 @@ spec:
 # and the Android lane gets discarded once the switch is done. Until then
 # build_android gates that lane: off skips
 # os-bump/github-dispatch/github-release-sync and the pipeline is Linux
-# only - linux-test/linux-dist plus linux-image (mkimage tarballs for
+# only - linux-test plus linux-image (mkimage tarballs for
 # both arches) and vmd-dist (the qemu host driver, x86_64 + aarch64),
 # and linux-release
 # stands in for the GitHub release half: when release_and_publish or
@@ -230,8 +230,6 @@ linux-release:
   resource_group: os-release
   timeout: 15m
   needs:
-    - job: linux-dist
-      artifacts: true
     - job: linux-image
       artifacts: true
     - job: vmd-dist

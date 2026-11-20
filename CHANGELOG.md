@@ -39,6 +39,8 @@ linked line per MR no matter how many commits it carried.
 - [Fix QEMU guest not displaying the dashboard](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/259) (!259)
 - [网站加主线 Linux 移植公告条](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/260) (!260)
 - [修复 CI: monado 构建缺 libudev-dev、hero golden 跨引擎像素差](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/261) (!261)
+- [vmd: 弃用 hsvc-vmd,主机端内置虚拟设备服务](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/262) (!262)
+- [ci: 修复 linux-release 对 linux-dist 的失效 needs](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/265) (!265)
 
 ## [alpha-v2026.10.25-r28] - 2026-10-25
 - [修复控制器射频站上电导致的开机重启循环](https://gitlab.com/neosalsa/HibiscusXR/-/merge_requests/223) (!223)
